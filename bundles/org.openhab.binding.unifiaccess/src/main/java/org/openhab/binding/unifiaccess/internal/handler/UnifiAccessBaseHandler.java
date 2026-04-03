@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.unifiaccess.internal.handler;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,7 +37,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
-    protected Map<String, State> stateCache = new HashMap<>();
+    protected Map<String, State> stateCache = new ConcurrentHashMap<>();
     /* This is the universal ID for the device or door, will match locationId as well in API responses */
     protected String deviceId = "";
 
@@ -84,14 +84,12 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
         return bridge != null ? bridge.getApiClient() : null;
     }
 
-    // updates from the WebSocket
-
     protected void handleDeviceUpdate(DeviceUpdateData updateData) {
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
                 updateData.isConnected ? OnOffType.ON : OnOffType.OFF);
         if (!updateData.isConnected) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Device reported as offline");
+                    "@text/offline.device-offline");
         }
     }
 
@@ -101,7 +99,7 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
                 Boolean.TRUE.equals(online) ? OnOffType.ON : OnOffType.OFF);
         if (!Boolean.TRUE.equals(online)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Device reported as offline");
+                    "@text/offline.device-offline");
         }
     }
 

@@ -16,6 +16,7 @@ import static org.openhab.binding.unifiaccess.internal.UnifiAccessBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,7 +65,7 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
             Map.entry(CHANNEL_DEVICE_FACE_DETECT_DISTANCE, "face_detect_distance_v2"));
 
     /** Cached config map from the last bootstrap sync, used for building settings on command. */
-    private Map<String, String> lastConfigMap = new HashMap<>();
+    private Map<String, String> lastConfigMap = new ConcurrentHashMap<>();
 
     public UnifiAccessDeviceHandler(Thing thing) {
         super(thing);

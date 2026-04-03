@@ -22,9 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -36,6 +38,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -137,8 +140,6 @@ public final class UniFiAccessApiClient implements Closeable {
         stopWsMonitor();
     }
 
-    // ---- Authentication ----
-
     /**
      * Performs session-based authentication against the v2 API.
      * <ol>
@@ -161,7 +162,10 @@ public final class UniFiAccessApiClient implements Closeable {
                 } else {
                     logger.debug("No initial CSRF token from GET / - will obtain from login response");
                 }
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted while fetching initial CSRF token: {}", e.getMessage());
+            } catch (TimeoutException | ExecutionException e) {
                 logger.debug("Failed to fetch initial CSRF token: {}", e.getMessage());
             }
 
@@ -182,13 +186,11 @@ public final class UniFiAccessApiClient implements Closeable {
             ContentResponse loginResp = loginReq.send();
 
             int status = loginResp.getStatus();
-            if (status == 401 || status == 403) {
-                throw new UniFiAccessApiException(
-                        "Authentication failed: " + status + " - " + loginResp.getContentAsString(), true);
+            if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
+                throw new UniFiAccessApiException("Authentication failed: " + status, true);
             }
-            if (status < 200 || status >= 300) {
-                throw new UniFiAccessApiException(
-                        "Login failed with status " + status + ": " + loginResp.getContentAsString());
+            if (!HttpStatus.isSuccess(status)) {
+                throw new UniFiAccessApiException("Login failed with status " + status);
             }
 
             // Step 3: Extract session cookie
@@ -366,8 +368,6 @@ public final class UniFiAccessApiClient implements Closeable {
         return door;
     }
 
-    // ---- Devices ----
-
     /**
      * Extracts all devices from the bootstrap topology.
      * Flattens device_groups from floors and doors into a single list.
@@ -537,8 +537,6 @@ public final class UniFiAccessApiClient implements Closeable {
         return map;
     }
 
-    // ---- Door Control ----
-
     /**
      * Unlocks a door by its location ID.
      */
@@ -667,8 +665,7 @@ public final class UniFiAccessApiClient implements Closeable {
         s.mobileWave.setEnabled("yes".equalsIgnoreCase(configMap.getOrDefault("camera_mobile_unlock", "no")));
 
         s.wave = new DeviceAccessMethodSettings.Wave();
-        // No direct "wave" key in v2 configs; assume not available
-        s.wave.setEnabled(false);
+        s.wave.setEnabled("yes".equalsIgnoreCase(configMap.getOrDefault("wave", "no")));
 
         s.qrCode = new DeviceAccessMethodSettings.QrCode();
         s.qrCode.setEnabled("yes".equalsIgnoreCase(configMap.getOrDefault("qr_code", "no")));
@@ -815,7 +812,8 @@ public final class UniFiAccessApiClient implements Closeable {
                             if (!closed) {
                                 onError.accept(e);
                             }
-                        } catch (Exception ignored) {
+                        } catch (Exception callbackEx) {
+                            logger.trace("Error in onError callback: {}", callbackEx.getMessage());
                         }
                     }
                 }
@@ -826,7 +824,8 @@ public final class UniFiAccessApiClient implements Closeable {
                     logger.debug("Notifications WebSocket error: {}", cause.getMessage(), cause);
                     try {
                         onError.accept(cause);
-                    } catch (Exception ignored) {
+                    } catch (Exception callbackEx) {
+                        logger.trace("Error in onError callback: {}", callbackEx.getMessage());
                     }
                 }
 
@@ -836,7 +835,8 @@ public final class UniFiAccessApiClient implements Closeable {
                     logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
                     try {
                         onClosed.accept(statusCode, reason);
-                    } catch (Exception ignored) {
+                    } catch (Exception callbackEx) {
+                        logger.trace("Error in onClosed callback: {}", callbackEx.getMessage());
                     }
                 }
             };
@@ -922,7 +922,7 @@ public final class UniFiAccessApiClient implements Closeable {
         }
 
         int sc = resp.getStatus();
-        if (sc == 401) {
+        if (sc == HttpStatus.UNAUTHORIZED_401) {
             if (!reauthenticating) {
                 reauthenticating = true;
                 try {
@@ -931,19 +931,15 @@ public final class UniFiAccessApiClient implements Closeable {
                 } finally {
                     reauthenticating = false;
                 }
-                // Signal caller to retry - throw a re-auth exception
                 throw new UniFiAccessApiException("Re-authenticated after 401 for " + action + ", retry required");
             }
-            throw new UniFiAccessApiException(
-                    "Authentication failed for " + action + ": " + sc + " - " + resp.getContentAsString(), true);
+            throw new UniFiAccessApiException("Authentication failed for " + action + ": " + sc, true);
         }
-        if (sc == 403) {
-            throw new UniFiAccessApiException("Forbidden for " + action + ": " + sc + " - " + resp.getContentAsString(),
-                    true);
+        if (sc == HttpStatus.FORBIDDEN_403) {
+            throw new UniFiAccessApiException("Forbidden for " + action + ": " + sc, true);
         }
-        if (sc < 200 || sc >= 300) {
-            throw new UniFiAccessApiException(
-                    "Non 2xx response for " + action + ": " + sc + " - " + resp.getContentAsString());
+        if (!HttpStatus.isSuccess(sc)) {
+            throw new UniFiAccessApiException("Non 2xx response for " + action + ": " + sc);
         }
 
         // Update CSRF token from response if present
@@ -1102,12 +1098,13 @@ public final class UniFiAccessApiClient implements Closeable {
 
     private synchronized void stopWsMonitor() {
         try {
-            ScheduledFuture<?> f = wsMonitorFuture;
-            if (f != null) {
-                f.cancel(true);
+            ScheduledFuture<?> monitorFuture = wsMonitorFuture;
+            if (monitorFuture != null) {
+                monitorFuture.cancel(true);
                 wsMonitorFuture = null;
             }
-        } catch (Exception ignored) {
+        } catch (RuntimeException e) {
+            logger.trace("Error stopping WS monitor: {}", e.getMessage());
         }
     }
 }

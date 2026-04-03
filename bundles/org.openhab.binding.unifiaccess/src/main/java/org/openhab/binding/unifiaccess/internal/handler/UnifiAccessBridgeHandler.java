@@ -100,6 +100,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing bridge handler");
+        cancelReconnect();
         cancelPolling();
         try {
             UniFiAccessApiClient client = this.apiClient;
@@ -109,10 +110,10 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.debug("Failed to close notifications WebSocket: {}", e.getMessage());
         }
-        cancelReconnect();
         try {
             httpClient.stop();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.trace("Error stopping HTTP client: {}", e.getMessage());
         }
         super.dispose();
     }
@@ -200,8 +201,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
         } catch (UniFiAccessApiException e) {
             logger.debug("Failed to open notifications WebSocket", e);
             if (e.isAuthFailure()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication failed - check API token");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.auth-failed");
             } else {
                 setOfflineAndReconnect("Failed to open notifications WebSocket");
             }
@@ -307,7 +307,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                             online ? OnOffType.ON : OnOffType.OFF);
                     if (!online) {
                         dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Device reported as offline");
+                                "@text/offline.device-offline");
                     } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
                         dh.setOnline();
                     }
@@ -329,8 +329,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
         } catch (UniFiAccessApiException e) {
             logger.debug("Polling error: {}", e.getMessage());
             if (e.isAuthFailure()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Authentication failed - check API token");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.auth-failed");
                 cancelPolling();
             }
         }
@@ -371,8 +370,6 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
         }
         return null;
     }
-
-    // -- Package-private bridge channel helpers used by NotificationRouter --
 
     void fireTriggerChannel(String channelId, String payload) {
         triggerChannel(channelId, payload);

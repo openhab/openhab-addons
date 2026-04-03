@@ -13,10 +13,12 @@
 package org.openhab.binding.unifiaccess.internal.handler;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -158,9 +160,12 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                     break;
                 case UnifiAccessBindingConstants.CHANNEL_UNLOCK_UNTIL: {
                     if (command instanceof DateTimeType dateTime) {
-                        int minutes = (int) Math.max(0,
-                                java.time.temporal.ChronoUnit.MINUTES.between(Instant.now(), dateTime.getInstant()));
-                        api.unlockForMinutes(getHubDeviceId(), minutes);
+                        int minutes = (int) ChronoUnit.MINUTES.between(Instant.now(), dateTime.getInstant());
+                        if (minutes > 0) {
+                            api.unlockForMinutes(getHubDeviceId(), minutes);
+                        } else {
+                            api.resetDoorLockRule(getHubDeviceId());
+                        }
                     } else {
                         api.resetDoorLockRule(getHubDeviceId());
                     }
@@ -277,6 +282,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
     protected void handleRemoteUnlock(Notification.RemoteUnlockData remoteUnlock) {
         setLastUnlock(remoteUnlock.fullName, System.currentTimeMillis());
         door.doorLockRelayStatus = DoorState.LockState.UNLOCKED;
+        updateLock(DoorState.LockState.UNLOCKED);
         String payload = new Gson().toJson(Map.of("deviceId", remoteUnlock.uniqueId, "name", remoteUnlock.name,
                 "fullName", remoteUnlock.fullName, "level", remoteUnlock.level, "workTimeId", remoteUnlock.workTimeId));
         triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_REMOTE_UNLOCK, payload);
@@ -326,7 +332,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
         if (rule != null) {
             this.lockRule = rule;
             updateState(UnifiAccessBindingConstants.CHANNEL_LOCK_RULE,
-                    new StringType(rule.type.name().toLowerCase(java.util.Locale.ROOT)));
+                    new StringType(rule.type.name().toLowerCase(Locale.ROOT)));
             switch (rule.type) {
                 case KEEP_UNLOCK:
                     updateState(UnifiAccessBindingConstants.CHANNEL_KEEP_UNLOCKED, OnOffType.ON);
@@ -338,7 +344,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                     break;
                 case CUSTOM:
                     updateState(UnifiAccessBindingConstants.CHANNEL_UNLOCK_UNTIL,
-                            new DateTimeType(Instant.ofEpochSecond(rule.until)));
+                            new DateTimeType(Instant.ofEpochMilli(rule.until)));
                     lockChannels.remove(UnifiAccessBindingConstants.CHANNEL_UNLOCK_UNTIL);
                     break;
                 default:

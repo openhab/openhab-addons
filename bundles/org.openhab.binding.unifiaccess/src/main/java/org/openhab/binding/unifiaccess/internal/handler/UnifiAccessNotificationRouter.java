@@ -131,7 +131,7 @@ public class UnifiAccessNotificationRouter {
         try {
             // Route doorbell status to device and door handlers via request ID mapping
             if (rvc.remoteCallRequestId != null) {
-                String deviceId = remoteViewRequestToDeviceId.get(rvc.remoteCallRequestId);
+                String deviceId = remoteViewRequestToDeviceId.remove(rvc.remoteCallRequestId);
                 if (deviceId != null) {
                     UnifiAccessDeviceHandler dh = bridgeHandler.getDeviceHandler(deviceId);
                     if (dh != null) {
@@ -150,6 +150,9 @@ public class UnifiAccessNotificationRouter {
 
     private void handleRemoteUnlockEvent(Notification notification) {
         RemoteUnlockData ru = notification.dataAsRemoteUnlock(gson);
+        if (ru == null) {
+            return;
+        }
         logger.debug("Device remote unlock: {}", ru.name);
         handleRemoteUnlock(ru);
     }
