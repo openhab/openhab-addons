@@ -64,7 +64,8 @@ import org.slf4j.LoggerFactory;
  * channels.
  *
  * @author Patrik Gfeller - Initial contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
+ * @author Patrik Gfeller - Issue #19079, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
@@ -88,7 +89,7 @@ public class HueSyncHandler extends BaseThingHandler {
      * 
      * @author Patrik Gfeller - Initial contribution
      * @author Patrik Gfeller - Issue #18062, improve connection exception handling.
-     * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+     * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
      */
     private class ExceptionHandler implements HueSyncExceptionHandler {
         private final HueSyncHandler handler;
@@ -200,8 +201,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 interval = this.getHueSyncConfiguration().statusUpdateInterval;
 
-                task = new HueSyncUpdateTask(this.connection.get(), this.deviceInfo.get(),
-                        deviceStatus -> this.handleUpdate(deviceStatus), this.exceptionHandler);
+                task = new HueSyncUpdateTask(this.connection.get(), this.deviceInfo.get(), this::handleUpdate,
+                        this.exceptionHandler);
                 break;
             }
             case TASKS.REGISTER -> {
@@ -233,12 +234,16 @@ public class HueSyncHandler extends BaseThingHandler {
         task.cancel(true);
     }
 
-    private void handleUpdate(@Nullable HueSyncUpdateTaskResult dto) {
-        var result = Optional.ofNullable(dto).orElseThrow();
+    private void handleUpdate(HueSyncUpdateTaskResult dto) {
+        var deviceStatus = dto.deviceStatus;
+        var hdmiStatus = dto.hdmiStatus;
+        var execution = dto.execution;
 
-        HueSyncDeviceDetailed deviceStatus = Optional.ofNullable(result.deviceStatus).orElseThrow();
-        HueSyncHdmi hdmiStatus = Optional.ofNullable(result.hdmiStatus).orElseThrow();
-        HueSyncExecution execution = Optional.ofNullable(result.execution).orElseThrow();
+        if (deviceStatus == null || hdmiStatus == null || execution == null) {
+            logger.warn("HueSync update skipped: deviceStatus={}, hdmiStatus={}, execution={}", deviceStatus,
+                    hdmiStatus, execution);
+            return;
+        }
 
         this.updateFirmwareInformation(deviceStatus);
         this.updateHdmiInformation(hdmiStatus);
@@ -399,7 +404,9 @@ public class HueSyncHandler extends BaseThingHandler {
 
         try {
             this.stopTasks();
-            this.connection.orElseThrow().dispose();
+            if (this.connection.isPresent()) {
+                this.connection.get().dispose();
+            }
         } catch (Exception e) {
             this.logger.warn("{}", e.getMessage());
         } finally {
