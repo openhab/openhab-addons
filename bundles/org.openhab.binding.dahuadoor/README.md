@@ -11,7 +11,8 @@ This binding integrates Dahua VTO Villastation door controllers with openHAB, en
 
 ## Discovery
 
-Dahua door stations are automatically discovered on the local network using the DHIP UDP multicast discovery protocol. The discovered thing is pre-configured with the device's IP address as `hostname`.
+Dahua door stations are automatically discovered on the local network using the DHIP UDP multicast discovery protocol.
+The discovered thing is pre-configured with the device's IP address as `hostname`.
 `username` and `password` must be set manually after accepting the thing in the inbox.
 
 **Note:** Auto-discovery relies on UDP multicast (`239.255.255.251:37810`) and therefore only works when openHAB and the Dahua devices are on the **same subnet**.
@@ -60,11 +61,11 @@ Single-button outdoor station.
 
 #### Thing Configuration
 
-When discovered automatically, the thing ID is based on the device serial number (e.g., `abc1234xyz56789`).
+When discovered automatically, the thing ID is based on the device serial number when available (e.g., `abc1234xyz56789`), and otherwise falls back to the device MAC address and then the hostname.
 For manual configuration, any unique ID can be used.
 
 ```java
-Thing dahuadoor:vto2202:abc1234xyz56789 "Front Door Station" @ "Entrance" [
+Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
     hostname="192.168.1.100",
     username="admin",
     password="password123",
@@ -75,8 +76,8 @@ Thing dahuadoor:vto2202:abc1234xyz56789 "Front Door Station" @ "Entrance" [
 #### Item Configuration
 
 ```java
-Switch OpenFrontDoor "Open Front Door" <door> { channel="dahuadoor:vto2202:abc1234xyz56789:open-door-1" }
-Image FrontDoorImage "Front Door Camera" <camera> { channel="dahuadoor:vto2202:abc1234xyz56789:door-image" }
+Switch OpenFrontDoor "Open Front Door" <door> { channel="dahuadoor:vto2202:frontdoor:open-door-1" }
+Image FrontDoorImage "Front Door Camera" <camera> { channel="dahuadoor:vto2202:frontdoor:door-image" }
 ```
 
 #### Rule Configuration
@@ -86,7 +87,7 @@ Send smartphone notification with camera image when doorbell is pressed (require
 ```java
 rule "Doorbell Notification"
 when
-    Channel "dahuadoor:vto2202:abc1234xyz56789:bell-button" triggered PRESSED
+    Channel "dahuadoor:vto2202:frontdoor:bell-button" triggered PRESSED
 then
     sendBroadcastNotification("Visitor at the door", "door", 
         "entrance", "Entrance", "door-notifications", null, 

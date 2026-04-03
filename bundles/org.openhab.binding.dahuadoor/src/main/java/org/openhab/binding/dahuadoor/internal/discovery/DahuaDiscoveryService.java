@@ -36,6 +36,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -56,11 +57,12 @@ import com.google.gson.JsonSyntaxException;
  * Protocol details: the 32-byte DHIP header is structured as follows:
  * <ul>
  * <li>Bytes 0–7: magic {@code 0x2000000044484950} (big-endian, last 4 bytes = "DHIP")</li>
- * <li>Bytes 8–15: zero padding</li>
+ * <li>Bytes 8–11: session ID (little-endian uint32)</li>
+ * <li>Bytes 12–15: request/message ID (little-endian uint32)</li>
  * <li>Bytes 16–19: payload length (little-endian uint32)</li>
- * <li>Bytes 20–23: zero padding</li>
+ * <li>Bytes 20–23: reserved / zero padding</li>
  * <li>Bytes 24–27: payload length again (little-endian uint32)</li>
- * <li>Bytes 28–31: zero padding</li>
+ * <li>Bytes 28–31: reserved / zero padding</li>
  * </ul>
  *
  * @author Sven Schad - Initial contribution
@@ -99,8 +101,6 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Starting Dahua DHIP discovery scan (multicast {}:{})", DHIP_MULTICAST_ADDRESS,
-                DHIP_DISCOVERY_PORT);
         scanTask = scheduler.schedule(this::performScan, 0, TimeUnit.SECONDS);
     }
 
@@ -120,6 +120,8 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
      * timeout expires. Each response is handed to {@link #parseResponse(byte[], String)}.
      */
     private void performScan() {
+        logger.debug("Starting Dahua DHIP discovery scan (multicast {}:{})", DHIP_MULTICAST_ADDRESS,
+                DHIP_DISCOVERY_PORT);
         byte[] packet = buildDiscoveryPacket();
 
         try (DatagramSocket socket = new DatagramSocket()) {
@@ -135,7 +137,7 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
             long deadline = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(SCAN_TIMEOUT_SECONDS);
             byte[] receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
 
-            while (System.currentTimeMillis() < deadline) {
+            while (!Thread.currentThread().isInterrupted() && System.currentTimeMillis() < deadline) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 try {
                     socket.receive(receivePacket);
@@ -148,7 +150,7 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (IOException e) {
-            logger.debug("Error during Dahua DHIP discovery scan: {}", e.getMessage());
+            logger.debug("Error during Dahua DHIP discovery scan: {}", e.getMessage(), e);
         }
 
         stopScan();
@@ -282,20 +284,22 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hostname", hostname);
         if (!mac.isEmpty()) {
-            properties.put("mac", mac);
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, mac);
         }
         if (!softwareVersion.isEmpty()) {
             properties.put("softwareVersion", softwareVersion);
         }
         if (!serialNo.isEmpty()) {
-            properties.put("serialNumber", serialNo);
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNo);
         }
         if (!deviceClass.isEmpty()) {
             properties.put("deviceClass", deviceClass);
         }
 
+        String representationProperty = !serialNo.isEmpty() ? Thing.PROPERTY_SERIAL_NUMBER
+                : !mac.isEmpty() ? Thing.PROPERTY_MAC_ADDRESS : "hostname";
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withRepresentationProperty("serialNumber").withLabel(label).build();
+                .withProperties(properties).withRepresentationProperty(representationProperty).withLabel(label).build();
 
         thingDiscovered(result);
         logger.debug("Discovered Dahua device: {} ({}) at {}", deviceType, uid, hostname);
