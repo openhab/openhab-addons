@@ -217,7 +217,7 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 #### Device Status & Health
 
 | Channel ID                             | Item Type               | RW | Description                        | Advanced |
-|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+|----------------------------------------|-------------------------|----|------------------------------------|----------|
 | is-connected                           | Switch                  | R  | Camera is connected                | false    |
 | is-dark                                | Switch                  | R  | Scene is currently dark            | false    |
 | connection-host                        | String                  | R  | Connection host address            | true     |
@@ -233,7 +233,7 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 #### Network & WiFi
 
 | Channel ID                             | Item Type               | RW | Description                        | Advanced |
-|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+|----------------------------------------|-------------------------|----|------------------------------------|----------|
 | ap-mac                                 | String                  | R  | Access point MAC address           | true     |
 | wifi-channel                           | Number                  | R  | WiFi channel number                | true     |
 | wifi-frequency                         | Number:Frequency        | R  | WiFi frequency                     | true     |
@@ -243,7 +243,7 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 #### Storage & Recording
 
 | Channel ID                             | Item Type               | RW | Description                        | Advanced |
-|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+|----------------------------------------|-------------------------|----|------------------------------------|----------|
 | storage-used                           | Number:DataAmount       | R  | Storage used by this camera        | false    |
 | storage-rate                           | Number:DataTransferRate | R  | Recording storage rate             | true     |
 
@@ -320,18 +320,18 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Sensor (`sensor`)
 
-| Channel ID         | Item Type          | RW | Description                              | Advanced |
-|--------------------|--------------------|----|------------------------------------------| ---------|
-| battery            | Number             | R  | Battery charge level (%)                 | false    |
-| contact            | Contact            | R  | Contact state (OPEN/CLOSED)              | false    |
-| temperature        | Number:Temperature | R  | Ambient temperature                      | false    |
-| humidity           | Number             | R  | Ambient humidity                         | false    |
-| illuminance        | Number:Illuminance | R  | Ambient light (Lux)                      | false    |
-| alarm-contact      | Contact            | R  | Smoke/CO alarm contact (OPEN = alarming) | false    |
-| water-leak-contact | Contact            | R  | Water leak contact (OPEN = leak)         | false    |
-| tamper-contact     | Contact            | R  | Tamper contact (OPEN = tampering)        | false    |
-| sensor-tamper-reset| Switch             | W  | Reset tamper status (send ON)            | true     |
-| device-reboot      | Switch             | W  | Reboot device (send ON command)          | true     |
+| Channel ID          | Item Type          | RW | Description                              | Advanced |
+|---------------------|--------------------|----|------------------------------------------|----------|
+| battery             | Number             | R  | Battery charge level (%)                 | false    |
+| contact             | Contact            | R  | Contact state (OPEN/CLOSED)              | false    |
+| temperature         | Number:Temperature | R  | Ambient temperature                      | false    |
+| humidity            | Number             | R  | Ambient humidity                         | false    |
+| illuminance         | Number:Illuminance | R  | Ambient light (Lux)                      | false    |
+| alarm-contact       | Contact            | R  | Smoke/CO alarm contact (OPEN = alarming) | false    |
+| water-leak-contact  | Contact            | R  | Water leak contact (OPEN = leak)         | false    |
+| tamper-contact      | Contact            | R  | Tamper contact (OPEN = tampering)        | false    |
+| sensor-tamper-reset | Switch             | W  | Reset tamper status (send ON)            | true     |
+| device-reboot       | Switch             | W  | Reboot device (send ON command)          | true     |
 
 ### Doorlock (`doorlock`)
 
@@ -345,12 +345,12 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Chime (`chime`)
 
-| Channel ID         | Item Type          | RW | Description                              | Advanced |
-|--------------------|--------------------|----|------------------------------------------| ---------|
-| play-chime         | Switch             | W  | Play chime sound (send ON)               | false    |
-| play-buzzer        | Switch             | W  | Play buzzer sound (send ON)              | false    |
-| volume             | Dimmer             | RW | Chime volume (0-100)                     | false    |
-| repeat-times       | Number             | RW | Number of times to repeat sound          | false    |
+| Channel ID   | Item Type | RW | Description                     | Advanced |
+|--------------|-----------|----|---------------------------------|----------|
+| play-chime   | Switch    | W  | Play chime sound (send ON)      | false    |
+| play-buzzer  | Switch    | W  | Play buzzer sound (send ON)     | false    |
+| volume       | Dimmer    | RW | Chime volume (0-100)            | false    |
+| repeat-times | Number    | RW | Number of times to repeat sound | false    |
 
 Trigger channels (for rules):
 

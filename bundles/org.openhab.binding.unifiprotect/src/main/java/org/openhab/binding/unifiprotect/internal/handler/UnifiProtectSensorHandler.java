@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.unifiprotect.internal.handler;
 
+import static org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
@@ -60,28 +61,18 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
         }
 
         switch (id) {
-            case UnifiProtectBindingConstants.CHANNEL_SENSOR_CLEAR_TAMPER: {
+            case CHANNEL_SENSOR_CLEAR_TAMPER:
                 if (command == OnOffType.ON) {
-                    api.getPrivateClient().clearSensorTamper(deviceId).whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            logger.debug("Failed to clear sensor tamper", ex);
-                        }
-                    });
+                    logOnFailure(api.getPrivateClient().clearSensorTamper(deviceId), "clear sensor tamper");
                     updateState(channelUID, OnOffType.OFF);
                 }
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT: {
+            case CHANNEL_DEVICE_REBOOT:
                 if (command == OnOffType.ON) {
-                    api.getPrivateClient().rebootDevice("sensor", deviceId).whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            logger.debug("Failed to reboot sensor", ex);
-                        }
-                    });
+                    logOnFailure(api.getPrivateClient().rebootDevice("sensor", deviceId), "reboot sensor");
                     updateState(channelUID, OnOffType.OFF);
                 }
                 break;
-            }
             default:
                 break;
         }
@@ -99,9 +90,8 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                     String payload = e.metadata != null && e.metadata.sensorMountType != null
                             && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
                                     : "none";
-                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_OPENED),
-                            payload);
-                    updateState(UnifiProtectBindingConstants.CHANNEL_CONTACT, OpenClosedType.OPEN);
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_OPENED), payload);
+                    updateState(CHANNEL_CONTACT, OpenClosedType.OPEN);
                 }
                 break;
             case SENSOR_CLOSED:
@@ -109,14 +99,13 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                     String payload = e.metadata != null && e.metadata.sensorMountType != null
                             && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
                                     : "none";
-                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_CLOSED),
-                            payload);
-                    updateState(UnifiProtectBindingConstants.CHANNEL_CONTACT, OpenClosedType.CLOSED);
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_CLOSED), payload);
+                    updateState(CHANNEL_CONTACT, OpenClosedType.CLOSED);
                 }
                 break;
             case SENSOR_MOTION:
                 if (event instanceof SensorMotionEvent) {
-                    triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_SENSOR_MOTION));
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_SENSOR_MOTION));
                 }
                 break;
             case SENSOR_ALARM:
@@ -124,12 +113,11 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                     String payload = e.metadata != null && e.metadata.alarmType != null
                             && e.metadata.alarmType.text != null ? e.metadata.alarmType.text.getApiValue() : "";
                     if (payload.isEmpty()) {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM));
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_ALARM));
                     } else {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_ALARM),
-                                payload);
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_ALARM), payload);
                     }
-                    updateState(UnifiProtectBindingConstants.CHANNEL_ALARM_CONTACT,
+                    updateState(CHANNEL_ALARM_CONTACT,
                             eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
@@ -138,20 +126,19 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                     String payload = e.metadata != null && e.metadata.sensorMountType != null
                             && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
                                     : "none";
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_WATER_LEAK)) {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_WATER_LEAK),
-                                payload);
+                    if (hasChannel(CHANNEL_WATER_LEAK)) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_WATER_LEAK), payload);
                     }
-                    updateState(UnifiProtectBindingConstants.CHANNEL_WATER_LEAK_CONTACT,
+                    updateState(CHANNEL_WATER_LEAK_CONTACT,
                             eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
             case SENSOR_TAMPER:
                 if (event instanceof SensorTamperEvent) {
-                    if (hasChannel(UnifiProtectBindingConstants.CHANNEL_TAMPER)) {
-                        triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_TAMPER));
+                    if (hasChannel(CHANNEL_TAMPER)) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_TAMPER));
                     }
-                    updateState(UnifiProtectBindingConstants.CHANNEL_TAMPER_CONTACT,
+                    updateState(CHANNEL_TAMPER_CONTACT,
                             eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 }
                 break;
@@ -163,13 +150,13 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                     if (type != null && value != null) {
                         switch (type) {
                             case "temperature":
-                                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_TEMPERATURE, value);
+                                updateDecimalChannel(CHANNEL_TEMPERATURE, value);
                                 break;
                             case "humidity":
-                                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_HUMIDITY, value);
+                                updateDecimalChannel(CHANNEL_HUMIDITY, value);
                                 break;
                             case "light":
-                                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_ILLUMINANCE, value);
+                                updateDecimalChannel(CHANNEL_ILLUMINANCE, value);
                                 break;
                             default:
                                 break;
@@ -186,19 +173,19 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
     public void refreshFromDevice(Sensor sensor) {
         super.refreshFromDevice(sensor);
         if (sensor.batteryStatus != null && sensor.batteryStatus.percentage != null) {
-            updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_BATTERY, sensor.batteryStatus.percentage);
+            updateDecimalChannel(CHANNEL_BATTERY, sensor.batteryStatus.percentage);
         }
-        updateContactChannel(UnifiProtectBindingConstants.CHANNEL_CONTACT, sensor.isOpened == null ? UnDefType.UNDEF
+        updateContactChannel(CHANNEL_CONTACT, sensor.isOpened == null ? UnDefType.UNDEF
                 : sensor.isOpened ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         if (sensor.stats != null) {
             if (sensor.stats.temperature != null) {
-                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_TEMPERATURE, sensor.stats.temperature.value);
+                updateDecimalChannel(CHANNEL_TEMPERATURE, sensor.stats.temperature.value);
             }
             if (sensor.stats.humidity != null) {
-                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_HUMIDITY, sensor.stats.humidity.value);
+                updateDecimalChannel(CHANNEL_HUMIDITY, sensor.stats.humidity.value);
             }
             if (sensor.stats.light != null) {
-                updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_ILLUMINANCE, sensor.stats.light.value);
+                updateDecimalChannel(CHANNEL_ILLUMINANCE, sensor.stats.light.value);
             }
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {

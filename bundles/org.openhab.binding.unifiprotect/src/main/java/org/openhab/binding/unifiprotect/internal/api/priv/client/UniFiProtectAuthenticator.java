@@ -165,8 +165,13 @@ public class UniFiProtectAuthenticator {
                     }
                 }
 
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new AuthenticationException("Authentication interrupted", e);
+            } catch (TimeoutException | ExecutionException e) {
                 throw new AuthenticationException("Authentication failed", e);
+            } catch (AuthenticationException e) {
+                throw e;
             }
         }, executor);
     }

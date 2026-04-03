@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.unifiprotect.internal.handler;
 
+import static org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants.*;
+
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Doorlock;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
@@ -56,66 +57,36 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
             return;
         }
 
-        try {
-            switch (channelId) {
-                case UnifiProtectBindingConstants.CHANNEL_LOCK:
-                    if (command instanceof OnOffType) {
-                        if (command == OnOffType.ON) {
-                            // Lock the door
-                            api.getPrivateClient().lockDoorlock(deviceId).whenComplete((result, ex) -> {
-                                if (ex != null) {
-                                    logger.debug("Failed to lock doorlock", ex);
-                                }
-                            });
-                        } else {
-                            // Unlock the door
-                            api.getPrivateClient().unlockDoorlock(deviceId).whenComplete((result, ex) -> {
-                                if (ex != null) {
-                                    logger.debug("Failed to unlock doorlock", ex);
-                                }
-                            });
-                        }
-                    }
-                    break;
-
-                case UnifiProtectBindingConstants.CHANNEL_CALIBRATE:
+        switch (channelId) {
+            case CHANNEL_LOCK:
+                if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        // Calibrate doorlock (door must be open and lock unlocked)
-                        api.getPrivateClient().calibrateDoorlock(deviceId).thenRun(() -> {
-                            logger.debug("Doorlock calibration started");
-                            // Reset the switch after calibration starts
-                            scheduler.schedule(() -> {
-                                updateState(channelUID, OnOffType.OFF);
-                            }, 1, TimeUnit.SECONDS);
-                        }).whenComplete((result, ex) -> {
-                            if (ex != null) {
-                                logger.debug("Failed to calibrate doorlock", ex);
-                            }
-                        });
+                        logOnFailure(api.getPrivateClient().lockDoorlock(deviceId), "lock doorlock");
+                    } else {
+                        logOnFailure(api.getPrivateClient().unlockDoorlock(deviceId), "unlock doorlock");
                     }
-                    break;
-
-                case UnifiProtectBindingConstants.CHANNEL_AUTO_CLOSE_TIME:
-                    if (command instanceof DecimalType decimalCmd) {
-                        int seconds = decimalCmd.intValue();
-                        api.getPrivateClient().setDoorlockAutoCloseTime(deviceId, seconds)
-                                .thenAccept(updatedDoorlock -> {
-                                    logger.debug("Set auto-close time to {} seconds", seconds);
-                                    // Update the channel with the new value
-                                    updateState(channelUID, new DecimalType(seconds));
-                                }).whenComplete((result, ex) -> {
-                                    if (ex != null) {
-                                        logger.debug("Failed to set auto-close time", ex);
-                                    }
-                                });
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        } catch (Exception e) {
-            logger.debug("Error handling command", e);
+                }
+                break;
+            case CHANNEL_CALIBRATE:
+                if (command == OnOffType.ON) {
+                    logOnFailure(api.getPrivateClient().calibrateDoorlock(deviceId).thenRun(() -> {
+                        logger.debug("Doorlock calibration started");
+                        scheduler.schedule(() -> updateState(channelUID, OnOffType.OFF), 1, TimeUnit.SECONDS);
+                    }), "calibrate doorlock");
+                }
+                break;
+            case CHANNEL_AUTO_CLOSE_TIME:
+                if (command instanceof DecimalType decimalCmd) {
+                    int seconds = decimalCmd.intValue();
+                    logOnFailure(api.getPrivateClient().setDoorlockAutoCloseTime(deviceId, seconds)
+                            .thenAccept(updatedDoorlock -> {
+                                logger.debug("Set auto-close time to {} seconds", seconds);
+                                updateState(channelUID, new DecimalType(seconds));
+                            }), "set auto-close time");
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -131,42 +102,41 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
     public void updateDoorlockChannels(Doorlock doorlock) {
         // Device properties
         if (doorlock.name != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_NAME, doorlock.name);
+            updateProperty(PROPERTY_NAME, doorlock.name);
         }
         if (doorlock.marketName != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MODEL, doorlock.marketName);
+            updateProperty(PROPERTY_MODEL, doorlock.marketName);
         } else if (doorlock.type != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MODEL, doorlock.type);
+            updateProperty(PROPERTY_MODEL, doorlock.type);
         }
         if (doorlock.firmwareVersion != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_FIRMWARE_VERSION, doorlock.firmwareVersion);
+            updateProperty(PROPERTY_FIRMWARE_VERSION, doorlock.firmwareVersion);
         }
         if (doorlock.mac != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MAC_ADDRESS, doorlock.mac);
+            updateProperty(PROPERTY_MAC_ADDRESS, doorlock.mac);
         }
         if (doorlock.host != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_IP_ADDRESS, doorlock.host);
+            updateProperty(PROPERTY_IP_ADDRESS, doorlock.host);
         }
 
         // Lock status
         if (doorlock.lockStatus != null) {
-            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_LOCK_STATUS, doorlock.lockStatus);
+            updateStringChannel(CHANNEL_LOCK_STATUS, doorlock.lockStatus);
 
             // Update lock switch based on status
             boolean isLocked = "closed".equalsIgnoreCase(doorlock.lockStatus)
                     || "locked".equalsIgnoreCase(doorlock.lockStatus);
-            updateState(UnifiProtectBindingConstants.CHANNEL_LOCK, OnOffType.from(isLocked));
+            updateState(CHANNEL_LOCK, OnOffType.from(isLocked));
         }
 
         // Battery status
         if (doorlock.batteryStatus != null && doorlock.batteryStatus.percentage != null) {
-            updateState(UnifiProtectBindingConstants.CHANNEL_BATTERY,
-                    new DecimalType(doorlock.batteryStatus.percentage));
+            updateState(CHANNEL_BATTERY, new DecimalType(doorlock.batteryStatus.percentage));
         }
 
         // Auto-close time
         if (doorlock.autoCloseTime != null) {
-            updateState(UnifiProtectBindingConstants.CHANNEL_AUTO_CLOSE_TIME, new DecimalType(doorlock.autoCloseTime));
+            updateState(CHANNEL_AUTO_CLOSE_TIME, new DecimalType(doorlock.autoCloseTime));
         }
     }
 

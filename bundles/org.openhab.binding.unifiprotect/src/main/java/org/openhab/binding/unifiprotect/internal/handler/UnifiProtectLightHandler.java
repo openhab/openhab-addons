@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.unifiprotect.internal.handler;
 
+import static org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants.*;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
@@ -47,11 +48,11 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
 
         if (event.type == EventType.LIGHT_MOTION) {
             // Trigger PIR motion event and update last motion timestamp
-            if (hasChannel(UnifiProtectBindingConstants.CHANNEL_PIR_MOTION)) {
-                triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_PIR_MOTION));
+            if (hasChannel(CHANNEL_PIR_MOTION)) {
+                triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_PIR_MOTION));
             }
             if (event.start != null) {
-                updateDateTimeChannel(UnifiProtectBindingConstants.CHANNEL_LAST_MOTION, event.start);
+                updateDateTimeChannel(CHANNEL_LAST_MOTION, event.start);
             }
         }
     }
@@ -76,55 +77,43 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
         }
 
         switch (id) {
-            case UnifiProtectBindingConstants.CHANNEL_LIGHT:
+            case CHANNEL_LIGHT:
                 logOnFailure(api.getPrivateClient().setLight(deviceId, OnOffType.ON.equals(command)), "set light");
                 break;
-            case UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE:
+            case CHANNEL_LIGHT_MODE:
                 logOnFailure(api.getPrivateClient().setLightMode(deviceId, command.toString(), null), "set light mode");
                 break;
-            case UnifiProtectBindingConstants.CHANNEL_ENABLE_AT:
+            case CHANNEL_ENABLE_AT:
                 logOnFailure(api.getPrivateClient().updateLight(deviceId,
                         Map.of("lightModeSettings", Map.of("enableAt", command.toString()))), "set enable at");
                 break;
-            case UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED:
+            case CHANNEL_INDICATOR_ENABLED:
                 logOnFailure(
                         api.getPrivateClient().updateLight(deviceId,
                                 Map.of("lightDeviceSettings",
                                         Map.of("isIndicatorEnabled", OnOffType.ON.equals(command)))),
                         "set indicator enabled");
                 break;
-            case UnifiProtectBindingConstants.CHANNEL_PIR_DURATION: {
+            case CHANNEL_PIR_DURATION: {
                 Long value = timeToMilliseconds(command);
                 logOnFailure(api.getPrivateClient().setLightDuration(deviceId, value != null ? value.intValue() : 0),
                         "set PIR duration");
                 break;
             }
-            case UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY: {
-                int value;
-                try {
-                    value = ((DecimalType) command).intValue();
-                } catch (Exception e) {
-                    logger.debug("Error parsing PIR sensitivity command", e);
-                    break;
+            case CHANNEL_PIR_SENSITIVITY:
+                if (command instanceof DecimalType decimal) {
+                    int value = Math.max(0, Math.min(100, decimal.intValue()));
+                    logOnFailure(api.getPrivateClient().setLightPirSensitivity(deviceId, value), "set PIR sensitivity");
                 }
-                value = Math.max(0, Math.min(100, value));
-                logOnFailure(api.getPrivateClient().setLightPirSensitivity(deviceId, value), "set PIR sensitivity");
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_LED_LEVEL: {
-                int value;
-                try {
-                    value = ((DecimalType) command).intValue();
-                } catch (Exception e) {
-                    logger.debug("Error parsing LED level command", e);
-                    break;
+            case CHANNEL_LED_LEVEL:
+                if (command instanceof DecimalType decimal) {
+                    int value = Math.max(1, Math.min(6, decimal.intValue()));
+                    logOnFailure(api.getPrivateClient().updateLight(deviceId,
+                            Map.of("lightDeviceSettings", Map.of("ledLevel", value))), "set LED level");
                 }
-                value = Math.max(1, Math.min(6, value));
-                logOnFailure(api.getPrivateClient().updateLight(deviceId,
-                        Map.of("lightDeviceSettings", Map.of("ledLevel", value))), "set LED level");
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT:
+            case CHANNEL_DEVICE_REBOOT:
                 if (command == OnOffType.ON) {
                     logOnFailure(api.getPrivateClient().rebootDevice("light", deviceId), "reboot light");
                     updateState(channelUID, OnOffType.OFF);
@@ -138,25 +127,22 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
     protected void updateLightChannels(Light light) {
         if (light.lightModeSettings != null) {
             if (light.lightModeSettings.mode != null) {
-                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE,
-                        light.lightModeSettings.mode.toString());
+                updateStringChannel(CHANNEL_LIGHT_MODE, light.lightModeSettings.mode.toString());
             }
             if (light.lightModeSettings.enableAt != null) {
-                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_ENABLE_AT, light.lightModeSettings.enableAt);
+                updateStringChannel(CHANNEL_ENABLE_AT, light.lightModeSettings.enableAt);
             }
         }
         if (light.lightDeviceSettings != null) {
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED,
-                    light.lightDeviceSettings.isIndicatorEnabled);
-            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_PIR_DURATION, light.lightDeviceSettings.pirDuration);
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY,
-                    light.lightDeviceSettings.pirSensitivity);
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_LED_LEVEL, light.lightDeviceSettings.ledLevel);
+            updateBooleanChannel(CHANNEL_INDICATOR_ENABLED, light.lightDeviceSettings.isIndicatorEnabled);
+            updateTimeChannel(CHANNEL_PIR_DURATION, light.lightDeviceSettings.pirDuration);
+            updateIntegerChannel(CHANNEL_PIR_SENSITIVITY, light.lightDeviceSettings.pirSensitivity);
+            updateIntegerChannel(CHANNEL_LED_LEVEL, light.lightDeviceSettings.ledLevel);
         }
-        updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_IS_DARK, light.isDark);
-        updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_LIGHT, light.isLightOn);
+        updateBooleanChannel(CHANNEL_IS_DARK, light.isDark);
+        updateBooleanChannel(CHANNEL_LIGHT, light.isLightOn);
         if (light.lastMotion != null) {
-            updateDateTimeChannel(UnifiProtectBindingConstants.CHANNEL_LAST_MOTION, light.lastMotion.toEpochMilli());
+            updateDateTimeChannel(CHANNEL_LAST_MOTION, light.lastMotion.toEpochMilli());
         }
     }
 }

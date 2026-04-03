@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.unifiprotect.internal.handler;
 
+import static org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants.*;
+
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
@@ -59,84 +60,80 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
 
         var privateClient = api.getPrivateClient();
 
-        try {
-            switch (channelId) {
-                case UnifiProtectBindingConstants.CHANNEL_PLAY_CHIME:
-                    if (command == OnOffType.ON) {
-                        // Get current volume and repeat times from the chime
-                        privateClient.getBootstrap().thenApply(bootstrap -> {
-                            Chime chime = bootstrap.chimes.get(deviceId);
-                            if (chime == null) {
-                                throw new IllegalArgumentException("Chime not found: " + deviceId);
-                            }
-                            return chime;
-                        }).thenAccept(chime -> {
-                            Integer volume = chime.volume != null ? chime.volume : 100;
-                            Integer repeatTimes = chime.repeatTimes != null ? chime.repeatTimes : 1;
+        switch (channelId) {
+            case CHANNEL_PLAY_CHIME:
+                if (command == OnOffType.ON) {
+                    // Get current volume and repeat times from the chime
+                    privateClient.getBootstrap().thenApply(bootstrap -> {
+                        Chime chime = bootstrap.chimes.get(deviceId);
+                        if (chime == null) {
+                            throw new IllegalArgumentException("Chime not found: " + deviceId);
+                        }
+                        return chime;
+                    }).thenAccept(chime -> {
+                        Integer volume = chime.volume != null ? chime.volume : 100;
+                        Integer repeatTimes = chime.repeatTimes != null ? chime.repeatTimes : 1;
 
-                            privateClient.playChime(deviceId, volume, repeatTimes).thenRun(() -> {
-                                logger.debug("Playing chime");
-                                // Reset the switch after playing starts
-                                scheduler.schedule(() -> {
-                                    updateState(channelUID, OnOffType.OFF);
-                                }, 1, TimeUnit.SECONDS);
-                            }).exceptionally(ex -> {
-                                logger.debug("Failed to play chime", ex);
-                                return null;
-                            });
-                        }).exceptionally(ex -> {
-                            logger.debug("Failed to get chime data", ex);
-                            return null;
-                        });
-                    }
-                    break;
-
-                case UnifiProtectBindingConstants.CHANNEL_PLAY_BUZZER:
-                    if (command == OnOffType.ON) {
-                        privateClient.playChimeBuzzer(deviceId).thenRun(() -> {
-                            logger.debug("Playing buzzer");
+                        privateClient.playChime(deviceId, volume, repeatTimes).thenRun(() -> {
+                            logger.debug("Playing chime");
                             // Reset the switch after playing starts
                             scheduler.schedule(() -> {
                                 updateState(channelUID, OnOffType.OFF);
                             }, 1, TimeUnit.SECONDS);
                         }).exceptionally(ex -> {
-                            logger.debug("Failed to play buzzer", ex);
+                            logger.debug("Failed to play chime", ex);
                             return null;
                         });
-                    }
-                    break;
+                    }).exceptionally(ex -> {
+                        logger.debug("Failed to get chime data", ex);
+                        return null;
+                    });
+                }
+                break;
 
-                case UnifiProtectBindingConstants.CHANNEL_CHIME_VOLUME:
-                    if (command instanceof DecimalType decimalCmd) {
-                        int volume = decimalCmd.intValue();
-                        privateClient.setChimeVolume(deviceId, volume).thenAccept(updatedChime -> {
-                            logger.debug("Set chime volume to {}", volume);
-                            updateState(channelUID, new PercentType(volume));
-                        }).exceptionally(ex -> {
-                            logger.debug("Failed to set chime volume", ex);
-                            return null;
-                        });
-                    }
-                    break;
+            case CHANNEL_PLAY_BUZZER:
+                if (command == OnOffType.ON) {
+                    privateClient.playChimeBuzzer(deviceId).thenRun(() -> {
+                        logger.debug("Playing buzzer");
+                        // Reset the switch after playing starts
+                        scheduler.schedule(() -> {
+                            updateState(channelUID, OnOffType.OFF);
+                        }, 1, TimeUnit.SECONDS);
+                    }).exceptionally(ex -> {
+                        logger.debug("Failed to play buzzer", ex);
+                        return null;
+                    });
+                }
+                break;
 
-                case UnifiProtectBindingConstants.CHANNEL_CHIME_REPEAT_TIMES:
-                    if (command instanceof DecimalType decimalCmd) {
-                        int repeatTimes = decimalCmd.intValue();
-                        privateClient.setChimeRepeatTimes(deviceId, repeatTimes).thenAccept(updatedChime -> {
-                            logger.debug("Set chime repeat times to {}", repeatTimes);
-                            updateState(channelUID, new DecimalType(repeatTimes));
-                        }).exceptionally(ex -> {
-                            logger.debug("Failed to set chime repeat times", ex);
-                            return null;
-                        });
-                    }
-                    break;
+            case CHANNEL_CHIME_VOLUME:
+                if (command instanceof DecimalType decimalCmd) {
+                    int volume = decimalCmd.intValue();
+                    privateClient.setChimeVolume(deviceId, volume).thenAccept(updatedChime -> {
+                        logger.debug("Set chime volume to {}", volume);
+                        updateState(channelUID, new PercentType(volume));
+                    }).exceptionally(ex -> {
+                        logger.debug("Failed to set chime volume", ex);
+                        return null;
+                    });
+                }
+                break;
 
-                default:
-                    break;
-            }
-        } catch (Exception e) {
-            logger.debug("Error handling command", e);
+            case CHANNEL_CHIME_REPEAT_TIMES:
+                if (command instanceof DecimalType decimalCmd) {
+                    int repeatTimes = decimalCmd.intValue();
+                    privateClient.setChimeRepeatTimes(deviceId, repeatTimes).thenAccept(updatedChime -> {
+                        logger.debug("Set chime repeat times to {}", repeatTimes);
+                        updateState(channelUID, new DecimalType(repeatTimes));
+                    }).exceptionally(ex -> {
+                        logger.debug("Failed to set chime repeat times", ex);
+                        return null;
+                    });
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -152,31 +149,31 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
     public void updateChimeChannels(Chime chime) {
         // Device properties
         if (chime.name != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_NAME, chime.name);
+            updateProperty(PROPERTY_NAME, chime.name);
         }
         if (chime.marketName != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MODEL, chime.marketName);
+            updateProperty(PROPERTY_MODEL, chime.marketName);
         } else if (chime.type != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MODEL, chime.type);
+            updateProperty(PROPERTY_MODEL, chime.type);
         }
         if (chime.firmwareVersion != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_FIRMWARE_VERSION, chime.firmwareVersion);
+            updateProperty(PROPERTY_FIRMWARE_VERSION, chime.firmwareVersion);
         }
         if (chime.mac != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_MAC_ADDRESS, chime.mac);
+            updateProperty(PROPERTY_MAC_ADDRESS, chime.mac);
         }
         if (chime.host != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_IP_ADDRESS, chime.host);
+            updateProperty(PROPERTY_IP_ADDRESS, chime.host);
         }
 
         // Volume
         if (chime.volume != null) {
-            updateState(UnifiProtectBindingConstants.CHANNEL_CHIME_VOLUME, new PercentType(chime.volume));
+            updateState(CHANNEL_CHIME_VOLUME, new PercentType(chime.volume));
         }
 
         // Repeat times
         if (chime.repeatTimes != null) {
-            updateState(UnifiProtectBindingConstants.CHANNEL_CHIME_REPEAT_TIMES, new DecimalType(chime.repeatTimes));
+            updateState(CHANNEL_CHIME_REPEAT_TIMES, new DecimalType(chime.repeatTimes));
         }
     }
 
