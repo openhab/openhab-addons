@@ -45,9 +45,13 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import me.legrange.mikrotik.MikrotikApiException;
+
 /**
- * The {@link MikrotikInterfaceThingHandler} is a {@link MikrotikBaseThingHandler} subclass that wraps shared
- * functionality for all interface things of different types. It is responsible for handling commands, which are
+ * The {@link MikrotikInterfaceThingHandler} is a
+ * {@link MikrotikBaseThingHandler} subclass that wraps shared
+ * functionality for all interface things of different types. It is responsible
+ * for handling commands, which are
  * sent to one of the channels and emit channel updates whenever required.
  *
  * @author Oleg Vivtash - Initial contribution
@@ -221,6 +225,12 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                 return StateUtil.stringOrNull(etherIface.getState());
             case MikrotikBindingConstants.CHANNEL_RATE:
                 return StateUtil.stringOrNull(etherIface.getRate());
+            case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
+                return StateUtil.stringOrNull(etherIface.getPOEOutState());
+            case MikrotikBindingConstants.CHANNEL_POE_OUT_STATUS:
+                return StateUtil.stringOrNull(etherIface.getPOEOutStatus());
+            case MikrotikBindingConstants.CHANNEL_POE_OUT_POWER:
+                return StateUtil.floatOrNull(etherIface.getPOEOutPower());
             default:
                 return UnDefType.UNDEF;
         }
@@ -368,9 +378,28 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
-        if (iface == null) {
+        RouterosInterfaceBase iface = this.iface;
+        if (!(iface instanceof RouterosEthernetInterface routerOsIface)) {
+            logger.warn("Cannot set POE Out State: interface is null or not an Ethernet interface");
             return;
         }
-        logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
+
+        RouterosDevice routeros = getRouterOs();
+        if (routeros == null || !routeros.isConnected()) {
+            return;
+        }
+
+        try {
+            String channelID = channelUID.getIdWithoutGroup();
+            switch (channelID) {
+                case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
+                    routeros.setPOEOutState(routerOsIface, command.toString());
+                    break;
+                default:
+                    logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
+            }
+        } catch (MikrotikApiException e) {
+            logger.warn("RouterOS command execution failed in {} due to Mikrotik API error", getThing().getUID(), e);
+        }
     }
 }
