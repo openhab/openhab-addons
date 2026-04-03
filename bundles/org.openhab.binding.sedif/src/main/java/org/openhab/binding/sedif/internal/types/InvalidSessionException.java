@@ -24,7 +24,6 @@ public class InvalidSessionException extends SedifException {
     private static final long serialVersionUID = 3703839284673384018L;
 
     public InvalidSessionException() {
-        super();
     }
 
     public InvalidSessionException(String message) {
