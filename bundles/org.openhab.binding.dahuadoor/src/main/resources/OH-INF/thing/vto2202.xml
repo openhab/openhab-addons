@@ -21,6 +21,7 @@
 				<description>Controls door relay 2</description>
 			</channel>
 		</channels>
+		<representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -41,6 +42,15 @@
 			<parameter name="snapshotPath" type="text" required="true">
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
+			</parameter>
+			<parameter name="tlsVersion" type="text">
+				<label>TLS Version</label>
+				<description>TLS version for HTTPS snapshot requests</description>
+				<options>
+					<option value="auto">Auto (TLS 1.2, legacy cipher)</option>
+					<option value="TLSv1.3">TLS 1.3</option>
+				</options>
+				<default>auto</default>
 			</parameter>
 		</config-description>
 	</thing-type>
