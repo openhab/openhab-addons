@@ -16,8 +16,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,32 +26,25 @@ import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 
 /**
- * The {@link DatahubPriceConfiguration} class contains fields mapping channel configuration parameters.
+ * Configuration for the {@code datahub-price} channel type.
+ *
+ * @param chargeTypeCodes Comma-separated list of charge type codes, e.g. "CD,CD R"
+ * @param notes Comma-separated list of notes, e.g. "Nettarif C"
+ * @param start Query start date parameter expressed as either yyyy-mm-dd or one of StartOfDay, StartOfMonth or
+ *            StartOfYear
+ * @param offset Query start date offset expressed as an ISO 8601 duration
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class DatahubPriceConfiguration {
+public record DatahubPriceConfiguration(String chargeTypeCodes, String notes, String start, String offset) {
 
-    /**
-     * Comma-separated list of charge type codes, e.g. "CD,CD R".
-     */
-    public String chargeTypeCodes = "";
-
-    /**
-     * Comma-separated list of notes, e.g. "Nettarif C".
-     */
-    public String notes = "";
-
-    /**
-     * Query start date parameter expressed as either yyyy-mm-dd or one of StartOfDay, StartOfMonth or StartOfYear.
-     */
-    public String start = "";
-
-    /**
-     * Query start date offset expressed as an ISO 8601 duration.
-     */
-    public String offset = "";
+    public DatahubPriceConfiguration {
+        chargeTypeCodes = chargeTypeCodes != null ? chargeTypeCodes : "";
+        notes = notes != null ? notes : "";
+        start = start != null ? start : "";
+        offset = offset != null ? offset : "";
+    }
 
     /**
      * Check if any filter values are provided.
@@ -68,8 +61,8 @@ public class DatahubPriceConfiguration {
      * @return Set of charge type codes.
      */
     public Set<ChargeTypeCode> getChargeTypeCodes() {
-        return chargeTypeCodes.isBlank() ? new HashSet<>()
-                : new HashSet<>(Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).toList());
+        return chargeTypeCodes.isBlank() ? Set.of()
+                : Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).collect(Collectors.toSet());
     }
 
     /**
@@ -78,7 +71,7 @@ public class DatahubPriceConfiguration {
      * @return Set of notes.
      */
     public Set<String> getNotes() {
-        return notes.isBlank() ? new HashSet<>() : new HashSet<>(Arrays.asList(notes.split(",")));
+        return notes.isBlank() ? Set.of() : Arrays.stream(notes.split(",")).collect(Collectors.toSet());
     }
 
     /**
