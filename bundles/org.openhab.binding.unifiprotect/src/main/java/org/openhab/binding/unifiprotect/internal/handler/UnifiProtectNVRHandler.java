@@ -155,11 +155,11 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         // Validate required fields (private API credentials are now required)
         if (config.hostname.isBlank() || config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Hostname, username, and password are required");
+                    "@text/offline.conf-error-missing-credentials");
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Initializing...");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.initializing");
 
         scheduler.execute(() -> {
             try {
@@ -179,7 +179,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         String userId = tempClient.getCurrentUserId().get(10, TimeUnit.SECONDS);
                         if (userId == null || userId.isBlank()) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Failed to retrieve user ID from UniFi Protect");
+                                    "@text/offline.conf-error-no-user-id");
                             return;
                         }
 
@@ -187,7 +187,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                         ApiKey key = tempClient.getOrCreateApiKey(userId, keyName).get(10, TimeUnit.SECONDS);
                         if (key == null || key.fullApiKey == null || key.fullApiKey.isBlank()) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "API key creation returned empty result");
+                                    "@text/offline.conf-error-api-key-empty");
                             return;
                         }
 
@@ -204,7 +204,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     } catch (Exception e) {
                         logger.debug("Failed to auto-create API key", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Failed to create API key: " + e.getMessage());
+                                "@text/offline.conf-error-api-key-creation");
                         return;
                     }
                 }
@@ -332,7 +332,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         } catch (InterruptedException | ExecutionException e) {
             logger.debug("Failed to refresh child {} from API", deviceId, e);
             handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    Objects.requireNonNull(e.getMessage(), "Failed to refresh child from API"));
+                    "@text/offline.comm-error-refresh-failed");
             scheduleChildRefreshRetry(deviceId);
         }
     }
