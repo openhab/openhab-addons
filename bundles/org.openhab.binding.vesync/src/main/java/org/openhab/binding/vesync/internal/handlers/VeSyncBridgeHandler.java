@@ -235,7 +235,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
             final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
 
             try {
-                api.login(config.username, passwordMd5, "Europe/London");
+                api.login(config.username, passwordMd5, "America/New_York");
                 api.updateBridgeData(this);
                 runDeviceScanSequence();
                 updateStatus(ThingStatus.ONLINE);
@@ -287,7 +287,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                 logger.trace("Refreshing API token due to error response regarding the token");
                 final VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
                 final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
-                api.login(config.username, passwordMd5, "Europe/London");
+                api.login(config.username, passwordMd5, "America/New_York");
                 return api.reqV2Authorized(url, macId, requestData);
             }
         }
