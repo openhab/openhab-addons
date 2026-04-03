@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -44,9 +46,10 @@ import org.slf4j.LoggerFactory;
  * @author Christian Schneider - Initial contribution
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  */
+@NonNullByDefault
 public class WebscrapeHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(WebscrapeHandler.class);
-    private SourceConfig config;
+    private @NonNullByDefault({}) SourceConfig config;
 
     private final List<ChannelConfig> channelConfigs = new ArrayList<>();
 
@@ -118,7 +121,7 @@ public class WebscrapeHandler extends BaseThingHandler {
         return Jsoup.connect(config.url).header("Authorization", "Basic " + base64login).get();
     }
 
-    private State getState(String value, Unit<?> unit) {
+    private State getState(String value, @Nullable Unit<?> unit) {
         if (unit == null) {
             return new StringType(value);
         } else {

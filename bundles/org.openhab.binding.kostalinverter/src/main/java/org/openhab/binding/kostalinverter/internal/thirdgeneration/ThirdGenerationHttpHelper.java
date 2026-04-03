@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -31,6 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ThirdGenerationHttpHelper} is handling http communication with the device
@@ -38,6 +40,7 @@ import com.google.gson.JsonObject;
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 final class ThirdGenerationHttpHelper {
 
     private ThirdGenerationHttpHelper() {
@@ -134,24 +137,24 @@ final class ThirdGenerationHttpHelper {
     }
 
     /**
-     * Helper to extract the JsonArray from a HTTP response.
-     * Use only, if you expect a JsonArray and no other types (e.g. JSON array)!
+     * Parses the content of an HTTP response as a JSON array.
      *
-     * @param reponse the HTTP response
-     * @return the JSON object
+     * @param reponse the HTTP response containing JSON data
+     * @return a JsonArray parsed from the response content, or null if parsing results in null
+     * @throws JsonSyntaxException if the response content is not valid JSON or cannot be parsed as a JsonArray
      */
-    static JsonArray getJsonArrayFromResponse(ContentResponse reponse) {
+    static @Nullable JsonArray getJsonArrayFromResponse(ContentResponse reponse) throws JsonSyntaxException {
         return GSON.fromJson(reponse.getContentAsString(), JsonArray.class);
     }
 
     /**
-     * Helper to extract the JSON object from a HTTP response.
-     * Use only, if you expect a JSON object and no other types (e.g. JSON array)!
+     * Parses the content of an HTTP response as a JSON object.
      *
-     * @param reponse the HTTP response
-     * @return the JSON object
+     * @param reponse the HTTP response containing JSON data
+     * @return a JsonObject parsed from the response content, or null if parsing results in null
+     * @throws JsonSyntaxException if the response content is not valid JSON or cannot be parsed as a JsonObject
      */
-    static JsonObject getJsonObjectFromResponse(ContentResponse reponse) {
+    static @Nullable JsonObject getJsonObjectFromResponse(ContentResponse reponse) throws JsonSyntaxException {
         return GSON.fromJson(reponse.getContentAsString(), JsonObject.class);
     }
 }
