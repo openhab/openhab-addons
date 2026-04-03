@@ -274,7 +274,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             logger.debug("API call too frequent, ignored {} ", lockoutTimer);
             return;
         }
-        this.lockoutTimer =Instant.now(). plusSeconds(60); // lockout time 1 min
+        this.lockoutTimer = Instant.now().plusSeconds(60); // lockout time 1 min
 
         Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
         if (!checkBridge.isPresent()) {
