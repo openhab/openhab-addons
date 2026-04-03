@@ -68,6 +68,10 @@ public class StateUtil {
         return value == null ? UnDefType.NULL : new DecimalType(value);
     }
 
+    public static State powerOrNull(@Nullable Float value) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, Units.WATT);
+    }
+
     public static State boolSwitchOrNull(@Nullable Boolean value) {
         if (value == null) {
             return UnDefType.NULL;

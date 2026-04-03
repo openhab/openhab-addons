@@ -175,12 +175,14 @@ public class RouterosDevice {
         }
 
         List<Map<String, String>> response = conn.execute(CMD_PRINT_PACKAGES);
-        response.forEach(pkgInfo -> {
-            String pkgName = pkgInfo.get("name");
-            if (pkgName != null) {
-                result.add(pkgName);
-            }
-        });
+        if (response != null) {
+            response.forEach(pkgInfo -> {
+                String pkgName = pkgInfo.get("name");
+                if (pkgName != null) {
+                    result.add(pkgName);
+                }
+            });
+        }
 
         logger.debug("RouterOS installed packages -> {}", result);
 
@@ -301,13 +303,17 @@ public class RouterosDevice {
                     logger.debug("Getting detailed data for Interface:{}, with command:{}", ifaceModel.getName(), cmd);
                 }
                 List<Map<String, String>> monitorProps = connection.execute(cmd);
-                ifaceModel.mergeProps(monitorProps.get(0));
+                if (monitorProps != null && !monitorProps.isEmpty()) {
+                    ifaceModel.mergeProps(monitorProps.get(0));
+                }
             }
             // Get PoE Data if present
             if (ifaceModel.hasProp(PROP_POE_OUT_KEY)) {
                 String cmd = String.format(CMD_MONITOR_POE_TPL, ifaceModel.getApiType(), ifaceModel.getName());
                 List<Map<String, String>> monitorProps = connection.execute(cmd);
-                ifaceModel.mergeProps(monitorProps.get(0));
+                if (monitorProps != null && !monitorProps.isEmpty()) {
+                    ifaceModel.mergeProps(monitorProps.get(0));
+                }
             }
             // Note SSIDs for non-CAPsMAN wireless clients
             String ifaceName = ifaceModel.getName();
@@ -368,7 +374,9 @@ public class RouterosDevice {
 
         List<Map<String, String>> response = conn.execute(cmd);
         wirelessRegistrationCache.clear();
-
+        if (response == null) {
+            return;
+        }
         response.forEach(props -> {
             String wlanIfaceName = props.get("interface");
             String wlanSsidName = wlanSsid.get(wlanIfaceName);

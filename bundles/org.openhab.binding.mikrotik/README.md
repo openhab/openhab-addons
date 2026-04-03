@@ -187,7 +187,7 @@ Number:Dimensionless   My_RB_3011_Used_Memory    "Used ram"     (gRB1) {channel=
 Number:Dimensionless   My_RB_3011_Cpu_Load       "Cpu load"     (gRB1) {channel="mikrotik:routeros:rb1:cpuLoad"}
 DateTime   My_RB_3011_Upsince      "Up since [%1$td.%1$tm.%1$ty %1$tH:%1$tM]"         (gRB1) {channel="mikrotik:routeros:rb1:upSince"}
 
-```markdown
+
 Group gRB1Eth1 "Ethernet Interface 1"
 String           Eth_1_Type                  "Type"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:type"}
 String           Eth_1_Name                  "Name"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:name"}

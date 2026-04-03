@@ -55,7 +55,11 @@ public class RouterosRouterboardInfo extends RouterosBaseData {
     }
 
     public boolean hasBuiltinCapsMan() {
-        return ModuleDescriptor.Version.parse(getFirmwareVersion())
-                .compareTo(ModuleDescriptor.Version.parse(CAPS_MAN_MIN_FIRMWARE_VERSION)) >= 1;
+        try {
+            return ModuleDescriptor.Version.parse(getFirmwareVersion())
+                    .compareTo(ModuleDescriptor.Version.parse(CAPS_MAN_MIN_FIRMWARE_VERSION)) >= 0;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
