@@ -813,7 +813,7 @@ public final class UniFiAccessApiClient implements Closeable {
                                 onError.accept(e);
                             }
                         } catch (Exception callbackEx) {
-                            logger.trace("Error in onError callback: {}", callbackEx.getMessage());
+                            logger.debug("Error in onError callback: {}", callbackEx.getMessage());
                         }
                     }
                 }
@@ -825,7 +825,7 @@ public final class UniFiAccessApiClient implements Closeable {
                     try {
                         onError.accept(cause);
                     } catch (Exception callbackEx) {
-                        logger.trace("Error in onError callback: {}", callbackEx.getMessage());
+                        logger.debug("Error in onError callback: {}", callbackEx.getMessage());
                     }
                 }
 
@@ -836,7 +836,7 @@ public final class UniFiAccessApiClient implements Closeable {
                     try {
                         onClosed.accept(statusCode, reason);
                     } catch (Exception callbackEx) {
-                        logger.trace("Error in onClosed callback: {}", callbackEx.getMessage());
+                        logger.debug("Error in onClosed callback: {}", callbackEx.getMessage());
                     }
                 }
             };
@@ -980,8 +980,6 @@ public final class UniFiAccessApiClient implements Closeable {
             return true; // HTTP was 2xx, treat as success
         }
     }
-
-    // ---- JSON Helpers ----
 
     private static @Nullable String getStringOrNull(JsonObject obj, String key) {
         JsonElement el = obj.get(key);
