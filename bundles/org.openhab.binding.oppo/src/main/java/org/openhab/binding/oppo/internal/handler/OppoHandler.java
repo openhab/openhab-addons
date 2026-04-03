@@ -264,7 +264,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 isInitialQuery = false;
                                 if (!BLANK.equals(currentPlayMode)) {
                                     currentPlayMode = BLANK;
-                                    clearStatusChannels();
+                                    clearStatusChannels(true);
                                 }
                             }
                         }
@@ -374,7 +374,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private synchronized void closeConnection() {
         if (!BLANK.equals(currentPlayMode)) {
             currentPlayMode = BLANK;
-            clearStatusChannels();
+            clearStatusChannels(true);
         }
 
         if (connector.isConnected()) {
@@ -445,7 +445,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (OFF.equals(updateData)) {
                             if (!BLANK.equals(currentPlayMode)) {
                                 currentPlayMode = BLANK;
-                                clearStatusChannels();
+                                clearStatusChannels(true);
                             }
                             isPowerOn = false;
                         } else {
@@ -457,7 +457,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (ZERO.equals(updateData)) {
                             if (!BLANK.equals(currentPlayMode)) {
                                 currentPlayMode = BLANK;
-                                clearStatusChannels();
+                                clearStatusChannels(true);
                             }
                             isPowerOn = false;
                             isInitialQuery = false;
@@ -508,7 +508,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (NO_DISC.equals(currentPlayMode) || LOADING.equals(currentPlayMode)
                                 || OPEN.equals(currentPlayMode) || CLOSE.equals(currentPlayMode)
                                 || STOP.equals(currentPlayMode)) {
-                            clearStatusChannels();
+                            clearStatusChannels(false);
                         }
                         updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
                         updateState(CHANNEL_CONTROL,
@@ -602,8 +602,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     /**
      * Clears the status channels
      */
-    private void clearStatusChannels() {
-        updateChannelState(CHANNEL_PLAY_MODE, null);
+    private void clearStatusChannels(boolean clearPlayMode) {
+        if (clearPlayMode) {
+            updateChannelState(CHANNEL_PLAY_MODE, null);
+        }
         updateChannelState(CHANNEL_CURRENT_TITLE, null);
         updateChannelState(CHANNEL_TOTAL_TITLE, null);
         updateChannelState(CHANNEL_CURRENT_CHAPTER, null);
