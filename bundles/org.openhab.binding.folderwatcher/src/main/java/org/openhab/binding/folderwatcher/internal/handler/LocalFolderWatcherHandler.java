@@ -72,14 +72,19 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(LocalFolderWatcherConfiguration.class);
+        logger.debug("Initializing Local Folder Watcher handler for {} with directory: {}, poll interval: {}s",
+                thing.getUID(), config.localDir, config.pollIntervalLocal);
         updateStatus(ThingStatus.UNKNOWN);
 
         if (!Files.isDirectory(Paths.get(config.localDir))) {
+            logger.debug("Local directory is not valid: {}", config.localDir);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Local directory is not valid");
             return;
         }
         try {
+            logger.debug("Initializing local listing file for directory: {}", config.localDir);
             previousLocalListing = WatcherCommon.initStorage(currentLocalListingFile, config.localDir);
+            logger.debug("Loaded {} previous local files from storage", previousLocalListing.size());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}: {}", currentLocalListingFile, e.getMessage());
@@ -87,10 +92,12 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
         }
 
         if (config.pollIntervalLocal > 0) {
+            logger.debug("Starting local folder refresh with {} second interval", config.pollIntervalLocal);
             updateStatus(ThingStatus.ONLINE);
             executionJob = scheduler.scheduleWithFixedDelay(this::refreshFolderInformation, config.pollIntervalLocal,
                     config.pollIntervalLocal, TimeUnit.SECONDS);
         } else {
+            logger.debug("Polling interval invalid: {}", config.pollIntervalLocal);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval can't be null or negative");
             return;
@@ -99,14 +106,17 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing Local Folder Watcher handler for {}", thing.getUID());
         ScheduledFuture<?> executionJob = this.executionJob;
         if (executionJob != null) {
             executionJob.cancel(true);
             this.executionJob = null;
+            logger.debug("Cancelled execution job");
         }
     }
 
     private void refreshFolderInformation() {
+        logger.debug("Refreshing local folder information for {}", config.localDir);
         final String rootDir = config.localDir;
         try {
             List<String> currentLocalListing = new ArrayList<>();
@@ -150,14 +160,22 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
 
             List<String> diffLocalListing = new ArrayList<>(currentLocalListing);
             diffLocalListing.removeAll(previousLocalListing);
-            diffLocalListing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
+            logger.debug("Local directory scan found {} total files", currentLocalListing.size());
+            logger.debug("Detected {} new local files since last refresh", diffLocalListing.size());
+            diffLocalListing.forEach(file -> {
+                logger.trace("Triggering CHANNEL_NEWFILE with: {}", file);
+                triggerChannel(CHANNEL_NEWFILE, file);
+            });
 
             if (!diffLocalListing.isEmpty()) {
+                logger.debug("Saving {} new files to listing file", diffLocalListing.size());
                 WatcherCommon.saveNewListing(diffLocalListing, currentLocalListingFile);
             }
+            logger.debug("Local refresh completed, updated previous listing from {} to {} files",
+                    previousLocalListing.size(), currentLocalListing.size());
             previousLocalListing = new ArrayList<>(currentLocalListing);
         } catch (IOException e) {
-            logger.debug("File manipulation error: {}", e.getMessage());
+            logger.debug("IOException during local directory walk: {}", e.getMessage(), e);
         }
     }
 }
