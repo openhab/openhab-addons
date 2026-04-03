@@ -106,16 +106,16 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     /**
      * Creates a {@link X509ExtendedTrustManager} instance by reading one or more PEM certificates from the given
-     * file. The returned trust manager will trust all certificates that are signed by any of the certificates in
+     * resource. The returned trust manager will trust all certificates that are signed by any of the certificates in
      * the PEM file, including certificates with intermediates. This is useful if you have private CA Certificate(s)
      * stored in a file.
      *
-     * @param fileName name of the PEM file located in the resources folder
+     * @param resourceName name of the PEM resource located in the resources folder
      * @return a {@link X509ExtendedTrustManager} instance
      * @throws CertificateException
      */
-    private X509ExtendedTrustManager getInstanceFromResource(String fileName) throws CertificateException {
-        byte[] certificatesBytes = readPEMCertificatesStringFromResource(fileName);
+    private X509ExtendedTrustManager getInstanceFromResource(String resourceName) throws CertificateException {
+        byte[] certificatesBytes = readPEMCertificatesStringFromResource(resourceName);
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             // load all certificates from the PEM file
@@ -124,7 +124,7 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
                 certificates = certificateFactory.generateCertificates(input);
             }
             if (certificates.isEmpty()) {
-                throw new CertificateException("No certificates found in " + fileName);
+                throw new CertificateException("No certificates found in " + resourceName);
             }
             // build a key store containing all the certificates
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -149,21 +149,22 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
     }
 
     /**
-     * Reads the content of a PEM file from the resources folder and returns it as a string. It may contain multiple
-     * certificates, e.g. a certificate chain with intermediate certificates. If the file is not found or cannot be
-     * read, null is returned.
+     * Reads the content of a PEM resource from the resources folder and returns it as a byte array. It may contain
+     * multiple certificates, e.g. a certificate chain with intermediate certificates. If the resource is not found or
+     * cannot be read, {@link CertificateException} is thrown.
      *
-     * @param fileName name of the PEM file located in the resources folder
-     * @return the content of the PEM file as a string, or null if the file is not found or cannot be read
+     * @param resourceName name of the PEM resource located in the resources folder
+     * @return the content of the PEM resource as a byte array
+     * @throws CertificateException if the resource is not found or cannot be read
      */
-    private byte[] readPEMCertificatesStringFromResource(String fileName) throws CertificateException {
-        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(fileName)) {
+    private byte[] readPEMCertificatesStringFromResource(String resourceName) throws CertificateException {
+        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(resourceName)) {
             if (inputStream == null) {
-                throw new CertificateException("Certificate resource not found: " + fileName);
+                throw new CertificateException("Certificate resource not found: " + resourceName);
             }
             return inputStream.readAllBytes();
         } catch (IOException e) {
-            throw new CertificateException("Certificate resource cannot be read: " + fileName, e);
+            throw new CertificateException("Certificate resource cannot be read: " + resourceName, e);
         }
     }
 }
