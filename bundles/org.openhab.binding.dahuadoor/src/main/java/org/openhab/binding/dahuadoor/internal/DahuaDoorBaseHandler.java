@@ -113,8 +113,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
-        client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password, this,
-                this::errorInformer);
+        client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
+                localConfig.useHttps, this, this::errorInformer);
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
