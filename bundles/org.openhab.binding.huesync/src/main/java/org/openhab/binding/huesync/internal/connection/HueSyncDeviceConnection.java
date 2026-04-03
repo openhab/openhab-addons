@@ -50,7 +50,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Handles the connection to a Hue HDMI Sync Box using the official API.
  * 
  * @author Patrik Gfeller - Initial Contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
