@@ -30,6 +30,7 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
@@ -276,6 +277,13 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
 
         for (HmChannel channel : device.getChannels()) {
+            if (HmGatewayInfo.ID_HOMEGEAR.equals(device.getGatewayId())
+                    && channel.getNumber() == CONFIGURATION_CHANNEL_NUMBER) {
+                // Homegear duplicates the device's configuration into channel 0,
+                // so there's no need for the global ones in that case
+                continue;
+            }
+
             String groupName = "HMG_" + channel.getNumber();
             String groupLabel = MetadataUtils.getDescription("CHANNEL_NAME") + " " + channel.getNumber();
             groups.add(ConfigDescriptionParameterGroupBuilder.create(groupName).withLabel(groupLabel).build());
