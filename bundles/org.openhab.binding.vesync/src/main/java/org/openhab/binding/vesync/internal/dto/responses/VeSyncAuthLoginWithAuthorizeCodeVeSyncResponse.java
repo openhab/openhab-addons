@@ -25,7 +25,7 @@ public class VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse extends VeSyncRespon
     @SerializedName("result")
     public VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.LoginTokenResponse result;
 
-    public class LoginTokenResponse {
+    public static class LoginTokenResponse {
 
         @SerializedName("currentRegion")
         public String currentRegion = "";

@@ -28,7 +28,7 @@ public class VeSyncV2BypassEnergyHistory extends VeSyncResponse {
     @SerializedName("result")
     public EnergyHistory result;
 
-    public class EnergyHistory extends VeSyncResponse {
+    public static class EnergyHistory extends VeSyncResponse {
 
         @SerializedName("result")
         public Result result = new Result();

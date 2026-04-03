@@ -24,7 +24,7 @@ public class VeSyncAuthTokenResponse extends VeSyncResponse {
     @SerializedName("result")
     public VeSyncAuthTokenResponse.LoginTokenResponse result;
 
-    public class LoginTokenResponse {
+    public static class LoginTokenResponse {
         @SerializedName("accountID")
         public String accountID;
 

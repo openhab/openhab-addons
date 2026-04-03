@@ -28,10 +28,6 @@ public class VeSyncUserSession {
 
     public String serverUrl;
 
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
     public String getToken() {
         return token;
     }

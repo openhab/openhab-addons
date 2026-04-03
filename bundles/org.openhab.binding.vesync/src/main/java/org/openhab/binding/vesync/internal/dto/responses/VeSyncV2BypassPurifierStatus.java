@@ -25,12 +25,12 @@ public class VeSyncV2BypassPurifierStatus extends VeSyncResponse {
     @SerializedName("result")
     public PurifierStatus result;
 
-    public class PurifierStatus extends VeSyncResponse {
+    public static class PurifierStatus extends VeSyncResponse {
 
         @SerializedName("result")
         public AirPurifierStatus result;
 
-        public class AirPurifierStatus {
+        public static class AirPurifierStatus {
             @SerializedName("enabled")
             public boolean enabled;
 
@@ -61,7 +61,7 @@ public class VeSyncV2BypassPurifierStatus extends VeSyncResponse {
             @SerializedName("configuration")
             public AirPurifierConfig configuration;
 
-            public class AirPurifierConfig {
+            public static class AirPurifierConfig {
                 @SerializedName("display")
                 public boolean display;
 
@@ -83,7 +83,7 @@ public class VeSyncV2BypassPurifierStatus extends VeSyncResponse {
             @SerializedName("extension")
             public AirPurifierExtension extension;
 
-            public class AirPurifierExtension {
+            public static class AirPurifierExtension {
                 @SerializedName("schedule_count")
                 public int scheduleCount;
 
