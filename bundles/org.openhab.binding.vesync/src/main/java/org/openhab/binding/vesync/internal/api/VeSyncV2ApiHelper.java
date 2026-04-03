@@ -184,6 +184,8 @@ public class VeSyncV2ApiHelper {
             VeSyncUserSession session = loggedInSession;
             if (session != null && !url.startsWith(session.getServerUrl())) {
                 url = session.getServerUrl() + url;
+            } else {
+                url = US_SERVER + url; // Fallback
             }
 
             Request request = client.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
