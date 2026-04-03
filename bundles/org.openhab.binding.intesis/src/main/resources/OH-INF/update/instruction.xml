@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<update:update-descriptions
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type-update thingTypeId="intesis:intesisBox">
+		<instruction-set targetVersion="1">
+			<update-channel id="errorStatus">
+				<type>intesis:errorStatusString</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type-update>
+
+	<thing-type-update thingTypeId="intesis:intesisHome">
+		<instruction-set targetVersion="1">
+			<update-channel id="errorStatus">
+				<type>intesis:errorStatusSwitch</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type-update>
+
+</update:update-descriptions>
