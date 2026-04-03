@@ -56,4 +56,12 @@ public interface RingAccount {
      * @param url to be sent to the Ring API
      */
     void sendCommand(String url);
+
+    /**
+     * Send a command with a payloadto the Ring API
+     *
+     * @param url to be sent to the Ring API
+     * @param payload to be send to the Ring API
+     */
+    void sendCommand(String url, String payload);
 }

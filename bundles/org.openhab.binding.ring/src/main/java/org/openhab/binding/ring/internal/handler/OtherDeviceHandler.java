@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.*;
+import static org.openhab.binding.ring.internal.ApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
@@ -109,5 +110,8 @@ public class OtherDeviceHandler extends RingDeviceHandler {
 
     protected void openDoorCommand(boolean b) {
         logger.info("Sending command to openDoor (Stub only)");
+        String command = "device_rpc";
+        String payload = "";
+        sendCommand(URL_INTERCOM_COMMAND, command, payload);
     }
 }
