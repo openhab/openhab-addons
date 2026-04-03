@@ -27,11 +27,11 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 
 `fixCost` shall be net costs which will be added to the net energy price.
 If you've already one or more items holding fix cost values consider to [calculate the future prices in a rule](https://www.openhab.org/addons/bindings/energidataservice/#time-series).
-Use [VAT Transformation Service](https://www.openhab.org/addons/transformations/vat/) to calculate the gross price. 
+Use [VAT Transformation Service](https://www.openhab.org/addons/transformations/vat/) to calculate the gross price.
 
 ## Channels
 
-All channels delivering `timeseries` information. 
+All channels delivering `timeseries` information.
 Attaching items which are bound only to `rrd4j` persistence will not work.
 If you don't have a database installed [InMemory persistence](https://www.openhab.org/addons/persistence/inmemory/) can be used.
 
@@ -55,7 +55,7 @@ Calculation is done on net prices without configured `fixCost` and any VAT appli
 See [Future Forecasting](https://www.future-forecasting.de/en/wiki/fehlermass/) for further description.
 
 **Note: After first installation these values will stay empty up to 1,5 days!**
-To compare market and forecast prices this time is needed until a market price is available. 
+To compare market and forecast prices this time is needed until a market price is available.
 
 | Channel           | Type                  | Description                                                                       |
 |-------------------|-----------------------|-----------------------------------------------------------------------------------|
@@ -67,9 +67,9 @@ To compare market and forecast prices this time is needed until a market price i
   
 `forecast` timeseries contains only forecast prices, market prices are excluded.
 `forecast-error` price difference between market and forecast price.
-`percent-error` is the `forecast-error` in percent. 
+`percent-error` is the `forecast-error` in percent.
 It can show extraordinary high values if market prices are around zero cost.
-If market price is 0.001 and forecast was 0.006 the percentage error is *high* while `forecast-error` is quite low.
+If market price is 0.001 and forecast was 0.006 the percentage error is _high_ while `forecast-error` is quite low.
 For visualization you can limit these values with configuration `errorLimit`.
 
 `mean-abs` shows the average of all absolute `forecast-error` calculations as one value.
