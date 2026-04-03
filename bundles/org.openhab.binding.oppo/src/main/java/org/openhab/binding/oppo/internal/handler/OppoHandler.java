@@ -100,7 +100,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private String verboseMode = VERBOSE_2;
     private String currentChapter = BLANK;
     private String currentTimeMode = T;
-    private String currentPlayMode = OFFLINE;
+    private String currentPlayMode = BLANK;
     private String currentDiscType = BLANK;
     private boolean isPowerOn = false;
     private boolean isUDP20X = false;
@@ -218,7 +218,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         schedulePollingJob();
 
         updateStatus(ThingStatus.UNKNOWN);
-        updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
     }
 
     @Override
@@ -263,9 +262,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             if (command == OnOffType.OFF) {
                                 isPowerOn = false;
                                 isInitialQuery = false;
-                                if (!OFF.equals(currentPlayMode)) {
-                                    currentPlayMode = OFF;
-                                    updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                                if (!BLANK.equals(currentPlayMode)) {
+                                    currentPlayMode = BLANK;
+                                    updateChannelState(CHANNEL_PLAY_MODE, null);
                                     clearStatusChannels();
                                 }
                             }
@@ -374,9 +373,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Close the connection with the Oppo player
      */
     private synchronized void closeConnection() {
-        if (!OFFLINE.equals(currentPlayMode)) {
-            currentPlayMode = OFFLINE;
-            updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+        if (!BLANK.equals(currentPlayMode)) {
+            currentPlayMode = BLANK;
+            updateChannelState(CHANNEL_PLAY_MODE, null);
         }
 
         if (connector.isConnected()) {
@@ -445,9 +444,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QPW:
                         updateChannelState(CHANNEL_POWER, updateData);
                         if (OFF.equals(updateData)) {
-                            if (!OFF.equals(currentPlayMode)) {
-                                currentPlayMode = OFF;
-                                updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                            if (!BLANK.equals(currentPlayMode)) {
+                                currentPlayMode = BLANK;
+                                updateChannelState(CHANNEL_PLAY_MODE, null);
                                 clearStatusChannels();
                             }
                             isPowerOn = false;
@@ -458,9 +457,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UPW:
                         updateChannelState(CHANNEL_POWER, ONE.equals(updateData) ? ON : OFF);
                         if (ZERO.equals(updateData)) {
-                            if (!OFF.equals(currentPlayMode)) {
-                                currentPlayMode = OFF;
-                                updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                            if (!BLANK.equals(currentPlayMode)) {
+                                currentPlayMode = BLANK;
+                                updateChannelState(CHANNEL_PLAY_MODE, null);
                                 clearStatusChannels();
                             }
                             isPowerOn = false;
@@ -607,13 +606,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Clears the status channels
      */
     private void clearStatusChannels() {
-        updateChannelState(CHANNEL_CURRENT_TITLE, ZERO);
-        updateChannelState(CHANNEL_TOTAL_TITLE, ZERO);
-        updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
-        updateChannelState(CHANNEL_TOTAL_CHAPTER, ZERO);
-        updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
-        updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
-        updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
+        updateChannelState(CHANNEL_CURRENT_TITLE, null);
+        updateChannelState(CHANNEL_TOTAL_TITLE, null);
+        updateChannelState(CHANNEL_CURRENT_CHAPTER, null);
+        updateChannelState(CHANNEL_TOTAL_CHAPTER, null);
+        updateChannelState(CHANNEL_TIME_DISPLAY, null);
+        updateChannelState(CHANNEL_AUDIO_TYPE, null);
+        updateChannelState(CHANNEL_SUBTITLE_TYPE, null);
     }
 
     /**
@@ -786,12 +785,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * @param channel the channel
      * @param value the value to be updated
      */
-    private void updateChannelState(String channel, String value) {
+    private void updateChannelState(String channel, @Nullable String value) {
         if (!isLinked(channel)) {
             return;
         }
 
-        if (UNDEF.equals(value)) {
+        if (value == null) {
             updateState(channel, UnDefType.UNDEF);
             return;
         }
