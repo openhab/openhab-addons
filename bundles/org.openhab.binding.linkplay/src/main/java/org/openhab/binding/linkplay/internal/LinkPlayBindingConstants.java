@@ -35,12 +35,11 @@ public class LinkPlayBindingConstants {
 
     public static final String PROPERTY_FIRMWARE = "firmwareVersion";
     public static final String PROPERTY_MODEL = "model";
-    public static final String PROPERTY_IP = "ipAddress";
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_MAC = "macAddress";
     public static final String PROPERTY_MANUFACTURER = "manufacturer";
     public static final String PROPERTY_DEVICE_NAME = "deviceName";
     public static final String PROPERTY_GROUP_NAME = "groupName";
-    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_PORT = "port";
     public static final String CONFIG_UDN = "udn";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";

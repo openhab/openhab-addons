@@ -263,7 +263,7 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
 
     public boolean isFullySubscribed() {
         for (String s : SERVICE_SUBSCRIPTIONS) {
-            if (!subscriptionState.getOrDefault(s, true)) {
+            if (!subscriptionState.getOrDefault(s, false)) {
                 return false;
             }
         }
@@ -304,7 +304,10 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
             } else {
                 logger.debug("{}: Could not parse QueueContext from TotalQueueResponse", udn);
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.trace("{}: Error while retrieving play list queue: {}", udn, e.getMessage(), e);
+        } catch (ExecutionException e) {
             logger.trace("{}: Error while retrieving play list queue: {}", udn, e.getMessage(), e);
         }
         return null;

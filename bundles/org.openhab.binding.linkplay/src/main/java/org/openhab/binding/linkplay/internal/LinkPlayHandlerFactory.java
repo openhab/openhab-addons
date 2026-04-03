@@ -38,6 +38,7 @@ import org.openhab.binding.linkplay.internal.handler.LinkPlayHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -83,7 +84,8 @@ public class LinkPlayHandlerFactory extends BaseThingHandlerFactory implements R
             final @Reference LinkPlayGroupService linkPlayGroupService,
             final @Reference LinkPlayCommandDescriptionProvider linkPlayCommandDescriptionProvider,
             final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService) {
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference HttpClientFactory httpClientFactory) {
         this.upnpIOService = upnpIOService;
         this.linkPlayGroupService = linkPlayGroupService;
         this.upnpService = upnpService;
@@ -91,14 +93,11 @@ public class LinkPlayHandlerFactory extends BaseThingHandlerFactory implements R
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
         upnpService.getRegistry().addListener(this);
-        httpClient = new HttpClient(new SslContextFactory.Client(true));
-        httpClient.setConnectTimeout(30000);
-        httpClient.setName("LinkPlayHTTPClient");
+        httpClient = httpClientFactory.createHttpClient("linkplay", new SslContextFactory.Client(true));
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.debug("Failed to start HTTP client: {}", e.getMessage(), e);
-            throw new IllegalStateException("Could not create HTTP client", e);
+            throw new IllegalStateException("Could not start HTTP client", e);
         }
     }
 

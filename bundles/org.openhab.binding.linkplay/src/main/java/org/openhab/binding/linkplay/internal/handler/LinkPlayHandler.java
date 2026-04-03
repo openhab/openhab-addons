@@ -69,8 +69,10 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -378,7 +380,10 @@ public class LinkPlayHandler extends BaseThingHandler
                     logger.debug("{}: No handler implemented for channel {}", udn, channelUID);
                     break;
             }
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Error while handling command: {}", e.getMessage(), e);
+        } catch (ExecutionException e) {
             logger.debug("Error while handling command: {}", e.getMessage(), e);
         }
     }
@@ -649,7 +654,7 @@ public class LinkPlayHandler extends BaseThingHandler
         if (isValidUpnpResponse(relPos)) {
             int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(relPos));
             if (seconds >= 0) {
-                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_POSITION, new DecimalType(seconds));
+                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_POSITION, new QuantityType<>(seconds, Units.SECOND));
                 currentPosition = seconds;
             }
         }
@@ -658,7 +663,7 @@ public class LinkPlayHandler extends BaseThingHandler
         if (isValidUpnpResponse(duration)) {
             int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(duration));
             if (seconds >= 0) {
-                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_DURATION, new DecimalType(seconds));
+                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_DURATION, new QuantityType<>(seconds, Units.SECOND));
                 currentDuration = seconds;
             }
         }
@@ -942,14 +947,17 @@ public class LinkPlayHandler extends BaseThingHandler
             if (result.get("RelTime") instanceof String track) {
                 currentPosition = LinkPlayUpnpCommands.hhMmSsToSeconds(track);
                 updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
-                        new DecimalType(currentPosition));
+                        new QuantityType<>(currentPosition, Units.SECOND));
             }
             if (result.get("TrackDuration") instanceof String duration) {
                 currentDuration = LinkPlayUpnpCommands.hhMmSsToSeconds(duration);
                 updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
-                        new DecimalType(currentDuration));
+                        new QuantityType<>(currentDuration, Units.SECOND));
             }
-        } catch (InterruptedException | ExecutionException | IllegalArgumentException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("{}: Error while retrieving position info: {}", udn, e.getMessage(), e);
+        } catch (ExecutionException | IllegalArgumentException e) {
             logger.debug("{}: Error while retrieving position info: {}", udn, e.getMessage(), e);
         }
     }
@@ -960,13 +968,18 @@ public class LinkPlayHandler extends BaseThingHandler
     private void refreshPlayer() {
         try {
             updatePlayerStatus();
-        } catch (InterruptedException | ExecutionException | TimeoutException | RejectedExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("{}: Error while parsing player status: {}", udn, e.getMessage(), e);
+        } catch (ExecutionException | TimeoutException | RejectedExecutionException e) {
             logger.debug("{}: Error while parsing player status: {}", udn, e.getMessage(), e);
         }
         if (isLeader || !inGroup) {
             try {
                 updateTrackMetadata();
-            } catch (InterruptedException | ExecutionException | TimeoutException | RejectedExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException | RejectedExecutionException e) {
                 // if no track metadata, we're not playing anything
             }
         }
@@ -1007,7 +1020,7 @@ public class LinkPlayHandler extends BaseThingHandler
         if (playerStatus.currentPosition != null) {
             int seconds = playerStatus.currentPosition / 1000;
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
-                    new DecimalType(seconds));
+                    new QuantityType<>(seconds, Units.SECOND));
             currentPosition = seconds;
         } else {
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
@@ -1017,7 +1030,7 @@ public class LinkPlayHandler extends BaseThingHandler
         if (playerStatus.totalLength != null) {
             int seconds = playerStatus.totalLength / 1000;
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
-                    new DecimalType(seconds));
+                    new QuantityType<>(seconds, Units.SECOND));
             currentDuration = seconds;
         } else {
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
@@ -1091,7 +1104,9 @@ public class LinkPlayHandler extends BaseThingHandler
             var eqStat = apiClient.getEQStat().get();
             updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_EQ_ENABLED,
                     eqStat.isOn() ? OnOffType.ON : OnOffType.OFF);
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
             logger.trace("{}: Unable to fetch EQ status: {}", udn, e.getMessage());
         }
 
@@ -1101,7 +1116,9 @@ public class LinkPlayHandler extends BaseThingHandler
                 updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_OUTPUT_HW_MODE,
                         new DecimalType(mode.hardware));
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
             logger.trace("{}: Unable to fetch output hardware mode: {}", udn, e.getMessage());
         }
 
@@ -1111,7 +1128,9 @@ public class LinkPlayHandler extends BaseThingHandler
                 updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_CHANNEL_BALANCE,
                         new DecimalType(balance));
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
             logger.trace("{}: Unable to fetch channel balance: {}", udn, e.getMessage());
         }
 
@@ -1121,7 +1140,9 @@ public class LinkPlayHandler extends BaseThingHandler
                 updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_SPDIF_DELAY,
                         new DecimalType(delay));
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
             logger.trace("{}: Unable to fetch SPDIF delay: {}", udn, e.getMessage());
         }
 
@@ -1130,12 +1151,14 @@ public class LinkPlayHandler extends BaseThingHandler
             Integer secs = apiClient.getShutdownTimer().get();
             if (secs != null && secs >= 0) {
                 updateState(LinkPlayBindingConstants.GROUP_DEVICE, LinkPlayBindingConstants.CHANNEL_SHUTDOWN_TIMER,
-                        new DecimalType(secs));
+                        new QuantityType<>(secs, Units.SECOND));
             } else {
                 updateState(LinkPlayBindingConstants.GROUP_DEVICE, LinkPlayBindingConstants.CHANNEL_SHUTDOWN_TIMER,
                         UnDefType.UNDEF);
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
             logger.trace("{}: Unable to fetch shutdown timer: {}", udn, e.getMessage());
         }
     }
@@ -1369,12 +1392,16 @@ public class LinkPlayHandler extends BaseThingHandler
             upnpClient.addSubscriptions();
             try {
                 updatePresetInfo();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException e) {
                 logger.trace("{}: Error while retrieving preset info: {}", udn, e.getMessage(), e);
             }
             try {
                 updateDeviceStatus();
-            } catch (InterruptedException | ExecutionException | TimeoutException | RejectedExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException | TimeoutException | RejectedExecutionException e) {
                 logger.trace("{}: Error while retrieving device status: {}", udn, e.getMessage(), e);
             }
         }

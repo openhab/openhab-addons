@@ -110,16 +110,16 @@ public class PlayerStatusAdapter implements JsonDeserializer<PlayerStatus> {
         if (hex.length() % 2 != 0) {
             return hex;
         }
-        try {
-            int len = hex.length();
-            byte[] data = new byte[len / 2];
-            for (int i = 0; i < len; i += 2) {
-                data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
-                        + Character.digit(hex.charAt(i + 1), 16));
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            int high = Character.digit(hex.charAt(i), 16);
+            int low = Character.digit(hex.charAt(i + 1), 16);
+            if (high < 0 || low < 0) {
+                return hex;
             }
-            return new String(data, StandardCharsets.UTF_8);
-        } catch (NumberFormatException e) {
-            return hex;
+            data[i / 2] = (byte) ((high << 4) + low);
         }
+        return new String(data, StandardCharsets.UTF_8);
     }
 }

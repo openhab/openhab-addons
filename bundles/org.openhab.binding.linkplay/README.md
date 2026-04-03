@@ -55,16 +55,16 @@ The binding provides the following channel groups and channels:
 
 Controls and monitors playback state and volume.
 
-| Channel ID          | Item Type   | Read/Write | Description                                                                            |
-|---------------------|-------------|------------|----------------------------------------------------------------------------------------|
-| control             | Player      | RW         | Control playback (PLAY, PAUSE, NEXT, PREVIOUS)                                         |
-| state               | String      | R          | Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING)                           |
-| position            | Number:Time | R          | Current track position                                                                 |
-| duration            | Number:Time | R          | Total track duration                                                                   |
-| repeat-shuffle-mode | Number      | RW         | Loop, shuffle or single-track mode (-1=Off, 0=Repeat One, 1=Repeat All, 2=Shuffle All) |
-| eq-preset           | String      | R          | Name of the active EQ preset                                                           |
-| volume              | Dimmer      | RW         | Main volume (0-100%)                                                                   |
-| mute                | Switch      | RW         | Mutes or unmutes the device                                                            |
+| Channel ID          | Item Type   | Read/Write | Description                                                                                             |
+|---------------------|-------------|------------|---------------------------------------------------------------------------------------------------------|
+| control             | Player      | RW         | Control playback (PLAY, PAUSE, NEXT, PREVIOUS)                                                          |
+| state               | String      | R          | Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING)                                            |
+| position            | Number:Time | R          | Current track position                                                                                  |
+| duration            | Number:Time | R          | Total track duration                                                                                    |
+| repeat-shuffle-mode | Number      | RW         | Loop, shuffle or single-track mode (4=Off, 0=Repeat All, 1=Repeat One, 2=Shuffle+Repeat All, 3=Shuffle) |
+| eq-preset           | String      | R          | Name of the active EQ preset                                                                            |
+| volume              | Dimmer      | RW         | Main volume (0-100%)                                                                                    |
+| mute                | Switch      | RW         | Mutes or unmutes the device                                                                             |
 
 ### Track Metadata Channel Group
 
@@ -102,7 +102,7 @@ Controls equalizer settings and audio output configuration.
 | enabled                 | Switch    | RW         | Equalizer on/off                                  |
 | preset                  | String    | R          | Name of the active EQ preset                      |
 | band                    | Number    | RW         | Gain value of an EQ frequency band (-12 to 12 dB) |
-| output-hardware-mode    | String    | R          | Active audio output (SPDIF, AUX, COAX)            |
+| output-hardware-mode    | Number    | R          | Active audio output (1=SPDIF, 2=AUX, 3=COAX)      |
 | channel-balance         | Number    | RW         | Stereo balance (-1.0 left to 1.0 right)           |
 | spdif-switch-delay-ms   | Number    | RW         | SPDIF sample-rate switch delay (0-3000ms)         |
 
@@ -262,10 +262,10 @@ Groups use a leader/member architecture where one device acts as the group leade
 
 ### Group Status Channels
 
-| Channel | Description |
-|---------|-------------|
+| Channel            | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
 | `multiroom#active` | Read-only. Indicates if the device is part of a group (as leader or member) |
-| `multiroom#leader` | Read-only. Indicates if the device is the leader of a group |
+| `multiroom#leader` | Read-only. Indicates if the device is the leader of a group                 |
 
 ### Creating and Managing Groups
 
@@ -371,10 +371,10 @@ When devices are in a group:
 
 The leader device provides special channels to control volume for all grouped devices simultaneously:
 
-| Channel | Type | Description |
-|---------|------|-------------|
+| Channel            | Type   | Description                                            |
+|--------------------|--------|--------------------------------------------------------|
 | `multiroom#volume` | Dimmer | Set volume level (0-100%) for all members in the group |
-| `multiroom#mute` | Switch | Mute or unmute all members in the group |
+| `multiroom#mute`   | Switch | Mute or unmute all members in the group                |
 
 ### Example: Creating a Whole-House Audio System
 

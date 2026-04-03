@@ -50,6 +50,7 @@ public class LinkPlayGroupService {
     public void deactivate() {
         logger.debug("LinkPlayGroupService deactivated");
         groups.clear();
+        groupStateCache.clear();
         participants.clear();
     }
 

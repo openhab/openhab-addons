@@ -123,7 +123,17 @@ public class LinkPlayNotificationHandler {
                 // No active playlist - just play the notification directly
                 playNotificationDirect(url, returnFuture);
             }
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("{}: Error while playing notification: {}", handler.getUdn(), e.getMessage(), e);
+            synchronized (this) {
+                cancelNotificationTimeoutJob();
+                inNotification.set(false);
+                if (!returnFuture.isDone()) {
+                    returnFuture.completeExceptionally(e);
+                }
+            }
+        } catch (ExecutionException e) {
             logger.debug("{}: Error while playing notification: {}", handler.getUdn(), e.getMessage(), e);
             synchronized (this) {
                 cancelNotificationTimeoutJob();

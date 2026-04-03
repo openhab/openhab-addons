@@ -89,8 +89,10 @@ public class LinkPlayAudioSink extends AudioSinkSync {
         if (volume != null) {
             try {
                 handler.setVolume(volume);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                throw new IOException("Error while setting volume: " + e.getMessage(), e);
+            } catch (ExecutionException | TimeoutException e) {
                 throw new IOException("Error while setting volume: " + e.getMessage(), e);
             }
         }
@@ -138,7 +140,10 @@ public class LinkPlayAudioSink extends AudioSinkSync {
             logger.trace("Stop currently playing stream.");
             try {
                 handler.stopPlaying();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Error while stopping media: {}", e.getMessage(), e);
+            } catch (ExecutionException | TimeoutException e) {
                 logger.debug("Error while stopping media: {}", e.getMessage(), e);
             }
             return;
@@ -162,8 +167,10 @@ public class LinkPlayAudioSink extends AudioSinkSync {
             String url = callbackUrl + streamServed.url();
             try {
                 playMedia(url).get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                logger.debug("Error while playing notification: {}", e.getMessage(), e);
+            } catch (ExecutionException e) {
                 logger.debug("Error while playing notification: {}", e.getMessage(), e);
             }
         } else {

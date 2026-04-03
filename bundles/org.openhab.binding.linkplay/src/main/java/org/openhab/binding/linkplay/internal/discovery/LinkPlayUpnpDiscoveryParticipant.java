@@ -29,11 +29,13 @@ import org.openhab.binding.linkplay.internal.client.http.LinkPlayConnectionUtils
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +57,12 @@ public class LinkPlayUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
     private final HttpClient httpClient;
 
     @Activate
-    public LinkPlayUpnpDiscoveryParticipant() {
+    public LinkPlayUpnpDiscoveryParticipant(final @Reference HttpClientFactory httpClientFactory) {
+        httpClient = httpClientFactory.createHttpClient("linkplay-discovery", new SslContextFactory.Client(true));
         try {
-            httpClient = new HttpClient(new SslContextFactory.Client(true));
             httpClient.start();
         } catch (Exception e) {
-            throw new IllegalStateException("Could not create HTTP client", e);
+            throw new IllegalStateException("Could not start HTTP client", e);
         }
     }
 

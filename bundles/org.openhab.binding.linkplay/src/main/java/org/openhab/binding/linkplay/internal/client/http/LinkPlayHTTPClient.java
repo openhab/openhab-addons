@@ -624,7 +624,7 @@ public class LinkPlayHTTPClient {
      * Command: ConnectMasterAp:JoinGroupMaster:eth:{ip} –Join a group by IP.
      */
     public CompletableFuture<String> multiroomJoinGroupMaster(String ip) {
-        return sendGetRequest("ConnectMasterAp:JoinGroupMaster:eth" + encode(ip) + ":wifi0.0.0.0", String.class);
+        return sendGetRequest("ConnectMasterAp:JoinGroupMaster:eth:" + encode(ip) + ":wifi0.0.0.0", String.class);
     }
 
     /**
@@ -821,7 +821,11 @@ public class LinkPlayHTTPClient {
                     throw new LinkPlayClientException("Response is null");
                 }
                 return result;
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.trace("Failed to send GET request to {}: {}", url, e.getMessage());
+                throw new LinkPlayClientException("Failed to send GET request to " + url, e);
+            } catch (ExecutionException | TimeoutException e) {
                 logger.trace("Failed to send GET request to {}: {}", url, e.getMessage());
                 throw new LinkPlayClientException("Failed to send GET request to " + url, e);
             } catch (JsonSyntaxException | JsonIOException e) {
