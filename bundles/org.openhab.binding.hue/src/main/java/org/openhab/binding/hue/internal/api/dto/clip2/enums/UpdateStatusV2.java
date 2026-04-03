@@ -22,10 +22,18 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum UpdateStatusV2 {
-    NO_UPDATE,
-    UPDATE_PENDING,
-    READY_TO_INSTALL,
-    INSTALLING;
+    NO_UPDATE("@text/update.state.no-update"),
+    UPDATE_AVAILABLE("@text/update.state.update-available"),
+    UPDATE_PENDING("@text/update.state.update-pending"),
+    READY_TO_INSTALL("@text/update.state.update-ready-to-install"),
+    INSTALLING("@text/update.state.installing-update"),
+    INSTALL_FAILED("@text/update.state.update-install-failed");
+
+    private final String label;
+
+    UpdateStatusV2(String label) {
+        this.label = label;
+    }
 
     public static @Nullable UpdateStatusV2 of(@Nullable String value) {
         if (value != null) {
@@ -52,7 +60,6 @@ public enum UpdateStatusV2 {
 
     @Override
     public String toString() {
-        String s = name();
-        return s.substring(0, 1) + s.substring(1).replace("_", " ").toLowerCase();
+        return label;
     }
 }

@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
+import org.openhab.binding.hue.internal.action.SoftwareUpdateActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
@@ -357,7 +358,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(DynamicsActions.class);
+        return (thisResource.getType() == ResourceType.DEVICE)
+                ? Set.of(DynamicsActions.class, SoftwareUpdateActions.class)
+                : Set.of(DynamicsActions.class);
     }
 
     @Override
@@ -1659,12 +1662,50 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (updateStatus == null) {
             return;
         }
-        String property = updateStatus.toString();
+        String property = updateStatus.toString(); // TODO i18n
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
         ThingStatusInfo status = thing.getStatusInfo();
         if (status.getStatus() == ThingStatus.ONLINE && status.getStatusDetail() == ThingStatusDetail.NONE) {
             String description = updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
             thing.setStatusInfo(new ThingStatusInfo(status.getStatus(), status.getStatusDetail(), description));
         }
+    }
+
+    /**
+     * Send command to install software update.
+     */
+    public String installUpdate() {
+        ThingStatusInfo info = thing.getStatusInfo();
+        if (info.getStatus() != ThingStatus.ONLINE) {
+            return "@text/install.update.error";
+        }
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, "@text/update.state.installing-update");
+
+        String resourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
+        if (resourceId == null) {
+            logger.error("{} -> installUpdate() no DEVICE_SOFTWARE_UPDATE resource found", this.resourceId);
+            return "@text/install.update.error";
+        }
+        Resource resource = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate().setId(resourceId);
+
+        try {
+            Resources resources = getBridgeHandler().putResource(resource);
+            if (resources.hasErrors()) {
+                logger.info("{} -> installUpdate() succeeded with errors: {}", thing.getUID(),
+                        String.join("; ", resources.getErrors()));
+            }
+            // TODO schedule a task to wait for update to complete and thing to go online again
+            // thing.setStatusInfo(info); // revert to previous status info
+            return "@text/install.update.success";
+        } catch (ApiException | AssetNotLoadedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} -> installUpdate() error {}", resourceId, e.getMessage(), e);
+            } else {
+                logger.warn("{} -> installUpdate() error {}", resourceId, e.getMessage());
+            }
+        } catch (InterruptedException e) {
+        }
+        return "@text/install.update.error";
     }
 }

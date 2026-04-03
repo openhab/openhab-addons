@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBridgeModel;
+import org.openhab.binding.hue.internal.action.SoftwareUpdateActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -461,7 +462,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(Clip2ThingDiscoveryService.class);
+        return Set.of(Clip2ThingDiscoveryService.class, SoftwareUpdateActions.class);
     }
 
     @Override
@@ -880,7 +881,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (updateStatus == null) {
             return;
         }
-        String property = updateStatus.toString();
+        String property = updateStatus.toString(); // TODO i18n
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
         ThingStatusInfo info = thing.getStatusInfo();
         if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE) {
@@ -1021,5 +1022,31 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public int getBridgeGeneration() {
         return bridgeGeneration;
+    }
+
+    /**
+     * Send command to install software update.
+     */
+    public String installUpdate() {
+        ThingStatusInfo info = thing.getStatusInfo();
+        if (info.getStatus() != ThingStatus.ONLINE) {
+            return "@text/install.update.error";
+        }
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, "@text/update.state.installing-update");
+
+        try {
+            getClip2Bridge().installUpdate();
+            // TODO schedule a task to wait for update to complete and thing to go online again
+            // thing.setStatusInfo(info); // revert to previous status info
+            return "@text/install.update.success";
+        } catch (IOException | AssetNotLoadedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("installUpdate() error {}", e.getMessage(), e);
+            } else {
+                logger.warn("installUpdate() error {}", e.getMessage());
+            }
+            return "@text/install.update.error";
+        }
     }
 }

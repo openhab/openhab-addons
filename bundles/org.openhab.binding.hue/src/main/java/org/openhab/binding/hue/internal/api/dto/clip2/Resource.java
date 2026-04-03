@@ -127,6 +127,7 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
+    private @Nullable InstallUpdate install;
 
     /**
      * Constructor
@@ -1082,6 +1083,14 @@ public class Resource {
      */
     public Resource setMuteType(@Nullable MuteType muteType) {
         mute = muteType == null ? null : new Mute().setMuteType(muteType);
+        return this;
+    }
+
+    /**
+     * Set the install software update command parameter.
+     */
+    public Resource setInstallUpdate() {
+        install = new InstallUpdate().setInstallUpdate();
         return this;
     }
 }

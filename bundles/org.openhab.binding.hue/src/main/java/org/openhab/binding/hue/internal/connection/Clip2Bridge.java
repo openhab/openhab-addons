@@ -1351,4 +1351,15 @@ public class Clip2Bridge implements Closeable {
         }
         return null;
     }
+
+    /**
+     * Send a PUT request trigger the bridge to check for updates.
+     * 
+     * @throws IOException if there was a communications error.
+     */
+    public void installUpdate() throws IOException {
+        BridgeConfig bridgeConfig = new BridgeConfig().setInstallUpdate();
+        // TODO setBridgeConfig(hostName, applicationKey, bridgeConfig);
+        throw new IOException("installUpdate() not implemented");
+    }
 }
