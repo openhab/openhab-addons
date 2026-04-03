@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
-    private static final long EXPIRYSECONDS = 100L; // 100 seconds before expiry
+    private static final long EXPIRY_SECONDS = 100L; // 100 seconds before expiry
     private AccountController sunAccount = new AccountController();
     private @Nullable ScheduledFuture<?> discoverApiKeyJob;
     private @Nullable SunSynkAccountConfig accountConfig;
@@ -98,16 +98,16 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public void configAccount() {
+    private boolean configAccount() {
         SunSynkAccountConfig accountConfig = this.accountConfig;
         if (accountConfig == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No account config provided.");
-            return;
+            return false;
         }
         if (accountConfig.getEmail().isBlank() | accountConfig.getPassword().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "E-mail address or Password missing in account configuration");
-            return;
+            return false;
         }
         try {
             this.sunAccount.clientAuthenticate(accountConfig.getEmail(), accountConfig.getPassword());
@@ -117,35 +117,36 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate binding with SunSynk");
-            return;
+            return false;
         } catch (SunSynkAuthenticateException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Error attempting to authenticate user: {}.", e.getMessage());
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate user credentials");
-            return;
+            return false;
         }
         updateStatus(ThingStatus.ONLINE);
+        return true;
     }
 
     /**
      * Checks if the bearer token is near expiry and if it is refreshes by logging in.
      * 
-     * @return boolean, true for a logged in account with unexpired token
      * @throws SunSynkAuthenticateException
      */
-    public boolean refreshAccount() throws SunSynkAuthenticateException {
+    public synchronized void refreshAccount() throws SunSynkAuthenticateException {
         try {
             SunSynkAccountConfig accountConfig = this.accountConfig;
             if (accountConfig == null) {
                 throw new SunSynkTokenException("No account config");
             }
             long expiresFromNow = this.sunAccount.checkExpireTime();
-            if (expiresFromNow < EXPIRYSECONDS) {
-                logger.debug("Account configuration token about to expired - logging in.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "re-enabling account");
-                configAccount();
+            if (expiresFromNow < EXPIRY_SECONDS) {
+                logger.debug("Account configuration token about to expire - logging in.");
+                if (configAccount() != true) {
+                    throw new SunSynkTokenException("failed to config account");
+                }
             } else {
                 Duration d = Duration.ofSeconds(expiresFromNow);
                 logger.debug(
@@ -156,8 +157,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to refresh account: " + e.getMessage());
-            return false;
+            throw new SunSynkAuthenticateException("" + e.getMessage());
         }
-        return true;
     }
 }

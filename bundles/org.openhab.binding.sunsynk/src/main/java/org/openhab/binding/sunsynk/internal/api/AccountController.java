@@ -144,9 +144,8 @@ public class AccountController {
      * 
      * @return long, seconds remaining on bearer token.
      * @throws SunSynkAuthenticateException
-     * @throws SunSynkTokenException
      */
-    public long checkExpireTime() throws SunSynkAuthenticateException, SunSynkTokenException {
+    public long checkExpireTime() throws SunSynkAuthenticateException {
         long expiresIn = this.sunAccount.getExpiresIn();
         long issuedAt = this.sunAccount.getIssuedAt();
         return (issuedAt + expiresIn) - Instant.now().getEpochSecond();
