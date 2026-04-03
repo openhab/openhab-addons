@@ -109,7 +109,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             } else {
                 logger.debug("Polling interval invalid: {}", config.pollIntervalS3);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Polling interval must be greater then 0 seconds");
+                        "Polling interval must be greater than 0 seconds");
                 return;
             }
         }
@@ -126,7 +126,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             difS3Listing.removeAll(previousS3Listing);
             logger.debug("Detected {} new S3 files since last refresh", difS3Listing.size());
             difS3Listing.forEach(file -> {
-                logger.debug("Triggering CHANNEL_NEWFILE with: {}", file);
+                logger.trace("Triggering CHANNEL_NEWFILE with: {}", file);
                 triggerChannel(CHANNEL_NEWFILE, file);
             });
 

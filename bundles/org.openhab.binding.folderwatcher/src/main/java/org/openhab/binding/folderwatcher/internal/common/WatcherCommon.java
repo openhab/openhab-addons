@@ -73,7 +73,7 @@ public class WatcherCommon {
             for (String newFile : newList) {
                 fileWriter.write(newFile);
                 fileWriter.newLine();
-                logger.debug("Saved entry: {}", newFile);
+                logger.trace("Saved entry: {}", newFile);
             }
             logger.debug("Successfully saved {} entries to listing file", newList.size());
         }

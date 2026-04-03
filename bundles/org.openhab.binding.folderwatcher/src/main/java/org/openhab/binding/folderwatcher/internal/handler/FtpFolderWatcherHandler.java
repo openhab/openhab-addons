@@ -137,8 +137,9 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
         Instant dateNow = Instant.now();
         for (FTPFile file : ftpClient.listFiles(dirPath)) {
             String currentFileName = file.getName();
-            logger.debug("Processing FTP file: {}, isDirectory: {}, timestamp: {}", currentFileName, file.isDirectory(),
-                    file.getTimestamp().toInstant());
+            Instant fileTimestamp = file.getTimestamp().toInstant();
+            logger.trace("Processing FTP file: {}, isDirectory: {}, timestamp: {}", currentFileName, file.isDirectory(),
+                    fileTimestamp);
             if (".".equals(currentFileName) || "..".equals(currentFileName)) {
                 continue;
             }
@@ -152,10 +153,10 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                long diff = ChronoUnit.HOURS.between(file.getTimestamp().toInstant(), dateNow);
-                logger.debug("FTP file {} is {} hours old", filePath, diff);
+                long diff = ChronoUnit.HOURS.between(fileTimestamp, dateNow);
+                logger.trace("FTP file {} is {} hours old", filePath, diff);
                 if (diff < config.diffHours) {
-                    logger.debug("File {} is newer than {} hours ({} hours), adding to list", filePath,
+                    logger.trace("File {} is newer than {} hours ({} hours), adding to list", filePath,
                             config.diffHours, diff);
                     dirFiles.add("ftp:/" + ftpClient.getRemoteAddress() + filePath);
                 }
@@ -210,7 +211,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 return;
             }
             try {
-                logger.debug("Attempting FTP login as user {}", config.ftpUsername);
+                logger.debug("Attempting FTP login");
                 if (!ftp.login(config.ftpUsername, config.ftpPassword)) {
                     logger.debug("FTP login failed: {}", ftp.getReplyString());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ftp.getReplyString());
@@ -290,7 +291,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                 diffFtpListing.removeAll(previousFtpListing);
                 logger.debug("Detected {} new FTP files since last refresh", diffFtpListing.size());
                 diffFtpListing.forEach(file -> {
-                    logger.debug("Triggering CHANNEL_NEWFILE with: {}", file);
+                    logger.trace("Triggering CHANNEL_NEWFILE with: {}", file);
                     triggerChannel(CHANNEL_NEWFILE, file);
                 });
                 if (!diffFtpListing.isEmpty() && currentFtpListingFile != null) {

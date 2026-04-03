@@ -163,7 +163,7 @@ public class LocalFolderWatcherHandler extends BaseThingHandler {
             logger.debug("Local directory scan found {} total files", currentLocalListing.size());
             logger.debug("Detected {} new local files since last refresh", diffLocalListing.size());
             diffLocalListing.forEach(file -> {
-                logger.debug("Triggering CHANNEL_NEWFILE with: {}", file);
+                logger.trace("Triggering CHANNEL_NEWFILE with: {}", file);
                 triggerChannel(CHANNEL_NEWFILE, file);
             });
 

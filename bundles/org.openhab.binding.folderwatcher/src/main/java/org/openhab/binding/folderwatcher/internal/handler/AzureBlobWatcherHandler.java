@@ -80,8 +80,8 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Account name or container configuration is invalid");
             return;
-        } else if (config.pollIntervalAzure == 0) {
-            logger.debug("Polling interval is zero");
+        } else if (config.pollIntervalAzure <= 0) {
+            logger.debug("Polling interval is zero or negative");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Polling interval must be greater than 0 seconds");
             return;
@@ -133,7 +133,7 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
             difBlobListing.removeAll(previousBlobListing);
             logger.debug("Detected {} new Azure files since last refresh", difBlobListing.size());
             difBlobListing.forEach(file -> {
-                logger.debug("Triggering CHANNEL_NEWFILE with: {}", file);
+                logger.trace("Triggering CHANNEL_NEWFILE with: {}", file);
                 triggerChannel(CHANNEL_NEWFILE, file);
             });
 
@@ -147,7 +147,7 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.debug("Exception connecting to Azure container: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Can't connect to the contaner: " + e.getMessage());
+                    "Can't connect to the container: " + e.getMessage());
             return false;
         }
         return true;
