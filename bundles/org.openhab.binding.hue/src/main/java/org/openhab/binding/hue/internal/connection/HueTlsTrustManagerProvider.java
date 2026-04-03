@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.hue.internal.connection;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -115,17 +116,25 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @throws CertificateException
      */
     private X509ExtendedTrustManager getInstanceFromResource(String resourceName) throws CertificateException {
-        byte[] certificatesBytes = readPEMCertificatesStringFromResource(resourceName);
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+
+        // load all certificates from the PEM file
+        Collection<? extends Certificate> certificates;
+
+        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(resourceName)) {
+            if (inputStream == null) {
+                throw new CertificateException("Certificate resource not found: " + resourceName);
+            }
+            certificates = certificateFactory.generateCertificates(inputStream);
+        } catch (IOException e) {
+            throw new CertificateException("Certificate resource cannot be read: " + resourceName, e);
+        }
+
+        if (certificates.isEmpty()) {
+            throw new CertificateException("No certificates found in " + resourceName);
+        }
+
         try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            // load all certificates from the PEM file
-            Collection<? extends Certificate> certificates;
-            try (InputStream input = new ByteArrayInputStream(certificatesBytes)) {
-                certificates = certificateFactory.generateCertificates(input);
-            }
-            if (certificates.isEmpty()) {
-                throw new CertificateException("No certificates found in " + resourceName);
-            }
             // build a key store containing all the certificates
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
@@ -143,28 +152,8 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
                 }
             }
             throw new CertificateException("No X509ExtendedTrustManager available.");
-        } catch (Exception e) {
+        } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
             throw new CertificateException("Failed to load certificates: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Reads the content of a PEM resource from the resources folder and returns it as a byte array. It may contain
-     * multiple certificates, e.g. a certificate chain with intermediate certificates. If the resource is not found or
-     * cannot be read, {@link CertificateException} is thrown.
-     *
-     * @param resourceName name of the PEM resource located in the resources folder
-     * @return the content of the PEM resource as a byte array
-     * @throws CertificateException if the resource is not found or cannot be read
-     */
-    private byte[] readPEMCertificatesStringFromResource(String resourceName) throws CertificateException {
-        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(resourceName)) {
-            if (inputStream == null) {
-                throw new CertificateException("Certificate resource not found: " + resourceName);
-            }
-            return inputStream.readAllBytes();
-        } catch (IOException e) {
-            throw new CertificateException("Certificate resource cannot be read: " + resourceName, e);
         }
     }
 }
