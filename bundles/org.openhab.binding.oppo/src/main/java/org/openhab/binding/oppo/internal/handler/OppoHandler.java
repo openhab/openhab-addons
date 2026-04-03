@@ -264,7 +264,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 isInitialQuery = false;
                                 if (!BLANK.equals(currentPlayMode)) {
                                     currentPlayMode = BLANK;
-                                    updateChannelState(CHANNEL_PLAY_MODE, null);
                                     clearStatusChannels();
                                 }
                             }
@@ -375,7 +374,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private synchronized void closeConnection() {
         if (!BLANK.equals(currentPlayMode)) {
             currentPlayMode = BLANK;
-            updateChannelState(CHANNEL_PLAY_MODE, null);
+            clearStatusChannels();
         }
 
         if (connector.isConnected()) {
@@ -446,7 +445,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (OFF.equals(updateData)) {
                             if (!BLANK.equals(currentPlayMode)) {
                                 currentPlayMode = BLANK;
-                                updateChannelState(CHANNEL_PLAY_MODE, null);
                                 clearStatusChannels();
                             }
                             isPowerOn = false;
@@ -459,7 +457,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         if (ZERO.equals(updateData)) {
                             if (!BLANK.equals(currentPlayMode)) {
                                 currentPlayMode = BLANK;
-                                updateChannelState(CHANNEL_PLAY_MODE, null);
                                 clearStatusChannels();
                             }
                             isPowerOn = false;
@@ -606,6 +603,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Clears the status channels
      */
     private void clearStatusChannels() {
+        updateChannelState(CHANNEL_PLAY_MODE, null);
         updateChannelState(CHANNEL_CURRENT_TITLE, null);
         updateChannelState(CHANNEL_TOTAL_TITLE, null);
         updateChannelState(CHANNEL_CURRENT_CHAPTER, null);
