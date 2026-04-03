@@ -296,8 +296,7 @@ public class DahuaDiscoveryService extends AbstractDiscoveryService {
             properties.put("deviceClass", deviceClass);
         }
 
-        String representationProperty = !serialNo.isEmpty() ? Thing.PROPERTY_SERIAL_NUMBER
-                : !mac.isEmpty() ? Thing.PROPERTY_MAC_ADDRESS : "hostname";
+        String representationProperty = Thing.PROPERTY_MAC_ADDRESS;
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperties(properties).withRepresentationProperty(representationProperty).withLabel(label).build();
 
