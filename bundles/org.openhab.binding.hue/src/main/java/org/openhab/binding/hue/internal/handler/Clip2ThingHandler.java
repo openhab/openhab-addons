@@ -88,7 +88,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -1654,57 +1653,65 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Read the update status of the thing from the given resource and update its property and, if it is online,
-     * also update its status info description text (allows displaying a dynamic info badge in Main UI).
+     * Read the update status of the thing from the given resource and update its property accordingly. If
+     * the ThingStatus is ONLINE and ThingStatusDetail is NONE, then setting a description text causes
+     * a dynamic info badge to be displayed in Main UI.
      */
     private void updateUpdateStatus(Resource resource) {
         UpdateStatusV2 updateStatus = resource.getUpdateStatus();
-        if (updateStatus == null) {
-            return;
-        }
-        String property = updateStatus.toString(); // TODO i18n
-        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
-        ThingStatusInfo status = thing.getStatusInfo();
-        if (status.getStatus() == ThingStatus.ONLINE && status.getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
-            thing.setStatusInfo(new ThingStatusInfo(status.getStatus(), status.getStatusDetail(), description));
+        switch (updateStatus) {
+            case INSTALLING:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                        "@text/update.state.installing-update");
+                break;
+            case READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING:
+                // TODO check if setProperty and ThingStatusInfo do i18n themselves or do we need to do it here?
+                String property = updateStatus.toString();
+                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, property);
+                break;
+            default:
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                break;
         }
     }
 
     /**
-     * Send command to install software update.
+     * Send a command to install a software update. If the command is accepted, the device will go offline
+     * and come back online once the installation is complete. The bridge will send SSE notifications about
+     * the software status, and the thing status will therefore be updated dynamically in real time.
+     * 
+     * @return a message key for the result of the command execution which is used to display a respective
+     *         message in the UI.
      */
     public String installUpdate() {
-        ThingStatusInfo info = thing.getStatusInfo();
-        if (info.getStatus() != ThingStatus.ONLINE) {
+        if (thisResource.getType() != ResourceType.DEVICE || thing.getStatus() != ThingStatus.ONLINE) {
             return "@text/install.update.error";
         }
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, "@text/update.state.installing-update");
-
-        String resourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
-        if (resourceId == null) {
-            logger.error("{} -> installUpdate() no DEVICE_SOFTWARE_UPDATE resource found", this.resourceId);
+        String dsuResourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
+        if (dsuResourceId == null) {
+            logger.error("{} -> installUpdate() no 'DEVICE_SOFTWARE_UPDATE' resource found", resourceId);
             return "@text/install.update.error";
         }
-        Resource resource = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate().setId(resourceId);
-
         try {
-            Resources resources = getBridgeHandler().putResource(resource);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                    "@text/update.state.installing-update");
+            Resource putResource = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate()
+                    .setId(dsuResourceId);
+            Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
                 logger.info("{} -> installUpdate() succeeded with errors: {}", thing.getUID(),
                         String.join("; ", resources.getErrors()));
             }
-            // TODO schedule a task to wait for update to complete and thing to go online again
-            // thing.setStatusInfo(info); // revert to previous status info
             return "@text/install.update.success";
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("{} -> installUpdate() error {}", resourceId, e.getMessage(), e);
+                logger.debug("{} -> installUpdate() error {}", dsuResourceId, e.getMessage(), e);
             } else {
-                logger.warn("{} -> installUpdate() error {}", resourceId, e.getMessage());
+                logger.warn("{} -> installUpdate() error {}", dsuResourceId, e.getMessage());
             }
         } catch (InterruptedException e) {
+            // fall through
         }
         return "@text/install.update.error";
     }

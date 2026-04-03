@@ -18,6 +18,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -532,11 +533,115 @@ public class Clip2Bridge implements Closeable {
     private static final int MAX_CONCURRENT_STREAMS = 3;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
+    private static final SSLContext TRUST_ALL_SSL_CONTEXT = createTrustAllSslContext();
 
     /**
-     * Get the bridge configuration. The call may redirect HTTP to HTTPS, but since we may not yet have the
-     * certificate configuration parameters for a real bridge we implement a trustAll policy and disable
-     * host name verification.
+     * Create a permanent (static) trust all SSL context.
+     */
+    private static SSLContext createTrustAllSslContext() {
+        try {
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
+            return ctx;
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to initialize SSL context", e);
+        }
+    }
+
+    /**
+     * Execute either a GET or a PUT HTTPS request.
+     * 
+     * @param url the target URL
+     * @param method either GET or PUT
+     * @param request the JSON content body to send
+     * @return a JSON string response
+     * @throws IOException if an error occurs
+     */
+    private static String doHTTP(String url, String method, @Nullable String request) throws IOException {
+        HttpURLConnection connection = null;
+        try {
+            URL destination = new URI(url).toURL();
+            connection = (HttpURLConnection) destination.openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.setRequestMethod(method);
+
+            if (request != null) {
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+                try (OutputStream out = connection.getOutputStream()) {
+                    out.write(request.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            int status = connection.getResponseCode();
+
+            // redirect to HTTPS
+            if (status == 301 || status == 302) {
+                String redirectUrl = connection.getHeaderField("Location");
+                if (redirectUrl != null && redirectUrl.startsWith("https://")) {
+                    return doHTTPS(redirectUrl, method, request);
+                }
+            }
+
+            try (InputStream in = connection.getInputStream()) {
+                String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                LOGGER.trace("doHTTP() {} {} {} request:'{}', response:'{}'", method, url, status, request, response);
+                return response;
+            }
+
+        } catch (URISyntaxException e) {
+            throw new IOException("Invalid URL", e);
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+        }
+    }
+
+    /**
+     * Execute either a GET or a PUT HTTPS request. Since we may not yet have the certificate configuration
+     * parameters for a real bridge we use a trustAll policy and disable host name verification.
+     * 
+     * @param url the target URL
+     * @param method either GET or PUT
+     * @param request the JSON content body to send
+     * @return a JSON string response
+     * @throws IOException if an error occurs
+     */
+    private static String doHTTPS(String url, String method, @Nullable String request) throws IOException {
+        HttpsURLConnection connection = null;
+        try {
+            URL destination = new URI(url).toURL();
+            connection = (HttpsURLConnection) destination.openConnection();
+            connection.setSSLSocketFactory(TRUST_ALL_SSL_CONTEXT.getSocketFactory());
+            connection.setHostnameVerifier((h, s) -> true);
+            connection.setRequestMethod(method);
+
+            if (request != null) {
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+                try (OutputStream out = connection.getOutputStream()) {
+                    out.write(request.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+            int status = connection.getResponseCode();
+
+            try (InputStream in = connection.getInputStream()) {
+                String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                LOGGER.trace("doHTTPS() {} {} {} request:'{}', response:'{}'", method, url, status, request, response);
+                return response;
+            }
+
+        } catch (URISyntaxException e) {
+            throw new IOException("Invalid URL", e);
+        } finally {
+            if (connection != null)
+                connection.disconnect();
+        }
+    }
+
+    /**
+     * GET the BridgeConfig.
      *
      * @param hostName the bridge IP address.
      * @param applicationKey the application key (it must be '0' when the bridge is not yet paired).
@@ -544,51 +649,28 @@ public class Clip2Bridge implements Closeable {
      * @throws IOException if unable to communicate with the bridge.
      */
     private static @Nullable BridgeConfig getBridgeConfig(String hostName, String applicationKey) throws IOException {
-        String response = null;
-        HttpURLConnection httpConnection = null;
-        HttpsURLConnection httpsConnection = null;
+        String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
+        String json = doHTTP(url, "GET", null);
         try {
-            URL url = new URI(FORMAT_URL_CONFIG.formatted(hostName, applicationKey)).toURL();
-            httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setInstanceFollowRedirects(false);
-            int status = httpConnection.getResponseCode();
-            if (status == 301 || status == 302) {
-                String redirectUrl = httpConnection.getHeaderField("Location");
-                if (redirectUrl != null && redirectUrl.startsWith("https://")) {
-                    SSLContext sslContext = SSLContext.getInstance("TLS");
-                    sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
-                    httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
-                    httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-                    httpsConnection.setHostnameVerifier((hostname, session) -> true); // don't verify host name
-                    try (InputStream in = httpsConnection.getInputStream()) {
-                        response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                    }
-                }
-            }
-            if (response == null) {
-                try (InputStream in = httpConnection.getInputStream()) {
-                    response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                }
-            }
-        } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
-            LOGGER.debug("getBridgeConfig() error '{}' connecting to bridge", e.getMessage());
-            throw new IOException("getBridgeConfig() error connecting to bridge", e);
-        } finally {
-            if (httpConnection != null) {
-                httpConnection.disconnect();
-            }
-            if (httpsConnection != null) {
-                httpsConnection.disconnect();
-            }
-        }
-
-        LOGGER.trace("getBridgeConfig() response: {}", response);
-        try {
-            return new Gson().fromJson(response, BridgeConfig.class);
+            return new Gson().fromJson(json, BridgeConfig.class);
         } catch (JsonParseException e) {
-            LOGGER.debug("getBridgeConfig() error '{}' parsing response", e.getMessage());
-            throw new IOException("getBridgeConfig() parsing response", e);
+            throw new IOException("Error parsing BridgeConfig JSON", e);
         }
+    }
+
+    /**
+     * PUT the BridgeConfig.
+     * 
+     * @param hostName the bridge IP address.
+     * @param applicationKey the application key (it must be '0' when the bridge is not yet paired).
+     * @param bridgeConfig the bridge configuration to be sent.
+     * @throws IOException if unable to communicate with the bridge.
+     */
+    public static void putBridgeConfig(String hostName, String applicationKey, BridgeConfig bridgeConfig)
+            throws IOException {
+        String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
+        String json = new Gson().toJson(bridgeConfig);
+        doHTTP(url, "PUT", json);
     }
 
     /**
@@ -1353,13 +1435,11 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Send a PUT request trigger the bridge to check for updates.
+     * Send a PUT request to trigger the bridge to check for updates.
      * 
      * @throws IOException if there was a communications error.
      */
     public void installUpdate() throws IOException {
-        BridgeConfig bridgeConfig = new BridgeConfig().setInstallUpdate();
-        // TODO setBridgeConfig(hostName, applicationKey, bridgeConfig);
-        throw new IOException("installUpdate() not implemented");
+        putBridgeConfig(hostName, applicationKey, new BridgeConfig().setInstallUpdate());
     }
 }

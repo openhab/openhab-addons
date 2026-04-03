@@ -17,6 +17,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Enum for device software update status.
+ * 
+ * Note: UPDATE_AVAILABLE and INSTALL_FAILED are not officially documented but are inferred
+ * from third party sources.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

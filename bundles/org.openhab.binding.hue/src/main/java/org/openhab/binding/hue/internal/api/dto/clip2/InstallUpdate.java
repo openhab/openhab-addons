@@ -18,8 +18,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * DTO for install software update command.
- *
+ * Unofficial DTO for install software update command.
+ * 
+ * Note: this is not documented in the official Hue API, so the implementation is inferred from the
+ * <a href="https://github.com/openhue/openhue-api/tree/main/src/device_software_update">OpenHue API</a>
+ * which is not (yet) fully tested or confirmed to work.
+ * 
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault

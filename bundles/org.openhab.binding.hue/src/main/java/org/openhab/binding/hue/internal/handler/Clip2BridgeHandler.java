@@ -97,6 +97,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int RECONNECT_DELAY_SECONDS = 10;
     private static final int RECONNECT_MAX_TRIES = 5;
     private static final int POLL_UPDATE_STATUS_INTERVAL_MINUTES = 720; // i.e. 12 hours
+    private static final int UPDATE_DURATION_SECONDS = 90;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
     private static final ResourceReference ROOM = new ResourceReference().setType(ResourceType.ROOM);
@@ -146,7 +147,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable Future<?> checkConnectionTask;
     private @Nullable Future<?> updateOnlineStateTask;
     private @Nullable ScheduledFuture<?> scheduledUpdateTask;
-    private @Nullable ScheduledFuture<?> updateUpdateStatusTask;
+    private @Nullable Future<?> updateUpdateStatusTask;
+    private @Nullable Future<?> afterUpdateTask;
+
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
@@ -315,11 +318,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             cancelTask(updateOnlineStateTask, true);
             cancelTask(scheduledUpdateTask, true);
             cancelTask(updateUpdateStatusTask, true);
+            cancelTask(afterUpdateTask, true);
             updateAutomationChannelsTask = null;
             checkConnectionTask = null;
             updateOnlineStateTask = null;
             scheduledUpdateTask = null;
             updateUpdateStatusTask = null;
+            afterUpdateTask = null;
             synchronized (resourcesEventTasks) {
                 resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
                 resourcesEventTasks.clear();
@@ -881,7 +886,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (updateStatus == null) {
             return;
         }
-        String property = updateStatus.toString(); // TODO i18n
+        // TODO check if setProperty and ThingStatusInfo do i18n themselves or if we need to do it here
+        String property = updateStatus.toString();
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
         ThingStatusInfo info = thing.getStatusInfo();
         if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE) {
@@ -1025,20 +1031,23 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Send command to install software update.
+     * Send a command to install a software update. If the command is accepted, the bridge will go offline and
+     * come back online once the installation is complete. So we schedule a task to sleep for a certain time
+     * and then start checking if the bridge is online again.
+     * 
+     * @return a message key for the result of the command execution which is used to display a respective
+     *         message in the UI.
      */
     public String installUpdate() {
         ThingStatusInfo info = thing.getStatusInfo();
         if (info.getStatus() != ThingStatus.ONLINE) {
             return "@text/install.update.error";
         }
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, "@text/update.state.installing-update");
-
         try {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                    "@text/update.state.installing-update");
             getClip2Bridge().installUpdate();
-            // TODO schedule a task to wait for update to complete and thing to go online again
-            // thing.setStatusInfo(info); // revert to previous status info
+            afterUpdateTask = scheduler.schedule(() -> checkConnection(), UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
             return "@text/install.update.success";
         } catch (IOException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
@@ -1046,7 +1055,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             } else {
                 logger.warn("installUpdate() error {}", e.getMessage());
             }
-            return "@text/install.update.error";
         }
+        return "@text/install.update.error";
     }
 }
