@@ -15,6 +15,9 @@ package org.openhab.binding.ring.internal.handler;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 import static org.openhab.binding.ring.internal.ApiConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.OtherDevice;
@@ -29,6 +32,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
+import com.google.gson.Gson;
+
 /**
  * The handler for a Ring Other Device.
  *
@@ -41,6 +46,8 @@ public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
     private boolean batterySupport = false;
     private boolean openDoorSupport = false;
+
+    private final Gson gson = new Gson();
 
     public OtherDeviceHandler(Thing thing) {
         super(thing);
@@ -110,8 +117,22 @@ public class OtherDeviceHandler extends RingDeviceHandler {
 
     protected void openDoorCommand(boolean b) {
         logger.info("Sending command to openDoor (Stub only)");
-        String command = "device_rpc";
-        String payload = "";
+        String command = "/device_rpc";
+        Map<String, Object> params = new HashMap<>();
+        params.put("door_id", 0);
+        params.put("user_id", 0);
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("jsonrpc", "2.0");
+        request.put("method", "unlock_door");
+        request.put("params", params);
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("request", request);
+        payloadMap.put("command_name", "device_rpc");
+
+        String payload = gson.toJson(payloadMap);
+        logger.debug("payload = {}", payload);
         sendCommand(URL_INTERCOM_COMMAND, command, payload);
     }
 }

@@ -38,7 +38,7 @@ public class ApiConstants {
     public static final String URL_SNAPSHOTS = API_BASE + "/clients_api/snapshots/image/";
     public static final String URL_LIGHT = "/floodlight_light_";
     public static final String URL_SIREN = "/siren_";
-    public static final String URL_INTERCOM_COMMAND = API_BASE + "/commands/v1/devices/";
+    public static final String URL_INTERCOM_COMMAND = API_BASE + "/commands/v1/devices";
 
     public static final String URL_RECORDING = "/clients_api/dings/{0}/recording";
 

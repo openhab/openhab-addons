@@ -402,6 +402,9 @@ public class RestClient {
             request.agent(ApiConstants.API_USER_AGENT);
             request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
 
+            if (payload != null) {
+                request.content(new StringContentProvider(payload), "application/json");
+            }
             ContentResponse response = request.send();
             int responseCode = response.getStatus();
             switch (responseCode) {
