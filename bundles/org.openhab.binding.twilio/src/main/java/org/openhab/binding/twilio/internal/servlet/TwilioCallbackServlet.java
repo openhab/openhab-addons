@@ -476,9 +476,11 @@ public class TwilioCallbackServlet extends HttpServlet {
         // it was given, which is the bare cloud webhook URL with no query string.
         // The cloud proxy may add an empty "?" to the local request, so we ignore
         // the query string entirely for cloud webhooks.
-        String cloudUrl = handler.getCloudWebhookUrl(endpoint);
-        if (cloudUrl != null) {
-            return cloudUrl;
+        if (handler.isUsingCloudWebhooks()) {
+            String cloudUrl = handler.getWebhookUrl(endpoint);
+            if (cloudUrl != null) {
+                return cloudUrl;
+            }
         }
 
         String publicUrl = accountHandler.getAccountConfig().publicUrl;

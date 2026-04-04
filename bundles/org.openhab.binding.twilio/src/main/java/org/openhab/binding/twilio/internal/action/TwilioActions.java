@@ -273,11 +273,7 @@ public class TwilioActions implements ThingActions {
     }
 
     private String getPhoneNumber() {
-        String number = phoneHandler.getPhoneNumber();
-        if (number == null) {
-            throw new IllegalStateException("Phone number is not configured");
-        }
-        return number;
+        return phoneHandler.getPhoneNumber();
     }
 
     private static String escapeXml(String text) {
