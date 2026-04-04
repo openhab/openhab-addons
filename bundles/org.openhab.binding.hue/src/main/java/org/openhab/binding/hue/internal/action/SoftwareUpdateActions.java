@@ -66,7 +66,7 @@ public class SoftwareUpdateActions implements ThingActions {
             return thingHandler.installUpdate();
         } else {
             logger.warn("ThingHandler not known");
-            return "@text/install.update.error";
+            return "Error: ThingHandler not known";
         }
     }
 }
