@@ -85,7 +85,10 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         }
         if (channelUID.getId().equals(CHANNEL_STATUS_OPENDOOR)) {
             if (command instanceof OnOffType onOffCommand) {
-                openDoorCommand(onOffCommand == OnOffType.ON);
+                if (onOffCommand == OnOffType.ON) {
+                    openDoorCommand();
+                    updateState(channelUID, OnOffType.OFF);
+                }
             }
         }
     }
@@ -115,8 +118,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         }
     }
 
-    protected void openDoorCommand(boolean b) {
-        logger.info("Sending command to openDoor (Stub only)");
+    protected void openDoorCommand() {
         String command = "/device_rpc";
         Map<String, Object> params = new HashMap<>();
         params.put("door_id", 0);
