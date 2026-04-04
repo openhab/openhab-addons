@@ -192,7 +192,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
         final String pinUrl = brandConfig.apiBaseUrl + USER_API_URL + "pin";
         final Ccs2ControlTokenRequest payload = new Ccs2ControlTokenRequest(this.deviceId, pin);
-        final Request request = httpClient.newRequest(pinUrl).method(HttpMethod.POST)
+        final Request request = httpClient.newRequest(pinUrl).method(HttpMethod.PUT)
                 .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
                 .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
         addStandardHeaders(request);
