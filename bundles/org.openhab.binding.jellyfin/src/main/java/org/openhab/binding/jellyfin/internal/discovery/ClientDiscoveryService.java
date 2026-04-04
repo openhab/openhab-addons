@@ -23,11 +23,15 @@ import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_SWIF
 import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_WEB;
 import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERABLE_CLIENT_THING_TYPES;
 import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERY_RESULT_TTL_SEC;
+import static org.openhab.binding.jellyfin.internal.Constants.PROPERTY_DEVICE_NAME;
 import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFIN_CLIENT;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,9 +42,11 @@ import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +64,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService<ServerHandler> {
     private static final Logger logger = LoggerFactory.getLogger(ClientDiscoveryService.class);
+
+    /**
+     * Registry of all configured Things. Used to detect when a Jellyfin client has regenerated
+     * its device ID, so the existing Thing's configuration can be updated instead of creating
+     * a duplicate inbox entry.
+     *
+     * <p>
+     * Declared {@code @NonNullByDefault({})} because OSGi DS guarantees injection before activation
+     * and the field would otherwise require @Nullable despite being effectively non-null at runtime.
+     */
+    @NonNullByDefault({})
+    private volatile ThingRegistry thingRegistry;
+
+    @Reference
+    public void setThingRegistry(ThingRegistry registry) {
+        this.thingRegistry = registry;
+    }
+
+    public void unsetThingRegistry(ThingRegistry registry) {
+        // Intentionally left unset — field is only used during active discovery runs
+    }
 
     /**
      * Creates a new instance of the client discovery service.
@@ -99,11 +126,17 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
      * For each valid client, a discovery result is created with:
      * - ThingUID based on the sanitized device ID
      * - Representation property using device name (with fallback to client name)
-     * - Properties including serial number (device ID) and firmware version (if available)
+     * - Properties including serial number (device ID), device name, and firmware version (if available)
      *
      * The openHAB Inbox framework automatically handles deduplication:
      * - First call with a ThingUID: fires ADDED event (new discovery)
      * - Subsequent calls with same ThingUID: fires UPDATED event (not ADDED)
+     *
+     * <p>
+     * Device ID regeneration: Jellyfin mobile clients can regenerate their device IDs (e.g. after
+     * an app reinstall). When this happens, this method detects the existing configured Thing by
+     * matching {@code deviceName} + {@code client} and updates its {@code serialNumber} configuration
+     * instead of emitting a new inbox entry.
      *
      * This method is called:
      * - When a manual scan is triggered
@@ -188,11 +221,45 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
                 label = clientName != null && !clientName.isBlank() ? clientName : "Jellyfin Client";
             }
 
+            // Migration: things created by old binding versions stored serialNumber as a Thing
+            // property rather than a configuration parameter. When the new binding XML declares
+            // serialNumber as a required <parameter>, the framework sets HANDLER_CONFIGURATION_PENDING
+            // and never calls initialize(). Detect this here and promote the value to configuration
+            // so the handler can initialize correctly.
+            Thing existingThing = thingRegistry.get(clientUID);
+            if (existingThing != null && existingThing.getConfiguration().get("serialNumber") == null) {
+                String legacySerial = existingThing.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
+                if (legacySerial != null && !legacySerial.isBlank()) {
+                    logger.info(
+                            "[MIGRATION] Promoting serialNumber '{}' from property to configuration for {} (legacy thing)",
+                            legacySerial, clientUID);
+                    Map<String, Object> updatedConfig = new HashMap<>(existingThing.getConfiguration().getProperties());
+                    updatedConfig.put("serialNumber", legacySerial);
+                    thingRegistry.updateConfiguration(clientUID, updatedConfig);
+                    continue; // thing already exists and is now properly configured; skip inbox entry
+                }
+            }
+
+            // Detect device ID regeneration: if an existing Thing matches by deviceName + client but
+            // carries a different serialNumber, update its config rather than emitting a new inbox entry.
+            String client = session.getClient();
+            if (deviceName != null && !deviceName.isBlank()
+                    && handleDeviceIdChange(bridgeUID, deviceId, deviceName, client)) {
+                logger.info("Device '{}' (client: {}) regenerated its device ID to {}; updated existing Thing config",
+                        deviceName, client, deviceId);
+                continue;
+            }
+
             // Build discovery result
             DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(clientUID)
                     .withThingType(THING_TYPE_JELLYFIN_CLIENT).withBridge(bridgeUID).withLabel(label)
                     .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                     .withProperty(Thing.PROPERTY_SERIAL_NUMBER, deviceId);
+
+            // Store deviceName as a thing property so future device-ID-change detection can match it
+            if (deviceName != null && !deviceName.isBlank()) {
+                resultBuilder.withProperty(PROPERTY_DEVICE_NAME, deviceName);
+            }
 
             // Add firmware version if available
             String appVersion = session.getApplicationVersion();
@@ -201,7 +268,6 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             }
 
             // Add vendor information (client application name) if available
-            String client = session.getClient();
             if (client != null && !client.isBlank()) {
                 resultBuilder.withProperty(Thing.PROPERTY_VENDOR, client);
             }
@@ -222,6 +288,96 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
      */
     String sanitizeDeviceId(String deviceId) {
         return DeviceIdSanitizer.sanitize(deviceId);
+    }
+
+    /**
+     * Searches the Thing registry for an existing configured client Thing under the given bridge that matches
+     * the supplied {@code deviceName} and {@code client} (app name).
+     *
+     * <p>
+     * The match is intentionally strict: both {@code deviceName} and {@code client} must be equal
+     * (case-insensitive) to the corresponding properties stored on the Thing. Things created before
+     * {@link org.openhab.binding.jellyfin.internal.Constants#PROPERTY_DEVICE_NAME} was introduced as a stored
+     * property will have no {@code deviceName} entry and are therefore skipped, avoiding false positives.
+     *
+     * <p>
+     * If more than one Thing matches (e.g. two identically-named devices of the same client app), this method
+     * returns {@code null} and logs a warning — the caller should fall through to normal discovery.
+     *
+     * @param bridgeUID the UID of the server bridge
+     * @param deviceName the device-name string from the current Jellyfin session
+     * @param client the Jellyfin client application name (may be {@code null})
+     * @return the single matching Thing, or {@code null} if no unique match was found
+     */
+    @Nullable
+    Thing findExistingThingByIdentity(ThingUID bridgeUID, String deviceName, @Nullable String client) {
+        List<Thing> matches = thingRegistry.getAll().stream()
+                .filter(t -> THING_TYPE_JELLYFIN_CLIENT.equals(t.getThingTypeUID()))
+                .filter(t -> bridgeUID.equals(t.getBridgeUID())).filter(t -> {
+                    String storedName = t.getProperties().get(PROPERTY_DEVICE_NAME);
+                    if (storedName == null || storedName.isBlank()) {
+                        return false; // legacy Thing without deviceName property — skip
+                    }
+                    if (!deviceName.equalsIgnoreCase(storedName)) {
+                        return false;
+                    }
+                    // Apply client app name check when both sides are known
+                    String storedClient = t.getProperties().get(Thing.PROPERTY_VENDOR);
+                    if (client != null && !client.isBlank() && storedClient != null && !storedClient.isBlank()) {
+                        return client.equalsIgnoreCase(storedClient);
+                    }
+                    return true;
+                }).collect(Collectors.toList());
+
+        if (matches.size() == 1) {
+            return matches.get(0);
+        }
+        if (matches.size() > 1) {
+            logger.warn(
+                    "Found {} Things matching deviceName='{}' client='{}' — cannot uniquely identify device; skipping ID update",
+                    matches.size(), deviceName, client);
+        }
+        return null;
+    }
+
+    /**
+     * Handles a potential Jellyfin device ID regeneration event.
+     *
+     * <p>
+     * When a Jellyfin mobile client reinstalls or clears its local storage, it generates a fresh device ID.
+     * This method detects the case by looking for an existing configured Thing with the same
+     * {@code deviceName} and {@code client} (app name) but a different {@code serialNumber}.
+     * If found, the existing Thing's {@code serialNumber} configuration is updated to the new device ID,
+     * which triggers the {@link org.openhab.binding.jellyfin.internal.handler.ClientHandler} lifecycle
+     * ({@code dispose()} + {@code initialize()}) and causes it to re-subscribe to the
+     * {@link org.openhab.binding.jellyfin.internal.events.SessionEventBus} with the new device ID.
+     *
+     * @param bridgeUID the UID of the server bridge
+     * @param newDeviceId the newly observed Jellyfin device ID
+     * @param deviceName the device-name label from the current Jellyfin session
+     * @param client the Jellyfin client application name (may be {@code null})
+     * @return {@code true} if a stale device ID was detected and the existing Thing was updated;
+     *         {@code false} if no match was found or the ID is already current
+     */
+    boolean handleDeviceIdChange(ThingUID bridgeUID, String newDeviceId, String deviceName, @Nullable String client) {
+        Thing existing = findExistingThingByIdentity(bridgeUID, deviceName, client);
+        if (existing == null) {
+            return false;
+        }
+
+        Object storedId = existing.getConfiguration().get("serialNumber");
+        if (newDeviceId.equals(storedId)) {
+            return false; // device ID unchanged — normal update path
+        }
+
+        logger.info("Detected device ID change for '{}' (client: {}): {} -> {}", deviceName, client, storedId,
+                newDeviceId);
+
+        // Copy the full existing configuration to preserve any future parameters, then update serialNumber
+        Map<String, Object> updatedConfig = new HashMap<>(existing.getConfiguration().getProperties());
+        updatedConfig.put("serialNumber", newDeviceId);
+        thingRegistry.updateConfiguration(existing.getUID(), updatedConfig);
+        return true;
     }
 
     /**
