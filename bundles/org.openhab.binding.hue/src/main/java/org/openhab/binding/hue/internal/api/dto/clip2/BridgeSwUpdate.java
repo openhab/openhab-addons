@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BridgeSwUpdate {
-    private @Nullable Boolean checkforupdate;
-    private @Nullable Boolean install;
+    private @SuppressWarnings("unused") @Nullable Boolean checkforupdate;
+    private @SuppressWarnings("unused") @Nullable Boolean install;
     private @Nullable BridgeSwUpdateBridge bridge;
 
     public @Nullable BridgeSwUpdateBridge getBridge() {

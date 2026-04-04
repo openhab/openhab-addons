@@ -128,7 +128,7 @@ public class Resource {
     private @Nullable Sound chime;
     private @Nullable Mute mute;
     // for the following see https://github.com/openhue/openhue-api/tree/main/src/device_software_update
-    private @Nullable InstallUpdate install; // unofficial
+    private @SuppressWarnings("unused") @Nullable InstallUpdate install; // unofficial
 
     /**
      * Constructor

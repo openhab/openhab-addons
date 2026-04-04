@@ -1673,6 +1673,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateUpdateStatus(Resource resource) {
         UpdateStatusV2 updateStatus = resource.getUpdateStatus();
+        if (updateStatus == null) {
+            updateStatus = UpdateStatusV2.NO_UPDATE;
+        }
         switch (updateStatus) {
             case INSTALLING:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
