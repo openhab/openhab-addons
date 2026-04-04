@@ -542,6 +542,72 @@ public class UniFiProtectPrivateClient {
     }
 
     /**
+     * Fetch an event thumbnail image
+     *
+     * @param thumbnailId The thumbnail ID (from Event.thumbnailId)
+     * @return CompletableFuture with thumbnail image bytes (JPEG)
+     */
+    public CompletableFuture<byte[]> getThumbnail(String thumbnailId) {
+        return ensureAuthenticated().thenCompose(v -> {
+            CompletableFuture<byte[]> future = new CompletableFuture<>();
+            try {
+                String url = baseUrl + PRIVATE_API_PATH + "thumbnails/" + thumbnailId;
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(DEFAULT_TIMEOUT.toMillis(),
+                        TimeUnit.MILLISECONDS);
+                authenticator.addAuthHeaders(request);
+
+                request.send(new BufferingResponseListener() {
+                    @Override
+                    public void onComplete(Result result) {
+                        if (result.isFailed()) {
+                            future.completeExceptionally(
+                                    new NvrException("Thumbnail request failed", result.getFailure()));
+                        } else {
+                            future.complete(getContent());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+            return future;
+        }).orTimeout(FUTURE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Fetch an event heatmap image
+     *
+     * @param heatmapId The heatmap ID (from Event.heatmapId)
+     * @return CompletableFuture with heatmap image bytes (PNG)
+     */
+    public CompletableFuture<byte[]> getHeatmap(String heatmapId) {
+        return ensureAuthenticated().thenCompose(v -> {
+            CompletableFuture<byte[]> future = new CompletableFuture<>();
+            try {
+                String url = baseUrl + PRIVATE_API_PATH + "heatmaps/" + heatmapId;
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(DEFAULT_TIMEOUT.toMillis(),
+                        TimeUnit.MILLISECONDS);
+                authenticator.addAuthHeaders(request);
+
+                request.send(new BufferingResponseListener() {
+                    @Override
+                    public void onComplete(Result result) {
+                        if (result.isFailed()) {
+                            future.completeExceptionally(
+                                    new NvrException("Heatmap request failed", result.getFailure()));
+                        } else {
+                            future.complete(getContent());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+            return future;
+        }).orTimeout(FUTURE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
      * Set light on/off
      * 
      * @param lightId The light ID

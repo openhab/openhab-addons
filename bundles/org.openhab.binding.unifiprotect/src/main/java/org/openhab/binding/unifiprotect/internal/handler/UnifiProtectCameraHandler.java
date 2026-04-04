@@ -34,6 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.Event;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ApiValueEnum;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ChannelQuality;
@@ -879,6 +880,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                 CHANNEL_MOTION_UPDATE_LABEL);
         addChannel(CHANNEL_MOTION_CONTACT, CONTACT, CHANNEL_MOTION_CONTACT, channelAdd, activeChannelIds);
         addChannel(CHANNEL_MOTION_SNAPSHOT, IMAGE, CHANNEL_SNAPSHOT, channelAdd, activeChannelIds);
+        addChannel(CHANNEL_MOTION_THUMBNAIL, IMAGE, CHANNEL_MOTION_THUMBNAIL, channelAdd, activeChannelIds);
+        addChannel(CHANNEL_MOTION_HEATMAP, IMAGE, CHANNEL_MOTION_HEATMAP, channelAdd, activeChannelIds);
         addChannel(CHANNEL_MOTION_DETECTION_ENABLED, SWITCH, CHANNEL_MOTION_DETECTION_ENABLED, channelAdd,
                 activeChannelIds);
 
@@ -905,6 +908,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     activeChannelIds);
             addChannel(CHANNEL_SMART_DETECT_ZONE_SNAPSHOT, IMAGE, CHANNEL_SNAPSHOT, channelAdd, activeChannelIds,
                     CHANNEL_SMART_DETECT_ZONE_SNAPSHOT_LABEL);
+            addChannel(CHANNEL_SMART_DETECT_THUMBNAIL, IMAGE, CHANNEL_SMART_DETECT_THUMBNAIL, channelAdd,
+                    activeChannelIds);
 
             addTriggerChannel(CHANNEL_SMART_DETECT_LINE_START, CHANNEL_SMART_DETECT_LINE, channelAdd, activeChannelIds,
                     CHANNEL_SMART_DETECT_LINE_START_LABEL);
@@ -956,6 +961,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             addChannel(CHANNEL_RING_CONTACT, CONTACT, CHANNEL_RING_CONTACT, channelAdd, activeChannelIds);
             addChannel(CHANNEL_RING_SNAPSHOT, IMAGE, CHANNEL_SNAPSHOT, channelAdd, activeChannelIds,
                     CHANNEL_RING_SNAPSHOT_LABEL);
+            addChannel(CHANNEL_RING_THUMBNAIL, IMAGE, CHANNEL_RING_THUMBNAIL, channelAdd, activeChannelIds);
             addChannel(CHANNEL_DOORBELL_DEFAULT_MESSAGE, STRING, CHANNEL_DOORBELL_DEFAULT_MESSAGE, channelAdd,
                     activeChannelIds, CHANNEL_DOORBELL_DEFAULT_MESSAGE_LABEL);
             addChannel(CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT, "Number:Time",
@@ -1126,6 +1132,74 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             }
 
         }
+    }
+
+    /**
+     * Handles a private API EVENT update that may contain thumbnail/heatmap IDs.
+     * Called asynchronously from the private WebSocket thread when the NVR has generated
+     * event images (typically on "update" actions, not "add", since images are produced
+     * after the event starts).
+     */
+    public void handleEventUpdate(Event event) {
+        if (event.type == null) {
+            return;
+        }
+        String thumbnailChannel = null;
+        String heatmapChannel = null;
+        switch (event.type) {
+            case MOTION:
+                thumbnailChannel = CHANNEL_MOTION_THUMBNAIL;
+                heatmapChannel = CHANNEL_MOTION_HEATMAP;
+                break;
+            case SMART_DETECT:
+            case SMART_DETECT_LINE:
+            case SMART_AUDIO_DETECT:
+                thumbnailChannel = CHANNEL_SMART_DETECT_THUMBNAIL;
+                break;
+            case RING:
+                thumbnailChannel = CHANNEL_RING_THUMBNAIL;
+                break;
+            default:
+                return;
+        }
+
+        UniFiProtectHybridClient client = getApiClient();
+        if (client == null) {
+            return;
+        }
+
+        String thumbnailId = event.thumbnailId;
+        if (thumbnailId != null && shouldUpdateEventImage(thumbnailChannel)) {
+            final String channel = thumbnailChannel;
+            client.getPrivateClient().getThumbnail(thumbnailId).whenComplete((bytes, ex) -> {
+                if (ex != null) {
+                    logger.debug("Failed to fetch thumbnail {}", thumbnailId, ex);
+                } else if (bytes.length > 0) {
+                    updateState(channel, new RawType(bytes, "image/jpeg"));
+                }
+            });
+        }
+
+        String heatmapId = event.heatmapId;
+        if (heatmapId != null && heatmapChannel != null && shouldUpdateEventImage(heatmapChannel)) {
+            final String channel = heatmapChannel;
+            client.getPrivateClient().getHeatmap(heatmapId).whenComplete((bytes, ex) -> {
+                if (ex != null) {
+                    logger.debug("Failed to fetch heatmap {}", heatmapId, ex);
+                } else if (bytes.length > 0) {
+                    updateState(channel, new RawType(bytes, "image/png"));
+                }
+            });
+        }
+    }
+
+    // Thumbnails/heatmaps only become available AFTER the NVR processes them, so treat both
+    // BEFORE and AFTER sequences as "yes, update when available". Only NONE suppresses updates.
+    private boolean shouldUpdateEventImage(String channelId) {
+        if (!hasChannel(channelId) || !isLinked(channelId)) {
+            return false;
+        }
+        return getSnapshotSequence(channelId) != Sequence.NONE;
     }
 
     private void triggerChannel(String channelId, List<? extends ApiValueEnum> smartDetectTypes) {

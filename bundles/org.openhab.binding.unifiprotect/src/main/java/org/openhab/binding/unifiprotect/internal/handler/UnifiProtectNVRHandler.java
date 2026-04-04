@@ -41,6 +41,7 @@ import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.gson.JsonUtil;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.ApiKey;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.Bootstrap;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.Event;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.Nvr;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.types.ModelType;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.DeviceState;
@@ -661,6 +662,24 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                             logger.trace("Private API sensor real-time update for device {} (action: {})", deviceId,
                                     update.action);
                             sensorHandler.refreshFromDevice(sensor);
+                        }
+                    }
+                    break;
+                case EVENT:
+                    // Thumbnail/heatmap IDs arrive on event UPDATE messages (not add), as the NVR
+                    // generates them asynchronously after the event starts.
+                    if ("update".equals(update.action)) {
+                        Event event = gson.fromJson(update.data, Event.class);
+                        if (event != null && event.cameraId != null
+                                && (event.thumbnailId != null || event.heatmapId != null)) {
+                            UnifiProtectCameraHandler camHandler = findChildHandler(event.cameraId,
+                                    UnifiProtectCameraHandler.class);
+                            if (camHandler != null) {
+                                logger.trace(
+                                        "Private API event update with thumbnail/heatmap for camera {} (event: {})",
+                                        event.cameraId, update.id);
+                                camHandler.handleEventUpdate(event);
+                            }
                         }
                     }
                     break;
