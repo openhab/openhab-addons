@@ -191,6 +191,10 @@ class LoginAuthV2Helper {
 
         final ContentResponse response = request.send();
 
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            return false;
+        }
+
         final VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse result = VeSyncConstants.GSON
                 .fromJson(response.getContentAsString(), VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.class);
 
