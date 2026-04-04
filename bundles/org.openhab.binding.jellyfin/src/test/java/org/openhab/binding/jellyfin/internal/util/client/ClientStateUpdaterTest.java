@@ -18,11 +18,13 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemKind;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.RepeatMode;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -39,6 +41,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 class ClientStateUpdaterTest {
 
     @Test
@@ -118,5 +121,87 @@ class ClientStateUpdaterTest {
         assertEquals(UnDefType.NULL, states.get(Constants.PLAYING_ITEM_EPISODE_CHANNEL));
         assertEquals(UnDefType.NULL, states.get(Constants.PLAYING_ITEM_GENRES_CHANNEL));
         assertEquals(UnDefType.NULL, states.get(Constants.PLAYING_ITEM_TYPE_CHANNEL));
+    }
+
+    // --- Regression tests: extended media control channels (audio/subtitle/repeat) ---
+
+    /**
+     * Regression: audio-track, subtitle, and repeat channels were not updated during
+     * active sessions — only cleared when session ended. Verify they reflect PlayState.
+     */
+    @Test
+    void calculateChannelStates_activeSession_audioAndSubtitleAndRepeatPopulated() {
+        PlayerStateInfo playState = new PlayerStateInfo();
+        playState.setIsPaused(false);
+        playState.setPositionTicks(10_000_000L);
+        playState.setAudioStreamIndex(2);
+        playState.setSubtitleStreamIndex(1);
+        playState.setRepeatMode(RepeatMode.REPEAT_ALL);
+
+        BaseItemDto playingItem = new BaseItemDto();
+        playingItem.setName("Test");
+        playingItem.setRunTimeTicks(100_000_000L);
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setNowPlayingItem(playingItem);
+        session.setPlayState(playState);
+
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
+
+        assertEquals(new DecimalType(2), states.get(Constants.MEDIA_AUDIO_TRACK_CHANNEL));
+        assertEquals(new DecimalType(1), states.get(Constants.MEDIA_SUBTITLE_CHANNEL));
+        assertEquals(new StringType(RepeatMode.REPEAT_ALL.toString()), states.get(Constants.MEDIA_REPEAT_CHANNEL));
+    }
+
+    @Test
+    void calculateChannelStates_activeSession_audioSubtitleRepeatNullWhenPlayStateAbsent() {
+        BaseItemDto playingItem = new BaseItemDto();
+        playingItem.setName("Test");
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setNowPlayingItem(playingItem);
+        session.setPlayState(null);
+
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
+
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_AUDIO_TRACK_CHANNEL));
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_SUBTITLE_CHANNEL));
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_REPEAT_CHANNEL));
+    }
+
+    @Test
+    void calculateChannelStates_audioSubtitleRepeatNullIndices_producesNull() {
+        PlayerStateInfo playState = new PlayerStateInfo();
+        playState.setAudioStreamIndex(null);
+        playState.setSubtitleStreamIndex(null);
+        playState.setRepeatMode(null);
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setPlayState(playState);
+
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
+
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_AUDIO_TRACK_CHANNEL));
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_SUBTITLE_CHANNEL));
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_REPEAT_CHANNEL));
+    }
+
+    @Test
+    void calculateChannelStates_shuffleAndQualityAlwaysNull() {
+        // Shuffle and quality are write-only; they must always be NULL regardless of session data
+        PlayerStateInfo playState = new PlayerStateInfo();
+        playState.setAudioStreamIndex(1);
+
+        BaseItemDto playingItem = new BaseItemDto();
+        playingItem.setName("Test");
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setNowPlayingItem(playingItem);
+        session.setPlayState(playState);
+
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
+
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_SHUFFLE_CHANNEL));
+        assertEquals(UnDefType.NULL, states.get(Constants.MEDIA_QUALITY_CHANNEL));
     }
 }

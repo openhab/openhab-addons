@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -100,12 +101,13 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     public void initialize() {
         logger.debug("Initializing ClientHandler for thing {}", thing.getUID());
 
-        // Extract device ID from ThingUID (last segment)
-        deviceId = thing.getUID().getId();
-        if (deviceId == null || deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device ID in ThingUID");
+        String id = (String) thing.getConfiguration().get("serialNumber");
+        if (id == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Missing required configuration: serialNumber");
             return;
         }
+        deviceId = id;
 
         // Validate bridge connection
         Bridge bridge = getBridge();
@@ -127,31 +129,25 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             return;
         }
 
-        String localDeviceId = deviceId;
-        if (localDeviceId == null) {
-            logger.warn("Device ID is null, cannot subscribe to event bus");
-            return;
-        }
-
         // Subscribe to event bus for session updates
         SessionEventBus eventBus = serverHandler.getSessionEventBus();
-        eventBus.subscribe(localDeviceId, this);
-        logger.debug("ClientHandler subscribed to event bus for device ID: {}", localDeviceId);
+        eventBus.subscribe(id, this);
+        logger.debug("ClientHandler subscribed to event bus for device ID: {}", id);
 
         // Create playback extrapolator (owns its own single-thread scheduler)
-        extrapolator = new PlaybackExtrapolator(localDeviceId, this::isLinked,
+        extrapolator = new PlaybackExtrapolator(id, this::isLinked,
                 (channelId, state) -> updateState(channel(channelId), state), timeoutMonitor::recordActivity);
 
         // Create command router using the framework scheduler for delayed browse
         commandRouter = new ClientCommandRouter(serverHandler, this::getCurrentSession, scheduler);
 
         // Start session timeout monitor
-        timeoutMonitor.start(scheduler, localDeviceId, () -> {
+        timeoutMonitor.start(scheduler, id, () -> {
             synchronized (sessionLock) {
                 return currentSession != null;
             }
         }, this::onSessionTimeout);
-        logger.debug("Session timeout monitor started for device: {}", localDeviceId);
+        logger.debug("Session timeout monitor started for device: {}", id);
 
         // Client status will be determined by session updates
         updateClientState();
@@ -214,6 +210,21 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
+
+        // Reject commands if thing is not ONLINE
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.info("Cannot send {} - client {} is {}", command, deviceId, getThing().getStatus());
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            SessionInfoDto session;
+            synchronized (sessionLock) {
+                session = currentSession;
+            }
+            updateStateFromSession(session);
+            return;
+        }
 
         ClientCommandRouter router = commandRouter;
         if (router == null) {
@@ -319,10 +330,24 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
      * @param session the session to derive states from, or {@code null} to clear all channels
      */
     public synchronized void updateStateFromSession(@Nullable SessionInfoDto session) {
+        // Skip state updates if thing is not ONLINE
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.trace("Skipping state update - thing is {} for device {}", getThing().getStatus(), deviceId);
+            return;
+        }
+
         if (session == null) {
             logger.debug("Clearing client state for device {} - session is null", deviceId);
         } else {
-            logger.debug("Updating client state from session: {}", session.getId());
+            var playingItem = session.getNowPlayingItem();
+            var playState = session.getPlayState();
+            if (playingItem != null) {
+                logger.debug("Updating client state from session: {} - playing '{}' (paused={})", session.getId(),
+                        playingItem.getName(), playState != null ? playState.getIsPaused() : "n/a");
+            } else {
+                logger.debug("Updating client state from session: {} - no NowPlayingItem (positionTicks={})",
+                        session.getId(), playState != null ? playState.getPositionTicks() : "n/a");
+            }
         }
 
         Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);

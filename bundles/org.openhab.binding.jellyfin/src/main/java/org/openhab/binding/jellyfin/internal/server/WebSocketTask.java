@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.server;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -163,6 +164,10 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
             // Initialize Jetty WebSocket client
             WebSocketClient client = new WebSocketClient();
+            // Jellyfin can send large Sessions payloads (all active sessions in a single
+            // message). The default Jetty limit of 64 KiB is frequently exceeded on busy
+            // servers; raise it to 4 MiB so the connection is not killed with error 1009.
+            client.getPolicy().setMaxTextMessageSize(4 * 1024 * 1024);
             this.webSocketClient = client;
 
             // Start client and connect asynchronously
@@ -342,6 +347,31 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         // Configure session timeouts
         session.setIdleTimeout(TimeUnit.MINUTES.toMillis(5));
         logger.debug("[WEBSOCKET] Configured idle timeout: 5 minutes");
+
+        // Subscribe to real-time session updates.
+        // Without this message the Jellyfin server never pushes Sessions events;
+        // state changes would only arrive via the 60-second REST poll.
+        sendSessionsStartSubscription(session);
+    }
+
+    /**
+     * Sends the {@code SessionsStart} subscription message so the Jellyfin server
+     * begins pushing {@code Sessions} WebSocket messages whenever session state changes.
+     *
+     * <p>
+     * Format: {@code {"MessageType":"SessionsStart","Data":"<initialDelay>,<interval>"}}
+     * where both values are in milliseconds. Using {@code "0,1500"} means: deliver the
+     * first update immediately, then at most once every 1 500 ms.
+     *
+     * @param session the active Jetty WebSocket session to send through
+     */
+    private void sendSessionsStartSubscription(Session session) {
+        try {
+            session.getRemote().sendString("{\"MessageType\":\"SessionsStart\",\"Data\":\"0,1500\"}");
+            logger.info("[WEBSOCKET] ✓ Sent SessionsStart subscription (0 ms delay, 1 500 ms interval)");
+        } catch (IOException e) {
+            logger.warn("[WEBSOCKET] ⚠️ Failed to send SessionsStart subscription: {}", e.getMessage());
+        }
     }
 
     @Override
