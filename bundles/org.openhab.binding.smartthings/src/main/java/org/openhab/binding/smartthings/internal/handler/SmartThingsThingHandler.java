@@ -103,7 +103,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                         return;
                     }
                     Map<String, String> properties = this.getThing().getProperties();
-                    String deviceId = properties.get("deviceId");
+                    String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
 
                     if (deviceId != null) {
                         api.sendCommand(deviceId, jsonMsg);

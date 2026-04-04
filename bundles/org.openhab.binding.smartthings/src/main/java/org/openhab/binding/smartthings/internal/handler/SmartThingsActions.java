@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -62,7 +63,7 @@ public class SmartThingsActions implements ThingActions {
         }
 
         Map<String, String> properties = lcHandler.getThing().getProperties();
-        String deviceId = properties.get("deviceId");
+        String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
         if (deviceId == null) {
             return "Missing device id";
         }
