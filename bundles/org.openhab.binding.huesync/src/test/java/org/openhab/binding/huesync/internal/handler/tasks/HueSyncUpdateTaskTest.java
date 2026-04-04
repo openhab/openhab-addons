@@ -14,6 +14,8 @@ package org.openhab.binding.huesync.internal.handler.tasks;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -123,6 +125,59 @@ public class HueSyncUpdateTaskTest {
 
         assertThat(received.isEmpty(), is(true));
         verify(exceptionHandler).handle(any(Exception.class));
+    }
+
+    @Test
+    void runCallsActionWithNullDeviceStatus() throws Exception {
+        // getDetailedDeviceInfo() returns null — no exception, so the task still calls the consumer.
+        // handleUpdate must then detect the null field and trigger the exception handler / recovery.
+        when(connection.getDetailedDeviceInfo()).thenReturn(null);
+        when(connection.getHdmiInfo()).thenReturn(new HueSyncHdmi());
+        when(connection.getExecutionInfo()).thenReturn(new HueSyncExecution());
+
+        List<HueSyncUpdateTaskResult> received = new ArrayList<>();
+        var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
+        task.run();
+
+        assertThat(received.size(), is(1));
+        assertThat(received.get(0).deviceStatus, nullValue());
+        assertThat(received.get(0).hdmiStatus, notNullValue());
+        assertThat(received.get(0).execution, notNullValue());
+        verifyNoInteractions(exceptionHandler);
+    }
+
+    @Test
+    void runCallsActionWithNullHdmiStatus() throws Exception {
+        when(connection.getDetailedDeviceInfo()).thenReturn(new HueSyncDeviceDetailed());
+        when(connection.getHdmiInfo()).thenReturn(null);
+        when(connection.getExecutionInfo()).thenReturn(new HueSyncExecution());
+
+        List<HueSyncUpdateTaskResult> received = new ArrayList<>();
+        var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
+        task.run();
+
+        assertThat(received.size(), is(1));
+        assertThat(received.get(0).deviceStatus, notNullValue());
+        assertThat(received.get(0).hdmiStatus, nullValue());
+        assertThat(received.get(0).execution, notNullValue());
+        verifyNoInteractions(exceptionHandler);
+    }
+
+    @Test
+    void runCallsActionWithNullExecution() throws Exception {
+        when(connection.getDetailedDeviceInfo()).thenReturn(new HueSyncDeviceDetailed());
+        when(connection.getHdmiInfo()).thenReturn(new HueSyncHdmi());
+        when(connection.getExecutionInfo()).thenReturn(null);
+
+        List<HueSyncUpdateTaskResult> received = new ArrayList<>();
+        var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
+        task.run();
+
+        assertThat(received.size(), is(1));
+        assertThat(received.get(0).deviceStatus, notNullValue());
+        assertThat(received.get(0).hdmiStatus, notNullValue());
+        assertThat(received.get(0).execution, nullValue());
+        verifyNoInteractions(exceptionHandler);
     }
 
     @Test

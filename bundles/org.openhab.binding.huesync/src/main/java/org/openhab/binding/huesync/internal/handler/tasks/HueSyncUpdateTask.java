@@ -50,8 +50,8 @@ public class HueSyncUpdateTask implements Runnable {
     @Override
     public void run() {
         try {
-            this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
-                    this.deviceInfo.uniqueId);
+            this.logger.trace("Status update query for {} {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+                    this.deviceInfo.uniqueId, this.deviceInfo.uniqueId);
 
             HueSyncUpdateTaskResult updateInfo = new HueSyncUpdateTaskResult();
             updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
@@ -59,8 +59,8 @@ public class HueSyncUpdateTask implements Runnable {
             updateInfo.execution = this.connection.getExecutionInfo();
             this.action.accept(updateInfo);
         } catch (Exception e) {
-            this.logger.debug("Unable to update status for {} {}: {}", this.deviceInfo.name, this.deviceInfo.deviceType,
-                    e.getMessage());
+            this.logger.debug("Unable to update status for {} {} {}: {}", this.deviceInfo.name,
+                    this.deviceInfo.deviceType, this.deviceInfo.uniqueId, e.getMessage());
             this.exceptionHandler.handle(e);
         }
     }

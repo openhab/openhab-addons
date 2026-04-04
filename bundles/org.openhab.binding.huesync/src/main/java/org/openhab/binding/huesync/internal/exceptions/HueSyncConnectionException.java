@@ -42,7 +42,7 @@ public class HueSyncConnectionException extends HueSyncException {
 
     @Override
     public @Nullable String getLocalizedMessage() {
-        var innerMessage = Optional.ofNullable(this.innerException.getLocalizedMessage());
+        var innerMessage = Optional.ofNullable(this.innerException).map(Exception::getLocalizedMessage);
         var message = super.getLocalizedMessage();
 
         if (innerMessage.isPresent()) {

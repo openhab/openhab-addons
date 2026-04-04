@@ -86,7 +86,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     /**
      * Exception handler implementation
-     * 
+     *
      * @author Patrik Gfeller - Initial contribution
      * @author Patrik Gfeller - Issue #18062, improve connection exception handling.
      * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
@@ -240,8 +240,9 @@ public class HueSyncHandler extends BaseThingHandler {
         var execution = dto.execution;
 
         if (deviceStatus == null || hdmiStatus == null || execution == null) {
-            logger.warn("HueSync update skipped: deviceStatus={}, hdmiStatus={}, execution={}", deviceStatus,
-                    hdmiStatus, execution);
+            logger.warn("HueSync update skipped for {}: deviceStatus={}, hdmiStatus={}, execution={}",
+                    this.thing.getUID(), deviceStatus, hdmiStatus, execution);
+            this.exceptionHandler.handle(new HueSyncConnectionException("Device returned incomplete update data"));
             return;
         }
 
