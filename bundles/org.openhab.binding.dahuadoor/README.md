@@ -24,12 +24,12 @@ Devices in a different subnet or VLAN will not be found automatically and must b
 
 Single-button outdoor station.
 
-| Parameter    | Type    | Required | Default | Description                                                                  |
-| ------------ | ------- | -------- | ------- | ---------------------------------------------------------------------------- |
-| hostname     | text    | Yes      |         | Hostname or IP address of the device (e.g., 192.168.1.100)                   |
-| username     | text    | Yes      |         | Username to access the device                                                |
-| password     | text    | Yes      |         | Password to access the device                                                |
-| snapshotPath | text    | Yes      |         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
+| Parameter    | Type    | Required | Default | Description                                                                                                                                                              |
+| ------------ | ------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname     | text    | Yes      |         | Hostname or IP address of the device (e.g., 192.168.1.100)                                                                                                               |
+| username     | text    | Yes      |         | Username to access the device                                                                                                                                            |
+| password     | text    | Yes      |         | Password to access the device                                                                                                                                            |
+| snapshotPath | text    | Yes      |         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                             |
 | useHttps     | boolean | No       | false   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used. |
 
 **Note:** Windows paths are not currently supported.
@@ -43,8 +43,6 @@ If you have exported the device certificate as `ca.crt`, import it with:
 keytool -importcert -alias dahua-door -file ca.crt \
     -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit
 ```
-
-Connection errors are logged at ERROR level.
 
 ## Channels
 

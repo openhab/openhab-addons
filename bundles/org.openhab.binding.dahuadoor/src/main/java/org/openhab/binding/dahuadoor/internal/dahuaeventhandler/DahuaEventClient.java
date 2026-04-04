@@ -45,6 +45,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +125,8 @@ public class DahuaEventClient implements Runnable {
         logger.debug("Requesting snapshot from {}", host);
         try {
             return sendSnapshotRequest(SNAPSHOT_PATH);
+        } catch (DahuaHttpRedirectException e) {
+            errorInformer.accept(e.getRedirectMessage());
         } catch (Exception e) {
             logger.warn("Could not retrieve snapshot from {}", host, e);
         }
@@ -139,6 +142,8 @@ public class DahuaEventClient implements Runnable {
         try {
             String path = "/cgi-bin/accessControl.cgi?action=openDoor&UserID=101&Type=Remote&channel=" + doorNo;
             sendOpenDoorRequest(path);
+        } catch (DahuaHttpRedirectException e) {
+            errorInformer.accept(e.getRedirectMessage());
         } catch (Exception e) {
             logger.warn("Could not open door {} on {}", doorNo, host, e);
         }
@@ -162,20 +167,19 @@ public class DahuaEventClient implements Runnable {
                     socket.setSoTimeout(HTTP_TIMEOUT_MS);
                     writeHttpGet(socket.getOutputStream(), path, null, false);
                     SnapshotHttpResponse response = parseSnapshotResponse(socket.getInputStream());
-                    if (response.statusCode == 200) {
+                    if (response.statusCode == HttpStatus.OK_200) {
                         logger.debug("Snapshot OK: {} bytes from {}", response.body.length, host);
                         return response.body;
                     }
-                    if (response.statusCode == 401) {
+                    if (response.statusCode == HttpStatus.UNAUTHORIZED_401) {
                         String challenge = response.headers.get("www-authenticate");
                         if (challenge != null) {
                             digestHeader = createDigestAuthorizationHeader(challenge, path);
                         }
                     } else {
-                        if (response.statusCode == 302) {
-                            logger.error(
-                                    "Snapshot request to {} redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration",
-                                    host);
+                        if (response.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
+                            throw new DahuaHttpRedirectException("Snapshot request to " + host
+                                    + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
                             logger.warn("Snapshot request to {} failed with unexpected HTTP status {}", host,
                                     response.statusCode);
@@ -194,14 +198,13 @@ public class DahuaEventClient implements Runnable {
                         authSocket.setSoTimeout(HTTP_TIMEOUT_MS);
                         writeHttpGet(authSocket.getOutputStream(), path, digestHeader, false);
                         SnapshotHttpResponse authResponse = parseSnapshotResponse(authSocket.getInputStream());
-                        if (authResponse.statusCode == 200) {
+                        if (authResponse.statusCode == HttpStatus.OK_200) {
                             logger.debug("Snapshot OK: {} bytes from {}", authResponse.body.length, host);
                             return authResponse.body;
                         }
-                        if (authResponse.statusCode == 302) {
-                            logger.error(
-                                    "Snapshot request to {} redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration",
-                                    host);
+                        if (authResponse.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
+                            throw new DahuaHttpRedirectException("Snapshot request to " + host
+                                    + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
                             logger.warn("Authenticated snapshot request to {} failed with unexpected HTTP status {}",
                                     host, authResponse.statusCode);
@@ -211,12 +214,20 @@ public class DahuaEventClient implements Runnable {
                 }
                 logger.debug("Snapshot request failed: no Digest challenge received from {}", host);
                 return null;
-            } catch (Exception e) {
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return null;
+            } catch (IOException e) {
                 if (attempt < maxAttempts - 1) {
                     long delayMs = 750L * (1 << attempt); // 750 ms, 1.5 s
                     logger.debug("Snapshot attempt {}/{} via {} to {} failed ({}), retrying in {} ms", attempt + 1,
                             maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
-                    Thread.sleep(delayMs);
+                    try {
+                        Thread.sleep(delayMs);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return null;
+                    }
                 } else {
                     throw e;
                 }
@@ -240,20 +251,19 @@ public class DahuaEventClient implements Runnable {
                     socket.setSoTimeout(HTTP_TIMEOUT_MS);
                     writeHttpGet(socket.getOutputStream(), path, null, false);
                     OpenDoorHttpResponse response = parseOpenDoorResponse(socket.getInputStream());
-                    if (response.statusCode == 200) {
+                    if (response.statusCode == HttpStatus.OK_200) {
                         logger.debug("Open Door Success");
                         return;
                     }
-                    if (response.statusCode == 401) {
+                    if (response.statusCode == HttpStatus.UNAUTHORIZED_401) {
                         String challenge = response.wwwAuthenticate;
                         if (challenge != null) {
                             digestHeader = createDigestAuthorizationHeader(challenge, path);
                         }
                     } else {
-                        if (response.statusCode == 302) {
-                            logger.error(
-                                    "Open door request to {} redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration",
-                                    host);
+                        if (response.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
+                            throw new DahuaHttpRedirectException("Open door request to " + host
+                                    + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
                             logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
                                     response.statusCode);
@@ -269,12 +279,11 @@ public class DahuaEventClient implements Runnable {
                         authSocket.setSoTimeout(HTTP_TIMEOUT_MS);
                         writeHttpGet(authSocket.getOutputStream(), path, digestHeader, false);
                         OpenDoorHttpResponse authResponse = parseOpenDoorResponse(authSocket.getInputStream());
-                        if (authResponse.statusCode == 200) {
+                        if (authResponse.statusCode == HttpStatus.OK_200) {
                             logger.debug("Open Door Success (with authentication)");
-                        } else if (authResponse.statusCode == 302) {
-                            logger.error(
-                                    "Open door request to {} redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration",
-                                    host);
+                        } else if (authResponse.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
+                            throw new DahuaHttpRedirectException("Open door request to " + host
+                                    + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
                             logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
                                     authResponse.statusCode);
@@ -284,12 +293,20 @@ public class DahuaEventClient implements Runnable {
                 }
                 logger.debug("Open door request failed: no Digest challenge received from {}", host);
                 return;
-            } catch (Exception e) {
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                return;
+            } catch (IOException e) {
                 if (attempt < maxAttempts - 1) {
                     long delayMs = 750L * (1 << attempt); // 750 ms, 1.5 s
                     logger.debug("Open door attempt {}/{} via {} to {} failed ({}), retrying in {} ms", attempt + 1,
                             maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
-                    Thread.sleep(delayMs);
+                    try {
+                        Thread.sleep(delayMs);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
                 } else {
                     throw e;
                 }
@@ -340,8 +357,9 @@ public class DahuaEventClient implements Runnable {
 
     /**
      * Builds the BCJSSE {@link SSLSocketFactory} once at class load time.
-     * Registers BouncyCastle providers if not already present so that
-     * TLS_RSA_WITH_AES_256_GCM_SHA384 (removed from Java 21 built-in TLS) is available.
+     * Uses directly instantiated BouncyCastle provider instances with the {@link SSLContext},
+     * without registering them globally, so that TLS_RSA_WITH_AES_256_GCM_SHA384 (removed from
+     * Java 21 built-in TLS) is available.
      */
     private static SSLSocketFactory buildBcSslSocketFactory() {
         // Use our embedded BouncyCastleJsseProvider instance directly (not via the global
@@ -566,7 +584,7 @@ public class DahuaEventClient implements Runnable {
             try {
                 return Integer.parseInt(parts[1]);
             } catch (NumberFormatException e) {
-                // ignore
+                logger.trace("Could not parse HTTP status code from status line: {}", statusLine);
             }
         }
         return 0;

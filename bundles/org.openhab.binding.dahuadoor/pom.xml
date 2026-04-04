@@ -19,6 +19,7 @@
          bcprov + bctls are unpacked into the bundle (embed-dependencies).
          Without this exclusion Karaf would try to resolve them as external deps. -->
     <bnd.importpackage>!org.bouncycastle.*</bnd.importpackage>
+    <bouncycastle.version>1.83</bouncycastle.version>
   </properties>
 
   <dependencies>
@@ -28,17 +29,19 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.83</version>
+      <version>${bouncycastle.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bctls-jdk18on</artifactId>
-      <version>1.83</version>
+      <version>${bouncycastle.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcutil-jdk18on</artifactId>
-      <version>1.83</version>
+      <version>${bouncycastle.version}</version>
     </dependency>
   </dependencies>
 

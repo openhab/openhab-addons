@@ -35,18 +35,15 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
     @Override
     protected void handleInvite(JsonObject eventList, JsonObject eventData) {
         logger.debug("Event Invite from VTO2202 (single button)");
+        // VTO2202 has only one button, always use lockNumber 1
         onButtonPressed(1);
-    }
-
-    @Override
-    protected void handleVTOCall() {
     }
 
     @Override
     protected void onButtonPressed(int lockNumber) {
         logger.debug("Button pressed on VTO2202 (lockNumber ignored, single button)");
 
-        // Trigger bell button channel
+        // Trigger bell button channel synchronously (fast, no blocking)
         Channel channel = this.getThing().getChannel(DahuaDoorBindingConstants.CHANNEL_BELL_BUTTON);
         if (channel == null) {
             logger.warn("Bell button channel not found");
@@ -64,8 +61,11 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
         scheduler.submit(() -> {
             byte[] buffer = localClient.requestImage();
             if (buffer != null && buffer.length > 0) {
+                // Update image channel
                 RawType image = new RawType(buffer, "image/jpeg");
                 updateState(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, image);
+
+                // Save snapshot
                 saveSnapshot(buffer);
             } else {
                 logger.warn("Received empty or null image buffer from VTO2202");

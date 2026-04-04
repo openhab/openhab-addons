@@ -562,7 +562,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     protected void handleVTOCall() {
-        logger.debug("Event Call from VTO - subclass should override this method");
+        logger.debug("Event Call from VTO");
     }
 
     /**
