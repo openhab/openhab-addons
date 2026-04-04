@@ -106,7 +106,7 @@ Leave all values empty, they will be filled automatically.
 
 ## Supported Things
 
-This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/). 
+This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/).
 
 If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
 
