@@ -24,10 +24,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,8 +39,7 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
@@ -362,35 +362,32 @@ public class DahuaEventClient implements Runnable {
      * Java 21 built-in TLS) is available.
      */
     private static SSLSocketFactory buildBcSslSocketFactory() {
-        // Use our embedded BouncyCastleJsseProvider instance directly (not via the global
-        // Security registry). Karaf may already have a bctls bundle installed; if we looked up
-        // "BCJSSE" from Security we might get that foreign provider, whose internal classes
-        // (e.g. SSLSocketUtil) can't be loaded by our bundle's ClassLoader → NoClassDefFoundError.
-        // By passing the Provider instance to SSLContext.getInstance() we stay entirely within
-        // our embedded BC classes regardless of what other BC bundles Karaf has loaded.
+        // Use our embedded BouncyCastleJsseProvider instance directly for both the TrustManager
+        // and the SSLContext (not via the global Security registry).
+        //
+        // Why not TrustManagerFactory.getInstance(alg) / Security.getProviders() approach:
+        // - JCA provider selection uses the global registry; Karaf globally registers its own
+        // bctls bundle's BouncyCastleJsseProvider at higher priority than SunJSSE.
+        // - Using Karaf's globally-registered BCJSSE factory fails with NoClassDefFoundError
+        // (ProvTrustManagerFactorySpi is in Karaf's bundle, invisible to our classloader).
+        // - Using SunJSSE's X509TrustManagerImpl fails because BCJSSE passes authType "KE:RSA"
+        // to checkServerTrusted(); SunJSSE does not recognise that format → certificate_unknown.
+        //
+        // Solution: supply our local embedded bcjsse instance as the explicit Provider to both
+        // TrustManagerFactory.getInstance() and SSLContext.getInstance(). Class loading then
+        // goes through bcjsse's own classloader (our embedded classes), not Karaf's bundle.
+        // BCJSSE's trust manager also speaks BCJSSE's own authType format natively.
         ClassLoader savedCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(BouncyCastleJsseProvider.class.getClassLoader());
             BouncyCastleJsseProvider bcjsse = new BouncyCastleJsseProvider(new BouncyCastleProvider());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm(),
+                    bcjsse);
+            tmf.init((KeyStore) null);
             SSLContext ctx = SSLContext.getInstance("TLS", bcjsse);
-            ctx.init(null, new TrustManager[] { new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(final X509Certificate @Nullable [] chain,
-                        final @Nullable String authType) {
-                }
-
-                @Override
-                public void checkServerTrusted(final X509Certificate @Nullable [] chain,
-                        final @Nullable String authType) {
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-            } }, SECURE_RANDOM);
+            ctx.init(null, tmf.getTrustManagers(), SECURE_RANDOM);
             return ctx.getSocketFactory();
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             throw new IllegalStateException("Failed to initialize BCJSSE SSL context", e);
         } finally {
             Thread.currentThread().setContextClassLoader(savedCl);
