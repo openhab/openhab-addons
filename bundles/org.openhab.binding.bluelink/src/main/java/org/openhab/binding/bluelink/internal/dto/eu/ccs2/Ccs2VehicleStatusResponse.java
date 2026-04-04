@@ -21,6 +21,7 @@ import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.dto.IDoorStatus;
 import org.openhab.binding.bluelink.internal.dto.ITirePressureWarning;
+import org.openhab.binding.bluelink.internal.dto.IVehicleLocation;
 import org.openhab.binding.bluelink.internal.dto.SeatHeaterState;
 import org.openhab.binding.bluelink.internal.dto.TemperatureValue;
 import org.openhab.binding.bluelink.internal.dto.TirePressureWarning;
@@ -77,8 +78,8 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public DoorStatus windowOpen() {
-                var r1 = v.cabin().door().row1();
-                var r2 = v.cabin().door().row2();
+                var r1 = v.cabin().window().row1();
+                var r2 = v.cabin().window().row2();
 
                 int fl = r1.driver() != null ? r1.driver().open() : 0;
                 int fr = r1.passenger() != null ? r1.passenger().open() : 0;
@@ -250,12 +251,14 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     }
 
     // Location & Coordinates
-    public record VehicleLocation(@SerializedName("Data") String time, @SerializedName("GeoCoord") GeoCoordinates coord,
-            @SerializedName("Heading") double head, @SerializedName("Speed") ValueUnit speed) {
+    public record VehicleLocation(@SerializedName("Data") String time,
+            @SerializedName("GeoCoord") Ccs2VehicleStatusResponse.GeoCoordinates coord,
+            @SerializedName("Heading") double head,
+            @SerializedName("Speed") ValueUnit speed) implements IVehicleLocation {
     }
 
     public record GeoCoordinates(@SerializedName("Latitude") double lat, @SerializedName("Longitude") double lon,
-            @SerializedName("Altitude") double alt) {
+            @SerializedName("Altitude") double alt) implements IVehicleLocation.GeoCoordinates {
     }
 
     // Drivetrain
