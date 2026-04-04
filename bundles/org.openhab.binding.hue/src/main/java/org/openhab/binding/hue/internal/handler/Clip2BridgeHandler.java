@@ -65,7 +65,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -1037,10 +1036,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      *         message in the UI.
      */
     public String installUpdate() {
-        ThingStatusInfo info = thing.getStatusInfo();
-        if (info.getStatus() != ThingStatus.ONLINE) {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
             return translate("@text/install.update.error");
         }
+        // TODO check if update status is actually 'ready to install' before allowing this command to be executed
         try {
             cancelTask(afterUpdateTask, false);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,

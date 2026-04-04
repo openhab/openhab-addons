@@ -1704,6 +1704,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (thisResource.getType() != ResourceType.DEVICE || thing.getStatus() != ThingStatus.ONLINE) {
             return translate("@text/install.update.error");
         }
+        // TODO check if update status is actually 'ready to install' before allowing this command to be executed
         String dsuResourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
         if (dsuResourceId == null) {
             logger.error("{} -> installUpdate() no 'DEVICE_SOFTWARE_UPDATE' resource found", resourceId);
