@@ -153,6 +153,14 @@ mvn clean install -DwithResolver -DskipChecks
 
 The build generates a `.jar` file per bundle in the respective bundle `/target` directory.
 
+#### Troubleshooting
+
+When having issues with running the integration tests, try the following steps:
+
+1. Clear the bnd cache: Remove the `~/.bnd` directory.
+1. Rebuild the `bom` index: Execute `mvn clean install` in the [`bom`](bom) directory.
+1. Rebuild the `itests` index: Execute `mvn clean install -N` in the [`itests`](itests) directory.
+
 ### How to develop via an Integrated Development Environment (IDE)
 
 We have assembled some step-by-step guides for different IDEs on our developer documentation website:

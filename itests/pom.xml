@@ -18,6 +18,7 @@
 
   <modules>
     <module>org.openhab.automation.groovyscripting.tests</module>
+    <module>org.openhab.automation.jsscripting.tests</module>
     <module>org.openhab.automation.jsscriptingnashorn.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
