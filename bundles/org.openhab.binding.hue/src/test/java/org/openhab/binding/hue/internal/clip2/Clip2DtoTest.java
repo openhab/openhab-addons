@@ -21,7 +21,6 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,13 +93,6 @@ class Clip2DtoTest {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
     private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
-
-    // Resource types which do not yet have a test JSON payload available
-    public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
-    //@formatter:off
-            ResourceType.SERVICE_GROUP
-    //@formatter:on
-    );
 
     /**
      * Load the test JSON payload string from a file
@@ -679,9 +671,6 @@ class Clip2DtoTest {
     void testValidJson() {
         for (ResourceType res : ResourceType.values()) {
             if (!ResourceType.SSE_TYPES.contains(res)) {
-                if (RESOURCES_WITH_NO_JSON_TEST_CASE_YET.contains(res)) {
-                    continue;
-                }
                 try {
                     String file = res.name().toLowerCase();
                     String json = load(file);

@@ -304,4 +304,45 @@
 
 	</thing-type>
 
+	<!-- API v2 Service Group thing -->
+	<thing-type id="service-group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge-api2"/>
+		</supported-bridge-type-refs>
+
+		<label>Hue Service Group</label>
+		<description>A group of Hue API v2 sensors.</description>
+
+		<channels>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+			<channel id="light-level" typeId="illuminance">
+				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-last-updated" typeId="last-updated-v2">
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</channel>
+			<channel id="light-level-enabled" typeId="sensor-enabled">
+				<description>Light level sensor enabled.</description>
+			</channel>
+		</channels>
+
+		<representation-property>resourceId</representation-property>
+
+		<config-description>
+			<parameter name="resourceId" type="text" required="true">
+				<label>Resource ID</label>
+				<description>Unique Resource ID of the service group in the Hue bridge</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
 </thing:thing-descriptions>
