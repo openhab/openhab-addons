@@ -57,9 +57,9 @@ import org.openhab.core.util.SameThreadExecutorService;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class EnOceanESP3TransceiverTest {
 
-    private @NonNullByDefault({}) @Mock TransceiverErrorListener errorListener;
-    private @NonNullByDefault({}) @Mock SerialPortManager portManager;
-    private @NonNullByDefault({}) @Mock SerialPort port;
+    private @Mock @NonNullByDefault({}) TransceiverErrorListener errorListener;
+    private @Mock @NonNullByDefault({}) SerialPortManager portManager;
+    private @Mock @NonNullByDefault({}) SerialPort port;
     private SameThreadExecutorService scheduler = new SameThreadExecutorService();
 
     @BeforeEach
