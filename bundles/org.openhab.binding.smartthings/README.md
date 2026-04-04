@@ -97,7 +97,7 @@ Leave all values empty, they will be filled automatically.
 ![alt text](doc/Authorize08.png)
 
 1. You can go back to your Smartthings Cloud Hub / bridge.  
-    The bridge should now be online, and the appName, clientId & clientSecret filled with values.  
+    The bridge should now be online, and the appName, clientId & clientSecret filled with values.
     Note that a Smartthings Apps API_ONLY have been created during the process, and registered on your Smartthings accounts.
 
     You can now close the window, and go to the openHAB Inbox to trigger a device scan.
@@ -136,7 +136,7 @@ Discovery is supported by the SmartThings binding and is run automatically on st
 
 ### Bridge Configuration
 
-```
+```yaml
 !!! ======================================================================================!!!  
 !!! @Todo : below this part, documentation needs to be rewritten                         !!!  
 !!! ======================================================================================!!!  
@@ -220,7 +220,7 @@ Switch  OfficeLight          "Office light"    <light>                    { chan
 String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
 ```
 
-**Special note about Valves** 
+**Special note about Valves**
 SmartThings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type. Therefore, the valve item needs to be defined with an item type of String. It can be controlled in the sitemap by specifying the element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
 
 ```java
@@ -264,7 +264,7 @@ Frame label="Sengled RGBW Bulb" {
 ## References
 
 1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-2. [SmartThings API Documentation](https://developer.smartthings.com/docs/api/public)
-3. [SmartThings Capabilities Reference]()
-4. [SmartThings Developers Documentation](https://developer.smartthings.com/docs/getting-started/architecture-of-smartthings)
-5. [Python implementation](https://github.com/andrewsayre/pysmartthings)
+1. [SmartThings API Documentation](https://developer.smartthings.com/docs/api/public)
+1. [SmartThings Capabilities Reference](https://tobecheck.com/todo_check)
+1. [SmartThings Developers Documentation](https://developer.smartthings.com/docs/getting-started/architecture-of-smartthings)
+1. [Python implementation](https://github.com/andrewsayre/pysmartthings)
