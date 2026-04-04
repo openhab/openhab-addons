@@ -240,7 +240,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         }
-
     }
 
     public void refreshDeviceFromCapa(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
