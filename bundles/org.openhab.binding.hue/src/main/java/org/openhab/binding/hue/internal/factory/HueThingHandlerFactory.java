@@ -184,7 +184,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry, localeProvider,
                     i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, thingRegistry, itemChannelLinkRegistry);
+            return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, thingRegistry, itemChannelLinkRegistry,
+                    localeProvider, i18nProvider);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     stateDescriptionProvider);

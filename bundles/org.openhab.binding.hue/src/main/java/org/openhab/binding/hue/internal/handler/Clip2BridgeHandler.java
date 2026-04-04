@@ -134,7 +134,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final ThingRegistry thingRegistry;
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
-    private final TranslationProvider translationProvider;
+    private final TranslationProvider i18nProvider;
     private final Map<String, Resource> automationsCache = new ConcurrentHashMap<>();
     private final Set<String> automationScriptIds = ConcurrentHashMap.newKeySet();
     private final ChannelGroupUID automationChannelGroupUID;
@@ -164,13 +164,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int bridgeGeneration;
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
-            LocaleProvider localeProvider, TranslationProvider translationProvider) {
+            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.thingRegistry = thingRegistry;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
+        this.i18nProvider = i18nProvider;
         this.automationChannelGroupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_AUTOMATION);
     }
 
@@ -435,7 +435,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return the localized text.
      */
     public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
-        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
         return Objects.nonNull(result) ? result : key;
     }
 
@@ -871,8 +871,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateUpdateStatus() {
         try {
-            UpdateStatusV2 updateStatus = getClip2Bridge().getUpdateStatus();
-            updateUpdateStatus(updateStatus);
+            updateUpdateStatus(getClip2Bridge().getUpdateStatus());
         } catch (AssetNotLoadedException e) {
             logger.debug("updateUpdateStatus() {}", e.getMessage());
         }
@@ -886,15 +885,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (updateStatus == null) {
             return;
         }
-        // TODO check if setProperty and ThingStatusInfo do i18n themselves or if we need to do it here
-        String property = updateStatus.toString();
-        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
-        ThingStatusInfo info = thing.getStatusInfo();
-        if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
-            thing.setStatusInfo(new ThingStatusInfo(info.getStatus(), info.getStatusDetail(), description));
+        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
+        if (thing.getStatus() == ThingStatus.ONLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.NONE) {
+            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? updateStatus.getI18nKey() : null;
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
         }
-        logger.debug("Software update status changed to: {}", property);
+        logger.debug("Software update status changed to: {}", updateStatus);
     }
 
     /**
@@ -963,14 +960,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create an automation channel from an automation resource
      */
     private Channel createAutomationChannel(Resource automation) {
-        String label = Objects.requireNonNullElse(translationProvider.getText(bundle, AUTOMATION_CHANNEL_LABEL_KEY,
+        String label = Objects.requireNonNullElse(i18nProvider.getText(bundle, AUTOMATION_CHANNEL_LABEL_KEY,
                 AUTOMATION_CHANNEL_LABEL_KEY, localeProvider.getLocale(), automation.getName()),
                 AUTOMATION_CHANNEL_LABEL_KEY);
 
-        String description = Objects.requireNonNullElse(
-                translationProvider.getText(bundle, AUTOMATION_CHANNEL_DESCRIPTION_KEY,
-                        AUTOMATION_CHANNEL_DESCRIPTION_KEY, localeProvider.getLocale(), automation.getName()),
-                AUTOMATION_CHANNEL_DESCRIPTION_KEY);
+        String description = Objects
+                .requireNonNullElse(
+                        i18nProvider.getText(bundle, AUTOMATION_CHANNEL_DESCRIPTION_KEY,
+                                AUTOMATION_CHANNEL_DESCRIPTION_KEY, localeProvider.getLocale(), automation.getName()),
+                        AUTOMATION_CHANNEL_DESCRIPTION_KEY);
 
         return ChannelBuilder
                 .create(new ChannelUID(automationChannelGroupUID, automation.getId()), CoreItemFactory.SWITCH)
@@ -1041,14 +1039,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public String installUpdate() {
         ThingStatusInfo info = thing.getStatusInfo();
         if (info.getStatus() != ThingStatus.ONLINE) {
-            return "@text/install.update.error";
+            return translate("@text/install.update.error");
         }
         try {
+            cancelTask(afterUpdateTask, false);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                     "@text/update.state.installing-update");
             getClip2Bridge().installUpdate();
             afterUpdateTask = scheduler.schedule(() -> checkConnection(), UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
-            return "@text/install.update.success";
+            return translate("@text/install.update.success");
         } catch (IOException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("installUpdate() error {}", e.getMessage(), e);
@@ -1056,6 +1055,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 logger.warn("installUpdate() error {}", e.getMessage());
             }
         }
-        return "@text/install.update.error";
+        return translate("@text/install.update.error");
+    }
+
+    public String translate(String key) {
+        String result = i18nProvider.getText(bundle, key, null, localeProvider.getLocale());
+        return result != null ? result : key;
     }
 }

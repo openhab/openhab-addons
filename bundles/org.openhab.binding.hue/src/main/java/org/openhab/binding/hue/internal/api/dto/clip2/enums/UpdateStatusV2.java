@@ -32,10 +32,10 @@ public enum UpdateStatusV2 {
     INSTALLING("@text/update.state.installing-update"),
     INSTALL_FAILED("@text/update.state.update-install-failed");
 
-    private final String label;
+    private final String i18nKey;
 
-    UpdateStatusV2(String label) {
-        this.label = label;
+    UpdateStatusV2(String i18nKey) {
+        this.i18nKey = i18nKey;
     }
 
     public static @Nullable UpdateStatusV2 of(@Nullable String value) {
@@ -63,6 +63,11 @@ public enum UpdateStatusV2 {
 
     @Override
     public String toString() {
-        return label;
+        String s = this.name().replace("_", " ");
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
+    }
+
+    public String getI18nKey() {
+        return i18nKey;
     }
 }

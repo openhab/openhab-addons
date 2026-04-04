@@ -68,6 +68,8 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -103,6 +105,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +206,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
+    private final Bundle bundle;
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider i18nProvider;
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -223,7 +230,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
-            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -242,6 +250,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -623,6 +634,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         thing.getUID(), channelUID, e.getMessage());
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -666,6 +678,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }, 3, TimeUnit.SECONDS);
     }
@@ -1244,6 +1257,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -1661,16 +1675,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
         UpdateStatusV2 updateStatus = resource.getUpdateStatus();
         switch (updateStatus) {
             case INSTALLING:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
-                        "@text/update.state.installing-update");
+                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, updateStatus.getI18nKey());
                 break;
             case READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING:
-                // TODO check if setProperty and ThingStatusInfo do i18n themselves or do we need to do it here?
-                String property = updateStatus.toString();
-                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, property);
+                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, updateStatus.getI18nKey());
                 break;
             default:
+                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, null);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 break;
         }
@@ -1686,12 +1699,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     public String installUpdate() {
         if (thisResource.getType() != ResourceType.DEVICE || thing.getStatus() != ThingStatus.ONLINE) {
-            return "@text/install.update.error";
+            return translate("@text/install.update.error");
         }
         String dsuResourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
         if (dsuResourceId == null) {
             logger.error("{} -> installUpdate() no 'DEVICE_SOFTWARE_UPDATE' resource found", resourceId);
-            return "@text/install.update.error";
+            return translate("@text/install.update.error");
         }
         try {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
@@ -1703,7 +1716,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.info("{} -> installUpdate() succeeded with errors: {}", thing.getUID(),
                         String.join("; ", resources.getErrors()));
             }
-            return "@text/install.update.success";
+            return translate("@text/install.update.success");
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{} -> installUpdate() error {}", dsuResourceId, e.getMessage(), e);
@@ -1711,8 +1724,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.warn("{} -> installUpdate() error {}", dsuResourceId, e.getMessage());
             }
         } catch (InterruptedException e) {
-            // fall through
+            Thread.currentThread().interrupt();
         }
-        return "@text/install.update.error";
+        return translate("@text/install.update.error");
+    }
+
+    public String translate(String key) {
+        String result = i18nProvider.getText(bundle, key, null, localeProvider.getLocale());
+        return result != null ? result : key;
     }
 }

@@ -533,20 +533,6 @@ public class Clip2Bridge implements Closeable {
     private static final int MAX_CONCURRENT_STREAMS = 3;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
-    private static final SSLContext TRUST_ALL_SSL_CONTEXT = createTrustAllSslContext();
-
-    /**
-     * Create a permanent (static) trust all SSL context.
-     */
-    private static SSLContext createTrustAllSslContext() {
-        try {
-            SSLContext ctx = SSLContext.getInstance("TLS");
-            ctx.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            return ctx;
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to initialize SSL context", e);
-        }
-    }
 
     /**
      * Execute either a GET or a PUT HTTPS request.
@@ -585,7 +571,7 @@ public class Clip2Bridge implements Closeable {
 
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("doHTTP() {} {} {} request:'{}', response:'{}'", method, url, status, request, response);
+                LOGGER.trace("doHTTP() {} {} request:'{}', response:'{}'", method, status, request, response);
                 return response;
             }
 
@@ -612,7 +598,9 @@ public class Clip2Bridge implements Closeable {
         try {
             URL destination = new URI(url).toURL();
             connection = (HttpsURLConnection) destination.openConnection();
-            connection.setSSLSocketFactory(TRUST_ALL_SSL_CONTEXT.getSocketFactory());
+            // use instance SSL context if available, otherwise fallback to the static TRUST_ALL_CONTEXT
+            SSLContext context = (lastInstance instanceof Clip2Bridge bridge) ? bridge.hueContext : TRUST_ALL_CONTEXT;
+            connection.setSSLSocketFactory(context.getSocketFactory());
             connection.setHostnameVerifier((h, s) -> true);
             connection.setRequestMethod(method);
 
@@ -628,7 +616,7 @@ public class Clip2Bridge implements Closeable {
 
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("doHTTPS() {} {} {} request:'{}', response:'{}'", method, url, status, request, response);
+                LOGGER.trace("doHTTPS() {} {} request:'{}', response:'{}'", method, status, request, response);
                 return response;
             }
 
@@ -726,6 +714,30 @@ public class Clip2Bridge implements Closeable {
     private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     /**
+     * Static reference to the most recently created instance of this class, which allows the static
+     * doHTTPS() method to use the instance SSL context if available, otherwise fallback to the static
+     * TRUST_ALL_CONTEXT. This is necessary because the doHTTP() method is used for the initial
+     * registration call before the instance is created and the SSL context is configured, but we
+     * want to use the instance SSL context for all subsequent calls.
+     */
+    protected static volatile @Nullable Clip2Bridge lastInstance = null;
+    protected static final SSLContext TRUST_ALL_CONTEXT = createTrustAllSslContext();
+    protected final SSLContext hueContext;
+
+    /**
+     * Create a permanent (static) trust all SSL context.
+     */
+    private static SSLContext createTrustAllSslContext() {
+        try {
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
+            return ctx;
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to initialize SSL context", e);
+        }
+    }
+
+    /**
      * Constructor.
      *
      * @param httpClientFactory the OH core HttpClientFactory.
@@ -745,6 +757,7 @@ public class Clip2Bridge implements Closeable {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[] { trustManagerProvider.getTrustManager() }, null);
             sslContextFactory.setSslContext(sslContext);
+            this.hueContext = sslContext;
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new ApiException("Could not initialize Hue SSL Context", e);
         }
@@ -762,6 +775,7 @@ public class Clip2Bridge implements Closeable {
         baseUrl = String.format(FORMAT_URL_RESOURCE, hostName);
         eventUrl = String.format(FORMAT_URL_EVENTS, hostName);
         registrationUrl = String.format(FORMAT_URL_REGISTER, hostName);
+        lastInstance = this;
     }
 
     /**
@@ -1435,7 +1449,7 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Send a PUT request to trigger the bridge to check for updates.
+     * Send a PUT request to trigger the bridge to update its software.
      * 
      * @throws IOException if there was a communications error.
      */
