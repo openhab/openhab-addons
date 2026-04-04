@@ -12,12 +12,15 @@
  */
 package org.openhab.automation.jsscripting;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_DEPENDENCY_LISTENER;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
+import static org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -36,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.automation.module.script.internal.handler.ScriptActionHandler;
 
 /**
  * @author Florian Hotze - Initial contribution
@@ -44,6 +48,8 @@ import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class OpenhabGraalJSScriptEngineTest extends GraalJSOSGiTest {
+    private static final String SCRIPT_FILENAME = "itest.js";
+    private static final String RULE_UID = "itest";
     private static final String ENGINE_IDENTIFIER = "itest-engine";
 
     private @Mock @NonNullByDefault({}) ScriptExtensionAccessor scriptExtensionAccessor;
@@ -78,8 +84,21 @@ public class OpenhabGraalJSScriptEngineTest extends GraalJSOSGiTest {
         super.afterEach();
     }
 
+    private void setFileContext() {
+        ScriptContext context = scriptEngine.getContext();
+        context.setAttribute("javax.script.filename", SCRIPT_FILENAME, ScriptContext.ENGINE_SCOPE);
+    }
+
+    private void setScriptActionContext() {
+        ScriptContext context = scriptEngine.getContext();
+        context.setAttribute(CONTEXT_KEY_MODULE_TYPE_ID, ScriptActionHandler.TYPE_ID, ScriptContext.ENGINE_SCOPE);
+        context.setAttribute("ruleUID", RULE_UID, ScriptContext.ENGINE_SCOPE);
+    }
+
     @Test
     public void evaluatesBasicExpressions() throws ScriptException {
+        setFileContext();
+
         // Boolean
         assertTrue((Boolean) scriptEngine.eval("(false && true) || true"));
         assertFalse((Boolean) scriptEngine.eval("(true || false) && false"));
@@ -89,5 +108,57 @@ public class OpenhabGraalJSScriptEngineTest extends GraalJSOSGiTest {
         // Comparisons
         assertTrue((Boolean) scriptEngine.eval("'apple' !== 'orange'"));
         assertTrue((Boolean) scriptEngine.eval("10 >= 10"));
+    }
+
+    @Test
+    public void loadsOpenhabJsLibrary() {
+        setFileContext();
+
+        String script = """
+                const { utils } = require('openhab');
+                if (!utils.OPENHAB_JS_VERSION) {
+                  throw new Error('OPENHAB_JS_VERSION is undefined/null');
+                }
+                """;
+        assertDoesNotThrow(() -> scriptEngine.eval(script));
+    }
+
+    @Test
+    public void throwsOnScriptLoadingInvalidLibrary() {
+        setFileContext();
+
+        String script = "const { foo } = require('bar');";
+        assertThrows(ScriptException.class, () -> scriptEngine.eval(script));
+    }
+
+    @Test
+    public void throwsScriptExceptionOnJsError() {
+        setFileContext();
+
+        String script = "throw new Error('JS Error');";
+        assertThrows(ScriptException.class, () -> scriptEngine.eval(script));
+    }
+
+    @Test
+    public void wrapperAllowsForLetConstInScriptActions() {
+        setScriptActionContext();
+
+        String script = """
+                        const foo = 'Hello';
+                        const bar = 'World';
+                        const result = `${foo} ${bar}`;
+                """;
+
+        // if let/const are allowed in script actions, we can execute scripts containing let/const more than once
+        assertDoesNotThrow(() -> scriptEngine.eval(script));
+        assertDoesNotThrow(() -> scriptEngine.eval(script));
+    }
+
+    @Test
+    public void wrapperAllowsForReturnInScriptActions() {
+        setScriptActionContext();
+
+        String script = "return true;";
+        assertDoesNotThrow(() -> scriptEngine.eval(script));
     }
 }
