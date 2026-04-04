@@ -43,6 +43,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
+import org.openhab.binding.bluelink.internal.dto.IVehicleLocation;
 import org.openhab.binding.bluelink.internal.dto.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.AirTemperature;
 import org.openhab.binding.bluelink.internal.dto.eu.BaseResponse;
@@ -279,6 +280,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             addStandardHeaders(request);
             addAuthHeaders(request);
 
+            IVehicleLocation location;
             if (ccs2Protocol) {
                 addCcs2Headers(request);
                 final BaseResponse<Ccs2VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
@@ -288,13 +290,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                     return false;
                 }
                 final var state = result.state().vehicle();
-
-                final var location = state.location();
-                if (location != null && location.coord() != null) {
-                    final var coord = location.coord();
-                    cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
-                            new DecimalType(coord.alt())));
-                }
+                location = state.location();
 
                 final var drivetrain = state.drivetrain();
                 if (drivetrain == null) {
@@ -325,12 +321,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 }
 
                 final VehicleStatusInfo statusInfo = result.vehicleStatusInfo();
-                final var location = statusInfo.vehicleLocation();
-                if (location != null && location.coord() != null) {
-                    final var coord = location.coord();
-                    cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
-                            new DecimalType(coord.alt())));
-                }
+                location = statusInfo.vehicleLocation();
 
                 final DrivingRange odometer = statusInfo.odometer();
                 if (odometer != null) {
@@ -343,6 +334,12 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 }
 
                 data = statusInfo.vehicleStatus();
+            }
+
+            if (location != null && location.coord() != null) {
+                final var coord = location.coord();
+                cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
+                        new DecimalType(coord.alt())));
             }
         }
 
@@ -531,7 +528,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
      * @return true on success
      * @throws BluelinkApiException
      */
-    private boolean sendChargeLimitRequest(final IVehicle vehicle, PlugType plugType, int limit)
+    private boolean sendChargeLimitRequest(final IVehicle vehicle, final PlugType plugType, final int limit)
             throws BluelinkApiException {
         ensureAuthenticated();
 
