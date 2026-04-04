@@ -64,7 +64,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
             }
             if (INTERCOM_KINDS.contains(kind)) {
                 openDoorSupport = true;
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_OPENDOOR);
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_CONTROL_OPENDOOR);
                 Channel channel = thing.getChannel(channelUID);
                 if (channel == null) {
                     logger.debug("Adding channel for opendoor, on device {}", getThing().getUID());
@@ -83,7 +83,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         if (RefreshType.REFRESH == command) {
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_STATUS_OPENDOOR)) {
+        if (channelUID.getId().equals(CHANNEL_CONTROL_OPENDOOR)) {
             if (command instanceof OnOffType onOffCommand) {
                 if (onOffCommand == OnOffType.ON) {
                     openDoorCommand();
