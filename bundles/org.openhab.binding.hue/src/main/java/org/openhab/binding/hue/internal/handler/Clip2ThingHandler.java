@@ -231,6 +231,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             thisResource = new Resource(ResourceType.ROOM);
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ZONE);
+        } else if (THING_TYPE_SERVICE_GROUP.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.SERVICE_GROUP);
         } else if (THING_TYPE_AREA.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.MOTION_AREA_CONFIGURATION);
         } else {

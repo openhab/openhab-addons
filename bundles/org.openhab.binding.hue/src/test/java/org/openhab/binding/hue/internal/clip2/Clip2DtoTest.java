@@ -1023,4 +1023,23 @@ class Clip2DtoTest {
         assertNotNull(soundValues);
         assertEquals(12, soundValues.size());
     }
+
+    @Test
+    void testServiceGroup() {
+        String json = load(ResourceType.SERVICE_GROUP.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SERVICE_GROUP, item.getType());
+        assertEquals("Sensor group", item.getName());
+        List<ResourceReference> services = item.getServiceReferences();
+        assertNotNull(services);
+        assertEquals(2, services.size());
+        List<ResourceReference> children = item.getChildren();
+        assertNotNull(children);
+        assertEquals(4, children.size());
+    }
 }
