@@ -60,7 +60,6 @@ public class CallbackMock implements ThingHandlerCallback {
     volatile ThingStatusInfo currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     public CallbackMock() {
-        super();
     }
 
     public void clear() {
@@ -70,7 +69,6 @@ public class CallbackMock implements ThingHandlerCallback {
     }
 
     public CallbackMock(String name) {
-        super();
         this.name = name;
     }
 

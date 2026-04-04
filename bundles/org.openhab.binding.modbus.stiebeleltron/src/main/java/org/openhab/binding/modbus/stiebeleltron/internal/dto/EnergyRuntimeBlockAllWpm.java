@@ -66,7 +66,6 @@ public class EnergyRuntimeBlockAllWpm extends EnergyBlock {
     public HeatPumpEnergyRuntimeInfo[] heatPumps;
 
     public EnergyRuntimeBlockAllWpm(int heatpumpCount) {
-        super();
         this.heatPumps = new HeatPumpEnergyRuntimeInfo[heatpumpCount];
         for (int i = 0; i < heatpumpCount; i++) {
             this.heatPumps[i] = new HeatPumpEnergyRuntimeInfo();

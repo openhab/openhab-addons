@@ -147,6 +147,7 @@
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
+    <module>org.openhab.binding.energyforecast</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enphase</module>
@@ -452,6 +453,7 @@
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.unifiaccess</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.unifiprotect</module>
     <module>org.openhab.binding.upnpcontrol</module>

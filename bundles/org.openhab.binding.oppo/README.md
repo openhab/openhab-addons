@@ -99,7 +99,7 @@ The following channels are available:
 | time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                                             |
 | current_title     | Number      | The current title or track number playing (ReadOnly)                                                                                  |
 | total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                                           |
-| current_chapter   | Number      | The current chapter number (ReadOnly)                                                                                                  |
+| current_chapter   | Number      | The current chapter number (ReadOnly)                                                                                                 |
 | total_chapter     | Number      | The total number of chapters in the current title (ReadOnly)                                                                          |
 | repeat_mode       | String      | Sets the current repeat mode (00-06)                                                                                                  |
 | zoom_mode         | String      | Sets the current zoom mode (00-12)                                                                                                    |

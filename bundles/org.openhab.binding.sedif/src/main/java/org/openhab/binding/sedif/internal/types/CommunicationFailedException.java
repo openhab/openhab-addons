@@ -24,7 +24,6 @@ public class CommunicationFailedException extends SedifException {
     private static final long serialVersionUID = 3703839284673384018L;
 
     public CommunicationFailedException() {
-        super();
     }
 
     public CommunicationFailedException(String message) {
