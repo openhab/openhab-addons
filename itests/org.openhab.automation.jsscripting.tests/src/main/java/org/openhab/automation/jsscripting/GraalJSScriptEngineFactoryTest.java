@@ -15,13 +15,19 @@ package org.openhab.automation.jsscripting;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -29,6 +35,8 @@ import org.mockito.quality.Strictness;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.core.service.WatchService;
 import org.openhab.core.test.java.JavaOSGiTest;
 
 /**
@@ -41,13 +49,20 @@ public class GraalJSScriptEngineFactoryTest extends JavaOSGiTest {
 
     private final Map<String, Object> config = Map.of();
 
-    private @Mock @NonNullByDefault({}) JSScriptServiceUtil jsScriptServiceUtil;
-    private @Mock @NonNullByDefault({}) JSDependencyTracker jsDependencyTracker;
+    private @TempDir @NonNullByDefault({}) Path tempDir;
 
+    private @Mock @NonNullByDefault({}) WatchService watchService;
+    private @Mock @NonNullByDefault({}) JSScriptServiceUtil jsScriptServiceUtil;
+
+    private @NonNullByDefault({}) JSDependencyTracker jsDependencyTracker;
     private @NonNullByDefault({}) GraalJSScriptEngineFactory scriptEngineFactory;
 
     @BeforeEach
     public void beforeEach() {
+        when(watchService.getWatchPath()).thenReturn(tempDir);
+
+        jsDependencyTracker = new JSDependencyTracker(watchService);
+
         scriptEngineFactory = new GraalJSScriptEngineFactory(jsScriptServiceUtil, jsDependencyTracker, config);
     }
 
@@ -55,10 +70,36 @@ public class GraalJSScriptEngineFactoryTest extends JavaOSGiTest {
     public void afterEach() {
         scriptEngineFactory.dispose();
         scriptEngineFactory = null;
+
+        jsDependencyTracker.deactivate();
+        jsDependencyTracker = null;
+
+        clearInvocations(watchService);
     }
 
     @Test
-    public void registerScriptTypeForJs() {
-        assertTrue(scriptEngineFactory.getScriptTypes().contains("application/javascript"));
+    public void registersScriptTypeForJs() {
+        final List<String> scriptTypes = scriptEngineFactory.getScriptTypes();
+
+        assertTrue(scriptTypes.contains("application/javascript"));
+        assertTrue(scriptTypes.contains("js"));
+
+        assertFalse(scriptTypes.contains("application/x-python3"));
+        assertFalse(scriptTypes.contains("application/javascript;version=ECMAScript-5.1"));
+    }
+
+    @Test
+    public void createsScriptEngineForJs() {
+        final @Nullable ScriptEngine scriptEngine = scriptEngineFactory.createScriptEngine("application/javascript");
+        assertNotNull(scriptEngine);
+        assertInstanceOf(InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable.class,
+                scriptEngine);
+    }
+
+    @Test
+    public void doesNotCreateScriptEngineForOtherLanguages() {
+        final @Nullable ScriptEngine scriptEngine = scriptEngineFactory
+                .createScriptEngine("application/javascript;version=ECMAScript-5.1");
+        assertNull(scriptEngine);
     }
 }
