@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.RepeatMode;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -119,6 +120,29 @@ public final class ClientStateUpdater {
         } else {
             states.put(Constants.PLAYING_ITEM_TYPE_CHANNEL, UnDefType.NULL);
         }
+
+        // Extended media control channels readable from PlayState
+        if (playState != null) {
+            Integer audioStreamIndex = playState.getAudioStreamIndex();
+            states.put(Constants.MEDIA_AUDIO_TRACK_CHANNEL,
+                    audioStreamIndex != null ? new DecimalType(audioStreamIndex) : UnDefType.NULL);
+
+            Integer subtitleStreamIndex = playState.getSubtitleStreamIndex();
+            states.put(Constants.MEDIA_SUBTITLE_CHANNEL,
+                    subtitleStreamIndex != null ? new DecimalType(subtitleStreamIndex) : UnDefType.NULL);
+
+            RepeatMode repeatMode = playState.getRepeatMode();
+            states.put(Constants.MEDIA_REPEAT_CHANNEL,
+                    repeatMode != null ? new StringType(repeatMode.toString()) : UnDefType.NULL);
+        } else {
+            states.put(Constants.MEDIA_AUDIO_TRACK_CHANNEL, UnDefType.NULL);
+            states.put(Constants.MEDIA_SUBTITLE_CHANNEL, UnDefType.NULL);
+            states.put(Constants.MEDIA_REPEAT_CHANNEL, UnDefType.NULL);
+        }
+        // Shuffle and quality are write-only (not exposed in Jellyfin session data)
+        states.put(Constants.MEDIA_SHUFFLE_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_QUALITY_CHANNEL, UnDefType.NULL);
+        states.put(Constants.MEDIA_STOP_CHANNEL, UnDefType.NULL);
 
         return states;
     }

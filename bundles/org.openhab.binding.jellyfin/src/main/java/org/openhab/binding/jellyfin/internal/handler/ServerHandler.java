@@ -64,7 +64,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -695,9 +694,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                     this.apiClient.authenticateWithToken(this.configuration.token);
                 } else if (initialState == ServerState.DISCOVERED || initialState == ServerState.NEEDS_AUTHENTICATION) {
                     // No token, set offline with configuration error
-                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
-                            ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.configuration.no-access-token");
-                    this.getThing().setStatusInfo(statusInfo);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/error.configuration.no-access-token");
                 }
                 // No specific authentication action for other states
 
@@ -722,8 +720,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             setState(ServerState.CONNECTED);
 
             // Set thing status to online
-            ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
-            this.getThing().setStatusInfo(statusInfo);
+            updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
             logger.warn("Failed to process system information: {}", e.getMessage(), e);
@@ -769,12 +766,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
             // Update session manager, which will publish events
             sessionManager.updateSessions(newSessions);
-
-            // Trigger client discovery after updating the client list
-            ClientDiscoveryService service = discoveryService;
-            if (service != null) {
-                service.discoverClients();
-            }
         } catch (Exception e) {
             logger.warn("Failed to update client list: {}", e.getMessage(), e);
         }

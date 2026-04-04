@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.util.session;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 
 /**
@@ -221,6 +223,98 @@ class SessionManagerTest {
         session.setId(sessionId);
         session.setDeviceId(deviceId);
         return session;
+    }
+
+    private SessionInfoDto createSessionWithPlayback(String sessionId, String deviceId) {
+        SessionInfoDto session = createSession(sessionId, deviceId);
+        BaseItemDto playingItem = new BaseItemDto();
+        playingItem.setName("Test Song");
+        session.setNowPlayingItem(playingItem);
+        return session;
+    }
+
+    // --- Regression tests: prefix-related device ID merging (issue #17674) ---
+
+    /**
+     * Regression: Jellyfin Android creates two sessions for one device — a short background-service
+     * device ID (prefix of the full device ID) and the full device ID for the main UI session.
+     * When the short-ID session carries NowPlayingItem but the long-ID session does not,
+     * the ClientHandler (subscribed to the long ID) must receive the playing session.
+     */
+    @Test
+    void updateSessions_prefixDeviceId_playingSessionPromotedToCanonicalId() {
+        String shortId = "93dbb268d5ccc56d";
+        String longId = "93dbb268d5ccc56dd700fbdb6af146b3b3c70644e708ad24";
+
+        eventBus.subscribe(longId, session -> receivedUpdates.add(new SessionUpdateRecord(longId, session)));
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put("session-short", createSessionWithPlayback("session-short", shortId));
+        sessions.put("session-long", createSession("session-long", longId)); // no NowPlayingItem
+        sessionManager.updateSessions(sessions);
+
+        // The long-ID listener must have been invoked exactly once with NowPlayingItem present
+        assertEquals(1, receivedUpdates.size());
+        assertEquals(longId, receivedUpdates.get(0).deviceId());
+        assertNotNull(receivedUpdates.get(0).session());
+        assertNotNull(receivedUpdates.get(0).session().getNowPlayingItem(),
+                "NowPlayingItem must be promoted from the prefix session to the canonical ID");
+    }
+
+    @Test
+    void updateSessions_prefixDeviceId_shortIdNotDispatchedSeparately() {
+        String shortId = "93dbb268d5ccc56d";
+        String longId = "93dbb268d5ccc56dd700fbdb6af146b3b3c70644e708ad24";
+
+        List<String> shortIdReceived = new ArrayList<>();
+        eventBus.subscribe(shortId, session -> shortIdReceived.add(shortId));
+        eventBus.subscribe(longId, session -> receivedUpdates.add(new SessionUpdateRecord(longId, session)));
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put("session-short", createSessionWithPlayback("session-short", shortId));
+        sessions.put("session-long", createSession("session-long", longId));
+        sessionManager.updateSessions(sessions);
+
+        // Short ID must not be dispatched separately when a canonical (longer) ID exists
+        assertTrue(shortIdReceived.isEmpty(),
+                "Short prefix ID must not be dispatched separately when a canonical long ID is present");
+    }
+
+    @Test
+    void updateSessions_prefixDeviceId_longIdAlreadyPlayingNotOverwritten() {
+        String shortId = "93dbb268d5ccc56d";
+        String longId = "93dbb268d5ccc56dd700fbdb6af146b3b3c70644e708ad24";
+
+        eventBus.subscribe(longId, session -> receivedUpdates.add(new SessionUpdateRecord(longId, session)));
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        // Both have NowPlayingItem — long-ID session data must not be replaced
+        sessions.put("session-short", createSessionWithPlayback("session-short", shortId));
+        sessions.put("session-long", createSessionWithPlayback("session-long", longId));
+        sessionManager.updateSessions(sessions);
+
+        assertEquals(1, receivedUpdates.size());
+        assertEquals(longId, receivedUpdates.get(0).deviceId());
+        // The received session must be the original long-ID session (session-long), not the short one
+        assertEquals("session-long", receivedUpdates.get(0).session().getId());
+    }
+
+    @Test
+    void updateSessions_unrelatedDeviceIds_dispatchedIndependently() {
+        String idA = "device-a-123";
+        String idB = "device-b-456";
+
+        eventBus.subscribe(idA, session -> receivedUpdates.add(new SessionUpdateRecord(idA, session)));
+        eventBus.subscribe(idB, session -> receivedUpdates.add(new SessionUpdateRecord(idB, session)));
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put("session-a", createSessionWithPlayback("session-a", idA));
+        sessions.put("session-b", createSession("session-b", idB));
+        sessionManager.updateSessions(sessions);
+
+        assertEquals(2, receivedUpdates.size());
+        assertTrue(receivedUpdates.stream().anyMatch(r -> idA.equals(r.deviceId())));
+        assertTrue(receivedUpdates.stream().anyMatch(r -> idB.equals(r.deviceId())));
     }
 
     /**
