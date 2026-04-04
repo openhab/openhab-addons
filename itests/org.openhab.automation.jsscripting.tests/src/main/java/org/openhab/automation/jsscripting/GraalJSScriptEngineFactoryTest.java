@@ -22,17 +22,11 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 
 /**
  * @author Florian Hotze - Initial contribution
  */
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class GraalJSScriptEngineFactoryTest extends GraalJSOSGiTest {
 
@@ -57,8 +51,12 @@ public class GraalJSScriptEngineFactoryTest extends GraalJSOSGiTest {
 
     @Test
     public void doesNotCreateScriptEngineForOtherLanguages() {
-        final @Nullable ScriptEngine scriptEngine = scriptEngineFactory
+        @Nullable
+        ScriptEngine scriptEngine = scriptEngineFactory
                 .createScriptEngine("application/javascript;version=ECMAScript-5.1");
+        assertNull(scriptEngine);
+
+        scriptEngine = scriptEngineFactory.createScriptEngine("application/x-python3");
         assertNull(scriptEngine);
     }
 }
