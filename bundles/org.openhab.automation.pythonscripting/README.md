@@ -117,6 +117,19 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 # For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.
 #
 #org.openhab.automation.pythonscripting:jythonEmulation = false
+
+# Enable debugger
+#
+# Enables Chrome Debugger support for Python Script. This allows to attach any debugger compatible with the 
+# <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
+#
+#org.openhab.automation.pythonscripting:debuggerEnabled = false
+
+# Debugger port
+#
+# The port to bind the debugger to.
+#
+#org.openhab.automation.pythonscripting:debuggerPort = 9229
 ```
 
 ### Console
