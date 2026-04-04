@@ -164,6 +164,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                     continue;
                 }
 
+                if (shouldIgnoreProperty(key, attr)) {
+                    continue;
+                }
+
                 if (SmartThingsPropMappings.isProperties(capa.id)) {
                     continue;
                 }
@@ -204,6 +208,26 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 logger.warn("Unable to register ChannelTypes for capability '{}'", key, ex);
             }
         }
+    }
+
+    private boolean shouldIgnoreProperty(String key, @Nullable SmartThingsAttribute attr) {
+        if (attr == null) {
+            return true;
+        }
+
+        // this sort of Attribute contains the enumeration of possible state / actions
+        // they are redondant with companion channels that already contains the information in their schema
+        // just ignore them
+        if (key.startsWith("supported") || key.startsWith("available")) {
+            SmartThingsProperty prop = attr.schema.properties.get("value");
+            if (prop != null) {
+                if (prop.type.equals("array")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private String getChannelTypeName(SmartThingsCapability capa, String key, String subKey) {
@@ -473,6 +497,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             if (attr == null) {
                 continue;
             }
+            if (shouldIgnoreProperty(attrKey, attr)) {
+                continue;
+            }
+
             SmartThingsSchema schema = attr.schema;
             Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
 
