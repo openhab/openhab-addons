@@ -9,8 +9,9 @@ mkdocs.yml
 /.apt_generated_tests/
 # Temporary (wip)
 .vscode
+.agents
 .directory
-.github
-.copilot/temp
 .editorconfig
-project-type.txt
+.env
+
+AGENTS.md
