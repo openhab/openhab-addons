@@ -83,11 +83,13 @@ public class OtherDeviceHandler extends RingDeviceHandler {
         if (RefreshType.REFRESH == command) {
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_CONTROL_OPENDOOR)) {
-            if (command instanceof OnOffType onOffCommand) {
-                if (onOffCommand == OnOffType.ON) {
-                    openDoorCommand();
-                    updateState(channelUID, OnOffType.OFF);
+        if (openDoorSupport) {
+            if (channelUID.getId().equals(CHANNEL_CONTROL_OPENDOOR)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand == OnOffType.ON) {
+                        openDoorCommand();
+                        updateState(channelUID, OnOffType.OFF);
+                    }
                 }
             }
         }
@@ -105,16 +107,18 @@ public class OtherDeviceHandler extends RingDeviceHandler {
             initialize();
         }
 
-        RingDeviceTO deviceTO = device.getDeviceStatus();
-        if (deviceTO.health.batteryPercentage != lastBattery) {
-            logger.debug("Battery Level: {}", deviceTO.health.batteryPercentage);
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-            updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
-            lastBattery = deviceTO.health.batteryPercentage;
-        } else {
-            logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
-                    deviceTO.health.batteryPercentage, lastBattery);
+        if (batterySupport) {
+            RingDeviceTO deviceTO = device.getDeviceStatus();
+            if (deviceTO.health.batteryPercentage != lastBattery) {
+                logger.debug("Battery Level: {}", deviceTO.health.batteryPercentage);
+                ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
+                updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
+                lastBattery = deviceTO.health.batteryPercentage;
+            } else {
+                logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
+                        deviceTO.health.batteryPercentage, lastBattery);
 
+            }
         }
     }
 

@@ -282,7 +282,7 @@
 	</channel-type>
 	<channel-type id="opendoor">
 		<item-type>Switch</item-type>
-		<label>Open Soor</label>
+		<label>Open Door</label>
 		<description>Open Door linked to Intercom</description>
 		<tags>
 			<tag>Switch</tag>

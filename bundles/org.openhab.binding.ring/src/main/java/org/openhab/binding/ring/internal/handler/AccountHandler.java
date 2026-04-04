@@ -615,7 +615,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public void sendCommand(String url, String payload) {
         try {
-            logger.debug("sending url {} with payload {} to Ring API", url, payload);
+            logger.trace("sending url {} with payload {} to Ring API", url, payload);
             restClient.sendCommand(url, payload, tokens);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
