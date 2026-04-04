@@ -16,7 +16,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResult;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -54,17 +54,21 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @ExtendWith(MockitoExtension.class)
 public class HueSyncHandlerTest {
 
+    @Mock
     private Thing thing;
+
+    @Mock
     private HttpClientFactory httpClientFactory;
+
+    @Mock
     private ThingHandlerCallback callback;
     private HueSyncHandler handler;
 
+    @Mock
+    private ScheduledExecutorService mockScheduler;
+
     @BeforeEach
     void setup() {
-        thing = mock(Thing.class);
-        httpClientFactory = mock(HttpClientFactory.class);
-        callback = mock(ThingHandlerCallback.class);
-
         handler = new HueSyncHandler(thing, httpClientFactory);
         handler.setCallback(callback);
     }
@@ -97,7 +101,7 @@ public class HueSyncHandlerTest {
     @DisplayName("handleUpdate with null DTO fields should set thing OFFLINE and trigger recovery")
     void handleUpdateWithNullDtoFieldsSetsThingOffline() throws Exception {
         // Arrange: inject a mock scheduler so exceptionHandler.handle() can call scheduler.execute()
-        ScheduledExecutorService mockScheduler = mock(ScheduledExecutorService.class);
+        ScheduledExecutorService mockScheduler = this.mockScheduler;
         Field schedulerField = BaseThingHandler.class.getDeclaredField("scheduler");
         schedulerField.setAccessible(true);
         schedulerField.set(handler, mockScheduler);
