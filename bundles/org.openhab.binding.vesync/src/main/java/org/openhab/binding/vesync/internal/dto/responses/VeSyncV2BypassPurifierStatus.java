@@ -71,7 +71,7 @@ public class VeSyncV2BypassPurifierStatus extends VeSyncResponse {
                 @SerializedName("auto_preference")
                 public AirPurifierConfigAutoPref autoPreference;
 
-                public class AirPurifierConfigAutoPref {
+                public static class AirPurifierConfigAutoPref {
                     @SerializedName("type")
                     public String autoType;
 

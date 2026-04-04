@@ -33,12 +33,12 @@ public class VeSyncV2BypassEnergyHistory extends VeSyncResponse {
         @SerializedName("result")
         public Result result = new Result();
 
-        public class Result {
+        public static class Result {
 
             @SerializedName("energyInfos")
             public List<EnergyInfo> energyInfos = new ArrayList<EnergyInfo>();
 
-            public class EnergyInfo {
+            public static class EnergyInfo {
 
                 @SerializedName("timestamp")
                 public long timestamp = 0;
