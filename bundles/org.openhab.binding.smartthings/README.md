@@ -26,7 +26,7 @@ The new actual version can use 3 different mechanism to handle device events.
 
 - Callback subscriptions : will be the prefered fallback method if SSE it not working.
     This will need to have an external openhab exposed URL to internet.
-    The addons will register automatically something has https://openhab.yourdomain/smartthings/cb.
+    The addons will register automatically something has <https://openhab.yourdomain/smartthings/cb>.
 
 - Event pooling : this is the last method if none other method are working.
   The addons will pool the events every 10s for every device.
@@ -41,7 +41,6 @@ All setup occurs directly inside openHAB.
 You will see appName, clientId, clientSecret settings in the Smartthings Bridge configuration.  
 Leave this value empty, they will be filled automatically on first setup.
 
-
 Note! you will no longer need to have openHAB Cloud setup have in previous version.
 
 To do the registration, follow these steps:
@@ -53,55 +52,51 @@ To do the registration, follow these steps:
 
 Leave all values empty, they will be filled automatically.
 
-2. Browse to the URL: https://oh.yourdomain/smartthings
+1. Browse to the URL: <https://oh.yourdomain/smartthings>
    You should see a page like this one:
 
 ![alt text](doc/Authorize01.png)
 
-3. Click on the Authorize Bridge button.  
+1. Click on the Authorize Bridge button.  
     You will be redirected to the following page on SmartThings.  
     If you are already logged in, go directly to Step 5.  
     If not, fill your email, and click on Next.  
 
 ![alt text](doc/Authorize02.png)
 
-4. Fill your password, and click Connect.
+1. Fill your password, and click Connect.
 
 ![alt text](doc/Authorize03.png)
 
-
-5. On this step, SmartThings should display a page like this one with an Authorize button.  
+1. On this step, SmartThings should display a page like this one with an Authorize button.  
     It will enable OpenHAB to authenticate to smartthings using smartthings-cli credentials.  
     Click on it.  
 
 ![alt text](doc/Authorize04.png)
 
-6. You will be next redirected on OpenHab side with a page like this one.  
+1. You will be next redirected on OpenHab side with a page like this one.  
    Just wait a few seconds, the process should continue automatically on step 7.
 
 ![alt text](doc/Authorize05.png)
 
-
-7. On this step, SmartThings should display a page like this one with a combo box to select your location.  
+1. On this step, SmartThings should display a page like this one with a combo box to select your location.  
     First select your location.  
 
 ![alt text](doc/Authorize06.png)
 
-8. After this, SmartThings will display the authorization selection.  
+1. After this, SmartThings will display the authorization selection.  
     Keep all checkboxes on, and click "Authorize".  
-
 
 ![alt text](doc/Authorize07.png)
 
-9. On this last step, your browser should be redirected to OpenHAB.  
+1. On this last step, your browser should be redirected to OpenHAB.  
     The page will display a confirmation with the selected location, and the number of devices found in the location.
 
     You can now close the window, and go to the openHAB Inbox to trigger a device scan.
 
 ![alt text](doc/Authorize08.png)
 
-
-10. You can go back to your Smartthings Cloud Hub / bridge.  
+1. You can go back to your Smartthings Cloud Hub / bridge.  
     The bridge should now be online, and the appName, clientId & clientSecret filled with values.  
     Note that a Smartthings Apps API_ONLY have been created during the process, and registered on your Smartthings accounts.
 
@@ -109,15 +104,11 @@ Leave all values empty, they will be filled automatically.
 
 ![alt text](doc/Authorize09.png)
 
-
-
 ## Supported Things
 
 This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/). 
 
 If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
-
-
 
 ## Discovery
 
@@ -127,24 +118,21 @@ Discovery will allow you to automatically fill the Inbox with your SmartThings d
 
 ![alt text](doc/Scan01.png)
 
-2. Select your binding.
+1. Select your binding.
 
 ![alt text](doc/Scan02.png)
 
-3. Select your binding.
+1. Select your binding.
 
 ![alt text](doc/Scan03.png)
 
-4. Click on the "Scan" button.
+1. Click on the "Scan" button.
     Your devices should appear after a few seconds.
 
 ![alt text](doc/Scan04.png)
 
-
 This allows openHAB to examine a binding and automatically find the Things available on that binding.
 Discovery is supported by the SmartThings binding and is run automatically on startup.
-
-
 
 ### Bridge Configuration
 
