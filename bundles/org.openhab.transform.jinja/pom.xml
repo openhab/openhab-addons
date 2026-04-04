@@ -14,6 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
 
+  <!-- TODO remove this once jinjava no longer enforces jackson 2.x -->
+  <properties>
+    <jackson.version>2.21.1</jackson.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>

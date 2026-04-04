@@ -72,7 +72,7 @@
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.21</jackson.annotations.version>
-    <jackson.version>2.21.1</jackson.version>
+    <jackson.version>3.1.0</jackson.version>
     <jna.version>5.18.1</jna.version>
     <json.version>20251224</json.version>
     <karaf.version>4.4.10</karaf.version>
