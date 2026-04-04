@@ -8,7 +8,8 @@ Import-Package: \
 
 -runrequires: \
 	bnd.identity;id='org.openhab.automation.jsscripting.tests',\
-	bnd.identity;id='org.graalvm.js.js-language'
+	bnd.identity;id='org.graalvm.js.js-language',\
+	bnd.identity;id='org.graalvm.regex.regex'
 
 #
 # done
@@ -68,6 +69,7 @@ Import-Package: \
 	org.graalvm.truffle.truffle-api;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-compiler;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-runtime;version='[25.0.1,25.0.2)',\
+	org.graalvm.regex.regex;version='[25.0.1,25.0.2)',\
 	org.hamcrest;version='[3.0.0,3.0.1)',\
 	org.mockito.junit-jupiter;version='[5.21.0,5.21.1)',\
 	org.mockito.mockito-core;version='[5.21.0,5.21.1)',\

@@ -30,6 +30,8 @@ import org.mockito.quality.Strictness;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.core.automation.module.script.action.ScriptExecution;
+import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.service.WatchService;
 import org.openhab.core.test.java.JavaOSGiTest;
 
@@ -44,7 +46,7 @@ import org.openhab.core.test.java.JavaOSGiTest;
 public abstract class GraalJSOSGiTest extends JavaOSGiTest {
     static final String SCRIPT_TYPE = "application/javascript";
 
-    final Map<String, Object> config = Map.of();
+    final Map<String, Object> config;
 
     @TempDir
     @NonNullByDefault({})
@@ -55,17 +57,31 @@ public abstract class GraalJSOSGiTest extends JavaOSGiTest {
     WatchService watchService;
     @Mock
     @NonNullByDefault({})
-    JSScriptServiceUtil jsScriptServiceUtil;
+    Scheduler scheduler;
+    @Mock
+    @NonNullByDefault({})
+    ScriptExecution scriptExecution;
 
+    @NonNullByDefault({})
+    JSScriptServiceUtil jsScriptServiceUtil;
     @NonNullByDefault({})
     JSDependencyTracker jsDependencyTracker;
     @NonNullByDefault({})
     GraalJSScriptEngineFactory scriptEngineFactory;
 
+    GraalJSOSGiTest() {
+        config = Map.of();
+    }
+
+    GraalJSOSGiTest(Map<String, Object> config) {
+        this.config = config;
+    }
+
     @BeforeEach
     public void beforeEach() throws Exception {
         when(watchService.getWatchPath()).thenReturn(tempDir);
 
+        jsScriptServiceUtil = new JSScriptServiceUtil(scheduler, scriptExecution);
         jsDependencyTracker = new JSDependencyTracker(watchService);
 
         scriptEngineFactory = new GraalJSScriptEngineFactory(jsScriptServiceUtil, jsDependencyTracker, config);
@@ -79,6 +95,6 @@ public abstract class GraalJSOSGiTest extends JavaOSGiTest {
         jsDependencyTracker.deactivate();
         jsDependencyTracker = null;
 
-        clearInvocations(watchService, jsScriptServiceUtil);
+        clearInvocations(watchService, scheduler, scriptExecution);
     }
 }
