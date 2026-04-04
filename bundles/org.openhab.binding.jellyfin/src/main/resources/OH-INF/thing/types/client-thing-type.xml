@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Jellyfin Client</label>
 		<description>Represents a running Jellyfin client connected to a server</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="send-notification" typeId="send-notification-channel"/>
 			<channel id="media-control" typeId="system.media-control"/>
@@ -38,7 +39,12 @@
 			<channel id="media-audio-track" typeId="media-audio-track-channel"/>
 			<channel id="media-subtitle" typeId="media-subtitle-channel"/>
 		</channels>
+		<representation-property>serialNumber</representation-property>
 		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Device ID</label>
+				<description>The Jellyfin device ID as reported by the client application.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 </thing:thing-descriptions>

@@ -77,6 +77,13 @@ public class Constants {
     public static final int DISCOVERY_RESULT_TTL_SEC = 600;
 
     /**
+     * Thing property key used to store the Jellyfin device name (user-visible device label set in the Jellyfin app).
+     * Stored as a Thing property (not a configuration parameter) so it is preserved across device ID regenerations
+     * and can be used to re-identify the same physical device when its Jellyfin device ID changes.
+     */
+    public static final String PROPERTY_DEVICE_NAME = "deviceName";
+
+    /**
      * Lowercase client name substrings used for discovery category filtering.
      * Android TV must be checked before Android to prevent false positive matches.
      */

@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +37,7 @@ import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 
@@ -56,6 +58,9 @@ class ClientDiscoveryServiceTest {
     @Mock(lenient = true)
     private @NonNullByDefault({}) Bridge bridge;
 
+    @Mock(lenient = true)
+    private @NonNullByDefault({}) ThingRegistry thingRegistry;
+
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     @BeforeEach
@@ -68,8 +73,12 @@ class ClientDiscoveryServiceTest {
         // All categories enabled by default so existing tests are unaffected
         when(bridge.getConfiguration()).thenReturn(allCategoriesEnabled());
 
+        // Return empty collection by default so existing tests are unaffected
+        when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
+
         discoveryService = new ClientDiscoveryService();
         discoveryService.setThingHandler(serverHandler);
+        discoveryService.setThingRegistry(thingRegistry);
     }
 
     // -------------------------------------------------------------------------
@@ -548,5 +557,231 @@ class ClientDiscoveryServiceTest {
         discoveryService.discoverClients();
 
         verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    // =========================================================================
+    // Device ID regeneration detection tests
+    // =========================================================================
+
+    /**
+     * Helper that builds a mock Thing simulating an existing configured client.
+     */
+    private Thing buildExistingClientThing(ThingUID thingUID, String serialNumber, String deviceName,
+            String clientName) {
+        Thing thing = mock(Thing.class, withSettings().lenient());
+        when(thing.getUID()).thenReturn(thingUID);
+        when(thing.getThingTypeUID()).thenReturn(Constants.THING_TYPE_JELLYFIN_CLIENT);
+        when(thing.getBridgeUID()).thenReturn(bridgeUID);
+
+        Configuration config = new Configuration();
+        config.put("serialNumber", serialNumber);
+        when(thing.getConfiguration()).thenReturn(config);
+
+        Map<String, String> properties = new HashMap<>();
+        properties.put(Constants.PROPERTY_DEVICE_NAME, deviceName);
+        properties.put(Thing.PROPERTY_VENDOR, clientName);
+        when(thing.getProperties()).thenReturn(properties);
+
+        return thing;
+    }
+
+    @Test
+    void testHandleDeviceIdChange_updatesSerialNumberAndSkipsDiscovery() {
+        String oldDeviceId = "old-device-id-abc";
+        String newDeviceId = "new-device-id-xyz";
+        String deviceName = "Mobile - Patrik";
+        String clientName = "Jellyfin for Android";
+
+        ThingUID existingThingUID = new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID,
+                DeviceIdSanitizer.sanitize(oldDeviceId));
+        Thing existingThing = buildExistingClientThing(existingThingUID, oldDeviceId, deviceName, clientName);
+
+        when(thingRegistry.getAll()).thenReturn(List.of(existingThing));
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(newDeviceId);
+        session.setDeviceName(deviceName);
+        session.setClient(clientName);
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        // Config must be updated with the new device ID
+        ArgumentCaptor<Map<String, Object>> configCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(thingRegistry).updateConfiguration(eq(existingThingUID), configCaptor.capture());
+        assertEquals(newDeviceId, configCaptor.getValue().get("serialNumber"));
+
+        // No new inbox entry should be emitted
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testHandleDeviceIdChange_noActionWhenDeviceNameNotStored() {
+        // Legacy Thing without PROPERTY_DEVICE_NAME stored
+        String oldDeviceId = "legacy-device-id";
+        ThingUID existingThingUID = new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID,
+                DeviceIdSanitizer.sanitize(oldDeviceId));
+
+        Thing legacyThing = mock(Thing.class, withSettings().lenient());
+        when(legacyThing.getUID()).thenReturn(existingThingUID);
+        when(legacyThing.getThingTypeUID()).thenReturn(Constants.THING_TYPE_JELLYFIN_CLIENT);
+        when(legacyThing.getBridgeUID()).thenReturn(bridgeUID);
+        when(legacyThing.getConfiguration()).thenReturn(new Configuration());
+        when(legacyThing.getProperties()).thenReturn(Map.of()); // no deviceName property
+
+        when(thingRegistry.getAll()).thenReturn(List.of(legacyThing));
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId("new-device-id");
+        session.setDeviceName("Mobile - Patrik");
+        session.setClient("Jellyfin for Android");
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        // No config update — legacy Thing is skipped
+        verify(thingRegistry, never()).updateConfiguration(any(), any());
+
+        // Normal discovery result emitted
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testHandleDeviceIdChange_noActionWhenSameSerialNumber() {
+        String deviceId = "same-device-id";
+        String deviceName = "Living Room TV";
+        String clientName = "Jellyfin Web";
+
+        ThingUID existingThingUID = new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID,
+                DeviceIdSanitizer.sanitize(deviceId));
+        Thing existingThing = buildExistingClientThing(existingThingUID, deviceId, deviceName, clientName);
+
+        when(thingRegistry.getAll()).thenReturn(List.of(existingThing));
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName(deviceName);
+        session.setClient(clientName);
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        // Serial number unchanged — no config update
+        verify(thingRegistry, never()).updateConfiguration(any(), any());
+
+        // Normal discovery result emitted so inbox auto-ignore can fire
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testHandleDeviceIdChange_noActionWhenClientDiffers() {
+        // Same deviceName but different client app — must NOT update
+        String oldDeviceId = "ios-device-id";
+        String deviceName = "Mobile - Patrik";
+
+        ThingUID existingThingUID = new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID,
+                DeviceIdSanitizer.sanitize(oldDeviceId));
+        Thing existingThing = buildExistingClientThing(existingThingUID, oldDeviceId, deviceName, "Swiftfin");
+
+        when(thingRegistry.getAll()).thenReturn(List.of(existingThing));
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId("android-device-id");
+        session.setDeviceName(deviceName);
+        session.setClient("Jellyfin for Android"); // different client app
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(thingRegistry, never()).updateConfiguration(any(), any());
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testHandleDeviceIdChange_noActionWhenDeviceNameIsNull() {
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId("some-device-id");
+        session.setDeviceName(null);
+        session.setClient("Jellyfin for Android");
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        // findExistingThingByIdentity is not reached when deviceName is null
+        verify(thingRegistry, never()).updateConfiguration(any(), any());
+
+        // Normal discovery result emitted with client name as fallback label
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testHandleDeviceIdChange_multipleMatchesWarnsAndSkipsUpdate() {
+        String deviceName = "Shared TV";
+        String clientName = "Jellyfin for Android TV";
+
+        Thing thing1 = buildExistingClientThing(new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID, "aaa"),
+                "aaa-id", deviceName, clientName);
+        Thing thing2 = buildExistingClientThing(new ThingUID(Constants.THING_TYPE_JELLYFIN_CLIENT, bridgeUID, "bbb"),
+                "bbb-id", deviceName, clientName);
+
+        when(thingRegistry.getAll()).thenReturn(List.of(thing1, thing2));
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId("new-tv-id");
+        session.setDeviceName(deviceName);
+        session.setClient(clientName);
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        // Multiple matches — no update performed
+        verify(thingRegistry, never()).updateConfiguration(any(), any());
+
+        // Discovery result is emitted (fall-through to normal path)
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testDiscoverClients_storesDeviceNameProperty() {
+        String deviceId = "device-with-name";
+        String deviceName = "Study Desktop";
+        String clientName = "Jellyfin Web";
+
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName(deviceName);
+        session.setClient(clientName);
+
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, timeout(500)).thingDiscovered(any(), resultCaptor.capture());
+        DiscoveryResult result = resultCaptor.getValue();
+
+        assertNotNull(result);
+        assertEquals(deviceName, result.getProperties().get(Constants.PROPERTY_DEVICE_NAME),
+                "deviceName property must be stored on the discovery result");
     }
 }

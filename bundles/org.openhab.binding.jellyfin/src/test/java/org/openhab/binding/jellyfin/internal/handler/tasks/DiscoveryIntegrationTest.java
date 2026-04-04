@@ -146,10 +146,10 @@ class DiscoveryIntegrationTest {
 
             discoveryTask.run();
 
-            // Assert - discovery was triggered twice:
-            // 1. From updateClientList() after processing users
-            // 2. From DiscoveryTask.run() after fetching users
-            verify(discoveryService, times(2)).discoverClients();
+            // Assert - discovery was triggered exactly once (from DiscoveryTask.run() only).
+            // updateClientList() no longer calls discoverClients() to avoid the previous
+            // double-discovery bug where every poll cycle triggered two discovery runs.
+            verify(discoveryService, times(1)).discoverClients();
 
             // Assert - clients map now contains our session
             java.util.Map<String, org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto> clients = handler
