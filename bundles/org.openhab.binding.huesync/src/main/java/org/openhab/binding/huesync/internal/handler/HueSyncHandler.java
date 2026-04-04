@@ -370,7 +370,8 @@ public class HueSyncHandler extends BaseThingHandler {
         try {
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
-            this.logger.warn("{}", e.getMessage());
+            this.logger.warn("Unable to initialize HueSyncHandler for {}: {} {}", this.thing.getUID(), e.getMessage(),
+                    e);
         }
     }
 
@@ -409,7 +410,8 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.connection.get().dispose();
             }
         } catch (Exception e) {
-            this.logger.warn("{}", e.getMessage());
+            this.logger.warn("Exception while disposing HueSyncHandler for {}: {} {}", this.thing.getUID(),
+                    e.getMessage(), e);
         } finally {
             this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
         }
