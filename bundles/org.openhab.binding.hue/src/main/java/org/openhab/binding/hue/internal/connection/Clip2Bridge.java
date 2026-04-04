@@ -720,9 +720,9 @@ public class Clip2Bridge implements Closeable {
      * registration call before the instance is created and the SSL context is configured, but we
      * want to use the instance SSL context for all subsequent calls.
      */
-    protected static volatile @Nullable Clip2Bridge lastInstance = null;
-    protected static final SSLContext TRUST_ALL_CONTEXT = createTrustAllSslContext();
-    protected final SSLContext hueContext;
+    private static volatile @Nullable Clip2Bridge lastInstance = null;
+    private static final SSLContext TRUST_ALL_CONTEXT = createTrustAllSslContext();
+    private final SSLContext hueContext;
 
     /**
      * Create a permanent (static) trust all SSL context.
