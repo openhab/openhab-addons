@@ -36,6 +36,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandle
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions.ChannelProperty;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsPropMappings;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
@@ -160,6 +161,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
             try {
                 if (key.indexOf("Range") > 0) {
+                    continue;
+                }
+
+                if (SmartThingsPropMappings.isProperties(capa.id)) {
                     continue;
                 }
 
@@ -294,9 +299,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 .withStateDescriptionFragment(stateFragment.build());
 
         Boolean isAdvanced = false;
-        if (capa.id.contains("ocf")) {
-            isAdvanced = true;
-        }
         channelTypeBuilder = channelTypeBuilder.isAdvanced(isAdvanced);
         channelTypeBuilder = channelTypeBuilder.withDescription(description);
         channelTypeBuilder = channelTypeBuilder.withCategory(category);
@@ -392,6 +394,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
                     for (SmartThingsCapability cap : component.capabilities) {
                         String capId = cap.id;
+
+                        if (SmartThingsPropMappings.isProperties(capId)) {
+                            continue;
+                        }
 
                         capId = capId.replace('.', '_');
 

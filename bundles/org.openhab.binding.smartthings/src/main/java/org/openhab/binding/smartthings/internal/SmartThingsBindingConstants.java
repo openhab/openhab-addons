@@ -68,9 +68,9 @@ public class SmartThingsBindingConstants {
 
     public static final String THING_LIGHT = "light";
 
-    public static final String DEVICE_ID = "deviceId";
-    public static final String DEVICE_NAME = "deviceName";
-    public static final String DEVICE_LABEL = "deviceLabel";
+    public static final String DEVICE_ID = "Device ID";
+    public static final String DEVICE_NAME = "Device Name";
+    public static final String DEVICE_LABEL = "Device Label";
 
     public static final String SM_TYPE_INTEGER = "integer";
     public static final String SM_TYPE_NUMBER = "number";

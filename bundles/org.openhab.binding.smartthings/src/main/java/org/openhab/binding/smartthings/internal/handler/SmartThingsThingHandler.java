@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverter;
 import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
@@ -203,7 +204,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         Map<String, String> properties = getThing().getProperties();
 
-        String deviceId = properties.get("deviceId");
+        String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
 
         logger.trace("refrehDevice for deviceId: {}", deviceId);
 
@@ -221,21 +222,14 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                             for (String capaKey : component.keySet()) {
                                 SmartThingsStatusCapabilities capa = component.get(capaKey);
 
-                                if (capa != null) {
-                                    for (String propertyKey : capa.keySet()) {
-                                        SmartThingsStatusProperties props = capa.get(propertyKey);
+                                if (capa == null) {
+                                    continue;
+                                }
 
-                                        if (props != null) {
-                                            Object value = props.value;
-
-                                            if (value != null) {
-                                                logger.trace("refrehDevice for deviceId: value : {}", value);
-
-                                                refreshDevice(thing.getThingTypeUID().getId(), componentKey, capaKey,
-                                                        propertyKey, value);
-                                            }
-                                        }
-                                    }
+                                if (SmartThingsPropMappings.isProperties(capaKey)) {
+                                    refreshDeviceProps(capa, componentKey, capaKey);
+                                } else {
+                                    refreshDeviceFromCapa(capa, componentKey, capaKey);
                                 }
                             }
                         }
@@ -246,6 +240,55 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         }
+
+    }
+
+    public void refreshDeviceFromCapa(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
+        for (String propertyKey : capa.keySet()) {
+            SmartThingsStatusProperties props = capa.get(propertyKey);
+
+            if (props != null) {
+                Object value = props.value;
+
+                if (value != null) {
+                    logger.trace("refrehDevice for deviceId: value : {}", value);
+
+                    refreshDevice(thing.getThingTypeUID().getId(), componentKey, capaKey, propertyKey, value);
+                }
+            }
+        }
+    }
+
+    public void refreshDeviceProps(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
+        Map<String, String> propMaps = this.editProperties();
+        for (String propertyKey : capa.keySet()) {
+            SmartThingsStatusProperties props = capa.get(propertyKey);
+
+            if (props == null) {
+                continue;
+            }
+            Object propsValue = props.value;
+
+            if (propsValue == null) {
+                continue;
+            }
+            logger.trace("refreshDeviceProps for deviceId: value : {}", propsValue);
+
+            String propertyName = SmartThingsPropMappings.getPropertyName(propertyKey);
+            if (propertyName == null) {
+                continue;
+            }
+            addProps(propMaps, propertyName, propsValue.toString());
+        }
+        updateProperties(propMaps);
+    }
+
+    private void addProps(Map<String, String> props, String key, @Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+
+        props.put(key, value);
     }
 
     @Override
