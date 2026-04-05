@@ -21,10 +21,10 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -104,7 +104,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
-    protected ShellyDeviceProfile profile = new ShellyDeviceProfile(); // init empty profile to avoid NPE
+    protected ShellyDeviceProfile profile;
     private ShellyDeviceStats stats = new ShellyDeviceStats();
     private @Nullable Shelly1CoapHandler coap;
 
@@ -158,6 +158,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Create thing handler depending on device generation
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        profile = new ShellyDeviceProfile(thingTypeUID);
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
@@ -167,9 +168,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         } else {
             this.api = new Shelly1HttpApi(thingName, this);
         }
-        if (gen2) {
-            config.eventsCoIoT = false;
-        }
+
         if (config.eventsCoIoT) {
             this.coap = new Shelly1CoapHandler(this, coapServer);
         }
@@ -695,10 +694,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void setThingOnline() {
         if (!isThingOnline()) {
-            if (!profile.isInitialized()) {
-                // First time wake-up from a battery powered sensor device
-                profile.initFromThingType(thing.getThingTypeUID());
-            }
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
@@ -1396,7 +1391,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param status the /status result
      */
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
-        Map<String, Object> properties = fillDeviceProperties(profile);
+        Map<String, String> properties = fillDeviceProperties(profile);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.realm);
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
@@ -1416,11 +1411,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         properties.put(PROPERTY_COIOTAUTO, String.valueOf(autoCoIoT));
 
-        Map<String, String> thingProperties = new TreeMap<>();
-        for (Map.Entry<String, Object> property : properties.entrySet()) {
-            thingProperties.put(property.getKey(), (String) property.getValue());
-        }
-        flushProperties(thingProperties);
+        flushProperties(properties);
     }
 
     /**
@@ -1432,24 +1423,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void updateProperties(String key, String value) {
         Map<String, String> thingProperties = editProperties();
-        if (thingProperties.containsKey(key)) {
-            thingProperties.replace(key, value);
-        } else {
-            thingProperties.put(key, value);
-        }
+        thingProperties.put(key, value);
         updateProperties(thingProperties);
         logger.trace("{}: Properties updated", thingName);
     }
 
     public void flushProperties(Map<String, String> propertyUpdates) {
         Map<String, String> thingProperties = editProperties();
-        for (Map.Entry<String, String> property : propertyUpdates.entrySet()) {
-            if (thingProperties.containsKey(property.getKey())) {
-                thingProperties.replace(property.getKey(), property.getValue());
-            } else {
-                thingProperties.put(property.getKey(), property.getValue());
-            }
-        }
+        thingProperties.putAll(propertyUpdates);
         updateProperties(thingProperties);
     }
 
@@ -1471,8 +1452,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param profile Property Map to full
      * @return a full property map
      */
-    public static Map<String, Object> fillDeviceProperties(ShellyDeviceProfile profile) {
-        Map<String, Object> properties = new TreeMap<>();
+    public static Map<String, String> fillDeviceProperties(ShellyDeviceProfile profile) {
+        Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_VENDOR, VENDOR);
         if (profile.isInitialized()) {
             properties.put(PROPERTY_MODEL_ID, getString(profile.device.type));

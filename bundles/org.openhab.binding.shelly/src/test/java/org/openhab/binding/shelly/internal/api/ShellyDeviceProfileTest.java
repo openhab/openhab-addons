@@ -150,7 +150,7 @@ public class ShellyDeviceProfileTest {
     @MethodSource("provideTestCasesForGetControlGroup")
     void getControlGroup(ThingTypeUID thingTypeUID, String mode, int numRollers, int numOutputs, int numLights,
             int index, String expectedControlGroup) throws ShellyApiException {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
         ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
         ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
 
@@ -201,7 +201,7 @@ public class ShellyDeviceProfileTest {
 
     @Test
     void updateFromStatusHasRelays() {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
         deviceProfile.hasRelays = true;
         deviceProfile.numInputs = -1;
 
@@ -216,7 +216,7 @@ public class ShellyDeviceProfileTest {
 
     @Test
     void updateFromStatusHasRelaysNoInputs() {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
         deviceProfile.hasRelays = true;
         deviceProfile.numInputs = -1;
 
@@ -228,7 +228,7 @@ public class ShellyDeviceProfileTest {
 
     @Test
     void updateFromStatusInput() {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
         deviceProfile.hasRelays = false;
         deviceProfile.numInputs = -1;
 
@@ -241,7 +241,7 @@ public class ShellyDeviceProfileTest {
 
     @Test
     void updateFromStatusNoInput() {
-        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
         deviceProfile.hasRelays = false;
         deviceProfile.numInputs = -1;
 

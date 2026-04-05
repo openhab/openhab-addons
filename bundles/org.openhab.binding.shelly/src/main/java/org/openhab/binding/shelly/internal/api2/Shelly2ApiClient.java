@@ -213,8 +213,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
          * first, and then takes only the extra steps that depends on other methods in Shelly2ApiRpc.
          */
 
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
-
         if (devInfo != null) {
             profile.device = devInfo;
         }

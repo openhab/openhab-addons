@@ -180,7 +180,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
+        if (thing == null) {
+            int i = 1;
+        }
+        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
+
+        profile.initFromThingType(thingTypeUID);
 
         if (devInfo != null) {
             profile.device = devInfo;

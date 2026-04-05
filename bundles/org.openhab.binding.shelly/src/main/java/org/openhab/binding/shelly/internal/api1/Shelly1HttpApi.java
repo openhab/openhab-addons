@@ -64,11 +64,9 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly1HttpApi.class);
-    private final ShellyDeviceProfile profile;
 
     public Shelly1HttpApi(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
-        profile = thing.getProfile();
     }
 
     /**
@@ -80,7 +78,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      */
     public Shelly1HttpApi(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
-        this.profile = new ShellyDeviceProfile();
     }
 
     @Override
