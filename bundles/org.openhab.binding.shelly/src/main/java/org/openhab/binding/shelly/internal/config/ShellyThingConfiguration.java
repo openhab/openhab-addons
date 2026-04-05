@@ -21,31 +21,97 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ShellyThingConfiguration {
-    public String deviceIp = ""; // ip address of thedevice
-    public String deviceAddress = ""; // IP address or MAC address for BLU devices
-    public String userId = ""; // userid for http basic auth
-    public String password = ""; // password for http basic auth
+    private String deviceIp = ""; // IP address of thedevice
+    private String deviceAddress = ""; // IP address or MAC address for BLU devices
+    private String userId = ""; // userid for http basic auth
+    private String password = ""; // password for http basic auth
 
-    public int updateInterval = 60; // schedule interval for the update job
-    public int lowBattery = 15; // threshold for battery value
-    public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
+    private int updateInterval = 60; // schedule interval for the update job
+    private int lowBattery = 15; // threshold for battery value
+    private boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
 
-    public int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
-    public int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
+    private int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
+    private int favoriteDOWN = 0; // Roller position favorite when control channel receives OFF, 0=none
 
-    public boolean eventsButton = false; // true: register for Relay btn_xxx events
-    public boolean eventsSwitch = true; // true: register for device out_xxx events
-    public boolean eventsPush = true; // true: register for short/long push events
-    public boolean eventsRoller = true; // true: register for short/long push events
-    public boolean eventsSensorReport = true; // true: register for sensor events
-    public boolean eventsCoIoT = false; // true: use CoIoT events (based on COAP)
+    // Gen1
+    private boolean eventsButton = false; // true: register for Relay btn_xxx events
+    private boolean eventsSwitch = true; // true: register for device out_xxx events
+    private boolean eventsPush = true; // true: register for short/long push events
+    private boolean eventsRoller = true; // true: register for short/long push events
+    private boolean eventsSensorReport = true; // true: register for sensor events
+    private boolean eventsCoIoT = false; // true: use CoIoT events (based on COAP)
 
-    public String localIp = ""; // local ip addresses used to create callback url
-    public String localPort = "8080";
-    public String realm = "";
+    // Gen2
+    private Boolean enableBluGateway = false;
+    private Boolean enableRangeExtender = true;
 
-    public Boolean enableBluGateway = false;
-    public Boolean enableRangeExtender = true;
+    public String getDeviceIp() {
+        return deviceIp;
+    }
+
+    public String getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getUpdateInterval() {
+        return updateInterval;
+    }
+
+    public int getLowBattery() {
+        return lowBattery;
+    }
+
+    public boolean getBrightnessAutoOn() {
+        return brightnessAutoOn;
+    }
+
+    public int getFavoriteUP() {
+        return favoriteUP;
+    }
+
+    public int getFavoriteDOWN() {
+        return favoriteDOWN;
+    }
+
+    public boolean getEventsButton() {
+        return eventsButton;
+    }
+
+    public boolean getEventsSwitch() {
+        return eventsSwitch;
+    }
+
+    public boolean getEventsPush() {
+        return eventsPush;
+    }
+
+    public boolean getEventsRoller() {
+        return eventsRoller;
+    }
+
+    public boolean getEventsSensorReport() {
+        return eventsSensorReport;
+    }
+
+    public boolean getEventsCoIoT() {
+        return eventsCoIoT;
+    }
+
+    public boolean getEnableBluGateway() {
+        return enableBluGateway;
+    }
+
+    public boolean getEnableRangeExtender() {
+        return enableRangeExtender;
+    }
 
     @Override
     public String toString() {

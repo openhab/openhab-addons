@@ -33,7 +33,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheck
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -83,7 +83,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
             String serviceName = getValue(properties, PROPERTY_SERVICE_NAME);
             String message = "";
 
-            ShellyThingConfiguration config = getThingConfig(th, properties);
+            ShellyApiConfiguration config = th.getApiConfig();
             ShellyDeviceProfile profile = th.getProfile();
             ShellyApiInterface api = th.getApi();
             new Shelly1HttpApi(uid, config, httpClient);
@@ -115,7 +115,9 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     break;
                 case ACTION_PROTECT:
                     // Get device settings
-                    if (config.userId.isEmpty() || config.password.isEmpty()) {
+                    String userId = config.getUserId();
+                    String password = config.getPassword();
+                    if (userId.isEmpty() || password.isEmpty()) {
                         message = getMessageP("action.protect.id-missing", MCWARNING);
                         break;
                     }
@@ -123,12 +125,11 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     if (!"yes".equalsIgnoreCase(update)) {
                         ShellySettingsLogin status = api.getLoginSettings();
                         message = getMessage("action.protect.status", getBool(status.enabled) ? "enabled" : "disabled",
-                                status.username)
-                                + getMessageP("action.protect.new", MCINFO, config.userId, config.password);
+                                status.username) + getMessageP("action.protect.new", MCINFO, userId, password);
                         actionUrl = buildActionUrl(uid, action);
                     } else {
-                        api.setLoginCredentials(config.userId, config.password);
-                        message = getMessageP("action.protect.confirm", MCINFO, config.userId, config.password);
+                        api.setLoginCredentials(userId, password);
+                        message = getMessageP("action.protect.confirm", MCINFO, userId, password);
                         refreshTimer = 3;
                     }
                     break;

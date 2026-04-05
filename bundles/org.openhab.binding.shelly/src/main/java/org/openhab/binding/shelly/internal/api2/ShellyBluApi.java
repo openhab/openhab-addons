@@ -38,7 +38,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
@@ -71,8 +71,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
-        super(thingName, thingTable, thing, webSocketClient, scheduler);
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+        super(thingName, thingTable, thing, config, webSocketClient, scheduler);
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
@@ -81,7 +81,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public void initialize(String thingName, ShellyApiConfiguration config) throws ShellyApiException {
         if (!initialized) {
             setConfig(thingName, config);
             connected = false;
@@ -90,7 +90,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void setConfig(String thingName, ShellyThingConfiguration config) {
+    public void setConfig(String thingName, ShellyApiConfiguration config) {
         this.thingName = thingName;
         this.config = config;
     }
@@ -98,10 +98,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
-        info.hostname = !config.realm.isEmpty() ? config.realm : "";
+        info.hostname = config.realm.get();
         info.fw = "";
         info.type = "BLU";
-        info.mac = config.deviceAddress;
+        info.mac = config.getDeviceAddress();
         info.auth = false;
         info.gen = 2;
         return info;
@@ -125,8 +125,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
 
         profile.device = getDeviceInfo();
-        if (config.realm.isEmpty()) {
-            config.realm = getString(profile.device.hostname);
+        if (config.realm.get().isEmpty()) {
+            config.realm.set(getString(profile.device.hostname));
         }
 
         // for now we have no API to get this information
