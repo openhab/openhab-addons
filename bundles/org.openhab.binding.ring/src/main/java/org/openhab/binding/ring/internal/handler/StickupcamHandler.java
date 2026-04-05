@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Stickupcam;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,7 +73,7 @@ public class StickupcamHandler extends RingDeviceHandler {
                 if (channel == null) {
                     logger.debug("Adding channel for light, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
-                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Light Status")
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH).withLabel("Light Status")
                             .withType(new ChannelTypeUID(BINDING_ID, "light")).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
@@ -85,7 +86,7 @@ public class StickupcamHandler extends RingDeviceHandler {
                 if (channel == null) {
                     logger.debug("Adding channel for siren, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
-                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Siren Status")
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH).withLabel("Siren Status")
                             .withType(new ChannelTypeUID(BINDING_ID, "siren")).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
