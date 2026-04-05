@@ -35,11 +35,14 @@
         <extensions>true</extensions>
         <configuration>
           <bnd><![CDATA[
-# On rend openhabcloud optionnel côté OSGi
 -importpackage: \
  org.openhab.io.openhabcloud;resolution:=optional,\
  org.openhab.io.openhabcloud.*;resolution:=optional
-          ]]></bnd>
+
+Import-Package: \
+ org.openhab.io.openhabcloud;resolution:=optional,\
+ org.openhab.io.openhabcloud.*;resolution:=optional,\
+ *          ]]></bnd>
         </configuration>
       </plugin>
 
