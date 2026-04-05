@@ -411,6 +411,7 @@ public class SmartThingsServlet extends HttpServlet
             BufferedReader rdr = new BufferedReader(req.getReader());
             String s = rdr.lines().collect(Collectors.joining());
 
+            @Nullable
             LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
 
             if (resultObj == null) {
