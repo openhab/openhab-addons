@@ -14,6 +14,7 @@ package org.openhab.binding.twilio.internal.handler;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +47,7 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private @Nullable TwilioApiClient apiClient;
     private TwilioAccountConfiguration config = new TwilioAccountConfiguration();
+    private @Nullable Future<?> validateTask;
 
     public TwilioAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -63,23 +65,30 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
 
         String accountSid = config.accountSid;
         if (accountSid == null || accountSid.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account SID is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.missing-account-sid");
             return;
         }
 
         String authToken = config.authToken;
         if (authToken == null || authToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Auth Token is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.missing-auth-token");
             return;
         }
 
         apiClient = new TwilioApiClient(httpClient, accountSid, authToken);
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.submit(this::asyncValidateAccount);
+        validateTask = scheduler.submit(this::asyncValidateAccount);
     }
 
     @Override
     public void dispose() {
+        Future<?> task = validateTask;
+        if (task != null) {
+            task.cancel(true);
+            validateTask = null;
+        }
         apiClient = null;
         super.dispose();
     }
@@ -110,7 +119,8 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
     private void asyncValidateAccount() {
         TwilioApiClient client = apiClient;
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API client not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.api-client-not-initialized");
             return;
         }
 
@@ -118,7 +128,8 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
             if (client.validateAccount()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account is not active");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.account-inactive");
             }
         } catch (TwilioApiException e) {
             if (e.isConfigurationError()) {

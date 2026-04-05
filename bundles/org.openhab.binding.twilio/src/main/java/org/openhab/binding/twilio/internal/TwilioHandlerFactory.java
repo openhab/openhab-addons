@@ -23,7 +23,6 @@ import org.openhab.binding.twilio.internal.handler.TwilioAccountHandler;
 import org.openhab.binding.twilio.internal.handler.TwilioPhoneHandler;
 import org.openhab.binding.twilio.internal.servlet.TwilioCallbackServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.HttpClientInitializationException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -31,7 +30,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,23 +54,7 @@ public class TwilioHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TwilioCallbackServlet callbackServlet, final @Reference ItemRegistry itemRegistry) {
         this.callbackServlet = callbackServlet;
         this.itemRegistry = itemRegistry;
-        httpClient = httpClientFactory.createHttpClient(BINDING_ID);
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            throw new HttpClientInitializationException("Could not start HttpClient", e);
-        }
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            super.deactivate(componentContext);
-        }
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override

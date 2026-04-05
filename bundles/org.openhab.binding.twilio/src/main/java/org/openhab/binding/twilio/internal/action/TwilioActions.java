@@ -30,6 +30,7 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -151,8 +152,8 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "text", label = "Text", description = "Text to speak", type = "java.lang.String", required = true) String text,
             @ActionInput(name = "voice", label = "Voice", description = "Voice to use (e.g. 'alice', 'Polly.Joanna')", type = "java.lang.String") @Nullable String voice) {
         logger.trace("makeTTSCall called: to='{}', text='{}', voice='{}'", to, text, voice);
-        String escapedText = escapeXml(text);
-        String voiceAttr = (voice != null && !voice.isBlank()) ? " voice=\"" + escapeXml(voice) + "\"" : "";
+        String escapedText = StringUtils.escapeXml(text);
+        String voiceAttr = (voice != null && !voice.isBlank()) ? " voice=\"" + StringUtils.escapeXml(voice) + "\"" : "";
         String twiml = "<Response><Say" + voiceAttr + ">" + escapedText + "</Say></Response>";
         return makeCall(to, twiml);
     }
@@ -217,7 +218,7 @@ public class TwilioActions implements ThingActions {
 
     // --- TwiML Response Actions ---
 
-    @RuleAction(label = "respond with TwiML", description = "Respond to an active call with TwiML. Must be called during a callReceived or dtmfReceived trigger.")
+    @RuleAction(label = "respond with TwiML", description = "Respond to an active call with TwiML. Must be called during a call-received or dtmf-received trigger.")
     public void respondWithTwiml(
             @ActionInput(name = "callSid", label = "Call SID", description = "The CallSid from the trigger event", type = "java.lang.String", required = true) String callSid,
             @ActionInput(name = "twiml", label = "TwiML", description = "TwiML response (e.g. <Response><Say>Hello</Say></Response>)", type = "java.lang.String", required = true) String twiml) {
@@ -274,10 +275,5 @@ public class TwilioActions implements ThingActions {
 
     private String getPhoneNumber() {
         return phoneHandler.getPhoneNumber();
-    }
-
-    private static String escapeXml(String text) {
-        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'",
-                "&apos;");
     }
 }

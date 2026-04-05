@@ -70,30 +70,30 @@ The `{gatherUrl}` placeholder is automatically replaced with the correct webhook
 
 ### State Channels
 
-| Channel             | Type     | Description                                               |
-| ------------------- | -------- | --------------------------------------------------------- |
-| lastMessageBody     | String   | Body text of the last received SMS/WhatsApp message       |
-| lastMessageFrom     | String   | Phone number of the last message sender                   |
-| lastMessageDate     | DateTime | Timestamp of the last received message                    |
-| lastMessageMediaUrl | String   | URL of the first media attachment (MMS/WhatsApp)          |
-| lastMessageSid      | String   | Twilio Message SID of the last received message           |
-| lastCallFrom        | String   | Phone number of the last incoming caller                  |
-| lastCallStatus      | String   | Status of the last call (ringing, in-progress, completed) |
-| lastCallDate        | DateTime | Timestamp of the last incoming call                       |
-| lastDtmfDigits      | String   | Last DTMF digits received from a caller                   |
+| Channel                | Type     | Description                                               |
+| ---------------------- | -------- | --------------------------------------------------------- |
+| last-message-body      | String   | Body text of the last received SMS/WhatsApp message       |
+| last-message-from      | String   | Phone number of the last message sender                   |
+| last-message-date      | DateTime | Timestamp of the last received message                    |
+| last-message-media-url | String   | URL of the first media attachment (MMS/WhatsApp)          |
+| last-message-sid       | String   | Twilio Message SID of the last received message           |
+| last-call-from         | String   | Phone number of the last incoming caller                  |
+| last-call-status       | String   | Status of the last call (ringing, in-progress, completed) |
+| last-call-date         | DateTime | Timestamp of the last incoming call                       |
+| last-dtmf-digits       | String   | Last DTMF digits received from a caller                   |
 
 ### Trigger Channels
 
-| Channel          | Payload | Description                                 |
-| ---------------- | ------- | ------------------------------------------- |
-| smsReceived      | JSON    | Triggered on incoming SMS/MMS               |
-| whatsappReceived | JSON    | Triggered on incoming WhatsApp message      |
-| callReceived     | JSON    | Triggered on incoming voice call            |
-| dtmfReceived     | JSON    | Triggered when DTMF digits are gathered     |
-| messageStatus    | JSON    | Triggered on message delivery status change |
-| callStatusUpdate | JSON    | Triggered on call status change             |
+| Channel            | Payload | Description                                 |
+| ------------------ | ------- | ------------------------------------------- |
+| sms-received       | JSON    | Triggered on incoming SMS/MMS               |
+| whatsapp-received  | JSON    | Triggered on incoming WhatsApp message      |
+| call-received      | JSON    | Triggered on incoming voice call            |
+| dtmf-received      | JSON    | Triggered when DTMF digits are gathered     |
+| message-status     | JSON    | Triggered on message delivery status change |
+| call-status-update | JSON    | Triggered on call status change             |
 
-Trigger channel payloads are JSON objects. Example `smsReceived` payload:
+Trigger channel payloads are JSON objects. Example `sms-received` payload:
 
 ```json
 {"from":"+15559876543","to":"+15551234567","body":"Hello!","messageSid":"SM...","numMedia":"0","mediaUrls":[]}
@@ -149,7 +149,7 @@ When an incoming call arrives or DTMF digits are pressed, the binding holds the 
 **How it works:**
 
 1. Twilio sends a webhook (incoming call or DTMF digits)
-1. The binding fires a trigger channel (`callReceived` or `dtmfReceived`)
+1. The binding fires a trigger channel (`call-received` or `dtmf-received`)
 1. The binding waits up to `responseTimeout` seconds (default: 10) for a rule to call `respondWithTwiml`
 1. If the rule responds in time, that TwiML is returned to Twilio
 1. If the timeout expires, the default TwiML from the thing config is used as fallback
@@ -242,11 +242,11 @@ Bridge twilio:account:myaccount "Twilio Account" [ accountSid="ACxxxxxxxxxxxxxxx
 ### Item Configuration
 
 ```java
-String TwilioLastMessage "Last SMS [%s]" { channel="twilio:phone:myaccount:myphone:lastMessageBody" }
-String TwilioLastFrom "From [%s]" { channel="twilio:phone:myaccount:myphone:lastMessageFrom" }
-DateTime TwilioLastDate "Received [%1$tF %1$tR]" { channel="twilio:phone:myaccount:myphone:lastMessageDate" }
-String TwilioLastCallFrom "Last Caller [%s]" { channel="twilio:phone:myaccount:myphone:lastCallFrom" }
-String TwilioLastDtmf "DTMF [%s]" { channel="twilio:phone:myaccount:myphone:lastDtmfDigits" }
+String TwilioLastMessage "Last SMS [%s]" { channel="twilio:phone:myaccount:myphone:last-message-body" }
+String TwilioLastFrom "From [%s]" { channel="twilio:phone:myaccount:myphone:last-message-from" }
+DateTime TwilioLastDate "Received [%1$tF %1$tR]" { channel="twilio:phone:myaccount:myphone:last-message-date" }
+String TwilioLastCallFrom "Last Caller [%s]" { channel="twilio:phone:myaccount:myphone:last-call-from" }
+String TwilioLastDtmf "DTMF [%s]" { channel="twilio:phone:myaccount:myphone:last-dtmf-digits" }
 ```
 
 ### Rule Examples
@@ -402,7 +402,7 @@ end
 ```javascript
 var ALLOWED_NUMBERS = ['+15559876543', '+15551112222'];
 
-rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:sms-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     if (ALLOWED_NUMBERS.indexOf(payload.from) === -1) {
         return;
@@ -422,7 +422,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().t
 ```java
 rule "Handle incoming SMS"
 when
-    Channel "twilio:phone:myaccount:myphone:smsReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:sms-received" triggered
 then
     val json = receivedEvent.getEvent()
     val body = transform("JSONPATH", "$.body", json)
@@ -452,7 +452,7 @@ end
 ```javascript
 var ALLOWED_NUMBERS = ['+15559876543', '+15551112222'];
 
-rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:sms-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     if (ALLOWED_NUMBERS.indexOf(payload.from) === -1) {
         return;
@@ -490,7 +490,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().t
 ```java
 rule "SMS command menu"
 when
-    Channel "twilio:phone:myaccount:myphone:smsReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:sms-received" triggered
 then
     val json = receivedEvent.getEvent()
     val body = transform("JSONPATH", "$.body", json)
@@ -537,7 +537,7 @@ end
 ::: tab JavaScript
 
 ```javascript
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:dtmf-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
 
@@ -569,7 +569,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().
 ```java
 rule "Handle DTMF"
 when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:dtmf-received" triggered
 then
     val json = receivedEvent.getEvent()
     val digits = transform("JSONPATH", "$.digits", json)
@@ -677,7 +677,7 @@ end
 ::: tab JavaScript
 
 ```javascript
-rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:call-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
 
@@ -696,7 +696,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().
         '</Gather><Say>No input. Goodbye.</Say></Response>');
 }).build('Security panel - incoming call');
 
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:dtmf-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
 
@@ -750,7 +750,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().
 ```java
 rule "Handle incoming call - security panel"
 when
-    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:call-received" triggered
 then
     val json = receivedEvent.getEvent()
     val callSid = transform("JSONPATH", "$.callSid", json)
@@ -774,7 +774,7 @@ end
 
 rule "Handle DTMF - security panel"
 when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:dtmf-received" triggered
 then
     val json = receivedEvent.getEvent()
     val digits = transform("JSONPATH", "$.digits", json)
@@ -844,7 +844,7 @@ rules.when().item('SmokeDetector').changed().to('ON').then(event => {
         '</Gather><Say>No response received. We will call again.</Say></Response>');
 }).build('Fire alarm call');
 
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:dtmf-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     if (payload.digits === '1') {
         items.FireAlarmAcknowledged.postUpdate('ON');
@@ -873,7 +873,7 @@ end
 
 rule "Handle fire alarm confirmation"
 when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:dtmf-received" triggered
 then
     val json = receivedEvent.getEvent()
     val digits = transform("JSONPATH", "$.digits", json)
@@ -899,7 +899,7 @@ end
 ::: tab JavaScript
 
 ```javascript
-rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:call-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
     twilioActions.respondWithTwiml(payload.callSid,
@@ -908,7 +908,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().
         '</Gather></Response>');
 }).build('Temperature menu');
 
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+rules.when().channel('twilio:phone:myaccount:myphone:dtmf-received').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
     var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
 
@@ -939,7 +939,7 @@ rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().
 ```java
 rule "Temperature menu"
 when
-    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:call-received" triggered
 then
     val json = receivedEvent.getEvent()
     val callSid = transform("JSONPATH", "$.callSid", json)
@@ -953,7 +953,7 @@ end
 
 rule "Read temperature"
 when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+    Channel "twilio:phone:myaccount:myphone:dtmf-received" triggered
 then
     val json = receivedEvent.getEvent()
     val digits = transform("JSONPATH", "$.digits", json)

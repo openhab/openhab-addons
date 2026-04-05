@@ -14,13 +14,17 @@ package org.openhab.binding.twilio.internal.handler;
 
 import static org.openhab.binding.twilio.internal.TwilioBindingConstants.*;
 
+import java.lang.reflect.Method;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +46,10 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +77,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     private String phoneNumber = "";
     private @Nullable String cloudWebhookBaseUrl;
     private @Nullable ScheduledFuture<?> webhookRefreshTask;
+    private @Nullable Future<?> initializeTask;
 
     public TwilioPhoneHandler(Thing thing, TwilioCallbackServlet callbackServlet, ItemRegistry itemRegistry) {
         super(thing);
@@ -87,17 +96,23 @@ public class TwilioPhoneHandler extends BaseThingHandler {
 
         String number = config.phoneNumber;
         if (number == null || number.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Phone number is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.missing-phone-number");
             return;
         }
         phoneNumber = number;
 
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.submit(this::asyncInitialize);
+        initializeTask = scheduler.submit(this::asyncInitialize);
     }
 
     @Override
     public void dispose() {
+        Future<?> initTask = initializeTask;
+        if (initTask != null) {
+            initTask.cancel(true);
+            initializeTask = null;
+        }
         ScheduledFuture<?> task = webhookRefreshTask;
         if (task != null) {
             task.cancel(true);
@@ -111,10 +126,10 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            scheduler.submit(this::asyncInitialize);
+            initializeTask = scheduler.submit(this::asyncInitialize);
         } else {
             callbackServlet.unregisterHandler(thing.getUID().getAsString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not online");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -129,9 +144,8 @@ public class TwilioPhoneHandler extends BaseThingHandler {
      * @return the bridge handler, or null if not available
      */
     public @Nullable TwilioAccountHandler getAccountHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            return (TwilioAccountHandler) bridge.getHandler();
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof TwilioAccountHandler handler) {
+            return handler;
         }
         return null;
     }
@@ -404,13 +418,15 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     private void asyncInitialize() {
         TwilioAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not available");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-uninitialized.bridge-handler-not-available");
             return;
         }
 
         TwilioApiClient client = accountHandler.getApiClient();
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "API client not available");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-uninitialized.api-client-not-available");
             return;
         }
 
@@ -435,24 +451,38 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     }
 
     /**
-     * Dynamically looks up the WebhookService from the OSGi service registry via reflection.
-     * Avoids any compile-time or class-loading dependency on the openHAB Cloud package,
-     * so the binding works regardless of whether the cloud add-on is installed.
+     * Looks up the WebhookService from the OSGi service registry via reflection and hands it
+     * to {@code action}, taking care of {@code ungetService} when done. Avoids any compile-time
+     * or class-loading dependency on the openHAB Cloud package so the binding works regardless
+     * of whether the cloud add-on is installed.
      *
-     * @return the service object, or null if not available
+     * @param action function invoked with the resolved service, or skipped if unavailable
+     * @return the result of {@code action}, or null if the service was not available
      */
-    private @Nullable Object getWebhookService() {
+    private <T> @Nullable T withWebhookService(Function<Object, @Nullable T> action) {
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle == null) {
+            return null;
+        }
+        BundleContext ctx = bundle.getBundleContext();
+        if (ctx == null) {
+            return null;
+        }
         try {
-            org.osgi.framework.BundleContext ctx = org.osgi.framework.FrameworkUtil.getBundle(getClass())
-                    .getBundleContext();
-            if (ctx == null) {
-                return null;
-            }
-            org.osgi.framework.ServiceReference<?>[] refs = ctx.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
+            ServiceReference<?>[] refs = ctx.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
             if (refs == null || refs.length == 0) {
                 return null;
             }
-            return ctx.getService(refs[0]);
+            ServiceReference<?> ref = refs[0];
+            Object service = ctx.getService(ref);
+            if (service == null) {
+                return null;
+            }
+            try {
+                return action.apply(service);
+            } finally {
+                ctx.ungetService(ref);
+            }
         } catch (Exception e) {
             logger.debug("Could not look up WebhookService: {}", e.getMessage());
             return null;
@@ -466,10 +496,9 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private @Nullable String invokeRequestWebhook(Object webhookService, String localPath) {
         try {
-            java.lang.reflect.Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
-            java.util.concurrent.CompletableFuture<String> future = (java.util.concurrent.CompletableFuture<String>) method
-                    .invoke(webhookService, localPath);
-            return future.get(30, TimeUnit.SECONDS);
+            Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
+            CompletableFuture<String> future = (CompletableFuture<String>) method.invoke(webhookService, localPath);
+            return future != null ? future.get(30, TimeUnit.SECONDS) : null;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
@@ -484,7 +513,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
      */
     private void invokeRemoveWebhook(Object webhookService, String localPath) {
         try {
-            java.lang.reflect.Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
+            Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
             method.invoke(webhookService, localPath);
         } catch (Exception e) {
             logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
@@ -492,21 +521,20 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     }
 
     private void registerCloudWebhooks() {
-        Object ws = getWebhookService();
-        if (ws == null) {
+        Boolean available = withWebhookService(ws -> {
+            refreshCloudWebhooks(ws);
+            return Boolean.TRUE;
+        });
+        if (available == null) {
             logger.debug("Cloud webhook requested but WebhookService not available. Install the openHAB Cloud add-on.");
             return;
         }
 
-        refreshCloudWebhooks(ws);
-
         // Schedule daily refresh to keep the 30-day TTL from expiring
-        webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> {
-            Object refreshWs = getWebhookService();
-            if (refreshWs != null) {
-                refreshCloudWebhooks(refreshWs);
-            }
-        }, WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+        webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> withWebhookService(ws -> {
+            refreshCloudWebhooks(ws);
+            return null;
+        }), WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
     }
 
     private void refreshCloudWebhooks(Object ws) {
@@ -562,10 +590,10 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         if (cloudWebhookBaseUrl == null) {
             return;
         }
-        Object ws = getWebhookService();
-        if (ws != null) {
+        withWebhookService(ws -> {
             invokeRemoveWebhook(ws, SERVLET_PATH);
-        }
+            return null;
+        });
         cloudWebhookBaseUrl = null;
     }
 }

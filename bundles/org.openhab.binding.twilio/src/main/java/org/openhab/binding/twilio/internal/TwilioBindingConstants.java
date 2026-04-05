@@ -31,25 +31,25 @@ public class TwilioBindingConstants {
     public static final ThingTypeUID THING_TYPE_PHONE = new ThingTypeUID(BINDING_ID, "phone");
 
     // Channel IDs - Message state channels
-    public static final String CHANNEL_LAST_MESSAGE_BODY = "lastMessageBody";
-    public static final String CHANNEL_LAST_MESSAGE_FROM = "lastMessageFrom";
-    public static final String CHANNEL_LAST_MESSAGE_DATE = "lastMessageDate";
-    public static final String CHANNEL_LAST_MESSAGE_MEDIA_URL = "lastMessageMediaUrl";
-    public static final String CHANNEL_LAST_MESSAGE_SID = "lastMessageSid";
+    public static final String CHANNEL_LAST_MESSAGE_BODY = "last-message-body";
+    public static final String CHANNEL_LAST_MESSAGE_FROM = "last-message-from";
+    public static final String CHANNEL_LAST_MESSAGE_DATE = "last-message-date";
+    public static final String CHANNEL_LAST_MESSAGE_MEDIA_URL = "last-message-media-url";
+    public static final String CHANNEL_LAST_MESSAGE_SID = "last-message-sid";
 
     // Channel IDs - Call state channels
-    public static final String CHANNEL_LAST_CALL_FROM = "lastCallFrom";
-    public static final String CHANNEL_LAST_CALL_STATUS = "lastCallStatus";
-    public static final String CHANNEL_LAST_CALL_DATE = "lastCallDate";
-    public static final String CHANNEL_LAST_DTMF_DIGITS = "lastDtmfDigits";
+    public static final String CHANNEL_LAST_CALL_FROM = "last-call-from";
+    public static final String CHANNEL_LAST_CALL_STATUS = "last-call-status";
+    public static final String CHANNEL_LAST_CALL_DATE = "last-call-date";
+    public static final String CHANNEL_LAST_DTMF_DIGITS = "last-dtmf-digits";
 
     // Channel IDs - Trigger channels
-    public static final String CHANNEL_SMS_RECEIVED = "smsReceived";
-    public static final String CHANNEL_WHATSAPP_RECEIVED = "whatsappReceived";
-    public static final String CHANNEL_CALL_RECEIVED = "callReceived";
-    public static final String CHANNEL_DTMF_RECEIVED = "dtmfReceived";
-    public static final String CHANNEL_MESSAGE_STATUS = "messageStatus";
-    public static final String CHANNEL_CALL_STATUS_TRIGGER = "callStatusUpdate";
+    public static final String CHANNEL_SMS_RECEIVED = "sms-received";
+    public static final String CHANNEL_WHATSAPP_RECEIVED = "whatsapp-received";
+    public static final String CHANNEL_CALL_RECEIVED = "call-received";
+    public static final String CHANNEL_DTMF_RECEIVED = "dtmf-received";
+    public static final String CHANNEL_MESSAGE_STATUS = "message-status";
+    public static final String CHANNEL_CALL_STATUS_TRIGGER = "call-status-update";
 
     // Twilio API
     public static final String API_BASE_URL = "https://api.twilio.com/2010-04-01/Accounts/";

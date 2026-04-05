@@ -7,8 +7,9 @@
 	<!-- Twilio Account Bridge -->
 	<bridge-type id="account">
 		<label>Twilio Account</label>
-		<description>A Twilio account that provides API access for sending SMS, MMS, WhatsApp messages, and making
-			voice calls.</description>
+		<description>A Twilio account that provides API access for sending SMS, MMS, WhatsApp messages, and making voice
+			calls.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="accountSid" type="text" required="true">
@@ -22,8 +23,7 @@
 			</parameter>
 			<parameter name="publicUrl" type="text" required="false">
 				<label>Public URL</label>
-				<description>Public-facing base URL for webhook callbacks (e.g. https://my.domain.com). Required to receive
-					incoming
+				<description>Public-facing base URL for webhook callbacks (e.g. https://my.domain.com). Required to receive incoming
 					messages and calls.</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -51,28 +51,28 @@
 		</supported-bridge-type-refs>
 
 		<label>Twilio Phone Number</label>
-		<description>Represents a Twilio phone number for sending and receiving SMS, MMS, WhatsApp messages, and voice
-			calls.</description>
+		<description>Represents a Twilio phone number for sending and receiving SMS, MMS, WhatsApp messages, and voice calls.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<!-- Message state channels -->
-			<channel id="lastMessageBody" typeId="lastMessageBody"/>
-			<channel id="lastMessageFrom" typeId="lastMessageFrom"/>
-			<channel id="lastMessageDate" typeId="lastMessageDate"/>
-			<channel id="lastMessageMediaUrl" typeId="lastMessageMediaUrl"/>
-			<channel id="lastMessageSid" typeId="lastMessageSid"/>
+			<channel id="last-message-body" typeId="last-message-body"/>
+			<channel id="last-message-from" typeId="last-message-from"/>
+			<channel id="last-message-date" typeId="last-message-date"/>
+			<channel id="last-message-media-url" typeId="last-message-media-url"/>
+			<channel id="last-message-sid" typeId="last-message-sid"/>
 			<!-- Call state channels -->
-			<channel id="lastCallFrom" typeId="lastCallFrom"/>
-			<channel id="lastCallStatus" typeId="lastCallStatus"/>
-			<channel id="lastCallDate" typeId="lastCallDate"/>
-			<channel id="lastDtmfDigits" typeId="lastDtmfDigits"/>
+			<channel id="last-call-from" typeId="last-call-from"/>
+			<channel id="last-call-status" typeId="last-call-status"/>
+			<channel id="last-call-date" typeId="last-call-date"/>
+			<channel id="last-dtmf-digits" typeId="last-dtmf-digits"/>
 			<!-- Trigger channels -->
-			<channel id="smsReceived" typeId="smsReceived"/>
-			<channel id="whatsappReceived" typeId="whatsappReceived"/>
-			<channel id="callReceived" typeId="callReceived"/>
-			<channel id="dtmfReceived" typeId="dtmfReceived"/>
-			<channel id="messageStatus" typeId="messageStatus"/>
-			<channel id="callStatusUpdate" typeId="callStatusUpdate"/>
+			<channel id="sms-received" typeId="sms-received"/>
+			<channel id="whatsapp-received" typeId="whatsapp-received"/>
+			<channel id="call-received" typeId="call-received"/>
+			<channel id="dtmf-received" typeId="dtmf-received"/>
+			<channel id="message-status" typeId="message-status"/>
+			<channel id="call-status-update" typeId="call-status-update"/>
 		</channels>
 
 		<representation-property>phoneNumber</representation-property>
@@ -84,22 +84,19 @@
 			</parameter>
 			<parameter name="voiceGreeting" type="text" required="false">
 				<label>Voice Greeting TwiML</label>
-				<description>TwiML returned when an incoming voice call is received. Use {gatherUrl} as a placeholder for the
-					DTMF
+				<description>TwiML returned when an incoming voice call is received. Use {gatherUrl} as a placeholder for the DTMF
 					callback URL.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="gatherResponse" type="text" required="false">
 				<label>Gather Response TwiML</label>
-				<description>TwiML returned after DTMF digits are gathered from a caller. Used as fallback when no rule
-					responds with
-					respondWithTwiml.</description>
+				<description>TwiML returned after DTMF digits are gathered from a caller. Used as fallback when no rule responds
+					with respondWithTwiml.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="responseTimeout" type="integer" unit="s" min="1" max="14" required="false">
 				<label>Response Timeout</label>
-				<description>Seconds to wait for a rule to respond with TwiML via respondWithTwiml before using the default
-					greeting
+				<description>Seconds to wait for a rule to respond with TwiML via respondWithTwiml before using the default greeting
 					or gather response.</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -108,71 +105,107 @@
 	</thing-type>
 
 	<!-- State Channel Types -->
-	<channel-type id="lastMessageBody">
+	<channel-type id="last-message-body">
 		<item-type>String</item-type>
 		<label>Last Message Body</label>
 		<description>Body text of the last received SMS or WhatsApp message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageFrom">
+	<channel-type id="last-message-from">
 		<item-type>String</item-type>
 		<label>Last Message From</label>
 		<description>Phone number of the last message sender.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageDate">
+	<channel-type id="last-message-date">
 		<item-type>DateTime</item-type>
 		<label>Last Message Date</label>
 		<description>Timestamp of the last received message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageMediaUrl">
+	<channel-type id="last-message-media-url">
 		<item-type>String</item-type>
 		<label>Last Message Media URL</label>
 		<description>URL of the first media attachment from the last received MMS or WhatsApp message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageSid" advanced="true">
+	<channel-type id="last-message-sid" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Message SID</label>
 		<description>Twilio Message SID of the last received message.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastCallFrom">
+	<channel-type id="last-call-from">
 		<item-type>String</item-type>
 		<label>Last Call From</label>
 		<description>Phone number of the last incoming caller.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastCallStatus">
+	<channel-type id="last-call-status">
 		<item-type>String</item-type>
 		<label>Last Call Status</label>
 		<description>Status of the last call (e.g. ringing, in-progress, completed).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastCallDate">
+	<channel-type id="last-call-date">
 		<item-type>DateTime</item-type>
 		<label>Last Call Date</label>
 		<description>Timestamp of the last incoming call.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastDtmfDigits">
+	<channel-type id="last-dtmf-digits">
 		<item-type>String</item-type>
 		<label>Last DTMF Digits</label>
 		<description>Last DTMF digits received from a caller during a voice call.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Trigger Channel Types -->
-	<channel-type id="smsReceived">
+	<channel-type id="sms-received">
 		<kind>trigger</kind>
 		<label>SMS Received</label>
 		<description>Triggered when an SMS or MMS message is received. Payload is a JSON object with from, to, body,
@@ -180,34 +213,31 @@
 		<event/>
 	</channel-type>
 
-	<channel-type id="whatsappReceived">
+	<channel-type id="whatsapp-received">
 		<kind>trigger</kind>
 		<label>WhatsApp Received</label>
-		<description>Triggered when a WhatsApp message is received. Payload is a JSON object with from, to, body,
-			messageSid,
+		<description>Triggered when a WhatsApp message is received. Payload is a JSON object with from, to, body, messageSid,
 			numMedia, and mediaUrls fields.</description>
 		<event/>
 	</channel-type>
 
-	<channel-type id="callReceived">
+	<channel-type id="call-received">
 		<kind>trigger</kind>
 		<label>Call Received</label>
-		<description>Triggered when an incoming voice call is received. Payload is a JSON object with from, to, callSid,
-			and
+		<description>Triggered when an incoming voice call is received. Payload is a JSON object with from, to, callSid, and
 			callStatus fields.</description>
 		<event/>
 	</channel-type>
 
-	<channel-type id="dtmfReceived">
+	<channel-type id="dtmf-received">
 		<kind>trigger</kind>
 		<label>DTMF Received</label>
-		<description>Triggered when DTMF digits are gathered from a caller. Payload is a JSON object with digits,
-			callSid,
+		<description>Triggered when DTMF digits are gathered from a caller. Payload is a JSON object with digits, callSid,
 			from, and to fields.</description>
 		<event/>
 	</channel-type>
 
-	<channel-type id="messageStatus">
+	<channel-type id="message-status">
 		<kind>trigger</kind>
 		<label>Message Status</label>
 		<description>Triggered when a message delivery status changes. Payload is a JSON object with messageSid,
@@ -215,11 +245,10 @@
 		<event/>
 	</channel-type>
 
-	<channel-type id="callStatusUpdate">
+	<channel-type id="call-status-update">
 		<kind>trigger</kind>
 		<label>Call Status Update</label>
-		<description>Triggered when a call status changes. Payload is a JSON object with callSid, callStatus, from,
-			and to
+		<description>Triggered when a call status changes. Payload is a JSON object with callSid, callStatus, from, and to
 			fields.</description>
 		<event/>
 	</channel-type>
