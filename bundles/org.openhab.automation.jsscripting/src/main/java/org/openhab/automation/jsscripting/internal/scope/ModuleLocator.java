@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.jsscripting.internal;
+package org.openhab.automation.jsscripting.internal.scope;
 
 import java.util.Optional;
 
