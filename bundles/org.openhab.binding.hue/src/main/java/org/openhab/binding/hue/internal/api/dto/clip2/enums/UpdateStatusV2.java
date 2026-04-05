@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -33,6 +35,9 @@ public enum UpdateStatusV2 {
     INSTALL_FAILED("@text/update.state.update-install-failed");
 
     private final String i18nKey;
+
+    private static final Set<UpdateStatusV2> UPDATE_READY_STATES = //
+            Set.of(READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING);
 
     UpdateStatusV2(String i18nKey) {
         this.i18nKey = i18nKey;
@@ -61,6 +66,18 @@ public enum UpdateStatusV2 {
         };
     }
 
+    public static @Nullable UpdateStatusV2 reverseLookup(@Nullable String text) {
+        if (text == null) {
+            return null;
+        }
+        for (UpdateStatusV2 status : values()) {
+            if (status.toString().equalsIgnoreCase(text.trim())) {
+                return status;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         String s = this.name().replace("_", " ");
@@ -69,5 +86,9 @@ public enum UpdateStatusV2 {
 
     public String getI18nKey() {
         return i18nKey;
+    }
+
+    public boolean isUpdateReady() {
+        return UPDATE_READY_STATES.contains(this);
     }
 }

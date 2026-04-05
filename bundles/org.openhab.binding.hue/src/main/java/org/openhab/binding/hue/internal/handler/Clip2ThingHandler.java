@@ -1701,40 +1701,71 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *         message in the UI.
      */
     public String installUpdate() {
-        if (thisResource.getType() != ResourceType.DEVICE || thing.getStatus() != ThingStatus.ONLINE) {
-            return translate("@text/install.update.error");
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            logger.warn("installUpdate() cannot be executed: offline");
+            return getText("install.update.error.offline");
         }
-        // TODO check if update status is actually 'ready to install' before allowing this command to be executed
+        if (thisResource.getType() != ResourceType.DEVICE) {
+            logger.warn("installUpdate() cannot be executed: thing not a device");
+            return getText("install.update.error.not-device");
+        }
+        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+        if (firmware == null) {
+            logger.warn("installUpdate() cannot be executed: state unknown");
+            return getText("install.update.error.state-unknown");
+        }
+        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+        if (status == null) {
+            logger.warn("installUpdate() cannot be executed: state unknown");
+            return getText("install.update.error.state-unknown");
+        }
+        if (!status.isUpdateReady()) {
+            logger.warn("installUpdate() cannot be executed: not ready");
+            return getText("install.update.error.not-ready");
+        }
         String dsuResourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
         if (dsuResourceId == null) {
-            logger.error("{} -> installUpdate() no 'DEVICE_SOFTWARE_UPDATE' resource found", resourceId);
-            return translate("@text/install.update.error");
+            logger.warn("installUpdate() cannot be executed: resource not found");
+            return getText("install.update.error.resource-not-found");
         }
+        scheduler.submit(() -> installUpdateTask(dsuResourceId));
+        return getText("install.update.success");
+    }
+
+    /**
+     * Helper method to get the translated text for a given key.
+     * 
+     * @param key the key to be translated.
+     * @return the translated text or a default text if no translation is found.
+     */
+    private String getText(String key) {
+        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
+        return result == null ? key : result;
+    }
+
+    /**
+     * Inner software update task called on a thread.
+     * 
+     * @param resourceId
+     */
+    private void installUpdateTask(String resourceId) {
         try {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                     "@text/update.state.installing-update");
             Resource putResource = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate()
-                    .setId(dsuResourceId);
+                    .setId(resourceId);
             Resources resources = getBridgeHandler().putResource(putResource);
             if (resources.hasErrors()) {
-                logger.info("{} -> installUpdate() succeeded with errors: {}", thing.getUID(),
-                        String.join("; ", resources.getErrors()));
+                logger.info("installUpdate() succeeded with errors: {}", String.join("; ", resources.getErrors()));
             }
-            return translate("@text/install.update.success");
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("{} -> installUpdate() error {}", dsuResourceId, e.getMessage(), e);
+                logger.debug("installUpdate() error {}", e.getMessage(), e);
             } else {
-                logger.warn("{} -> installUpdate() error {}", dsuResourceId, e.getMessage());
+                logger.warn("installUpdate() error {}", e.getMessage());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        return translate("@text/install.update.error");
-    }
-
-    public String translate(String key) {
-        String result = i18nProvider.getText(bundle, key, null, localeProvider.getLocale());
-        return result != null ? result : key;
     }
 }

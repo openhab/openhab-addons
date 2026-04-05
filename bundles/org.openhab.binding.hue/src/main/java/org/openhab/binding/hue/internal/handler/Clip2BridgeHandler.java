@@ -1037,16 +1037,48 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public String installUpdate() {
         if (thing.getStatus() != ThingStatus.ONLINE) {
-            return translate("@text/install.update.error");
+            logger.warn("installUpdate() cannot be executed: offline");
+            return getText("install.update.error.offline");
         }
-        // TODO check if update status is actually 'ready to install' before allowing this command to be executed
+        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+        if (firmware == null) {
+            logger.warn("installUpdate() cannot be executed: state unknown");
+            return getText("install.update.error.state-unknown");
+        }
+        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+        if (status == null) {
+            logger.warn("installUpdate() cannot be executed: state unknown");
+            return getText("install.update.error.state-unknown");
+        }
+        if (!status.isUpdateReady()) {
+            logger.warn("installUpdate() cannot be executed: not ready");
+            return getText("install.update.error.not-ready");
+        }
+        scheduler.submit(this::installUpdateTask);
+        return getText("install.update.success");
+    }
+
+    /**
+     * Helper method to get the translated text for a given key.
+     * 
+     * @param key the key to be translated.
+     * @return the translated text or a default text if no translation is found.
+     */
+    private String getText(String key) {
+        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
+        return result == null ? key : result;
+    }
+
+    /**
+     * Inner software update task called on a thread.
+     */
+    private void installUpdateTask() {
         try {
             cancelTask(afterUpdateTask, false);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                     "@text/update.state.installing-update");
             getClip2Bridge().installUpdate();
             afterUpdateTask = scheduler.schedule(() -> checkConnection(), UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
-            return translate("@text/install.update.success");
         } catch (IOException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("installUpdate() error {}", e.getMessage(), e);
@@ -1054,11 +1086,5 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 logger.warn("installUpdate() error {}", e.getMessage());
             }
         }
-        return translate("@text/install.update.error");
-    }
-
-    public String translate(String key) {
-        String result = i18nProvider.getText(bundle, key, null, localeProvider.getLocale());
-        return result != null ? result : key;
     }
 }

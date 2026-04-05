@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = SoftwareUpdateActions.class)
-@ThingActionsScope(name = "hue-software-update")
+@ThingActionsScope(name = "hue")
 @NonNullByDefault
 public class SoftwareUpdateActions implements ThingActions {
 
@@ -54,19 +54,19 @@ public class SoftwareUpdateActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (handler instanceof Clip2BridgeHandler || handler instanceof Clip2ThingHandler) ? handler : null;
+        this.handler = handler;
     }
 
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
     public @ActionOutput(type = "java.lang.String", label = "@text/install.update.result.label", description = "@text/install.update.result.description") String installUpdate() {
         ThingHandler handler = this.handler;
-        if (handler instanceof Clip2BridgeHandler bridgeHandler) {
-            return bridgeHandler.installUpdate();
-        } else if (handler instanceof Clip2ThingHandler thingHandler) {
-            return thingHandler.installUpdate();
-        } else {
-            logger.warn("ThingHandler not known");
+        if (!(handler instanceof Clip2BridgeHandler || handler instanceof Clip2ThingHandler)) {
+            logger.warn("SoftwareUpdateActions called but ThingHandler not known: {}", handler);
             return "Error: ThingHandler not known";
         }
+        if (handler instanceof Clip2BridgeHandler bridgeHandler) {
+            return bridgeHandler.installUpdate();
+        } // Clip2ThingHandler
+        return ((Clip2ThingHandler) handler).installUpdate();
     }
 }
