@@ -120,7 +120,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
         @Override
         public void run() {
-            byte[] buffer = new byte[ENOCEAN_MAX_DATA + 7]; // 7 = 1 (sync) + 4 (header) + 2 * 1 (CrC8)
+            byte[] buffer = new byte[ENOCEAN_MAX_DATA + 7]; // 7 = 1 (sync) + 4 (header) + 2 * 1 (CRC-8)
             int read;
             ReadingState state = ReadingState.WAIT_FIRST_SYNCBYTE;
             int doRead = 1;
@@ -200,7 +200,7 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                 if (length == 0) {
                                     logger.debug("Received header with zero length, assuming false sync byte");
                                 } else {
-                                    logger.debug("Received header with invalid CrC8, assuming false sync byte");
+                                    logger.debug("Received header with invalid CRC-8, assuming false sync byte");
                                 }
                                 start = -1;
                                 length = -1;

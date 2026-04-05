@@ -17,8 +17,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,7 +89,9 @@ public class EnOceanESP3TransceiverTest {
 
     @Test
     public void testReceiver1() throws Exception {
-        String hexBytes = Files.readString(Path.of("src/test/resources/ESP3Stream1.txt"));
+        String hexBytes = new String(
+                Objects.requireNonNull(getClass().getResourceAsStream("/ESP3Stream1.txt")).readAllBytes(),
+                StandardCharsets.UTF_8);
         ByteArrayInputStream bis = new ByteArrayInputStream(HexFormat.of().parseHex(hexBytes));
         when(port.getInputStream()).thenReturn(bis);
 
@@ -127,7 +128,9 @@ public class EnOceanESP3TransceiverTest {
 
     @Test
     public void testReceiver2() throws Exception {
-        String hexBytes = Files.readString(Path.of("src/test/resources/ESP3Stream2.txt"));
+        String hexBytes = new String(
+                Objects.requireNonNull(getClass().getResourceAsStream("/ESP3Stream2.txt")).readAllBytes(),
+                StandardCharsets.UTF_8);
         ByteArrayInputStream bis = new ByteArrayInputStream(HexFormat.of().parseHex(hexBytes));
         when(port.getInputStream()).thenReturn(bis);
 
