@@ -11,8 +11,12 @@ This binding integrates Dahua VTO Villastation door controllers with openHAB, en
 
 ## Discovery
 
-Automatic discovery is not supported.
-Things must be manually configured.
+Dahua door stations are automatically discovered on the local network using the DHIP UDP multicast discovery protocol.
+The discovered thing is pre-configured with the device's IP address as `hostname`.
+`username` and `password` must be set manually after accepting the thing in the inbox.
+
+**Note:** Auto-discovery relies on UDP multicast (`239.255.255.251:37810`) and therefore only works when openHAB and the Dahua devices are on the **same subnet**.
+Devices in a different subnet or VLAN will not be found automatically and must be added manually.
 
 ## Thing Configuration
 
@@ -20,14 +24,25 @@ Things must be manually configured.
 
 Single-button outdoor station.
 
-| Parameter    | Type | Required | Description                                                                  |
-| ------------ | ---- | -------- | ---------------------------------------------------------------------------- |
-| hostname     | text | Yes      | Hostname or IP address of the device (e.g., 192.168.1.100)                   |
-| username     | text | Yes      | Username to access the device                                                |
-| password     | text | Yes      | Password to access the device                                                |
-| snapshotPath | text | Yes      | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
+| Parameter    | Type    | Required | Default | Description                                                                                                                                                              |
+| ------------ | ------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| hostname     | text    | Yes      |         | Hostname or IP address of the device (e.g., 192.168.1.100)                                                                                                               |
+| username     | text    | Yes      |         | Username to access the device                                                                                                                                            |
+| password     | text    | Yes      |         | Password to access the device                                                                                                                                            |
+| snapshotPath | text    | Yes      |         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                             |
+| useHttps     | boolean | No       | false   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used. |
 
 **Note:** Windows paths are not currently supported.
+
+**Note on HTTPS:**
+To use HTTPS for snapshot retrieval and door-open commands, set `useHttps=true` and enable HTTPS on the device.
+Dahua devices typically use a self-signed certificate, which must be imported into the Java truststore of the machine running openHAB.
+If you have exported the device certificate as `ca.crt`, import it with:
+
+```shell
+keytool -importcert -alias dahua-door -file ca.crt \
+    -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit
+```
 
 ## Channels
 
@@ -57,12 +72,16 @@ Single-button outdoor station.
 
 #### Thing Configuration
 
+When discovered automatically, the thing ID is based on the device serial number when available (e.g., `abc1234xyz56789`), and otherwise falls back to the device MAC address and then the hostname.
+For manual configuration, any unique ID can be used.
+
 ```java
 Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
     hostname="192.168.1.100",
     username="admin",
     password="password123",
-    snapshotPath="/var/lib/openhab/door-images"
+    snapshotPath="/var/lib/openhab/door-images",
+    useHttps=false
 ]
 ```
 
@@ -98,7 +117,8 @@ Thing dahuadoor:vto3211:entrance "Entrance Station" @ "Entrance" [
     hostname="192.168.1.101",
     username="admin",
     password="password123",
-    snapshotPath="/var/lib/openhab/door-images"
+    snapshotPath="/var/lib/openhab/door-images",
+    useHttps=false
 ]
 ```
 

@@ -35,6 +35,7 @@
 				<description>Relay control to open door 2</description>
 			</channel>
 		</channels>
+		<representation-property>macAddress</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -55,6 +56,12 @@
 			<parameter name="snapshotPath" type="text" required="true">
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
+			</parameter>
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.
+					Disable for plain HTTP (port 80).</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>

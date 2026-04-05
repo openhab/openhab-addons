@@ -71,7 +71,7 @@ public class IntesisBoxMessage {
     }
 
     public static @Nullable IntesisBoxMessage parse(String message) {
-        Matcher m = REGEX.matcher(message);
+        Matcher m = REGEX.matcher(message.trim());
         if (!m.find()) {
             return null;
         }

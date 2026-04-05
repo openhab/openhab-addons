@@ -46,7 +46,6 @@ public class A5_07_01 extends A5_07 {
     private static final byte DB0_DEFAULT = 0x09;
 
     public A5_07_01() {
-        super();
     }
 
     public A5_07_01(ERP1Message packet) {

@@ -145,6 +145,29 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="pm4">
+		<item-type>Number:Density</item-type>
+		<label>PM4 Air Quality</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="pm1">
+		<item-type>Number:Density</item-type>
+		<label>PM1 Air Quality</label>
+		<category>AirQuality</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO₂</label>

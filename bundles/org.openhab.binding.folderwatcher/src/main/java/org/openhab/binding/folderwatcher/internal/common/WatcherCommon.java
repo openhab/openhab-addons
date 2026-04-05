@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WatcherCommon} class contains commonly used methods.
@@ -28,25 +30,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class WatcherCommon {
+    private static final Logger logger = LoggerFactory.getLogger(WatcherCommon.class);
 
     private static void initFile(File file, String watchDir) throws IOException {
+        logger.debug("Initializing file {} with watch directory: {}", file.getAbsolutePath(), watchDir);
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file))) {
             fileWriter.write(watchDir);
             fileWriter.newLine();
+            logger.debug("File {} initialized successfully", file.getAbsolutePath());
         }
     }
 
     public static List<String> initStorage(File file, String watchDir) throws IOException {
+        logger.debug("Initializing storage from file: {}, watch directory: {}", file.getAbsolutePath(), watchDir);
         List<String> returnList = List.of();
         List<String> currentFileListing = List.of();
         if (!file.exists()) {
+            logger.debug("Listing file does not exist, creating parent directories and initializing file");
             Files.createDirectories(file.toPath().getParent());
             initFile(file, watchDir);
         } else {
+            logger.debug("Listing file exists, reading existing entries");
             currentFileListing = Files.readAllLines(file.toPath().toAbsolutePath());
-            if (currentFileListing.get(0).equals(watchDir)) {
+            if (currentFileListing.isEmpty()) {
+                logger.debug("File is empty, initializing with watch directory");
+                initFile(file, watchDir);
+            } else if (currentFileListing.get(0).equals(watchDir)) {
+                logger.debug("File contains {} entries for matching watch directory", currentFileListing.size());
                 returnList = currentFileListing;
             } else {
+                logger.debug("Watch directory mismatch in file, reinitializing. Previous: {}, Current: {}",
+                        currentFileListing.get(0), watchDir);
                 initFile(file, watchDir);
             }
         }
@@ -54,11 +68,14 @@ public class WatcherCommon {
     }
 
     public static void saveNewListing(List<String> newList, File listingFile) throws IOException {
+        logger.debug("Saving {} new entries to listing file: {}", newList.size(), listingFile.getAbsolutePath());
         try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(listingFile, true))) {
             for (String newFile : newList) {
                 fileWriter.write(newFile);
                 fileWriter.newLine();
+                logger.trace("Saved entry: {}", newFile);
             }
+            logger.debug("Successfully saved {} entries to listing file", newList.size());
         }
     }
 }

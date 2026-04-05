@@ -23,12 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.Helper;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
+import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -72,8 +77,22 @@ public abstract class EEP {
         setOptionalData(packet.getOptionalPayload());
     }
 
-    public EEP convertFromCommand(String channelId, String channelTypeId, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+    public EEP convertFromCommand(Thing thing, ChannelUID channelUID, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
+
+        String channelId = channelUID.getId();
+        Channel channel = thing.getChannel(channelUID);
+        // Virtual channels (e.g. sendCommand) are not registered as real Thing channels.
+        // Allow those through; for any other unknown channel, log and bail out.
+        if (channel == null && !VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)) {
+            logger.debug("Channel {} not found on thing {}; ignoring command {}", channelUID, thing.getUID(), command);
+            return this;
+        }
+
+        ChannelTypeUID channelTypeUID = (channel != null) ? channel.getChannelTypeUID() : null;
+        String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+        Configuration config = (channel != null) ? channel.getConfiguration() : new Configuration();
+
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
                     command.toString(), channelId, channelTypeId));
@@ -82,13 +101,27 @@ public abstract class EEP {
         if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
             teachInQueryImpl(config);
         } else {
-            convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, config);
+            convertFromCommandImpl(thing, channelUID, command, getCurrentStateFunc, stm);
+        }
+        return this;
+    }
+
+    public EEP convertFromCommand(String channelId, String channelTypeId, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration channelConfig) {
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
+                    command.toString(), channelId, channelTypeId));
+        }
+        if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
+            teachInQueryImpl(channelConfig);
+        } else {
+            convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, channelConfig);
         }
         return this;
     }
 
     public State convertToState(String channelId, String channelTypeId, Configuration config,
-            Function<String, @Nullable State> getCurrentStateFunc) {
+            Function<String, @Nullable State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
@@ -111,17 +144,17 @@ public abstract class EEP {
                 return new DateTimeType();
         }
 
-        return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
+        return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config, stm);
     }
 
     public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
-            Configuration config) {
+            Configuration config, @Nullable STMStateMachine<?, ?> stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        return convertToEventImpl(channelId, channelTypeId, lastEvent, config);
+        return convertToEventImpl(channelId, channelTypeId, lastEvent, config, stm);
     }
 
     public EEP setRORG(RORG newRORG) {
@@ -215,17 +248,48 @@ public abstract class EEP {
 
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
+        // legacy interface
         logger.warn("No implementation for sending data from channel {}/{} for this EEP!", channelId, channelTypeId);
+    }
+
+    protected void convertFromCommandImpl(Thing thing, ChannelUID channelUID, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
+
+        // interface for EEPs using the state machine
+        Channel channel = thing.getChannel(channelUID);
+        if (channel != null) {
+            Configuration channelConfig = channel.getConfiguration();
+            String channelId = channelUID.getId();
+            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+            String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+
+            convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, channelConfig);
+        }
     }
 
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
+        // legacy interface
         return UnDefType.UNDEF;
+    }
+
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, @Nullable State> getCurrentStateFunc, Configuration config,
+            @Nullable STMStateMachine<?, ?> stm) {
+        // interface for EEPs using the state machine
+        return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 
     protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
+        // legacy interface
         return null;
+    }
+
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
+            Configuration config, @Nullable STMStateMachine<?, ?> stm) {
+        // interface for EEPs using the state machine
+        return convertToEventImpl(channelId, channelTypeId, lastEvent, config);
     }
 
     protected void teachInQueryImpl(@Nullable Configuration config) {

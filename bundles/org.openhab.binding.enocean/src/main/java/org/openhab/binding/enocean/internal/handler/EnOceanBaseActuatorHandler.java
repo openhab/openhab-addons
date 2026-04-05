@@ -28,9 +28,14 @@ import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
+import org.openhab.binding.enocean.internal.eep.StateMachineProvider;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
+import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,6 +50,7 @@ import org.openhab.core.util.HexUtils;
 /**
  *
  * @author Daniel Weber - Initial contribution
+ * @author Sven Schad - added state machine for blinds/rollershutter
  *         This class defines base functionality for sending eep messages. This class extends EnOceanBaseSensorHandler
  *         class as most actuator things send status or response messages, too.
  */
@@ -64,8 +70,14 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob; // used for polling current status of thing
 
-    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+    private final Storage<String> storage;
+
+    private static final String STORAGE_KEY_STM_STATE = "stmstate";
+
+    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            StorageService storageService) {
         super(thing, itemChannelLinkRegistry);
+        this.storage = storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader());
     }
 
     /**
@@ -200,7 +212,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         // Generic things are treated as actuator things, however to support also generic sensors one can omit
         // senderIdOffset
-        // TODO: seperate generic actuators from generic sensors?
+        // TODO: separate generic actuators from generic sensors?
         Integer senderOffset = getConfiguration().senderIdOffset;
 
         if ((senderOffset == null && THING_TYPE_GENERICTHING.equals(this.getThing().getThingTypeUID()))) {
@@ -239,19 +251,19 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     protected void sendRequestResponse() {
-        sendMessage(VIRTUALCHANNEL_SEND_COMMAND, VIRTUALCHANNEL_SEND_COMMAND, OnOffType.ON, null);
+        sendMessage(new ChannelUID(thing.getUID(), VIRTUALCHANNEL_SEND_COMMAND), OnOffType.ON);
     }
 
-    protected void sendMessage(String channelId, String channelTypeId, Command command,
-            @Nullable Configuration channelConfig) {
+    protected void sendMessage(ChannelUID channelUID, Command command) {
+
         EEPType sendType = sendingEEPType;
         if (sendType == null) {
             logger.warn("cannot send a message with an empty EEPType");
             return;
         }
         EEP eep = EEPFactory.createEEP(sendType);
-        if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                .hasData()) {
+
+        if (eep.convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), stm).hasData()) {
             BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
             if (msg == null) {
@@ -274,7 +286,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         // check if the channel is linked otherwise do nothing
-        String channelId = channelUID.getId();
         Channel channel = getThing().getChannel(channelUID);
         if (channel == null || !isLinked(channelUID)) {
             return;
@@ -299,8 +310,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         try {
-            Configuration channelConfig = channel.getConfiguration();
-            sendMessage(channelId, channelTypeId, command, channelConfig);
+            sendMessage(channelUID, command);
         } catch (IllegalArgumentException e) {
             logger.warn("Exception while sending telegram!", e);
         }
@@ -329,6 +339,84 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
             this.refreshJob = null;
+        }
+    }
+
+    /**
+     * Callback invoked when the state machine changes state.
+     * Updates the state channel for UI visibility and persists the new state
+     * using the openHAB {@link StorageService} (JSON file in userdata).
+     * No item linking or persistence service configuration is required.
+     *
+     * @param newState the new state
+     */
+    private void onStateChanged(Enum<?> newState) {
+        updateState(CHANNEL_STATEMACHINESTATE, new StringType(newState.name()));
+        storage.put(STORAGE_KEY_STM_STATE, newState.name());
+        logger.debug("STM state changed to {}", newState);
+    }
+
+    /**
+     * Restores the state machine state from the StorageService after a restart.
+     * The state is automatically persisted to a JSON file in the openHAB userdata
+     * directory whenever the state machine transitions. No item linking or
+     * persistence service configuration is required.
+     * <p>
+     * The provider's {@link StateMachineProvider#getStateOnStartup} method is responsible
+     * for deciding which state to restore (e.g. replacing unsafe transient states).
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void restoreStateMachineState(StateMachineProvider<?, ?> stmEEP) {
+        STMStateMachine<?, ?> localStm = stm;
+        if (localStm == null) {
+            return;
+        }
+        @Nullable
+        Enum<?> persistedState = null;
+        @Nullable
+        String lastState = storage.get(STORAGE_KEY_STM_STATE);
+        if (lastState != null) {
+            try {
+                Class<? extends Enum> stateClass = localStm.getState().getDeclaringClass();
+                persistedState = Enum.valueOf(stateClass, lastState);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Could not parse persisted STM state '{}', passing null to provider", lastState);
+            }
+        }
+        @Nullable
+        Enum<?> startupState = ((StateMachineProvider) stmEEP).getStateOnStartup(persistedState);
+        if (startupState != null) {
+            ((STMStateMachine) localStm).restoreState(startupState);
+            logger.debug("STM startup state: {}", startupState);
+        }
+    }
+
+    /**
+     * Processes a stored command after a state transition.
+     * This is called via callback when calibration or positioning completes.
+     */
+    private void processStoredCommand() {
+        STMStateMachine<?, ?> stateMachine = stm;
+        if (stateMachine == null) {
+            return;
+        }
+
+        @Nullable
+        String channel = stateMachine.getStoredChannel();
+        @Nullable
+        Command command = stateMachine.getStoredCommand();
+
+        if (channel != null && command != null) {
+            logger.debug("Processing stored command {} for channel {}", command, channel);
+            stateMachine.clearStoredCommand();
+
+            // Schedule the command processing with a short delay
+            stateMachine.scheduleDelayed(() -> {
+                Channel ch = getThing().getChannel(channel);
+                if (ch != null) {
+                    handleCommand(ch.getUID(), command);
+                }
+            }, 100);
         }
     }
 }
