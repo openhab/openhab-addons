@@ -1,8 +1,0 @@
--importpackage: \
- org.openhab.io.openhabcloud;resolution:=optional,\
- org.openhab.io.openhabcloud.*;resolution:=optional
-
-Import-Package: \
- org.openhab.io.openhabcloud;resolution:=optional,\
- org.openhab.io.openhabcloud.*;resolution:=optional,\
- *
