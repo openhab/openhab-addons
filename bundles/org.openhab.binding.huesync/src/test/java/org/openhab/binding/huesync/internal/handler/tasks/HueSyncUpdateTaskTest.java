@@ -17,8 +17,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
@@ -53,15 +54,16 @@ import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 @ExtendWith(MockitoExtension.class)
 public class HueSyncUpdateTaskTest {
 
-    private HueSyncDeviceConnection connection = mock(HueSyncDeviceConnection.class);
-    private HueSyncExceptionHandler exceptionHandler = mock(HueSyncExceptionHandler.class);
+    @Mock
+    private HueSyncDeviceConnection connection;
+    @Mock
+    private HueSyncExceptionHandler exceptionHandler;
 
     private HueSyncDevice deviceInfo = new HueSyncDevice();
 
     @BeforeEach
     void setup() {
-        connection = mock(HueSyncDeviceConnection.class);
-        exceptionHandler = mock(HueSyncExceptionHandler.class);
+        // Mocks are injected by MockitoExtension
         deviceInfo = new HueSyncDevice();
         deviceInfo.name = "TestDevice";
         deviceInfo.deviceType = "HSB1";
@@ -97,7 +99,7 @@ public class HueSyncUpdateTaskTest {
         var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
         task.run();
 
-        assertThat(received.isEmpty(), is(true));
+        assertTrue(received.isEmpty());
         verify(exceptionHandler).handle(any(Exception.class));
     }
 
@@ -110,7 +112,7 @@ public class HueSyncUpdateTaskTest {
         var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
         task.run();
 
-        assertThat(received.isEmpty(), is(true));
+        assertTrue(received.isEmpty());
         verify(exceptionHandler).handle(any(Exception.class));
     }
 
@@ -124,7 +126,7 @@ public class HueSyncUpdateTaskTest {
         var task = new HueSyncUpdateTask(connection, deviceInfo, received::add, exceptionHandler);
         task.run();
 
-        assertThat(received.isEmpty(), is(true));
+        assertTrue(received.isEmpty());
         verify(exceptionHandler).handle(any(Exception.class));
     }
 
