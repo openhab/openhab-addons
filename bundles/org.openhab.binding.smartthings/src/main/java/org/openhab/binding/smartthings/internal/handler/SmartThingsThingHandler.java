@@ -260,7 +260,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     public void refreshDeviceProps(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
-        Map<String, String> properties = new HashMap<>(editProperties());
+        Map<String, String> propMaps = new HashMap<>(editProperties());
         for (String propertyKey : capa.keySet()) {
             SmartThingsStatusProperties props = capa.get(propertyKey);
 
