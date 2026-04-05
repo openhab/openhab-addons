@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.enocean.internal.transceiver;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,8 +25,10 @@ import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP2Packet;
+import org.openhab.binding.enocean.internal.messages.ESP2Packet.ESP2PacketType;
 import org.openhab.binding.enocean.internal.messages.ESP2PacketConverter;
 import org.openhab.binding.enocean.internal.messages.Response;
+import org.openhab.binding.enocean.internal.util.EnOceanUtil;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.util.HexUtils;
 
@@ -37,134 +39,247 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class EnOceanESP2Transceiver extends EnOceanTransceiver {
 
+    private static final String RX_THREAD_NAME_PREFIX = "OH-binding-enocean-ESP2-RX-";
+    private static final AtomicInteger THREAD_NUM = new AtomicInteger();
+
+    // All access must be guarded by "this"
+    private @Nullable Thread worker;
+
     public EnOceanESP2Transceiver(String path, TransceiverErrorListener errorListener,
             ScheduledExecutorService scheduler, @Nullable SerialPortManager serialPortManager) {
         super(path, errorListener, scheduler, serialPortManager);
     }
 
     enum ReadingState {
-        WaitingForFirstSyncByte,
-        WaitingForSecondSyncByte,
-        ReadingHeader,
-        ReadingData
+        WAIT_FIRST_SYNCBYTE,
+        WAIT_SECOND_SYNCBYTE,
+        READ_HEADER,
+        READ_DATA
     }
 
-    byte[] dataBuffer = new byte[ESP2Packet.ESP_PACKET_LENGTH];
-    ReadingState state = ReadingState.WaitingForFirstSyncByte;
-    int currentPosition = 0;
-    int dataLength = -1;
-    byte packetType = -1;
+    @Override
+    public void startReceiving(ScheduledExecutorService scheduler) {
+        Thread worker;
+        InputStream is;
+        synchronized (this) {
+            worker = this.worker;
+            if (worker != null && worker.isAlive()) {
+                worker.interrupt();
+            }
+
+            is = inputStream;
+            if (is == null) {
+                this.worker = worker = null;
+            } else {
+                this.worker = worker = new Thread(new Receiver(is, errorListener, scheduler),
+                        RX_THREAD_NAME_PREFIX + THREAD_NUM.incrementAndGet());
+                worker.setUncaughtExceptionHandler((t, e) -> {
+                    logger.warn("Uncaught exception in EnOceanSerialTransceiver RX thread ({}): {}", t.getName(),
+                            e.getMessage());
+                    logger.trace("", e);
+                    TransceiverErrorListener listener = this.errorListener;
+                    if (listener != null) {
+                        scheduler.execute(() -> listener.errorOccurred(e));
+                    }
+                });
+            }
+        }
+        if (worker == null) {
+            logger.warn("Cannot read from null stream");
+            TransceiverErrorListener errorListener = this.errorListener;
+            if (errorListener != null) {
+                IOException e = new IOException("Cannot read from null stream");
+                scheduler.execute(() -> errorListener.errorOccurred(e));
+            }
+        } else {
+            worker.start();
+            logger.info("EnOceanSerialTransceiver RX thread ({}) started", worker.getName());
+        }
+    }
 
     @Override
-    protected void processMessage(byte firstByte) {
-        byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
-        int bytesRead = -1;
-        byte byteBuffer;
+    protected void shutDownRx() {
+        Thread worker;
+        synchronized (this) {
+            worker = this.worker;
+            this.worker = null;
+        }
+        if (worker != null && worker.isAlive()) {
+            worker.interrupt();
+        }
+    }
 
-        try {
-            readingBuffer[0] = firstByte;
-            InputStream localInputStream = inputStream;
-            if (localInputStream == null) {
-                throw new IOException("could not read from inputstream, it was null");
+    private class Receiver implements Runnable {
+
+        private final InputStream is;
+        private final @Nullable TransceiverErrorListener errorListener;
+        private final ScheduledExecutorService scheduler;
+
+        public Receiver(InputStream is, @Nullable TransceiverErrorListener errorListener,
+                ScheduledExecutorService scheduler) {
+            this.is = is;
+            this.errorListener = errorListener;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public void run() {
+            byte[] bytes = new byte[64];
+            int read;
+            ReadingState state = ReadingState.WAIT_FIRST_SYNCBYTE;
+            int doRead = 1;
+            byte packetType = -1;
+            int packetLength = -1;
+            int packetStart = -1;
+            int pos = 0;
+            final Thread thread = Thread.currentThread();
+            InputStream is = this.is;
+            logger.trace("RX InputStream implementation: {}", is.getClass().getName());
+            if (!is.markSupported()) {
+                // Use this as a "rough indicator" that the stream isn't buffered
+                logger.trace("Wrapping {} in BufferedInputStream", is.getClass().getName());
+                is = new BufferedInputStream(is, ENOCEAN_MAX_DATA);
             }
-            bytesRead = localInputStream.read(readingBuffer, 1, localInputStream.available());
-            if (bytesRead == -1) {
-                throw new IOException("could not read from inputstream");
-            }
+            byte[] packetBytes;
 
-            Future<?> localReadingTask = readingTask;
-            if (localReadingTask == null || localReadingTask.isCancelled()) {
-                return;
-            }
-
-            bytesRead++;
-            for (int p = 0; p < bytesRead; p++) {
-                byteBuffer = readingBuffer[p];
-
-                switch (state) {
-                    case WaitingForFirstSyncByte:
-                        if (byteBuffer == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE) {
-                            state = ReadingState.WaitingForSecondSyncByte;
-                            logger.trace("Received First Sync Byte");
-                        }
-                        break;
-                    case WaitingForSecondSyncByte:
-                        if (byteBuffer == ESP2Packet.ENOCEAN_ESP2_SECONDSYNC_BYTE) {
-                            state = ReadingState.ReadingHeader;
-                            logger.trace("Received Second Sync Byte");
-                        }
-                        break;
-                    case ReadingHeader: {
-                        state = ReadingState.ReadingData;
-
-                        currentPosition = 0;
-                        dataBuffer[currentPosition++] = byteBuffer;
-                        dataLength = ((dataBuffer[0] & 0xFF) & 0b11111);
-                        packetType = (byte) ((dataBuffer[0] & 0xFF) >> 5);
-
-                        logger.trace(">> Received header, data length {} packet type {}", dataLength, packetType);
+            while (!thread.isInterrupted()) {
+                try {
+                    read = is.read(bytes, pos, doRead);
+                } catch (IOException e) {
+                    logger.debug("Unable to read from serial port: {}", e.getMessage());
+                    logger.trace("", e);
+                    TransceiverErrorListener errorListener = this.errorListener;
+                    if (errorListener != null && !thread.isInterrupted()) {
+                        // We don't want to take the Thing offline if an IOException is thrown when the port is closed,
+                        // which is why we check isInterrupted()
+                        errorListener.errorOccurred(e);
                     }
+                    break;
+                }
+                if (read <= 0) {
+                    // Unlike regular InputStreams, the serial port streams occasionally returns -1 even if the
+                    // stream is still "alive", so just accept it and try to read again. Add a short backoff to
+                    // avoid a tight loop and high CPU usage if this happens repeatedly.
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                         break;
-                    case ReadingData:
-                        if (currentPosition == dataLength) {
-                            if (ESP2Packet.validateCheckSum(dataBuffer, dataLength, byteBuffer)) {
-                                BasePacket packet = ESP2PacketConverter.buildPacket(dataLength, packetType, dataBuffer);
-                                if (packet != null) {
-                                    switch (packet.getPacketType()) {
-                                        case RADIO_ERP1: {
-                                            ERP1Message msg = (ERP1Message) packet;
-                                            logger.debug("Converted to: {} with RORG {} for {}",
-                                                    packet.getPacketType().name(), msg.getRORG().name(),
-                                                    HexUtils.bytesToHex(msg.getSenderId()));
+                    }
+                    continue;
+                }
+                doRead -= read;
+                if (doRead == 0) {
+                    switch (state) {
+                        case WAIT_FIRST_SYNCBYTE:
+                            if (bytes[pos] == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE) {
+                                state = ReadingState.WAIT_SECOND_SYNCBYTE;
+                                logger.trace("Received first sync byte");
+                            }
+                            doRead = 1;
+                            break;
+                        case WAIT_SECOND_SYNCBYTE:
+                            if (bytes[pos] == ESP2Packet.ENOCEAN_ESP2_SECONDSYNC_BYTE) {
+                                state = ReadingState.READ_HEADER;
+                                logger.trace("Received second sync byte");
+                            } else {
+                                state = ReadingState.WAIT_FIRST_SYNCBYTE;
+                                logger.trace(
+                                        "Received non-matching second sync byte ({}) - first sync byte was a false positive",
+                                        EnOceanUtil.byteToHex(bytes[pos]));
+                            }
+                            doRead = 1;
+                            break;
+                        case READ_HEADER:
+                            doRead = bytes[pos] & 0x1f;
+                            if (doRead == 0) {
+                                state = ReadingState.WAIT_FIRST_SYNCBYTE;
+                                doRead = 1;
+                                logger.debug(">> Received header with zero length, ignoring packet");
+                            } else {
+                                state = ReadingState.READ_DATA;
+                                packetStart = pos;
+                                packetLength = (byte) doRead;
+                                packetType = (byte) ((bytes[pos] & 0xff) >> 5);
+                                logger.trace(">> Received header, data length {} packet type {}", doRead, packetType);
+                            }
+                            break;
+                        case READ_DATA:
+                            try {
+                                packetBytes = EnOceanUtil.subArray(bytes, packetStart, packetLength + 1);
+                                if (ESP2Packet.validateCheckSum(packetBytes, 0, packetLength)) {
+                                    if (packetBytes[1] == ESP2Packet.ENOCEAN_ESP2_INTERNAL_COMMAND_BYTE) {
+                                        // Internal commands have a structure that we can't decode,
+                                        // and they shouldn't be of interest to us
+                                        if (logger.isTraceEnabled()) {
+                                            logger.trace("Skipping internal command ESP2Packet: {}",
+                                                    HexUtils.bytesToHex(packetBytes));
+                                        }
+                                    } else {
+                                        BasePacket packet = ESP2PacketConverter
+                                                .buildPacket(ESP2PacketType.getPacketType(packetType), packetBytes);
+                                        if (packet != null) {
+                                            switch (packet.getPacketType()) {
+                                                case RADIO_ERP1:
+                                                    ERP1Message msg = (ERP1Message) packet;
+                                                    if (logger.isDebugEnabled()) {
+                                                        logger.debug("Converted to: {} with RORG {} for {}",
+                                                                packet.getPacketType().name(), msg.getRORG().name(),
+                                                                HexUtils.bytesToHex(msg.getSenderId()));
+                                                    }
 
-                                            if (msg.getRORG() != RORG.Unknown) {
-                                                informListeners(msg);
-                                            } else {
-                                                logger.debug("Received unknown RORG");
+                                                    if (msg.getRORG() != RORG.Unknown) {
+                                                        informListeners(msg, scheduler);
+                                                    } else {
+                                                        logger.debug("Received unknown RORG");
+                                                    }
+                                                    break;
+                                                case RESPONSE:
+                                                    Response response = (Response) packet;
+                                                    logger.debug("Converted to: {} with code {}",
+                                                            packet.getPacketType().name(),
+                                                            response.getResponseType().name());
+
+                                                    handleResponse(response, scheduler);
+                                                    break;
+                                                default:
+                                                    logger.debug("Not handling packet of type {}",
+                                                            packet.getPacketType());
+                                                    break;
                                             }
+                                        } else if (logger.isDebugEnabled()) {
+                                            logger.debug("Unknown/unsupported ESP2Packet: {}",
+                                                    HexUtils.bytesToHex(packetBytes));
                                         }
-                                            break;
-                                        case RESPONSE: {
-                                            Response response = (Response) packet;
-                                            logger.debug("Converted to: {} with code {}", packet.getPacketType().name(),
-                                                    response.getResponseType().name());
-
-                                            handleResponse(response);
-                                        }
-                                            break;
-                                        default:
-                                            break;
                                     }
                                 } else {
-                                    if (dataBuffer[1] != (byte) 0xFC) {
-                                        byte[] array = Arrays.copyOf(dataBuffer, dataLength);
-                                        String packetString = array != null ? HexUtils.bytesToHex(array) : "";
-                                        logger.debug("Unknown/unsupported ESP2Packet: {}", packetString);
-                                    }
+                                    logger.debug("Malformed ESP2Packet: {}", HexUtils.bytesToHex(packetBytes));
                                 }
-                            } else {
-                                logger.debug("ESP2Packet malformed: {}", HexUtils.bytesToHex(dataBuffer));
+                            } catch (RuntimeException e) {
+                                logger.debug("Unable to process message: {}", e.getMessage());
+                                logger.trace("", e);
+                                TransceiverErrorListener errorListener = this.errorListener;
+                                if (errorListener != null && !thread.isInterrupted()) {
+                                    // We don't want to take the Thing offline if a RuntimeException is thrown while
+                                    // the Receiver is terminating, which is why we check isInterrupted()
+                                    errorListener.errorOccurred(e);
+                                }
                             }
-
-                            state = byteBuffer == ESP2Packet.ENOCEAN_ESP2_FIRSTSYNC_BYTE
-                                    ? ReadingState.WaitingForSecondSyncByte
-                                    : ReadingState.WaitingForFirstSyncByte;
-
-                            currentPosition = 0;
-                            dataLength = packetType = -1;
-                        } else {
-                            dataBuffer[currentPosition++] = byteBuffer;
-                        }
-                        break;
+                            state = ReadingState.WAIT_FIRST_SYNCBYTE;
+                            doRead = 1;
+                            packetStart = -1;
+                            packetLength = -1;
+                            packetType = -1;
+                            break;
+                    }
                 }
+
+                // Not checking for overflow here because it should be impossible, and should it happen
+                // throwing an IndexOutOfBoundsException above is just as good as anything we can do here.
+                pos = state == ReadingState.WAIT_FIRST_SYNCBYTE ? 0 : pos + read;
             }
-        } catch (IOException ioexception) {
-            logger.trace("Unable to process message", ioexception);
-            TransceiverErrorListener localListener = errorListener;
-            if (localListener != null) {
-                localListener.errorOccured(ioexception);
-            }
-            return;
+
+            logger.info("Shutting down EnOceanSerialTransceiver RX thread ({})", thread.getName());
         }
     }
 
