@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
+import java.lang.module.ModuleDescriptor;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class RouterosRouterboardInfo extends RouterosBaseData {
+    private static final String CAPS_MAN_MIN_FIRMWARE_VERSION = "7.13";
 
     public RouterosRouterboardInfo(Map<String, String> props) {
         super(props);
@@ -50,5 +52,14 @@ public class RouterosRouterboardInfo extends RouterosBaseData {
 
     public String getFirmwareVersion() {
         return getProp("current-firmware", "Unknown");
+    }
+
+    public boolean hasBuiltinCapsMan() {
+        try {
+            return ModuleDescriptor.Version.parse(getFirmwareVersion())
+                    .compareTo(ModuleDescriptor.Version.parse(CAPS_MAN_MIN_FIRMWARE_VERSION)) >= 0;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

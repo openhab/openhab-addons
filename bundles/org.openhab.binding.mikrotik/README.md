@@ -25,33 +25,34 @@ Take note of the API port number as you'll need it below.
 To connect to the RouterOS API, you will need to provide user credentials for the bridge Thing.
 You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only needs to read data from the device.
 To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
+To control PoE output, the user must also have the `write` policy assigned.
 
 > Thing type: `routeros`
 
 The RouterOS Bridge configuration parameters are:
 
-| Name | Type | Required | Default | Description |
-|---|---|---|---|---|
-| host | text | Yes | 192.168.88.1 | Hostname or IP address of the RouterOS device |
-| port | integer | No | 8728 | API Port number of the RouterOS device |
-| login | text | Yes | admin | The username to access the RouterOS device |
-| password | text | Yes |  | The user password to access the RouterOS device |
-| refresh | integer | No | 10 | The refresh interval in seconds to poll the RouterOS device |
+| Name     | Type    | Required | Default      | Description                                                 |
+|----------|---------|----------|--------------|-------------------------------------------------------------|
+| host     | text    | Yes      | 192.168.88.1 | Hostname or IP address of the RouterOS device               |
+| port     | integer | No       | 8728         | API Port number of the RouterOS device                      |
+| login    | text    | Yes      | admin        | The username to access the RouterOS device                  |
+| password | text    | Yes      |              | The user password to access the RouterOS device             |
+| refresh  | integer | No       | 10           | The refresh interval in seconds to poll the RouterOS device |
 
 **All things provided by this binding require a working bridge to be set up.**
 
 ### Bridge Channels
 
-| Channel | Type | Description | Comment |
-|---|---|---|---|
-| freeSpace | Number:DataAmount | Amount of free storage left on device in bytes |  |
-| totalSpace | Number:DataAmount | Amount of total storage available on device in bytes |  |
-| usedSpace | Number:Dimensionless | Percentage of used device storage space |  |
-| freeMemory | Number:DataAmount | Amount of free memory left on device in bytes |  |
-| totalMemory | Number:DataAmount | Amount of total memory available on device in bytes |  |
-| usedMemory | Number:Dimensionless | Percentage of used device memory |  |
-| cpuLoad | Number:Dimensionless | CPU load percentage |  |
-| upSince | DateTime | Time when Thing got up |  |
+| Channel     | Type                 | Description                                          | Comment |
+|-------------|----------------------|------------------------------------------------------|---------|
+| freeSpace   | Number:DataAmount    | Amount of free storage left on device in bytes       |         |
+| totalSpace  | Number:DataAmount    | Amount of total storage available on device in bytes |         |
+| usedSpace   | Number:Dimensionless | Percentage of used device storage space              |         |
+| freeMemory  | Number:DataAmount    | Amount of free memory left on device in bytes        |         |
+| totalMemory | Number:DataAmount    | Amount of total memory available on device in bytes  |         |
+| usedMemory  | Number:Dimensionless | Percentage of used device memory                     |         |
+| cpuLoad     | Number:Dimensionless | CPU load percentage                                  |         |
+| upSince     | DateTime             | Time when Thing got up                               |         |
 
 ## WiFi Client Thing Configuration
 
@@ -61,33 +62,33 @@ Represents a wireless client connected to a RouterOS wireless network (direct or
 
 The WiFi client Thing configuration parameters are:
 
-| Name | Type | Required | Default | Description |
-|---|---|---|---|---|
-| mac | text | Yes |  | WiFi client MAC address |
-| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this Thing will stay offline until client reconnects to specified SSID. |
-| considerContinuous | integer | No | 180 | The interval in seconds to treat the client as connected permanently |
+| Name               | Type    | Required | Default | Description                                                                                                                                                       |
+|--------------------|---------|----------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| mac                | text    | Yes      |         | WiFi client MAC address                                                                                                                                           |
+| ssid               | text    | No       |         | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this Thing will stay offline until client reconnects to specified SSID. |
+| considerContinuous | integer | No       | 180     | The interval in seconds to treat the client as connected permanently                                                                                              |
 
 ### WiFi client Thing Channels
 
-| Channel | Type | Description | Comment |
-|---|---|---|---|
-| macAddress | String | MAC address of the client or interface |  |
-| comment | String | User-defined comment |  |
-| connected | Contact | Reflects connected or disconnected state |  |
-| continuous | Contact | Connection is considered long-running |  |
-| ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
-| interface | String | Network interface name |  |
-| signal | system.signal-strength | Signal strength (RSSI) |  |
-| upSince | DateTime | Time when Thing got up |  |
-| lastSeen | DateTime | Time of when the client was last seen connected |  |
-| txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
-| rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
-| txPacketRate | Number | Rate of data transmission in packets per second |  |
-| rxPacketRate | Number | Rate of data receiving in packets per second |  |
-| txBytes | Number:DataAmount | Amount of bytes transmitted |  |
-| rxBytes | Number:DataAmount | Amount of bytes received |  |
-| txPackets | Number | Amount of packets transmitted |  |
-| rxPackets | Number | Amount of packets received |  |
+| Channel      | Type                    | Description                                                 | Comment |
+|--------------|-------------------------|-------------------------------------------------------------|---------|
+| macAddress   | String                  | MAC address of the client or interface                      |         |
+| comment      | String                  | User-defined comment                                        |         |
+| connected    | Contact                 | Reflects connected or disconnected state                    |         |
+| continuous   | Contact                 | Connection is considered long-running                       |         |
+| ssid         | String                  | Wireless Network (SSID) the wireless client is connected to |         |
+| interface    | String                  | Network interface name                                      |         |
+| signal       | system.signal-strength  | Signal strength (RSSI)                                      |         |
+| upSince      | DateTime                | Time when Thing got up                                      |         |
+| lastSeen     | DateTime                | Time of when the client was last seen connected             |         |
+| txRate       | Number:DataTransferRate | Rate of data transmission in megabits per second            |         |
+| rxRate       | Number:DataTransferRate | Rate of data receiving in megabits per second               |         |
+| txPacketRate | Number                  | Rate of data transmission in packets per second             |         |
+| rxPacketRate | Number                  | Rate of data receiving in packets per second                |         |
+| txBytes      | Number:DataAmount       | Amount of bytes transmitted                                 |         |
+| rxBytes      | Number:DataAmount       | Amount of bytes received                                    |         |
+| txPackets    | Number                  | Amount of packets transmitted                               |         |
+| rxPackets    | Number                  | Amount of packets received                                  |         |
 
 ## Network Interface Thing Configuration
 
@@ -110,9 +111,9 @@ The interface Thing configuration parameters are:
 
 ### Interface Thing Configuration
 
-| Name | Type | Required | Default | Description |
-|---|---|---|---|---|
-| name | text | Yes |  | RouterOS Interface name (i.e. ether1) |
+| Name | Type | Required | Default | Description                           |
+|------|------|----------|---------|---------------------------------------|
+| name | text | Yes      |         | RouterOS Interface name (i.e. ether1) |
 
 ### Interface Thing Channels
 
@@ -122,35 +123,38 @@ This may be improved in future binding versions.
 
 Common for all kinds of interfaces:
 
-| Channel | Type | Description | Comment |
-|---|---|---|---|
-| type | String | Network interface type |  |
-| name | String | Network interface name |  |
-| comment | String | User-defined comment |  |
-| macAddress | String | MAC address of the client or interface |  |
-| enabled | Switch | Reflects enabled or disabled state |  |
-| connected | Contact | Reflects connected or disconnected state |  |
-| lastLinkDownTime | DateTime | Last time when link went down |  |
-| lastLinkUpTime | DateTime | Last time when link went up |  |
-| linkDowns | Number | Amount of link downs |  |
-| txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
-| rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
-| txPacketRate | Number | Rate of data transmission in packets per second |  |
-| rxPacketRate | Number | Rate of data receiving in packets per second |  |
-| txBytes | Number:DataAmount | Amount of bytes transmitted |  |
-| rxBytes | Number:DataAmount | Amount of bytes received |  |
-| txPackets | Number | Amount of packets transmitted |  |
-| rxPackets | Number | Amount of packets received |  |
-| txDrops | Number | Amount of packets dropped during transmission |  |
-| rxDrops | Number | Amount of packets dropped during receiving |  |
-| txErrors | Number | Amount of errors during transmission |  |
-| rxErrors | Number | Amount of errors during receiving |  |
-| defaultName | String | Interface factory name | Populated only for `ether` interfaces |
-| rate | String | Ethernet link rate | Populated only for `ether` interfaces |
-| state | String | WiFi interface state |  |
-| registeredClients | Number | Amount of clients registered to WiFi interface | Populated only for `cap` interfaces |
-| authorizedClients | Number | Amount of clients authorized by WiFi interface | Populated only for `cap` interfaces |
-| upSince | DateTime | Time when Thing got up | Populated only for `cap` interfaces |
+| Channel           | Type                    | Description                                      | Comment                                        |
+|-------------------|-------------------------|--------------------------------------------------|------------------------------------------------|
+| type              | String                  | Network interface type                           |                                                |
+| name              | String                  | Network interface name                           |                                                |
+| comment           | String                  | User-defined comment                             |                                                |
+| macAddress        | String                  | MAC address of the client or interface           |                                                |
+| enabled           | Switch                  | Reflects enabled or disabled state               |                                                |
+| connected         | Contact                 | Reflects connected or disconnected state         |                                                |
+| lastLinkDownTime  | DateTime                | Last time when link went down                    |                                                |
+| lastLinkUpTime    | DateTime                | Last time when link went up                      |                                                |
+| linkDowns         | Number                  | Amount of link downs                             |                                                |
+| txRate            | Number:DataTransferRate | Rate of data transmission in megabits per second |                                                |
+| rxRate            | Number:DataTransferRate | Rate of data receiving in megabits per second    |                                                |
+| txPacketRate      | Number                  | Rate of data transmission in packets per second  |                                                |
+| rxPacketRate      | Number                  | Rate of data receiving in packets per second     |                                                |
+| txBytes           | Number:DataAmount       | Amount of bytes transmitted                      |                                                |
+| rxBytes           | Number:DataAmount       | Amount of bytes received                         |                                                |
+| txPackets         | Number                  | Amount of packets transmitted                    |                                                |
+| rxPackets         | Number                  | Amount of packets received                       |                                                |
+| txDrops           | Number                  | Amount of packets dropped during transmission    |                                                |
+| rxDrops           | Number                  | Amount of packets dropped during receiving       |                                                |
+| txErrors          | Number                  | Amount of errors during transmission             |                                                |
+| rxErrors          | Number                  | Amount of errors during receiving                |                                                |
+| state             | String                  | Interface state                                  |                                                |
+| defaultName       | String                  | Interface factory name                           | Populated only for `ether` interfaces          |
+| rate              | String                  | Ethernet link rate                               | Populated only for `ether` interfaces          |
+| poeOutState       | String                  | Interface PoE state                              | Populated only for `ether` interfaces with PoE |
+| poeOutStatus      | String                  | Interface PoE status                             | Populated only for `ether` interfaces with PoE |
+| poeOutPower       | Number:Power            | PoE out power consumption                        | Populated only for `ether` interfaces with PoE |
+| registeredClients | Number                  | Amount of clients registered to WiFi interface   | Populated only for `cap` interfaces            |
+| authorizedClients | Number                  | Amount of clients authorized by WiFi interface   | Populated only for `cap` interfaces            |
+| upSince           | DateTime                | Time when Thing got up                           | Populated only for `cap` interfaces            |
 
 ## Text Configuration Example
 
@@ -183,32 +187,35 @@ Number:Dimensionless   My_RB_3011_Used_Memory    "Used ram"     (gRB1) {channel=
 Number:Dimensionless   My_RB_3011_Cpu_Load       "Cpu load"     (gRB1) {channel="mikrotik:routeros:rb1:cpuLoad"}
 DateTime   My_RB_3011_Upsince      "Up since [%1$td.%1$tm.%1$ty %1$tH:%1$tM]"         (gRB1) {channel="mikrotik:routeros:rb1:upSince"}
 
+
 Group gRB1Eth1 "Ethernet Interface 1"
-String     Eth_1_Type                  "Type"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:type"}
-String     Eth_1_Name                  "Name"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:name"}
-String     Eth_1_Comment               "Comment"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:comment"}
-String     Eth_1_Mac_Address           "Mac address"                (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:macAddress"}
-Switch     Eth_1_Enabled               "Enabled"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:enabled"}
-Contact     Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
-DateTime   Eth_1_Last_Link_Down_Time   "Last link down"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkDownTime"}
-DateTime   Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkUpTime"}
-Number     Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
-Number:DataTransferRate     Eth_1_Tx_Rate               "Transmission rate"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txRate"}
-Number:DataTransferRate     Eth_1_Rx_Rate               "Receiving rate"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxRate"}
-Number     Eth_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPacketRate"}
-Number     Eth_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPacketRate"}
-Number:DataAmount     Eth_1_Tx_Bytes              "Transmitted bytes"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txBytes"}
-Number:DataAmount     Eth_1_Rx_Bytes              "Received bytes"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxBytes"}
-Number     Eth_1_Tx_Packets            "Transmitted packets"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPackets"}
-Number     Eth_1_Rx_Packets            "Received packets"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPackets"}
-Number     Eth_1_Tx_Drops              "Transmission drops"         (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txDrops"}
-Number     Eth_1_Rx_Drops              "Receiving drops"            (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxDrops"}
-Number     Eth_1_Tx_Errors             "Transmission errors"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txErrors"}
-Number     Eth_1_Rx_Errors             "Receiving errors"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxErrors"}
-String     Eth_1_Default_Name          "Default name"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:defaultName"}
-String     Eth_1_Rate                  "Link rate"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rate"}
-String     Eth_1_Auto_Negotiation      "Auto negotiation"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:autoNegotiation"}
-String     Eth_1_State                 "State"                      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:state"}
+String           Eth_1_Type                  "Type"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:type"}
+String           Eth_1_Name                  "Name"                       (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:name"}
+String           Eth_1_Comment               "Comment"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:comment"}
+String           Eth_1_Mac_Address           "MAC Address"                (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:macAddress"}
+Switch           Eth_1_Enabled               "Enabled"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:enabled"}
+Contact          Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
+DateTime         Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkUpTime"}
+Number           Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
+Number:DataTransferRate Eth_1_Tx_Rate        "Transmission rate"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txRate"}
+Number:DataTransferRate Eth_1_Rx_Rate        "Receiving rate"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxRate"}
+Number           Eth_1_Tx_Packet_Rate        "Transmission packet rate"   (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPacketRate"}
+Number           Eth_1_Rx_Packet_Rate        "Receiving packet rate"      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPacketRate"}
+Number:DataAmount Eth_1_Tx_Bytes             "Transmitted bytes"          (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txBytes"}
+Number:DataAmount Eth_1_Rx_Bytes             "Received bytes"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxBytes"}
+Number           Eth_1_Tx_Packets            "Transmitted packets"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txPackets"}
+Number           Eth_1_Rx_Packets            "Received packets"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxPackets"}
+Number           Eth_1_Tx_Drops              "Transmission drops"         (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txDrops"}
+Number           Eth_1_Rx_Drops              "Receiving drops"            (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxDrops"}
+Number           Eth_1_Tx_Errors             "Transmission errors"        (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:txErrors"}
+Number           Eth_1_Rx_Errors             "Receiving errors"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rxErrors"}
+String           Eth_1_Default_Name          "Default name"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:defaultName"}
+String           Eth_1_Rate                  "Link rate"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rate"}
+String           Eth_1_Auto_Negotiation      "Auto negotiation"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:autoNegotiation"}
+String           Eth_1_State                 "State"                      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:state"}
+String           Eth_1_POE_State             "PoE State"                  (gRB1Eth1) ["Control", "Mode"]      {channel="mikrotik:interface:rb1:eth1:poeOutState"}
+String           Eth_1_POE_Status            "PoE Status"                 (gRB1Eth1) ["Status", "Mode"]       {channel="mikrotik:interface:rb1:eth1:poeOutStatus"}
+Number:Power     Eth_1_POE_Power             "PoE Power"                  (gRB1Eth1) ["Measurement", "Power"] {channel="mikrotik:interface:rb1:eth1:poeOutPower"}
 
 Group gRB1Eth2 "Ethernet Interface 2"
 String     Eth_2_Type                  "Type"                       (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:type"}
@@ -236,6 +243,10 @@ String     Eth_2_Default_Name          "Default name"               (gRB1Eth2) {
 String     Eth_2_Rate                  "Link rate"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rate"}
 String     Eth_2_Auto_Negotiation      "Auto negotiation"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:autoNegotiation"}
 String     Eth_2_State                 "State"                      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:state"}
+String     Eth_2_POE_State             "PoE State"                  (gRB1Eth2)    ["Status", "Control"]       {channel="mikrotik:interface:rb1:eth2:poeOutState"}
+String     Eth_2_POE_Status            "PoE Status"                 (gRB1Eth2)    ["Status"]                  {channel="mikrotik:interface:rb1:eth2:poeOutStatus"}
+Number:Power     Eth_2_POE_Power       "PoE Power"                  (gRB1Eth2)    ["Measurement", "Power"]    {channel="mikrotik:interface:rb1:eth2:poeOutPower"}
+
 
 Group gRB1Cap1 "CAPsMAN Interface 1"
 String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}

@@ -48,20 +48,25 @@ public class RouterosDevice {
     private final String password;
     private @Nullable ApiConnection connection;
 
+    public static final String PROP_POE_OUT_KEY = "poe-out";
     public static final String PROP_ID_KEY = ".id";
     public static final String PROP_TYPE_KEY = "type";
     public static final String PROP_NAME_KEY = "name";
     public static final String PROP_SSID_KEY = "ssid";
     public static final String PROP_CONFIG_SSID_KEY = "configuration.ssid";
+
     private static final String CMD_PRINT_IFACES = "/interface/print";
     private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
     private static final String CMD_MONTOR_IFACE_MONITOR_TPL = "/interface/%s/monitor numbers=%s once";
+    private static final String CMD_MONITOR_POE_TPL = "/interface/%s/poe/monitor numbers=%s once";
+    private static final String CMD_SET_POE_OUT_TPL = "/interface/%s/poe/set numbers=%s poe-out=%s";
     private static final String CMD_PRINT_CAPS_IFACES = "/caps-man/interface/print";
-    private static final String CMD_PRINT_CAPSMAN_REGS = "/caps-man/registration-table/print";
     private static final String CMD_PRINT_WIFI_REGS = "/interface/wifi/registration-table/print";
     private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
+    private static final String CMD_PRINT_WIFIWAVE2_REGS = "/interface/wifiwave2/registration-table/print";
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
+    private static final String CMD_PRINT_PACKAGES = "/system/package/print";
 
     private final List<RouterosInterfaceBase> interfaceCache = new ArrayList<>();
     private final List<RouterosCapsmanRegistration> capsmanRegistrationCache = new ArrayList<>();
@@ -71,6 +76,7 @@ public class RouterosDevice {
 
     private @Nullable RouterosSystemResources resourcesCache;
     private @Nullable RouterosRouterboardInfo rbInfo;
+    private RouterosWirelessType rbWirelessType = RouterosWirelessType.NONE;
 
     private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String, String> interfaceProps) {
         RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get(PROP_TYPE_KEY));
@@ -119,6 +125,7 @@ public class RouterosDevice {
     public void start() throws MikrotikApiException {
         login();
         updateRouterboardInfo();
+        RouterosRouterboardInfo rbInfo = this.rbInfo;
         if (rbInfo != null) {
             logger.debug("RouterOS Version = {}", rbInfo.getFirmwareVersion());
         }
@@ -162,6 +169,28 @@ public class RouterosDevice {
         return monitoredInterfaces.remove(interfaceName);
     }
 
+    private Set<String> getInstalledPackages() throws MikrotikApiException {
+        Set<String> result = new HashSet<>();
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return result;
+        }
+
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_PACKAGES);
+        if (response != null) {
+            response.forEach(pkgInfo -> {
+                String pkgName = pkgInfo.get("name");
+                if (pkgName != null) {
+                    result.add(pkgName);
+                }
+            });
+        }
+
+        logger.debug("RouterOS installed packages -> {}", result);
+
+        return result;
+    }
+
     public void refresh() throws MikrotikApiException {
         synchronized (this) {
             updateResources();
@@ -176,13 +205,7 @@ public class RouterosDevice {
             try {
                 updateWirelessRegistrations();
             } catch (MikrotikApiException e) {
-                logger.debug(
-                        "MikrotikApiException: Device does not appear to have any built in CAPsMAN wireless devices.");
-            }
-            try {
-                updateWifiRegistrations();
-            } catch (MikrotikApiException e) {
-                logger.debug("MikrotikApiException: Device does not appear to have any built in wifi.");
+                logger.debug("MikrotikApiException: Device does not appear to have supported wireless packages.");
             }
             logger.trace("There are {} wirelessRegistration's registered in cache.", wirelessRegistrationCache.size());
         }
@@ -194,6 +217,10 @@ public class RouterosDevice {
 
     public @Nullable RouterosSystemResources getSysResources() {
         return resourcesCache;
+    }
+
+    public RouterosWirelessType getWirelessType() {
+        return rbWirelessType;
     }
 
     public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
@@ -247,7 +274,7 @@ public class RouterosDevice {
                 cmd = CMD_PRINT_CAPS_IFACES;
             }
             logger.debug("Command used for updating the interfaces is:{}", cmd);
-            connection.execute(cmd).forEach(propMap -> {
+            conn.execute(cmd).forEach(propMap -> {
                 String ifaceName = propMap.get(PROP_NAME_KEY);
                 if (ifaceName != null) {
                     if (typedIfaceResponse.containsKey(ifaceName)) {
@@ -271,8 +298,18 @@ public class RouterosDevice {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Getting detailed data for Interface:{}, with command:{}", ifaceModel.getName(), cmd);
                 }
-                List<Map<String, String>> monitorProps = connection.execute(cmd);
-                ifaceModel.mergeProps(monitorProps.get(0));
+                List<Map<String, String>> monitorProps = conn.execute(cmd);
+                if (monitorProps != null && !monitorProps.isEmpty()) {
+                    ifaceModel.mergeProps(monitorProps.get(0));
+                }
+            }
+            // Get PoE Data if present for monitored interface things
+            if (ifaceModel.hasProp(PROP_POE_OUT_KEY) && monitoredInterfaces.contains(ifaceModel.getName())) {
+                String cmd = String.format(CMD_MONITOR_POE_TPL, ifaceModel.getApiType(), ifaceModel.getName());
+                List<Map<String, String>> monitorProps = conn.execute(cmd);
+                if (monitorProps != null && !monitorProps.isEmpty()) {
+                    ifaceModel.mergeProps(monitorProps.get(0));
+                }
             }
             // Note SSIDs for non-CAPsMAN wireless clients
             String ifaceName = ifaceModel.getName();
@@ -298,9 +335,22 @@ public class RouterosDevice {
         if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = conn.execute(CMD_PRINT_CAPSMAN_REGS);
-        if (response != null) {
-            capsmanRegistrationCache.clear();
+
+        List<String> prefixes = switch (getWirelessType()) {
+            case DUAL -> List.of("/caps-man/registration-table", "/interface/wifi/registration-table");
+            case WIRELESS -> List.of("/caps-man/registration-table");
+            case WIFIWAVE2 -> List.of("/interface/wifiwave2/capsman");
+            case WIFI -> List.of("/interface/wifi/capsman");
+            default -> List.of("");
+        };
+
+        capsmanRegistrationCache.clear();
+        for (String prefix : prefixes) {
+            List<Map<String, String>> response = conn.execute(prefix + "/print");
+            if (response == null) {
+                continue;
+            }
+
             response.forEach(reg -> capsmanRegistrationCache.add(new RouterosCapsmanRegistration(reg)));
         }
     }
@@ -310,33 +360,37 @@ public class RouterosDevice {
         if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = conn.execute(CMD_PRINT_WIRELESS_REGS);
-        response.forEach(props -> {
-            String wlanIfaceName = props.get("interface");
-            String wlanSsidName = wlanSsid.get(wlanIfaceName);
 
-            if (wlanSsidName != null && wlanIfaceName != null && !wlanIfaceName.isBlank() && !wlanSsidName.isBlank()) {
-                props.put(PROP_SSID_KEY, wlanSsidName);
+        List<String> registrationTableCmds = switch (getWirelessType()) {
+            case DUAL -> List.of(CMD_PRINT_WIRELESS_REGS, CMD_PRINT_WIFI_REGS);
+            case WIRELESS -> List.of(CMD_PRINT_WIRELESS_REGS);
+            case WIFIWAVE2 -> List.of(CMD_PRINT_WIFIWAVE2_REGS);
+            case WIFI -> List.of(CMD_PRINT_WIFI_REGS);
+            case NONE -> List.of();
+        };
+
+        for (String cmd : registrationTableCmds) {
+            List<Map<String, String>> response;
+            try {
+                response = conn.execute(cmd);
+            } catch (MikrotikApiException e) {
+                logger.debug("MikrotikApiException while querying '{}': {}", cmd, e.getMessage());
+                continue;
             }
-            wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
-        });
-    }
+            if (response == null) {
+                continue;
+            }
+            response.forEach(props -> {
+                String wlanIfaceName = props.get("interface");
+                String wlanSsidName = wlanSsid.get(wlanIfaceName);
 
-    private void updateWifiRegistrations() throws MikrotikApiException {
-        ApiConnection conn = this.connection;
-        if (conn == null) {
-            return;
+                if (wlanSsidName != null && wlanIfaceName != null && !wlanIfaceName.isBlank()
+                        && !wlanSsidName.isBlank()) {
+                    props.put(PROP_SSID_KEY, wlanSsidName);
+                }
+                wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
+            });
         }
-        List<Map<String, String>> response = conn.execute(CMD_PRINT_WIFI_REGS);
-        response.forEach(props -> {
-            String wlanIfaceName = props.get("interface");
-            String wlanSsidName = wlanSsid.get(wlanIfaceName);
-
-            if (wlanSsidName != null && wlanIfaceName != null && !wlanIfaceName.isBlank() && !wlanSsidName.isBlank()) {
-                props.put("configuration.ssid", wlanSsidName);
-            }
-            wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
-        });
     }
 
     private void updateResources() throws MikrotikApiException {
@@ -355,5 +409,22 @@ public class RouterosDevice {
         }
         List<Map<String, String>> response = conn.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
+        this.rbWirelessType = RouterosWirelessType.resolveFromPkgSet(getInstalledPackages(), this.rbInfo);
+    }
+
+    public void setPOEOutState(RouterosEthernetInterface ifaceModel, String state) throws MikrotikApiException {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+
+        if (!"auto-on".equals(state) && !"forced-on".equals(state) && !"off".equals(state)) {
+            logger.warn("Unsupported PoE state '{}'", state);
+
+            return;
+        }
+
+        String cmd = String.format(CMD_SET_POE_OUT_TPL, ifaceModel.getApiType(), ifaceModel.getName(), state);
+        conn.execute(cmd);
     }
 }

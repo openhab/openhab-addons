@@ -68,6 +68,11 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_TX_ERRORS = "txErrors";
     public static final String CHANNEL_RX_ERRORS = "rxErrors";
 
+    // Ethernet PoE
+    public static final String CHANNEL_POE_OUT_STATE = "poeOutState";
+    public static final String CHANNEL_POE_OUT_STATUS = "poeOutStatus";
+    public static final String CHANNEL_POE_OUT_POWER = "poeOutPower";
+
     // Ethernet interface channel list
     public static final String CHANNEL_DEFAULT_NAME = "defaultName";
     public static final String CHANNEL_RATE = "rate";
