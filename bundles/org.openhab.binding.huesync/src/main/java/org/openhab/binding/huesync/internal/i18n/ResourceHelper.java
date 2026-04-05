@@ -26,19 +26,34 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(ResourceHelper.class)
-            .getBundleContext();
-    private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
-            .getServiceReference(TranslationProvider.class);
-    private static final Bundle BUNDLE = BUNDLE_CONTEXT.getBundle();
-    private static final TranslationProvider TRANSLATION_PROVIDER = BUNDLE_CONTEXT.getService(SERVICE_REFERENCE);
-
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 
         String missingKey = "Missing Translation: " + key;
 
-        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, null);
+        Bundle bundle = FrameworkUtil.getBundle(ResourceHelper.class);
+        if (bundle == null) {
+            return missingKey;
+        }
+
+        BundleContext context = bundle.getBundleContext();
+        if (context == null) {
+            return missingKey;
+        }
+
+        ServiceReference<TranslationProvider> ref = context.getServiceReference(TranslationProvider.class);
+        if (ref == null) {
+            return missingKey;
+        }
+
+        TranslationProvider provider = context.getService(ref);
+        if (provider == null) {
+            context.ungetService(ref);
+            return missingKey;
+        }
+
+        String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
+        context.ungetService(ref);
 
         return localizedString == null ? missingKey : localizedString;
     }

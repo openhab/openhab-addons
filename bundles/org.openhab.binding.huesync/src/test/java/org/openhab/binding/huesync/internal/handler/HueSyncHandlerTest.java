@@ -21,8 +21,11 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,27 +52,29 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  * <li>Handler lifecycle is safe against concurrent state changes</li>
  * </ul>
  *
+ * @author Patrik Gfeller - Initial contribution
  * @author Patrik Gfeller - Issue #19079, Regression tests
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 public class HueSyncHandlerTest {
 
     @Mock
-    private Thing thing;
+    private @Nullable Thing thing;
 
     @Mock
-    private HttpClientFactory httpClientFactory;
+    private @Nullable HttpClientFactory httpClientFactory;
 
     @Mock
-    private ThingHandlerCallback callback;
-    private HueSyncHandler handler;
+    private @Nullable ThingHandlerCallback callback;
+    private @Nullable HueSyncHandler handler;
 
     @Mock
-    private ScheduledExecutorService mockScheduler;
+    private @Nullable ScheduledExecutorService mockScheduler;
 
     @BeforeEach
     void setup() {
-        handler = new HueSyncHandler(thing, httpClientFactory);
+        handler = new HueSyncHandler(Objects.requireNonNull(thing), Objects.requireNonNull(httpClientFactory));
         handler.setCallback(callback);
     }
 
@@ -106,17 +111,17 @@ public class HueSyncHandlerTest {
         schedulerField.setAccessible(true);
         schedulerField.set(handler, mockScheduler);
 
-        when(thing.getUID()).thenReturn(new ThingUID("huesync", "box", "test"));
+        when(Objects.requireNonNull(thing).getUID()).thenReturn(new ThingUID("huesync", "box", "test"));
 
         // Act: invoke private handleUpdate with an all-null result (simulates connection returning
         // null for device info — possible when device becomes unregistered mid-poll)
         Method handleUpdate = HueSyncHandler.class.getDeclaredMethod("handleUpdate", HueSyncUpdateTaskResult.class);
         handleUpdate.setAccessible(true);
-        handleUpdate.invoke(handler, new HueSyncUpdateTaskResult());
+        handleUpdate.invoke(Objects.requireNonNull(handler), new HueSyncUpdateTaskResult());
 
         // Assert: thing must have been set OFFLINE so the recovery path can trigger re-init
         ArgumentCaptor<ThingStatusInfo> captor = forClass(ThingStatusInfo.class);
-        verify(thing).setStatusInfo(captor.capture());
+        verify(Objects.requireNonNull(thing)).setStatusInfo(captor.capture());
         assertThat(captor.getValue().getStatus(), is(ThingStatus.OFFLINE));
     }
 }

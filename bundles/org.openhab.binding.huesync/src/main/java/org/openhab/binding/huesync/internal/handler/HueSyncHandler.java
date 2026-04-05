@@ -15,6 +15,7 @@ package org.openhab.binding.huesync.internal.handler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -149,8 +150,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
 
-    private Optional<HueSyncDevice> deviceInfo = Optional.empty();
-    private Optional<HueSyncDeviceConnection> connection = Optional.empty();
+    private @Nullable HueSyncDevice deviceInfo = null;
+    private @Nullable HueSyncDeviceConnection connection = null;
 
     private final HttpClient httpClient;
 
@@ -176,9 +177,9 @@ public class HueSyncHandler extends BaseThingHandler {
     private synchronized void startTasks() {
         String taskId = TASKS.POLL;
 
-        if (this.connection.isEmpty()) {
+        if (this.connection == null) {
             taskId = TASKS.CONNECT;
-        } else if (!this.connection.get().isRegistered()) {
+        } else if (!this.connection.isRegistered()) {
             taskId = TASKS.REGISTER;
         }
 
@@ -201,14 +202,15 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 interval = this.getHueSyncConfiguration().statusUpdateInterval;
 
-                task = new HueSyncUpdateTask(this.connection.get(), this.deviceInfo.get(), this::handleUpdate,
+                task = new HueSyncUpdateTask(Objects.requireNonNull(this.connection, "connection"),
+                        Objects.requireNonNull(this.deviceInfo, "deviceInfo"), this::handleUpdate,
                         this.exceptionHandler);
                 break;
             }
             case TASKS.REGISTER -> {
-                task = new HueSyncRegistrationTask(this.connection.get(), this.deviceInfo.get(),
-                        this.getHueSyncConfiguration(), registration -> this.handleRegistration(registration),
-                        this.exceptionHandler);
+                task = new HueSyncRegistrationTask(Objects.requireNonNull(this.connection, "connection"),
+                        Objects.requireNonNull(this.deviceInfo, "deviceInfo"), this.getHueSyncConfiguration(),
+                        registration -> this.handleRegistration(registration), this.exceptionHandler);
                 break;
             }
         }
@@ -276,7 +278,7 @@ public class HueSyncHandler extends BaseThingHandler {
                         : deviceStatus.firmwareVersion);
 
         setProperty(Thing.PROPERTY_FIRMWARE_VERSION, deviceStatus.firmwareVersion);
-        setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", deviceStatus.apiLevel));
+        setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.valueOf(deviceStatus.apiLevel));
 
         this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE, firmwareState);
         this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
@@ -296,8 +298,8 @@ public class HueSyncHandler extends BaseThingHandler {
         try {
             var information = Optional.ofNullable(connectionInstance.getDeviceInfo());
 
-            this.deviceInfo = Optional.of(this.checkCompatibility(information));
-            this.connection = Optional.of(connectionInstance);
+            this.deviceInfo = this.checkCompatibility(information);
+            this.connection = connectionInstance;
 
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
@@ -338,22 +340,26 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     private void setProperty(String key, @Nullable String value) {
-        if (value != null) {
-            Map<String, String> properties = this.editProperties();
+        if (value == null) {
+            return;
+        }
 
-            if (properties.containsKey(key)) {
-                @Nullable
-                String currentValue = properties.get(key);
-                if (!(value.equals(currentValue))) {
-                    saveProperty(key, value, properties);
-                }
-            } else {
-                saveProperty(key, value, properties);
+        Map<String, String> properties = this.editProperties();
+        Map<String, @Nullable String> safeProperties = new HashMap<>();
+        if (properties != null) {
+            for (Map.Entry<String, String> e : properties.entrySet()) {
+                safeProperties.put(e.getKey(), e.getValue());
             }
+        }
+
+        @Nullable
+        String currentValue = safeProperties.get(key);
+        if (!value.equals(currentValue)) {
+            saveProperty(key, value, safeProperties);
         }
     }
 
-    private void saveProperty(String key, String value, Map<String, String> properties) {
+    private void saveProperty(String key, String value, Map<String, @Nullable String> properties) {
         properties.put(key, value);
         this.updateProperties(properties);
     }
@@ -370,8 +376,7 @@ public class HueSyncHandler extends BaseThingHandler {
         try {
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
-            this.logger.warn("Unable to initialize HueSyncHandler for {}: {} {}", this.thing.getUID(), e.getMessage(),
-                    e);
+            this.logger.warn("Unable to initialize HueSyncHandler for {}: {}", this.thing.getUID(), e.getMessage(), e);
         }
     }
 
@@ -384,7 +389,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (thing.getStatus() != ThingStatus.ONLINE || this.connection.isEmpty()) {
+        if (thing.getStatus() != ThingStatus.ONLINE || this.connection == null) {
             this.logger.warn("Device status: {} - Command {} for channel {} will be ignored",
                     thing.getStatus().toString(), command.toFullString(), channelUID.toString());
             return;
@@ -397,7 +402,7 @@ public class HueSyncHandler extends BaseThingHandler {
             return;
         }
 
-        this.connection.get().executeCommand(channel, command);
+        this.connection.executeCommand(channel, command);
     }
 
     @Override
@@ -406,12 +411,12 @@ public class HueSyncHandler extends BaseThingHandler {
 
         try {
             this.stopTasks();
-            if (this.connection.isPresent()) {
-                this.connection.get().dispose();
+            if (this.connection != null) {
+                this.connection.dispose();
             }
         } catch (Exception e) {
-            this.logger.warn("Exception while disposing HueSyncHandler for {}: {} {}", this.thing.getUID(),
-                    e.getMessage(), e);
+            this.logger.warn("Exception while disposing HueSyncHandler for {}: {}", this.thing.getUID(), e.getMessage(),
+                    e);
         } finally {
             this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
         }
@@ -421,8 +426,8 @@ public class HueSyncHandler extends BaseThingHandler {
     public synchronized void handleRemoval() {
         super.handleRemoval();
 
-        if (this.connection.isPresent()) {
-            this.connection.get().unregisterDevice();
+        if (this.connection != null) {
+            this.connection.unregisterDevice();
         }
     }
 

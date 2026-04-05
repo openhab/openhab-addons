@@ -183,7 +183,7 @@ public class HueSyncDeviceConnection {
                     return registration;
                 }
             } catch (JsonProcessingException e) {
-                this.logger.warn("Unable to parse registration response: {} {}", e.getMessage(), e);
+                this.logger.warn("Unable to parse registration response: {}", e.getMessage(), e);
             }
         }
         return null;
@@ -197,7 +197,7 @@ public class HueSyncDeviceConnection {
         try {
             this.connection.unregisterDevice();
         } catch (HueSyncConnectionException e) {
-            this.logger.warn("Error while unregistering device: {} {}", e.getMessage(), e);
+            this.logger.warn("Error while unregistering device: {}", e.getMessage(), e);
         }
     }
 

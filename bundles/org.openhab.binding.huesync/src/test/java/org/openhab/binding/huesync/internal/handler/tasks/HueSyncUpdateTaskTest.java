@@ -46,6 +46,7 @@ import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
  * called only on complete success, and the exception handler is invoked on any fetch failure —
  * never the reverse.
  *
+ * @author Patrik Gfeller - Initial contribution
  * @author Patrik Gfeller - Issue #19079, Regression tests
  */
 @NonNullByDefault
