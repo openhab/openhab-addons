@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal.handler;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -259,7 +260,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     }
 
     public void refreshDeviceProps(SmartThingsStatusCapabilities capa, String componentKey, String capaKey) {
-        Map<String, String> propMaps = this.editProperties();
+        Map<String, String> properties = new HashMap<>(editProperties());
         for (String propertyKey : capa.keySet()) {
             SmartThingsStatusProperties props = capa.get(propertyKey);
 
