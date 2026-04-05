@@ -25,8 +25,18 @@ The new actual version can use 3 different mechanism to handle device events.
     This is the most convenient mechanism as it is fast, modern way to be notified of event
 
 - Callback subscriptions : will be the prefered fallback method if SSE it not working.
-    This will need to have an external openhab exposed URL to internet.
-    The addons will register automatically something has <https://openhab.yourdomain/smartthings/cb>.
+    This will need to have an external openhab exposed URL to internet (reverseProxy), or use the new openHab Cloud webHook service (see below).
+    
+    1. reverseProxy method:
+    You will have to setup a reverse proxy before addons setup, and access the smarttings setup using you public facing URI.
+    The addons will detect and register automatically with something like this: <https://openhab.yourdomain/smartthings/cb>.
+
+    1. openHab webHookService method:
+    You can also now use the new openHab Cloud webHookService functionnality.
+    For this, you will need to setup openHab cloud before the Smartthings setup, and verify that you can access your openHab instance from openhabCloud (https://home.myopenhab.org/).
+    When you add the SmartthingsAccount things, make sure to check the new config options : "Use openHAB Cloud Webhooks".
+    The addons will register automatically a callback URL like this one to the Smartthings Api : https://myopenhab.org/api/hooks/d4d7dbb1-67e6-41e6-832c-1b136a02d03e.
+
 
 - Event pooling : this is the last method if none other method are working.
   The addons will pool the events every 10s for every device.
