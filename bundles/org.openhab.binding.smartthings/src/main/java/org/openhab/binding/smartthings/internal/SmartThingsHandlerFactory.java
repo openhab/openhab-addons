@@ -36,12 +36,9 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.openhab.io.openhabcloud.WebhookService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
@@ -77,9 +74,6 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SmartThingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
     }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.STATIC)
-    private @Nullable volatile WebhookService webHookService;
 
     @Activate
     public SmartThingsHandlerFactory(final @Reference HttpService httpService,
