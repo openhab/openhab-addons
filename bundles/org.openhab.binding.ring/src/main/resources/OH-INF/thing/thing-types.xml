@@ -286,7 +286,7 @@
 		<description>Open Door linked to Intercom</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Control</tag>
+			<tag>Opening</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="light">
