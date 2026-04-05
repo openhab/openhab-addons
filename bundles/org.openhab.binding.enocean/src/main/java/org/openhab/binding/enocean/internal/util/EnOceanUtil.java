@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ravi Nadahar - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EnOceanUtil.class);
