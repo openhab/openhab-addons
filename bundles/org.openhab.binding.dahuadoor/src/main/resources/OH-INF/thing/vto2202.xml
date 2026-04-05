@@ -43,14 +43,11 @@
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
 			</parameter>
-			<parameter name="tlsVersion" type="text">
-				<label>TLS Version</label>
-				<description>TLS version for HTTPS snapshot requests</description>
-				<options>
-					<option value="auto">Auto (TLS 1.2, legacy cipher)</option>
-					<option value="TLSv1.3">TLS 1.3</option>
-				</options>
-				<default>auto</default>
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.
+					Disable for plain HTTP (port 80).</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
