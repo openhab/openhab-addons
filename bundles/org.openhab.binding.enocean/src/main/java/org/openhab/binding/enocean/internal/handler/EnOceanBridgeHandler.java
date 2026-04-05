@@ -379,8 +379,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         sendingThings[id] = null;
     }
 
-    public <T extends @Nullable Response> void sendMessage(BasePacket message,
-            @Nullable ResponseListener<T> responseListener) {
+    public <T extends Response> void sendMessage(BasePacket message, @Nullable ResponseListener<T> responseListener) {
         try {
             EnOceanTransceiver localTransceiver = transceiver;
             if (localTransceiver == null) {

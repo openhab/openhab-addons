@@ -36,7 +36,7 @@ public class Response extends BasePacket {
         RET_BASEID_OUT_OF_RANGE((byte) 0x90),
         RET_BASEID_MAX_REACHED((byte) 0x91);
 
-        private byte value;
+        private final byte value;
 
         ResponseType(byte value) {
             this.value = value;
