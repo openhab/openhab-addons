@@ -15,7 +15,7 @@ package org.openhab.binding.dirigera.internal.handler.matter;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,17 +48,17 @@ class TestMatterOutlet {
     private static String electricSensorDeviceId = "27887dc3-151b-462f-bda6-105138ccc0ba_2";
     private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OUTLET;
 
-    BaseMatterHandler getHandler() {
+    MatterOutlet getHandler() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/matter-home.json", false,
                 List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, outletDeviceId);
-        assertTrue(factoryHandler instanceof BaseMatterHandler);
-        return (BaseMatterHandler) factoryHandler;
+        assertTrue(factoryHandler instanceof MatterOutlet);
+        return (MatterOutlet) factoryHandler;
     }
 
     @Test
     void testIdentification() {
-        MatterOutlet handler = (MatterOutlet) getHandler();
+        MatterOutlet handler = getHandler();
         Thing thing = handler.getThing();
         assertNotNull(thing);
         Model model = handler.gateway().model();
@@ -80,7 +80,7 @@ class TestMatterOutlet {
 
     @Test
     void testInitialization() {
-        MatterOutlet handler = (MatterOutlet) getHandler();
+        MatterOutlet handler = getHandler();
         Thing thing = handler.getThing();
         CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(handler);
@@ -96,7 +96,7 @@ class TestMatterOutlet {
 
     @Test
     void testCommand() {
-        MatterOutlet handler = (MatterOutlet) getHandler();
+        MatterOutlet handler = getHandler();
         Thing thing = handler.getThing();
         DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
 
@@ -111,7 +111,7 @@ class TestMatterOutlet {
         api.clear();
 
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET_DATE),
-                DateTimeType.valueOf(ZonedDateTime.now().toString()));
+                new DateTimeType(Instant.now()));
         patch = api.getPatch(electricSensorDeviceId);
         assertEquals("{\"attributes\":{\"energyConsumedAtLastReset\":0}}", patch, "Energy reset date");
         api.clear();

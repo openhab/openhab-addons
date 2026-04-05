@@ -13,7 +13,6 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -23,11 +22,9 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class MatterOutlet extends BaseMatterHandler {
-    private TimeZoneProvider timeZoneProvider;
 
-    public MatterOutlet(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public MatterOutlet(Thing thing) {
         super(thing);
         super.setChildHandler(this);
-        this.timeZoneProvider = timeZoneProvider;
     }
 }

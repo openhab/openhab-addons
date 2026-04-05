@@ -418,7 +418,8 @@ Past and future timestamps are not possible and will be ignored.
 ## Smart Power Plug Matter
 
 Smart plug based on Matter standard.
-Same as [Smart Power Plug](#smart-power-plug).
+Provides the power and energy measurement channels listed below.
+Additional [Smart Power Plug](#smart-power-plug) channels such as child lock or status light configuration are not supported by the Matter variant.
 
 | Channel               | Type                      | Read/Write | Description                                  |
 |-----------------------|---------------------------|------------|----------------------------------------------|

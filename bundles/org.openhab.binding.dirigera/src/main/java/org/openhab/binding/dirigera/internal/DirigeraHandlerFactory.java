@@ -182,7 +182,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
                 || THING_TYPE_MATTER_WATER_LEAK_SENSOR.equals(thingTypeUID)) {
             return new MatterSensor(thing);
         } else if (THING_TYPE_MATTER_OUTLET.equals(thingTypeUID)) {
-            return new MatterOutlet(thing, timezoneProvider);
+            return new MatterOutlet(thing);
         } else if (THING_TYPE_MATTER_2_BUTTON_CONTROLLER.equals(thingTypeUID)) {
             return new Matter2ButtonController(thing);
         } else if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(thingTypeUID)) {

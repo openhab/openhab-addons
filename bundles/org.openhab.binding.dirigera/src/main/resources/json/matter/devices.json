@@ -574,7 +574,7 @@
 			{
 				"attribute": "startupOnOff",
 				"channel": "startup",
-				"itemType": "DecimalType",
+				"itemType": "Number",
 				"inType": "Number",
 				"outType": "String",
 				"transformation": "mapping",
