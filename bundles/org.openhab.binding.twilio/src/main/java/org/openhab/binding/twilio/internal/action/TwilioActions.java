@@ -70,7 +70,11 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "message", label = "Message", description = "Message body (optional for MMS)", type = "java.lang.String", required = false) @Nullable String message,
             @ActionInput(name = "mediaUrl", label = "Media URL", description = "URL of media to attach", type = "java.lang.String") @Nullable String mediaUrl) {
         logger.trace("sendSMS called: to='{}', message='{}', mediaUrl='{}'", to, message, mediaUrl);
-        return doSendMessage(getPhoneNumber(), to, message, mediaUrl);
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return false;
+        }
+        return doSendMessage(handler.getPhoneNumber(), to, message, mediaUrl);
     }
 
     public static Boolean sendSMS(ThingActions actions, String to, @Nullable String message,
@@ -97,7 +101,11 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "message", label = "Message", description = "Message body (optional with media)", type = "java.lang.String", required = false) @Nullable String message,
             @ActionInput(name = "mediaUrl", label = "Media URL", description = "URL of media to attach", type = "java.lang.String") @Nullable String mediaUrl) {
         logger.trace("sendWhatsApp called: to='{}', message='{}', mediaUrl='{}'", to, message, mediaUrl);
-        String whatsappFrom = "whatsapp:" + getPhoneNumber();
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return false;
+        }
+        String whatsappFrom = "whatsapp:" + handler.getPhoneNumber();
         String whatsappTo = to.startsWith("whatsapp:") ? to : "whatsapp:" + to;
         return doSendMessage(whatsappFrom, whatsappTo, message, mediaUrl);
     }
@@ -115,15 +123,19 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "twiml", label = "TwiML", description = "TwiML instructions for the call", type = "java.lang.String", required = true) String twiml) {
         logger.trace("makeCall called: to='{}', twiml='{}'", to, twiml);
 
-        TwilioApiClient client = getApiClient();
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return false;
+        }
+        TwilioApiClient client = getApiClient(handler);
         if (client == null) {
             logger.debug("Cannot make call: API client not available");
             return false;
         }
 
         try {
-            String processedTwiml = phoneHandler.replaceTwimlPlaceholders(twiml);
-            client.makeCall(getPhoneNumber(), to, processedTwiml, phoneHandler.getStatusCallbackUrl());
+            String processedTwiml = handler.replaceTwimlPlaceholders(twiml);
+            client.makeCall(handler.getPhoneNumber(), to, processedTwiml, handler.getStatusCallbackUrl());
             return true;
         } catch (TwilioApiException e) {
             logger.debug("Failed to make call: {}", e.getMessage());
@@ -169,18 +181,21 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "itemName", label = "Item Name", description = "Name of an Image item", type = "java.lang.String", required = true) String itemName) {
         logger.trace("createItemMediaUrl called: itemName='{}'", itemName);
 
-        String mediaBaseUrl = phoneHandler.getMediaBaseUrl();
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return null;
+        }
+        String mediaBaseUrl = handler.getMediaBaseUrl();
         if (mediaBaseUrl == null) {
-            logger.debug("Cannot create media URL: publicUrl not configured on bridge");
+            logger.debug("Cannot create media URL: neither publicUrl nor useCloudWebhook is configured on bridge");
             return null;
         }
 
         try {
-            Item item = phoneHandler.getItemRegistry().getItem(itemName);
+            Item item = handler.getItemRegistry().getItem(itemName);
             State state = item.getState();
             if (state instanceof RawType rawType) {
-                String uuid = phoneHandler.getCallbackServlet().createMediaEntry(rawType.getBytes(),
-                        rawType.getMimeType());
+                String uuid = handler.getCallbackServlet().createMediaEntry(rawType.getBytes(), rawType.getMimeType());
                 return mediaBaseUrl + "/" + uuid;
             } else {
                 logger.debug("Item '{}' state is not RawType (Image), got: {}", itemName,
@@ -202,13 +217,17 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "sourceUrl", label = "Source URL", description = "Local URL to proxy (e.g. http://192.168.1.100/snapshot.jpg)", type = "java.lang.String", required = true) String sourceUrl) {
         logger.trace("createProxyMediaUrl called: sourceUrl='{}'", sourceUrl);
 
-        String mediaBaseUrl = phoneHandler.getMediaBaseUrl();
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return null;
+        }
+        String mediaBaseUrl = handler.getMediaBaseUrl();
         if (mediaBaseUrl == null) {
-            logger.debug("Cannot create media URL: publicUrl not configured on bridge");
+            logger.debug("Cannot create media URL: neither publicUrl nor useCloudWebhook is configured on bridge");
             return null;
         }
 
-        String uuid = phoneHandler.getCallbackServlet().createProxyEntry(sourceUrl);
+        String uuid = handler.getCallbackServlet().createProxyEntry(sourceUrl);
         return mediaBaseUrl + "/" + uuid;
     }
 
@@ -223,7 +242,11 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "callSid", label = "Call SID", description = "The CallSid from the trigger event", type = "java.lang.String", required = true) String callSid,
             @ActionInput(name = "twiml", label = "TwiML", description = "TwiML response (e.g. <Response><Say>Hello</Say></Response>)", type = "java.lang.String", required = true) String twiml) {
         logger.trace("respondWithTwiml called: callSid='{}', twiml='{}'", callSid, twiml);
-        CompletableFuture<String> future = phoneHandler.getCallbackServlet().getPendingResponse(callSid);
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return;
+        }
+        CompletableFuture<String> future = handler.getCallbackServlet().getPendingResponse(callSid);
         if (future != null) {
             future.complete(twiml);
         } else {
@@ -239,7 +262,9 @@ public class TwilioActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.phoneHandler = (TwilioPhoneHandler) handler;
+        if (handler instanceof TwilioPhoneHandler twilioHandler) {
+            this.phoneHandler = twilioHandler;
+        }
     }
 
     @Override
@@ -249,15 +274,31 @@ public class TwilioActions implements ThingActions {
 
     // --- Private helpers ---
 
+    /**
+     * @return the bound phone handler, or {@code null} if the action was invoked before the
+     *         handler was set (in which case a debug message is logged).
+     */
+    private @Nullable TwilioPhoneHandler getHandler() {
+        TwilioPhoneHandler handler = phoneHandler;
+        if (handler == null) {
+            logger.debug("Twilio action invoked but thing handler is not set");
+        }
+        return handler;
+    }
+
     private Boolean doSendMessage(String from, String to, @Nullable String message, @Nullable String mediaUrl) {
-        TwilioApiClient client = getApiClient();
+        TwilioPhoneHandler handler = getHandler();
+        if (handler == null) {
+            return false;
+        }
+        TwilioApiClient client = getApiClient(handler);
         if (client == null) {
             logger.debug("Cannot send message: API client not available");
             return false;
         }
 
         try {
-            client.sendMessage(from, to, message, mediaUrl, phoneHandler.getStatusCallbackUrl());
+            client.sendMessage(from, to, message, mediaUrl, handler.getStatusCallbackUrl());
             return true;
         } catch (TwilioApiException e) {
             logger.debug("Failed to send message: {}", e.getMessage());
@@ -265,15 +306,11 @@ public class TwilioActions implements ThingActions {
         }
     }
 
-    private @Nullable TwilioApiClient getApiClient() {
-        TwilioAccountHandler accountHandler = phoneHandler.getAccountHandler();
+    private @Nullable TwilioApiClient getApiClient(TwilioPhoneHandler handler) {
+        TwilioAccountHandler accountHandler = handler.getAccountHandler();
         if (accountHandler != null) {
             return accountHandler.getApiClient();
         }
         return null;
-    }
-
-    private String getPhoneNumber() {
-        return phoneHandler.getPhoneNumber();
     }
 }

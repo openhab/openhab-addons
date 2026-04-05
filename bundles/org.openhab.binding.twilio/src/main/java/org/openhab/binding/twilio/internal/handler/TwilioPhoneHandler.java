@@ -14,17 +14,12 @@ package org.openhab.binding.twilio.internal.handler;
 
 import static org.openhab.binding.twilio.internal.TwilioBindingConstants.*;
 
-import java.lang.reflect.Method;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,10 +41,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,16 +58,11 @@ public class TwilioPhoneHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TwilioPhoneHandler.class);
 
-    private static final long WEBHOOK_REFRESH_INTERVAL_HOURS = 24;
-    private static final String WEBHOOK_SERVICE_CLASS = "org.openhab.io.openhabcloud.WebhookService";
-
     private final TwilioCallbackServlet callbackServlet;
     private final ItemRegistry itemRegistry;
 
     private TwilioPhoneConfiguration config = new TwilioPhoneConfiguration();
     private String phoneNumber = "";
-    private @Nullable String cloudWebhookBaseUrl;
-    private @Nullable ScheduledFuture<?> webhookRefreshTask;
     private @Nullable Future<?> initializeTask;
 
     public TwilioPhoneHandler(Thing thing, TwilioCallbackServlet callbackServlet, ItemRegistry itemRegistry) {
@@ -113,13 +99,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
             initTask.cancel(true);
             initializeTask = null;
         }
-        ScheduledFuture<?> task = webhookRefreshTask;
-        if (task != null) {
-            task.cancel(true);
-            webhookRefreshTask = null;
-        }
         callbackServlet.unregisterHandler(thing.getUID().getAsString());
-        removeCloudWebhooks();
         super.dispose();
     }
 
@@ -188,63 +168,30 @@ public class TwilioPhoneHandler extends BaseThingHandler {
      * @return the full webhook URL, or null if no public URL is available
      */
     public @Nullable String getWebhookUrl(String endpoint) {
-        String cloudBase = cloudWebhookBaseUrl;
-        if (cloudBase != null) {
-            return cloudBase + "/" + thing.getUID().getAsString() + "/" + endpoint;
+        TwilioAccountHandler accountHandler = getAccountHandler();
+        if (accountHandler == null) {
+            return null;
         }
-        String baseUrl = getPublicUrlBase();
+        String baseUrl = accountHandler.getWebhookBaseUrl(thing.getUID().getAsString());
         return baseUrl != null ? baseUrl + "/" + endpoint : null;
     }
 
     /**
-     * Returns true if cloud webhooks are active for this phone.
+     * Returns true if cloud webhooks are active for this phone's account.
      */
     public boolean isUsingCloudWebhooks() {
-        return cloudWebhookBaseUrl != null;
-    }
-
-    /**
-     * Returns the webhook base URL using the configured publicUrl, or null if not configured.
-     */
-    private @Nullable String getPublicUrlBase() {
         TwilioAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler == null) {
-            return null;
-        }
-        String publicUrl = accountHandler.getAccountConfig().publicUrl;
-        if (publicUrl == null || publicUrl.isBlank()) {
-            return null;
-        }
-        if (publicUrl.endsWith("/")) {
-            publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
-        }
-        return publicUrl + SERVLET_PATH + "/" + thing.getUID().getAsString();
+        return accountHandler != null && accountHandler.isUsingCloudWebhooks();
     }
 
     /**
-     * Returns the media serving base URL. Checks cloud webhook URL first,
-     * then falls back to publicUrl. The returned URL can have media UUIDs
-     * appended as sub-paths (e.g. {@code baseUrl + "/" + mediaUuid}).
+     * Returns the media serving base URL. Media UUIDs can be appended as sub-paths.
      *
      * @return the media base URL, or null if neither cloud webhook nor publicUrl is available
      */
     public @Nullable String getMediaBaseUrl() {
-        String cloudBase = cloudWebhookBaseUrl;
-        if (cloudBase != null) {
-            return cloudBase + "/" + WEBHOOK_MEDIA;
-        }
         TwilioAccountHandler accountHandler = getAccountHandler();
-        if (accountHandler == null) {
-            return null;
-        }
-        String publicUrl = accountHandler.getAccountConfig().publicUrl;
-        if (publicUrl == null || publicUrl.isBlank()) {
-            return null;
-        }
-        if (publicUrl.endsWith("/")) {
-            publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
-        }
-        return publicUrl + SERVLET_PATH + "/" + WEBHOOK_MEDIA;
+        return accountHandler != null ? accountHandler.getMediaBaseUrl() : null;
     }
 
     /**
@@ -433,14 +380,6 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         // Register with the callback servlet
         callbackServlet.registerHandler(thing.getUID().getAsString(), this);
 
-        // Manage cloud webhooks based on config
-        TwilioAccountConfiguration accountConfig = accountHandler.getAccountConfig();
-        if (accountConfig.useCloudWebhook) {
-            registerCloudWebhooks();
-        } else {
-            removeCloudWebhooks();
-        }
-
         // Set webhook URL properties
         updateWebhookProperties();
 
@@ -448,103 +387,6 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         configureWebhooksOnTwilio();
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    /**
-     * Looks up the WebhookService from the OSGi service registry via reflection and hands it
-     * to {@code action}, taking care of {@code ungetService} when done. Avoids any compile-time
-     * or class-loading dependency on the openHAB Cloud package so the binding works regardless
-     * of whether the cloud add-on is installed.
-     *
-     * @param action function invoked with the resolved service, or skipped if unavailable
-     * @return the result of {@code action}, or null if the service was not available
-     */
-    private <T> @Nullable T withWebhookService(Function<Object, @Nullable T> action) {
-        Bundle bundle = FrameworkUtil.getBundle(getClass());
-        if (bundle == null) {
-            return null;
-        }
-        BundleContext ctx = bundle.getBundleContext();
-        if (ctx == null) {
-            return null;
-        }
-        try {
-            ServiceReference<?>[] refs = ctx.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
-            if (refs == null || refs.length == 0) {
-                return null;
-            }
-            ServiceReference<?> ref = refs[0];
-            Object service = ctx.getService(ref);
-            if (service == null) {
-                return null;
-            }
-            try {
-                return action.apply(service);
-            } finally {
-                ctx.ungetService(ref);
-            }
-        } catch (Exception e) {
-            logger.debug("Could not look up WebhookService: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Calls requestWebhook(localPath) on the WebhookService via reflection.
-     * Returns the webhook URL, or null on failure.
-     */
-    @SuppressWarnings("unchecked")
-    private @Nullable String invokeRequestWebhook(Object webhookService, String localPath) {
-        try {
-            Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
-            CompletableFuture<String> future = (CompletableFuture<String>) method.invoke(webhookService, localPath);
-            return future != null ? future.get(30, TimeUnit.SECONDS) : null;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return null;
-        } catch (Exception e) {
-            logger.debug("Failed to request cloud webhook for {}: {}", localPath, e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Calls removeWebhook(localPath) on the WebhookService via reflection.
-     */
-    private void invokeRemoveWebhook(Object webhookService, String localPath) {
-        try {
-            Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
-            method.invoke(webhookService, localPath);
-        } catch (Exception e) {
-            logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
-        }
-    }
-
-    private void registerCloudWebhooks() {
-        Boolean available = withWebhookService(ws -> {
-            refreshCloudWebhooks(ws);
-            return Boolean.TRUE;
-        });
-        if (available == null) {
-            logger.debug("Cloud webhook requested but WebhookService not available. Install the openHAB Cloud add-on.");
-            return;
-        }
-
-        // Schedule daily refresh to keep the 30-day TTL from expiring
-        webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> withWebhookService(ws -> {
-            refreshCloudWebhooks(ws);
-            return null;
-        }), WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
-    }
-
-    private void refreshCloudWebhooks(Object ws) {
-        String webhookUrl = invokeRequestWebhook(ws, SERVLET_PATH);
-        if (webhookUrl != null) {
-            cloudWebhookBaseUrl = webhookUrl;
-            logger.debug("Registered cloud webhook base URL: {}", webhookUrl);
-        }
-        updateWebhookProperties();
-        configureWebhooksOnTwilio();
     }
 
     private void configureWebhooksOnTwilio() {
@@ -578,22 +420,5 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         } else {
             logger.debug("Cannot auto-configure webhooks: no webhook URLs available");
         }
-    }
-
-    private void removeCloudWebhooks() {
-        // Cancel the refresh task
-        ScheduledFuture<?> task = webhookRefreshTask;
-        if (task != null) {
-            task.cancel(true);
-            webhookRefreshTask = null;
-        }
-        if (cloudWebhookBaseUrl == null) {
-            return;
-        }
-        withWebhookService(ws -> {
-            invokeRemoveWebhook(ws, SERVLET_PATH);
-            return null;
-        });
-        cloudWebhookBaseUrl = null;
     }
 }

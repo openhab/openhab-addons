@@ -77,6 +77,8 @@ public class TwilioBindingConstants {
 
     // Media serving
     public static final int MEDIA_EXPIRY_MINUTES = 5;
+    // Maximum size (in bytes) of a response fetched through the proxy-media endpoint. Twilio's MMS limit is 5 MB;
+    public static final int MAX_PROXY_MEDIA_BYTES = 5 * 1024 * 1024;
 
     // TwiML response timeout
     public static final int DEFAULT_RESPONSE_TIMEOUT = 10;

@@ -135,7 +135,7 @@ Actions are available on `phone` things under the `twilio` scope.
 
 These actions create time-limited (5 minute) public URLs for media that Twilio can fetch.
 This is useful for sending camera snapshots or locally-hosted media as MMS/WhatsApp attachments.
-The `publicUrl` must be configured on the bridge for these actions to work.
+Either `publicUrl` must be configured on the bridge or `useCloudWebhook` must be enabled for these actions to work.
 
 **Supported media types:** Any content type works (images, audio, video, PDFs).
 For Image items, the MIME type is determined from the item's `RawType` state.
@@ -212,7 +212,7 @@ If using a reverse proxy, you must forward this entire path prefix.
 | Path                                   | Method | Purpose                                                |
 | -------------------------------------- | ------ | ------------------------------------------------------ |
 | `/twilio/callback/{thingUID}/sms`      | POST   | Incoming SMS/MMS messages                              |
-| `/twilio/callback/{thingUID}/whatsapp` | POST   | Incoming WhatsApp messages                             |
+| `/twilio/callback/{thingUID}/whatsapp` | POST   | Incoming WhatsApp messages (equivalent to `/sms`)      |
 | `/twilio/callback/{thingUID}/voice`    | POST   | Incoming voice calls                                   |
 | `/twilio/callback/{thingUID}/gather`   | POST   | DTMF digit gather callbacks                            |
 | `/twilio/callback/{thingUID}/status`   | POST   | Message/call status updates                            |
@@ -220,6 +220,10 @@ If using a reverse proxy, you must forward this entire path prefix.
 
 The `{thingUID}` is the full thing UID (e.g. `twilio:phone:myaccount:myphone`).
 The `{uuid}` is a randomly generated identifier for temporary media entries.
+
+Both `/sms` and `/whatsapp` route incoming messages to the same handler; WhatsApp is detected from the `From:` prefix Twilio sends.
+Auto-configuration only sets a single Messaging webhook on Twilio (via `/sms`), which is sufficient for both SMS/MMS and WhatsApp when using a Twilio Messaging Service.
+The `/whatsapp` path is available for users who prefer to configure a separate WhatsApp webhook manually.
 
 **Example full URLs** (assuming `publicUrl` is `https://my.domain.com`):
 

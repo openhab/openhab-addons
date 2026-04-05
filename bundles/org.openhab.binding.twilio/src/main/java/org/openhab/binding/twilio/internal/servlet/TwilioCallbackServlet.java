@@ -17,6 +17,8 @@ import static org.openhab.binding.twilio.internal.TwilioBindingConstants.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,6 +44,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.twilio.internal.api.TwilioApiClient;
 import org.openhab.binding.twilio.internal.api.TwilioSignatureValidator;
@@ -118,8 +122,6 @@ public class TwilioCallbackServlet extends HttpServlet {
         }
     }
 
-    // --- Handler Registration ---
-
     public void registerHandler(String thingUID, TwilioPhoneHandler handler) {
         handlers.put(thingUID, handler);
         logger.debug("Registered Twilio callback handler for {}", thingUID);
@@ -129,8 +131,6 @@ public class TwilioCallbackServlet extends HttpServlet {
         handlers.remove(thingUID);
         logger.debug("Unregistered Twilio callback handler for {}", thingUID);
     }
-
-    // --- Pending TwiML Responses ---
 
     /**
      * Creates a pending response for a call. The servlet will wait on this future
@@ -154,8 +154,6 @@ public class TwilioCallbackServlet extends HttpServlet {
     public @Nullable CompletableFuture<String> getPendingResponse(String callSid) {
         return pendingResponses.get(callSid);
     }
-
-    // --- Media Cache ---
 
     /**
      * Creates a media entry with direct content (bytes + MIME type).
@@ -185,8 +183,6 @@ public class TwilioCallbackServlet extends HttpServlet {
         logger.debug("Created proxy media entry {} -> {} (expires {})", uuid, proxyUrl, expiresAt);
         return uuid;
     }
-
-    // --- HTTP Handlers ---
 
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
@@ -246,7 +242,6 @@ public class TwilioCallbackServlet extends HttpServlet {
         TwilioPhoneHandler handler = handlers.get(thingUID);
         if (handler == null) {
             logger.debug("No handler registered for thingUID: {}", thingUID);
-            logger.trace("POST response: 404 (unknown thing: {})", thingUID);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown thing");
             return;
         }
@@ -404,11 +399,30 @@ public class TwilioCallbackServlet extends HttpServlet {
 
     private void proxyMedia(String sourceUrl, HttpServletResponse resp) throws IOException {
         logger.trace("Proxy fetch: {}", sourceUrl);
+
+        // Restrict to http/https to prevent the proxy endpoint from being used to read
+        // non-HTTP resources (e.g. file://, jar://) if a stored proxy URL is ever tampered with.
         try {
-            ContentResponse proxyResponse = httpClient.newRequest(sourceUrl) //
+            String scheme = new URI(sourceUrl).getScheme();
+            if (scheme == null || !("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))) {
+                logger.debug("Rejecting proxy request for non-http(s) URL scheme: {}", scheme);
+                resp.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Unsupported URL scheme");
+                return;
+            }
+        } catch (URISyntaxException e) {
+            logger.debug("Rejecting proxy request for malformed URL {}: {}", sourceUrl, e.getMessage());
+            resp.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Invalid source URL");
+            return;
+        }
+
+        try {
+            Request request = httpClient.newRequest(sourceUrl) //
                     .method(HttpMethod.GET) //
-                    .timeout(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
-                    .send();
+                    .timeout(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            // Cap the buffered response size so a runaway source cannot exhaust memory.
+            FutureResponseListener listener = new FutureResponseListener(request, MAX_PROXY_MEDIA_BYTES);
+            request.send(listener);
+            ContentResponse proxyResponse = listener.get(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             int status = proxyResponse.getStatus();
             if (status < 200 || status >= 300) {

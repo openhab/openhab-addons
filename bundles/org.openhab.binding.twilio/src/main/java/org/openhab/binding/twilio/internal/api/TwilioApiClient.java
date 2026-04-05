@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.twilio.internal.api;
 
+import static org.openhab.binding.twilio.internal.TwilioBindingConstants.API_BASE_URL;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class TwilioApiClient {
         this.httpClient = httpClient;
         this.accountSid = accountSid;
         this.authToken = authToken;
-        this.baseUrl = "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/";
+        this.baseUrl = API_BASE_URL + accountSid + "/";
         this.authHeader = "Basic "
                 + Base64.getEncoder().encodeToString((accountSid + ":" + authToken).getBytes(StandardCharsets.UTF_8));
     }

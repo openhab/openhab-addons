@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.twilio.internal.handler;
 
+import static org.openhab.binding.twilio.internal.TwilioBindingConstants.SERVLET_PATH;
+import static org.openhab.binding.twilio.internal.TwilioBindingConstants.WEBHOOK_MEDIA;
+
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -23,6 +26,7 @@ import org.openhab.binding.twilio.internal.api.TwilioApiClient;
 import org.openhab.binding.twilio.internal.api.TwilioApiException;
 import org.openhab.binding.twilio.internal.config.TwilioAccountConfiguration;
 import org.openhab.binding.twilio.internal.discovery.TwilioPhoneDiscoveryService;
+import org.openhab.binding.twilio.internal.service.TwilioCloudWebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -45,13 +49,15 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(TwilioAccountHandler.class);
 
     private final HttpClient httpClient;
+    private final TwilioCloudWebhookService cloudWebhookService;
     private @Nullable TwilioApiClient apiClient;
     private TwilioAccountConfiguration config = new TwilioAccountConfiguration();
     private @Nullable Future<?> validateTask;
 
-    public TwilioAccountHandler(Bridge bridge, HttpClient httpClient) {
+    public TwilioAccountHandler(Bridge bridge, HttpClient httpClient, TwilioCloudWebhookService cloudWebhookService) {
         super(bridge);
         this.httpClient = httpClient;
+        this.cloudWebhookService = cloudWebhookService;
     }
 
     @Override
@@ -116,6 +122,64 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
         return config;
     }
 
+    /**
+     * Returns true if cloud webhooks are active (enabled in config and cloud URL is available).
+     */
+    public boolean isUsingCloudWebhooks() {
+        return config.useCloudWebhook && cloudWebhookService.getBaseUrl() != null;
+    }
+
+    /**
+     * Returns the webhook base URL for a phone thing, choosing cloud or publicUrl based on
+     * account configuration. The returned URL can have endpoint path segments appended.
+     *
+     * @param thingUID the phone thing UID as a string
+     * @return the base webhook URL (e.g. {@code https://…/twilio/callback/twilio:phone:…}),
+     *         or {@code null} if no URL source is configured
+     */
+    public @Nullable String getWebhookBaseUrl(String thingUID) {
+        if (config.useCloudWebhook) {
+            String cloudBase = cloudWebhookService.getBaseUrl();
+            if (cloudBase != null) {
+                return cloudBase + "/" + thingUID;
+            }
+        }
+        return getPublicUrlBase(thingUID);
+    }
+
+    /**
+     * Returns the media serving base URL, choosing cloud or publicUrl based on account
+     * configuration. Media UUIDs can be appended as sub-paths.
+     *
+     * @return the media base URL, or {@code null} if no URL source is configured
+     */
+    public @Nullable String getMediaBaseUrl() {
+        if (config.useCloudWebhook) {
+            String cloudBase = cloudWebhookService.getBaseUrl();
+            if (cloudBase != null) {
+                return cloudBase + "/" + WEBHOOK_MEDIA;
+            }
+        }
+        String publicUrl = getNormalizedPublicUrl();
+        return publicUrl != null ? publicUrl + SERVLET_PATH + "/" + WEBHOOK_MEDIA : null;
+    }
+
+    private @Nullable String getPublicUrlBase(String thingUID) {
+        String publicUrl = getNormalizedPublicUrl();
+        return publicUrl != null ? publicUrl + SERVLET_PATH + "/" + thingUID : null;
+    }
+
+    private @Nullable String getNormalizedPublicUrl() {
+        String publicUrl = config.publicUrl;
+        if (publicUrl == null || publicUrl.isBlank()) {
+            return null;
+        }
+        if (publicUrl.endsWith("/")) {
+            publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
+        }
+        return publicUrl;
+    }
+
     private void asyncValidateAccount() {
         TwilioApiClient client = apiClient;
         if (client == null) {
@@ -126,6 +190,9 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
 
         try {
             if (client.validateAccount()) {
+                if (config.useCloudWebhook) {
+                    cloudWebhookService.register();
+                }
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

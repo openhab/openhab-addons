@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.twilio.internal.handler.TwilioAccountHandler;
 import org.openhab.binding.twilio.internal.handler.TwilioPhoneHandler;
+import org.openhab.binding.twilio.internal.service.TwilioCloudWebhookService;
 import org.openhab.binding.twilio.internal.servlet.TwilioCallbackServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.ItemRegistry;
@@ -48,12 +49,15 @@ public class TwilioHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final TwilioCallbackServlet callbackServlet;
     private final ItemRegistry itemRegistry;
+    private final TwilioCloudWebhookService cloudWebhookService;
 
     @Activate
     public TwilioHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference TwilioCallbackServlet callbackServlet, final @Reference ItemRegistry itemRegistry) {
+            final @Reference TwilioCallbackServlet callbackServlet, final @Reference ItemRegistry itemRegistry,
+            final @Reference TwilioCloudWebhookService cloudWebhookService) {
         this.callbackServlet = callbackServlet;
         this.itemRegistry = itemRegistry;
+        this.cloudWebhookService = cloudWebhookService;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -67,7 +71,7 @@ public class TwilioHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new TwilioAccountHandler((Bridge) thing, httpClient);
+            return new TwilioAccountHandler((Bridge) thing, httpClient, cloudWebhookService);
         } else if (THING_TYPE_PHONE.equals(thingTypeUID)) {
             return new TwilioPhoneHandler(thing, callbackServlet, itemRegistry);
         }
