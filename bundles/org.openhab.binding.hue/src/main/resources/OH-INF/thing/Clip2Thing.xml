@@ -311,7 +311,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Hue Service Group</label>
-		<description>A group of Hue API v2 sensors.</description>
+		<description>A group of sensors.</description>
 
 		<channels>
 			<channel id="motion" typeId="system.motion"/>
