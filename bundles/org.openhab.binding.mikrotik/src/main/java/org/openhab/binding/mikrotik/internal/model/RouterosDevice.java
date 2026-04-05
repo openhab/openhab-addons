@@ -307,10 +307,10 @@ public class RouterosDevice {
                     ifaceModel.mergeProps(monitorProps.get(0));
                 }
             }
-            // Get PoE Data if present
-            if (ifaceModel.hasProp(PROP_POE_OUT_KEY)) {
+            // Get PoE Data if present for monitored interface things
+            if (ifaceModel.hasProp(PROP_POE_OUT_KEY) && monitoredInterfaces.contains(ifaceModel.getName())) {
                 String cmd = String.format(CMD_MONITOR_POE_TPL, ifaceModel.getApiType(), ifaceModel.getName());
-                List<Map<String, String>> monitorProps = connection.execute(cmd);
+                List<Map<String, String>> monitorProps = conn.execute(cmd);
                 if (monitorProps != null && !monitorProps.isEmpty()) {
                     ifaceModel.mergeProps(monitorProps.get(0));
                 }

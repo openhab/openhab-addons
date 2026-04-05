@@ -406,11 +406,12 @@
 	<channel-type id="poeOutPower" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>PoE Out Consumption</label>
+		<description>Current power consumption of the port in watts</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="defaultName" advanced="true">
