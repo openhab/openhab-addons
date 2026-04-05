@@ -38,8 +38,9 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class MeasureHelper {
 
-    public static Map<String, String> createProperties(Measure measure) {
-        Map<String, String> properties = new HashMap<>(4);
+    public static Map<String, @Nullable String> createProperties(Measure measure) {
+        Map<String, @Nullable String> properties = new HashMap<>(4);
+
         String firmwareVersion = measure.firmwareVersion;
         if (firmwareVersion != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
