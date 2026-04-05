@@ -105,7 +105,7 @@ public class SmartThingsServlet extends HttpServlet
 
     private Gson gson = new Gson();
 
-    private String servletBaseURL = "";
+    private String callBackURL = "";
 
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
@@ -292,7 +292,7 @@ public class SmartThingsServlet extends HttpServlet
                                 logger.debug("Captured auth code: {}", reqCode);
 
                                 // Finish OAuth flow
-                                bridgeHandler.finishOAuth(servletBaseURL, reqCode,
+                                bridgeHandler.finishOAuth(callBackURL, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
                                 String authorizationUri = accountHandler.formatAuthorizationUrl(
                                         SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
@@ -350,12 +350,13 @@ public class SmartThingsServlet extends HttpServlet
         // index case, first time we go to servlet without any queryString
         else {
             // calculate the callback URL
-            servletBaseURL = requestUrl;
+            callBackURL = getExternalRequestUrl(requestUrl);
 
             // Display it in page rendering for user confirmation
-            replaceMap.put(KEY_CALLBACK_URI, servletBaseURL);
 
-            if (!servletBaseURL.startsWith("https://")) {
+            replaceMap.put(KEY_CALLBACK_URI, callBackURL);
+
+            if (!callBackURL.startsWith("https://")) {
                 Locale locale = Locale.getDefault();
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
                 String redirectUriError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
@@ -375,6 +376,15 @@ public class SmartThingsServlet extends HttpServlet
         }
 
         return replaceKeysFromMap(template, replaceMap);
+    }
+
+    private String getExternalRequestUrl(String requestUrl) {
+        String cloudUrl = bridgeHandler.getCloudWebhookUrl();
+        if (cloudUrl != null) {
+            return cloudUrl;
+        }
+
+        return requestUrl + "/cb";
     }
 
     @Override
@@ -404,6 +414,8 @@ public class SmartThingsServlet extends HttpServlet
             LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
 
             if (resultObj == null) {
+                String responseSt = "Callback empty";
+                resp.getWriter().print(responseSt);
                 return;
             }
 

@@ -37,6 +37,7 @@ public class SmartThingsBindingConstants {
 
     // Authorization related Servlet and resources aliases.
     public static final String SMARTTHINGS_ALIAS = "/smartthings";
+    public static final String SMARTTHINGS_CB_ALIAS = SMARTTHINGS_ALIAS + "/cb";
     public static final String SMARTTHINGS_IMG_ALIAS = "/img";
 
     /**
@@ -125,6 +126,7 @@ public class SmartThingsBindingConstants {
     // Bridge config properties
     public static final String IP_ADDRESS = "ipAddress";
     public static final String PORT = "port";
+    public static final String WEBHOOK_URL = "webHookUrl";
 
     // Thing config properties
     public static final String THING_TIMEOUT = "timeout";

@@ -238,7 +238,7 @@ public class SmartThingsApi {
     public AppResponse createApp(String appName, String eventCallbackuri) throws SmartThingsException {
         try {
             String uri = baseUrl + appEndPoint;
-            String fullCallbackUri = eventCallbackuri + "/cb";
+            String fullCallbackUri = eventCallbackuri;
 
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;

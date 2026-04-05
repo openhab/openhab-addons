@@ -27,6 +27,7 @@ public class SmartThingsBridgeConfig {
     public String clientId = "";
     public String clientSecret = "";
     public int pollingTime = -1;
+    public boolean useCloudWebhook = false;
 
     @Override
     public String toString() {
