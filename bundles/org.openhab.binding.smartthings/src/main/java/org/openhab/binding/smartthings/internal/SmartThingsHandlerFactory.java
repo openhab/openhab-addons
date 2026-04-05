@@ -73,7 +73,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    private volatile WebhookService webHookService;
+    private @Nullable volatile WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -86,7 +86,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory,
             final @Reference SmartThingsTypeRegistry typeRegistery, final @Reference ClientBuilder clientBuilder,
-            final @Reference SseEventSourceFactory eventSourceFactory, final @Reference WebhookService webHookService) {
+            final @Reference SseEventSourceFactory eventSourceFactory) {
         this.httpService = httpService;
         this.authService = authService;
         this.translationProvider = translationProvider;
@@ -95,7 +95,16 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         this.typeRegistry = typeRegistery;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
-        this.webHookService = webHookService;
+    }
+
+    protected void setWebhookService(WebhookService service) {
+        this.webHookService = service;
+    }
+
+    protected void unsetWebhookService(WebhookService service) {
+        if (this.webHookService == service) {
+            this.webHookService = null;
+        }
     }
 
     @Override

@@ -89,7 +89,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     protected @NonNullByDefault({}) SmartThingsDiscoveryService discoService;
     protected @NonNullByDefault({}) ClientBuilder clientBuilder;
     protected @NonNullByDefault({}) SseEventSourceFactory eventSourceFactory;
-    private final WebhookService webHookService;
+    private @Nullable final WebhookService webHookService;
 
     private @Nullable OAuthClientService oAuthService;
     private @NonNullByDefault({}) SmartThingsNetworkConnector networkConnector;
@@ -105,7 +105,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
             SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            WebhookService webHookService) {
+            @Nullable WebhookService webHookService) {
         super(bridge);
 
         config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
