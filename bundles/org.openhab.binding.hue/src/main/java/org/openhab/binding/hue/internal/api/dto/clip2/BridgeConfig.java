@@ -14,13 +14,41 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**
- * A 'special' DTO for bridge discovery to read the software version from a bridge.
+ * A 'special' DTO for bridge discovery to read the configuration from a bridge using API v1.0+
  *
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class BridgeConfig {
-    public @Nullable String swversion;
+    private @Nullable String swversion;
+    private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+ ('swupdate' is deprecated)
+
+    public @Nullable String getSoftwareVersion() {
+        return swversion;
+    }
+
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
+        return (swupdate2 instanceof BridgeSwUpdate update)
+                && (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null;
+    }
+
+    /**
+     * Creates a swupdate2 field with check for update flag set. Triggers the bridge to check for updates.
+     */
+    public BridgeConfig setCheckForUpdate() {
+        swupdate2 = new BridgeSwUpdate().setCheckForUpdate();
+        return this;
+    }
+
+    /**
+     * Creates a swupdate2 field with install update flag set. Triggers the bridge to do an update.
+     */
+    public BridgeConfig setInstallUpdate() {
+        swupdate2 = new BridgeSwUpdate().setInstallUpdate();
+        return this;
+    }
 }

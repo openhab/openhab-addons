@@ -35,9 +35,9 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneState;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoftwareUpdateStatusType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 import org.openhab.core.library.types.DateTimeType;
@@ -127,6 +127,8 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
+    // for the following see https://github.com/openhue/openhue-api/tree/main/src/device_software_update
+    private @SuppressWarnings("unused") @Nullable InstallUpdate install; // unofficial
 
     /**
      * Constructor
@@ -1038,23 +1040,23 @@ public class Resource {
      * because both are represented by the 'state' JSON element. If the resource type is 'device_software_update' it
      * is a software update status, if it is 'smart_scene' it is a smart scene state.
      */
-    public @Nullable SoftwareUpdateStatusType getSoftwareUpdateStatus() {
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
         if (ResourceType.DEVICE_SOFTWARE_UPDATE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
             String state = statePrimitive.getAsString();
             if (Objects.nonNull(state)) {
-                return SoftwareUpdateStatusType.of(state);
+                return UpdateStatusV2.of(state);
             }
         }
         return null;
     }
 
     /**
-     * Depending on the returned value from getSoftwareUpdateStatus() this method returns a StringType of the status
+     * Depending on the returned value from getUpdateStatus() this method returns a StringType of the status
      * name, or 'UnDefType.NULL' if there is no such status.
      */
-    public State getSoftwareUpdateState() {
-        SoftwareUpdateStatusType softwareUpdateStatus = getSoftwareUpdateStatus();
-        return softwareUpdateStatus != null ? new StringType(softwareUpdateStatus.toString()) : UnDefType.NULL;
+    public State getUpdateState() {
+        UpdateStatusV2 updateStatus = getUpdateStatus();
+        return updateStatus != null ? new StringType(updateStatus.toString()) : UnDefType.NULL;
     }
 
     /**
@@ -1082,6 +1084,18 @@ public class Resource {
      */
     public Resource setMuteType(@Nullable MuteType muteType) {
         mute = muteType == null ? null : new Mute().setMuteType(muteType);
+        return this;
+    }
+
+    /**
+     * Set the install software update command parameter.
+     * 
+     * Note: this is not documented in the official Hue API, so the implementation is inferred from the
+     * <a href="https://github.com/openhue/openhue-api/tree/main/src/device_software_update">OpenHue API</a>
+     * which is not (yet) fully tested or confirmed to work.
+     */
+    public Resource setInstallUpdate() {
+        install = new InstallUpdate().setInstallUpdate();
         return this;
     }
 }

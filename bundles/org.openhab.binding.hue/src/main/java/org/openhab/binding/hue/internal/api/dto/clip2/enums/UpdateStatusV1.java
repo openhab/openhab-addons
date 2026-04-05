@@ -16,18 +16,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for device software update status.
+ * Enum for bridge API v1.20+ software update status values.
  *
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum SoftwareUpdateStatusType {
-    NO_UPDATE,
-    UPDATE_PENDING,
-    READY_TO_INSTALL,
-    INSTALLING;
+public enum UpdateStatusV1 {
+    NOTUPDATABLE,
+    UNKNOWN,
+    NOUPDATES,
+    TRANSFERRING,
+    DOWNLOADING,
+    INSTALLING,
+    ALLREADYTOINSTALL,
+    ANYREADYTOINSTALL,
+    READYTOINSTALL;
 
-    public static SoftwareUpdateStatusType of(@Nullable String value) {
+    /**
+     * Create enum from a JSON string. Returns null if the input is null or does not match any enum value.
+     */
+    public static @Nullable UpdateStatusV1 of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -35,6 +44,6 @@ public enum SoftwareUpdateStatusType {
                 // fall through
             }
         }
-        return NO_UPDATE;
+        return null;
     }
 }
