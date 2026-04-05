@@ -40,6 +40,8 @@ import org.openhab.io.openhabcloud.WebhookService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
 import org.slf4j.Logger;
@@ -70,7 +72,8 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final SmartThingsTypeRegistry typeRegistry;
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    private final WebhookService webHookService;
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    private volatile WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

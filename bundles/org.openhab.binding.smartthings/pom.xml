@@ -26,27 +26,5 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-
-      <plugin>
-        <groupId>biz.aQute.bnd</groupId>
-        <artifactId>bnd-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <bnd><![CDATA[
--importpackage: \
- org.openhab.io.openhabcloud;resolution:=optional,\
- org.openhab.io.openhabcloud.*;resolution:=optional
-
-Import-Package: \
- org.openhab.io.openhabcloud;resolution:=optional,\
- org.openhab.io.openhabcloud.*;resolution:=optional,\
- *          ]]></bnd>
-        </configuration>
-      </plugin>
-
-    </plugins>
-  </build>
 
 </project>
