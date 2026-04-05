@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -76,6 +77,22 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
+        Configuration config = getConfig();
+
+        Object oldId = config.get("id");
+        Object newId = config.get(PROPERTY_VEHICLE_ID);
+
+        if (oldId != null && newId == null) {
+            String migrated = oldId.toString();
+            config.put(PROPERTY_VEHICLE_ID, migrated);
+            config.remove("id");
+
+            updateConfiguration(config);
+            logger.info("Migrated evcc vehicle Thing property 'id' -> 'vehicleId'");
+            updateStatus(ThingStatus.UNINITIALIZED);
+            return;
+        }
+
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
