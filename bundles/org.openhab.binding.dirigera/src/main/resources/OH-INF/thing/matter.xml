@@ -92,4 +92,15 @@
 		<config-description-ref uri="thing-type:dirigera:color-light"/>
 	</thing-type>
 
+	<thing-type id="matter-outlet">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Power Plug (Matter)</label>
+		<description>Power plug with electricity measurements</description>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+
 </thing:thing-descriptions>

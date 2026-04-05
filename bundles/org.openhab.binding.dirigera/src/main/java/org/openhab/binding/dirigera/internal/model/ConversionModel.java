@@ -15,6 +15,10 @@ package org.openhab.binding.dirigera.internal.model;
 import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,5 +47,35 @@ public class ConversionModel {
                 yield 0.0;
             }
         };
+    }
+
+    public static Integer stringToInteger(String stringValue) {
+        try {
+            return Integer.parseInt(stringValue);
+        } catch (NumberFormatException nfe) {
+            LOGGER.warn("Cannot convert {} into integer, cause {}", stringValue, nfe.getMessage());
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    public static State stringToQuality(String stringValue) {
+        try {
+            return QuantityType.valueOf(stringValue);
+        } catch (NumberFormatException nfe) {
+            LOGGER.warn("Cannot convert {} into number, cause {}", stringValue, nfe.getMessage());
+            return UnDefType.UNDEF;
+        } catch (IllegalArgumentException iae) {
+            LOGGER.warn("Cannot convert {} into quantity, cause {}", stringValue, iae.getMessage());
+            return UnDefType.UNDEF;
+        }
+    }
+
+    public static State stringToDateTime(String stringValue) {
+        try {
+            return DateTimeType.valueOf(stringValue);
+        } catch (IllegalArgumentException iae) {
+            LOGGER.warn("Cannot convert {} into datetime, cause {}", stringValue, iae.getMessage());
+            return UnDefType.UNDEF;
+        }
     }
 }
