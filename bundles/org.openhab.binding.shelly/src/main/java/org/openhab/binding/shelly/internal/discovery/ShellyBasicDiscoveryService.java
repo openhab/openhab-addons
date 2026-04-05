@@ -20,7 +20,6 @@ import static org.openhab.core.thing.Thing.*;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -125,7 +124,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String name = hostname; // will become the realm for auth response
         String deviceName = "";
         String thingType = "";
-        Map<String, String> properties = new TreeMap<>();
+        Map<String, String> properties = new HashMap<>();
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);

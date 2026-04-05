@@ -1402,6 +1402,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             properties.put(PROPERTY_DEV_NAME, deviceName);
         }
 
+        // add status properties
         if (status.wifiSta != null) {
             properties.put(PROPERTY_WIFI_NETW, getString(status.wifiSta.ssid));
         }
