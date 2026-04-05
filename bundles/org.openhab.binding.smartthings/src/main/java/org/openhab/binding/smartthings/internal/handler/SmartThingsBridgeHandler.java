@@ -598,5 +598,4 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public SmartThingsTypeRegistry getSmartThingsTypeRegistry() {
         return this.typeRegistry;
     }
-
 }
