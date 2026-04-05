@@ -25,7 +25,7 @@ public class VeSyncManagedDevicesPage extends VeSyncResponse {
     @SerializedName("result")
     public Outcome outcome;
 
-    public class Outcome {
+    public static class Outcome {
         @SerializedName("pageNo")
         public String pageNo;
 
