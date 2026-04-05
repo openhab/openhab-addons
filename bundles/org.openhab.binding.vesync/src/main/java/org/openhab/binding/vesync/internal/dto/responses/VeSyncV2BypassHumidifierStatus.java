@@ -25,12 +25,12 @@ public class VeSyncV2BypassHumidifierStatus extends VeSyncResponse {
     @SerializedName("result")
     public HumidifierrStatus result;
 
-    public class HumidifierrStatus extends VeSyncResponse {
+    public static class HumidifierrStatus extends VeSyncResponse {
 
         @SerializedName("result")
         public AirHumidifierStatus result;
 
-        public class AirHumidifierStatus {
+        public static class AirHumidifierStatus {
             @SerializedName("enabled")
             public boolean enabled;
 
@@ -73,7 +73,7 @@ public class VeSyncV2BypassHumidifierStatus extends VeSyncResponse {
             @SerializedName("warm_level")
             public int warmLevel;
 
-            public class HumidityPurifierConfig {
+            public static class HumidityPurifierConfig {
                 @SerializedName("auto_target_humidity")
                 public int autoTargetHumidity;
 

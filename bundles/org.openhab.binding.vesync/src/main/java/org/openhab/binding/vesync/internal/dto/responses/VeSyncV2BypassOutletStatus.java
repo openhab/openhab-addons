@@ -25,7 +25,7 @@ public class VeSyncV2BypassOutletStatus extends VeSyncResponse {
     @SerializedName("result")
     public OutletStatusResult outletResult;
 
-    public class OutletStatusResult extends VeSyncResponse {
+    public static class OutletStatusResult extends VeSyncResponse {
 
         @SerializedName("module")
         public Object object = null;
@@ -36,7 +36,7 @@ public class VeSyncV2BypassOutletStatus extends VeSyncResponse {
         @SerializedName("result")
         public Result result = new Result();
 
-        public class Result {
+        public static class Result {
 
             @SerializedName("enabled")
             public boolean enabled = false;
