@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ddwrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- ==================== Bridge ==================== -->
+
+	<bridge-type id="network">
+
+		<label>DD-WRT Network</label>
+		<description>A network of DD-WRT compatible devices managed via SSH</description>
+		<category>Network</category>
+
+		<channels>
+			<channel id="total-clients" typeId="total-clients"/>
+			<channel id="wireless-clients" typeId="wireless-clients"/>
+			<channel id="wired-clients" typeId="wired-clients"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostnames" type="text" required="false">
+				<context>network-addresses</context>
+				<label>Hostnames</label>
+				<description>Optional comma separated list of hostnames or IP addresses of the devices for discovery</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535">
+				<label>SSH Port</label>
+				<description>Default SSH port on devices. If omitted, uses SSH config or defaults to 22.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="user" type="text" required="false">
+				<context>user</context>
+				<label>User</label>
+				<description>Default username to access the devices. If omitted, uses SSH config or system username.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Optional default password to access the devices. To use keys instead of password place the keys in
+					$USER_DATA/ddwrt/keys</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the devices are polled in seconds</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<!-- ==================== Device ==================== -->
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>DD-WRT Device</label>
+		<description>A DD-WRT, OpenWrt, or compatible Linux device managed via SSH</description>
+		<category>NetworkAppliance</category>
+
+		<channels>
+			<channel id="online" typeId="online"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="cpu-load" typeId="cpu-load"/>
+			<channel id="cpu-temp" typeId="cpu-temp"/>
+			<channel id="wan-ip" typeId="wan-ip"/>
+			<channel id="wan-in" typeId="wan-in"/>
+			<channel id="wan-out" typeId="wan-out"/>
+			<channel id="if-in" typeId="if-in"/>
+			<channel id="if-out" typeId="if-out"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="last-warning-event" typeId="last-warning-event"/>
+			<channel id="last-error-event" typeId="last-error-event"/>
+			<channel id="warning-events" typeId="warning-events"/>
+			<channel id="error-events" typeId="error-events"/>
+			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
+			<channel id="last-wireless-event" typeId="last-wireless-event"/>
+			<channel id="new-warning-event" typeId="new-warning-event"/>
+			<channel id="new-error-event" typeId="new-error-event"/>
+			<channel id="new-dhcp-event" typeId="new-dhcp-event"/>
+			<channel id="new-wireless-event" typeId="new-wireless-event"/>
+		</channels>
+
+		<properties>
+			<property name="mac">unknown</property>
+			<property name="model">unknown</property>
+			<property name="firmware">unknown</property>
+			<property name="chipset">unknown</property>
+		</properties>
+
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Connection settings</description>
+			</parameter-group>
+
+			<parameter-group name="authentication">
+				<label>Authentication</label>
+				<description>Authentication settings. To use keys instead of password place the keys in $USER_DATA/ddwrt/keys</description>
+			</parameter-group>
+
+			<parameter name="hostname" type="text" required="true" groupName="connection">
+				<context>network-addresses</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" groupName="connection">
+				<label>SSH Port</label>
+				<description>SSH port. If omitted, uses SSH config or defaults to 22.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="user" type="text" required="false" groupName="authentication">
+				<context>user</context>
+				<label>User</label>
+				<description>Username to access the device. If omitted, uses SSH config or system username.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="authentication">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="syslogPriority" type="text">
+				<label>Syslog Priority</label>
+				<description>Minimum syslog priority level to capture (debug, info, notice, warning, error, critical)</description>
+				<default>warning</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="debug">Debug</option>
+					<option value="info">Info</option>
+					<option value="notice">Notice</option>
+					<option value="warning">Warning</option>
+					<option value="error">Error</option>
+					<option value="critical">Critical</option>
+				</options>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- ==================== Radio ==================== -->
+
+	<thing-type id="radio">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>Wireless Radio</label>
+		<description>A wireless radio interface on a DD-WRT device</description>
+		<category>Network</category>
+
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="channel" typeId="channel"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="client-count" typeId="client-count"/>
+			<channel id="assoclist" typeId="assoclist"/>
+		</channels>
+
+		<representation-property>interfaceId</representation-property>
+
+		<config-description>
+			<parameter name="interfaceId" type="text" required="true">
+				<label>Interface ID</label>
+				<description>Wireless interface identifier (e.g. wl0, ath0, wlan0)</description>
+			</parameter>
+			<parameter name="parentDeviceMac" type="text" required="false">
+				<label>Parent Device MAC</label>
+				<description>MAC address of the parent device</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- ==================== Wireless Client ==================== -->
+
+	<thing-type id="wireless-client">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>Wireless Client</label>
+		<description>A wireless client associated with a DD-WRT network device</description>
+		<category>Network</category>
+
+		<channels>
+			<channel id="online" typeId="online"/>
+			<channel id="mac-address" typeId="mac-address"/>
+			<channel id="hostname" typeId="client-hostname"/>
+			<channel id="ip-address" typeId="ip-address"/>
+			<channel id="ap" typeId="ap"/>
+			<channel id="ap-mac" typeId="ap-mac"/>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="signal" typeId="signal"/>
+			<channel id="snr" typeId="snr"/>
+			<channel id="rx-rate" typeId="rx-rate"/>
+			<channel id="tx-rate" typeId="tx-rate"/>
+			<channel id="last-seen" typeId="last-seen"/>
+		</channels>
+
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>Hostname of the wireless client (stable identifier even with MAC randomization)</description>
+			</parameter>
+			<parameter name="mac" type="text" required="false">
+				<label>MAC Address</label>
+				<description>MAC address of the wireless client (may change due to MAC randomization)</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- ==================== Firewall Rule ==================== -->
+
+	<thing-type id="firewall-rule">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="network"/>
+		</supported-bridge-type-refs>
+
+		<label>Firewall Rule</label>
+		<description>A GUI-configured firewall filter rule from nvram</description>
+		<category>Shield</category>
+
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="description" typeId="description"/>
+		</channels>
+
+		<representation-property>ruleId</representation-property>
+
+		<config-description>
+			<parameter name="ruleId" type="text" required="true">
+				<label>Rule ID</label>
+				<description>The nvram filter_rule key identifier</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- ==================== Channel Types ==================== -->
+
+	<!-- Common -->
+
+	<channel-type id="online">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Whether the device or client is currently online</description>
+		<category>Status</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="uptime">
+		<item-type>DateTime</item-type>
+		<label>Uptime Since</label>
+		<description>System boot time (updates only on reboot)</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Network bridge -->
+
+	<channel-type id="total-clients">
+		<item-type>Number</item-type>
+		<label>Total Clients</label>
+		<description>Total number of clients connected across all devices</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wireless-clients">
+		<item-type>Number</item-type>
+		<label>Wireless Clients</label>
+		<description>Number of wireless clients connected across all devices</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wired-clients">
+		<item-type>Number</item-type>
+		<label>Wired Clients</label>
+		<description>Number of wired clients connected across all devices</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Device telemetry -->
+
+	<channel-type id="cpu-load">
+		<item-type>Number</item-type>
+		<label>CPU Load</label>
+		<description>1-minute load average</description>
+		<category>Number</category>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="cpu-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>CPU Temperature</label>
+		<description>CPU temperature in degrees Celsius</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wan-ip">
+		<item-type>String</item-type>
+		<label>WAN IP</label>
+		<description>External WAN IP address (only available on gateway devices)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wan-in">
+		<item-type>Number:DataAmount</item-type>
+		<label>WAN In</label>
+		<description>Total bytes received on the WAN interface (only available on gateway devices)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wan-out">
+		<item-type>Number:DataAmount</item-type>
+		<label>WAN Out</label>
+		<description>Total bytes sent on the WAN interface (only available on gateway devices)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="if-in">
+		<item-type>Number:DataAmount</item-type>
+		<label>LAN In</label>
+		<description>Total bytes received on the LAN bridge interface (br0)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="if-out">
+		<item-type>Number:DataAmount</item-type>
+		<label>LAN Out</label>
+		<description>Total bytes sent on the LAN bridge interface (br0)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="reboot">
+		<item-type>Switch</item-type>
+		<label>Reboot</label>
+		<description>Turn ON to reboot the device; automatically resets to OFF</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- Radio -->
+
+	<channel-type id="enabled">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>Whether the radio or rule is enabled</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="ssid">
+		<item-type>String</item-type>
+		<label>SSID</label>
+		<description>Wireless network name</description>
+		<category>Network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="channel">
+		<item-type>Number</item-type>
+		<label>Channel</label>
+		<description>Wireless channel number</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Wireless mode (e.g. Master, Client, Ad-Hoc)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="client-count">
+		<item-type>Number</item-type>
+		<label>Client Count</label>
+		<description>Number of clients associated with this radio</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="assoclist">
+		<item-type>String</item-type>
+		<label>Associated Clients</label>
+		<description>Comma-separated list of MAC addresses of associated wireless clients</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Wireless Client -->
+
+	<channel-type id="mac-address">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of the wireless client</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="client-hostname">
+		<item-type>String</item-type>
+		<label>Hostname</label>
+		<description>Hostname of the wireless client</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ip-address">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP address of the wireless client</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ap">
+		<item-type>String</item-type>
+		<label>Access Point</label>
+		<description>Name of the radio the client is associated with (hostname-interface)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ap-mac">
+		<item-type>String</item-type>
+		<label>AP MAC Address</label>
+		<description>MAC address of the access point the client is associated with</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="signal">
+		<item-type>Number</item-type>
+		<label>Signal</label>
+		<description>Signal strength in dBm</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="snr">
+		<item-type>Number</item-type>
+		<label>Signal-to-Noise Ratio</label>
+		<description>Signal-to-noise ratio in dB</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dB"/>
+	</channel-type>
+
+	<channel-type id="rx-rate">
+		<item-type>Number</item-type>
+		<label>RX Rate</label>
+		<description>Receive rate in Mbit/s</description>
+		<state readOnly="true" pattern="%.1f Mbit/s"/>
+	</channel-type>
+
+	<channel-type id="tx-rate">
+		<item-type>Number</item-type>
+		<label>TX Rate</label>
+		<description>Transmit rate in Mbit/s</description>
+		<state readOnly="true" pattern="%.1f Mbit/s"/>
+	</channel-type>
+
+	<channel-type id="last-seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp when the client was last seen online</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Firewall Rule -->
+
+	<channel-type id="description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description of the firewall rule</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Syslog Events (modeled after logreader binding) -->
+
+	<channel-type id="last-warning-event">
+		<item-type>String</item-type>
+		<label>Last Warning Event</label>
+		<description>Last warning-level syslog line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-error-event">
+		<item-type>String</item-type>
+		<label>Last Error Event</label>
+		<description>Last error-level syslog line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warning-events">
+		<item-type>Number</item-type>
+		<label>Warning Events</label>
+		<description>Number of warning-level syslog events since startup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="error-events">
+		<item-type>Number</item-type>
+		<label>Error Events</label>
+		<description>Number of error-level syslog events since startup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-dhcp-event">
+		<item-type>String</item-type>
+		<label>Last DHCP Event</label>
+		<description>Last DHCP lease, renewal, or release event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-wireless-event">
+		<item-type>String</item-type>
+		<label>Last Wireless Event</label>
+		<description>Last wireless association or deassociation event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="new-warning-event">
+		<kind>trigger</kind>
+		<label>New Warning Event</label>
+		<description>Fires when a new warning-level syslog event is detected</description>
+	</channel-type>
+
+	<channel-type id="new-error-event">
+		<kind>trigger</kind>
+		<label>New Error Event</label>
+		<description>Fires when a new error-level syslog event is detected</description>
+	</channel-type>
+
+	<channel-type id="new-dhcp-event">
+		<kind>trigger</kind>
+		<label>New DHCP Event</label>
+		<description>Fires when a DHCP lease, renewal, or release is detected</description>
+	</channel-type>
+
+	<channel-type id="new-wireless-event">
+		<kind>trigger</kind>
+		<label>New Wireless Event</label>
+		<description>Fires when a wireless association or deassociation is detected</description>
+	</channel-type>
+
+</thing:thing-descriptions>
