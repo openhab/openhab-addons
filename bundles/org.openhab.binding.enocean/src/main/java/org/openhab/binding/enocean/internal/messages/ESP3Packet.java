@@ -112,12 +112,16 @@ public class ESP3Packet {
         }
     }
 
-    public static boolean checkCRC8(byte[] data, int length, byte crc8) {
+    public static boolean checkCRC8(byte[] data, int start, int length) {
         byte output = 0;
-        for (int i = 0; i < length; i++) {
+        int end = start + length;
+        if (data.length <= end) {
+            return false;
+        }
+        for (int i = start; i < end; i++) {
             int index = (output ^ data[i]) & 0xff;
             output = crc8Table[index];
         }
-        return output == crc8;
+        return output == data[end];
     }
 }
