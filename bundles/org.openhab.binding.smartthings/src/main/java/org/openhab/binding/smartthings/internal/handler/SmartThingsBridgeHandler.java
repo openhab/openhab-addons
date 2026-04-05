@@ -284,6 +284,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     public void registerCloudWebhook() {
+        @Nullable
         Map<String, String> properties = thing.getProperties();
 
         if (config.useCloudWebhook) {
@@ -339,6 +340,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     private void updateWebhookProperties(@Nullable String webHookUrl) {
+        @Nullable
         Map<String, String> properties = new HashMap<>(editProperties());
         if (webHookUrl == null) {
             properties.put(SmartThingsBindingConstants.WEBHOOK_URL, "");
