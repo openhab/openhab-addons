@@ -175,18 +175,19 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     private synchronized void startTasks() {
+        var localConnection = this.connection;
         String taskId = TASKS.POLL;
 
-        if (this.connection == null) {
+        if (localConnection == null) {
             taskId = TASKS.CONNECT;
-        } else if (!this.connection.isRegistered()) {
+        } else if (!localConnection.isRegistered()) {
             taskId = TASKS.REGISTER;
         }
 
         Runnable task = null;
 
-        long delay = TASKS.delays.get(taskId);
-        long interval = TASKS.intervals.get(taskId);
+        long delay = Objects.requireNonNull(TASKS.delays.get(taskId));
+        long interval = Objects.requireNonNull(TASKS.intervals.get(taskId));
 
         this.logger.trace("startTasks - [{}, delay: {}s, interval: {}s]", taskId, delay, interval);
 
@@ -310,10 +311,8 @@ public class HueSyncHandler extends BaseThingHandler {
     private void handleRegistration(HueSyncRegistration registration) {
         setProperty(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
 
-        if ((this.getHueSyncConfiguration().apiAccessToken == null ? registration.accessToken != null
-                : !this.getHueSyncConfiguration().apiAccessToken.equals(registration.accessToken))
-                && (this.getHueSyncConfiguration().registrationId == null ? registration.registrationId != null
-                        : !this.getHueSyncConfiguration().registrationId.equals(registration.registrationId))) {
+        if ((!Objects.equals(this.getHueSyncConfiguration().apiAccessToken, registration.accessToken))
+                && (!Objects.equals(this.getHueSyncConfiguration().registrationId, registration.registrationId))) {
             Configuration configuration = this.editConfiguration();
 
             configuration.put(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
@@ -346,10 +345,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
         Map<String, String> properties = this.editProperties();
         Map<String, @Nullable String> safeProperties = new HashMap<>();
-        if (properties != null) {
-            for (Map.Entry<String, String> e : properties.entrySet()) {
-                safeProperties.put(e.getKey(), e.getValue());
-            }
+        for (Map.Entry<String, String> e : properties.entrySet()) {
+            safeProperties.put(e.getKey(), e.getValue());
         }
 
         @Nullable
@@ -389,7 +386,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
     @Override
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
-        if (thing.getStatus() != ThingStatus.ONLINE || this.connection == null) {
+        var localConnection = this.connection;
+        if (thing.getStatus() != ThingStatus.ONLINE || localConnection == null) {
             this.logger.warn("Device status: {} - Command {} for channel {} will be ignored",
                     thing.getStatus().toString(), command.toFullString(), channelUID.toString());
             return;
@@ -402,7 +400,7 @@ public class HueSyncHandler extends BaseThingHandler {
             return;
         }
 
-        this.connection.executeCommand(channel, command);
+        localConnection.executeCommand(channel, command);
     }
 
     @Override
@@ -411,8 +409,9 @@ public class HueSyncHandler extends BaseThingHandler {
 
         try {
             this.stopTasks();
-            if (this.connection != null) {
-                this.connection.dispose();
+            var localConnection = this.connection;
+            if (localConnection != null) {
+                localConnection.dispose();
             }
         } catch (Exception e) {
             this.logger.warn("Exception while disposing HueSyncHandler for {}: {}", this.thing.getUID(), e.getMessage(),
@@ -426,8 +425,9 @@ public class HueSyncHandler extends BaseThingHandler {
     public synchronized void handleRemoval() {
         super.handleRemoval();
 
-        if (this.connection != null) {
-            this.connection.unregisterDevice();
+        var localConnection = this.connection;
+        if (localConnection != null) {
+            localConnection.unregisterDevice();
         }
     }
 

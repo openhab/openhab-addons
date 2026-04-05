@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -29,9 +30,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
 import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecution;
@@ -51,19 +49,17 @@ import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
  * @author Patrik Gfeller - Issue #19079, Regression tests
  */
 @NonNullByDefault
-@ExtendWith(MockitoExtension.class)
 public class HueSyncUpdateTaskTest {
 
-    @Mock
-    private HueSyncDeviceConnection connection;
-    @Mock
-    private HueSyncExceptionHandler exceptionHandler;
+    @SuppressWarnings("null")
+    private HueSyncDeviceConnection connection = mock(HueSyncDeviceConnection.class);
+    @SuppressWarnings("null")
+    private HueSyncExceptionHandler exceptionHandler = mock(HueSyncExceptionHandler.class);
 
     private HueSyncDevice deviceInfo = new HueSyncDevice();
 
     @BeforeEach
     void setup() {
-        // Mocks are injected by MockitoExtension
         deviceInfo = new HueSyncDevice();
         deviceInfo.name = "TestDevice";
         deviceInfo.deviceType = "HSB1";

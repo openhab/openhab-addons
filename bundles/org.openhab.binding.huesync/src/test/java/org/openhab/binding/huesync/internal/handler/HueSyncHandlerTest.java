@@ -75,30 +75,32 @@ public class HueSyncHandlerTest {
     @BeforeEach
     void setup() {
         handler = new HueSyncHandler(Objects.requireNonNull(thing), Objects.requireNonNull(httpClientFactory));
-        handler.setCallback(callback);
+        Objects.requireNonNull(handler).setCallback(callback);
     }
 
     @Test
     @DisplayName("dispose() should not throw NoSuchElementException when connection is empty")
     void disposeWithEmptyConnection() {
-        assertDoesNotThrow(handler::dispose);
+        assertDoesNotThrow(Objects.requireNonNull(handler)::dispose);
     }
 
     @Test
     @DisplayName("Multiple successive dispose() calls should be safe")
     void multipleSuccessiveDisposeCalls() {
+        HueSyncHandler h = Objects.requireNonNull(handler);
         assertDoesNotThrow(() -> {
-            handler.dispose();
-            handler.dispose();
+            h.dispose();
+            h.dispose();
         });
     }
 
     @Test
     @DisplayName("Initialize and dispose sequence should work correctly")
     void initializeAndDisposeSequence() {
+        HueSyncHandler h = Objects.requireNonNull(handler);
         assertDoesNotThrow(() -> {
-            handler.initialize();
-            handler.dispose();
+            h.initialize();
+            h.dispose();
         });
     }
 

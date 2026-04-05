@@ -26,6 +26,7 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
+    @SuppressWarnings("null")
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 

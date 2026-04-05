@@ -18,7 +18,6 @@ import java.security.cert.CertificateException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
@@ -47,12 +46,7 @@ public class HueSyncConnectionTask implements Runnable {
     @Override
     public void run() {
         try {
-            @Nullable
             Configuration cfg = this.handler.getThing().getConfiguration();
-            if (cfg == null) {
-                this.exceptionHandler.handle(new IllegalStateException("Thing configuration not available"));
-                return;
-            }
 
             var connection = new HueSyncDeviceConnection(this.httpClient, cfg.as(HueSyncConfiguration.class),
                     this.exceptionHandler);
