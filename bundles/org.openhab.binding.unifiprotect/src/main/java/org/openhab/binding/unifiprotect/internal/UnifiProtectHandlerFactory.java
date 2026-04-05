@@ -18,12 +18,14 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifiprotect.internal.api.util.TranslationService;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectCameraHandler;
+import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectChimeHandler;
+import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectDoorlockHandler;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectLightHandler;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectNVRHandler;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectSensorHandler;
 import org.openhab.binding.unifiprotect.internal.media.UnifiMediaService;
+import org.openhab.binding.unifiprotect.internal.util.TranslationService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -44,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NVR, THING_TYPE_CAMERA,
-            THING_TYPE_LIGHT, THING_TYPE_SENSOR);
+            THING_TYPE_LIGHT, THING_TYPE_SENSOR, THING_TYPE_DOORLOCK, THING_TYPE_CHIME);
     private final TranslationService translationService;
     private HttpClientFactory httpClientFactory;
     private UnifiMediaService media;
@@ -73,6 +75,10 @@ public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
             return new UnifiProtectLightHandler(thing);
         } else if (THING_TYPE_SENSOR.equals(thingTypeUID)) {
             return new UnifiProtectSensorHandler(thing);
+        } else if (THING_TYPE_DOORLOCK.equals(thingTypeUID)) {
+            return new UnifiProtectDoorlockHandler(thing);
+        } else if (THING_TYPE_CHIME.equals(thingTypeUID)) {
+            return new UnifiProtectChimeHandler(thing);
         }
 
         return null;
