@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link RouterosWirelessType} enum define RouterOS wireless types.
+ * The {@link RouterosWirelessType} enum defines RouterOS wireless types.
  *
  * @author Leo Siepel - Initial contribution
  */
@@ -38,20 +38,25 @@ public enum RouterosWirelessType {
 
     public static RouterosWirelessType resolveFromPkgSet(Set<String> installedPkgs,
             @Nullable RouterosRouterboardInfo rbInfo) {
-        if (installedPkgs.contains(WIFI_PACKAGE)) {
+        boolean hasWireless = installedPkgs.contains(WIRELESS_PACKAGE);
+        boolean hasWifi = installedPkgs.contains(WIFI_PACKAGE) || installedPkgs.contains(WIFI_AC_PACKAGE);
+        boolean hasWifiwave2 = installedPkgs.contains(WIFIWAVE2_PACKAGE);
+        boolean hasNewWifiStack = hasWifi || hasWifiwave2;
+
+        if (hasWireless && hasNewWifiStack) {
+            return DUAL;
+        }
+
+        if (hasWifi) {
             return WIFI;
         }
 
-        if (installedPkgs.contains(WIFI_AC_PACKAGE)) {
-            return WIFI;
-        }
-
-        if (installedPkgs.contains(WIFIWAVE2_PACKAGE)) {
+        if (hasWifiwave2) {
             return WIFIWAVE2;
         }
 
-        if (installedPkgs.contains(WIRELESS_PACKAGE)) {
-            return DUAL;
+        if (hasWireless) {
+            return WIRELESS;
         }
 
         if (rbInfo == null) {

@@ -278,7 +278,7 @@ public class RouterosDevice {
                 cmd = CMD_PRINT_CAPS_IFACES;
             }
             logger.debug("Command used for updating the interfaces is:{}", cmd);
-            connection.execute(cmd).forEach(propMap -> {
+            conn.execute(cmd).forEach(propMap -> {
                 String ifaceName = propMap.get(PROP_NAME_KEY);
                 if (ifaceName != null) {
                     if (typedIfaceResponse.containsKey(ifaceName)) {
@@ -302,7 +302,7 @@ public class RouterosDevice {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Getting detailed data for Interface:{}, with command:{}", ifaceModel.getName(), cmd);
                 }
-                List<Map<String, String>> monitorProps = connection.execute(cmd);
+                List<Map<String, String>> monitorProps = conn.execute(cmd);
                 if (monitorProps != null && !monitorProps.isEmpty()) {
                     ifaceModel.mergeProps(monitorProps.get(0));
                 }
