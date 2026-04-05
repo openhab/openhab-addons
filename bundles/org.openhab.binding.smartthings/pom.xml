@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
@@ -12,6 +10,42 @@
 
   <artifactId>org.openhab.binding.smartthings</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Samsung Smartthings Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Samsung SmartThings Binding</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.io.openhabcloud</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <bnd><![CDATA[
+Bundle-SymbolicName: org.openhab.binding.smartthings
+  
+Import-Package: \
+ org.openhab.io.openhabcloud;resolution:=optional,\
+ org.openhab.io.openhabcloud.*;resolution:=optional,\
+ *
+          ]]></bnd>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>
