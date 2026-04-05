@@ -31,6 +31,7 @@ import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.openhab.binding.enocean.internal.eep.StateMachineProvider;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
+import org.openhab.binding.enocean.internal.statemachine.STMTransitionConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -41,6 +42,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -105,8 +107,87 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         config = getConfigAs(EnOceanActuatorConfig.class);
     }
 
+    @Override
+    protected boolean applyThingStructureUpdates() {
+        EnOceanActuatorConfig localConfig = getConfiguration();
+        if (localConfig.sendingEEPId.isEmpty()) {
+            return false;
+        }
+
+        EEPType localEEPType;
+        try {
+            localEEPType = EEPType.getType(localConfig.sendingEEPId);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        EEP eep = EEPFactory.createEEP(localEEPType);
+        if (!(eep instanceof StateMachineProvider<?, ?> stmEEP)) {
+            return false;
+        }
+
+        Thing thing = getThing();
+        Set<String> channelsToRemove = stmEEP.getChannelsToRemove(thing);
+        if (channelsToRemove.isEmpty()) {
+            return false;
+        }
+
+        ThingBuilder thingBuilder = editThing();
+        boolean changed = false;
+        for (String channelId : channelsToRemove) {
+            Channel channel = thing.getChannel(channelId);
+            if (channel != null) {
+                thingBuilder.withoutChannel(channel.getUID());
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            updateThing(thingBuilder.build());
+            return true;
+        }
+        return false;
+    }
+
     protected EnOceanActuatorConfig getConfiguration() {
         return (EnOceanActuatorConfig) config;
+    }
+
+    /**
+     * Overrides updateChannels() to prevent a channel add/remove loop.
+     * The base class re-creates all autoCreate channels advertised by EEPType. For StateMachineProvider EEPs,
+     * some channels are intentionally absent depending on the config mode. This override removes them again
+     * immediately after the base-class pass so the Thing structure stays stable across re-initialization cycles.
+     */
+    @Override
+    protected void updateChannels() {
+        super.updateChannels();
+
+        EEPType localEEPType = sendingEEPType;
+        if (localEEPType == null) {
+            return;
+        }
+        EEP eep = EEPFactory.createEEP(localEEPType);
+        if (!(eep instanceof StateMachineProvider<?, ?> stmEEP)) {
+            return;
+        }
+        Set<String> toRemove = stmEEP.getChannelsToRemove(getThing());
+        if (toRemove.isEmpty()) {
+            return;
+        }
+        Thing thing = getThing();
+        ThingBuilder thingBuilder = editThing();
+        boolean changed = false;
+        for (String channelId : toRemove) {
+            Channel channel = thing.getChannel(channelId);
+            if (channel != null) {
+                thingBuilder.withoutChannel(channel.getUID());
+                changed = true;
+            }
+        }
+        if (changed) {
+            updateThing(thingBuilder.build());
+        }
     }
 
     @Override
@@ -169,6 +250,16 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             String senderIdHex = getConfiguration().senderId;
             boolean hasSenderId = senderIdHex != null && !senderIdHex.isEmpty();
             if (hasSenderId || validateSenderIdOffset(getConfiguration().senderIdOffset)) {
+                // Initialize state machine if the sending EEP provides one
+                stm = null;
+                EEP eep = EEPFactory.createEEP(localEEPType);
+                if (eep instanceof StateMachineProvider<?, ?> stmEEP) {
+                    STMTransitionConfiguration<?, ?> transConfig = stmEEP.getTransitionConfiguration(getThing());
+                    if (transConfig != null) {
+                        stm = buildStateMachine(stmEEP, transConfig);
+                        restoreStateMachineState(stmEEP);
+                    }
+                }
                 return initializeIdForSending();
             } else {
                 configurationErrorDescription = "Sender Id is not valid for bridge";
@@ -340,6 +431,18 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+        stm = null;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private STMStateMachine<?, ?> buildStateMachine(StateMachineProvider<?, ?> stmEEP,
+            STMTransitionConfiguration<?, ?> transConfig) {
+        STMStateMachine stm = STMStateMachine.build((STMTransitionConfiguration) transConfig,
+                (Enum) stmEEP.getInitialState(), scheduler, this::onStateChanged);
+        for (Object action : ((StateMachineProvider) stmEEP).getRequiredCallbackActions(getThing())) {
+            stm.register((Enum) action, this::processStoredCommand);
+        }
+        return stm;
     }
 
     /**
