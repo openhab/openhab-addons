@@ -621,10 +621,10 @@ public class LinkPlayHTTPClient {
     }
 
     /**
-     * Command: ConnectMasterAp:JoinGroupMaster:eth:{ip} –Join a group by IP.
+     * Command: ConnectMasterAp:JoinGroupMaster:eth{ip} – Join a group by IP.
      */
     public CompletableFuture<String> multiroomJoinGroupMaster(String ip) {
-        return sendGetRequest("ConnectMasterAp:JoinGroupMaster:eth:" + encode(ip) + ":wifi0.0.0.0", String.class);
+        return sendGetRequest("ConnectMasterAp:JoinGroupMaster:eth" + encode(ip) + ":wifi0.0.0.0", String.class);
     }
 
     /**
