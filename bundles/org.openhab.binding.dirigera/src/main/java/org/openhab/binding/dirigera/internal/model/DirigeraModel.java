@@ -410,6 +410,8 @@ public class DirigeraModel implements Model {
         if (hasAttribute(id, ATTRIBUTES_KEY_QRCODE)) {
             String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
             return switch (deviceType) {
+                case "outlet" -> THING_TYPE_MATTER_OUTLET;
+                case "electricalSensor" -> THING_TYPE_MATTER_OUTLET;
                 case "occupancySensor" -> THING_TYPE_MATTER_OCCUPANCY_SENSOR;
                 case "lightSensor" -> {
                     String relationId = getRelationId(id);

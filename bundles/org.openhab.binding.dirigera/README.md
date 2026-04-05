@@ -55,6 +55,7 @@ Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor
 | `two-button-switch`   | Controller with 2 programmable buttons                    | [Controller](#two-button-switch)          | BILRESA dual button                       |
 | `three-button-switch` | Controller with 3 programmable buttons                    | [Controller](#three-button-switch)        | BILRESA scroll wheel                      |
 | `matter-light`        | LED light (based on Matter standard)                      | [Lights](#matter-light)                   | KAJPLATS series                           |
+| `matter-outlet`       | Power plug with electricity measurements                  | [Plugs](#smart-power-plug-matter)         | GRILLPLATS, TOFSMYGGA                     |
 
 ## Discovery
 
@@ -413,6 +414,21 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 Smart plug provides `energy-total` measuring energy consumption over lifetime and `energy-reset` measuring energy consumption from `reset-date` till now.
 Channel `reset-date` is writable and will set the date time to the timestamp of command execution.
 Past and future timestamps are not possible and will be ignored.
+
+## Smart Power Plug Matter
+
+Smart plug based on Matter standard.
+Provides the power and energy measurement channels listed below.
+Additional [Smart Power Plug](#smart-power-plug) channels such as child lock or status light configuration are not supported by the Matter variant.
+
+| Channel               | Type                      | Read/Write | Description                                  |
+|-----------------------|---------------------------|------------|----------------------------------------------|
+| `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |
+| `energy-total`        | Number:Energy             | R          | Total energy consumption                     |
+| `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |
+| `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |
+| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |
+| `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |
 
 ## Sensors
 
