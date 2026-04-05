@@ -323,19 +323,23 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         logger.info("try register webhook");
 
         try {
-            String result = this.webHookService.requestWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).get();
+            if (webHookService != null) {
+                String result = webHookService.requestWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).get();
 
-            logger.info("try register webhook, result={}", result);
-            return result;
-
+                logger.info("try register webhook, result={}", result);
+                return result;
+            }
         } catch (Exception ex) {
             logger.warn("try register webhook failed", ex);
             return null;
         }
+        return null;
     }
 
     private void removeCloudWebhooks() {
-        this.webHookService.removeWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).join();
+        if (webHookService != null) {
+            webHookService.removeWebhook(SmartThingsBindingConstants.SMARTTHINGS_CB_ALIAS).join();
+        }
     }
 
     private void updateWebhookProperties(@Nullable String webHookUrl) {

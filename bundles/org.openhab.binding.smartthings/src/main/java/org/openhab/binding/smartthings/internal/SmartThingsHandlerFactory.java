@@ -102,7 +102,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     }
 
     protected void unsetWebhookService(WebhookService service) {
-        if (this.webHookService == service) {
+        if (service.equals(webHookService)) {
             this.webHookService = null;
         }
     }
