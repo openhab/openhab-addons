@@ -219,7 +219,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                     }
                 }
             } catch (HeosNotFoundException e) {
-                logger.debug("SKipping handler which reported not found", e);
+                logger.debug("Skipping handler which reported not found", e);
             }
         }
     }
