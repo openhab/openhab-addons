@@ -50,7 +50,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Handles the connection to a Hue HDMI Sync Box using the official API.
  * 
  * @author Patrik Gfeller - Initial Contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
@@ -183,7 +183,7 @@ public class HueSyncDeviceConnection {
                     return registration;
                 }
             } catch (JsonProcessingException e) {
-                this.logger.warn("{}", e.getMessage());
+                this.logger.warn("Unable to parse registration response: {}", e.getMessage(), e);
             }
         }
         return null;
@@ -197,7 +197,7 @@ public class HueSyncDeviceConnection {
         try {
             this.connection.unregisterDevice();
         } catch (HueSyncConnectionException e) {
-            this.logger.warn("{}", e.getMessage());
+            this.logger.warn("Error while unregistering device: {}", e.getMessage(), e);
         }
     }
 
