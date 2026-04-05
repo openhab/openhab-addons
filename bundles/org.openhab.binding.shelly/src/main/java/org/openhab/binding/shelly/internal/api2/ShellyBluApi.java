@@ -110,7 +110,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
+        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
 
         if (devInfo != null) {
             profile.device = devInfo;

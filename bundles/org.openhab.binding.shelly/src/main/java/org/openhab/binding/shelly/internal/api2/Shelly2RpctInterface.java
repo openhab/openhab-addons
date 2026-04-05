@@ -32,7 +32,7 @@ public interface Shelly2RpctInterface {
 
     void onPong();
 
-    void onClose(int statusCode, String reason);
+    void onClose(boolean inbound, int statusCode, String reason);
 
     void onError(Throwable cause);
 }
