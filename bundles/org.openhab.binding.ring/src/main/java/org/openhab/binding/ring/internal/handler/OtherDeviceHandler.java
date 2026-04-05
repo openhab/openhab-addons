@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.OtherDevice;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
@@ -69,7 +70,7 @@ public class OtherDeviceHandler extends RingDeviceHandler {
                 if (channel == null) {
                     logger.debug("Adding channel for opendoor, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
-                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Open Door")
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH).withLabel("Open Door")
                             .withType(new ChannelTypeUID(BINDING_ID, "opendoor")).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
