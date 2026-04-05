@@ -53,7 +53,7 @@ public class EnoceanBleRockerHandler extends BeaconBluetoothHandler {
                 }
             }
         } catch (IllegalStateException e) {
-            logger.warn("PTM215B event could not be parsed correctly, exception occured:", e);
+            logger.warn("PTM215B event could not be parsed correctly, exception occurred:", e);
         }
     }
 
