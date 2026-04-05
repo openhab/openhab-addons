@@ -38,8 +38,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class ConfigurationHelper {
 
-    public static Map<String, String> createProperties(LocalConfiguration configuration) {
-        Map<String, String> properties = new HashMap<>(4);
+    public static Map<String, @Nullable String> createProperties(LocalConfiguration configuration) {
+        Map<String, @Nullable String> properties = new HashMap<>(4);
 
         String model = configuration.model;
         if (model != null) {
