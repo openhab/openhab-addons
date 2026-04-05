@@ -24,5 +24,26 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-  </dependencies>
+  </dependencies> 
+  
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <bnd><![CDATA[
+# On rend openhabcloud optionnel côté OSGi
+-importpackage: \
+ org.openhab.io.openhabcloud;resolution:=optional,\
+ org.openhab.io.openhabcloud.*;resolution:=optional
+          ]]></bnd>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
 </project>
