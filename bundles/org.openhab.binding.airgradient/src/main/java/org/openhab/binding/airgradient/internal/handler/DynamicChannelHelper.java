@@ -14,7 +14,6 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,25 +37,20 @@ public class DynamicChannelHelper {
     private record ConfigurationChannel(String id, String typeId, String itemType) {
     }
 
-    private static final List<ConfigurationChannel> CHANNELS = new ArrayList<ConfigurationChannel>() {
-        {
-            add(new ConfigurationChannel(CHANNEL_COUNTRY_CODE, CHANNEL_COUNTRY_CODE, "String"));
-            add(new ConfigurationChannel(CHANNEL_PM_STANDARD, CHANNEL_PM_STANDARD, "String"));
-            add(new ConfigurationChannel(CHANNEL_ABC_DAYS, CHANNEL_ABC_DAYS, "Number"));
-            add(new ConfigurationChannel(CHANNEL_TVOC_LEARNING_OFFSET, CHANNEL_TVOC_LEARNING_OFFSET, "Number"));
-            add(new ConfigurationChannel(CHANNEL_NOX_LEARNING_OFFSET, CHANNEL_NOX_LEARNING_OFFSET, "Number"));
-            add(new ConfigurationChannel(CHANNEL_MQTT_BROKER_URL, CHANNEL_MQTT_BROKER_URL, "String"));
-            add(new ConfigurationChannel(CHANNEL_TEMPERATURE_UNIT, CHANNEL_TEMPERATURE_UNIT, "String"));
-            add(new ConfigurationChannel(CHANNEL_CONFIGURATION_CONTROL, CHANNEL_CONFIGURATION_CONTROL, "String"));
-            add(new ConfigurationChannel(CHANNEL_POST_TO_CLOUD, CHANNEL_POST_TO_CLOUD, "Switch"));
-            add(new ConfigurationChannel(CHANNEL_LED_BAR_BRIGHTNESS, CHANNEL_LED_BAR_BRIGHTNESS,
-                    "Number:Dimensionless"));
-            add(new ConfigurationChannel(CHANNEL_DISPLAY_BRIGHTNESS, CHANNEL_DISPLAY_BRIGHTNESS,
-                    "Number:Dimensionless"));
-            add(new ConfigurationChannel(CHANNEL_MODEL, CHANNEL_MODEL, "String"));
-            add(new ConfigurationChannel(CHANNEL_LED_BAR_TEST, CHANNEL_LED_BAR_TEST, "String"));
-        }
-    };
+    private static final List<ConfigurationChannel> CHANNELS = List.of(
+            new ConfigurationChannel(CHANNEL_COUNTRY_CODE, CHANNEL_COUNTRY_CODE, "String"),
+            new ConfigurationChannel(CHANNEL_PM_STANDARD, CHANNEL_PM_STANDARD, "String"),
+            new ConfigurationChannel(CHANNEL_ABC_DAYS, CHANNEL_ABC_DAYS, "Number"),
+            new ConfigurationChannel(CHANNEL_TVOC_LEARNING_OFFSET, CHANNEL_TVOC_LEARNING_OFFSET, "Number"),
+            new ConfigurationChannel(CHANNEL_NOX_LEARNING_OFFSET, CHANNEL_NOX_LEARNING_OFFSET, "Number"),
+            new ConfigurationChannel(CHANNEL_MQTT_BROKER_URL, CHANNEL_MQTT_BROKER_URL, "String"),
+            new ConfigurationChannel(CHANNEL_TEMPERATURE_UNIT, CHANNEL_TEMPERATURE_UNIT, "String"),
+            new ConfigurationChannel(CHANNEL_CONFIGURATION_CONTROL, CHANNEL_CONFIGURATION_CONTROL, "String"),
+            new ConfigurationChannel(CHANNEL_POST_TO_CLOUD, CHANNEL_POST_TO_CLOUD, "Switch"),
+            new ConfigurationChannel(CHANNEL_LED_BAR_BRIGHTNESS, CHANNEL_LED_BAR_BRIGHTNESS, "Number:Dimensionless"),
+            new ConfigurationChannel(CHANNEL_DISPLAY_BRIGHTNESS, CHANNEL_DISPLAY_BRIGHTNESS, "Number:Dimensionless"),
+            new ConfigurationChannel(CHANNEL_MODEL, CHANNEL_MODEL, "String"),
+            new ConfigurationChannel(CHANNEL_LED_BAR_TEST, CHANNEL_LED_BAR_TEST, "String"));
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicChannelHelper.class);
 
