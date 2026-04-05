@@ -72,13 +72,14 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final SmartThingsTypeRegistry typeRegistry;
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    private @Nullable volatile WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SmartThingsBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId());
     }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.STATIC)
+    private @Nullable volatile WebhookService webHookService;
 
     @Activate
     public SmartThingsHandlerFactory(final @Reference HttpService httpService,
@@ -97,16 +98,6 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         this.eventSourceFactory = eventSourceFactory;
     }
 
-    protected void setWebhookService(WebhookService service) {
-        this.webHookService = service;
-    }
-
-    protected void unsetWebhookService(WebhookService service) {
-        if (service.equals(webHookService)) {
-            this.webHookService = null;
-        }
-    }
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -123,7 +114,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
             bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,
                     bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder,
-                    eventSourceFactory, webHookService);
+                    eventSourceFactory);
 
             SmartThingsBridgeHandler accountHandler = bridgeHandler;
             authService.setSmartThingsAccountHandler(accountHandler);

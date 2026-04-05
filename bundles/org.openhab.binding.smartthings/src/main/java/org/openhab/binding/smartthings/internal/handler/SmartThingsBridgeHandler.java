@@ -58,9 +58,12 @@ import org.openhab.io.openhabcloud.WebhookService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +92,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     protected @NonNullByDefault({}) SmartThingsDiscoveryService discoService;
     protected @NonNullByDefault({}) ClientBuilder clientBuilder;
     protected @NonNullByDefault({}) SseEventSourceFactory eventSourceFactory;
-    private @Nullable final WebhookService webHookService;
 
     private @Nullable OAuthClientService oAuthService;
     private @NonNullByDefault({}) SmartThingsNetworkConnector networkConnector;
@@ -101,11 +103,13 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     private static final long WEBHOOK_REFRESH_INTERVAL_HOURS = 24;
 
+    private @Nullable volatile WebhookService webHookService;
+
     public SmartThingsBridgeHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
-            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            @Nullable WebhookService webHookService) {
+            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory) {
         super(bridge);
 
         config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
@@ -120,7 +124,27 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.typeRegistry = typeRegistry;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
-        this.webHookService = webHookService;
+    }
+
+    private @Nullable ServiceTracker<WebhookService, WebhookService> tracker;
+
+    private @Nullable WebhookService getWebhookService() {
+        if (tracker != null) {
+            return tracker.getService();
+        }
+        return null;
+    }
+
+    @Reference
+    protected void setWebhookService(WebhookService service) {
+        this.webHookService = service;
+    }
+
+    @Reference
+    protected void unsetWebhookService(WebhookService service) {
+        if (service.equals(webHookService)) {
+            this.webHookService = null;
+        }
     }
 
     @Override
@@ -149,6 +173,26 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         if (!validateConfig(this.config)) {
             return;
         }
+
+        BundleContext ctx = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        tracker = new ServiceTracker<>(ctx, WebhookService.class, new ServiceTrackerCustomizer<>() {
+            @Override
+            public WebhookService addingService(@Nullable ServiceReference<WebhookService> ref) {
+                WebhookService svc = ctx.getService(ref);
+                logger.info("WebhookService arrived !");
+                return svc;
+            }
+
+            @Override
+            public void removedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
+                logger.info("WebhookService removed !");
+            }
+
+            @Override
+            public void modifiedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
+            }
+        });
+        tracker.open();
 
         registerOAuth(false);
         registerCloudWebhook();
@@ -286,6 +330,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public void registerCloudWebhook() {
         Map<String, String> properties = thing.getProperties();
 
+        webHookService = getWebhookService();
+
         if (config.useCloudWebhook) {
             cloudWebHook = properties.get(SmartThingsBindingConstants.WEBHOOK_URL);
             if (cloudWebHook == null || "".equals(cloudWebHook)) {
@@ -418,6 +464,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         removeRefreshTask();
         removeCloudWebhooks();
 
+        if (tracker != null) {
+            tracker.close();
+        }
+
         SmartThingsServlet s = servlet;
         if (s != null) {
             s.deactivate();
@@ -548,4 +598,5 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public SmartThingsTypeRegistry getSmartThingsTypeRegistry() {
         return this.typeRegistry;
     }
+
 }

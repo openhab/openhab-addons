@@ -33,7 +33,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.io.openhabcloud.WebhookService;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
@@ -54,10 +53,10 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     public SmartThingsAccountHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
-            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
-            @Nullable WebhookService webHookService) {
+            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory) {
         super(bridge, smartthingsHandlerFactory, authService, translationProvider, bundleContext, httpService,
-                oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory, webHookService);
+                oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
     }
 
     @Override

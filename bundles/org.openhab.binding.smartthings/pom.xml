@@ -35,10 +35,8 @@
         <extensions>true</extensions>
         <configuration>
           <bnd><![CDATA[
--importpackage: \
- org.openhab.io.openhabcloud;resolution:=optional,\
- org.openhab.io.openhabcloud.*;resolution:=optional
-
+Bundle-SymbolicName: org.openhab.binding.smartthings
+  
 Import-Package: \
  org.openhab.io.openhabcloud;resolution:=optional,\
  org.openhab.io.openhabcloud.*;resolution:=optional,\
