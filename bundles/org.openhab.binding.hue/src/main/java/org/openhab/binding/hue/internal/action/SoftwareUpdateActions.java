@@ -60,13 +60,13 @@ public class SoftwareUpdateActions implements ThingActions {
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
     public @ActionOutput(type = "java.lang.String", label = "@text/install.update.result.label", description = "@text/install.update.result.description") String installUpdate() {
         ThingHandler handler = this.handler;
-        if (!(handler instanceof Clip2BridgeHandler || handler instanceof Clip2ThingHandler)) {
-            logger.warn("SoftwareUpdateActions called but ThingHandler not known: {}", handler);
-            return "Error: ThingHandler not known";
-        }
         if (handler instanceof Clip2BridgeHandler bridgeHandler) {
             return bridgeHandler.installUpdate();
-        } // Clip2ThingHandler
-        return ((Clip2ThingHandler) handler).installUpdate();
+        }
+        if (handler instanceof Clip2ThingHandler thingHandler) {
+            return thingHandler.installUpdate();
+        }
+        logger.warn("SoftwareUpdateActions called on unsupported ThingHandler: {}", handler);
+        return "Error: unsupported thing handler";
     }
 }

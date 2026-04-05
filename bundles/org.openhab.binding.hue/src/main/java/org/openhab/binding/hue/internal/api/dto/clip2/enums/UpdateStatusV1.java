@@ -33,6 +33,9 @@ public enum UpdateStatusV1 {
     ANYREADYTOINSTALL,
     READYTOINSTALL;
 
+    /**
+     * Create enum from a JSON string. Returns null if the input is null or does not match any enum value.
+     */
     public static @Nullable UpdateStatusV1 of(@Nullable String value) {
         if (value != null) {
             try {

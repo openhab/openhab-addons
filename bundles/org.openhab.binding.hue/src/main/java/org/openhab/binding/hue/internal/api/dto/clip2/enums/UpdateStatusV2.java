@@ -43,6 +43,9 @@ public enum UpdateStatusV2 {
         this.i18nKey = i18nKey;
     }
 
+    /**
+     * Create enum from a JSON string. Returns null if the input is null or does not match any enum value.
+     */
     public static @Nullable UpdateStatusV2 of(@Nullable String value) {
         if (value != null) {
             try {
@@ -54,6 +57,9 @@ public enum UpdateStatusV2 {
         return null;
     }
 
+    /**
+     * Create a v2 enum from a v1 enum. Returns null if the input is null.
+     */
     public static @Nullable UpdateStatusV2 of(@Nullable UpdateStatusV1 statusV1) {
         if (statusV1 == null) {
             return null;
@@ -66,6 +72,9 @@ public enum UpdateStatusV2 {
         };
     }
 
+    /**
+     * Reverse lookup for the enum based on the toString value. Returns null if no match is found.
+     */
     public static @Nullable UpdateStatusV2 reverseLookup(@Nullable String text) {
         if (text == null) {
             return null;
@@ -78,16 +87,25 @@ public enum UpdateStatusV2 {
         return null;
     }
 
+    /**
+     * Returns a "Title case" version of the name e.g. "READY_TO_INSTALL" becomes "Ready to install"
+     */
     @Override
     public String toString() {
         String s = this.name().replace("_", " ");
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 
-    public String getI18nKey() {
+    /**
+     * Returns an i18n key for localisation of the update status text
+     */
+    public String i18nKey() {
         return i18nKey;
     }
 
+    /**
+     * Returns true if the update status indicates that an update is ready to be installed
+     */
     public boolean isUpdateReady() {
         return UPDATE_READY_STATES.contains(this);
     }

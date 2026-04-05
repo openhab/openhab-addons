@@ -887,7 +887,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
         if (thing.getStatus() == ThingStatus.ONLINE
                 && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? updateStatus.getI18nKey() : null;
+            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? updateStatus.i18nKey() : null;
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
         }
         logger.debug("Software update status changed to: {}", updateStatus);
@@ -1032,8 +1032,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * come back online once the installation is complete. So we schedule a task to sleep for a certain time
      * and then start checking if the bridge is online again.
      * 
-     * @return a message key for the result of the command execution which is used to display a respective
-     *         message in the UI.
+     * @return a either an error message or a message of successful start of the update process.
      */
     public String installUpdate() {
         if (thing.getStatus() != ThingStatus.ONLINE) {
@@ -1054,6 +1053,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.warn("installUpdate() cannot be executed: not ready");
             return getText("install.update.error.not-ready");
         }
+        // schedule the update task asynchronously
         scheduler.submit(this::installUpdateTask);
         return getText("install.update.success");
     }
@@ -1075,15 +1075,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void installUpdateTask() {
         try {
             cancelTask(afterUpdateTask, false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
-                    "@text/update.state.installing-update");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, UpdateStatusV2.INSTALLING.i18nKey());
             getClip2Bridge().installUpdate();
             afterUpdateTask = scheduler.schedule(() -> checkConnection(), UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
         } catch (IOException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("installUpdate() error {}", e.getMessage(), e);
+                logger.debug("installUpdate() error: {}", e.getMessage(), e);
             } else {
-                logger.warn("installUpdate() error {}", e.getMessage());
+                logger.warn("installUpdate() error: {}", e.getMessage());
             }
         }
     }

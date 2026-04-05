@@ -1679,11 +1679,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (updateStatus) {
             case INSTALLING:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, updateStatus.getI18nKey());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, updateStatus.i18nKey());
                 break;
             case READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, updateStatus.getI18nKey());
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, updateStatus.i18nKey());
                 break;
             default:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, null);
@@ -1697,8 +1697,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * and come back online once the installation is complete. The bridge will send SSE notifications about
      * the software status, and the thing status will therefore be updated dynamically in real time.
      * 
-     * @return a message key for the result of the command execution which is used to display a respective
-     *         message in the UI.
+     * @return a either an error message or a message of successful start of the update process.
      */
     public String installUpdate() {
         if (thing.getStatus() != ThingStatus.ONLINE) {
@@ -1728,6 +1727,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             logger.warn("installUpdate() cannot be executed: resource not found");
             return getText("install.update.error.resource-not-found");
         }
+        // schedule the update task asynchronously
         scheduler.submit(() -> installUpdateTask(dsuResourceId));
         return getText("install.update.success");
     }
@@ -1746,23 +1746,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
     /**
      * Inner software update task called on a thread.
      * 
-     * @param resourceId
+     * @param resourceId the id of the device software update resource for which the command shall be sent.
      */
     private void installUpdateTask(String resourceId) {
         try {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
-                    "@text/update.state.installing-update");
-            Resource putResource = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate()
-                    .setId(resourceId);
-            Resources resources = getBridgeHandler().putResource(putResource);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, UpdateStatusV2.INSTALLING.i18nKey());
+            Resource putRes = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate().setId(resourceId);
+            Resources resources = getBridgeHandler().putResource(putRes);
             if (resources.hasErrors()) {
                 logger.info("installUpdate() succeeded with errors: {}", String.join("; ", resources.getErrors()));
             }
         } catch (ApiException | AssetNotLoadedException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("installUpdate() error {}", e.getMessage(), e);
+                logger.debug("installUpdate() error: {}", e.getMessage(), e);
             } else {
-                logger.warn("installUpdate() error {}", e.getMessage());
+                logger.warn("installUpdate() error: {}", e.getMessage());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
