@@ -61,19 +61,10 @@ public class VeSyncV1AirPurifierDeviceDetailsResponse extends VeSyncResponse {
     }
 
     @SerializedName("filterLife")
-    public FilterLife filter;
+    public VeSyncV1AirPurifierDeviceDetailsResponseFilterLife filter;
 
     public int getFilterPercent() {
         return filter.getPercent();
-    }
-
-    public class FilterLife {
-        @SerializedName("percent")
-        public int percent;
-
-        public int getPercent() {
-            return percent;
-        }
     }
 
     @SerializedName("deviceName")

@@ -180,7 +180,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
     }
 
     public void updateDeviceMetaData() {
-        Map<String, String> newProps = null;
+        Map<String, @Nullable String> newProps = null;
 
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
@@ -245,11 +245,11 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param metadata - the meta-data of a device
      * @return - Map of common props
      */
-    public Map<String, String> getMetadataProperities(final @Nullable VeSyncManagedDeviceBase metadata) {
+    public Map<String, @Nullable String> getMetadataProperities(final @Nullable VeSyncManagedDeviceBase metadata) {
         if (metadata == null) {
             return Map.of();
         }
-        final Map<String, String> newProps = new HashMap<>(4);
+        final Map<String, @Nullable String> newProps = new HashMap<>(4);
         newProps.put(DEVICE_PROP_DEVICE_MAC_ID, metadata.getMacId());
         newProps.put(DEVICE_PROP_DEVICE_NAME, metadata.getDeviceName());
         newProps.put(DEVICE_PROP_DEVICE_TYPE, metadata.getDeviceType());
