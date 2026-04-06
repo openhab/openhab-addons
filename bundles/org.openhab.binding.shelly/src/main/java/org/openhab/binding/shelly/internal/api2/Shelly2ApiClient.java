@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -106,7 +105,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscoveryInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiClient.class);
-    protected final Random random = new Random();
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
@@ -212,8 +210,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
          * or reorganize the two methods so that Shelly2ApiRpc.getDeviceProfile() calls super (this method)
          * first, and then takes only the extra steps that depends on other methods in Shelly2ApiRpc.
          */
-
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
         if (devInfo != null) {
             profile.device = devInfo;
