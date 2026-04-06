@@ -23,31 +23,5 @@ import com.google.gson.annotations.SerializedName;
 public class VeSyncManagedDevicesPage extends VeSyncResponse {
 
     @SerializedName("result")
-    public Outcome outcome;
-
-    public static class Outcome {
-        @SerializedName("pageNo")
-        public String pageNo;
-
-        @SerializedName("total")
-        public String total;
-
-        @SerializedName("pageSize")
-        public String pageSize;
-
-        @SerializedName("list")
-        public VeSyncManagedDeviceBase[] list;
-
-        public String getPageNo() {
-            return pageNo;
-        }
-
-        public String getPageSize() {
-            return pageSize;
-        }
-
-        public String getTotal() {
-            return total;
-        }
-    }
+    public VeSyncManagedDevicePageOutcome outcome;
 }
