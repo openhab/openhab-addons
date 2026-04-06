@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.api.dto.clip2;
+package org.openhab.binding.hue.internal.api.dto.clip1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV1;
+import org.openhab.binding.hue.internal.api.dto.clip1.enums.UpdateStatusV1;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**

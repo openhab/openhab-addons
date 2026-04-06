@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.api.dto.clip2.BridgeConfig;
+import org.openhab.binding.hue.internal.api.dto.clip1.BridgeConfig;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 import com.google.gson.Gson;
