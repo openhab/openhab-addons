@@ -138,25 +138,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public synchronized void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         setConfig(thingName, config);
 
         alwaysOn = getProfile().alwaysOn;
         if (alwaysOn) {
-            if (initialized) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
-                }
-                disconnect();
-            }
-            Shelly2RpcSocket rpcSocket = this.rpcSocket;
-            if (rpcSocket != null) {
-                rpcSocket.disconnect();
-            }
-
+            disconnect();
             rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
             rpcSocket.addMessageHandler(this);
-            this.rpcSocket = rpcSocket;
         }
 
         initialized = true;
