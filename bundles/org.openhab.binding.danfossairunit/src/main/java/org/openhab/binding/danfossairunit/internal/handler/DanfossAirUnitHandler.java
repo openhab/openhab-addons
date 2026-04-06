@@ -127,7 +127,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             return;
         }
 
-        logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
+        logger.trace("Updating DanfossHRV data '{}'", getThing().getUID());
 
         for (Channel channel : Channel.values()) {
             if (Thread.interrupted()) {

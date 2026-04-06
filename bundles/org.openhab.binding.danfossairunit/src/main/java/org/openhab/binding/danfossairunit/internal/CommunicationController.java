@@ -24,8 +24,6 @@ import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
  */
 @NonNullByDefault
 public interface CommunicationController {
-    void connect() throws IOException;
-
     void disconnect();
 
     byte[] sendRobustRequest(Parameter parameter) throws IOException;
