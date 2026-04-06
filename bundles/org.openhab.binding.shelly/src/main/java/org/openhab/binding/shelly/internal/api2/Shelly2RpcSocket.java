@@ -200,6 +200,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         ShellyThingInterface thing;
         try {
             thing = thingTable.getThing(deviceIp);
+            thingName = thing.getThingName();
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: RPC connection error for {} (unknown/disabled thing? - {}), closing socket", thingName,
                     deviceIp, e.getMessage(), e);
@@ -417,12 +418,8 @@ public class Shelly2RpcSocket implements WriteCallback {
             cleanup();
         }
 
-        if (inbound) {
-            // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
-            return;
-        }
         if (handler != null) {
-            handler.onClose(statusCode, reason);
+            handler.onClose(inbound, statusCode, reason);
         }
     }
 
