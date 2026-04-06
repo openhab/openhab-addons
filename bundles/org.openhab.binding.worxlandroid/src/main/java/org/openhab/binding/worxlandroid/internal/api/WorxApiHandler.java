@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.worxlandroid.internal.api.dto.ProductItemStatus;
 import org.openhab.binding.worxlandroid.internal.api.dto.UsersMeResponse;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -46,6 +47,7 @@ public class WorxApiHandler {
     private static final String URL_BASE = "https://api.worxlandroid.com/api/v2/";
     private static final String URL_PRODUCT_ITEMS = URL_BASE + "product-items";
     private static final String URL_USERS_ME = URL_BASE + "users/me";
+    private static final int TIMEOUT_S = 15;
 
     private static final Type PRODUCT_ITEM_STATUS_LIST = new TypeToken<List<ProductItemStatus>>() {
     }.getType();
@@ -69,7 +71,7 @@ public class WorxApiHandler {
         Request request = httpClient.newRequest(url).method(method);
         request.header(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken));
         request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-        request.timeout(15, TimeUnit.SECONDS);
+        request.timeout(TIMEOUT_S, TimeUnit.SECONDS);
         return request;
     }
 
@@ -79,14 +81,17 @@ public class WorxApiHandler {
         logger.debug("URI: {}", request.getURI().toString());
         try {
             ContentResponse response = request.send();
-            if (response.getStatus() == 200) {
+            if (response.getStatus() == HttpStatus.OK_200) {
                 String result = response.getContentAsString();
                 logger.trace("Worx Landroid Api Response: {}", result);
                 return deserializer.deserialize(type, result);
             }
             throw new WebApiException(
                     "Error calling Worx Landroid Api! HTTP Status = %d".formatted(response.getStatus()));
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new WebApiException(e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new WebApiException(e);
         }
     }
@@ -96,8 +101,11 @@ public class WorxApiHandler {
 
         logger.debug("URI: {}", request.getURI().toString());
         try {
-            return request.send().getStatus() == 200;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            return request.send().getStatus() == HttpStatus.OK_200;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Interrupted while posting at {}: {}", request.getURI().toString(), e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             logger.error("Error posting at {}: {}", request.getURI().toString(), e.getMessage());
         }
         return false;

@@ -115,8 +115,7 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
                 String message = cause.getMessage();
                 if (message != null && message.contains("http code 403")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/oauth-connection-delayed");
-                    connectionJob = scheduler.schedule(() -> initiateConnection(username, password), 1, TimeUnit.HOURS);
+                            "@text/oauth-connection-error");
                     return;
                 }
             }

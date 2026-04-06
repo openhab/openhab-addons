@@ -109,7 +109,7 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
         logger.debug("AWS connection is available");
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected to AWS");
+            updateStatus(ThingStatus.ONLINE);
         }
         updateChannelOnOff(GROUP_AWS, CHANNEL_CONNECTED, awsClient.isConnected());
 
@@ -213,13 +213,13 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
         if (command instanceof RefreshType) {
             return;
         }
-        if (!isOnline()) {
-            logger.warn("handleCommand mower: {} is offline!", getThing().getUID());
-            return;
-        }
         WorxLandroidBridgeHandler bridgeHandler = getBridgeHandler(getBridge(), WorxLandroidBridgeHandler.class);
         if (bridgeHandler == null) {
             logger.error("no bridgeHandler");
+            return;
+        }
+        if (!isOnline()) {
+            logger.warn("handleCommand mower: {} is offline!", getThing().getUID());
             return;
         }
         String groupId = channelUID.getGroupId();

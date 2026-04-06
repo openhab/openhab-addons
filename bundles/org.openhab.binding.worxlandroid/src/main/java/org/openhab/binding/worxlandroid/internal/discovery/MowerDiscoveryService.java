@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.worxlandroid.internal.discovery;
 
-import static org.openhab.binding.worxlandroid.internal.WorxLandroidBindingConstants.THING_TYPE_MOWER;
+import static org.openhab.binding.worxlandroid.internal.WorxLandroidBindingConstants.*;
 
 import java.util.List;
 import java.util.Set;
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.worxlandroid.internal.WorxLandroidBindingConstants;
 import org.openhab.binding.worxlandroid.internal.api.WebApiException;
 import org.openhab.binding.worxlandroid.internal.api.dto.ProductItemStatus;
-import org.openhab.binding.worxlandroid.internal.config.MowerConfiguration;
 import org.openhab.binding.worxlandroid.internal.handler.WorxLandroidBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -65,9 +64,9 @@ public class MowerDiscoveryService extends AbstractDiscoveryService {
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder
                         .create(new ThingUID(THING_TYPE_MOWER, bridgeHandler.getThing().getUID(), mower.id))
-                        .withRepresentationProperty(MowerConfiguration.SERIAL_NUMBER).withLabel(mower.name)
-                        .withProperty(MowerConfiguration.SERIAL_NUMBER, mower.serialNumber)
-                        .withBridge(bridgeHandler.getThing().getUID()).build();
+                        .withRepresentationProperty(SERIAL_NUMBER).withLabel(mower.name)
+                        .withProperty(SERIAL_NUMBER, mower.serialNumber).withBridge(bridgeHandler.getThing().getUID())
+                        .build();
 
                 thingDiscovered(discoveryResult);
                 logger.debug("Discovered a mower thing with ID '{}'", mower.serialNumber);

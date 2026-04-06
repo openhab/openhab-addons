@@ -22,8 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MowerConfiguration {
-    public static final String SERIAL_NUMBER = "serialNumber";
-
     public String serialNumber = "";
     public int refreshStatusInterval = 600;
     public int pollingInterval = 3600;

@@ -47,6 +47,9 @@ public class WorxLandroidBindingConstants {
     public static final String GROUP_WIFI = "wifi";
     public static final String GROUP_AWS = "aws";
 
+    // Configuration constants
+    public static final String SERIAL_NUMBER = "serialNumber";
+
     // List channel ids
     // common
     public static final String CHANNEL_ONLINE_TIMESTAMP = "online-timestamp";

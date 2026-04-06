@@ -187,7 +187,7 @@
 
 	<channel-group-type id="day-sched-group-type">
 		<label>Daily Schedule</label>
-		<description>Configuration schedule channels for each day</description>
+		<description>Schedule For Each Day</description>
 		<channels>
 			<channel id="enable" typeId="switch-rw">
 				<label>Active</label>
