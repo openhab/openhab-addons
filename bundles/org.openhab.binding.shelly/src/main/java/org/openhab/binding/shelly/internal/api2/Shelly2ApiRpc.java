@@ -111,7 +111,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final ShellyThingTable thingTable;
 
     protected volatile boolean initialized = false;
-    protected volatile boolean alwaysOn = false;
+    protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
@@ -135,13 +135,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.thingTable = thingTable;
         this.client = webSocketClient;
         this.scheduler = scheduler;
+        this.alwaysOn = profile.alwaysOn;
     }
 
     @Override
-    public synchronized void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         setConfig(thingName, config);
 
-        alwaysOn = getProfile().alwaysOn;
         if (alwaysOn) {
             disconnect();
             rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);

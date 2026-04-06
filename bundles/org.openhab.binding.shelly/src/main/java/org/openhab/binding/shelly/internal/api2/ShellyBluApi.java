@@ -74,7 +74,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         super(thingName, thingTable, thing, webSocketClient, scheduler);
 
-        ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
