@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * All Twilio phone Things share one cloud webhook mapping at
  * {@link org.openhab.binding.twilio.internal.TwilioBindingConstants#SERVLET_PATH}. The first call
- * to {@link #getOrRegister()} registers the mapping with the openHAB Cloud {@code WebhookService}
- * and starts a daily refresh task to keep the 30-day TTL from expiring. Subsequent calls return the
- * cached URL. The mapping is removed when the binding is deactivated.
+ * to {@link #register()} registers the mapping with the openHAB Cloud {@code WebhookService}
+ * and starts a daily refresh task to keep the 30-day TTL from expiring. The mapping is removed
+ * when the binding is deactivated.
  * <p>
  * The openHAB Cloud {@code WebhookService} is looked up via reflection so this binding has no
  * compile-time or class-loading dependency on the cloud add-on.
@@ -129,7 +129,7 @@ public class TwilioCloudWebhookService {
     }
 
     // the following methods are bit complicated to get around not having a direct java dependency on the cloud binding
-    
+
     private @Nullable String fetchWebhookUrl() {
         return withWebhookService(ws -> invokeRequestWebhook(ws, SERVLET_PATH));
     }
