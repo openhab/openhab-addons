@@ -295,7 +295,7 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS, new DecimalType(executionStatus.brightness));
     }
 
-    private void handleConnection(HueSyncDeviceConnection connectionInstance) {
+    private synchronized void handleConnection(HueSyncDeviceConnection connectionInstance) {
         try {
             var information = Optional.ofNullable(connectionInstance.getDeviceInfo());
 
@@ -344,19 +344,13 @@ public class HueSyncHandler extends BaseThingHandler {
         }
 
         Map<String, String> properties = this.editProperties();
-        Map<String, @Nullable String> safeProperties = new HashMap<>();
-        for (Map.Entry<String, String> e : properties.entrySet()) {
-            safeProperties.put(e.getKey(), e.getValue());
-        }
-
-        @Nullable
-        String currentValue = safeProperties.get(key);
+        String currentValue = properties.get(key);
         if (!value.equals(currentValue)) {
-            saveProperty(key, value, safeProperties);
+            saveProperty(key, value, properties);
         }
     }
 
-    private void saveProperty(String key, String value, Map<String, @Nullable String> properties) {
+    private void saveProperty(String key, String value, Map<String, String> properties) {
         properties.put(key, value);
         this.updateProperties(properties);
     }
@@ -409,13 +403,9 @@ public class HueSyncHandler extends BaseThingHandler {
 
         try {
             this.stopTasks();
-            var localConnection = this.connection;
-            if (localConnection != null) {
-                localConnection.dispose();
-            }
+            java.util.Optional.ofNullable(this.connection).ifPresent(HueSyncDeviceConnection::dispose);
         } catch (Exception e) {
-            this.logger.warn("Exception while disposing HueSyncHandler for {}: {}", this.thing.getUID(), e.getMessage(),
-                    e);
+            this.logger.warn("Failed to dispose thing {} ({})", this.thing.getLabel(), this.thing.getUID(), e);
         } finally {
             this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
         }

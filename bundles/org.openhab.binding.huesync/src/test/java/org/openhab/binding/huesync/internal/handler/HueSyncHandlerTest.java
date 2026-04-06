@@ -59,21 +59,27 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @ExtendWith(MockitoExtension.class)
 public class HueSyncHandlerTest {
 
+    @SuppressWarnings("null")
     @Mock
     private @Nullable Thing thing;
 
+    @SuppressWarnings("null")
     @Mock
     private @Nullable HttpClientFactory httpClientFactory;
 
+    @SuppressWarnings("null")
     @Mock
     private @Nullable ThingHandlerCallback callback;
     private @Nullable HueSyncHandler handler;
 
+    @SuppressWarnings("null")
     @Mock
     private @Nullable ScheduledExecutorService mockScheduler;
 
     @BeforeEach
     void setup() {
+        when(httpClientFactory.getCommonHttpClient())
+                .thenReturn(org.mockito.Mockito.mock(org.eclipse.jetty.client.HttpClient.class));
         handler = new HueSyncHandler(Objects.requireNonNull(thing), Objects.requireNonNull(httpClientFactory));
         Objects.requireNonNull(handler).setCallback(callback);
     }
