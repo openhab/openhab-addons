@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link VeSyncV2Ver2BypassAirPurifierStatusWrapper} class is used as a DTO to hold the Vesync's API's
- * response data from the bypass API about the result of a request for the status of an Air Purifier, however for
+ * response data from the bypass API about the result of a request for the status of an air purifier, however for
  * reasons not understood it is double wrapped into this second wrapper.
  *
  * @author David Goodyear - Initial contribution
