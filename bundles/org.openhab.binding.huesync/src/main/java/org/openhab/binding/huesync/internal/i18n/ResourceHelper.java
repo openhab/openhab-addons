@@ -49,13 +49,14 @@ public class ResourceHelper {
 
         TranslationProvider provider = context.getService(ref);
         if (provider == null) {
-            context.ungetService(ref);
             return missingKey;
         }
 
-        String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
-        context.ungetService(ref);
-
-        return localizedString == null ? missingKey : localizedString;
+        try {
+            String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
+            return localizedString == null ? missingKey : localizedString;
+        } finally {
+            context.ungetService(ref);
+        }
     }
 }
