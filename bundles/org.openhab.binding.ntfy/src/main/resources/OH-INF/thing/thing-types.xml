@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ntfy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="ntfyConnection">
+
+		<label>Ntfy Connection</label>
+		<description>Connection to a ntfy server</description>
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname of the ntfy server</description>
+				<default>https://ntfy.sh</default>
+			</parameter>
+			<parameter name="username" type="text" required="false">
+				<context>username</context>
+				<label>username</label>
+				<description>Username to access the server</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the server</description>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" required="true">
+				<context>time</context>
+				<label>Web-Socket timeout</label>
+				<description>Connection-Timeout for WebSocket</description>
+				<default>60000</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="ntfyTopic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ntfyConnection"/>
+		</supported-bridge-type-refs>
+		<label>Ntfy Topic</label>
+		<description>Topic of a ntfy server</description>
+
+		<channels>
+			<channel id="lastMessage" typeId="lastMessage"/>
+			<channel id="lastMessageTime" typeId="lastMessageTime"/>
+			<channel id="lastMessageSequenceId" typeId="lastMessageSequenceId"/>
+		</channels>
+
+		<representation-property>topicname</representation-property>
+
+		<config-description>
+			<parameter name="topicname" type="text" required="true">
+				<context>topicname</context>
+				<label>Topic name</label>
+				<description>Name of the topic</description>
+			</parameter>
+		</config-description>
+
+
+	</thing-type>
+
+	<channel-type id="lastMessage">
+		<item-type>String</item-type>
+		<label>Last Message</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastMessageMessageId">
+		<item-type>String</item-type>
+		<label>Message Id of the last message</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastMessageTime">
+		<item-type>DateTime</item-type>
+		<label>Time of the last message</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
