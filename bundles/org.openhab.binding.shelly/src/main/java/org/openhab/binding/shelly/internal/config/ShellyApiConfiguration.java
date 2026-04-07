@@ -162,15 +162,15 @@ public class ShellyApiConfiguration {
                 if (!ip.equals(saddr)) {
                     resolvedIp = saddr + (port.isEmpty() ? "" : ":" + port);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("{}: hostname {} resolved to IP address {}", realm, deviceIp, resolvedIp);
+                        logger.debug("{}: hostname {} resolved to IP address {}", realm.get(), deviceIp, resolvedIp);
                     }
                 }
             } catch (UnknownHostException e) {
-                logger.debug("{}: Unable to resolve hostname {}", realm, deviceIp);
+                logger.debug("{}: Unable to resolve hostname {}", realm.get(), deviceIp);
             }
         }
         if (resolvedIp.isBlank()) {
-            logger.debug("{}: Device IP is missing or invalid", realm);
+            logger.debug("{}: Device IP is missing or invalid", realm.get());
         }
         return resolvedIp;
     }
