@@ -236,6 +236,10 @@ class UniFiControllerRequest<T> {
         return csrfToken;
     }
 
+    public void setCsrfToken(String csrfToken) {
+        this.csrfToken = csrfToken;
+    }
+
     private Request newRequest() {
         final HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
         final Request request = httpClient.newRequest(uri.toString()).timeout(timeoutSeconds, TimeUnit.SECONDS)
