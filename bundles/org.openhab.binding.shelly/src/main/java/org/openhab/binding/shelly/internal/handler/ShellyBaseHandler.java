@@ -395,7 +395,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Check for Range Extender mode, add secondary device to Inbox
         checkRangeExtender(tmpPrf);
 
-        startCoap(apiConfig, tmpPrf);
+        startCoap(tmpPrf);
         if (!gen2 && !apiConfig.enableCoIOT.get()) {
             api.setActionURLs(); // register event urls
         }
@@ -636,7 +636,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void showThingConfig(ShellyDeviceProfile profile) {
-        if (logger.isDebugEnabled()) {
+        if (!logger.isDebugEnabled()) {
             return;
         }
 
@@ -1114,7 +1114,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
-    public void startCoap(ShellyApiConfiguration config, ShellyDeviceProfile profile) throws ShellyApiException {
+    public void startCoap(ShellyDeviceProfile profile) throws ShellyApiException {
         if (coap == null || !apiConfig.enableCoIOT.get()) {
             return;
         }
@@ -1134,8 +1134,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
-            config.enableCoIOT.set(true);
-            api.setConfig(thingName, config);
+            apiConfig.enableCoIOT.set(true);
+            api.setConfig(thingName, apiConfig);
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
