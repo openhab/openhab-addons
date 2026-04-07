@@ -122,7 +122,8 @@ public class ShellyDeviceProfile {
 
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
 
-    public ShellyDeviceProfile() {
+    public ShellyDeviceProfile(ThingTypeUID thingTypeUID) {
+        initFromThingType(thingTypeUID);
     }
 
     public ShellyDeviceProfile initialize(ThingTypeUID thingTypeUID, String jsonIn, ShellySettingsDevice device)

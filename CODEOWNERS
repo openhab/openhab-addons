@@ -211,6 +211,7 @@
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
+/bundles/org.openhab.binding.linkplay/ @digitaldan
 /bundles/org.openhab.binding.linktap/ @dag81
 /bundles/org.openhab.binding.linky/ @clinique @lolodomo
 /bundles/org.openhab.binding.linuxinput/ @t-8ch
@@ -417,6 +418,7 @@
 /bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.tuya/ @J-N-K
+/bundles/org.openhab.binding.twilio/ @digitaldan
 /bundles/org.openhab.binding.unifi/ @mgbowman @Hilbrand
 /bundles/org.openhab.binding.unifiaccess/ @digitaldan
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD

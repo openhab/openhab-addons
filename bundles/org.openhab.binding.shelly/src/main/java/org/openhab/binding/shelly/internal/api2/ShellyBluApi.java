@@ -74,7 +74,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         super(thingName, thingTable, thing, webSocketClient, scheduler);
 
-        ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
         deviceStatus = profile.status;
@@ -110,7 +109,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
+        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
 
         if (devInfo != null) {
             profile.device = devInfo;

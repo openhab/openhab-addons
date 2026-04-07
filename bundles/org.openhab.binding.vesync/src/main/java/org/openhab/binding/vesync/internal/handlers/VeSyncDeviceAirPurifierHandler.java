@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -66,7 +67,6 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_PURIFIER = "LAP";
@@ -292,7 +292,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             } else if (command instanceof StringType) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_FAN_MODE_ENABLED:
-                        final String targetFanMode = command.toString().toLowerCase();
+                        final String targetFanMode = command.toString().toLowerCase(Locale.ENGLISH);
 
                         if (!devContraints.isFanModeSupported(targetFanMode)) {
                             logger.warn("{}", getLocalizedText("warning.device.fan-mode-invalid", command,
@@ -316,7 +316,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         }
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
-                        final String targetNightLightMode = command.toString().toLowerCase();
+                        final String targetNightLightMode = command.toString().toLowerCase(Locale.ENGLISH);
                         if (!devContraints.isNightLightModeSupported(targetNightLightMode)) {
                             logger.warn("{}", getLocalizedText("warning.device.night-light-invalid", command,
                                     devContraints.deviceFamilyName, String.join(",", devContraints.nightLightModes)));

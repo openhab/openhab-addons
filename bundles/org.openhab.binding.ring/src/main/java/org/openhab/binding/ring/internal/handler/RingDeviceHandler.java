@@ -112,6 +112,14 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         }
     }
 
+    protected void sendCommand(String url, String command, String payload) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
+                ringAccount.sendCommand(url + "/" + config.id + command, payload);
+            }
+        }
+    }
+
     /**
      * Link the device, and update the device with the status CONFIGURED.
      *

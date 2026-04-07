@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="twilio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Twilio Binding</name>
+	<description>Integrates with Twilio for sending and receiving SMS, MMS, and WhatsApp messages, as well as making
+		and
+		receiving voice calls with text-to-speech and DTMF input support.</description>
+	<connection>cloud</connection>
+
+</addon:addon>

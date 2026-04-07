@@ -21,15 +21,10 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequest {
-
-    public transient HttpMethod httpMethod;
+public class VeSyncRequest extends VeSyncBaseRequest {
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
-
-    @SerializedName("acceptLanguage")
-    public String acceptLanguage = "en";
 
     @SerializedName("appVersion")
     public String appVersion = "2.5.1";
@@ -39,12 +34,6 @@ public class VeSyncRequest {
 
     @SerializedName("phoneOS")
     public String phoneOS = "Android";
-
-    @SerializedName("traceId")
-    public String traceId = "";
-
-    @SerializedName("method")
-    public String method;
 
     @SerializedName("deviceId")
     public String deviceId;

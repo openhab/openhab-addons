@@ -17,9 +17,9 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -124,7 +124,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String name = hostname; // will become the realm for auth response
         String deviceName = "";
         String thingType = "";
-        Map<String, Object> properties = new TreeMap<>();
+        Map<String, String> properties = new HashMap<>();
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
@@ -184,8 +184,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
                     : deviceName + " (" + name + "@" + ipAddress + ")";
             logger.debug("{}: Adding Thing to Inbox (type {}, model {}, mode={})", name, thingType, model, mode);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
-                    .withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
+            return DiscoveryResultBuilder.create(thingUID).withProperties(new HashMap<>(properties))
+                    .withLabel(thingLabel).withRepresentationProperty(PROPERTY_SERVICE_NAME).build();
         }
 
         return null;
@@ -202,7 +202,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         return config;
     }
 
-    private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
+    private static void addProperty(Map<String, String> properties, String key, @Nullable String value) {
         properties.put(key, value != null ? value : "");
     }
 }
