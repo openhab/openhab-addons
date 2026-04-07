@@ -15,8 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *  The {@link VeSyncManagedDevicePageOutcome} class holds the outcome data from a request for device data
- *  known to the VeSync service.
+ * The {@link VeSyncManagedDevicePageOutcome} class holds the outcome data from a request for device data
+ * known to the VeSync service.
  *
  * @author David Goodyear - Initial contribution
  */

@@ -15,8 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassOutletStatus} is a Java class used as a DTO to hold the Vesync's API's common response
- * data, in regard to an outlet device.
+ * The {@link VeSyncV2BypassOutletStatus} class is used as a DTO to hold the Vesync's API's common response
+ * data, with regard's to an outlet device.
  *
  * @author Marcel Goerentz - Initial contribution
  */

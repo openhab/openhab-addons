@@ -261,7 +261,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     public void handleNewUserSession(final @Nullable VeSyncUserSession userSessionData) {
-        final Map<String, @Nullable String> newProps = new HashMap<>();
+        final Map<String, String> newProps = new HashMap<>();
         if (userSessionData != null) {
             newProps.put(DEVICE_PROP_BRIDGE_REG_TS, userSessionData.registerTime);
             newProps.put(DEVICE_PROP_BRIDGE_COUNTRY_CODE, userSessionData.countryCode);

@@ -15,7 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Contains basic information about a single device, from within a VeSyncManagedDevicesPage.
+ * The {@link VeSyncManagedDeviceBase} class contains basic information about a single device, from within a
+ * VeSyncManagedDevicesPage.
  *
  * @author David Goodyear - Initial contribution
  */

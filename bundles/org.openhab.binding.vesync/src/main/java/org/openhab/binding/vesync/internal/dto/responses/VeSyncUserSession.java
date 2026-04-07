@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Contains data about the logged in user - including the accountID and token's used
+ * The {@link VeSyncUserSession} class contains data about the logged in user - including the accountID and token's used
  * for authenticating other payload's.
  *
  * @implNote See unit test - Result may not be in respone if not authenticated

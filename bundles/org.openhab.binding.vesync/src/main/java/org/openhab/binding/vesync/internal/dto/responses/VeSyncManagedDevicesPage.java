@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncManagedDevicesPage} is a Java class used as a DTO to hold the Vesync's API's response data to a
+ * The {@link VeSyncManagedDevicesPage} class is used as a DTO to hold the Vesync's API's response data to a
  * page of data requesting the manages devices.
  *
  * @author David Goodyear - Initial contribution

@@ -15,8 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2Ver2BypassHumidifierStatus} is a Java class used as a DTO to hold the Vesync's API's common
- * response data, in regard's to a Air Humidifier based device, using the latest encoding protocol scheme.
+ * The {@link VeSyncV2Ver2BypassHumidifierStatus} class is used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an Air Humidifier based device, using the latest encoding protocol scheme.
  *
  * @author David Goodyear - Initial contribution
  */

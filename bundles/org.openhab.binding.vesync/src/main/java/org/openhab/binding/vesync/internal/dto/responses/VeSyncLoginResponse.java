@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.dto.responses;
 
 /**
- * The {@link VeSyncLoginResponse} is a Java class used as a DTO to hold the Vesync's API's login response.
+ * The {@link VeSyncLoginResponse} class is used as a DTO to hold the Vesync's API's login response.
  *
  * @author David Goodyear - Initial contribution
  */

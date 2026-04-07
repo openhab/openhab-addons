@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthTokenResponse} is a Java class used as a DTO to hold the Vesync's API's login response.
+ * The {@link VeSyncAuthTokenResponse} class is used as a DTO to hold the Vesync's API's login response.
  *
  * @author David Goodyear - Initial contribution
  */

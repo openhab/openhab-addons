@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2Ver2BypassAirPurifierStatusResult} is a Java class used as a DTO to hold the Vesync's API's
+ * The {@link VeSyncV2Ver2BypassAirPurifierStatusResult} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the result of a request for the status of an Air Purifier.
  *
  * @author David Goodyear - Initial contribution

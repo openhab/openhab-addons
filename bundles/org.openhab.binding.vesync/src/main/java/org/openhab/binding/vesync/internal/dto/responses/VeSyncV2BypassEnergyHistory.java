@@ -18,7 +18,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassEnergyHistory} is a Java class used as a DTO to hold the Vesync's API's common response
+ * The {@link VeSyncV2BypassEnergyHistory} class is used as a DTO to hold the Vesync's API's common response
  * data, in regard to an outlet device.
  *
  * @author Marcel Goerentz - Initial contribution

@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2Ver2BypassAirPurifierConfigAutoPref} is a Java class used as a DTO to hold the Vesync's API's
+ * The {@link VeSyncV2Ver2BypassAirPurifierConfigAutoPref} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the parameters regarding configuration of room preferences.
  *
  * @author David Goodyear - Initial contribution
