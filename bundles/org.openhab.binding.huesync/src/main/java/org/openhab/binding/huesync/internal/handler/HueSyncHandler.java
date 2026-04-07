@@ -342,16 +342,14 @@ public class HueSyncHandler extends BaseThingHandler {
         if (value == null) {
             return;
         }
-        Map<String, @Nullable String> properties = (Map<String, @Nullable String>) (Map<String, String>) this
-                .editProperties();
-        @Nullable
+        Map<String, String> properties = this.editProperties();
         String currentValue = properties.get(key);
         if (!value.equals(currentValue)) {
             saveProperty(key, value, properties);
         }
     }
 
-    private void saveProperty(String key, String value, Map<String, @Nullable String> properties) {
+    private void saveProperty(String key, String value, Map<String, String> properties) {
         properties.put(key, value);
         this.updateProperties(properties);
     }
