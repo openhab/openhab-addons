@@ -15,9 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses.v1;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV1AirPurifierDeviceDetailsResponseFilterLife} is a Java class used as a DTO to hold the Vesync's V1
- * API's
- * common response data, in regard's to an Air Purifier's Filter Life.
+ *  The {@link VeSyncV1AirPurifierDeviceDetailsResponseFilterLife} class is used as a DTO to hold the VeSync V1
+ *  API response data with regard to an air purifier's filter life.
  *
  * @author David Goodyear - Initial contribution
  */
