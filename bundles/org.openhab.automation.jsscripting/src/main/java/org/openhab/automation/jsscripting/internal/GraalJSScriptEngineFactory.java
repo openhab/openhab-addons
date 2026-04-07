@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.util.ThreadLocalSlf4jOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
@@ -115,10 +116,11 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
                 .getLogger(GraalJSScriptEngineFactory.class.getPackageName() + ".org.graalvm.polyglot.Engine");
         return Engine.newBuilder().allowExperimentalOptions(true) //
                 .option("engine.WarnInterpreterOnly", "false") //
-                .out(new Slf4jOutputStream(engineLogger, Level.DEBUG)) //
-                // Note: Due to a bug in GraalVM, info messages are logged to the err stream, so hide it for now
-                // https://github.com/oracle/graal/issues/13222
-                .err(new Slf4jOutputStream(engineLogger, Level.DEBUG));
+                .out(new ThreadLocalSlf4jOutputStream(engineLogger, Level.DEBUG)) //
+                // Note: Due to a bug in GraalVM, info messages are logged to the err stream, so hide it until the fix
+                // is available. FTR: https://github.com/oracle/graal/issues/13222
+                // TODO: Increase level to WARN when upgrading GraalVM
+                .err(new ThreadLocalSlf4jOutputStream(engineLogger, Level.DEBUG));
     }
 
     @Deactivate

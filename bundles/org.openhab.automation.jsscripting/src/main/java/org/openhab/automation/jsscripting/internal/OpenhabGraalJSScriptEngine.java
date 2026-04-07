@@ -59,6 +59,7 @@ import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scope.ScriptExtensionModuleProvider;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
+import org.openhab.automation.jsscripting.internal.util.Slf4jOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;

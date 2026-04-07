@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.jsscripting.internal;
+package org.openhab.automation.jsscripting.internal.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import org.slf4j.event.Level;
  * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
-class Slf4jOutputStream extends OutputStream {
+public class Slf4jOutputStream extends OutputStream {
     private final Logger logger;
     private final Level level;
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -36,26 +36,32 @@ class Slf4jOutputStream extends OutputStream {
         this.level = level;
     }
 
+    protected ByteArrayOutputStream getBuffer() {
+        return buffer;
+    }
+
     @Override
     public void write(int b) {
         if (b == '\n') {
             flush();
         } else {
-            buffer.write(b);
+            getBuffer().write(b);
+        }
+    }
+
+    @Override
+    public void flush() {
+        var buffer = getBuffer();
+        if (buffer.size() > 0) {
+            logger.atLevel(level).log(buffer.toString());
+            buffer.reset();
         }
     }
 
     @Override
     public void close() throws IOException {
         flush();
+        getBuffer().close();
         super.close();
-    }
-
-    @Override
-    public void flush() {
-        if (buffer.size() > 0) {
-            logger.atLevel(level).log(buffer.toString());
-            buffer.reset();
-        }
     }
 }
