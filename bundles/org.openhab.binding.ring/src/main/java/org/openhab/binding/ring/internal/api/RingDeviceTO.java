@@ -51,5 +51,5 @@ public class RingDeviceTO {
     public OwnerTO owner = new OwnerTO();
 
     @SerializedName("settings")
-    public DeviceSettingsTO settings = new DeviceSettingsTO();
+    public DeviceSettingsTO deviceSettings = new DeviceSettingsTO();
 }
