@@ -35,7 +35,6 @@ The following options can be set for the `mower`:
 | refreshStatusInterval | Interval for refreshing mower status (ONLINE/OFFLINE) and channel 'common#online' in seconds |   3600  |  Yes     |
 | pollingInterval       | Interval for polling in seconds (min="30" max="7200").                                       |   1200  |  Yes     |
 
-
 Default values for `refreshStatusInterval` and `pollingInterval` are the recommended settings in order to prevent a 24h ban from Worx.
 Lower polling and refresh values will likely result in a 24h ban for your account.
 
@@ -183,6 +182,21 @@ And so on for each day of the week along with the Slot 2 when supported.
 | rssi         | Number:Power | wifi#rssi         |
 | wifi-quality | Number       | wifi#wifi-quality |
 
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name                 | Dynamic | Illustration                            |
+|---------------------------|---------|-----------------------------------------|
+| oh:worxlandroid:charging  |   Yes   | ![Charging](doc/images/charging.svg)    |
+| oh:worxlandroid:counter   |   No    | ![Counter](doc/images/counter.svg)      |
+| oh:worxlandroid:distance  |   Yes   | ![Distance](doc/images/distance.svg)    |
+| oh:worxlandroid:lawnmower |   No    | ![Lawn Mower](doc/images/lawnmower.svg) |
+| oh:worxlandroid:lock      |   Yes   | ![Lock](doc/images/lock.svg)            |
+| oh:worxlandroid:rain      |   Yes   | ![Rain](doc/images/rain.svg)            |
+| oh:worxlandroid:refresh   |   No    | ![Refresh](doc/images/refresh.svg)      |
+| oh:worxlandroid:zones     |   Yes   | ![Zones](doc/images/zones.svg)          |
+
 ## Examples
 
 ### $OPENHAB_CONF/items/landroid.things
@@ -193,7 +207,6 @@ Bridge worxlandroid:bridge:api "Worx Api" [ username="xxxxYYYxxxx", password="dl
 }
 
 ```
-
 
 ### $OPENHAB_CONF/items/landroid.items
 
