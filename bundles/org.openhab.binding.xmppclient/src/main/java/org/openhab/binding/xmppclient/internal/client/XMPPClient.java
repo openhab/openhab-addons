@@ -188,24 +188,60 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     public void sendImageByHTTP(String to, String filename) {
-        if (connection == null) {
-            logger.warn("XMPP connection is null");
+        if (connection == null || !connection.isAuthenticated()) {
+            logger.warn("XMPP connection is null or not authenticated");
             return;
         }
-        HttpFileUploadManager httpFileUploadManagerLocal = httpFileUploadManager;
-        if (httpFileUploadManagerLocal == null) {
-            httpFileUploadManagerLocal = httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
-            if (httpFileUploadManagerLocal == null) {
-                logger.warn("XMPP httpFileUploadManager is null");
+
+        File file = new File(filename);
+        if (!file.isFile() || !file.canRead()) {
+            logger.warn("XMPP image file does not exist or is not readable: {}", filename);
+            return;
+        }
+
+        HttpFileUploadManager uploadManager = httpFileUploadManager;
+        if (uploadManager == null) {
+            httpFileUploadManager = uploadManager = HttpFileUploadManager.getInstanceFor(connection);
+        }
+
+        if (uploadManager == null) {
+            logger.warn("XMPP HttpFileUploadManager is null");
+            return;
+        }
+
+        try {
+            // Force discovery instead of assuming it already happened
+            if (!uploadManager.isUploadServiceDiscovered()) {
+                boolean discovered = uploadManager.discoverUploadService();
+                logger.debug("XMPP HTTP upload discovered: {}", discovered);
+            }
+
+            if (!uploadManager.isUploadServiceDiscovered()) {
+                logger.warn("XMPP server does not provide XEP-0363 HTTP File Upload");
                 return;
             }
-        }
-        try {
-            URL u = httpFileUploadManagerLocal.uploadFile(new File(filename));
-            // Use Stanza oob
-            this.sendMessage(to, u.toString());
-        } catch (XMPPException.XMPPErrorException | SmackException | InterruptedException | IOException e) {
-            logger.warn("XMPP HTTP image sending error", e);
+
+            logger.debug("XMPP HTTP upload service: {}", uploadManager.getDefaultUploadService());
+
+            URL url = uploadManager.uploadFile(file);
+
+            // Simple fallback: just send the URL as a message.
+            // If you want true out-of-band metadata, build an OOB extension stanza instead.
+            sendMessage(to, url.toString());
+
+        } catch (XMPPException.XMPPErrorException e) {
+            logger.warn("XMPP HTTP upload rejected by server: {}", e.getMessage(), e);
+        } catch (SmackException.NoResponseException e) {
+            logger.warn("XMPP HTTP upload timed out while discovering service or requesting slot", e);
+        } catch (SmackException.NotConnectedException e) {
+            logger.warn("XMPP HTTP upload failed because connection is not active", e);
+        } catch (SmackException e) {
+            logger.warn("XMPP HTTP upload failed: {}", e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("XMPP HTTP upload interrupted", e);
+        } catch (IOException e) {
+            logger.warn("XMPP HTTP upload I/O error", e);
         }
     }
 
