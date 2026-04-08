@@ -12,22 +12,22 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassEnergyHistory} class is used as a DTO to hold the Vesync's API's common response
- * data, in regard to an outlet device.
+ * The {@link VeSyncV2BypassEnergyHistorySnapshots} class is used as a DTO to hold the Vesync's API's common response
+ * data, with regard's to the energy use of an outlet device at multiple points in time.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassEnergyHistory extends VeSyncResponse {
+public class VeSyncV2BypassEnergyHistorySnapshots {
 
-    @SerializedName("result")
-    public EnergyHistory result;
+    @SerializedName("energyInfos")
+    public List<VeSyncV2BypassEnergyHistoryInfoSnapshot> energyInfos = new ArrayList<VeSyncV2BypassEnergyHistoryInfoSnapshot>();
 
-    public static class EnergyHistory extends VeSyncResponse {
-
-        @SerializedName("result")
-        public VeSyncV2BypassEnergyHistorySnapshots result = new VeSyncV2BypassEnergyHistorySnapshots();
-    }
+    @SerializedName("total")
+    public int total = 0;
 }

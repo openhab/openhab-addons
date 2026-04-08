@@ -27,7 +27,7 @@ import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory.EnergyHistory.Result.EnergyInfo;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistoryInfoSnapshot;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletStatus;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
@@ -202,7 +202,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
     }
 
     private static double getEnergy(VeSyncV2BypassEnergyHistory energyHistory, int days) {
-        List<EnergyInfo> energyList = energyHistory.result.result.energyInfos;
+        List<VeSyncV2BypassEnergyHistoryInfoSnapshot> energyList = energyHistory.result.result.energyInfos;
         double energy = 0;
         for (byte i = 0; i < days; i++) {
             energy += energyList.get(i).energy;

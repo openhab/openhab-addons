@@ -23,33 +23,7 @@ import com.google.gson.annotations.SerializedName;
 public class VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.LoginTokenResponse result;
-
-    public static class LoginTokenResponse {
-
-        @SerializedName("currentRegion")
-        public String currentRegion = "";
-
-        @SerializedName("countryCode")
-        public String countryCode = "";
-
-        @SerializedName("accountID")
-        public String accountID;
-
-        @SerializedName("bizToken")
-        public String bizToken;
-
-        @SerializedName("token")
-        public String token;
-
-        @SerializedName("acceptLanguage")
-        public String acceptLanguage;
-
-        public String toString() {
-            return "currentRegion=" + currentRegion + ", countryCode=" + countryCode + ", accountID=" + accountID
-                    + ", bizToken=" + bizToken + ", acceptLanguage=" + acceptLanguage;
-        }
-    }
+    public VeSyncAuthLoginWithAuthorizeCodeVeSyncResponseDetails result;
 
     @Override
     public String toString() {
