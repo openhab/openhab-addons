@@ -138,7 +138,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         if (CHANNEL_REBOOT.equals(channelId) && OnOffType.ON.equals(command)) {
-            logger.info("Rebooting device: {}", device.getMac());
+            logger.debug("Rebooting device: {}", device.getMac());
             device.reboot();
             updateState(channelUID, OnOffType.OFF);
             return true;
