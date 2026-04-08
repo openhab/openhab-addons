@@ -374,10 +374,12 @@ public class DDWRTNetworkCache {
         devicesByMac.clear();
         wirelessClientsByMac.clear();
         hostnameToMac.clear();
+        mergedAwayMacs.clear();
         radiosByInterfaceId.clear();
         firewallRulesByRuleId.clear();
         dhcpLeasesByMac.clear();
         dhcpHostnameToMac.clear();
+        listenersByKey.clear();
     }
 
     private static String normalizeMac(String mac) {
