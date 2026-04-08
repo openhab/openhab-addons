@@ -12,16 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_LOAD;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_TEMP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_IN;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_OUT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_REBOOT;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_UPTIME;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_OUT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import java.util.Map;
 import java.util.Objects;
