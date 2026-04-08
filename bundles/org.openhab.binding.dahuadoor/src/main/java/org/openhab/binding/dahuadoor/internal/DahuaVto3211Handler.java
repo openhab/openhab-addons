@@ -51,13 +51,6 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
-    protected void handleVTOCall() {
-        logger.debug("Event Call from VTO3211 (dual button) - no LockNum available, defaulting to button 1");
-        // VTOCall events don't contain LockNum, default to button 1
-        onButtonPressed(1);
-    }
-
-    @Override
     protected void onButtonPressed(int lockNumber) {
         logger.debug("Button {} pressed on VTO3211", lockNumber);
 

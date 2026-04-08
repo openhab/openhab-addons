@@ -321,8 +321,8 @@ class TestModel {
         List<String> all = gateway.model().getAllDeviceIds();
         List<String> resolved = gateway.model().getResolvedDeviceList();
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
-        assertEquals(67, all.size(), "All Devices");
-        assertEquals(55, resolved.size(), "All Resolved Devices");
-        assertEquals(60, discovery.discoveries.size(), "Discovery Devices");
+        assertEquals(69, all.size(), "All Devices");
+        assertEquals(56, resolved.size(), "All Resolved Devices");
+        assertEquals(61, discovery.discoveries.size(), "Discovery Devices");
     }
 }

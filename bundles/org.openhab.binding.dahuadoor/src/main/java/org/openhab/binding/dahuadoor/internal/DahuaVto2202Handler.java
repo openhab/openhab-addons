@@ -40,13 +40,6 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
-    protected void handleVTOCall() {
-        logger.debug("Event Call from VTO2202 (single button)");
-        // VTO2202 has only one button, always use lockNumber 1
-        onButtonPressed(1);
-    }
-
-    @Override
     protected void onButtonPressed(int lockNumber) {
         logger.debug("Button pressed on VTO2202 (lockNumber ignored, single button)");
 

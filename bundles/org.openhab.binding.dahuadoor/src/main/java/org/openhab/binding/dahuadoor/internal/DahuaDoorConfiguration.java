@@ -30,4 +30,5 @@ public class DahuaDoorConfiguration {
     public String username = "";
     public String password = "";
     public String snapshotPath = "";
+    public boolean useHttps = false;
 }

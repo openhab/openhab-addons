@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,7 +41,10 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = DepartmentDbService.class)
 @NonNullByDefault
 public class DepartmentDbService {
+    private static final String RESOURCE_NAME = "/db/departments.json";
+
     private final Logger logger = LoggerFactory.getLogger(DepartmentDbService.class);
+
     private List<Department> departments = List.of();
     private volatile boolean dbLoadAttempted;
 
@@ -56,14 +58,14 @@ public class DepartmentDbService {
     }
 
     private void loadDB() {
-        try (InputStream stream = DepartmentDbService.class.getResourceAsStream("/db/departments.json");
-                Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            if (stream == null) {
-                throw new IllegalStateException("Resource /db/departments.json not found");
-            }
+        InputStream stream = DepartmentDbService.class.getResourceAsStream(RESOURCE_NAME);
+        if (stream == null) {
+            throw new IllegalStateException("Resource " + RESOURCE_NAME + " not found");
+        }
+        try (stream; Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             Department[] parsed = gson.fromJson(reader, Department[].class);
-            departments = Arrays.asList(parsed);
+            departments = List.of(parsed);
             logger.debug("Loaded {} French departments", departments.size());
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             logger.warn("Unable to load departments list: {}", e.getMessage());
