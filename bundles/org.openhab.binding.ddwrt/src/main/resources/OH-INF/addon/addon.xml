@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>DD-WRT, OpenWrt, Tomato Binding</name>
+	<name>DD-WRT Binding</name>
 	<description>Monitors and manages DD-WRT, OpenWrt, Tomato routers, and Linux devices via SSH.</description>
 
 </addon:addon>
