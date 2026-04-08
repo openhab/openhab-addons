@@ -81,7 +81,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
                         "Failed to connect to device at " + config.hostname);
                 return false;
             }
-            logger.info("Successfully added device to network: {} (MAC: {})", config.hostname, d.getMac());
+            logger.debug("Successfully added device to network: {} (MAC: {})", config.hostname, d.getMac());
         }
 
         d.setUpdater(this);
