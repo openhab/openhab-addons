@@ -1679,17 +1679,42 @@ public class Clip2ThingHandler extends BaseThingHandler {
         switch (updateStatus) {
             case INSTALLING:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, updateStatus.i18nKey());
+                // overridden updateStatus() method below sets description based on the firmware property
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
                 break;
             case READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, updateStatus.i18nKey());
+                // overridden updateStatus() method below sets description based on the firmware property
+                updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, null);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 break;
         }
+    }
+
+    /**
+     * Override method: Updates the thing status based on the given status, status detail, and description. If the
+     * status is ONLINE the status detail is NONE and the firmware property indicates that an update is available,
+     * then the description is overridden with the respective update state's translatable text. If the status detail
+     * is FIRMWARE_UPDATING, then the description is overridden with the translatable 'installing update' text. In
+     * all other cases, the given status, status detail, and description are used unchanged.
+     */
+    @Override
+    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail statusDetail, @Nullable String description) {
+        if (thingStatus == ThingStatus.ONLINE && statusDetail == ThingStatusDetail.NONE) {
+            String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+            UpdateStatusV2 updateStatus = UpdateStatusV2.reverseLookup(firmware);
+            if (updateStatus != null && updateStatus.isUpdateReady()) {
+                super.updateStatus(thingStatus, statusDetail, updateStatus.i18nKey());
+                return;
+            }
+        } else if (statusDetail == ThingStatusDetail.FIRMWARE_UPDATING) {
+            super.updateStatus(thingStatus, statusDetail, UpdateStatusV2.INSTALLING.i18nKey());
+            return;
+        }
+        super.updateStatus(thingStatus, statusDetail, description);
     }
 
     /**
