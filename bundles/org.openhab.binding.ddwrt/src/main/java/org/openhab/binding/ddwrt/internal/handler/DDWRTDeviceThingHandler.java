@@ -170,6 +170,6 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     }
 
     private static boolean isBlank(@Nullable String s) {
-        return s == null || s.trim().isEmpty();
+        return s == null || s.isBlank();
     }
 }
