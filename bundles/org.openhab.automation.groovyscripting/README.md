@@ -48,6 +48,7 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 ```text
     ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```
+
 ## `scriptExtension.importPreset` limitation
 
 For explicit presets `scriptExtension.importPreset` imports instance variables, but not classes.
