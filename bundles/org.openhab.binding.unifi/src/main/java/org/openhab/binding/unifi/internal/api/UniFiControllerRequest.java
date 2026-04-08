@@ -236,7 +236,7 @@ class UniFiControllerRequest<T> {
         return csrfToken;
     }
 
-    public void setCsrfToken(String csrfToken) {
+    public void setCsrfToken(final String csrfToken) {
         this.csrfToken = csrfToken;
     }
 
