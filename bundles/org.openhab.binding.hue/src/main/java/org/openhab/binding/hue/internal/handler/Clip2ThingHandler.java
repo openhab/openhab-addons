@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
-import org.openhab.binding.hue.internal.action.SoftwareUpdateActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
@@ -68,8 +67,6 @@ import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -105,8 +102,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,9 +201,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
     private final Clip2StateDescriptionProvider stateDescriptionProvider;
-    private final Bundle bundle;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider i18nProvider;
 
     private String resourceId = "?";
     private Resource thisResource;
@@ -230,8 +222,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private @Nullable Future<?> updateServiceContributorsTask;
 
     public Clip2ThingHandler(Thing thing, Clip2StateDescriptionProvider stateDescriptionProvider,
-            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry, LocaleProvider localeProvider,
-            TranslationProvider i18nProvider) {
+            ThingRegistry thingRegistry, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -250,9 +241,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.bundle = FrameworkUtil.getBundle(getClass());
-        this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
     }
 
     /**
@@ -368,9 +356,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return (thisResource.getType() == ResourceType.DEVICE)
-                ? Set.of(DynamicsActions.class, SoftwareUpdateActions.class)
-                : Set.of(DynamicsActions.class);
+        return Set.of(DynamicsActions.class);
     }
 
     @Override
@@ -1706,7 +1692,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (thingStatus == ThingStatus.ONLINE && statusDetail == ThingStatusDetail.NONE) {
             String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
             UpdateStatusV2 updateStatus = UpdateStatusV2.reverseLookup(firmware);
-            if (updateStatus != null && updateStatus.isUpdateReady()) {
+            if (updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE) {
                 super.updateStatus(thingStatus, statusDetail, updateStatus.i18nKey());
                 return;
             }
@@ -1715,80 +1701,5 @@ public class Clip2ThingHandler extends BaseThingHandler {
             return;
         }
         super.updateStatus(thingStatus, statusDetail, description);
-    }
-
-    /**
-     * Send a command to install a software update. If the command is accepted, the device will go offline
-     * and come back online once the installation is complete. The bridge will send SSE notifications about
-     * the software status, and the thing status will therefore be updated dynamically in real time.
-     * 
-     * @return a either an error message or a message of successful start of the update process.
-     */
-    public String installUpdate() {
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            logger.warn("installUpdate() cannot be executed: offline");
-            return getText("install.update.error.offline");
-        }
-        if (thisResource.getType() != ResourceType.DEVICE) {
-            logger.warn("installUpdate() cannot be executed: thing not a device");
-            return getText("install.update.error.not-device");
-        }
-        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
-        if (firmware == null) {
-            logger.warn("installUpdate() cannot be executed: state unknown");
-            return getText("install.update.error.state-unknown");
-        }
-        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
-        if (status == null) {
-            logger.warn("installUpdate() cannot be executed: state unknown");
-            return getText("install.update.error.state-unknown");
-        }
-        if (!status.isUpdateReady()) {
-            logger.warn("installUpdate() cannot be executed: not ready");
-            return getText("install.update.error.not-ready");
-        }
-        String dsuResourceId = commandResourceIds.get(ResourceType.DEVICE_SOFTWARE_UPDATE);
-        if (dsuResourceId == null) {
-            logger.warn("installUpdate() cannot be executed: resource not found");
-            return getText("install.update.error.resource-not-found");
-        }
-        // schedule the update task asynchronously
-        scheduler.submit(() -> installUpdateTask(dsuResourceId));
-        return getText("install.update.success");
-    }
-
-    /**
-     * Helper method to get the translated text for a given key.
-     * 
-     * @param key the key to be translated.
-     * @return the translated text or a default text if no translation is found.
-     */
-    private String getText(String key) {
-        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
-        return result == null ? key : result;
-    }
-
-    /**
-     * Inner software update task called on a thread.
-     * 
-     * @param resourceId the id of the device software update resource for which the command shall be sent.
-     */
-    private void installUpdateTask(String resourceId) {
-        try {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, UpdateStatusV2.INSTALLING.i18nKey());
-            Resource putRes = new Resource(ResourceType.DEVICE_SOFTWARE_UPDATE).setInstallUpdate().setId(resourceId);
-            Resources resources = getBridgeHandler().putResource(putRes);
-            if (resources.hasErrors()) {
-                logger.info("installUpdate() succeeded with errors: {}", String.join("; ", resources.getErrors()));
-            }
-        } catch (ApiException | AssetNotLoadedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("installUpdate() error: {}", e.getMessage(), e);
-            } else {
-                logger.warn("installUpdate() error: {}", e.getMessage());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 }

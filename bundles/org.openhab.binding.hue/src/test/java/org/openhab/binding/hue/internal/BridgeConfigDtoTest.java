@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.api.dto.clip1.BridgeConfig;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
@@ -59,6 +61,8 @@ class BridgeConfigDtoTest {
         BridgeConfig bridgeConfig = GSON.fromJson(json, BridgeConfig.class);
         assertNotNull(bridgeConfig);
         assertEquals("2071280000", bridgeConfig.getSoftwareVersion());
-        assertEquals(UpdateStatusV2.NO_UPDATE, bridgeConfig.getUpdateStatus());
+        Map<String, @Nullable UpdateStatusV2> map = bridgeConfig.getUpdateStatusMap();
+        assertEquals(2, map.size());
+        assertEquals(UpdateStatusV2.NO_UPDATE, map.get("bridge"));
     }
 }

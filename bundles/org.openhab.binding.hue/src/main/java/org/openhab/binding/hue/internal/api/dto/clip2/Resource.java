@@ -127,8 +127,6 @@ public class Resource {
     private @Nullable Sound alarm;
     private @Nullable Sound chime;
     private @Nullable Mute mute;
-    // for the following see https://github.com/openhue/openhue-api/tree/main/src/device_software_update
-    private @SuppressWarnings("unused") @Nullable InstallUpdate install; // unofficial
 
     /**
      * Constructor
@@ -1084,18 +1082,6 @@ public class Resource {
      */
     public Resource setMuteType(@Nullable MuteType muteType) {
         mute = muteType == null ? null : new Mute().setMuteType(muteType);
-        return this;
-    }
-
-    /**
-     * Set the install software update command parameter.
-     * 
-     * Note: this is not documented in the official Hue API, so the implementation is inferred from the
-     * <a href="https://github.com/openhue/openhue-api/tree/main/src/device_software_update">OpenHue API</a>
-     * which is not (yet) fully tested or confirmed to work.
-     */
-    public Resource setInstallUpdate() {
-        install = new InstallUpdate().setInstallUpdate();
         return this;
     }
 }

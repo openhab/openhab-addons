@@ -14,6 +14,8 @@ package org.openhab.binding.hue.internal.api.dto.clip1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.api.dto.clip1.enums.UpdateStatusV1;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**
  * DTO for an API v1.20+ bridge configuration response's software update part.
@@ -23,17 +25,19 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class BridgeSwUpdate {
-    private @SuppressWarnings("unused") @Nullable Boolean checkforupdate;
     private @SuppressWarnings("unused") @Nullable Boolean install;
+    private @Nullable String state;
     private @Nullable BridgeSwUpdateBridge bridge;
 
     public @Nullable BridgeSwUpdateBridge getBridge() {
         return bridge;
     }
 
-    public BridgeSwUpdate setCheckForUpdate() {
-        checkforupdate = true;
-        return this;
+    /**
+     * Reads the update status of the devices in the bridge in v1 protocol form and converts it to v2 protocol form.
+     */
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
+        return UpdateStatusV2.of(UpdateStatusV1.of(state));
     }
 
     public BridgeSwUpdate setInstallUpdate() {

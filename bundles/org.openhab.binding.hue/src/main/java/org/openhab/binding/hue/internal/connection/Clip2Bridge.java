@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1436,16 +1437,18 @@ public class Clip2Bridge implements Closeable {
     /**
      * Get the bridge update status.
      *
-     * @return the update status or null if unable to determine it.
+     * @return an array of the update status of the devices and the bridge or null if unable to determine it.
      */
-    public @Nullable UpdateStatusV2 getUpdateStatus() {
+    public Map<String, @Nullable UpdateStatusV2> getUpdateStatusMap() {
         try {
-            BridgeConfig bridgeConfig = getBridgeConfig(hostName, applicationKey);
-            return bridgeConfig != null ? bridgeConfig.getUpdateStatus() : null;
+            BridgeConfig config = getBridgeConfig(hostName, applicationKey);
+            if (config != null) {
+                return config.getUpdateStatusMap();
+            }
         } catch (IOException e) {
             LOGGER.debug("getUpdateStatus() error '{}'", e.getMessage());
         }
-        return null;
+        return new HashMap<>();
     }
 
     /**

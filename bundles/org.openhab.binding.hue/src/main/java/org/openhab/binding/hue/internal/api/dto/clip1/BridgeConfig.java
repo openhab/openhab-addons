@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip1;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
@@ -27,21 +30,24 @@ public class BridgeConfig {
     private @Nullable String swversion;
     private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+ ('swupdate' is deprecated)
 
+    public static final String DEVICE = "device";
+    public static final String BRIDGE = "bridge";
+
     public @Nullable String getSoftwareVersion() {
         return swversion;
     }
 
-    public @Nullable UpdateStatusV2 getUpdateStatus() {
-        return (swupdate2 instanceof BridgeSwUpdate update)
-                && (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null;
-    }
-
     /**
-     * Creates a swupdate2 field with check for update flag set. Triggers the bridge to check for updates.
+     * Gets the update status map of the bridge and its devices if available, or null if not available.
      */
-    public BridgeConfig setCheckForUpdate() {
-        swupdate2 = new BridgeSwUpdate().setCheckForUpdate();
-        return this;
+    public Map<String, @Nullable UpdateStatusV2> getUpdateStatusMap() {
+        Map<String, @Nullable UpdateStatusV2> result = new HashMap<>();
+        if (swupdate2 instanceof BridgeSwUpdate update) {
+            result.put(DEVICE, update.getUpdateStatus());
+            result.put(BRIDGE,
+                    (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null);
+        }
+        return result;
     }
 
     /**

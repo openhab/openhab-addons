@@ -15,7 +15,6 @@ package org.openhab.binding.hue.internal.action;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
-import org.openhab.binding.hue.internal.handler.Clip2ThingHandler;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -62,9 +61,6 @@ public class SoftwareUpdateActions implements ThingActions {
         ThingHandler handler = this.handler;
         if (handler instanceof Clip2BridgeHandler bridgeHandler) {
             return bridgeHandler.installUpdate();
-        }
-        if (handler instanceof Clip2ThingHandler thingHandler) {
-            return thingHandler.installUpdate();
         }
         logger.warn("SoftwareUpdateActions called on unsupported ThingHandler: {}", handler);
         return "Error: unsupported thing handler";
