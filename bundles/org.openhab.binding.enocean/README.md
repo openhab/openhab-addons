@@ -276,6 +276,8 @@ Otherwise `senderIdOffset` is used and direct `senderId` values are rejected dur
 ¹ multiple values possible, EEPs have to be of different EEP families.
 If you want to receive messages of your EnOcean devices you have to set **the enoceanId to the EnOceanId of your device**.
 
+In some cases you can have more than one receivingEEPId . For example, an Eltako FTKB typically has the `receivingEEPId` D5_00_01. However, this means that the additional data available for the energy storage and the battery voltage is not accessible. By adding an additional `receivingEEPId` A5_14_01_ELTAKO, the corresponding channels for the energy storage and the battery voltage will be created.
+
 ## Channels
 
 The channels of a thing are determined automatically based on the chosen EEP.
