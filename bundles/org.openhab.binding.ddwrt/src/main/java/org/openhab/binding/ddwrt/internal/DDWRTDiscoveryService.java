@@ -85,9 +85,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         logger.debug("Starting DD-WRT background discovery");
         ScheduledFuture<?> job = backgroundDiscoveryJob;
         if (job == null || job.isCancelled()) {
-            int intervalSeconds = DISCOVERY_TIMEOUT_SECONDS;
             backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan,
-                    BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS, intervalSeconds, TimeUnit.SECONDS);
+                    BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
         // Register as refresh listener so discovery runs immediately after device refresh
         DDWRTNetwork net = thingHandler.getNetwork();
