@@ -23,11 +23,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DDWRTNetworkConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Comma-separated host names or addresses of the DD-WRT devices to connect to.
      */
     public String hostnames = "";
+
+    /**
+     * User name used to authenticate with the DD-WRT device.
+     */
     public String user = "";
+
+    /**
+     * Password used to authenticate with the DD-WRT device.
+     */
     public String password = "";
+
+    /**
+     * Network port used to connect to the DD-WRT device.
+     */
     public int port = 0;
+
+    /**
+     * Refresh interval, in seconds, for polling the DD-WRT device.
+     */
     public int refreshInterval = 3;
 }
