@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_FIREWALL_RULE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +52,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
     private static final int DISCOVERY_TIMEOUT_SECONDS = 120;
     private static final int BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS = 10;
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTDiscoveryService.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
     private @Nullable ScheduledFuture<?> refreshTriggeredScan;

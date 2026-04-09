@@ -15,8 +15,6 @@ package org.openhab.binding.ddwrt.internal.handler;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DESCRIPTION;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ENABLED;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTFirewallRuleConfiguration;
@@ -43,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule, DDWRTFirewallRuleConfiguration> {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTFirewallRuleHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTFirewallRuleHandler.class);
 
     private DDWRTFirewallRuleConfiguration config = new DDWRTFirewallRuleConfiguration();
 
@@ -55,7 +53,8 @@ public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule
     protected boolean initialize(DDWRTFirewallRuleConfiguration config) {
         this.config = config;
         if (config.ruleId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ruleId is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-ruleid");
             return false;
         }
         return true;
@@ -82,7 +81,7 @@ public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule
         String channelId = channelUID.getIdWithoutGroup();
         if (CHANNEL_ENABLED.equals(channelId) && command instanceof OnOffType) {
             logger.info("Firewall rule enable/disable not yet implemented for {}", rule.getRuleId());
-            return true;
+            return false;
         }
         return false;
     }

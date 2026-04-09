@@ -14,13 +14,13 @@ Features include:
 
 ## Supported Things
 
-| ThingTypeUID    | Label            | Description                                                         |
-|-----------------|------------------|---------------------------------------------------------------------|
-| `network`       | DD-WRT Network   | Bridge representing the network of managed devices                  |
-| `device`        | DD-WRT Device    | A DD-WRT, OpenWrt, Tomato, or compatible Linux device managed via SSH |
-| `radio`         | Wireless Radio   | A wireless radio interface on a device (e.g. `wl0`, `wlan0`)       |
-| `wireless-client`| Wireless Client  | A wireless client associated with the network                     |
-| `firewall-rule`  | Firewall Rule    | A GUI-configured firewall filter rule from DD-WRT nvram           |
+| ThingTypeUID      | Label           | Description                                                           |
+|-------------------|-----------------|-----------------------------------------------------------------------|
+| `network`         | DD-WRT Network  | Bridge representing the network of managed devices                    |
+| `device`          | DD-WRT Device   | A DD-WRT, OpenWrt, Tomato, or compatible Linux device managed via SSH |
+| `radio`           | Wireless Radio  | A wireless radio interface on a device (e.g. `wl0`, `wlan0`)          |
+| `wireless-client` | Wireless Client | A wireless client associated with the network                         |
+| `firewall-rule`   | Firewall Rule   | A GUI-configured firewall filter rule from DD-WRT nvram               |
 
 The binding auto-detects the chipset and firmware variant during the first SSH connection.
 Tested firmware includes DD-WRT, OpenWrt, FreshTomato, and generic Linux with `iw`/`iwconfig`.
@@ -36,20 +36,147 @@ After adding and configuring the `network` bridge, the binding automatically dis
 
 Discovery results appear in the openHAB inbox after each device refresh cycle.
 
+## Quick Start
+
+1. **Enable SSH** on your router (see [Firmware SSH Setup](#firmware-ssh-setup) below)
+1. **Set up SSH key authentication** (see [SSH Key Setup](#ssh-key-setup) below)
+1. **Test** from the openHAB host: `ssh root@router` should log in without a password prompt
+1. **Add the bridge** in openHAB with your device hostnames:
+
+```java
+Bridge ddwrt:network:home "Home Network" [ hostnames="router,office-ap,garage-ap" ]
+```
+
+1. **Wait for discovery** — devices, radios, wireless clients, and firewall rules appear in the inbox
+
+The `hostnames` parameter is a comma-separated list of hostnames or IP addresses.
+Each hostname is connected via SSH and auto-detected during the first refresh cycle.
+Devices that fail to connect are retried every refresh interval until they come online.
+You do not need to manually add `device` things — they are discovered automatically from this list.
+
 ## SSH Authentication
 
 The binding connects to devices using Apache MINA SSHD.
 Authentication is attempted in this order:
 
 1. **SSH keys** from `$OPENHAB_USERDATA/ddwrt/keys/` (any files in this directory)
-1. **SSH keys** from `~/.ssh/` (standard OpenSSH key files)
-1. **Password** from thing configuration
+1. **SSH keys** from `$HOME/.ssh/` (standard OpenSSH key files like `id_ed25519`, `id_rsa`)
+1. **Password** from thing configuration (least secure, not recommended)
 
-The binding also respects `~/.ssh/config` for per-host settings including `HostName`, `User`, `Port`, `ProxyJump`, and `IdentityFile`.
+On openhabian, `$HOME` for the openHAB service is `/var/lib/openhab`, so keys should be placed in `/var/lib/openhab/.ssh/`.
+
+The binding also respects `$HOME/.ssh/config` for per-host settings including `HostName`, `User`, `Port`, `ProxyJump`, and `IdentityFile`.
 This means you can use jump hosts (ProxyJump) to reach devices behind NAT.
 
-If no user is configured on the thing, the binding defers to `~/.ssh/config` or the system username.
-If no port is configured (port = 0), the binding defers to `~/.ssh/config` or port 22.
+If no user is configured on the thing, the binding defers to `$HOME/.ssh/config` or the system username.
+If no port is configured (port = 0), the binding defers to `$HOME/.ssh/config` or port 22.
+
+### SSH Key Setup
+
+SSH key authentication is strongly recommended over password authentication.
+
+#### 1. Generate an SSH key pair (if you don't have one)
+
+```bash
+ssh-keygen -t ed25519 -C "openhab"
+```
+
+This creates `$HOME/.ssh/id_ed25519` (private key) and `$HOME/.ssh/id_ed25519.pub` (public key).
+The binding automatically loads keys from `$HOME/.ssh/`.
+
+#### 2. Copy the public key to each device
+
+```bash
+ssh-copy-id root@router
+ssh-copy-id root@office-ap
+```
+
+Or manually append the public key to the device's authorized keys file (see firmware-specific instructions below).
+
+#### 3. Verify passwordless login
+
+```bash
+ssh root@router
+```
+
+You should be logged in without a password prompt.
+
+#### Key directories
+
+The binding loads private keys from two directories:
+
+| Directory                       | Description                                       |
+|---------------------------------|---------------------------------------------------|
+| `$HOME/.ssh/`                   | Standard OpenSSH key directory (recommended)      |
+| `$OPENHAB_USERDATA/ddwrt/keys/` | Binding-specific key directory for dedicated keys |
+
+Files named `id_ed25519`, `id_rsa`, `id_ecdsa`, or any file not ending in `.pub` are loaded as private keys.
+Files named `known_hosts`, `config`, `authorized_keys`, and backup files (`~`) are skipped.
+
+If openHAB runs as a different user (e.g. `openhab`), place keys in that user's `$HOME/.ssh/` directory or in the `$OPENHAB_USERDATA/ddwrt/keys/` directory.
+
+**Note:** SSH keys are loaded once when the binding starts. If you add or change key files, restart openHAB for the binding to pick them up.
+
+#### SSH config (optional)
+
+You can use `$HOME/.ssh/config` to set per-host defaults:
+
+```text
+Host router
+    HostName 192.168.1.1
+    User root
+
+Host office-ap
+    HostName 192.168.1.10
+    User root
+    Port 2222
+
+Host remote-ap
+    HostName 10.0.0.1
+    User root
+    ProxyJump router
+```
+
+This lets you use short hostnames in the binding configuration and reach devices behind NAT via ProxyJump.
+
+### Host Key Verification
+
+The binding uses Trust On First Use (TOFU) host key verification with `$HOME/.ssh/known_hosts`:
+
+- **First connection** — the host key is automatically accepted and saved to `$HOME/.ssh/known_hosts`
+- **Subsequent connections** — the saved key is verified; if it matches, the connection proceeds
+- **Changed key** — the connection is **rejected** and a warning is logged with instructions to fix it
+
+If a device's host key changes (e.g. after a firmware reflash), you will see:
+
+```text
+WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
+The host key for 192.168.1.1:22 has changed.
+Add correct host key in /home/openhab/.ssh/known_hosts to get rid of this message.
+Offending key in /home/openhab/.ssh/known_hosts:1
+```
+
+To fix this, remove the old key and restart openHAB so the binding re-reads `known_hosts` and re-learns the new key on the next connection:
+
+```bash
+ssh-keygen -R 192.168.1.1
+```
+
+**Note:** The `known_hosts` file is read once when the binding starts and cached in memory. Changes to this file (including new keys accepted via TOFU) are written back automatically, but manual edits require an openHAB restart to take effect.
+
+### Firmware SSH Setup
+
+Each firmware has its own way to enable SSH and install public keys:
+
+- **DD-WRT** — Services → Secure Shell → Enable SSHd, paste public key into "Authorized Keys".
+  See [DD-WRT SSH documentation](https://wiki.dd-wrt.com/wiki/index.php/SSH).
+- **OpenWrt** — System → Administration → SSH Access is enabled by default on port 22.
+  Paste public key into System → Administration → SSH-Keys.
+  See [OpenWrt Dropbear key-based authentication](https://openwrt.org/docs/guide-user/security/dropbear.public-key.auth).
+- **FreshTomato** — Administration → Admin Access → Enable SSH Daemon, paste public key into "Authorized Keys".
+  See [FreshTomato documentation](https://wiki.freshtomato.org/doku.php/admin_access).
+- **Standard OpenSSH** — For generic Linux devices, use `ssh-copy-id` or append the public key to `$HOME/.ssh/authorized_keys`.
+  See [OpenSSH manual](https://www.openssh.com/manual.html).
 
 ## Thing Configuration
 
@@ -65,9 +192,9 @@ If no port is configured (port = 0), the binding defers to `~/.ssh/config` or po
 
 ### `device` Thing Configuration
 
-| Name            | Type    | Description                                                              | Default   | Required | Advanced |
-|-----------------|---------|--------------------------------------------------------------------------|-----------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device                                     | N/A       | yes      | no       |
+| Name            | Type    | Description                                                               | Default   | Required | Advanced |
+|-----------------|---------|---------------------------------------------------------------------------|-----------|----------|----------|
+| hostname        | text    | Hostname or IP address of the device                                      | N/A       | yes      | no       |
 | user            | text    | SSH username (overrides bridge default; if omitted, uses SSH config)      | N/A       | no       | no       |
 | password        | text    | SSH password (overrides bridge default)                                   | N/A       | no       | no       |
 | port            | integer | SSH port (0 = use SSH config or 22)                                       | 0         | no       | yes      |
@@ -87,82 +214,82 @@ If no port is configured (port = 0), the binding defers to `~/.ssh/config` or po
 |------|------|-------------------------------------------------------------------|---------|----------|----------|
 | mac  | text | MAC address of the client (optional due to MAC randomization)     | N/A     | no       | no       |
 
-The thing ID is derived from the client's sanitized hostname (e.g. `Lee-Pixel-8a` → `leepixel8a`).
+The thing ID is derived from the client's sanitized hostname (e.g. `Joes-Phone` → `joesphone`).
 If the client uses MAC randomization, the binding tracks it by hostname rather than MAC address.
 When a new randomized MAC appears with the same DHCP hostname, the binding merges it with the existing client.
 
 ### `firewall-rule` Thing Configuration
 
-| Name   | Type | Description                        | Default | Required | Advanced |
-|--------|------|------------------------------------|---------|----------|----------|
-| ruleId | text | The nvram `filter_rule` key (e.g. `filter_rule3`) | N/A | yes | no  |
+| Name   | Type | Description                                          | Default | Required | Advanced |
+|--------|------|------------------------------------------------------|---------|----------|----------|
+| ruleId | text | The nvram `filter_rule` key (e.g. `filter_rule3`)    | N/A     | yes      | no       |
 
 ## Channels
 
 ### Network Bridge Channels
 
-| Channel          | Type   | Read/Write | Description                                     |
-|------------------|--------|------------|-------------------------------------------------|
-| total-clients     | Number | RO         | Total clients connected across all devices      |
-| wireless-clients  | Number | RO         | Wireless clients connected across all devices   |
-| wired-clients     | Number | RO         | Wired clients connected across all devices      |
+| Channel          | Type   | Read/Write | Description                                   |
+|------------------|--------|------------|-----------------------------------------------|
+| total-clients    | Number | RO         | Total clients connected across all devices    |
+| wireless-clients | Number | RO         | Wireless clients connected across all devices |
+| wired-clients    | Number | RO         | Wired clients connected across all devices    |
 
 ### Device Channels
 
-| Channel            | Type               | Read/Write | Description                                              |
-|--------------------|--------------------|------------|----------------------------------------------------------|
-| online             | Switch             | RO         | Whether the device is reachable via SSH                  |
-| uptime             | DateTime           | RO         | System boot time (updates only on reboot)                |
-| cpu-load           | Number             | RO         | 1-minute load average                                    |
-| cpu-temp           | Number:Temperature | RO         | CPU temperature                                          |
-| wan-ip             | String             | RO         | External WAN IP address (gateway devices only)           |
-| wan-in             | Number:DataAmount  | RO         | Total bytes received on WAN (gateway devices only)       |
-| wan-out            | Number:DataAmount  | RO         | Total bytes sent on WAN (gateway devices only)           |
-| if-in              | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                 |
-| if-out             | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                     |
-| reboot             | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF|
-| last-warning-event  | String             | RO         | Last warning-level syslog line                          |
-| last-error-event    | String             | RO         | Last error-level syslog line                            |
-| warning-events      | Number             | RO         | Warning event count since startup                       |
-| error-events        | Number             | RO         | Error event count since startup                         |
-| last-dhcp-event     | String             | RO         | Last DHCP lease/renewal/release event                   |
-| last-wireless-event | String             | RO         | Last wireless association/deassociation event            |
+| Channel             | Type               | Read/Write | Description                                               |
+|---------------------|--------------------|------------|-----------------------------------------------------------|
+| online              | Switch             | RO         | Whether the device is reachable via SSH                   |
+| uptime              | DateTime           | RO         | System boot time (updates only on reboot)                 |
+| cpu-load            | Number             | RO         | 1-minute load average                                     |
+| cpu-temp            | Number:Temperature | RO         | CPU temperature                                           |
+| wan-ip              | String             | RO         | External WAN IP address (gateway devices only)            |
+| wan-in              | Number:DataAmount  | RO         | Total bytes received on WAN (gateway devices only)        |
+| wan-out             | Number:DataAmount  | RO         | Total bytes sent on WAN (gateway devices only)            |
+| if-in               | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                  |
+| if-out              | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                      |
+| reboot              | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF |
+| last-warning-event  | String             | RO         | Last warning-level syslog line                            |
+| last-error-event    | String             | RO         | Last error-level syslog line                              |
+| warning-events      | Number             | RO         | Warning event count since startup                         |
+| error-events        | Number             | RO         | Error event count since startup                           |
+| last-dhcp-event     | String             | RO         | Last DHCP lease/renewal/release event                     |
+| last-wireless-event | String             | RO         | Last wireless association/deassociation event             |
 
 ### Device Trigger Channels
 
-| Channel            | Kind    | Description                                          |
-|--------------------|---------|------------------------------------------------------|
-| new-warning-event  | Trigger | Fires when a new warning-level syslog event arrives  |
-| new-error-event    | Trigger | Fires when a new error-level syslog event arrives    |
-| new-dhcp-event     | Trigger | Fires when a DHCP lease/renewal/release is detected  |
-| new-wireless-event | Trigger | Fires when a wireless assoc/deassoc is detected      |
+| Channel        | Kind    | Description                                         |
+|----------------|---------|-----------------------------------------------------|
+| warning-event  | Trigger | Fires when a warning-level syslog event arrives     |
+| error-event    | Trigger | Fires when an error-level syslog event arrives      |
+| dhcp-event     | Trigger | Fires when a DHCP lease/renewal/release is detected |
+| wireless-event | Trigger | Fires when a wireless assoc/deassoc is detected     |
 
 ### Radio Channels
 
-| Channel     | Type   | Read/Write | Description                                             |
-|-------------|--------|------------|---------------------------------------------------------|
-| enabled     | Switch | RW         | Whether the radio is enabled                            |
-| ssid        | String | RO         | Wireless network name                                   |
-| channel     | Number | RO         | Wireless channel number                                 |
-| mode        | String | RO         | Wireless mode (e.g. Master, Client, Ad-Hoc)             |
-| client-count | Number | RO         | Number of clients associated with this radio           |
-| assoclist   | String | RO         | Comma-separated MACs of associated clients              |
+| Channel      | Type   | Read/Write | Description                                        |
+|--------------|--------|------------|----------------------------------------------------|
+| enabled      | Switch | RW         | Whether the radio is enabled                       |
+| ssid         | String | RO         | Wireless network name                              |
+| channel      | Number | RO         | Wireless channel number                            |
+| mode         | String | RO         | Wireless mode (e.g. Master, Client, Ad-Hoc)        |
+| client-count | Number | RO         | Number of clients associated with this radio       |
+| assoclist    | String | RO         | Comma-separated MACs of associated clients         |
 
 ### Wireless Client Channels
 
-| Channel    | Type     | Read/Write | Description                                              |
-|------------|----------|------------|----------------------------------------------------------|
-| online     | Switch   | RO         | Whether the client is currently connected                |
-| mac-address | String   | RO         | Current MAC address of the client                       |
-| hostname    | String   | RO         | Hostname from DHCP lease                                |
-| ip-address  | String   | RO         | IP address from DHCP lease                              |
-| ap         | String   | RO         | Name of the radio the client is associated with          |
-| ap-mac     | String   | RO         | MAC address of the access point                          |
-| ssid       | String   | RO         | SSID the client is connected to                          |
-| snr        | Number   | RO         | Signal-to-noise ratio in dB                              |
-| rx-rate    | Number   | RO         | Receive rate in Mbit/s                                   |
-| tx-rate    | Number   | RO         | Transmit rate in Mbit/s                                  |
-| last-seen  | DateTime | RO         | Timestamp when the client was last seen online           |
+| Channel     | Type     | Read/Write | Description                                          |
+|-------------|----------|------------|------------------------------------------------------|
+| online      | Switch   | RO         | Whether the client is currently connected            |
+| mac-address | String   | RO         | Current MAC address of the client                    |
+| hostname    | String   | RO         | Hostname from DHCP lease                             |
+| ip-address  | String   | RO         | IP address from DHCP lease                           |
+| ap          | String   | RO         | Name of the radio the client is associated with      |
+| ap-mac      | String   | RO         | MAC address of the access point                      |
+| ssid        | String   | RO         | SSID the client is connected to                      |
+| snr         | Number   | RO         | Signal-to-noise ratio in dB                          |
+| rx-rate     | Number   | RO         | Receive rate in Mbit/s                               |
+| tx-rate     | Number   | RO         | Transmit rate in Mbit/s                              |
+| last-seen   | DateTime | RO         | Timestamp when the client was last seen online       |
 
 ### Firewall Rule Channels
 
@@ -187,18 +314,18 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 ### Thing Configuration
 
 ```java
-Bridge ddwrt:network:home "Home Network" [ hostnames="gateway-ap,lodge-ap,cabin-ap", user="root", refreshInterval=3 ] {
-    Thing device gateway  "Gateway AP"  [ hostname="gateway-ap" ]
-    Thing device lodge    "Lodge AP"    [ hostname="lodge-ap" ]
-    Thing device cabin    "Cabin AP"    [ hostname="cabin-ap" ]
+Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-ap", user="root", refreshInterval=3 ] {
+    Thing device router    "Main Router"  [ hostname="router" ]
+    Thing device officeap  "Office AP"    [ hostname="office-ap" ]
+    Thing device garageap  "Garage AP"    [ hostname="garage-ap" ]
 
-    Thing radio gateway_wl0   "Gateway 2.4GHz"   [ interfaceId="wl0" ]
-    Thing radio gateway_wl1   "Gateway 5GHz"     [ interfaceId="wl1" ]
-    Thing radio lodge_wlan0   "Lodge 2.4GHz"     [ interfaceId="wlan0" ]
-    Thing radio lodge_wlan1   "Lodge 5GHz"       [ interfaceId="wlan1" ]
+    Thing radio router_wl0    "Router 2.4GHz"   [ interfaceId="wl0" ]
+    Thing radio router_wl1    "Router 5GHz"     [ interfaceId="wl1" ]
+    Thing radio officeap_wlan0 "Office 2.4GHz"  [ interfaceId="wlan0" ]
+    Thing radio officeap_wlan1 "Office 5GHz"    [ interfaceId="wlan1" ]
 
-    Thing wireless-client leepixel8a   "Lee's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
-    Thing wireless-client delldesktop  "Dell Desktop"     [ mac="b0:8b:a8:7f:99:2c" ]
+    Thing wireless-client joesphone     "Joe's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
+    Thing wireless-client livingroomtv  "Living Room TV"   [ mac="b0:8b:a8:7f:99:2c" ]
 
     Thing firewall-rule bedtime10 "Bedtime 10-12" [ ruleId="filter_rule3" ]
     Thing firewall-rule bedtime12 "Bedtime 12-6"  [ ruleId="filter_rule4" ]
@@ -209,50 +336,50 @@ Bridge ddwrt:network:home "Home Network" [ hostnames="gateway-ap,lodge-ap,cabin-
 
 ```java
 // Device telemetry
-Switch   GatewayOnline     "Gateway Online [%s]"         { channel="ddwrt:device:home:gateway:online" }
-DateTime GatewayUptime     "Gateway Uptime [%1$tF %1$tR]" { channel="ddwrt:device:home:gateway:uptime" }
-Number   GatewayCpuLoad    "Gateway CPU [%.2f]"           { channel="ddwrt:device:home:gateway:cpu-load" }
-Number:Temperature GatewayCpuTemp "Gateway Temp [%.1f %unit%]" { channel="ddwrt:device:home:gateway:cpu-temp" }
-String   GatewayWanIp      "WAN IP [%s]"                  { channel="ddwrt:device:home:gateway:wan-ip" }
-Switch   GatewayReboot     "Reboot Gateway"               { channel="ddwrt:device:home:gateway:reboot" }
+Switch             RouterOnline   "Router Online [%s]"            { channel="ddwrt:device:home:router:online" }
+DateTime           RouterUptime   "Router Uptime [%1$tF %1$tR]"   { channel="ddwrt:device:home:router:uptime" }
+Number             RouterCpuLoad  "Router CPU [%.2f]"             { channel="ddwrt:device:home:router:cpu-load" }
+Number:Temperature RouterCpuTemp  "Router Temp [%.1f %unit%]"     { channel="ddwrt:device:home:router:cpu-temp" }
+String             RouterWanIp    "WAN IP [%s]"                   { channel="ddwrt:device:home:router:wan-ip" }
+Switch             RouterReboot   "Reboot Router"                 { channel="ddwrt:device:home:router:reboot" }
 
 // Syslog events
-String   GatewayLastDhcp   "Last DHCP [%s]"               { channel="ddwrt:device:home:gateway:last-dhcp-event" }
-String   GatewayLastWifi   "Last Wireless [%s]"            { channel="ddwrt:device:home:gateway:last-wireless-event" }
+String             RouterLastDhcp "Last DHCP [%s]"                { channel="ddwrt:device:home:router:last-dhcp-event" }
+String             RouterLastWifi "Last Wireless [%s]"            { channel="ddwrt:device:home:router:last-wireless-event" }
 
 // Radio
-String   Gateway24Ssid     "2.4GHz SSID [%s]"             { channel="ddwrt:radio:home:gateway_wl0:ssid" }
-Number   Gateway24Channel  "2.4GHz Channel [%d]"           { channel="ddwrt:radio:home:gateway_wl0:channel" }
-Number   Gateway24Clients  "2.4GHz Clients [%d]"           { channel="ddwrt:radio:home:gateway_wl0:client-count" }
+String             Router24Ssid    "2.4GHz SSID [%s]"             { channel="ddwrt:radio:home:router_wl0:ssid" }
+Number             Router24Channel "2.4GHz Channel [%d]"          { channel="ddwrt:radio:home:router_wl0:channel" }
+Number             Router24Clients "2.4GHz Clients [%d]"          { channel="ddwrt:radio:home:router_wl0:client-count" }
 
 // Wireless client
-Switch   PhoneOnline       "Phone Online [%s]"             { channel="ddwrt:wireless-client:home:leepixel8a:online" }
-String   PhoneAp           "Phone AP [%s]"                 { channel="ddwrt:wireless-client:home:leepixel8a:ap" }
-String   PhoneSsid         "Phone SSID [%s]"               { channel="ddwrt:wireless-client:home:leepixel8a:ssid" }
-Number   PhoneSnr          "Phone SNR [%d dB]"             { channel="ddwrt:wireless-client:home:leepixel8a:snr" }
-DateTime PhoneLastSeen     "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:wireless-client:home:leepixel8a:last-seen" }
+Switch             PhoneOnline    "Phone Online [%s]"             { channel="ddwrt:wireless-client:home:joesphone:online" }
+String             PhoneAp        "Phone AP [%s]"                 { channel="ddwrt:wireless-client:home:joesphone:ap" }
+String             PhoneSsid      "Phone SSID [%s]"               { channel="ddwrt:wireless-client:home:joesphone:ssid" }
+Number             PhoneSnr       "Phone SNR [%d dB]"             { channel="ddwrt:wireless-client:home:joesphone:snr" }
+DateTime           PhoneLastSeen  "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:wireless-client:home:joesphone:last-seen" }
 
 // Firewall
-Switch   Bedtime10         "Bedtime 10-12 [%s]"            { channel="ddwrt:firewall-rule:home:bedtime10:enabled" }
-Switch   Bedtime12         "Bedtime 12-6 [%s]"             { channel="ddwrt:firewall-rule:home:bedtime12:enabled" }
+Switch             Bedtime10      "Bedtime 10-12 [%s]"            { channel="ddwrt:firewall-rule:home:bedtime10:enabled" }
+Switch             Bedtime12      "Bedtime 12-6 [%s]"             { channel="ddwrt:firewall-rule:home:bedtime12:enabled" }
 ```
 
 ### Sitemap Configuration
 
 ```perl
 sitemap home label="Home Network" {
-    Frame label="Gateway" {
-        Switch item=GatewayOnline
-        Text   item=GatewayUptime
-        Text   item=GatewayCpuLoad
-        Text   item=GatewayCpuTemp
-        Text   item=GatewayWanIp
-        Switch item=GatewayReboot
+    Frame label="Router" {
+        Switch item=RouterOnline
+        Text   item=RouterUptime
+        Text   item=RouterCpuLoad
+        Text   item=RouterCpuTemp
+        Text   item=RouterWanIp
+        Switch item=RouterReboot
     }
     Frame label="Radios" {
-        Text item=Gateway24Ssid
-        Text item=Gateway24Channel
-        Text item=Gateway24Clients
+        Text item=Router24Ssid
+        Text item=Router24Channel
+        Text item=Router24Clients
     }
     Frame label="Devices" {
         Switch item=PhoneOnline

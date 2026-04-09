@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class DDWRTWirelessClientHandler
         extends DDWRTBaseHandler<DDWRTWirelessClient, DDWRTWirelessClientConfiguration> {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTWirelessClientHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTWirelessClientHandler.class);
 
     private DDWRTWirelessClientConfiguration config = new DDWRTWirelessClientConfiguration();
 

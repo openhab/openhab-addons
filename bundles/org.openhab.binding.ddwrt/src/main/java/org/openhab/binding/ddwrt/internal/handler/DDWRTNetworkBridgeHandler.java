@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TOTAL_CLIENTS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRED_CLIENTS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRELESS_CLIENTS;
+
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDiscoveryService;
 import org.openhab.binding.ddwrt.internal.DDWRTNetworkConfiguration;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -42,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class);
 
     private DDWRTNetworkConfiguration config = new DDWRTNetworkConfiguration();
 
@@ -103,12 +108,23 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
+            updateBridgeChannels();
         } else if (network.getDevices().isEmpty() && !network.hasPendingDevices()) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "No devices have active SSH sessions");
+                    "@text/offline.no-active-sessions");
         }
+    }
+
+    private void updateBridgeChannels() {
+        DDWRTNetworkCache cache = network.getCache();
+        int wireless = cache.getTotalWirelessClients();
+        int total = cache.getDhcpLeases().size();
+        int wired = Math.max(0, total - wireless);
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL_CLIENTS), new DecimalType(total));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRELESS_CLIENTS), new DecimalType(wireless));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRED_CLIENTS), new DecimalType(wired));
     }
 
     private void cancelRefreshJob() {

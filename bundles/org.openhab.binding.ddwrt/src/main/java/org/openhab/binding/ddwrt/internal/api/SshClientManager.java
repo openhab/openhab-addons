@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -26,7 +27,8 @@ import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.auth.keyboard.UserInteraction;
 import org.apache.sshd.client.config.hosts.DefaultConfigFileHostEntryResolver;
 import org.apache.sshd.client.future.ConnectFuture;
-import org.apache.sshd.client.keyverifier.AcceptAllServerKeyVerifier;
+import org.apache.sshd.client.keyverifier.KnownHostsServerKeyVerifier;
+import org.apache.sshd.client.keyverifier.ServerKeyVerifier;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
 import org.apache.sshd.common.future.CancelOption;
@@ -45,7 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SshClientManager {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshClientManager.class));
+    private final Logger logger = LoggerFactory.getLogger(SshClientManager.class);
 
     private static final SshClientManager INSTANCE = new SshClientManager();
 
@@ -68,8 +70,8 @@ public class SshClientManager {
         // Explicitly register the EdDSA provider so Ed25519 keys work.
         try {
             Class<?> providerClass = Class.forName("net.i2p.crypto.eddsa.EdDSASecurityProvider");
-            java.security.Provider eddsaProvider = (java.security.Provider) providerClass.getDeclaredConstructor()
-                    .newInstance();
+            java.security.Provider eddsaProvider = Objects
+                    .requireNonNull((java.security.Provider) providerClass.getDeclaredConstructor().newInstance());
             if (java.security.Security.getProvider(eddsaProvider.getName()) == null) {
                 java.security.Security.addProvider(eddsaProvider);
                 logger.debug("Registered EdDSA security provider for Ed25519 support");
@@ -79,8 +81,34 @@ public class SshClientManager {
         }
 
         client = Objects.requireNonNull(SshClient.setUpDefaultClient());
-        logger.debug("SSH Client Key Verifier Accept All");
-        client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE); // MVP only; replace with pinning
+        // TOFU: trust on first use, persist to ~/.ssh/known_hosts, reject changed keys
+        Path knownHostsPath = getHomeSshDir() != null ? Objects.requireNonNull(getHomeSshDir()).resolve("known_hosts")
+                : Paths.get(ohPrivateKeyDirString, "known_hosts");
+        ServerKeyVerifier verifier = new KnownHostsServerKeyVerifier((s, a, k) -> {
+            logger.info("TOFU: auto-accepting host key for {}", a);
+            return true;
+        }, knownHostsPath) {
+            @Override
+            @NonNullByDefault({})
+            public boolean acceptModifiedServerKey(ClientSession session, java.net.SocketAddress remoteAddress,
+                    org.apache.sshd.client.config.hosts.KnownHostEntry entry, java.security.PublicKey expected,
+                    java.security.PublicKey actual) throws Exception {
+                String host = remoteAddress.toString().replaceFirst("^/", "");
+                int line = findKnownHostsLine(knownHostsPath, host);
+                logger.warn(
+                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+                                + "    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!\n"
+                                + "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+                                + "IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!\n"
+                                + "The host key for {} has changed.\n"
+                                + "Add correct host key in {} to get rid of this message.\n"
+                                + "Offending key in {}:{}\n" + "Host key verification failed.",
+                        host, knownHostsPath, knownHostsPath, line);
+                return false;
+            }
+        };
+        client.setServerKeyVerifier(verifier);
+        logger.debug("SSH Client Key Verifier: known_hosts at {}", knownHostsPath);
         client.setHostConfigEntryResolver(DefaultConfigFileHostEntryResolver.INSTANCE);
 
         // Load keys from both directories and register on client so they are
@@ -134,7 +162,14 @@ public class SshClientManager {
 
     private static @Nullable Path getHomeSshDir() {
         String home = System.getProperty("user.home");
-        return home != null ? Paths.get(home, ".ssh") : null;
+        if (home == null) {
+            return null;
+        }
+        Path sshDir = Paths.get(home, ".ssh");
+        if (!sshDir.toFile().exists()) {
+            sshDir.toFile().mkdirs();
+        }
+        return sshDir;
     }
 
     // Disable NonNullByDefault on this class to match Apache SSHD’s UserInteraction
@@ -186,10 +221,29 @@ public class SshClientManager {
                 && !name.startsWith("authorized_keys") && !name.endsWith("~");
     }
 
+    /**
+     * Find the line number in known_hosts that matches the given host.
+     */
+    private static int findKnownHostsLine(Path knownHostsPath, String host) {
+        try {
+            // Strip port suffix if present (e.g., "192.168.0.1:22" -> "192.168.0.1")
+            String bareHost = host.contains(":") ? host.substring(0, host.lastIndexOf(':')) : host;
+            List<String> lines = Files.readAllLines(knownHostsPath);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i).trim();
+                if (!line.isEmpty() && !line.startsWith("#") && line.startsWith(bareHost)) {
+                    return i + 1; // 1-indexed
+                }
+            }
+        } catch (Exception e) {
+            // Ignore - best effort
+        }
+        return 0;
+    }
+
     @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
-            @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
-            throws IOException {
+            Duration defaultTimeout) throws IOException {
         // Pass empty string when user is not configured so the HostConfigEntryResolver
         // can fill it from ~/.ssh/config User directive. The resolver falls back to the
         // system username if SSH config also has no User for the host.

@@ -52,7 +52,7 @@ public class SshAuthSession implements AutoCloseable {
         this.defaultTimeout = defaultTimeout;
         this.welcomeBanner = welcomeBanner;
         this.hostname = hostname;
-        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshAuthSession.class.getName() + "." + hostname));
+        this.logger = LoggerFactory.getLogger(SshAuthSession.class.getName() + "." + hostname);
     }
 
     /** Exposes the underlying SSHD session for creating additional channels (e.g. log follow). */
