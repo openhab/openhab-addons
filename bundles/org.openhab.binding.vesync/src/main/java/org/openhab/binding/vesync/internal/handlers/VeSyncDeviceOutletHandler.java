@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
 import java.text.ParseException;
 import java.time.Instant;

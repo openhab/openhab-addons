@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V2_BYPASS_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.V2_BYPASS_ENDPOINT;
 
 import java.time.Duration;
 import java.util.ArrayList;

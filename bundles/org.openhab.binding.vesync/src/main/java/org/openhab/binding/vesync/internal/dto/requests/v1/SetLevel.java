@@ -15,17 +15,17 @@ package org.openhab.binding.vesync.internal.dto.requests.v1;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1SetLevel} is the Java class as a DTO define a V1 Set Level command for the Vesync
+ * The {@link SetLevel} is the Java class as a DTO define a V1 Set Level command for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1SetLevel extends VeSyncRequestV1Command {
+public class SetLevel extends Command {
 
     @SerializedName("level")
     public Integer level = null;
 
-    public VeSyncRequestV1SetLevel(final String deviceUuid, final int level) {
+    public SetLevel(final String deviceUuid, final int level) {
         super(deviceUuid);
         this.level = level;
     }

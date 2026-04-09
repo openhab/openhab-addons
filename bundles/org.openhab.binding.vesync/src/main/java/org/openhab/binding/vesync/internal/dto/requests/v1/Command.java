@@ -18,17 +18,17 @@ import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1Command} is the Java class as a DTO to define the base implementation of a V1 command for
+ * The {@link Command} is the Java class as a DTO to define the base implementation of a V1 command for
  * the Vesync API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1Command extends AuthenticatedReq {
+public class Command extends AuthenticatedReq {
 
     @SerializedName("uuid")
     public String uuid = null;
 
-    public VeSyncRequestV1Command(final String deviceUuid) {
+    public Command(final String deviceUuid) {
         // Exclude fields that shouldn't be there by setting to null
         super.phoneOS = null;
         super.phoneBrand = null;

@@ -13,11 +13,11 @@
 package org.openhab.binding.vesync.internal.dto.requests;
 
 /**
- * The {@link VeSyncProtocolConstants} contains common Strings used by various elements of the protocol.
+ * The {@link ProtocolConstants} contains common Strings used by various elements of the protocol.
  *
  * @author David Goodyear - Initial contribution
  */
-public interface VeSyncProtocolConstants {
+public interface ProtocolConstants {
 
     // Common Payloads
     String MODE_AUTO = "auto";

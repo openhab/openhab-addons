@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.api;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.EMPTY_STRING;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
 import java.net.HttpURLConnection;
 import java.util.Locale;

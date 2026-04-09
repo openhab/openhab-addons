@@ -19,12 +19,12 @@ import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1ManagedDeviceDetails} is the Java class as a DTO to request the managed device details for
+ * The {@link GetDeviceDetails} is the Java class as a DTO to request the managed device details for
  * the Vesync API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1ManagedDeviceDetails extends AuthenticatedReq {
+public class GetDeviceDetails extends AuthenticatedReq {
 
     @SerializedName("mobileId")
     public String mobileId = "1234567890123456";
@@ -32,18 +32,17 @@ public class VeSyncRequestV1ManagedDeviceDetails extends AuthenticatedReq {
     @SerializedName("uuid")
     public String uuid = null;
 
-    public VeSyncRequestV1ManagedDeviceDetails(final String deviceUuid) {
+    public GetDeviceDetails(final String deviceUuid) {
         uuid = deviceUuid;
         method = "deviceDetail";
     }
 
-    public VeSyncRequestV1ManagedDeviceDetails(final UserSession user) throws AuthenticationException {
+    public GetDeviceDetails(final UserSession user) throws AuthenticationException {
         super(user);
         method = "deviceDetail";
     }
 
-    public VeSyncRequestV1ManagedDeviceDetails(final UserSession user, String deviceUuid)
-            throws AuthenticationException {
+    public GetDeviceDetails(final UserSession user, String deviceUuid) throws AuthenticationException {
         this(user);
         uuid = deviceUuid;
     }

@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -30,16 +30,14 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1ManagedDeviceDetails;
-import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetLevel;
-import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetMode;
-import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetStatus;
+import org.openhab.binding.vesync.internal.dto.requests.v1.GetDeviceDetails;
+import org.openhab.binding.vesync.internal.dto.requests.v1.SetLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v1.SetMode;
+import org.openhab.binding.vesync.internal.dto.requests.v1.SetStatus;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetChildLock;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetLightDetection;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetManualSpeedLevel;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetNightLight;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetPower;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetScreenSwitch;
@@ -249,8 +247,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/deviceStatus",
-                                        new VeSyncRequestV1SetStatus(deviceUuid,
-                                                command.equals(OnOffType.ON) ? "on" : "off"));
+                                        new SetStatus(deviceUuid, command.equals(OnOffType.ON) ? "on" : "off"));
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_SWITCH,
@@ -266,8 +263,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/updateScreen",
-                                        new VeSyncRequestV1SetStatus(deviceUuid,
-                                                command.equals(OnOffType.ON) ? "on" : "off"));
+                                        new SetStatus(deviceUuid, command.equals(OnOffType.ON) ? "on" : "off"));
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_DISPLAY,
@@ -312,10 +308,11 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/updateMode",
-                                        new VeSyncRequestV1SetMode(deviceUuid, targetFanMode));
+                                        new SetMode(deviceUuid, targetFanMode));
                                 break;
                             default:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetMode(targetFanMode));
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetMode(targetFanMode));
                         }
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
@@ -349,14 +346,17 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/updateMode",
-                                        new VeSyncRequestV1SetMode(deviceUuid, MODE_MANUAL), false);
+                                        new SetMode(deviceUuid, MODE_MANUAL), false);
                                 sendV1ControlCommand("131airPurifier/v1/device/updateSpeed",
-                                        new VeSyncRequestV1SetLevel(deviceUuid, requestedLevel));
+                                        new SetLevel(deviceUuid, requestedLevel));
                                 break;
                             default:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetMode(MODE_MANUAL), false);
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetMode(MODE_MANUAL),
+                                        false);
                                 sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                        new SetLevel(0, DEVICE_LEVEL_TYPE_WIND, requestedLevel));
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel(0,
+                                                DEVICE_LEVEL_TYPE_WIND, requestedLevel));
                         }
                         break;
                 }
@@ -394,8 +394,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             boolean cachedDataUsed = response != null;
             if (response == null) {
                 logger.trace("Requesting fresh response");
-                response = sendV1Command("131airPurifier/v1/device/deviceDetail",
-                        new VeSyncRequestV1ManagedDeviceDetails(deviceUuid));
+                response = sendV1Command("131airPurifier/v1/device/deviceDetail", new GetDeviceDetails(deviceUuid));
             } else {
                 logger.trace("Using cached response {}", response);
             }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests.login;
 
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequest;
+import org.openhab.binding.vesync.internal.dto.requests.RequestBase;
 import org.openhab.binding.vesync.internal.dto.responses.login.UserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class AuthenticatedReq extends VeSyncRequest {
+public class AuthenticatedReq extends RequestBase {
 
     @SerializedName("accountID")
     public String accountId;
