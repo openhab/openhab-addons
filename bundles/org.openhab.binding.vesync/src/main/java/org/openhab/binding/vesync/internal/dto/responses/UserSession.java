@@ -12,29 +12,41 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link VeSyncLoginResponse} class is used as a DTO to hold the Vesync's API's login response.
+ * The {@link UserSession} class contains data about the logged in user - including the accountID and token's used
+ * for authenticating other payload's.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncLoginResponse extends TransactionResp {
+public class UserSession {
 
-    public VeSyncUserSession result;
+    public String token;
 
-    public VeSyncUserSession getUserSession() {
-        return result;
-    }
+    public String serverUrl;
 
     public String getToken() {
-        return (result == null) ? null : result.token;
+        return token;
     }
 
+    @SerializedName("registerTime")
+    public String registerTime;
+
+    public String accountId;
+
     public String getAccountId() {
-        return (result == null) ? null : result.accountId;
+        return accountId;
     }
+
+    @SerializedName("acceptLanguage")
+    public String acceptLanguage;
+
+    @SerializedName("countryCode")
+    public String countryCode;
 
     @Override
     public String toString() {
-        return "VesyncLoginResponse [msg=" + getMsg() + ", result=" + result + "]";
+        return "Data [token=" + token + "]";
     }
 }

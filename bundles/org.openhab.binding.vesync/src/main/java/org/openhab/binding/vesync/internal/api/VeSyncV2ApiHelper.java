@@ -39,8 +39,7 @@ import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevi
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.requests.management.DevicesInfoPageReq;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.UserSession;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.dto.responses.management.DevicesInfoPageResp;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -59,7 +58,7 @@ public class VeSyncV2ApiHelper {
 
     protected static final int RESPONSE_TIMEOUT_SEC = 5;
 
-    private volatile @Nullable VeSyncUserSession loggedInSession;
+    private volatile @Nullable UserSession loggedInSession;
 
     private final @Nullable HttpClient httpClient;
 
@@ -142,7 +141,7 @@ public class VeSyncV2ApiHelper {
         }
 
         @Nullable
-        VeSyncUserSession session = loggedInSession;
+        UserSession session = loggedInSession;
         if (session != null && session.serverUrl != null) {
             url = session.serverUrl + url;
         } else {
@@ -179,7 +178,7 @@ public class VeSyncV2ApiHelper {
             }
 
             @Nullable
-            VeSyncUserSession session = loggedInSession;
+            UserSession session = loggedInSession;
             if (session != null && session.serverUrl != null && !url.startsWith(session.serverUrl)) {
                 url = session.serverUrl + url;
             }
@@ -225,7 +224,7 @@ public class VeSyncV2ApiHelper {
             return;
         }
         try {
-            loggedInSession = processLoginAuthV2(username, password, timezone).getUserSession();
+            loggedInSession = processLoginAuthV2(username, password, timezone);
         } catch (final AuthenticationException ae) {
             loggedInSession = null;
             throw ae;
@@ -236,7 +235,7 @@ public class VeSyncV2ApiHelper {
         bridge.handleNewUserSession(loggedInSession);
     }
 
-    private VeSyncLoginResponse processLoginAuthV2(String username, String password, String timezone)
+    private UserSession processLoginAuthV2(String username, String password, String timezone)
             throws AuthenticationException {
         try {
             final HttpClient client = httpClient;
@@ -254,7 +253,7 @@ public class VeSyncV2ApiHelper {
             if (!loginHelper.loginByAuthorizeCode()) {
                 throw new AuthenticationException("Invalid username or password");
             }
-            return loginHelper.getVeSyncLoginResponse();
+            return loginHelper.getUserSession();
 
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException(e);

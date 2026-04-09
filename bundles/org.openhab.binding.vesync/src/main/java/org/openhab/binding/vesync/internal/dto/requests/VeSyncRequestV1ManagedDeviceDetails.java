@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.dto.requests;
 
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.UserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
 import com.google.gson.annotations.SerializedName;
@@ -37,12 +37,12 @@ public class VeSyncRequestV1ManagedDeviceDetails extends AuthenticatedReq {
         method = "deviceDetail";
     }
 
-    public VeSyncRequestV1ManagedDeviceDetails(final VeSyncUserSession user) throws AuthenticationException {
+    public VeSyncRequestV1ManagedDeviceDetails(final UserSession user) throws AuthenticationException {
         super(user);
         method = "deviceDetail";
     }
 
-    public VeSyncRequestV1ManagedDeviceDetails(final VeSyncUserSession user, String deviceUuid)
+    public VeSyncRequestV1ManagedDeviceDetails(final UserSession user, String deviceUuid)
             throws AuthenticationException {
         this(user);
         uuid = deviceUuid;

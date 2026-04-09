@@ -32,8 +32,7 @@ import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthCodeReq;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthTokenReq;
 import org.openhab.binding.vesync.internal.dto.requests.login.RegionSwitchReq;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.UserSession;
 import org.openhab.binding.vesync.internal.dto.responses.login.AuthCodeResp;
 import org.openhab.binding.vesync.internal.dto.responses.login.AuthTokenResp;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -48,7 +47,7 @@ class LoginAuthV2Helper {
 
     private final Logger logger = LoggerFactory.getLogger(LoginAuthV2Helper.class);
     private final HttpClient client;
-    private final VeSyncUserSession loginData = new VeSyncUserSession();
+    private final UserSession loginData = new UserSession();
 
     private static final String US_TOKEN_REQ_URL = US_SERVER + "/globalPlatform/api/accountAuth/v1/authByPWDOrOTM";
     private static final String US_AUTH_BY_TOKEN = US_SERVER + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
@@ -70,10 +69,8 @@ class LoginAuthV2Helper {
         loginData.serverUrl = US_SERVER;
     }
 
-    protected VeSyncLoginResponse getVeSyncLoginResponse() {
-        final VeSyncLoginResponse simResponse = new VeSyncLoginResponse();
-        simResponse.result = loginData;
-        return simResponse;
+    protected UserSession getUserSession() {
+        return loginData;
     }
 
     protected boolean requestAuthToken(final String username, final String password)

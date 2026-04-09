@@ -37,7 +37,7 @@ import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandle
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.UserSession;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
@@ -260,7 +260,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         logger.warn("{}", getLocalizedText("warning.bridge.unexpected-command-call"));
     }
 
-    public void handleNewUserSession(final @Nullable VeSyncUserSession userSessionData) {
+    public void handleNewUserSession(final @Nullable UserSession userSessionData) {
         final Map<String, String> newProps = new HashMap<>();
         if (userSessionData != null) {
             newProps.put(DEVICE_PROP_BRIDGE_REG_TS, userSessionData.registerTime);
