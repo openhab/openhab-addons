@@ -64,6 +64,7 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             ResourceType.DEVICE, THING_TYPE_DEVICE, //
             ResourceType.ROOM, THING_TYPE_ROOM, //
             ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
             ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
 
     /**
@@ -73,13 +74,15 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             ResourceType.DEVICE, THING_TYPE_DEVICE, //
             ResourceType.ROOM, THING_TYPE_ROOM, //
             ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
             ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
             ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA);
 
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA),
+        super(Clip2BridgeHandler.class,
+                Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP),
                 DISCOVERY_TIMEOUT_SECONDS, true);
     }
 

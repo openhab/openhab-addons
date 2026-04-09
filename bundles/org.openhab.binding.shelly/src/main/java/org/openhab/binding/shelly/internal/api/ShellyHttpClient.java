@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYUNKNOWN;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -70,7 +71,7 @@ public class ShellyHttpClient {
     protected final Gson gson = new Gson();
     protected int timeoutErrors = 0;
     protected int timeoutsRecovered = 0;
-    private final ShellyDeviceProfile profile;
+    protected final ShellyDeviceProfile profile;
     protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
@@ -84,7 +85,7 @@ public class ShellyHttpClient {
         this.thingName = thingName;
         this.config = config;
         this.httpClient = httpClient;
-        this.profile = new ShellyDeviceProfile();
+        this.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
