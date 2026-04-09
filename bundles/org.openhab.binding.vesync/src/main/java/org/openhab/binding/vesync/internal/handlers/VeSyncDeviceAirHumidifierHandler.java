@@ -30,10 +30,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.Enabled;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetNightLightBrightness;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetTargetHumidity;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V1StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V2StatusResp;
@@ -231,7 +234,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         break;
                     case DEVICE_CHANNEL_STOP_AT_TARGET:
                         sendV2BypassControlCommand(DEVICE_SET_AUTOMATIC_STOP,
-                                new ManagedDeviceBypassReq.EnabledPayload(command.equals(OnOffType.ON)));
+                                new Enabled(command.equals(OnOffType.ON)));
                         break;
                     case DEVICE_CHANNEL_WARM_ENABLED:
                         logger.warn("{}", getLocalizedText("warning.device.warm-mode-unsupported"));
@@ -250,10 +253,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new ManagedDeviceBypassReq.SetMode(devContraints.getProtocolMode(MODE_AUTO)), false);
+                                new SetMode(devContraints.getProtocolMode(MODE_AUTO)), false);
 
                         sendV2BypassControlCommand(DEVICE_SET_TARGET_HUMIDITY_MODE,
-                                new ManagedDeviceBypassReq.SetTargetHumidity(targetHumidity));
+                                new SetTargetHumidity(targetHumidity));
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
                         int targetMistLevel = quantityCommand.intValue();
@@ -284,8 +287,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                             }
                         }
 
-                        sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new ManagedDeviceBypassReq.SetMode(MODE_MANUAL), false);
+                        sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE, new SetMode(MODE_MANUAL), false);
 
                         sendV2BypassControlCommand(DEVICE_SET_VIRTUAL_LEVEL,
                                 new SetLevel(0, DEVICE_LEVEL_TYPE_MIST, targetMistLevel));
@@ -316,7 +318,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                             return;
                         }
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new ManagedDeviceBypassReq.SetMode(devContraints.getProtocolMode(targetMode)));
+                                new SetMode(devContraints.getProtocolMode(targetMode)));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
                         if (!devContraints.nightLightModes.contains(targetMode)) {
@@ -340,7 +342,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 return; // should never hit
                         }
                         sendV2BypassControlCommand(DEVICE_SET_NIGHT_LIGHT_BRIGHTNESS,
-                                new ManagedDeviceBypassReq.SetNightLightBrightness(targetValue));
+                                new SetNightLightBrightness(targetValue));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();

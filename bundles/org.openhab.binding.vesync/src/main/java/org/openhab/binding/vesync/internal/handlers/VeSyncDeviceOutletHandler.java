@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.GetEnergyHistory;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryInfoSnapshot;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryResp;
@@ -138,7 +138,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                     long end = getTimestampForToday();
                     long start = end - SECONDS_IN_MONTH; // 30 days
                     responseEnergyHistory = sendV2BypassCommand(DEVICE_GET_ENEGERGY_HISTORY,
-                            new ManagedDeviceBypassReq.GetEnergyHistory(start, end));
+                            new GetEnergyHistory(start, end));
                 } catch (ParseException e) {
                     logger.error("Could not parse timestamp: {}", e.getMessage());
                 }

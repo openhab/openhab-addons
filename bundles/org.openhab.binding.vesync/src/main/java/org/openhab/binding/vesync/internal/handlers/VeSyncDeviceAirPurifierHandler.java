@@ -35,14 +35,17 @@ import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetLev
 import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetStatus;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetChildLock;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetLightDetection;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetManualSpeedLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetNightLight;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetPower;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetScreenSwitch;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetWorkMode;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier.V1StatusResp;
@@ -305,16 +308,14 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         switch (deviceFamily) {
                             case DEV_FAMILY_VITAL_100S:
                             case DEV_FAMILY_VITAL_200S:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new ManagedDeviceBypassReq.SetWorkModePayload(targetFanMode));
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetWorkMode(targetFanMode));
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/updateMode",
                                         new VeSyncRequestV1SetMode(deviceUuid, targetFanMode));
                                 break;
                             default:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new ManagedDeviceBypassReq.SetMode(targetFanMode));
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetMode(targetFanMode));
                         }
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
@@ -325,8 +326,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                             pollForUpdate();
                             return;
                         }
-                        sendV2BypassControlCommand(DEVICE_SET_NIGHT_LIGHT,
-                                new ManagedDeviceBypassReq.SetNightLight(targetNightLightMode));
+                        sendV2BypassControlCommand(DEVICE_SET_NIGHT_LIGHT, new SetNightLight(targetNightLightMode));
                         break;
                 }
             } else if (command instanceof QuantityType quantityCommand) {
@@ -344,10 +344,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         switch (deviceFamily) {
                             case DEV_FAMILY_VITAL_100S:
                             case DEV_FAMILY_VITAL_200S:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new ManagedDeviceBypassReq.SetWorkModePayload(MODE_MANUAL));
-                                sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                        new ManagedDeviceBypassReq.SetManualSpeedLevelPayload(requestedLevel));
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetWorkMode(MODE_MANUAL));
+                                sendV2BypassControlCommand(DEVICE_SET_LEVEL, new SetManualSpeedLevel(requestedLevel));
                                 break;
                             case DEV_FAMILY_PUR_131S:
                                 sendV1ControlCommand("131airPurifier/v1/device/updateMode",
@@ -356,8 +354,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                         new VeSyncRequestV1SetLevel(deviceUuid, requestedLevel));
                                 break;
                             default:
-                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new ManagedDeviceBypassReq.SetMode(MODE_MANUAL), false);
+                                sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE, new SetMode(MODE_MANUAL), false);
                                 sendV2BypassControlCommand(DEVICE_SET_LEVEL,
                                         new SetLevel(0, DEVICE_LEVEL_TYPE_WIND, requestedLevel));
                         }
