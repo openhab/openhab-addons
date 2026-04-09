@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DD-WRT Binding</name>
 	<description>Monitors and manages DD-WRT, OpenWrt, Tomato routers, and Linux devices via SSH.</description>
+	<connection>local</connection>
 
 </addon:addon>

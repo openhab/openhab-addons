@@ -21,7 +21,6 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_S
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRadioConfiguration> {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTRadioThingHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTRadioThingHandler.class);
 
     private DDWRTRadioConfiguration config = new DDWRTRadioConfiguration();
 
@@ -62,7 +61,8 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
     protected boolean initialize(DDWRTRadioConfiguration config) {
         this.config = config;
         if (config.interfaceId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "interfaceId is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-interfaceid");
             return false;
         }
         return true;

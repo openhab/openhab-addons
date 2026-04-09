@@ -54,7 +54,7 @@ public class DDWRTNetwork {
     private final Map<String, Integer> hostFailureCount = new ConcurrentHashMap<>();
     private final Map<String, Long> hostFailureTimes = new ConcurrentHashMap<>();
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetwork.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTNetwork.class);
 
     // Refresh listeners (e.g., discovery service)
     private final List<RefreshListener> refreshListeners = new CopyOnWriteArrayList<>();
@@ -281,7 +281,7 @@ public class DDWRTNetwork {
                     }
                 } catch (Exception e) {
                     // Track failure count and time for backoff
-                    int failureCount = hostFailureCount.merge(hostname, 1, Integer::sum);
+                    int failureCount = Objects.requireNonNull(hostFailureCount.merge(hostname, 1, Integer::sum));
                     hostFailureTimes.put(hostname, System.currentTimeMillis());
                     logger.debug("Retry failed for host {} (attempt {}): {}", hostname, failureCount, e.getMessage());
 

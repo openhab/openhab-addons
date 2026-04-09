@@ -78,7 +78,7 @@ public class SshLogFollower implements Runnable, AutoCloseable {
         this.sessionSupplier = Objects.requireNonNull(sessionSupplier);
         this.command = Objects.requireNonNull(command);
         this.devicePattern = devicePattern;
-        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshLogFollower.class.getName() + "." + hostname));
+        this.logger = LoggerFactory.getLogger(SshLogFollower.class.getName() + "." + hostname);
         this.parser = new SyslogParser(this.logger);
         this.isLogreadCommand = command.contains("logread") || command.contains("tail -F");
     }
@@ -158,14 +158,13 @@ public class SshLogFollower implements Runnable, AutoCloseable {
      */
     private String readStderr(ChannelExec ch) {
         try {
-            // Try to cast to InputStream - if it fails, we'll just return empty string
-            java.io.InputStream errStream = (java.io.InputStream) ch.getAsyncErr();
-            if (errStream != null) {
+            java.io.InputStream errStream = ch.getInvertedErr();
+            if (errStream != null && errStream.available() > 0) {
                 BufferedReader errReader = new BufferedReader(
                         new InputStreamReader(errStream, java.nio.charset.StandardCharsets.UTF_8));
                 StringBuilder stderr = new StringBuilder();
                 String line;
-                while ((line = errReader.readLine()) != null) {
+                while (errReader.ready() && (line = errReader.readLine()) != null) {
                     if (stderr.length() > 0) {
                         stderr.append("; ");
                     }
@@ -173,10 +172,8 @@ public class SshLogFollower implements Runnable, AutoCloseable {
                 }
                 return stderr.toString();
             }
-        } catch (ClassCastException e) {
-            // IoInputStream type issue - just return empty string
         } catch (Exception e) {
-            // Other stderr read errors - ignore and return empty string
+            // Stderr read errors - ignore and return empty string
         }
         return "";
     }

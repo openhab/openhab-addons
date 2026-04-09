@@ -78,10 +78,10 @@
 			<channel id="error-events" typeId="error-events"/>
 			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
 			<channel id="last-wireless-event" typeId="last-wireless-event"/>
-			<channel id="new-warning-event" typeId="new-warning-event"/>
-			<channel id="new-error-event" typeId="new-error-event"/>
-			<channel id="new-dhcp-event" typeId="new-dhcp-event"/>
-			<channel id="new-wireless-event" typeId="new-wireless-event"/>
+			<channel id="warning-event" typeId="warning-event"/>
+			<channel id="error-event" typeId="error-event"/>
+			<channel id="dhcp-event" typeId="dhcp-event"/>
+			<channel id="wireless-event" typeId="wireless-event"/>
 		</channels>
 
 		<properties>
@@ -536,27 +536,27 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="new-warning-event">
+	<channel-type id="warning-event">
 		<kind>trigger</kind>
-		<label>New Warning Event</label>
+		<label>Warning Event</label>
 		<description>Fires when a new warning-level syslog event is detected</description>
 	</channel-type>
 
-	<channel-type id="new-error-event">
+	<channel-type id="error-event">
 		<kind>trigger</kind>
-		<label>New Error Event</label>
+		<label>Error Event</label>
 		<description>Fires when a new error-level syslog event is detected</description>
 	</channel-type>
 
-	<channel-type id="new-dhcp-event">
+	<channel-type id="dhcp-event">
 		<kind>trigger</kind>
-		<label>New DHCP Event</label>
+		<label>DHCP Event</label>
 		<description>Fires when a DHCP lease, renewal, or release is detected</description>
 	</channel-type>
 
-	<channel-type id="new-wireless-event">
+	<channel-type id="wireless-event">
 		<kind>trigger</kind>
-		<label>New Wireless Event</label>
+		<label>Wireless Event</label>
 		<description>Fires when a wireless association or deassociation is detected</description>
 	</channel-type>
 

@@ -96,10 +96,10 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_ERROR_EVENTS = "error-events";
     public static final String CHANNEL_LAST_DHCP_EVENT = "last-dhcp-event";
     public static final String CHANNEL_LAST_WIRELESS_EVENT = "last-wireless-event";
-    public static final String CHANNEL_NEW_WARNING_EVENT = "new-warning-event";
-    public static final String CHANNEL_NEW_ERROR_EVENT = "new-error-event";
-    public static final String CHANNEL_NEW_DHCP_EVENT = "new-dhcp-event";
-    public static final String CHANNEL_NEW_WIRELESS_EVENT = "new-wireless-event";
+    public static final String CHANNEL_WARNING_EVENT = "warning-event";
+    public static final String CHANNEL_ERROR_EVENT = "error-event";
+    public static final String CHANNEL_DHCP_EVENT = "dhcp-event";
+    public static final String CHANNEL_WIRELESS_EVENT = "wireless-event";
 
     // List of all configuration parameters
     public static final String HOSTNAME = "hostname";

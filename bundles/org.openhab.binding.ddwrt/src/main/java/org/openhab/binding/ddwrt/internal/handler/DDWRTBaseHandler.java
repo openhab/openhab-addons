@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
         implements DDWRTThingUpdater, CacheChangeListener {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTBaseHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTBaseHandler.class);
 
     public DDWRTBaseHandler(Thing thing) {
         super(thing);
@@ -65,7 +65,7 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
         final Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null
                 || !(bridge.getHandler() instanceof DDWRTNetworkBridgeHandler)) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is missing or wrong type");
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.bridge-missing");
             return;
         }
 
@@ -77,7 +77,7 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
 
         if (initialize(config)) {
             if (bridge.getStatus() == OFFLINE) {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             } else {
                 updateStatus(ONLINE);
             }

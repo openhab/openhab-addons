@@ -199,14 +199,12 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * Returns the appropriate subclass. If SSH fails, returns null and tracks the failure.
      */
     public static @Nullable DDWRTBaseDevice createDevice(DDWRTNetworkCache cache, DDWRTDeviceConfiguration cfg) {
-        Logger log = Objects
-                .requireNonNull(LoggerFactory.getLogger(DDWRTBaseDevice.class.getName() + "." + cfg.hostname));
+        Logger log = LoggerFactory.getLogger(DDWRTBaseDevice.class.getName() + "." + cfg.hostname);
         SshAuthSession ssh = null;
         try {
             String host = Objects.requireNonNull(cfg.hostname);
             Duration timeout = Objects.requireNonNull(Duration.ofSeconds(5));
-            ssh = SshClientManager.getInstance().openAuthSession(host, cfg.port, cfg.user, cfg.password, null, null,
-                    timeout);
+            ssh = SshClientManager.getInstance().openAuthSession(host, cfg.port, cfg.user, cfg.password, timeout);
 
             // Capture MOTD for firmware/chipset detection first
             String motd = stripControlCodes(ssh.captureMotd());
@@ -612,9 +610,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
             // Create and start dedicated refresh thread
             refreshThreadStopped = false;
-            refreshThread = new Thread(new RefreshRunnable(refreshInterval), "DDWRT-Refresh-" + hostname);
-            refreshThread.setDaemon(true);
-            refreshThread.start();
+            Thread rt = new Thread(new RefreshRunnable(refreshInterval), "DDWRT-Refresh-" + hostname);
+            rt.setDaemon(true);
+            rt.start();
+            refreshThread = rt;
 
             logger.info("Started device refresh every {} seconds", refreshInterval);
         }
@@ -785,7 +784,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         DDWRTThingUpdater u = updater;
         if (u != null) {
             u.updateChannel("last-dhcp-event", new StringType(event.message));
-            u.fireTrigger("new-dhcp-event", event.message);
+            u.fireTrigger("dhcp-event", event.message);
         }
 
         // Invalidate caches so next periodic refresh picks up full state
@@ -840,7 +839,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         DDWRTThingUpdater u = updater;
         if (u != null) {
             u.updateChannel("last-wireless-event", new StringType(event.message));
-            u.fireTrigger("new-wireless-event", event.message);
+            u.fireTrigger("wireless-event", event.message);
         }
 
         // Try to parse AP-STA-CONNECTED/DISCONNECTED and update cache directly
@@ -955,7 +954,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         if (u != null) {
             u.updateChannel("warning-events", new DecimalType(warningEventCount));
             u.updateChannel("last-warning-event", new StringType(event.message));
-            u.fireTrigger("new-warning-event", event.message);
+            u.fireTrigger("warning-event", event.message);
         }
     }
 
@@ -968,7 +967,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         if (u != null) {
             u.updateChannel("error-events", new DecimalType(errorEventCount));
             u.updateChannel("last-error-event", new StringType(event.message));
-            u.fireTrigger("new-error-event", event.message);
+            u.fireTrigger("error-event", event.message);
         }
     }
 
@@ -1059,7 +1058,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             online = false;
             DDWRTThingUpdater u = updater;
             if (u != null) {
-                u.reportOffline("SSH session not available");
+                u.reportOffline("@text/offline.ssh-session-unavailable");
             }
             return;
         }
@@ -1772,7 +1771,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             String host = Objects.requireNonNull(config.hostname);
             Duration timeout = Objects.requireNonNull(Duration.ofSeconds(5));
             SshAuthSession newSession = SshClientManager.getInstance().openAuthSession(host, config.port, config.user,
-                    config.password, null, null, timeout);
+                    config.password, timeout);
 
             // Test the session
             SshRunner runner = newSession.createRunner();

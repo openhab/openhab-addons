@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTNetworkCache {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkCache.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTNetworkCache.class);
 
     private final Map<String, DDWRTBaseDevice> devicesByMac = new ConcurrentHashMap<>();
     private final Map<String, DDWRTWirelessClient> wirelessClientsByMac = new ConcurrentHashMap<>();
@@ -63,7 +63,9 @@ public class DDWRTNetworkCache {
      * The key should be a lowercase hostname (for MAC-randomizing clients) or normalized MAC.
      */
     public void addChangeListener(String key, CacheChangeListener listener) {
-        listenersByKey.computeIfAbsent(key.toLowerCase(Locale.ROOT), k -> new CopyOnWriteArrayList<>()).add(listener);
+        Objects.requireNonNull(
+                listenersByKey.computeIfAbsent(key.toLowerCase(Locale.ROOT), k -> new CopyOnWriteArrayList<>()))
+                .add(listener);
     }
 
     /**
@@ -313,6 +315,7 @@ public class DDWRTNetworkCache {
 
     public void putFirewallRule(String ruleId, DDWRTFirewallRule rule) {
         firewallRulesByRuleId.put(ruleId, rule);
+        notifyListenersForKey(ruleId);
     }
 
     public List<DDWRTFirewallRule> getFirewallRules() {

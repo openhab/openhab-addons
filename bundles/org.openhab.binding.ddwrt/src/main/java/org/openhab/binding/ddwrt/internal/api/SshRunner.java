@@ -77,7 +77,7 @@ public class SshRunner {
     public SshRunner(ClientSession session, Duration defaultTimeout, String hostname) {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
-        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshRunner.class.getName() + "." + hostname));
+        this.logger = LoggerFactory.getLogger(SshRunner.class.getName() + "." + hostname);
     }
 
     /**

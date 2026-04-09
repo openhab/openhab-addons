@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
-
-import java.util.Map;
-import java.util.Objects;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_LOAD;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_TEMP;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_IN;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_OUT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_REBOOT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_UPTIME;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_OUT;
 
 import javax.measure.quantity.Temperature;
 
@@ -49,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, DDWRTDeviceConfiguration> {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTDeviceThingHandler.class));
+    private final Logger logger = LoggerFactory.getLogger(DDWRTDeviceThingHandler.class);
 
     private DDWRTDeviceConfiguration config = new DDWRTDeviceConfiguration();
 
@@ -61,14 +67,15 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     protected boolean initialize(DDWRTDeviceConfiguration config) {
         this.config = config;
         if (isBlank(config.hostname)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname is required");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-hostname");
             return false;
         }
 
         // Try to find or create the device in the network
         DDWRTNetwork net = getNetwork();
         if (net == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not ready");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-not-ready");
             return false;
         }
 
@@ -78,7 +85,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             d = net.addOrUpdateDevice(config);
             if (d == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect to device at " + config.hostname);
+                        "@text/offline.comm-error-connect");
                 return false;
             }
             logger.debug("Successfully added device to network: {} (MAC: {})", config.hostname, d.getMac());
@@ -149,12 +156,10 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     @Override
     protected void updateProperties(@Nullable DDWRTBaseDevice device) {
         if (device != null) {
-            Map<String, String> props = editProperties();
-            props.put("mac", device.getMac());
-            props.put("model", device.getModel());
-            props.put("firmware", device.getFirmware());
-            props.put("chipset", device.getChipset());
-            updateProperties(props);
+            updateProperty("mac", device.getMac());
+            updateProperty("model", device.getModel());
+            updateProperty("firmware", device.getFirmware());
+            updateProperty("chipset", device.getChipset());
         }
     }
 
