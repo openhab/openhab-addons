@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.login;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthLoginWithAuthorizeCodeVeSyncResponseDetails} class is used as a DTO to hold the Vesync's API's
- * login response when a token is provided. It may inform that a region switch is required for the account.
+ * The {@link RegionSwitchResp} class is used as a DTO to hold the Vesync's API's
+ * response to a {@link org.openhab.binding.vesync.internal.dto.requests.login.RegionSwitchReq} request.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncAuthLoginWithAuthorizeCodeVeSyncResponseDetails {
+public class RegionSwitchResp {
 
     @SerializedName("currentRegion")
     public String currentRegion = "";

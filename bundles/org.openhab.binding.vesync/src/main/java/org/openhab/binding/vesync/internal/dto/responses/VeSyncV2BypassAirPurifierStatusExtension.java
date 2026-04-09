@@ -15,13 +15,15 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassPurifierStatus} is a Java class used as a DTO to hold the Vesync's API's common response
- * data, with regard's to an air purifier device.
+ * The {@link VeSyncV2BypassAirPurifierStatusExtension} is a Java class used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device's extensions capabilities..
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncV2BypassPurifierStatus extends VeSyncResponse {
+public class VeSyncV2BypassAirPurifierStatusExtension {
+    @SerializedName("schedule_count")
+    public int scheduleCount;
 
-    @SerializedName("result")
-    public VeSyncV2BypassPurifierStatusWrapper result;
+    @SerializedName("timer_remain")
+    public int timerRemain;
 }

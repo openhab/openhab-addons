@@ -10,16 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.login;
+
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncBaseRequest;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthTokenRequest} is a Java class used as a DTO to hold the login token request
+ * The {@link AuthTokenReq} class is used as a DTO to hold the login token request
  *
  * @author David Goodyear - Initial contribution for new Auth Handling
  */
-public class VeSyncAuthTokenRequest extends VeSyncBaseRequest {
+public class AuthTokenReq extends VeSyncBaseRequest {
 
     @SerializedName("email")
     public String email = "";
@@ -66,7 +68,7 @@ public class VeSyncAuthTokenRequest extends VeSyncBaseRequest {
     @SerializedName("sourceAppID")
     public String sourceAppID = "eldodkfj";
 
-    public VeSyncAuthTokenRequest(final String email, final String password, final String accountId) {
+    public AuthTokenReq(final String email, final String password, final String accountId) {
         this.method = "authByPWDOrOTM";
         traceId = String.valueOf(System.currentTimeMillis());
         this.email = email;

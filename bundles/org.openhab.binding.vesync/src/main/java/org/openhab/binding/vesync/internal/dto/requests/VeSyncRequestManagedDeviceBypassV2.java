@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestManagedDeviceBypassV2 extends VeSyncAuthenticatedRequest {
+public class VeSyncRequestManagedDeviceBypassV2 extends AuthenticatedReq {
 
     @SerializedName("deviceRegion")
     public String deviceRegion = "";

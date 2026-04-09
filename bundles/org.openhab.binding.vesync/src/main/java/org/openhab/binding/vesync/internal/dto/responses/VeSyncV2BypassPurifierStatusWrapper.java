@@ -15,18 +15,14 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthTokenResponse} class is used as a DTO to hold the Vesync's API's
- * response data from the API about the result of a token request.
+ * The {@link VeSyncV2BypassPurifierStatusWrapper} is a Java class used as a DTO to hold the Vesync's API's common
+ * response
+ * data, with regard's to an air purifier device, this is a wrapper layer for the actual response data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncAuthTokenResponse extends VeSyncResponse {
+public class VeSyncV2BypassPurifierStatusWrapper extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncAuthTokenResponseDetails result;
-
-    @Override
-    public String toString() {
-        return "VeSyncAuthTokenResponse [msg=" + getMsg() + ", result=" + result + "]";
-    }
+    public VeSyncV2BypassAirPurifierStatusDetails result;
 }

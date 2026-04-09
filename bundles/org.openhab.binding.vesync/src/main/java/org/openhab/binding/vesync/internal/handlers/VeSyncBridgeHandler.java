@@ -35,7 +35,7 @@ import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
@@ -271,7 +271,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     @Override
-    public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(final String url, final String macId, final AuthenticatedReq requestData)
             throws AuthenticationException, DeviceUnknownException {
         // This is common to all call's check the response code for token expiry, if the token has expired
         // then perform a new login before a final attempt. all errors such as invalid token or expired token all have

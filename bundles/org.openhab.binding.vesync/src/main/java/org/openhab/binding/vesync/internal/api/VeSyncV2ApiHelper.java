@@ -35,9 +35,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevicesPage;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDevicesPage;
@@ -136,7 +136,7 @@ public class VeSyncV2ApiHelper {
         }
     }
 
-    public String reqV2Authorized(String url, final String macId, final VeSyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(String url, final String macId, final AuthenticatedReq requestData)
             throws AuthenticationException, DeviceUnknownException {
         if (loggedInSession == null) {
             throw new AuthenticationException("User is not logged in");
@@ -167,12 +167,11 @@ public class VeSyncV2ApiHelper {
         return reqV1Authorized(url, requestData);
     }
 
-    public String reqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
-            throws AuthenticationException {
+    public String reqV1Authorized(final String url, final AuthenticatedReq requestData) throws AuthenticationException {
         return directReqV1Authorized(url, requestData);
     }
 
-    private String directReqV1Authorized(String url, final VeSyncAuthenticatedRequest requestData)
+    private String directReqV1Authorized(String url, final AuthenticatedReq requestData)
             throws AuthenticationException {
         try {
             final HttpClient client = httpClient;

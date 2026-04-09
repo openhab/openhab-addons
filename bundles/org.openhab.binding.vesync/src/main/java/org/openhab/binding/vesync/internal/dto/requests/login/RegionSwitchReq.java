@@ -10,16 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.login;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthLoginWithAuthorizeCodeVeSync} is a Java class used as a DTO to hold the login token request
+ * The {@link AuthCodeReq} class is used as a DTO to perform a regional switch of where the
+ * user is logging in.
  *
  * @author David Goodyear - Initial contribution for new Auth Handling
  */
-public class VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange extends VeSyncAuthLoginWithAuthorizeCodeVeSync {
+public class RegionSwitchReq extends AuthCodeReq {
 
     @SerializedName("regionChange")
     public String regionChange = "lastRegion";
@@ -27,8 +28,7 @@ public class VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange extends VeSyncAu
     @SerializedName("bizToken")
     public String bizToken = "";
 
-    public VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange(final String authorizeCode, final String countryCode,
-            final String bizToken) {
+    public RegionSwitchReq(final String authorizeCode, final String countryCode, final String bizToken) {
         super(authorizeCode, "");
         this.bizToken = bizToken;
         this.userCountryCode = countryCode;

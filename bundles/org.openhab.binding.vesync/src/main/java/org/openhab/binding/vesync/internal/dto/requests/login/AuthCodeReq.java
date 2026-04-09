@@ -10,16 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.login;
+
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncBaseRequest;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthLoginWithAuthorizeCodeVeSync} is a Java class used as a DTO to hold the login token request
+ * The {@link AuthCodeReq} class is used as a DTO to hold the login authorization code request
  *
  * @author David Goodyear - Initial contribution for new Auth Handling
  */
-public class VeSyncAuthLoginWithAuthorizeCodeVeSync extends VeSyncBaseRequest {
+public class AuthCodeReq extends VeSyncBaseRequest {
 
     @SerializedName("authorizeCode")
     public String authorizeCode;
@@ -57,7 +59,7 @@ public class VeSyncAuthLoginWithAuthorizeCodeVeSync extends VeSyncBaseRequest {
     @SerializedName("userCountryCode")
     public String userCountryCode = "US";
 
-    public VeSyncAuthLoginWithAuthorizeCodeVeSync(final String authorizeCode, final String accountId) {
+    public AuthCodeReq(final String authorizeCode, final String accountId) {
         this.method = "loginByAuthorizeCode4Vesync";
         traceId = String.valueOf(System.currentTimeMillis());
         this.authorizeCode = authorizeCode;

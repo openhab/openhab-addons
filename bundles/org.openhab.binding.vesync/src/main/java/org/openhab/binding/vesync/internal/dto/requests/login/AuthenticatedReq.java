@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.login;
 
+import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequest;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthenticatedRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
+ * The {@link AuthenticatedReq} is class used as a DTO to hold the Vesync's API's common request data, for a request
+ * that is to be performed using authenticated user credentials.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncAuthenticatedRequest extends VeSyncRequest {
+public class AuthenticatedReq extends VeSyncRequest {
 
     @SerializedName("accountID")
     public String accountId;
@@ -30,10 +32,10 @@ public class VeSyncAuthenticatedRequest extends VeSyncRequest {
     @SerializedName("token")
     public String token;
 
-    public VeSyncAuthenticatedRequest() {
+    public AuthenticatedReq() {
     }
 
-    public VeSyncAuthenticatedRequest(final VeSyncUserSession user) throws AuthenticationException {
+    public AuthenticatedReq(final VeSyncUserSession user) throws AuthenticationException {
         if (user == null) {
             throw new AuthenticationException("User is not logged in");
         }

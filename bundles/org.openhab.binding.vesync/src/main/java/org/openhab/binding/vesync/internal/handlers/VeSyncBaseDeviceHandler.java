@@ -33,8 +33,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
@@ -430,11 +430,11 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request) {
+    protected final String sendV1ControlCommand(final String urlPath, final AuthenticatedReq request) {
         return sendV1ControlCommand(urlPath, request, true);
     }
 
-    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request,
+    protected final String sendV1ControlCommand(final String urlPath, final AuthenticatedReq request,
             final boolean readbackDevice) {
         final String result = sendV1Command(urlPath, request);
         if (!EMPTY_STRING.equals(result) && readbackDevice) {
@@ -443,7 +443,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    public final String sendV1Command(final String urlPath, final VeSyncAuthenticatedRequest request) {
+    public final String sendV1Command(final String urlPath, final AuthenticatedReq request) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;

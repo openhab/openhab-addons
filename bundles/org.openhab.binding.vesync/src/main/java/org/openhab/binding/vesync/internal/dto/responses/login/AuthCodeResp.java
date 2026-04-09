@@ -10,20 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.login;
+
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse} class is used as a DTO to hold the Vesync's API's
- * login response.
+ * The {@link AuthCodeResp} class is used as a DTO to hold the Vesync's API's
+ * response to a {@link org.openhab.binding.vesync.internal.dto.requests.login.AuthCodeReq} request.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse extends VeSyncResponse {
+public class AuthCodeResp extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncAuthLoginWithAuthorizeCodeVeSyncResponseDetails result;
+    public RegionSwitchResp result;
 
     @Override
     public String toString() {

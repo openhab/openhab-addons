@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 
@@ -23,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestManagedDevicesPage extends VeSyncAuthenticatedRequest {
+public class VeSyncRequestManagedDevicesPage extends AuthenticatedReq {
 
     @SerializedName("pageNo")
     public String pageNo;

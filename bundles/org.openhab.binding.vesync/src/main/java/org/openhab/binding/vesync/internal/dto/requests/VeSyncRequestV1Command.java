@@ -13,6 +13,7 @@
 package org.openhab.binding.vesync.internal.dto.requests;
 
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1Command extends VeSyncAuthenticatedRequest {
+public class VeSyncRequestV1Command extends AuthenticatedReq {
 
     @SerializedName("uuid")
     public String uuid = null;
