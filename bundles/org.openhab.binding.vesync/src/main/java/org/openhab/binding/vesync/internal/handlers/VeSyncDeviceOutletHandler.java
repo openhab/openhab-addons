@@ -25,7 +25,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryInfoSnapshot;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.StatusResp;
@@ -92,7 +93,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
             if (command instanceof OnOffType) {
                 if (channelUID.getId().equals(DEVICE_CHANNEL_ENABLED)) {
                     sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                            new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON), 0));
+                            new ManagedDeviceBypassReq.SetSwitchPayload(command.equals(OnOffType.ON), 0));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();
@@ -131,14 +132,13 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
             boolean cachedDataUsed = responses != null;
             if (responses == null) {
                 logger.trace("Requesting fresh response");
-                responseStatus = sendV2BypassCommand(DEVICE_GET_OUTLET_STATUS,
-                        new VeSyncRequestManagedDeviceBypassV2.EmptyPayload());
+                responseStatus = sendV2BypassCommand(DEVICE_GET_OUTLET_STATUS, new EmptyPayload());
 
                 try {
                     long end = getTimestampForToday();
                     long start = end - SECONDS_IN_MONTH; // 30 days
                     responseEnergyHistory = sendV2BypassCommand(DEVICE_GET_ENEGERGY_HISTORY,
-                            new VeSyncRequestManagedDeviceBypassV2.GetEnergyHistory(start, end));
+                            new ManagedDeviceBypassReq.GetEnergyHistory(start, end));
                 } catch (ParseException e) {
                     logger.error("Could not parse timestamp: {}", e.getMessage());
                 }

@@ -10,27 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.v1;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1SetStatus} is the Java class as a DTO define a V1 Set Status command for the Vesync
+ * The {@link VeSyncRequestV1SetMode} is the Java class as a DTO define a V1 Set Mode command for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1SetStatus extends VeSyncRequestV1Command {
+public class VeSyncRequestV1SetMode extends VeSyncRequestV1Command {
 
-    @SerializedName("status")
-    public String status = null;
+    @SerializedName("mode")
+    public String mode = null;
 
-    public VeSyncRequestV1SetStatus(final String deviceUuid, final String status) {
+    public VeSyncRequestV1SetMode(final String deviceUuid, final String mode) {
         super(deviceUuid);
-        this.status = status;
+        this.mode = mode;
     }
 
-    public String getStatus() {
-        return status;
+    public String getMode() {
+        return mode;
     }
 }

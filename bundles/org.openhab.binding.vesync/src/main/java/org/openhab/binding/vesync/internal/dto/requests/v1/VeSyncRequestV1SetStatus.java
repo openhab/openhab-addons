@@ -10,27 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.v1;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1SetLevel} is the Java class as a DTO define a V1 Set Level command for the Vesync
+ * The {@link VeSyncRequestV1SetStatus} is the Java class as a DTO define a V1 Set Status command for the Vesync
  * API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1SetLevel extends VeSyncRequestV1Command {
+public class VeSyncRequestV1SetStatus extends VeSyncRequestV1Command {
 
-    @SerializedName("level")
-    public Integer level = null;
+    @SerializedName("status")
+    public String status = null;
 
-    public VeSyncRequestV1SetLevel(final String deviceUuid, final int level) {
+    public VeSyncRequestV1SetStatus(final String deviceUuid, final String status) {
         super(deviceUuid);
-        this.level = level;
+        this.status = status;
     }
 
-    public Integer getLevel() {
-        return level;
+    public String getStatus() {
+        return status;
     }
 }

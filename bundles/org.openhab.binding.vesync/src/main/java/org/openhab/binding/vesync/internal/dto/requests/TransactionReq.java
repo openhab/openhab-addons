@@ -17,11 +17,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncBaseRequest} is a Java class used as a DTO to hold the lowest common aspects of a VeSync Request
+ * The {@link TransactionReq} class is used as a DTO to hold the lowest common aspects of a VeSync Request
+ * which specifies for example the trace id allowing requests and responses to be matched.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncBaseRequest {
+public class TransactionReq {
 
     public transient HttpMethod httpMethod;
 
@@ -34,7 +35,7 @@ public class VeSyncBaseRequest {
     @SerializedName("method")
     public String method = "";
 
-    public VeSyncBaseRequest() {
+    public TransactionReq() {
         traceId = String.valueOf(System.currentTimeMillis());
         httpMethod = HttpMethod.POST;
     }

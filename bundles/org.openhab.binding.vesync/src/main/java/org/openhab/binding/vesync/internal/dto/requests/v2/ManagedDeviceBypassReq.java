@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.v2;
 
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestManagedDeviceBypassV2} is a Java class used as a DTO to hold the Vesync's API's common
+ * The {@link ManagedDeviceBypassReq} class is used as a DTO to hold the Vesync's API's common
  * request data for V2 ByPass payloads.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestManagedDeviceBypassV2 extends AuthenticatedReq {
+public class ManagedDeviceBypassReq extends AuthenticatedReq {
 
     @SerializedName("deviceRegion")
     public String deviceRegion = "";
@@ -58,53 +58,6 @@ public class VeSyncRequestManagedDeviceBypassV2 extends AuthenticatedReq {
 
         @SerializedName("subDeviceNo")
         public int subDeviceNo = 0;
-    }
-
-    public static class EmptyPayload {
-    }
-
-    public static class SetLightDetectionPayload extends EmptyPayload {
-
-        public SetLightDetectionPayload(final boolean enabled) {
-            lightDetectionSwitch = enabled ? 1 : 0;
-        }
-
-        @SerializedName("lightDetectionSwitch")
-        public int lightDetectionSwitch = -1;
-    }
-
-    public static class SetPowerPayload extends EmptyPayload {
-
-        public SetPowerPayload(final boolean enabled, final int switchIdx) {
-            this.powerSwitch = enabled ? 1 : 0;
-            this.switchIdx = switchIdx;
-        }
-
-        @SerializedName("switchIdx")
-        public int switchIdx = -1;
-
-        @SerializedName("powerSwitch")
-        public int powerSwitch = -1;
-    }
-
-    public static class SetChildLockPayload extends EmptyPayload {
-
-        public SetChildLockPayload(final boolean enabled) {
-            this.childLockSwitch = enabled ? 1 : 0;
-        }
-
-        @SerializedName("childLockSwitch")
-        public int childLockSwitch = -1;
-    }
-
-    public static class SetScreenSwitchPayload extends EmptyPayload {
-
-        public SetScreenSwitchPayload(final boolean enabled) {
-            this.screenSwitch = enabled ? 1 : 0;
-        }
-
-        @SerializedName("screenSwitch")
-        public int screenSwitch = -1;
     }
 
     public static class SetManualSpeedLevelPayload extends EmptyPayload {
@@ -248,7 +201,7 @@ public class VeSyncRequestManagedDeviceBypassV2 extends AuthenticatedReq {
         public long end = 0;
     }
 
-    public VeSyncRequestManagedDeviceBypassV2() {
+    public ManagedDeviceBypassReq() {
         method = "bypassV2";
     }
 }

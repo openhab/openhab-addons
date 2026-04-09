@@ -33,8 +33,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
@@ -407,8 +408,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param payload - The payload to send in within the V2 bypass command
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassControlCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+    protected final String sendV2BypassControlCommand(final String method, final EmptyPayload payload) {
         return sendV2BypassControlCommand(method, payload, true);
     }
 
@@ -421,8 +421,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      *            should be run.
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassControlCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload, final boolean readbackDevice) {
+    protected final String sendV2BypassControlCommand(final String method, final EmptyPayload payload,
+            final boolean readbackDevice) {
         final String result = sendV2BypassCommand(method, payload);
         if (!EMPTY_STRING.equals(result) && readbackDevice) {
             performReadbackPoll();
@@ -479,14 +479,13 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param payload - The payload to send in within the V2 bypass command
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+    protected final String sendV2BypassCommand(final String method, final EmptyPayload payload) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
         }
 
-        VeSyncRequestManagedDeviceBypassV2 readReq = new VeSyncRequestManagedDeviceBypassV2();
+        ManagedDeviceBypassReq readReq = new ManagedDeviceBypassReq();
         readReq.payload.method = method;
         readReq.payload.data = payload;
         readReq.deviceId = deviceId;

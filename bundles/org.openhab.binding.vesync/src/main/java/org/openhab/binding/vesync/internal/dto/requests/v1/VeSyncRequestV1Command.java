@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.v1;
 
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;

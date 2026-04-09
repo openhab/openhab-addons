@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests.login;
 
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncBaseRequest;
+import org.openhab.binding.vesync.internal.dto.requests.TransactionReq;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution for new Auth Handling
  */
-public class AuthTokenReq extends VeSyncBaseRequest {
+public class AuthTokenReq extends TransactionReq {
 
     @SerializedName("email")
     public String email = "";

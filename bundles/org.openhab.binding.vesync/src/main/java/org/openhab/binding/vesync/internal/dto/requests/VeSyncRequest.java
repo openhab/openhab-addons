@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequest extends VeSyncBaseRequest {
+public class VeSyncRequest extends TransactionReq {
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";

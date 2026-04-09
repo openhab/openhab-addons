@@ -10,27 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.v2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestV1SetMode} is the Java class as a DTO define a V1 Set Mode command for the Vesync
- * API.
+ * The {@link SetChildLock} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set a child lock switch.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestV1SetMode extends VeSyncRequestV1Command {
+public class SetChildLock extends EmptyPayload {
 
-    @SerializedName("mode")
-    public String mode = null;
-
-    public VeSyncRequestV1SetMode(final String deviceUuid, final String mode) {
-        super(deviceUuid);
-        this.mode = mode;
+    public SetChildLock(final boolean enabled) {
+        this.childLockSwitch = enabled ? 1 : 0;
     }
 
-    public String getMode() {
-        return mode;
-    }
+    @SerializedName("childLockSwitch")
+    public int childLockSwitch = -1;
 }

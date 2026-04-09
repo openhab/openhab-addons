@@ -35,9 +35,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.requests.management.DevicesInfoPageReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.login.UserSession;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
@@ -152,7 +152,7 @@ public class VeSyncV2ApiHelper {
         requestData.applyAuthentication(loggedInSession);
 
         // Apply specific addressing parameters
-        if (requestData instanceof VeSyncRequestManagedDeviceBypassV2 veSyncRequestManagedDeviceBypassV2) {
+        if (requestData instanceof ManagedDeviceBypassReq veSyncRequestManagedDeviceBypassV2) {
             final DeviceInfo deviceData = macLookup.get(macId);
             if (deviceData == null) {
                 throw new DeviceUnknownException(String.format("Device not discovered with mac id: %s", macId));
