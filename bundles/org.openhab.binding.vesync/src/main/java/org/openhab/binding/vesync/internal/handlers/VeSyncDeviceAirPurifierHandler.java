@@ -36,9 +36,9 @@ import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetStatus;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier.V1StatusResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier.V2StatusResp;
-import org.openhab.binding.vesync.internal.dto.responses.v1.VeSyncV1AirPurifierDeviceDetailsResponse;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier.V1StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier.V2StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -391,7 +391,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         String response;
-        VeSyncV1AirPurifierDeviceDetailsResponse purifierStatus;
+        StatusResp purifierStatus;
         synchronized (pollLock) {
             response = cachedResponse.getValue();
             boolean cachedDataUsed = response != null;
@@ -407,7 +407,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            purifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV1AirPurifierDeviceDetailsResponse.class);
+            purifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
 
             if (purifierStatus == null) {
                 return;
