@@ -114,7 +114,7 @@ import org.slf4j.LoggerFactory;
 public class Clip2ThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM,
-            THING_TYPE_ZONE, THING_TYPE_AREA);
+            THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
 
@@ -232,6 +232,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             thisResource = new Resource(ResourceType.ROOM);
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ZONE);
+        } else if (THING_TYPE_SERVICE_GROUP.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.SERVICE_GROUP);
         } else if (THING_TYPE_AREA.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.MOTION_AREA_CONFIGURATION);
         } else {
