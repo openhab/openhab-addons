@@ -902,7 +902,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
             return refreshSoftwareStatusUI();
         } catch (AssetNotLoadedException e) {
-            logger.debug("updateUpdateStatus() error: {}", e.getMessage());
+            logger.debug("getCombinedSoftwareStatus() error: {}", e.getMessage());
         }
         return null;
     }
@@ -1159,8 +1159,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         } else if (doDevices) {
             afterUpdateTask = scheduler.schedule(() -> {
                 /*
-                 * Schedule a task to clear the v1 'any' device update status after a delay to give actual devices time
-                 * to notify their own update status via v2 SSE events and thus quickly update the UI.
+                 * Schedule a task to clear the v1 'any' device update status after a delay to give actual devices
+                 * time to notify their own update status via v2 SSE events and thus quickly update the UI.
                  */
                 putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, null);
                 refreshSoftwareStatusUI();
