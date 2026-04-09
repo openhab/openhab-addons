@@ -96,8 +96,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
     private static final int RECONNECT_DELAY_SECONDS = 10;
     private static final int RECONNECT_MAX_TRIES = 5;
-    private static final int MINUTES_LOW = 5;
-    private static final int MINUTES_HIGH = 60;
+    private static final int POLL_INTERVAL_LOW = 5;
+    private static final int POLL_INTERVAL_HIGH = 60;
     private static final int UPDATE_DURATION_SECONDS = 90;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
@@ -145,7 +145,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Map of software update resource id's and status. Used to track the update status of child device
      * things during update operations.
      */
-    private final Map<String, UpdateStatusV2> softwareUpdateStatusMap = new ConcurrentHashMap<>();
+    private final Map<String, UpdateStatusV2> softwareStatusMap = new ConcurrentHashMap<>();
 
     private @Nullable Clip2Bridge clip2Bridge;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
@@ -155,7 +155,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable Future<?> checkConnectionTask;
     private @Nullable Future<?> updateOnlineStateTask;
     private @Nullable ScheduledFuture<?> scheduledUpdateTask;
-    private @Nullable Future<?> updateUpdateStatusTask;
+    private @Nullable Future<?> pollSoftwareStatusTask;
     private @Nullable Future<?> afterUpdateTask;
 
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
@@ -324,13 +324,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             cancelTask(checkConnectionTask, true);
             cancelTask(updateOnlineStateTask, true);
             cancelTask(scheduledUpdateTask, true);
-            cancelTask(updateUpdateStatusTask, true);
+            cancelTask(pollSoftwareStatusTask, true);
             cancelTask(afterUpdateTask, true);
             updateAutomationChannelsTask = null;
             checkConnectionTask = null;
             updateOnlineStateTask = null;
             scheduledUpdateTask = null;
-            updateUpdateStatusTask = null;
+            pollSoftwareStatusTask = null;
             afterUpdateTask = null;
             synchronized (resourcesEventTasks) {
                 resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
@@ -350,7 +350,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             if (Objects.nonNull(disco)) {
                 disco.abortScan();
             }
-            softwareUpdateStatusMap.clear();
+            softwareStatusMap.clear();
         }
     }
 
@@ -576,8 +576,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes offline. Schedule a reconnection.
      */
     public void onConnectionOffline() {
-        cancelTask(updateUpdateStatusTask, false);
-        updateUpdateStatusTask = null;
+        cancelTask(pollSoftwareStatusTask, false);
+        pollSoftwareStatusTask = null;
         if (assetsLoaded) {
             cancelTask(checkConnectionTask, false);
             checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
@@ -589,9 +589,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes online. Schedule a general state update.
      */
     public void onConnectionOnline() {
-        cancelTask(updateUpdateStatusTask, false);
-        // use an initial updateUpdateStatusTask delay of 30 seconds
-        updateUpdateStatusTask = scheduler.schedule(() -> updateUpdateStatus(), 30, TimeUnit.SECONDS);
+        cancelTask(pollSoftwareStatusTask, false);
+        // use an initial pollSoftwareStatusTask delay of 30 seconds
+        pollSoftwareStatusTask = scheduler.schedule(() -> pollSoftwareStatus(), 30, TimeUnit.SECONDS);
         cancelTask(updateOnlineStateTask, false);
         updateOnlineStateTask = scheduler.schedule(() -> updateOnlineState(), 0, TimeUnit.MILLISECONDS);
     }
@@ -874,26 +874,37 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Task called periodically on a scheduler thread to make a bridge v1 API call (which continues to be
-     * supported on BSB002 and BSB003 models) to read and update the software update status. Updates the
-     * thing's firmware update status property and also, if it is online, updates its status info description
-     * text (allows displaying a dynamic info badge in Main UI). The task reschedules itself with a short
-     * delay if an update is currently installing or the status is unknown (to optimise responsiveness), and
-     * otherwise with a long delay (to reduce unnecessary calls to the bridge).
+     * supported on BSB002 and BSB003 models) to read and update the software update status. The task
+     * reschedules itself with a short delay if an update is currently installing or the status is unknown
+     * (to optimise responsiveness), and otherwise with a long delay (to reduce unnecessary calls to the
+     * bridge).
      */
-    private void updateUpdateStatus() {
-        UpdateStatusV2 combinedStatus = null;
+    private void pollSoftwareStatus() {
+        UpdateStatusV2 combinedStatus = getCombinedSoftwareStatus();
+        Future<?> task = pollSoftwareStatusTask;
+        if (task != null && !task.isCancelled()) {
+            int delay = UpdateStatusV2.INSTALLING == combinedStatus ? POLL_INTERVAL_LOW : POLL_INTERVAL_HIGH;
+            pollSoftwareStatusTask = scheduler.schedule(() -> pollSoftwareStatus(), delay, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * Read the update status of the bridge and its devices, update the map of all device software update statuses,
+     * and update the bridge's firmware update status to the maximum of all device software update statuses (including
+     * itself). Returns the overall maximum update enum value of the bridge and all devices, or null if it cannot
+     * be read.
+     * 
+     * @return the overall maximum update enum value of the bridge and all devices, or null if it cannot be read.
+     */
+    private @Nullable UpdateStatusV2 getCombinedSoftwareStatus() {
         try {
             Map<String, @Nullable UpdateStatusV2> statusMap = getClip2Bridge().getUpdateStatusMap();
-            statusMap.entrySet().forEach(e -> updateSoftwareUpdateStatusMap(e.getKey(), e.getValue()));
-            combinedStatus = updateBridgeUpdateStatus();
+            statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
+            return refreshSoftwareStatusUI();
         } catch (AssetNotLoadedException e) {
             logger.debug("updateUpdateStatus() error: {}", e.getMessage());
         }
-        Future<?> task = updateUpdateStatusTask;
-        if (task != null && !task.isCancelled()) {
-            int delay = UpdateStatusV2.INSTALLING == combinedStatus ? MINUTES_LOW : MINUTES_HIGH;
-            updateUpdateStatusTask = scheduler.schedule(() -> updateUpdateStatus(), delay, TimeUnit.MINUTES);
-        }
+        return null;
     }
 
     /**
@@ -902,34 +913,41 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * 
      * @return the maximum update status of the bridge and all devices.
      */
-    private void updateSoftwareUpdateStatusMap(String id, @Nullable UpdateStatusV2 status) {
+    private void putSoftwareStatus(String id, @Nullable UpdateStatusV2 status) {
         if (status == null || status == UpdateStatusV2.NO_UPDATE) {
-            softwareUpdateStatusMap.remove(id);
+            softwareStatusMap.remove(id);
         } else {
-            softwareUpdateStatusMap.put(id, status);
+            softwareStatusMap.put(id, status);
         }
     }
 
     /**
-     * Update the bridge's firmware update status to the maximum of all device software update statuses
+     * Refresh the bridge's UI firmware update status to the maximum of all device software update statuses
      * (including itself). Updates the firmware update state property and the status info description.
      * 
      * @return the overall maximum update enum value of the bridge and all devices.
      */
-    private UpdateStatusV2 updateBridgeUpdateStatus() {
-        UpdateStatusV2 overall = softwareUpdateStatusMap.values().stream().max(UpdateStatusV2::compareTo)
+    private UpdateStatusV2 refreshSoftwareStatusUI() {
+        UpdateStatusV2 status = softwareStatusMap.values().stream().max(UpdateStatusV2::compareTo)
                 .orElse(UpdateStatusV2.NO_UPDATE);
 
-        String property = overall == UpdateStatusV2.NO_UPDATE ? null : overall.toString();
-        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
+        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
 
-        if (thing.getStatus() == ThingStatus.ONLINE
-                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = overall == UpdateStatusV2.NO_UPDATE ? null : overall.i18nKey();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            switch (status) {
+                case INSTALLING:
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    break;
+                case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    break;
+                default:
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                    break;
+            }
         }
 
-        return overall;
+        return status;
     }
 
     /**
@@ -1020,13 +1038,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public boolean onResources(List<Resource> resources) {
         boolean requireUpdateChannels = false;
-        boolean updateBridgeUpdateStatus = false;
+        boolean updateSoftwareStatusUI = false;
         for (Resource resource : resources) {
             switch (resource.getType()) {
 
                 case DEVICE_SOFTWARE_UPDATE:
-                    updateSoftwareUpdateStatusMap(resource.getId(), resource.getUpdateStatus());
-                    updateBridgeUpdateStatus = true;
+                    putSoftwareStatus(resource.getId(), resource.getUpdateStatus());
+                    updateSoftwareStatusUI = true;
                     break;
 
                 case BEHAVIOR_INSTANCE:
@@ -1060,8 +1078,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     break;
             }
         }
-        if (updateBridgeUpdateStatus) {
-            updateBridgeUpdateStatus();
+        if (updateSoftwareStatusUI) {
+            refreshSoftwareStatusUI();
         }
         return requireUpdateChannels;
     }
@@ -1076,9 +1094,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Send a command to install a software update. If the command is accepted, the bridge will go offline and
-     * come back online once the installation is complete. So we schedule a task to sleep for a certain time
-     * and then start checking if the bridge is online again.
+     * Send a command to install a software update. The command will only be sent if the bridge is online and the update
+     * status is READY_TO_INSTALL.
      * 
      * @return a either an error message or a message of successful start of the update process.
      */
@@ -1087,12 +1104,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.warn("installUpdate() cannot be executed: offline");
             return getText("install.update.error.offline");
         }
-        String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
-        if (firmware == null) {
-            logger.warn("installUpdate() cannot be executed: state unknown");
-            return getText("install.update.error.state-unknown");
-        }
-        UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+        UpdateStatusV2 status = getCombinedSoftwareStatus();
         if (status == null) {
             logger.warn("installUpdate() cannot be executed: state unknown");
             return getText("install.update.error.state-unknown");
@@ -1101,8 +1113,57 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.warn("installUpdate() cannot be executed: not ready");
             return getText("install.update.error.not-ready");
         }
-        // schedule the update task asynchronously
-        scheduler.submit(this::installUpdateTask);
+
+        // bridge goes offline if it is updating itself; whereas if ONLY updating devices it stays online
+        UpdateStatusV2 installingStatus = UpdateStatusV2.INSTALLING;
+        String installingKey = installingStatus.i18nKey();
+        boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
+        if (doBridge) {
+            putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+        }
+
+        boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
+        if (doDevices) {
+            putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
+            if (!doBridge) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            }
+        }
+
+        // update the UI to give feedback to the user that an update is starting
+        refreshSoftwareStatusUI();
+
+        try {
+            getClip2Bridge().installUpdate();
+        } catch (IOException | AssetNotLoadedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("installUpdate() error: {}", e.getMessage(), e);
+            } else {
+                logger.warn("installUpdate() error: {}", e.getMessage());
+            }
+            return getText("install.update.error.install-failed");
+        }
+
+        cancelTask(afterUpdateTask, false);
+        if (doBridge) {
+            afterUpdateTask = scheduler.schedule(() -> {
+                /*
+                 * Schedule a first check after a delay to give the bridge time to go offline and update itself.
+                 * Note: checkConnection() loops every minute thereafter until the bridge comes back online
+                 */
+                checkConnection();
+            }, UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
+        } else if (doDevices) {
+            afterUpdateTask = scheduler.schedule(() -> {
+                /*
+                 * Schedule a task to clear the v1 'any' device update status after a delay to give actual devices time
+                 * to notify their own update status via v2 SSE events and thus quickly update the UI.
+                 */
+                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, null);
+                refreshSoftwareStatusUI();
+            }, 5, TimeUnit.SECONDS);
+        }
         return getText("install.update.success");
     }
 
@@ -1115,25 +1176,5 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private String getText(String key) {
         String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
         return result == null ? key : result;
-    }
-
-    /**
-     * Inner software update task called on a thread.
-     */
-    private void installUpdateTask() {
-        try {
-            cancelTask(afterUpdateTask, false);
-            softwareUpdateStatusMap.put(BridgeConfig.BRIDGE, UpdateStatusV2.INSTALLING);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, UpdateStatusV2.INSTALLING.i18nKey());
-            getClip2Bridge().installUpdate();
-        } catch (IOException | AssetNotLoadedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("installUpdate() error: {}", e.getMessage(), e);
-            } else {
-                logger.warn("installUpdate() error: {}", e.getMessage());
-            }
-        } finally {
-            afterUpdateTask = scheduler.schedule(() -> checkConnection(), UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
-        }
     }
 }

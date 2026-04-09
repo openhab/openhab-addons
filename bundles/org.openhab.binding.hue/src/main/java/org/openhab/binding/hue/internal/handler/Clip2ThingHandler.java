@@ -809,7 +809,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResourceToCache(resource);
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
-                        updateUpdateStatus(resource);
+                        refreshSoftwareStatusUI(resource);
                         break;
                     case LIGHT:
                         if (!updateLightPropertiesDone) {
@@ -1655,53 +1655,46 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Read the update status of the thing from the given resource and update its property accordingly. If
-     * the ThingStatus is ONLINE and ThingStatusDetail is NONE, then setting a description text causes
-     * a dynamic info badge to be displayed in Main UI.
+     * Read the update status of the thing from the given resource and update its property and status accordingly.
      */
-    private void updateUpdateStatus(Resource resource) {
-        UpdateStatusV2 updateStatus = resource.getUpdateStatus();
-        if (updateStatus == null) {
-            updateStatus = UpdateStatusV2.NO_UPDATE;
-        }
-        switch (updateStatus) {
-            case INSTALLING:
-                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                // overridden updateStatus() method below sets description based on the firmware property
+    private void refreshSoftwareStatusUI(Resource resource) {
+        UpdateStatusV2 status = resource.getUpdateStatus();
+        if (status != null) {
+            thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
+            // the updateStatus() override below takes care of setting the status detail and description
+            if (status == UpdateStatusV2.INSTALLING) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
-                break;
-            case READY_TO_INSTALL, UPDATE_AVAILABLE, UPDATE_PENDING:
-                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, updateStatus.toString());
-                // overridden updateStatus() method below sets description based on the firmware property
+            } else {
                 updateStatus(ThingStatus.ONLINE);
-                break;
-            default:
-                thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, null);
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-                break;
+            }
         }
     }
 
     /**
      * Override method: Updates the thing status based on the given status, status detail, and description. If the
-     * status is ONLINE the status detail is NONE and the firmware property indicates that an update is available,
-     * then the description is overridden with the respective update state's translatable text. If the status detail
-     * is FIRMWARE_UPDATING, then the description is overridden with the translatable 'installing update' text. In
-     * all other cases, the given status, status detail, and description are used unchanged.
+     * status is ONLINE and the firmware property indicates that an update is available, then the description is
+     * overridden with the respective update state's translatable text. If the status detail is FIRMWARE_UPDATING,
+     * then the description is overridden with the translatable 'installing update' text. In all other cases,
+     * the given status, status detail, and description are used unchanged.
      */
     @Override
-    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail statusDetail, @Nullable String description) {
-        if (thingStatus == ThingStatus.ONLINE && statusDetail == ThingStatusDetail.NONE) {
+    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail detail, @Nullable String description) {
+        if (thingStatus == ThingStatus.ONLINE || detail == ThingStatusDetail.FIRMWARE_UPDATING) {
             String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
-            UpdateStatusV2 updateStatus = UpdateStatusV2.reverseLookup(firmware);
-            if (updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE) {
-                super.updateStatus(thingStatus, statusDetail, updateStatus.i18nKey());
-                return;
+            UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+            switch (status) {
+                case INSTALLING:
+                    super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    break;
+                case READY_TO_INSTALL:
+                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                    break;
+                case null:
+                default:
+                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    break;
             }
-        } else if (statusDetail == ThingStatusDetail.FIRMWARE_UPDATING) {
-            super.updateStatus(thingStatus, statusDetail, UpdateStatusV2.INSTALLING.i18nKey());
-            return;
         }
-        super.updateStatus(thingStatus, statusDetail, description);
+        super.updateStatus(thingStatus, detail, description);
     }
 }

@@ -30,8 +30,8 @@ public class BridgeConfig {
     private @Nullable String swversion;
     private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+ ('swupdate' is deprecated)
 
-    public static final String DEVICE = "device";
-    public static final String BRIDGE = "bridge";
+    public static final String V1_ANY_DEVICE = "device";
+    public static final String V1_BRIDGE = "bridge";
 
     public @Nullable String getSoftwareVersion() {
         return swversion;
@@ -43,8 +43,8 @@ public class BridgeConfig {
     public Map<String, @Nullable UpdateStatusV2> getUpdateStatusMap() {
         Map<String, @Nullable UpdateStatusV2> result = new HashMap<>();
         if (swupdate2 instanceof BridgeSwUpdate update) {
-            result.put(DEVICE, update.getUpdateStatus());
-            result.put(BRIDGE,
+            result.put(V1_ANY_DEVICE, update.getUpdateStatus());
+            result.put(V1_BRIDGE,
                     (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null);
         }
         return result;
