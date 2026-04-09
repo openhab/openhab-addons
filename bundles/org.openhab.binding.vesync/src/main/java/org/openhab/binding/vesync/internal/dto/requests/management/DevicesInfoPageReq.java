@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests;
+package org.openhab.binding.vesync.internal.dto.requests.management;
 
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
@@ -19,12 +19,13 @@ import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequestManagedDevicesPage} is the Java class as a DTO to hold login credentials for the Vesync
- * API.
+ * The {@link DevicesInfoPageReq} class is a DTO to get a specific page of information
+ * about devices known managed by the Vesync API, and their associated current status as
+ * well as key information required to address them in requests.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequestManagedDevicesPage extends AuthenticatedReq {
+public class DevicesInfoPageReq extends AuthenticatedReq {
 
     @SerializedName("pageNo")
     public String pageNo;
@@ -32,13 +33,12 @@ public class VeSyncRequestManagedDevicesPage extends AuthenticatedReq {
     @SerializedName("pageSize")
     public String pageSize;
 
-    public VeSyncRequestManagedDevicesPage(final VeSyncUserSession user) throws AuthenticationException {
+    public DevicesInfoPageReq(final VeSyncUserSession user) throws AuthenticationException {
         super(user);
         method = "devices";
     }
 
-    public VeSyncRequestManagedDevicesPage(final VeSyncUserSession user, int pageNo, int pageSize)
-            throws AuthenticationException {
+    public DevicesInfoPageReq(final VeSyncUserSession user, int pageNo, int pageSize) throws AuthenticationException {
         this(user);
         this.pageNo = String.valueOf(pageNo);
         this.pageSize = String.valueOf(pageSize);

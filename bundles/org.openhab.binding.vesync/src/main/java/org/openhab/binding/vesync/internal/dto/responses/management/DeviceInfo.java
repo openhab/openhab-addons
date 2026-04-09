@@ -10,17 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.management;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncManagedDeviceBase} class contains basic information about a single device, from within a
- * VeSyncManagedDevicesPage.
+ * The {@link DeviceInfo} class contains basic information about a single device managed by the Vesync API.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncManagedDeviceBase {
+public class DeviceInfo {
 
     @SerializedName("deviceRegion")
     public String deviceRegion;

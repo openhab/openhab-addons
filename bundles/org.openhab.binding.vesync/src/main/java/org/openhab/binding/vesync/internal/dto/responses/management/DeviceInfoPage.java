@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.management;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncManagedDevicePageOutcome} class holds the outcome data from a request for device data
- * known to the VeSync service.
+ * The {@link DeviceInfoPage} class is a DTO that defines the information for a read page of information
+ * about 1 or more devices.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncManagedDevicePageOutcome {
+public class DeviceInfoPage {
     @SerializedName("pageNo")
     public String pageNo;
 
@@ -31,7 +31,7 @@ public class VeSyncManagedDevicePageOutcome {
     public String pageSize;
 
     @SerializedName("list")
-    public VeSyncManagedDeviceBase[] list;
+    public DeviceInfo[] list;
 
     public String getPageNo() {
         return pageNo;

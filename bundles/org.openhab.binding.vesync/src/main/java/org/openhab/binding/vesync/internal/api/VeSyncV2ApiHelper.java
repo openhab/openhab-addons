@@ -36,13 +36,13 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevicesPage;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
+import org.openhab.binding.vesync.internal.dto.requests.management.DevicesInfoPageReq;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDevicesPage;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
+import org.openhab.binding.vesync.internal.dto.responses.management.DevicesInfoPageResp;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
@@ -63,14 +63,14 @@ public class VeSyncV2ApiHelper {
 
     private final @Nullable HttpClient httpClient;
 
-    private Map<String, @NotNull VeSyncManagedDeviceBase> macLookup;
+    private Map<String, @NotNull DeviceInfo> macLookup;
 
     public VeSyncV2ApiHelper(final HttpClient httpClient) {
         this.httpClient = httpClient;
         macLookup = new HashMap<>();
     }
 
-    public Map<String, @NotNull VeSyncManagedDeviceBase> getMacLookupMap() {
+    public Map<String, @NotNull DeviceInfo> getMacLookupMap() {
         return macLookup;
     }
 
@@ -99,17 +99,16 @@ public class VeSyncV2ApiHelper {
 
     public void discoverDevices() throws AuthenticationException {
         try {
-            VeSyncRequestManagedDevicesPage reqDevPage = new VeSyncRequestManagedDevicesPage(loggedInSession);
+            DevicesInfoPageReq reqDevPage = new DevicesInfoPageReq(loggedInSession);
             boolean finished = false;
             int pageNo = 1;
-            HashMap<String, VeSyncManagedDeviceBase> generatedMacLookup = new HashMap<>();
+            HashMap<String, DeviceInfo> generatedMacLookup = new HashMap<>();
             while (!finished) {
                 reqDevPage.pageNo = String.valueOf(pageNo);
                 reqDevPage.pageSize = String.valueOf(100);
                 final String result = reqV1Authorized(V1_MANAGED_DEVICES_ENDPOINT, reqDevPage);
 
-                VeSyncManagedDevicesPage resultsPage = VeSyncConstants.GSON.fromJson(result,
-                        VeSyncManagedDevicesPage.class);
+                DevicesInfoPageResp resultsPage = VeSyncConstants.GSON.fromJson(result, DevicesInfoPageResp.class);
                 if (resultsPage == null || !resultsPage.outcome.getTotal().equals(resultsPage.outcome.getPageSize())) {
                     finished = true;
                 } else {
@@ -117,7 +116,7 @@ public class VeSyncV2ApiHelper {
                 }
 
                 if (resultsPage != null) {
-                    for (VeSyncManagedDeviceBase device : resultsPage.outcome.list) {
+                    for (DeviceInfo device : resultsPage.outcome.list) {
                         logger.debug(
                                 "Found device : {}, type: {}, deviceType: {}, connectionState: {}, deviceStatus: {}, deviceRegion: {}, cid: {}, configModule: {}, macID: {}, uuid: {}",
                                 device.getDeviceName(), device.getType(), device.getDeviceType(),
@@ -155,7 +154,7 @@ public class VeSyncV2ApiHelper {
 
         // Apply specific addressing parameters
         if (requestData instanceof VeSyncRequestManagedDeviceBypassV2 veSyncRequestManagedDeviceBypassV2) {
-            final VeSyncManagedDeviceBase deviceData = macLookup.get(macId);
+            final DeviceInfo deviceData = macLookup.get(macId);
             if (deviceData == null) {
                 throw new DeviceUnknownException(String.format("Device not discovered with mac id: %s", macId));
             }

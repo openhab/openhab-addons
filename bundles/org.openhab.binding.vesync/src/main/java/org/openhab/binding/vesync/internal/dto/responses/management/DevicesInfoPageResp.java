@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.management;
+
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncManagedDevicesPage} class is used as a DTO to hold the Vesync's API's response data to a
- * page of data requesting the manages devices.
+ * The {@link DevicesInfoPageResp} class is used as a DTO to hold the Vesync's API's response data to a
+ * response of a {@link org.openhab.binding.vesync.internal.dto.requests.management.DevicesInfoPageReq} request.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncManagedDevicesPage extends VeSyncResponse {
+public class DevicesInfoPageResp extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncManagedDevicePageOutcome outcome;
+    public DeviceInfoPage outcome;
 }

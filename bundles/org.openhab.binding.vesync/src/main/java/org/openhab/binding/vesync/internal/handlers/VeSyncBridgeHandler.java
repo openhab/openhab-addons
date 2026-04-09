@@ -36,9 +36,9 @@ import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.i18n.LocaleProvider;
@@ -181,14 +181,14 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         this.updateThings();
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirPurifiersMetadata() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getAirPurifiersMetadata() {
         return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
                 .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
                         VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES)
                 .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirHumidifiersMetadata() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getAirHumidifiersMetadata() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> !VeSyncBaseDeviceHandler
                         .getDeviceFamilyMetadata(x.getDeviceType(),
@@ -197,7 +197,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                         .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getOutletMetaData() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getOutletMetaData() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> !VeSyncBaseDeviceHandler
                         .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,

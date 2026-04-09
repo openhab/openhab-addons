@@ -35,7 +35,7 @@ import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
+import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.cache.ExpiringCache;
@@ -173,7 +173,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            DeviceInfo metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
             return metadata != null && "online".equals(metadata.connectionStatus);
         }
         return false;
@@ -185,7 +185,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            DeviceInfo metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return;
@@ -245,7 +245,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param metadata - the meta-data of a device
      * @return - Map of common props
      */
-    public Map<String, String> getMetadataProperties(final @Nullable VeSyncManagedDeviceBase metadata) {
+    public Map<String, String> getMetadataProperties(final @Nullable DeviceInfo metadata) {
         if (metadata == null) {
             return Map.of();
         }
@@ -296,7 +296,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             if (configMac != null) {
                 logger.debug("Searching for device mac id : {}", configMac);
                 @Nullable
-                VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap()
+                DeviceInfo metadata = vesyncBridgeHandler.api.getMacLookupMap()
                         .get(configMac.toLowerCase(Locale.ENGLISH));
 
                 if (metadata != null && metadata.macId != null) {
