@@ -85,20 +85,6 @@ public class ManagedDeviceBypassReq extends AuthenticatedReq {
         public String workMode = "";
     }
 
-    public static class SetSwitchPayload extends EmptyPayload {
-
-        public SetSwitchPayload(final boolean enabled, final int id) {
-            this.enabled = enabled;
-            this.id = id;
-        }
-
-        @SerializedName("enabled")
-        public boolean enabled = true;
-
-        @SerializedName("id")
-        public int id = -1;
-    }
-
     public static class EnabledPayload extends EmptyPayload {
 
         public EnabledPayload(final boolean enabled) {
@@ -107,34 +93,6 @@ public class ManagedDeviceBypassReq extends AuthenticatedReq {
 
         @SerializedName("enabled")
         public boolean enabled = true;
-    }
-
-    public static class SetLevelPayload extends EmptyPayload {
-
-        public SetLevelPayload(final int id, final String type, final int level) {
-            this.id = id;
-            this.type = type;
-            this.level = level;
-        }
-
-        @SerializedName("id")
-        public int id = -1;
-
-        @SerializedName("level")
-        public int level = -1;
-
-        @SerializedName("type")
-        public String type = "";
-    }
-
-    public static class SetState extends EmptyPayload {
-
-        public SetState(final boolean state) {
-            this.state = state;
-        }
-
-        @SerializedName("state")
-        public boolean state = false;
     }
 
     public static class SetNightLight extends EmptyPayload {

@@ -37,9 +37,12 @@ import org.openhab.binding.vesync.internal.dto.requests.v1.VeSyncRequestV1SetSta
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetChildLock;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetLightDetection;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetPower;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetScreenSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier.V1StatusResp;
@@ -248,7 +251,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                                        new ManagedDeviceBypassReq.SetSwitchPayload(command.equals(OnOffType.ON), 0));
+                                        new SetSwitch(command.equals(OnOffType.ON), 0));
                         }
                         break;
                     case DEVICE_CHANNEL_DISPLAY_ENABLED:
@@ -265,7 +268,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_DISPLAY,
-                                        new ManagedDeviceBypassReq.SetState(command.equals(OnOffType.ON)));
+                                        new SetState(command.equals(OnOffType.ON)));
 
                                 break;
                         }
@@ -355,8 +358,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
                                         new ManagedDeviceBypassReq.SetMode(MODE_MANUAL), false);
-                                sendV2BypassControlCommand(DEVICE_SET_LEVEL, new ManagedDeviceBypassReq.SetLevelPayload(
-                                        0, DEVICE_LEVEL_TYPE_WIND, requestedLevel));
+                                sendV2BypassControlCommand(DEVICE_SET_LEVEL,
+                                        new SetLevel(0, DEVICE_LEVEL_TYPE_WIND, requestedLevel));
                         }
                         break;
                 }

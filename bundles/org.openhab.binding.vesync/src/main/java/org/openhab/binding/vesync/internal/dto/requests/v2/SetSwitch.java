@@ -15,17 +15,21 @@ package org.openhab.binding.vesync.internal.dto.requests.v2;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SetScreenSwitch} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set a screen on / off switch.
+ * The {@link SetSwitch} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set a switch to enabled true or false.
  *
  * @author David Goodyear - Initial contribution
  */
-public class SetScreenSwitch extends EmptyPayload {
+public class SetSwitch extends EmptyPayload {
 
-    public SetScreenSwitch(final boolean enabled) {
-        this.screenSwitch = enabled ? 1 : 0;
+    public SetSwitch(final boolean enabled, final int id) {
+        this.enabled = enabled;
+        this.id = id;
     }
 
-    @SerializedName("screenSwitch")
-    public int screenSwitch = -1;
+    @SerializedName("enabled")
+    public boolean enabled = true;
+
+    @SerializedName("id")
+    public int id = -1;
 }

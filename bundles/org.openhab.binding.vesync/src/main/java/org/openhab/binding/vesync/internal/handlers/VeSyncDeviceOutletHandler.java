@@ -27,6 +27,7 @@ import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryInfoSnapshot;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.EnergyHistoryResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.outlet.StatusResp;
@@ -92,8 +93,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         scheduler.submit(() -> {
             if (command instanceof OnOffType) {
                 if (channelUID.getId().equals(DEVICE_CHANNEL_ENABLED)) {
-                    sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                            new ManagedDeviceBypassReq.SetSwitchPayload(command.equals(OnOffType.ON), 0));
+                    sendV2BypassControlCommand(DEVICE_SET_SWITCH, new SetSwitch(command.equals(OnOffType.ON), 0));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();

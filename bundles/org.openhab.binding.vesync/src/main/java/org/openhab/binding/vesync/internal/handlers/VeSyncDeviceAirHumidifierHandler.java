@@ -31,6 +31,9 @@ import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 import org.openhab.binding.vesync.internal.dto.requests.v2.ManagedDeviceBypassReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V1StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V2StatusResp;
@@ -221,12 +224,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             if (command instanceof OnOffType) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_ENABLED:
-                        sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                                new ManagedDeviceBypassReq.SetSwitchPayload(command.equals(OnOffType.ON), 0));
+                        sendV2BypassControlCommand(DEVICE_SET_SWITCH, new SetSwitch(command.equals(OnOffType.ON), 0));
                         break;
                     case DEVICE_CHANNEL_DISPLAY_ENABLED:
-                        sendV2BypassControlCommand(DEVICE_SET_DISPLAY,
-                                new ManagedDeviceBypassReq.SetState(command.equals(OnOffType.ON)));
+                        sendV2BypassControlCommand(DEVICE_SET_DISPLAY, new SetState(command.equals(OnOffType.ON)));
                         break;
                     case DEVICE_CHANNEL_STOP_AT_TARGET:
                         sendV2BypassControlCommand(DEVICE_SET_AUTOMATIC_STOP,
@@ -287,7 +288,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 new ManagedDeviceBypassReq.SetMode(MODE_MANUAL), false);
 
                         sendV2BypassControlCommand(DEVICE_SET_VIRTUAL_LEVEL,
-                                new ManagedDeviceBypassReq.SetLevelPayload(0, DEVICE_LEVEL_TYPE_MIST, targetMistLevel));
+                                new SetLevel(0, DEVICE_LEVEL_TYPE_MIST, targetMistLevel));
                         break;
                     case DEVICE_CHANNEL_WARM_LEVEL:
                         int targetWarmMistLevel = quantityCommand.intValue();
@@ -301,8 +302,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                     : devContraints.targetMaxWarmMistLevel;
                         }
 
-                        sendV2BypassControlCommand(DEVICE_SET_LEVEL, new ManagedDeviceBypassReq.SetLevelPayload(0,
-                                DEVICE_LEVEL_TYPE_WARM_MIST, targetWarmMistLevel));
+                        sendV2BypassControlCommand(DEVICE_SET_LEVEL,
+                                new SetLevel(0, DEVICE_LEVEL_TYPE_WARM_MIST, targetWarmMistLevel));
                         break;
                 }
             } else if (command instanceof StringType) {
