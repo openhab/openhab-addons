@@ -17,7 +17,7 @@ package org.openhab.binding.vesync.internal.dto.responses;
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncLoginResponse extends VeSyncResponse {
+public class VeSyncLoginResponse extends TransactionResp {
 
     public VeSyncUserSession result;
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses.devices.outlet;
 
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class EnergyHistoryWrapper extends VeSyncResponse {
+public class EnergyHistoryWrapper extends TransactionResp {
 
     @SerializedName("result")
     public EnergyHistorySnapshots result = new EnergyHistorySnapshots();

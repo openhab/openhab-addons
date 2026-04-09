@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier;
 
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2StatusWrapper extends VeSyncResponse {
+public class V2StatusWrapper extends TransactionResp {
 
     @SerializedName("result")
     public V2StatusDetails result;

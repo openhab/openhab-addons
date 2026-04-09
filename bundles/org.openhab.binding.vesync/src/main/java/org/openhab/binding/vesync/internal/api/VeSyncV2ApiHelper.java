@@ -38,8 +38,8 @@ import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
 import org.openhab.binding.vesync.internal.dto.requests.management.DevicesInfoPageReq;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.dto.responses.management.DevicesInfoPageResp;
@@ -197,8 +197,8 @@ public class VeSyncV2ApiHelper {
 
             ContentResponse response = request.send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                VeSyncResponse commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                        VeSyncResponse.class);
+                TransactionResp commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
+                        TransactionResp.class);
 
                 if (commResponse != null && (commResponse.isMsgSuccess() || commResponse.isMsgDeviceOffline())) {
                     logger.debug("Got OK response {}", response.getContentAsString());

@@ -35,7 +35,7 @@ import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1ManagedDe
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestV1SetStatus;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier.V1StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier.V2StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.v1.VeSyncV1AirPurifierDeviceDetailsResponse;
@@ -452,7 +452,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         String response;
-        VeSyncResponse purifierStatus = null;
+        TransactionResp purifierStatus = null;
 
         synchronized (pollLock) {
             response = cachedResponse.getValue();

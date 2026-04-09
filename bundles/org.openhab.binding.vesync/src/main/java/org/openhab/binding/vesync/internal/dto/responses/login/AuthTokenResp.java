@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses.login;
 
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author David Goodyear - Initial contribution
  */
-public class AuthTokenResp extends VeSyncResponse {
+public class AuthTokenResp extends TransactionResp {
 
     @SerializedName("result")
     public AuthDetails result;

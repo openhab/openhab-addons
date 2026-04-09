@@ -36,7 +36,7 @@ import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -279,7 +279,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         // in the message.
         String result = api.reqV2Authorized(url, macId, requestData);
 
-        VeSyncResponse responseFrame = VeSyncConstants.GSON.fromJson(result, VeSyncResponse.class);
+        TransactionResp responseFrame = VeSyncConstants.GSON.fromJson(result, TransactionResp.class);
 
         if (responseFrame != null && responseFrame.code != null && responseFrame.msg != null) {
             final String message = responseFrame.msg;

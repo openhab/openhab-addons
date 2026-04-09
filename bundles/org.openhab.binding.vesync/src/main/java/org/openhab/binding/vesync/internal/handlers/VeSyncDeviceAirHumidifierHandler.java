@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.airhumidifier.V1StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.airhumidifier.V2StatusResp;
 import org.openhab.core.cache.ExpiringCache;
@@ -357,7 +357,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     @Override
     protected void pollForDeviceData(final ExpiringCache<String> cachedResponse) {
         String response;
-        VeSyncResponse humidifierStatus;
+        TransactionResp humidifierStatus;
 
         final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
 
