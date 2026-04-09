@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.airhumidifier;
+
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassHumidifierStatus} class is used as a DTO to hold the Vesync's API's common response
- * data, with regard's to an Air Humidifier device.
+ * The {@link V1StatusResp} class is used as a DTO to hold the Vesync's API's common response
+ * data, with regard's to an air humidifier device.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncV2BypassHumidifierStatus extends VeSyncResponse {
+public class V1StatusResp extends VeSyncResponse {
 
     @SerializedName("result")
     public HumidifierrStatus result;

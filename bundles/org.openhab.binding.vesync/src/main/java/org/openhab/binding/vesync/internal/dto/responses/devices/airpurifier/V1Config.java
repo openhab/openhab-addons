@@ -10,20 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassAirPurifierStatusExtension} is a Java class used as a DTO to hold the Vesync's API's common
- * response data, with regard's to an air purifier device's extensions capabilities..
+ * The {@link V1Config} class is used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device's current configuration.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncV2BypassAirPurifierStatusExtension {
-    @SerializedName("schedule_count")
-    public int scheduleCount;
+public class V1Config {
+    @SerializedName("display")
+    public boolean display;
 
-    @SerializedName("timer_remain")
-    public int timerRemain;
+    @SerializedName("display_forever")
+    public boolean displayForever;
+
+    @SerializedName("auto_preference")
+    public V1AutoSetup autoPreference;
 }

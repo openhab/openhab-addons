@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2Ver2BypassAirPurifierStatusResult} class is used as a DTO to hold the Vesync's API's
+ * The {@link V2StatusDetails} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the result of a request for the status of an air purifier.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncV2Ver2BypassAirPurifierStatusResult {
+public class V2StatusDetails {
     @SerializedName("AQLevel")
     public int airQuality;
 
@@ -94,8 +94,8 @@ public class VeSyncV2Ver2BypassAirPurifierStatusResult {
     public int errorCode;
 
     @SerializedName("autoPreference")
-    public VeSyncV2Ver2BypassAirPurifierConfigAutoPref autoPreference;
+    public V2AutoSetup autoPreference;
 
     @SerializedName("sleepPreference")
-    public VeSyncV2Ver2BypassAirPurifierSleepPref sleepPreference;
+    public V2SleepSetup sleepPreference;
 }

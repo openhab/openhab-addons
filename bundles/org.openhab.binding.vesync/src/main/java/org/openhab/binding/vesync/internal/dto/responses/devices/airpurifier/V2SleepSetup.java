@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.airpurifier;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2Ver2BypassAirPurifierSleepPref} class is used as a DTO to hold the Vesync's API's
+ * The {@link V2SleepSetup} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the sleep preferences regarding an air purifier unit.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncV2Ver2BypassAirPurifierSleepPref {
+public class V2SleepSetup {
     @SerializedName("sleepPreferenceType")
     public String sleepPreferenceType;
 

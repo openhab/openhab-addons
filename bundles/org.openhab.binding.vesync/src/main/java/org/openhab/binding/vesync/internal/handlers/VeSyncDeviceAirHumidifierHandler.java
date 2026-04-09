@@ -31,8 +31,8 @@ import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassHumidifierStatus;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2Ver2BypassHumidifierStatus;
+import org.openhab.binding.vesync.internal.dto.responses.devices.airhumidifier.V1StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.airhumidifier.V2StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -383,9 +383,9 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             }
 
             if (devContraints.protocolV2Version == 2) {
-                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2Ver2BypassHumidifierStatus.class);
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, V2StatusResp.class);
             } else {
-                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2BypassHumidifierStatus.class);
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, V1StatusResp.class);
             }
 
             if (humidifierStatus == null) {
@@ -407,14 +407,13 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (devContraints.protocolV2Version != 2) {
-            parseV2Ver1Poll((VeSyncV2BypassHumidifierStatus) humidifierStatus, deviceFamily);
+            parseV2Ver1Poll((V1StatusResp) humidifierStatus, deviceFamily);
         } else {
-            parseV2Ver2Poll((VeSyncV2Ver2BypassHumidifierStatus) humidifierStatus);
+            parseV2Ver2Poll((V2StatusResp) humidifierStatus);
         }
     }
 
-    private void parseV2Ver1Poll(final VeSyncV2BypassHumidifierStatus humidifierStatus,
-            final @Nullable String deviceFamily) {
+    private void parseV2Ver1Poll(final V1StatusResp humidifierStatus, final @Nullable String deviceFamily) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));
             return;
@@ -455,7 +454,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                 new QuantityType<>(humidifierStatus.result.result.configuration.autoTargetHumidity, Units.PERCENT));
     }
 
-    private void parseV2Ver2Poll(final VeSyncV2Ver2BypassHumidifierStatus humidifierStatus) {
+    private void parseV2Ver2Poll(final V2StatusResp humidifierStatus) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));
             return;
