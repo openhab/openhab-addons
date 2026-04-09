@@ -15,13 +15,19 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassOutletStatus} class is used as a DTO to hold the Vesync's API's common response
+ * The {@link VeSyncV2BypassOutletStatusWrapper} class is used as a DTO to hold the Vesync's API's common response
  * data, with regard's to an outlet device.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassOutletStatus extends VeSyncResponse {
+public class VeSyncV2BypassOutletStatusWrapper extends VeSyncResponse {
+
+    @SerializedName("module")
+    public Object object = null;
+
+    @SerializedName("stacktrace")
+    public Object object2 = null;
 
     @SerializedName("result")
-    public VeSyncV2BypassOutletStatusWrapper outletResult;
+    public VeSyncV2BypassOutletStatusDetails result = new VeSyncV2BypassOutletStatusDetails();
 }
