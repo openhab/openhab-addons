@@ -17,13 +17,14 @@ import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V1StatusResp} class is used as a DTO to hold the Vesync's API's common response
- * data, with regard's to an air humidifier device.
+ * The {@link V1StatusWrapper} class is used as a DTO to hold the Vesync's API's
+ * response data from the bypass API about the result of a request for the status of an air humidifier, however for
+ * reasons not understood it is double wrapped into this second wrapper.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V1StatusResp extends VeSyncResponse {
+public class V1StatusWrapper extends VeSyncResponse {
 
     @SerializedName("result")
-    public V1StatusWrapper result;
+    public V1StatusDetails result;
 }
