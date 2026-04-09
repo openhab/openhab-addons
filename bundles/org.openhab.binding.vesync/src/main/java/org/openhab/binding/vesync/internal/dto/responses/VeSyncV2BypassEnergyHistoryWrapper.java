@@ -15,13 +15,13 @@ package org.openhab.binding.vesync.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassEnergyHistory} class is used as a DTO to hold the Vesync's API's common response
- * data, in regard to an outlet device.
+ * The {@link VeSyncV2BypassEnergyHistoryWrapper} class is used as a DTO to hold the Vesync's API's
+ * response data from the bypass API about the result of a request for the status of an energy use.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassEnergyHistory extends VeSyncResponse {
+public class VeSyncV2BypassEnergyHistoryWrapper extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncV2BypassEnergyHistoryWrapper result;
+    public VeSyncV2BypassEnergyHistorySnapshots result = new VeSyncV2BypassEnergyHistorySnapshots();
 }
