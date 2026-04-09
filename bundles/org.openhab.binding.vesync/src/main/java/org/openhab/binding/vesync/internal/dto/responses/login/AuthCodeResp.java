@@ -18,14 +18,15 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link AuthCodeResp} class is used as a DTO to hold the Vesync's API's
- * response to a {@link org.openhab.binding.vesync.internal.dto.requests.login.AuthCodeReq} request.
+ * response to a {@link org.openhab.binding.vesync.internal.dto.requests.login.AuthCodeReq} or a
+ * {@link org.openhab.binding.vesync.internal.dto.requests.login.RegionSwitchReq} request.
  *
  * @author David Goodyear - Initial contribution
  */
 public class AuthCodeResp extends VeSyncResponse {
 
     @SerializedName("result")
-    public RegionSwitchResp result;
+    public RegionSwitch result;
 
     @Override
     public String toString() {

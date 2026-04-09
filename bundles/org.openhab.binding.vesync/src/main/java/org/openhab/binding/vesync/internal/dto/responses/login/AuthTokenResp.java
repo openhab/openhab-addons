@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses.login;
 
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncAuthTokenResponseDetails;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 public class AuthTokenResp extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncAuthTokenResponseDetails result;
+    public AuthDetails result;
 
     @Override
     public String toString() {

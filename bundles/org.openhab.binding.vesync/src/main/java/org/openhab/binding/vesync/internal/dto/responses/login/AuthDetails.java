@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.login;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncAuthTokenResponseDetails} class is used as a DTO to hold the Vesync's API's login response
- * for when a token is requested for the given user credentials.
+ * The {@link AuthDetails} class is used as a DTO to hold the Vesync's API's giving user
+ * authorization details.
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncAuthTokenResponseDetails {
+public class AuthDetails {
     @SerializedName("accountID")
     public String accountID;
 

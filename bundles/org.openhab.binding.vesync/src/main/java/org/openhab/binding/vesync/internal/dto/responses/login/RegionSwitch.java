@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.responses.login;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link RegionSwitchResp} class is used as a DTO to hold the Vesync's API's
- * response to a {@link org.openhab.binding.vesync.internal.dto.requests.login.RegionSwitchReq} request.
+ * The {@link RegionSwitch} class is used as a DTO to hold the Vesync's API's
+ * response
  *
  * @author David Goodyear - Initial contribution
  */
-public class RegionSwitchResp {
+public class RegionSwitch {
 
     @SerializedName("currentRegion")
     public String currentRegion = "";
