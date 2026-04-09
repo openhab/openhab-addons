@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.outlet;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassEnergyHistoryInfoSnapshot} class is used as a DTO to hold the Vesync's API's common response
+ * The {@link EnergyHistoryInfoSnapshot} class is used as a DTO to hold the Vesync's API's common response
  * data, with regard's to the energy use of an outlet device at a given point in time.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassEnergyHistoryInfoSnapshot {
+public class EnergyHistoryInfoSnapshot {
 
     @SerializedName("timestamp")
     public long timestamp = 0;

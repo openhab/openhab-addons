@@ -26,9 +26,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistoryInfoSnapshot;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletStatus;
+import org.openhab.binding.vesync.internal.dto.responses.devices.outlet.EnergyHistoryInfoSnapshot;
+import org.openhab.binding.vesync.internal.dto.responses.devices.outlet.EnergyHistoryResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.outlet.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -124,8 +124,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         String responseStatus = EMPTY_STRING;
         String responseEnergyHistory = EMPTY_STRING;
         String responses;
-        VeSyncV2BypassOutletStatus outletStatus;
-        VeSyncV2BypassEnergyHistory energyHistory;
+        StatusResp outletStatus;
+        EnergyHistoryResp energyHistory;
         synchronized (pollLock) {
             responses = cachedResponse.getValue();
             boolean cachedDataUsed = responses != null;
@@ -155,8 +155,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            outletStatus = VeSyncConstants.GSON.fromJson(responseStatus, VeSyncV2BypassOutletStatus.class);
-            energyHistory = VeSyncConstants.GSON.fromJson(responseEnergyHistory, VeSyncV2BypassEnergyHistory.class);
+            outletStatus = VeSyncConstants.GSON.fromJson(responseStatus, StatusResp.class);
+            energyHistory = VeSyncConstants.GSON.fromJson(responseEnergyHistory, EnergyHistoryResp.class);
 
             if (outletStatus == null || energyHistory == null) {
                 return;
@@ -201,8 +201,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         return instant.toEpochMilli() / 1000;
     }
 
-    private static double getEnergy(VeSyncV2BypassEnergyHistory energyHistory, int days) {
-        List<VeSyncV2BypassEnergyHistoryInfoSnapshot> energyList = energyHistory.result.result.energyInfos;
+    private static double getEnergy(EnergyHistoryResp energyHistory, int days) {
+        List<EnergyHistoryInfoSnapshot> energyList = energyHistory.result.result.energyInfos;
         double energy = 0;
         for (byte i = 0; i < days; i++) {
             energy += energyList.get(i).energy;

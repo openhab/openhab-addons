@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.outlet;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassOutletStatusDetails} class is used as a DTO to hold the Vesync's API's common response
+ * The {@link StatusDetails} class is used as a DTO to hold the Vesync's API's common response
  * data, with regard's to an outlet device's status.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassOutletStatusDetails {
+public class StatusDetails {
 
     @SerializedName("enabled")
     public boolean enabled = false;

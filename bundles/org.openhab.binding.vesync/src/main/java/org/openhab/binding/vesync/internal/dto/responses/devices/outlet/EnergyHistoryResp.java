@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses;
+package org.openhab.binding.vesync.internal.dto.responses.devices.outlet;
+
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncV2BypassOutletStatus} class is used as a DTO to hold the Vesync's API's common response
- * data, with regard's to an outlet device.
+ * The {@link EnergyHistoryResp} class is used as a DTO to hold the Vesync's API's common response
+ * data, in regard to an outlet device.
  *
  * @author Marcel Goerentz - Initial contribution
  */
-public class VeSyncV2BypassOutletStatus extends VeSyncResponse {
+public class EnergyHistoryResp extends VeSyncResponse {
 
     @SerializedName("result")
-    public VeSyncV2BypassOutletStatusWrapper outletResult;
+    public EnergyHistoryWrapper result;
 }
