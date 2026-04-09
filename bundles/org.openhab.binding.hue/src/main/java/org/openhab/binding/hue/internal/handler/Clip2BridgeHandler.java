@@ -939,7 +939,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    // if there is no software update status defer to any prior description from elsewhere
+                    String description = thing.getStatusInfo().getDescription();
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
                 default:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());

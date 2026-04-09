@@ -1691,9 +1691,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     break;
                 case null:
                 default:
-                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                    // if there is no software update status defer to any prior description from elsewhere
+                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
             }
+            return;
         }
         super.updateStatus(thingStatus, detail, description);
     }
