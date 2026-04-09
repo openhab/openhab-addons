@@ -63,6 +63,6 @@ public class SoftwareUpdateActions implements ThingActions {
             return bridgeHandler.installUpdate();
         }
         logger.warn("SoftwareUpdateActions called on unsupported ThingHandler: {}", handler);
-        return "Error: unsupported thing handler";
+        return "@text/install.update.error.unsupported-handler";
     }
 }

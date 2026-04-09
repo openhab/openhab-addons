@@ -883,7 +883,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         UpdateStatusV2 combinedStatus = getCombinedSoftwareStatus();
         Future<?> task = pollSoftwareStatusTask;
         if (task != null && !task.isCancelled()) {
-            int delay = UpdateStatusV2.INSTALLING == combinedStatus ? POLL_INTERVAL_LOW : POLL_INTERVAL_HIGH;
+            int delay = (combinedStatus == null || UpdateStatusV2.INSTALLING == combinedStatus) ? POLL_INTERVAL_LOW
+                    : POLL_INTERVAL_HIGH;
             pollSoftwareStatusTask = scheduler.schedule(() -> pollSoftwareStatus(), delay, TimeUnit.MINUTES);
         }
     }
@@ -929,7 +930,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private UpdateStatusV2 refreshSoftwareStatusUI() {
         UpdateStatusV2 status = softwareStatusMap.values().stream().max(UpdateStatusV2::compareTo)
-                .orElse(UpdateStatusV2.NO_UPDATE);
+                .orElseGet(() -> UpdateStatusV2.NO_UPDATE);
 
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
 

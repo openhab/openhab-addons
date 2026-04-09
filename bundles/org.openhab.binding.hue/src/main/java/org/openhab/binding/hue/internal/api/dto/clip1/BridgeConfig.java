@@ -38,7 +38,7 @@ public class BridgeConfig {
     }
 
     /**
-     * Gets the update status map of the bridge and its devices if available, or null if not available.
+     * Gets the update status map of the bridge and its 'any' devices, or an empty map if not available.
      */
     public Map<String, @Nullable UpdateStatusV2> getUpdateStatusMap() {
         Map<String, @Nullable UpdateStatusV2> result = new HashMap<>();

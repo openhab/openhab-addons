@@ -544,7 +544,8 @@ public class Clip2Bridge implements Closeable {
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
-    private static String doHTTP(String url, String method, @Nullable String request) throws IOException {
+    private static String doHTTP(String url, String method, @Nullable String request, SSLContext sslContext)
+            throws IOException {
         HttpURLConnection connection = null;
         try {
             URL destination = new URI(url).toURL();
@@ -566,7 +567,7 @@ public class Clip2Bridge implements Closeable {
             if (status == 301 || status == 302) {
                 String redirectUrl = connection.getHeaderField("Location");
                 if (redirectUrl != null && redirectUrl.startsWith("https://")) {
-                    return doHTTPS(redirectUrl, method, request);
+                    return doHTTPS(redirectUrl, method, request, sslContext);
                 }
             }
 
@@ -594,15 +595,18 @@ public class Clip2Bridge implements Closeable {
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
-    private static String doHTTPS(String url, String method, @Nullable String request) throws IOException {
+    private static String doHTTPS(String url, String method, @Nullable String request, SSLContext sslContext)
+            throws IOException {
         HttpsURLConnection connection = null;
         try {
             URL destination = new URI(url).toURL();
             connection = (HttpsURLConnection) destination.openConnection();
-            // use instance SSL context if available, otherwise fallback to the static TRUST_ALL_CONTEXT
-            SSLContext context = (lastInstance instanceof Clip2Bridge bridge) ? bridge.hueContext : TRUST_ALL_CONTEXT;
-            connection.setSSLSocketFactory(context.getSocketFactory());
-            connection.setHostnameVerifier((h, s) -> true);
+            connection.setSSLSocketFactory(sslContext.getSocketFactory());
+            String host = destination.getHost();
+            // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
+            if (IPV4_PATTERN.matcher(host).matches()) {
+                connection.setHostnameVerifier((h, s) -> true);
+            }
             connection.setRequestMethod(method);
 
             if (request != null) {
@@ -637,9 +641,10 @@ public class Clip2Bridge implements Closeable {
      * @return the bridge configuration (with limited fields if application key is '0').
      * @throws IOException if unable to communicate with the bridge.
      */
-    private static @Nullable BridgeConfig getBridgeConfig(String hostName, String applicationKey) throws IOException {
+    private static @Nullable BridgeConfig getBridgeConfig(String hostName, String applicationKey, SSLContext sslContext)
+            throws IOException {
         String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
-        String json = doHTTP(url, "GET", null);
+        String json = doHTTP(url, "GET", null, sslContext);
         try {
             return new Gson().fromJson(json, BridgeConfig.class);
         } catch (JsonParseException e) {
@@ -655,11 +660,11 @@ public class Clip2Bridge implements Closeable {
      * @param bridgeConfig the bridge configuration to be sent.
      * @throws IOException if unable to communicate with the bridge.
      */
-    public static void putBridgeConfig(String hostName, String applicationKey, BridgeConfig bridgeConfig)
-            throws IOException {
+    public static void putBridgeConfig(String hostName, String applicationKey, BridgeConfig bridgeConfig,
+            SSLContext sslContext) throws IOException {
         String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
         String json = new Gson().toJson(bridgeConfig);
-        doHTTP(url, "PUT", json);
+        doHTTP(url, "PUT", json, sslContext);
     }
 
     /**
@@ -670,7 +675,7 @@ public class Clip2Bridge implements Closeable {
      * @throws IOException if unable to communicate with the bridge.
      */
     public static boolean isClip2Supported(String hostName) throws IOException {
-        BridgeConfig bridgeConfig = getBridgeConfig(hostName, "0");
+        BridgeConfig bridgeConfig = getBridgeConfig(hostName, "0", TRUST_ALL_CONTEXT);
         if (Objects.nonNull(bridgeConfig)) {
             String swVersion = bridgeConfig.getSoftwareVersion();
             if (Objects.nonNull(swVersion)) {
@@ -721,7 +726,6 @@ public class Clip2Bridge implements Closeable {
      * registration call before the instance is created and the SSL context is configured, but we
      * want to use the instance SSL context for all subsequent calls.
      */
-    private static volatile @Nullable Clip2Bridge lastInstance = null;
     private static final SSLContext TRUST_ALL_CONTEXT = createTrustAllSslContext();
     private final SSLContext hueContext;
 
@@ -776,7 +780,6 @@ public class Clip2Bridge implements Closeable {
         baseUrl = String.format(FORMAT_URL_RESOURCE, hostName);
         eventUrl = String.format(FORMAT_URL_EVENTS, hostName);
         registrationUrl = String.format(FORMAT_URL_REGISTER, hostName);
-        lastInstance = this;
     }
 
     /**
@@ -1437,11 +1440,12 @@ public class Clip2Bridge implements Closeable {
     /**
      * Get the bridge update status.
      *
-     * @return an array of the update status of the devices and the bridge or null if unable to determine it.
+     * @return a map of the update status of 'any' devices and the bridge itself, or an empty map if unable
+     *         to determine them.
      */
     public Map<String, @Nullable UpdateStatusV2> getUpdateStatusMap() {
         try {
-            BridgeConfig config = getBridgeConfig(hostName, applicationKey);
+            BridgeConfig config = getBridgeConfig(hostName, applicationKey, hueContext);
             if (config != null) {
                 return config.getUpdateStatusMap();
             }
@@ -1457,6 +1461,6 @@ public class Clip2Bridge implements Closeable {
      * @throws IOException if there was a communications error.
      */
     public void installUpdate() throws IOException {
-        putBridgeConfig(hostName, applicationKey, new BridgeConfig().setInstallUpdate());
+        putBridgeConfig(hostName, applicationKey, new BridgeConfig().setInstallUpdate(), hueContext);
     }
 }

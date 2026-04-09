@@ -1682,20 +1682,18 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (thingStatus == ThingStatus.ONLINE || detail == ThingStatusDetail.FIRMWARE_UPDATING) {
             String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
             UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
-            switch (status) {
-                case INSTALLING:
-                    super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
-                    break;
-                case READY_TO_INSTALL:
-                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
-                    break;
-                case null:
-                default:
-                    // if there is no software update status defer to any prior description from elsewhere
-                    super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
-                    break;
+            if (status != null) {
+                switch (status) {
+                    case INSTALLING:
+                        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                        return;
+                    case READY_TO_INSTALL:
+                        super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                        return;
+                    default:
+                }
             }
-            return;
+            // if there is no software update status preserve the caller-provided status information
         }
         super.updateStatus(thingStatus, detail, description);
     }
