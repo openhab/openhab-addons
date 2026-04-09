@@ -301,7 +301,7 @@
 	<channel-type id="motionDetection">
 		<item-type>Switch</item-type>
 		<label>Motion Detection Status</label>
-		<description>Current status of Motion Detection (On=Enabled, Off=Disabled</description>
+		<description>Current status of Motion Detection (ON=Enabled, OFF=Disabled)</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Info</tag>

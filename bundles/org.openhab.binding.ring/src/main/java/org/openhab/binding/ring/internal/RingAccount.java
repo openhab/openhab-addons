@@ -62,6 +62,7 @@ public interface RingAccount {
      * Send a command with a payload to the Ring API
      *
      * @param url to be sent to the Ring API
+     * @param HTTP method (ie patch, get, put) to be sent to the Ring API
      * @param payload to be sent to the Ring API
      */
     void sendCommand(String url, HttpMethod httpMethod, String payload);

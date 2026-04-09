@@ -116,19 +116,25 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (RefreshType.REFRESH == command) {
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_STATUS_LIGHT)) {
-            if (command instanceof OnOffType onOffCommand) {
-                lightCommand(onOffCommand == OnOffType.ON);
+        if (lightSupport) {
+            if (channelUID.getId().equals(CHANNEL_STATUS_LIGHT)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    lightCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
-        if (channelUID.getId().equals(CHANNEL_STATUS_SIREN)) {
-            if (command instanceof OnOffType onOffCommand) {
-                sirenCommand(onOffCommand == OnOffType.ON);
+        if (sirenSupport) {
+            if (channelUID.getId().equals(CHANNEL_STATUS_SIREN)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    sirenCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
-        if (channelUID.getId().equals(CHANNEL_CONTROL_MOTION_DETECTION)) {
-            if (command instanceof OnOffType onOffCommand) {
-                motionDetectionCommand(onOffCommand == OnOffType.ON);
+        if (motionDetectionSupport) {
+            if (channelUID.getId().equals(CHANNEL_CONTROL_MOTION_DETECTION)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    motionDetectionCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
     }

@@ -84,9 +84,11 @@ public class DoorbellHandler extends RingDeviceHandler {
         if (RefreshType.REFRESH == command) {
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_CONTROL_MOTION_DETECTION)) {
-            if (command instanceof OnOffType onOffCommand) {
-                motionDetectionCommand(onOffCommand == OnOffType.ON);
+        if (motionDetectionSupport) {
+            if (channelUID.getId().equals(CHANNEL_CONTROL_MOTION_DETECTION)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    motionDetectionCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
     }
