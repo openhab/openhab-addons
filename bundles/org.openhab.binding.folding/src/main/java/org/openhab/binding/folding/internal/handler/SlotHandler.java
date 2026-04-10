@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.folding.internal.handler;
 
+import static org.openhab.binding.folding.internal.FoldingBindingConstants.*;
+
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -19,7 +21,6 @@ import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,7 +49,12 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
 
     @Override
     public void initialize() {
-        getBridgeHandler().registerSlot(myId(), this);
+        try {
+            getBridgeHandler().registerSlot(myId(), this);
+        } catch (IllegalStateException e) {
+            logger.debug("Unable to register slot handler to Folding client bridge", e);
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     private FoldingClientHandler getBridgeHandler() throws IllegalStateException {
@@ -65,13 +71,13 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if ("run".equals(channelUID.getId())) {
+            if (CHANNEL_RUN.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("unpause " + myId());
                 } else if (command == OnOffType.OFF) {
                     getBridgeHandler().sendCommand("pause " + myId());
                 }
-            } else if ("finish".equals(channelUID.getId())) {
+            } else if (CHANNEL_FINISH.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("finish " + myId());
                 } else if (command == OnOffType.OFF) {
@@ -88,18 +94,12 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void refreshed(SlotInfo si) {
         updateStatus(ThingStatus.ONLINE);
-        updateState(getChannelUid("status"), new StringType(si.status));
+        updateState(CHANNEL_STATUS, new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getChannelUid("finish"), OnOffType.from(finishing));
-        updateState(getChannelUid("run"), OnOffType.from(run));
-        updateState(getChannelUid("description"), new StringType(si.description));
-    }
-
-    private ChannelUID getChannelUid(String channelId) throws IllegalStateException {
-        if (getThing() instanceof Thing thing && thing.getChannel(channelId) instanceof Channel channel) {
-            return channel.getUID();
-        }
-        throw new IllegalStateException("Thing is null or Channel " + channelId + " does not exist");
+        updateState(CHANNEL_ACTIVE, OnOffType.from(run));
+        updateState(CHANNEL_FINISH, OnOffType.from(finishing));
+        updateState(CHANNEL_RUN, OnOffType.from(run));
+        updateState(CHANNEL_DESCRIPTION, new StringType(si.description));
     }
 }

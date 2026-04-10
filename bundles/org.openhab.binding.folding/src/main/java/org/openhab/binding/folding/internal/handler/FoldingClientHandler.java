@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.folding.internal.handler;
 
+import static org.openhab.binding.folding.internal.FoldingBindingConstants.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,9 +35,7 @@ import org.openhab.binding.folding.internal.discovery.FoldingDiscoveryProxy;
 import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -81,7 +81,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         try {
             if (command instanceof RefreshType) {
                 refresh();
-            } else if ("run".equals(channelUID.getId())) {
+            } else if (CHANNEL_RUN.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     sendCommand("unpause");
                 } else if (command == OnOffType.OFF) {
@@ -89,7 +89,7 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 }
                 refresh();
                 delayedRefresh();
-            } else if ("finish".equals(channelUID.getId())) {
+            } else if (CHANNEL_FINISH.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     sendCommand("finish");
                 } else if (command == OnOffType.OFF) {
@@ -162,8 +162,8 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 FoldingDiscoveryProxy.getInstance().newSlot(getThing().getUID(), host, si.id, si.description);
             }
         }
-        updateState(getChannelUid("run"), OnOffType.from(running));
-        updateState(getChannelUid("finish"), OnOffType.from(finishing));
+        updateState(CHANNEL_RUN, OnOffType.from(running));
+        updateState(CHANNEL_FINISH, OnOffType.from(finishing));
     }
 
     public void delayedRefresh() {
@@ -270,12 +270,5 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         if (!initializing) {
             delayedRefresh();
         }
-    }
-
-    private ChannelUID getChannelUid(String channelId) throws IllegalStateException {
-        if (getThing() instanceof Thing thing && thing.getChannel(channelId) instanceof Channel channel) {
-            return channel.getUID();
-        }
-        throw new IllegalStateException("Thing is null or Channel " + channelId + " does not exist");
     }
 }
