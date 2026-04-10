@@ -47,6 +47,6 @@ public class UserSession {
 
     @Override
     public String toString() {
-        return "Data [token=" + token + "]";
+        return getClass().getSimpleName() + " [token=\"" + token + "\"]";
     }
 }

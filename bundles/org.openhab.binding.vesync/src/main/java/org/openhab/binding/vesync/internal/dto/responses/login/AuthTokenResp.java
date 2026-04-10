@@ -29,6 +29,6 @@ public class AuthTokenResp extends TransactionResp {
 
     @Override
     public String toString() {
-        return "VeSyncAuthTokenResponse [msg=" + getMsg() + ", result=" + result + "]";
+        return getClass().getSimpleName() + " [msg=\"" + getMsg() + "\", result=\"" + result + "\"]";
     }
 }

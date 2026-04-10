@@ -30,6 +30,6 @@ public class AuthCodeResp extends TransactionResp {
 
     @Override
     public String toString() {
-        return "VeSyncAuthLoginTokenResponse [msg=" + getMsg() + ", result=" + result + "]";
+        return getClass().getSimpleName() + " [msg=\"" + getMsg() + "\", result=\"" + result + "\"]";
     }
 }

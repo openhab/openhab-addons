@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.requests.v2;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link EmptyPayload} class is used as a DTO to hold a hold the addressing information
+ * The {@link BypassDefinition} class is used as a DTO to hold the addressing information
  * that the command is for, and the relevant payload to send.
  *
  * @author David Goodyear - Initial contribution

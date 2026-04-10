@@ -37,7 +37,7 @@ public class AuthDetails {
     public Integer accountLockTimeInSec = -1;
 
     public String toString() {
-        return "accountLockTimeInSec=" + accountLockTimeInSec + ", accountId=" + accountID + ", bizToken=" + bizToken
-                + ", authorizeCode=" + authorizeCode;
+        return getClass().getSimpleName() + " [accountLockTimeInSec=\"" + accountLockTimeInSec + "\", accountId=\""
+                + accountID + "\", bizToken=\"" + bizToken + "\", authorizeCode=\"" + authorizeCode + "\"]";
     }
 }

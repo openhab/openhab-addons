@@ -53,6 +53,7 @@ public class TransactionResp {
 
     @Override
     public String toString() {
-        return "VesyncResponse [traceId=\"" + traceId + "\", msg=\"" + msg + "\", code=\"" + code + "\"]";
+        return getClass().getSimpleName() + " [traceId=\"" + traceId + "\", msg=\"" + msg + "\", code=\"" + code
+                + "\"]";
     }
 }

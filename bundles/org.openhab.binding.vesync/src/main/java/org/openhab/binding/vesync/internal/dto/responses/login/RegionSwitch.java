@@ -42,7 +42,8 @@ public class RegionSwitch {
     public String acceptLanguage;
 
     public String toString() {
-        return "currentRegion=" + currentRegion + ", countryCode=" + countryCode + ", accountID=" + accountID
-                + ", bizToken=" + bizToken + ", acceptLanguage=" + acceptLanguage;
+        return getClass().getSimpleName() + " [ currentRegion=\"" + currentRegion + "\", countryCode=\"" + countryCode
+                + "\", accountID=\"" + accountID + "\", bizToken=\"" + bizToken + "\", acceptLanguage=\""
+                + acceptLanguage + "\"]";
     }
 }
