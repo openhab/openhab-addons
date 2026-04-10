@@ -66,7 +66,7 @@ public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
-            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
+            logger.debug("Hostname can not be resolved. Computer name will be set to the default one: {}",
                     DEFAULT_THING_ID);
         }
 
