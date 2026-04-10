@@ -228,7 +228,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
             return null;
         }
 
-        final String friendlyName = details.getFriendlyName();
+        final @Nullable String friendlyName = details.getFriendlyName();
         logger.debug("Discovered unit: {}", friendlyName);
 
         final ModelDetails modelDetails = details.getModelDetails();
