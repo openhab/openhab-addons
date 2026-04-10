@@ -59,6 +59,7 @@ class SessionsMessageHandlerTest {
         SessionInfoDto session = new SessionInfoDto();
         session.setId("session-1");
         session.setDeviceId(deviceId);
+        session.setUserId(UUID.randomUUID());
 
         SessionsMessage message = new SessionsMessage(SessionMessageType.SESSIONS);
         message.setMessageId(UUID.randomUUID());
@@ -81,6 +82,7 @@ class SessionsMessageHandlerTest {
         SessionInfoDto session = new SessionInfoDto();
         session.setId("session-2");
         session.setDeviceId(deviceId);
+        session.setUserId(UUID.randomUUID());
 
         SessionsMessage first = new SessionsMessage(SessionMessageType.SESSIONS);
         first.setMessageId(UUID.randomUUID());
@@ -124,5 +126,62 @@ class SessionsMessageHandlerTest {
     void invalidJsonThrows() {
         RuntimeException ex = assertThrows(RuntimeException.class, () -> handler.handleMessage("not-json"));
         assertTrue(ex.getMessage().contains("Failed to parse WebSocket message payload"));
+    }
+
+    @Test
+    void handleSessionsMessage_nullUserIdSession_isNotDispatched() throws Exception {
+        // Arrange: a session with userId = "00000000-0000-0000-0000-000000000000" (server-owned)
+        String serverDeviceId = "openHAB-server-device";
+        SessionInfoDto serverSession = new SessionInfoDto();
+        serverSession.setId("server-session-1");
+        serverSession.setDeviceId(serverDeviceId);
+        serverSession.setUserId(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        serverSession.setClient("openHAB");
+
+        // A normal user session that should be dispatched
+        String userDeviceId = "normal-device";
+        SessionInfoDto userSession = new SessionInfoDto();
+        userSession.setId("user-session-1");
+        userSession.setDeviceId(userDeviceId);
+        userSession.setUserId(UUID.randomUUID());
+
+        SessionsMessage message = new SessionsMessage(SessionMessageType.SESSIONS);
+        message.setMessageId(UUID.randomUUID());
+        message.setData(List.of(serverSession, userSession));
+
+        String json = apiClient.getObjectMapper().writeValueAsString(message);
+
+        AtomicInteger serverUpdates = new AtomicInteger();
+        AtomicInteger userUpdates = new AtomicInteger();
+        eventBus.subscribe(serverDeviceId, s -> serverUpdates.incrementAndGet());
+        eventBus.subscribe(userDeviceId, s -> userUpdates.incrementAndGet());
+
+        handler.handleMessage(json);
+
+        assertEquals(0, serverUpdates.get(), "Server-owned null-UUID session must not be dispatched");
+        assertEquals(1, userUpdates.get(), "Normal user session must be dispatched");
+    }
+
+    @Test
+    void handleSessionsMessage_javaNull_userId_isNotDispatched() throws Exception {
+        // Arrange: a session with no userId set (Java null) — defensive check
+        String serverDeviceId = "null-user-device";
+        SessionInfoDto session = new SessionInfoDto();
+        session.setId("null-user-session");
+        session.setDeviceId(serverDeviceId);
+        // userId deliberately left null
+
+        SessionsMessage message = new SessionsMessage(SessionMessageType.SESSIONS);
+        message.setMessageId(UUID.randomUUID());
+        message.setData(List.of(session));
+
+        String json = apiClient.getObjectMapper().writeValueAsString(message);
+
+        AtomicInteger updates = new AtomicInteger();
+        eventBus.subscribe(serverDeviceId, s -> updates.incrementAndGet());
+
+        handler.handleMessage(json);
+
+        assertEquals(0, updates.get(), "Session with Java-null userId must not be dispatched");
     }
 }

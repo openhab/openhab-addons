@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
@@ -52,6 +53,14 @@ public class SessionManager {
     private final Set<String> previousDeviceIds = new HashSet<>();
 
     /**
+     * Canonical (full) device IDs from currently configured client Things.
+     * Used by {@link #buildDeviceDispatchMap} to route short-ID sessions (new Android app format)
+     * to handlers that are still subscribed on the legacy full ID, bridging the gap before
+     * {@link org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService} updates the config.
+     */
+    private final AtomicReference<Set<String>> knownCanonicalDeviceIds = new AtomicReference<>(Set.of());
+
+    /**
      * Creates a new session manager.
      * 
      * @param eventBus The event bus for publishing session updates
@@ -67,6 +76,22 @@ public class SessionManager {
      */
     public Map<String, SessionInfoDto> getSessions() {
         return new HashMap<>(sessions);
+    }
+
+    /**
+     * Updates the set of known canonical (full) device IDs from configured client Things.
+     *
+     * <p>
+     * This should be called by {@code ServerHandler} whenever client Things are initialized or
+     * updated, so that {@link #buildDeviceDispatchMap} can bridge the gap between a short device ID
+     * reported by the server and the full device ID still stored in the Thing's {@code serialNumber}
+     * configuration.
+     *
+     * @param ids the set of full device IDs currently stored in configured client Things
+     */
+    public void updateKnownDeviceIds(Collection<String> ids) {
+        knownCanonicalDeviceIds.set(Set.copyOf(ids));
+        logger.debug("Known canonical device IDs updated: {} ID(s)", ids.size());
     }
 
     /**
@@ -168,6 +193,31 @@ public class SessionManager {
                 result.remove(shortId);
             }
         }
+
+        // Also route short IDs to known canonical (full) IDs from configured Things.
+        // This covers the transition window where the Android app now sends only a short ANDROID_ID
+        // but the configured Thing still has the legacy full ID (ANDROID_ID + userId hex) as
+        // serialNumber. Without this, the ClientHandler subscribed on the full ID would never
+        // receive session updates and would go OFFLINE.
+        Set<String> known = knownCanonicalDeviceIds.get();
+        if (!known.isEmpty()) {
+            for (String shortId : new ArrayList<>(result.keySet())) {
+                for (String knownFullId : known) {
+                    if (knownFullId.startsWith(shortId) && !knownFullId.equals(shortId)) {
+                        SessionInfoDto session = result.get(shortId);
+                        if (session != null) {
+                            logger.debug(
+                                    "Dispatching short device ID '{}' to known canonical ID '{}' (pending config migration)",
+                                    shortId, knownFullId);
+                            result.put(knownFullId, session);
+                            result.remove(shortId);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         return result;
     }
 
@@ -180,5 +230,6 @@ public class SessionManager {
     public void clear() {
         sessions.clear();
         previousDeviceIds.clear();
+        knownCanonicalDeviceIds.set(Set.of());
     }
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
@@ -43,6 +44,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SessionsMessageHandler implements WebSocketMessageHandler {
 
     private static final int LOG_TRUNCATE_LENGTH = 200;
+
+    /**
+     * The "null user" UUID used by Jellyfin for server-owned sessions (e.g. the openHAB connection
+     * session itself). Sessions carrying this userId must be excluded from client discovery and
+     * dispatch, mirroring the filter that {@code ClientListUpdater} already applies on the poll path.
+     */
+    private static final UUID NULL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     private final Logger logger = LoggerFactory.getLogger(SessionsMessageHandler.class);
     private final ObjectMapper objectMapper;
@@ -89,6 +97,15 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
                 String sessionId = session.getId();
                 if (sessionId == null || sessionId.isBlank()) {
                     logger.debug("Skipping session without id: {}", session);
+                    continue;
+                }
+                // Skip server-owned sessions (null userId / all-zeros UUID).
+                // These are Jellyfin's own internal sessions (e.g. the openHAB connection itself)
+                // and must not appear as discoverable client devices.
+                UUID userId = session.getUserId();
+                if (userId == null || NULL_UUID.equals(userId)) {
+                    logger.debug("Skipping server-owned session (null userId): client={}, deviceId={}",
+                            session.getClient(), session.getDeviceId());
                     continue;
                 }
                 newSessions.put(sessionId, session);

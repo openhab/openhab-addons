@@ -610,9 +610,6 @@ class ServerHandlerTest {
         assertTrue(actualTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID),
                 "WebSocketTask should exist before token change");
 
-        // Mock WebSocketTask to verify dispose is called
-        AbstractTask originalTask = actualTasks.get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
-
         // Act - update configuration with new token
         Map<String, Object> newConfigParams = new HashMap<>();
         newConfigParams.put("token", "new-token");

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +63,7 @@ import org.openhab.binding.jellyfin.internal.util.user.UserManager;
 import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -477,6 +479,32 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     }
 
     /**
+     * Returns the set of {@code serialNumber} values from all currently configured child client Things.
+     *
+     * <p>
+     * Used to populate {@link SessionManager#updateKnownDeviceIds} so that the dispatch map can route
+     * short-ID sessions (new Android app format) to handlers subscribed on legacy full IDs during the
+     * transition window before {@link ClientDiscoveryService} migrates the config.
+     *
+     * @return snapshot of serialNumber strings from child Things (never {@code null})
+     */
+    private Set<String> getConfiguredClientSerialNumbers() {
+        Set<String> ids = new HashSet<>();
+        try {
+            for (Thing child : getThing().getThings()) {
+                Object serialNumber = child.getConfiguration().get("serialNumber");
+                if (serialNumber instanceof String sn && !sn.isBlank()) {
+                    ids.add(sn);
+                }
+            }
+        } catch (ClassCastException e) {
+            // Should not occur in production (thing is always a Bridge), but guard defensively.
+            logger.debug("Could not iterate child Things — thing is not a Bridge: {}", e.getMessage());
+        }
+        return ids;
+    }
+
+    /**
      * Returns the session event bus for client handlers to subscribe to session updates.
      *
      * @return the session event bus
@@ -511,6 +539,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             logger.info("[STATE] Server fully connected and operational");
             // Initialize WebSocketTask now that we have an authenticated connection with token
             initializeWebSocketTask();
+            // Inform the session manager about the full device IDs currently configured in child
+            // Things so it can route short-ID sessions to the correct ClientHandler during the
+            // transition window before ClientDiscoveryService updates the serialNumber config.
+            sessionManager.updateKnownDeviceIds(getConfiguredClientSerialNumbers());
         } else if (newState == ServerState.ERROR) {
             logger.warn("[STATE] Server entered ERROR state from {}", oldState);
         } else if (newState == ServerState.DISPOSED) {

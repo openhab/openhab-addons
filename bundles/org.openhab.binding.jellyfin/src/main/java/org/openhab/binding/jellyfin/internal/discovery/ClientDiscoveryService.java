@@ -28,9 +28,12 @@ import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFI
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -154,6 +157,35 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
         logger.debug("Processing {} client(s) for discovery", clients.size());
 
+        // ----------------------------------------------------------------
+        // Pre-pass: canonical ID expansion (Android short-ID migration)
+        //
+        // Newer Jellyfin Android apps send only ANDROID_ID (16 hex chars) as deviceId,
+        // whereas older versions sent ANDROID_ID + userId (48 hex chars). If a configured
+        // Thing still has the old full ID as serialNumber, detect it here by computing the
+        // candidate full ID (shortId + userId_hex) and update its config to the short ID so
+        // that the ClientHandler re-subscribes on the correct key.
+        // ----------------------------------------------------------------
+        Set<String> migratedDeviceIds = new HashSet<>();
+        for (SessionInfoDto session : clients.values()) {
+            String shortId = session.getDeviceId();
+            UUID userId = session.getUserId();
+            if (shortId == null || shortId.isBlank() || userId == null) {
+                continue;
+            }
+            String candidateFullId = computeCandidateFullId(shortId, userId);
+            Thing existingThing = findThingBySerialNumber(bridgeUID, candidateFullId);
+            if (existingThing != null) {
+                logger.info(
+                        "[MIGRATION] Canonical ID expansion: updating serialNumber '{}' → '{}' for device '{}' (client: {})",
+                        candidateFullId, shortId, session.getDeviceName(), session.getClient());
+                Map<String, Object> updatedConfig = new HashMap<>(existingThing.getConfiguration().getProperties());
+                updatedConfig.put("serialNumber", shortId);
+                thingRegistry.updateConfiguration(existingThing.getUID(), updatedConfig);
+                migratedDeviceIds.add(shortId);
+            }
+        }
+
         // Deduplicate device IDs that are prefix variants of the same client.
         // Prefer the longest deviceId when one is a prefix of another.
         Map<String, SessionInfoDto> deduped = new LinkedHashMap<>();
@@ -167,6 +199,13 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             if (deviceId == null || deviceId.isBlank()) {
                 logger.debug("Skipping client with missing or empty device ID: sessionId={}, client={}",
                         session.getId(), session.getClient());
+                continue;
+            }
+
+            // Skip devices whose serialNumber was just migrated — their Thing config is up to date;
+            // no new inbox entry is needed.
+            if (migratedDeviceIds.contains(deviceId)) {
+                logger.debug("Skipping migrated device '{}' (serialNumber config updated)", deviceId);
                 continue;
             }
 
@@ -378,6 +417,37 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
         updatedConfig.put("serialNumber", newDeviceId);
         thingRegistry.updateConfiguration(existing.getUID(), updatedConfig);
         return true;
+    }
+
+    /**
+     * Computes the candidate full device ID by appending the user's UUID (hex, no hyphens) to the short ID.
+     *
+     * <p>
+     * Older Jellyfin Android apps sent {@code ANDROID_ID + userId_hex} as the device ID.
+     * Newer versions send only the 16-hex-char {@code ANDROID_ID}. This method reconstructs the
+     * legacy full ID so callers can check whether a configured Thing still carries the old form.
+     *
+     * @param shortId the short device ID reported by the Jellyfin server
+     * @param userId the user UUID from the session
+     * @return the candidate full device ID ({@code shortId} + {@code userId} without hyphens)
+     */
+    static String computeCandidateFullId(String shortId, UUID userId) {
+        return shortId + userId.toString().replace("-", "");
+    }
+
+    /**
+     * Searches the Thing registry for a configured client Thing under the given bridge whose
+     * {@code serialNumber} configuration parameter exactly matches the given value.
+     *
+     * @param bridgeUID the UID of the server bridge
+     * @param serialNumber the serialNumber value to search for
+     * @return the matching Thing, or {@code null} if none found
+     */
+    @Nullable
+    Thing findThingBySerialNumber(ThingUID bridgeUID, String serialNumber) {
+        return thingRegistry.getAll().stream().filter(t -> THING_TYPE_JELLYFIN_CLIENT.equals(t.getThingTypeUID()))
+                .filter(t -> bridgeUID.equals(t.getBridgeUID()))
+                .filter(t -> serialNumber.equals(t.getConfiguration().get("serialNumber"))).findFirst().orElse(null);
     }
 
     /**
