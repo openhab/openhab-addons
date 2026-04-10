@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.hypfvieh.bluetooth.DeviceManager;
 import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
@@ -33,6 +35,8 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothDevice;
 @NonNullByDefault
 public class DeviceManagerWrapper {
 
+    private final Logger logger = LoggerFactory.getLogger(DeviceManagerWrapper.class);
+
     private @Nullable DeviceManager deviceManager;
 
     public DeviceManagerWrapper(@Nullable DeviceManager deviceManager) {
@@ -42,7 +46,12 @@ public class DeviceManagerWrapper {
     @SuppressWarnings("null")
     public synchronized Collection<BluetoothAdapter> scanForBluetoothAdapters() {
         if (deviceManager != null) {
-            return deviceManager.scanForBluetoothAdapters();
+            try {
+                return deviceManager.scanForBluetoothAdapters();
+            } catch (Exception e) {
+                logger.debug("Failed to scan for bluetooth adapters: {}", e.getMessage());
+                return Set.of();
+            }
         } else {
             return Set.of();
         }
