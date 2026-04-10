@@ -318,11 +318,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             if (!jsonTree.isJsonObject()) {
                 throw new FreeAtHomeHttpCommunicationException(0,
-                        "No data is received by getDatapoint with the URL [ " + url + " ]");
-            }
-
-            if (!jsonTree.isJsonObject()) {
-                throw new FreeAtHomeHttpCommunicationException(0,
                         "Invalid jsonObject in getFreeatHomeDeviceDescription with the URL [ " + url + " ]");
             }
 
