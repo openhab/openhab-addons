@@ -63,8 +63,9 @@ public class FreeAtHomeDeviceDescription {
         // set the device invalid at first
         validDevice = false;
 
-        sceneIsDetected = id.toLowerCase(Locale.ROOT).startsWith("ffff48");
-        ruleIsDetected = id.toLowerCase(Locale.ROOT).startsWith("ffff4a");
+        final String idLowerCase = id.toLowerCase(Locale.ROOT);
+        sceneIsDetected = idLowerCase.startsWith("ffff48");
+        ruleIsDetected = idLowerCase.startsWith("ffff4a");
 
         JsonObject jsonObjectOfId = jsonObject.getAsJsonObject(id);
 
