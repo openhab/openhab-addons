@@ -14,6 +14,7 @@ package org.openhab.binding.freeathome.internal.datamodel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -62,8 +63,8 @@ public class FreeAtHomeDeviceDescription {
         // set the device invalid at first
         validDevice = false;
 
-        sceneIsDetected = id.toLowerCase().startsWith("ffff48");
-        ruleIsDetected = id.toLowerCase().startsWith("ffff4a");
+        sceneIsDetected = id.toLowerCase(Locale.ROOT).startsWith("ffff48");
+        ruleIsDetected = id.toLowerCase(Locale.ROOT).startsWith("ffff4a");
 
         JsonObject jsonObjectOfId = jsonObject.getAsJsonObject(id);
 
@@ -76,13 +77,13 @@ public class FreeAtHomeDeviceDescription {
         if (jsonObjectOfInterface != null) {
             String interfaceString = jsonObjectOfInterface.getAsString();
 
-            if (interfaceString.toLowerCase().startsWith("vdev:")) {
+            if (interfaceString.toLowerCase(Locale.ROOT).startsWith("vdev:")) {
                 interfaceType = DEVICE_INTERFACE_VIRTUAL_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("hue")) {
+            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("hue")) {
                 interfaceType = DEVICE_INTERFACE_HUE_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("rf")) {
+            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("rf")) {
                 interfaceType = DEVICE_INTERFACE_WIRELESS_TYPE;
-            } else if (interfaceString.toLowerCase().startsWith("tp")) {
+            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("tp")) {
                 interfaceType = DEVICE_INTERFACE_WIRED_TYPE;
             } else {
                 interfaceType = DEVICE_INTERFACE_UNKNOWN_TYPE;
