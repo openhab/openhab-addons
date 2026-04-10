@@ -237,12 +237,17 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
         }
 
         final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
-        final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
-        final String modelNumber = modelDetails.getModelNumber();
-        final String modelName = modelDetails.getModelName();
-        final String serialNumber = details.getSerialNumber();
-
-        logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
+        final @Nullable String manufacturer = manufacturerDetails == null ? null
+                : manufacturerDetails.getManufacturer();
+        final @Nullable String modelNumber = modelDetails.getModelNumber();
+        final @Nullable String modelName = modelDetails.getModelName();
+        final @Nullable String serialNumber = details.getSerialNumber();
+        if (serialNumber == null || isBlank(serialNumber)) {
+            logger.debug("Discovered unit without serial number: {} {} - {}", manufacturer, modelNumber, friendlyName);
+            return null;
+        } else {
+            logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
+        }
 
         if (modelNumber != null) {
             if (isSupportedByVendorKey(manufacturer, modelNumber)) {
@@ -254,7 +259,7 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
                 return new ThingUID(THING_TYPE_RADIO, serialNumber);
             }
 
-            if (modelName != null && hasSupportedModelInFriendlyName(friendlyName)) {
+            if (hasSupportedModelInFriendlyName(friendlyName)) {
                 return new ThingUID(THING_TYPE_RADIO, serialNumber);
             }
         }
