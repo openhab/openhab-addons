@@ -76,14 +76,14 @@ public class FreeAtHomeDeviceDescription {
 
         if (jsonObjectOfInterface != null) {
             String interfaceString = jsonObjectOfInterface.getAsString();
-
-            if (interfaceString.toLowerCase(Locale.ROOT).startsWith("vdev:")) {
+            final String interfaceStringLowerCase = interfaceString.toLowerCase(Locale.ROOT);
+            if (interfaceStringLowerCase.startsWith("vdev:")) {
                 interfaceType = DEVICE_INTERFACE_VIRTUAL_TYPE;
-            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("hue")) {
+            } else if (interfaceStringLowerCase.startsWith("hue")) {
                 interfaceType = DEVICE_INTERFACE_HUE_TYPE;
-            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("rf")) {
+            } else if (interfaceStringLowerCase.startsWith("rf")) {
                 interfaceType = DEVICE_INTERFACE_WIRELESS_TYPE;
-            } else if (interfaceString.toLowerCase(Locale.ROOT).startsWith("tp")) {
+            } else if (interfaceStringLowerCase.startsWith("tp")) {
                 interfaceType = DEVICE_INTERFACE_WIRED_TYPE;
             } else {
                 interfaceType = DEVICE_INTERFACE_UNKNOWN_TYPE;
