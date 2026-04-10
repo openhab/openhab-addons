@@ -16,7 +16,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link RegionSwitch} class is used as a DTO to hold the Vesync's API's
- * response
+ * response, this indicates the details required if a region switch is required. Details such as
+ * the expected users region and a bizToken are used currently to perform the regional switch.
  *
  * @author David Goodyear - Initial contribution
  */
