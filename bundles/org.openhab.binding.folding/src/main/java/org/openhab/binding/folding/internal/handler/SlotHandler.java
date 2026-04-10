@@ -97,7 +97,6 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         updateState(CHANNEL_STATUS, new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(CHANNEL_ACTIVE, OnOffType.from(run));
         updateState(CHANNEL_FINISH, OnOffType.from(finishing));
         updateState(CHANNEL_RUN, OnOffType.from(run));
         updateState(CHANNEL_DESCRIPTION, new StringType(si.description));

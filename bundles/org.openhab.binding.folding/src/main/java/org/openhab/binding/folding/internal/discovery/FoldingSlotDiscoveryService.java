@@ -63,7 +63,7 @@ public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
         return description + " @ " + host;
     }
 
-    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, String description) {
+    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, @Nullable String description) {
         if (isBackgroundDiscoveryEnabled() && id != null) {
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(FoldingBindingConstants.PARAM_SLOT_ID, id);

@@ -33,7 +33,6 @@ public class FoldingBindingConstants {
     public static final String PARAM_SLOT_ID = "id";
 
     // List of all Channel ids
-    public static final String CHANNEL_ACTIVE = "active";
     public static final String CHANNEL_DESCRIPTION = "description";
     public static final String CHANNEL_FINISH = "finish";
     public static final String CHANNEL_RUN = "run";

@@ -39,7 +39,7 @@ public class FoldingDiscoveryProxy {
         this.discoveryService = service;
     }
 
-    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, String description) {
+    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, @Nullable String description) {
         FoldingSlotDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.newSlot(bridgeUID, host, id, description);
