@@ -762,7 +762,7 @@ public class Clip2Bridge implements Closeable {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new TrustManager[] { trustManagerProvider.getTrustManager() }, null);
             sslContextFactory.setSslContext(sslContext);
-            this.hueContext = sslContext;
+            hueContext = sslContext;
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new ApiException("Could not initialize Hue SSL Context", e);
         }
