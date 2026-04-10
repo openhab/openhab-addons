@@ -60,6 +60,7 @@ public class HyperionBindingConstants {
     // List of all properties
     public static final String PROP_HOST = "host";
     public static final String PROP_PORT = "port";
+    public static final String PROP_INSTANCES = "instances";
     public static final String PROP_PRIORITY = "priority";
     public static final String PROP_POLL_FREQUENCY = "poll_frequency";
     public static final String PROP_ORIGIN = "origin";
