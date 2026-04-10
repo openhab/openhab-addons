@@ -15,10 +15,8 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier.V1Config} class is used as a DTO
- * to
- * hold the Vesync's API's common
- * response data, with regard's to an air humidifer device's current configuration.
+ * The {@link org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V1Config} class is used as a DTO
+ * to hold the Vesync's API's common response data, with regard to an air humidifier device's current configuration.
  *
  * @author David Goodyear - Initial contribution
  */
