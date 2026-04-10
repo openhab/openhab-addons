@@ -19,9 +19,11 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +33,9 @@ import org.openhab.binding.folding.internal.discovery.FoldingDiscoveryProxy;
 import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -41,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.Strictness;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
@@ -124,10 +129,17 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         List<SlotInfo> slotList = null;
         try {
             Socket s = getSocket();
-            s.getOutputStream().write(("slot-info\r\n").getBytes());
-            socketReader.readLine(); // Discard PyON header
-            JsonReader jr = new JsonReader(socketReader);
-            jr.setLenient(true);
+            if (s == null) {
+                throw new IOException("Socket is not available");
+            }
+            BufferedReader reader = socketReader;
+            if (reader == null) {
+                throw new IOException("Socket reader is not available");
+            }
+            s.getOutputStream().write(("slot-info\r\n").getBytes(StandardCharsets.UTF_8));
+            reader.readLine(); // Discard PyON header
+            JsonReader jr = new JsonReader(reader);
+            jr.setStrictness(Strictness.LENIENT);
             Type slotListType = new TypeToken<List<SlotInfo>>() {
             }.getType();
 
@@ -150,8 +162,8 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 FoldingDiscoveryProxy.getInstance().newSlot(getThing().getUID(), host, si.id, si.description);
             }
         }
-        updateState(getThing().getChannel("run").getUID(), OnOffType.from(running));
-        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
+        updateState(getChannelUid("run"), OnOffType.from(running));
+        updateState(getChannelUid("finish"), OnOffType.from(finishing));
     }
 
     public void delayedRefresh() {
@@ -195,10 +207,12 @@ public class FoldingClientHandler extends BaseBridgeHandler {
             }
             activeSocket = new Socket();
             activeSocket.connect(new InetSocketAddress(cfgHost, cfgPort.intValue()), 2000);
-            socketReader = new BufferedReader(new InputStreamReader(activeSocket.getInputStream()));
+            socketReader = new BufferedReader(
+                    new InputStreamReader(activeSocket.getInputStream(), StandardCharsets.UTF_8));
             readUntilPrompt(); // Discard initial banner message
             if (password != null) {
-                activeSocket.getOutputStream().write(("auth \"" + password + "\"\r\n").getBytes());
+                activeSocket.getOutputStream()
+                        .write(("auth \"" + password + "\"\r\n").getBytes(StandardCharsets.UTF_8));
                 if (readUntilPrompt().startsWith("OK")) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
@@ -214,12 +228,16 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     private synchronized String readUntilPrompt() throws IOException {
         boolean havePrompt1 = false;
         StringBuilder response = new StringBuilder();
+        BufferedReader reader = socketReader;
+        if (reader == null) {
+            throw new IOException("Socket reader is not available");
+        }
         try {
             while (true) {
-                int c = socketReader.read();
+                int c = reader.read();
                 if (havePrompt1) {
                     if (c == ' ') {
-                        return response.toString();
+                        return Objects.requireNonNull(response.toString());
                     } else {
                         response.append((char) c);
                     }
@@ -236,7 +254,10 @@ public class FoldingClientHandler extends BaseBridgeHandler {
     public synchronized void sendCommand(String command) throws IOException {
         try {
             Socket s = getSocket();
-            s.getOutputStream().write((command + "\r\n").getBytes());
+            if (s == null) {
+                throw new IOException("Socket is not available");
+            }
+            s.getOutputStream().write((command + "\r\n").getBytes(StandardCharsets.UTF_8));
             readUntilPrompt();
         } catch (IOException e) {
             disconnected();
@@ -249,5 +270,12 @@ public class FoldingClientHandler extends BaseBridgeHandler {
         if (!initializing) {
             delayedRefresh();
         }
+    }
+
+    private ChannelUID getChannelUid(String channelId) throws IllegalStateException {
+        if (getThing() instanceof Thing thing && thing.getChannel(channelId) instanceof Channel channel) {
+            return channel.getUID();
+        }
+        throw new IllegalStateException("Thing is null or Channel " + channelId + " does not exist");
     }
 }

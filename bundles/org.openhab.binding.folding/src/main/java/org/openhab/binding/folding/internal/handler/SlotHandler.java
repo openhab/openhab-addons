@@ -15,11 +15,11 @@ package org.openhab.binding.folding.internal.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,11 +51,11 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         getBridgeHandler().registerSlot(myId(), this);
     }
 
-    private @Nullable FoldingClientHandler getBridgeHandler() {
+    private FoldingClientHandler getBridgeHandler() throws IllegalStateException {
         if (super.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof FoldingClientHandler handler) {
             return handler;
         }
-        return null;
+        throw new IllegalStateException("Slot handler without Folding client bridge");
     }
 
     private String myId() {
@@ -88,11 +88,18 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void refreshed(SlotInfo si) {
         updateStatus(ThingStatus.ONLINE);
-        updateState(getThing().getChannel("status").getUID(), new StringType(si.status));
+        updateState(getChannelUid("status"), new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
-        updateState(getThing().getChannel("run").getUID(), OnOffType.from(run));
-        updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
+        updateState(getChannelUid("finish"), OnOffType.from(finishing));
+        updateState(getChannelUid("run"), OnOffType.from(run));
+        updateState(getChannelUid("description"), new StringType(si.description));
+    }
+
+    private ChannelUID getChannelUid(String channelId) throws IllegalStateException {
+        if (getThing() instanceof Thing thing && thing.getChannel(channelId) instanceof Channel channel) {
+            return channel.getUID();
+        }
+        throw new IllegalStateException("Thing is null or Channel " + channelId + " does not exist");
     }
 }
