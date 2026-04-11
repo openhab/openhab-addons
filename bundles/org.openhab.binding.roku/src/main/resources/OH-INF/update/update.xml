@@ -92,6 +92,12 @@
 				<type>roku:endTime</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<update-channel id="powerState">
+				<type>roku:powerState</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
