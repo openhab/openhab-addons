@@ -42,7 +42,7 @@ import io.github.floriansw.ondus.api.model.Room;
 public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GroheOndusBaseHandler.class);
 
-    protected @Nullable GroheOndusApplianceConfiguration config;
+    protected @NonNullByDefault({}) GroheOndusApplianceConfiguration config;
 
     private @Nullable ScheduledFuture<?> poller;
 

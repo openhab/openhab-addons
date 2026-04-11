@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.groheondus.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
+@NonNullByDefault
 public class GroheOndusApplianceConfiguration {
 
-    public String applianceId;
+    public @Nullable String applianceId;
     public int roomId;
     public int locationId;
-    public int pollingInterval;
+    public int pollingInterval = GroheOndusBindingConstants.DEFAULT_POLLING_INTERVAL;
 }

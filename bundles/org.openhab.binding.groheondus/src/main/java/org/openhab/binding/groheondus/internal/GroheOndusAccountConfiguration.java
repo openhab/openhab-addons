@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.groheondus.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
+@NonNullByDefault
 public class GroheOndusAccountConfiguration {
 
-    public String username;
-    public String password;
+    public @Nullable String username;
+    public @Nullable String password;
 }

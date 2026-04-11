@@ -70,9 +70,11 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        OndusService ondusService = this.ondusService;
         if (ondusService != null) {
-            ondusService = null;
+            this.ondusService = null;
         }
+        ScheduledFuture<?> reloginFuture = this.reloginFuture;
         if (reloginFuture != null) {
             reloginFuture.cancel(true);
         }
