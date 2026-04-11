@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
@@ -16,13 +16,14 @@
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
       <artifactId>aws-iot-device-sdk</artifactId>
-      <version>1.21.0</version>
+      <version>1.30.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.31.3</version>
+      <version>0.44.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
