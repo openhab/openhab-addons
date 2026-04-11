@@ -10,25 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier;
+package org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier.V1Config} class is used as a
- * DTO
- * to hold the Vesync's API's common response data, with regard to an air humidifier device's current configuration.
+ * The {@link V1Config} class is used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device's current configuration.
  *
  * @author David Goodyear - Initial contribution
  */
 public class V1Config {
-
-    @SerializedName("auto_target_humidity")
-    public int autoTargetHumidity;
-
     @SerializedName("display")
     public boolean display;
 
-    @SerializedName("automatic_stop")
-    public boolean automaticStop;
+    @SerializedName("display_forever")
+    public boolean displayForever;
+
+    @SerializedName("auto_preference")
+    public V1AutoSetup autoPreference;
 }

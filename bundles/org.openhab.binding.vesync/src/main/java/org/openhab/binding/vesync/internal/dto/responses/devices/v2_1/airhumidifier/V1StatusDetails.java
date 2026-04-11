@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses.devices.v2.airhumidifier;
+package org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier;
 
 import com.google.gson.annotations.SerializedName;
 

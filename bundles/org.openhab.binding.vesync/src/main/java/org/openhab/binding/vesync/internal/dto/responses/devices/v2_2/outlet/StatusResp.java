@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier;
+package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.outlet;
 
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2StatusResp} class is used as a DTO to hold the Vesync's API's response,
- * to a status request
+ * The {@link StatusResp} class is used as a DTO to hold the Vesync's API's common response
+ * data, with regard's to an outlet device.
  *
- * @author David Goodyear - Initial contribution
+ * @author Marcel Goerentz - Initial contribution
  */
-public class V2StatusResp extends TransactionResp {
+public class StatusResp extends TransactionResp {
 
     @SerializedName("result")
-    public V2StatusWrapper result;
+    public StatusWrapper outletResult;
 }

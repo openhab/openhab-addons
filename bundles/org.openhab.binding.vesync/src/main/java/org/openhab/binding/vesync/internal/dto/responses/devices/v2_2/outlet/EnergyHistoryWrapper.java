@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses.devices.v2.airpurifier;
+package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.outlet;
 
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V1StatusWrapper} is a Java class used as a DTO to hold the Vesync's API's common
- * response data, with regard's to an air purifier device, this is a wrapper layer for the actual response data.
+ * The {@link EnergyHistoryWrapper} class is used as a DTO to hold the Vesync's API's
+ * response data from the bypass API about the result of a request for the status of an energy use.
  *
- * @author David Goodyear - Initial contribution
+ * @author Marcel Goerentz - Initial contribution
  */
-public class V1StatusWrapper extends TransactionResp {
+public class EnergyHistoryWrapper extends TransactionResp {
 
     @SerializedName("result")
-    public V1StatusDetails result;
+    public EnergyHistorySnapshots result = new EnergyHistorySnapshots();
 }
