@@ -10,23 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SetState} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set a state to true or false.
+ * The {@link SetMode} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set a mode.
  *
  * @author David Goodyear - Initial contribution
  */
+public class SetMode extends EmptyPayload {
 
-public class SetState extends EmptyPayload {
-
-    public SetState(final boolean state) {
-        this.state = state;
+    public SetMode(final String mode) {
+        this.mode = mode;
     }
 
-    @SerializedName("state")
-    public boolean state = false;
+    @SerializedName("mode")
+    public String mode = "";
 }

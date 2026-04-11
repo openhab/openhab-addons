@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 /**
  * The {@link EmptyPayload} class is used as a DTO to hold a empty payload for the

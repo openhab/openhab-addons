@@ -10,22 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SetScreenSwitch} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set a screen on / off switch.
+ * The {@link SetLightDetection} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set light detection switch.
  *
  * @author David Goodyear - Initial contribution
  */
-public class SetScreenSwitch extends EmptyPayload {
+public class SetLightDetection extends EmptyPayload {
 
-    public SetScreenSwitch(final boolean enabled) {
-        this.screenSwitch = enabled ? 1 : 0;
+    public SetLightDetection(final boolean enabled) {
+        lightDetectionSwitch = enabled ? 1 : 0;
     }
 
-    @SerializedName("screenSwitch")
-    public int screenSwitch = -1;
+    @SerializedName("lightDetectionSwitch")
+    public int lightDetectionSwitch = -1;
 }

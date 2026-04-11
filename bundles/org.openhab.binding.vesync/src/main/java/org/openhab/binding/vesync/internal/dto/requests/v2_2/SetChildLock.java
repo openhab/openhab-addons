@@ -10,21 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SetWorkMode} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set work mode.
+ * The {@link SetChildLock} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set a child lock switch.
  *
  * @author David Goodyear - Initial contribution
  */
-public class SetWorkMode extends EmptyPayload {
-    public SetWorkMode(final String workMode) {
-        this.workMode = workMode;
+public class SetChildLock extends EmptyPayload {
+
+    public SetChildLock(final boolean enabled) {
+        this.childLockSwitch = enabled ? 1 : 0;
     }
 
-    @SerializedName("workMode")
-    public String workMode = "";
+    @SerializedName("childLockSwitch")
+    public int childLockSwitch = -1;
 }

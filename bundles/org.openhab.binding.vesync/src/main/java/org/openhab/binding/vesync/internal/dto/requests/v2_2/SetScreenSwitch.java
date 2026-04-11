@@ -10,22 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SetMode} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set a mode.
+ * The {@link SetScreenSwitch} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set a screen on / off switch.
  *
  * @author David Goodyear - Initial contribution
  */
-public class SetMode extends EmptyPayload {
+public class SetScreenSwitch extends EmptyPayload {
 
-    public SetMode(final String mode) {
-        this.mode = mode;
+    public SetScreenSwitch(final boolean enabled) {
+        this.screenSwitch = enabled ? 1 : 0;
     }
 
-    @SerializedName("mode")
-    public String mode = "";
+    @SerializedName("screenSwitch")
+    public int screenSwitch = -1;
 }

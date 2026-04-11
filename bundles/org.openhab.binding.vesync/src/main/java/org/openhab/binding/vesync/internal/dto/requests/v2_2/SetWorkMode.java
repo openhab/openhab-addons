@@ -10,22 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.requests.v2;
+package org.openhab.binding.vesync.internal.dto.requests.v2_2;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Enabled} class is used as a DTO to hold a payload for the
- * managed device bypass requests to set enabled.
+ * The {@link SetWorkMode} class is used as a DTO to hold a payload for the
+ * managed device bypass requests to set work mode.
  *
  * @author David Goodyear - Initial contribution
  */
-public class Enabled extends EmptyPayload {
-
-    public Enabled(final boolean enabled) {
-        this.enabled = enabled;
+public class SetWorkMode extends EmptyPayload {
+    public SetWorkMode(final String workMode) {
+        this.workMode = workMode;
     }
 
-    @SerializedName("enabled")
-    public boolean enabled = true;
+    @SerializedName("workMode")
+    public String workMode = "";
 }

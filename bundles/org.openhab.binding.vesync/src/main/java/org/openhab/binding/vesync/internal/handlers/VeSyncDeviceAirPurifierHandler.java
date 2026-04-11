@@ -34,16 +34,16 @@ import org.openhab.binding.vesync.internal.dto.requests.v1.GetDeviceDetails;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetLevel;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetMode;
 import org.openhab.binding.vesync.internal.dto.requests.v1.SetStatus;
-import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetChildLock;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetLightDetection;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetManualSpeedLevel;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetNightLight;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetPower;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetScreenSwitch;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
-import org.openhab.binding.vesync.internal.dto.requests.v2.SetWorkMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetNightLight;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetChildLock;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLightDetection;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetManualSpeedLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetPower;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetScreenSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetWorkMode;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifier.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
@@ -310,7 +310,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetMode(targetFanMode));
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode(
+                                                targetFanMode));
                         }
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
@@ -350,10 +351,10 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                                 break;
                             default:
                                 sendV2BypassControlCommand(DEVICE_SET_PURIFIER_MODE,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetMode(MODE_MANUAL),
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode(MODE_MANUAL),
                                         false);
                                 sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                        new org.openhab.binding.vesync.internal.dto.requests.v2.SetLevel(0,
+                                        new org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLevel(0,
                                                 DEVICE_LEVEL_TYPE_WIND, requestedLevel));
                         }
                         break;
