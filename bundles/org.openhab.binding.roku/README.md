@@ -43,20 +43,20 @@ The following channels are available:
 | activeAppName      | String               | The name of the current app (Read-only).                                                                                                                        |
 | button             | String               | Sends a remote control command the Roku. See list of available commands below. (Write-only)                                                                     |
 | control            | Player               | Control Playback e.g. play/pause/next/previous                                                                                                                  |
-| playMode           | String               | The current playback mode ie: stop, play, pause (Read-only).                                                                                                    |
+| playMode           | String               | The current playback mode e.g. stop, play, pause (Read-only).                                                                                                   |
 | timeElapsed        | Number:Time          | The total number of seconds of playback time elapsed for the current playing title (Read-only).                                                                 |
 | timeTotal          | Number:Time          | The total length of the current playing title in seconds (Read-only). This data is not provided by all streaming apps.                                          |
 | endTime            | DateTime             | The date/time when the currently playing media will end (Read-only). N/A if timeTotal is not provided by the current streaming app.                             |
 | progress           | Dimmer               | The current progress [0-100%] of playing media (Read-only). N/A if timeTotal is not provided by the current streaming app.                                      |
 | activeChannel      | String               | A dropdown containing a list of available TV channels on the Roku TV. The channel currently tuned is automatically selected. The list updates every 10 minutes. |
-| signalMode         | String               | The signal type of the current TV channel, ie: 1080i (Read-only).                                                                                               |
+| signalMode         | String               | The signal type of the current TV channel, e.g. 1080i (Read-only).                                                                                              |
 | signalQuality      | Number:Dimensionless | The signal quality of the current TV channel, 0-100% (Read-only).                                                                                               |
 | channelName        | String               | The name of the channel currently selected (Read-only).                                                                                                         |
 | programTitle       | String               | The name of the current TV program (Read-only).                                                                                                                 |
 | programDescription | String               | The description of the current TV program (Read-only).                                                                                                          |
 | programRating      | String               | The TV parental guideline rating of the current TV program (Read-only).                                                                                         |
 | power              | Switch               | Controls the power for the TV.                                                                                                                                  |
-| powerState         | String               | The current power state for the TV. (Read-only - ie PowerOn, DisplayOff, Ready, etc.)                                                                           |
+| powerState         | String               | The current power state for the TV. (Read-only - e.g. PowerOn, DisplayOff, Ready, Offline)                                                                      |
 
 Some Notes:
 
