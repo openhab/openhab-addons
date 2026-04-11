@@ -17,13 +17,13 @@ import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V1StatusResp} class is used as a DTO to hold the Vesync's API's response,
- * to a status request
+ * The {@link StatusWrapper} is a Java class used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device, this is a wrapper layer for the actual response data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V1StatusResp extends TransactionResp {
+public class StatusWrapper extends TransactionResp {
 
     @SerializedName("result")
-    public V1StatusWrapper result;
+    public StatusDetails result;
 }

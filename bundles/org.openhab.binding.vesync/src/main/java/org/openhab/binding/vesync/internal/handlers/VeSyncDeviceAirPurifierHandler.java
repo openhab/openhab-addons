@@ -45,8 +45,7 @@ import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetWorkMode;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier.V1StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifier.StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifier.V2StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
@@ -388,7 +387,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         String response;
-        StatusResp purifierStatus;
+        org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp purifierStatus;
         synchronized (pollLock) {
             response = cachedResponse.getValue();
             boolean cachedDataUsed = response != null;
@@ -403,7 +402,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            purifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
+            purifierStatus = VeSyncConstants.GSON.fromJson(response,
+                    org.openhab.binding.vesync.internal.dto.responses.devices.v1.airpurifier.StatusResp.class);
 
             if (purifierStatus == null) {
                 return;
@@ -466,7 +466,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             if (devContraints.protocolV2Version == 2) {
                 purifierStatus = VeSyncConstants.GSON.fromJson(response, V2StatusResp.class);
             } else {
-                purifierStatus = VeSyncConstants.GSON.fromJson(response, V1StatusResp.class);
+                purifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
             }
 
             if (purifierStatus == null) {
@@ -490,11 +490,11 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         if (devContraints.protocolV2Version == 2) {
             parseV2Ver2Poll((V2StatusResp) purifierStatus);
         } else {
-            parseV2Ver1Poll((V1StatusResp) purifierStatus);
+            parseV2Ver1Poll((StatusResp) purifierStatus);
         }
     }
 
-    private void parseV2Ver1Poll(final V1StatusResp purifierStatus) {
+    private void parseV2Ver1Poll(final StatusResp purifierStatus) {
         if (!"0".equals(purifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-purifier"));
             return;

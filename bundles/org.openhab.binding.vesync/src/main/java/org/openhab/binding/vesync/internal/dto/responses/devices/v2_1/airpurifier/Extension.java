@@ -15,16 +15,15 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V1AutoSetup} class used as a DTO to hold the Vesync's API's common
- * response data, with regard's to an air purifier device's configuration relating to its
- * automatic mode of operation.
+ * The {@link Extension} class is used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device's extensions capabilities.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V1AutoSetup {
-    @SerializedName("type")
-    public String autoType;
+public class Extension {
+    @SerializedName("schedule_count")
+    public int scheduleCount;
 
-    @SerializedName("room_size")
-    public int roomSize;
+    @SerializedName("timer_remain")
+    public int timerRemain;
 }

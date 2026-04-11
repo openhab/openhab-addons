@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airpurifi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V1StatusDetails} class is used as a DTO to hold the Vesync's API's common
+ * The {@link StatusDetails} class is used as a DTO to hold the Vesync's API's common
  * response data, with regard's to an air purifier device's current status.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V1StatusDetails {
+public class StatusDetails {
     @SerializedName("enabled")
     public boolean enabled;
 
@@ -49,10 +49,10 @@ public class V1StatusDetails {
     public String nightLight;
 
     @SerializedName("configuration")
-    public V1Config configuration;
+    public Config configuration;
 
     @SerializedName("extension")
-    public V1Extension extension;
+    public Extension extension;
 
     @SerializedName("device_error_code")
     public int deviceErrorCode;

@@ -38,7 +38,7 @@ import org.openhab.binding.vesync.internal.dto.requests.v2.SetState;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.requests.v2.SetTargetHumidity;
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
-import org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.V1StatusResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airhumidifier.V2StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
@@ -382,7 +382,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             if (devContraints.protocolV2Version == 2) {
                 humidifierStatus = VeSyncConstants.GSON.fromJson(response, V2StatusResp.class);
             } else {
-                humidifierStatus = VeSyncConstants.GSON.fromJson(response, V1StatusResp.class);
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
             }
 
             if (humidifierStatus == null) {
@@ -404,13 +404,13 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (devContraints.protocolV2Version != 2) {
-            parseV2Ver1Poll((V1StatusResp) humidifierStatus, deviceFamily);
+            parseV2Ver1Poll((StatusResp) humidifierStatus, deviceFamily);
         } else {
             parseV2Ver2Poll((V2StatusResp) humidifierStatus);
         }
     }
 
-    private void parseV2Ver1Poll(final V1StatusResp humidifierStatus, final @Nullable String deviceFamily) {
+    private void parseV2Ver1Poll(final StatusResp humidifierStatus, final @Nullable String deviceFamily) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));
             return;
