@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airhumidi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2StatusDetails} class is used as a DTO to hold the Vesync's API's
+ * The {@link StatusDetails} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API with regard's to the status of an air humidifier.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2StatusDetails {
+public class StatusDetails {
 
     @SerializedName("powerSwitch")
     public int powerSwitch;

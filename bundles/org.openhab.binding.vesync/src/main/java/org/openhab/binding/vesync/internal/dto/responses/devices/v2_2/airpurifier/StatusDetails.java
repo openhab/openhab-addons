@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2StatusDetails} class is used as a DTO to hold the Vesync's API's
+ * The {@link StatusDetails} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the result of a request for the status of an air purifier.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2StatusDetails {
+public class StatusDetails {
     @SerializedName("AQLevel")
     public int airQuality;
 
@@ -94,8 +94,8 @@ public class V2StatusDetails {
     public int errorCode;
 
     @SerializedName("autoPreference")
-    public V2AutoSetup autoPreference;
+    public AutoSetup autoPreference;
 
     @SerializedName("sleepPreference")
-    public V2SleepSetup sleepPreference;
+    public SleepSetup sleepPreference;
 }

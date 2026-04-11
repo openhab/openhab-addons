@@ -15,12 +15,12 @@ package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifi
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2SleepSetup} class is used as a DTO to hold the Vesync's API's
+ * The {@link SleepSetup} class is used as a DTO to hold the Vesync's API's
  * response data from the bypass API about the sleep preferences regarding an air purifier unit.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2SleepSetup {
+public class SleepSetup {
     @SerializedName("sleepPreferenceType")
     public String sleepPreferenceType;
 

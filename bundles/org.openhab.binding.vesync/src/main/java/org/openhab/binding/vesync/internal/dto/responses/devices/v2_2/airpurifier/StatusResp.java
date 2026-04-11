@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifier;
 
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2AutoSetup} class used as a DTO to hold the Vesync's API's common
- * response data, with regard's to an air purifier device's configuration relating to its
- * automatic mode of operation.
+ * The {@link StatusResp} class is used as a DTO to hold the Vesync's API's response,
+ * to a status request
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2AutoSetup {
-    @SerializedName("autoPreferenceType")
-    public String autoType;
+public class StatusResp extends TransactionResp {
 
-    @SerializedName("roomSize")
-    public int roomSize;
+    @SerializedName("result")
+    public StatusWrapper result;
 }

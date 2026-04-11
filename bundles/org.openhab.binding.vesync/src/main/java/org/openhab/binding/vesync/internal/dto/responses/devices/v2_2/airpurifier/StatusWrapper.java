@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airhumidifier;
+package org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airpurifier;
 
 import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link V2StatusResp} class is used as a DTO to hold the Vesync's API's common
- * response data, with regard's to an air humidifier based device, using the latest encoding protocol scheme.
+ * The {@link StatusWrapper} is a Java class used as a DTO to hold the Vesync's API's common
+ * response data, with regard's to an air purifier device, this is a wrapper layer for the actual response data.
  *
  * @author David Goodyear - Initial contribution
  */
-public class V2StatusResp extends TransactionResp {
+public class StatusWrapper extends TransactionResp {
 
     @SerializedName("result")
-    public V2StatusWrapper result;
+    public StatusDetails result;
 }
