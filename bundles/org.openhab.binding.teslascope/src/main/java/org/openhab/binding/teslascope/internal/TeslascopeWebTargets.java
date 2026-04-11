@@ -97,20 +97,24 @@ public class TeslascopeWebTargets {
                 logger.trace("{} request for {}", HttpMethod.GET, uri);
             }
             ContentResponse response = request.send();
-            status = response.getStatus();
-            jsonResponse = response.getContentAsString();
-            logger.trace("JSON response: '{}'", jsonResponse);
-            if (status == HttpStatus.UNAUTHORIZED_401) {
-                throw new TeslascopeAuthenticationException("Unauthorized");
-            }
-            if (!HttpStatus.isSuccess(status)) {
-                throw new TeslascopeCommunicationException(
-                        String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+            switch (response.getStatus()) {
+                case HttpStatus.OK_200:
+                    jsonResponse = response.getContentAsString();
+                    logger.trace("JSON response: '{}'", jsonResponse);
+                    break;
+                case HttpStatus.UNAUTHORIZED_401:
+                    throw new TeslascopeAuthenticationException("Unauthorized");
+                case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                case HttpStatus.BAD_GATEWAY_502:
+                    logger.debug("Http error 500/502 received, continuing");
+                    break;
+                default:
+                    throw new TeslascopeCommunicationException(
+                            String.format("Teslascope returned error <%d> while invoking %s", status, uri));
             }
         } catch (TimeoutException | ExecutionException | InterruptedException ex) {
             throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
         }
-
         return jsonResponse;
     }
 }
