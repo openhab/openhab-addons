@@ -24,5 +24,5 @@ public class GroheOndusApplianceConfiguration {
     public @Nullable String applianceId;
     public int roomId;
     public int locationId;
-    public int pollingInterval = GroheOndusBindingConstants.DEFAULT_POLLING_INTERVAL;
+    public int pollingInterval = 0;
 }
