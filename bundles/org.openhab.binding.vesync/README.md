@@ -42,7 +42,6 @@ Once the bridge is configured auto discovery will discover supported devices fro
 | password                         | String | The password as used in the VeSync mobile application     |                    |
 | airPurifierPollInterval          | Number | The poll interval (seconds) for air filters / humidifiers | 60                 |
 | outletPollInterval               | Number | The poll interval (seconds) for outlets                   | 60                 |
-| backgroundDeviceDiscovery        | Switch | Enable frequent scanning for new devices.                 | ON                 |
 | refreshBackgroundDeviceDiscovery | Number | Frequency (seconds) of scans for new new devices          | 120                |
 
 - Note Air PM Levels don't usually change quickly - 60s seems reasonable if openHAB is controlling it and your don't want near instant feedback of physical interactions with the devices.
