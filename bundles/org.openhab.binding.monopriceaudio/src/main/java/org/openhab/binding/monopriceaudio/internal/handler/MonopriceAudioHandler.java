@@ -462,9 +462,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private synchronized void closeConnection() {
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     @Override
@@ -698,10 +698,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
      * @param channelType the channel type to be updated
      */
     private void updateChannelState(String zoneId, String channelType) {
-        MonopriceAudioZoneDTO zoneData = zoneDataMap.get(zoneId);
+        final MonopriceAudioZoneDTO zoneData = zoneDataMap.get(zoneId);
 
         if (zoneData != null) {
-            String channel = amp.getZoneName(zoneId) + CHANNEL_DELIMIT + channelType;
+            final String channel = amp.getZoneName(zoneId) + CHANNEL_DELIMIT + channelType;
 
             if (!isLinked(channel)) {
                 return;
