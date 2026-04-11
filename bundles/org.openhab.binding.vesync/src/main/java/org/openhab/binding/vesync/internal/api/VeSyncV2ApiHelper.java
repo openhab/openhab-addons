@@ -108,13 +108,14 @@ public class VeSyncV2ApiHelper {
                 final String result = reqV1Authorized(V1_MANAGED_DEVICES_ENDPOINT, reqDevPage);
 
                 DevicesInfoPageResp resultsPage = VeSyncConstants.GSON.fromJson(result, DevicesInfoPageResp.class);
-                if (resultsPage == null || !resultsPage.outcome.getTotal().equals(resultsPage.outcome.getPageSize())) {
+                if (resultsPage == null || resultsPage.outcome == null
+                        || !resultsPage.outcome.getTotal().equals(resultsPage.outcome.getPageSize())) {
                     finished = true;
                 } else {
                     ++pageNo;
                 }
 
-                if (resultsPage != null) {
+                if (resultsPage != null && resultsPage.outcome != null && resultsPage.outcome.list != null) {
                     for (DeviceInfo device : resultsPage.outcome.list) {
                         logger.debug(
                                 "Found device : {}, type: {}, deviceType: {}, connectionState: {}, deviceStatus: {}, deviceRegion: {}, cid: {}, configModule: {}, macID: {}, uuid: {}",
