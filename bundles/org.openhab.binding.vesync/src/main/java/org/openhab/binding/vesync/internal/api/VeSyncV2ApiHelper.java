@@ -130,7 +130,7 @@ public class VeSyncV2ApiHelper {
             }
             macLookup = Collections.unmodifiableMap(generatedMacLookup);
         } catch (final AuthenticationException ae) {
-            logger.warn("Failed background device scan : {}", ae.getMessage());
+            logger.debug("Failed background device scan : {}", ae.getMessage());
             throw ae;
         }
     }
