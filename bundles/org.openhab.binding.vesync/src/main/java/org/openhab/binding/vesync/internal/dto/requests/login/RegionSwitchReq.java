@@ -15,7 +15,7 @@ package org.openhab.binding.vesync.internal.dto.requests.login;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link AuthCodeReq} class is used as a DTO to perform a regional switch of where the
+ * The {@link RegionSwitchReq} class is used as a DTO to perform a regional switch of where the
  * user is logging in.
  *
  * @author David Goodyear - Initial contribution for new Auth Handling
