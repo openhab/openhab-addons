@@ -66,6 +66,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -934,16 +935,23 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
 
-        if (thing.getStatus() == ThingStatus.ONLINE) {
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE) {
             switch (status) {
                 case INSTALLING:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
-                    // if there is no software update status defer to any prior description from elsewhere
-                    String description = thing.getStatusInfo().getDescription();
+                    /*
+                     * Set the thing status to ThingStatus.ONLINE + ThingStatusDetail.NONE and if the status detail
+                     * had previously been FIRMWARE_UPDATING then clear its respective prior status description now,
+                     * or otherwise keep any status description that may have been set elsewhere.
+                     */
+                    String description = (statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) ? null
+                            : statusInfo.getDescription();
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
+                case INSTALL_FAILED, READY_TO_INSTALL:
                 default:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
                     break;
@@ -1041,13 +1049,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public boolean onResources(List<Resource> resources) {
         boolean requireUpdateChannels = false;
-        boolean updateSoftwareStatusUI = false;
+        boolean refreshSoftwareStatusUI = false;
         for (Resource resource : resources) {
             switch (resource.getType()) {
 
                 case DEVICE_SOFTWARE_UPDATE:
                     putSoftwareStatus(resource.getId(), resource.getUpdateStatus());
-                    updateSoftwareStatusUI = true;
+                    refreshSoftwareStatusUI = true;
                     break;
 
                 case BEHAVIOR_INSTANCE:
@@ -1081,7 +1089,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     break;
             }
         }
-        if (updateSoftwareStatusUI) {
+        if (refreshSoftwareStatusUI) {
             refreshSoftwareStatusUI();
         }
         return requireUpdateChannels;
