@@ -92,15 +92,15 @@
 				<option value="5">Slow Charging</option>
 				<option value="6">Fast Charging</option>
 				<option value="7">Discharging</option>
-				<option value="8">Not charging></option>
-				<option value="9">Slow Charging after reaching trip target></option>
-				<option value="10">Charging after reaching trip target></option>
-				<option value="11">Fast Charging after reaching trip target></option>
-				<option value="12">Connected></option>
-				<option value="13">AC Charging></option>
-				<option value="14">DC Charging></option>
-				<option value="15">Battery calibration active></option>
-				<option value="16">Unknown></option>
+				<option value="8">Not charging</option>
+				<option value="9">Slow Charging after reaching trip target</option>
+				<option value="10">Charging after reaching trip target</option>
+				<option value="11">Fast Charging after reaching trip target</option>
+				<option value="12">Connected</option>
+				<option value="13">AC Charging</option>
+				<option value="14">DC Charging</option>
+				<option value="15">Battery calibration active</option>
+				<option value="16">Unknown</option>
 			</options>
 		</state>
 	</channel-type>
