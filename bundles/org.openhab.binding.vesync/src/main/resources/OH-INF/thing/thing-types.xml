@@ -26,8 +26,8 @@
 				<description>Password for the registered VeSync username, that allows to access the mobile application.</description>
 			</parameter>
 			<parameter name="backgroundDeviceDiscovery" type="boolean">
-				<label>Background Device Scans</label>
-				<description>Enable background scanning for new devices.</description>
+				<label>Enable Frequent Scanning</label>
+				<description>Enable frequent scanning for new devices.</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="airPurifierPollInterval" type="integer" min="5" step="1" unit="s">
