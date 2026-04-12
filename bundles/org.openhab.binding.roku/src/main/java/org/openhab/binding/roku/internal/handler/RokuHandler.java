@@ -157,8 +157,8 @@ public class RokuHandler extends BaseThingHandler {
                             updateState(POWER_STATE, new StringType(powerMode));
                             updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
 
-                            // If power off and limited mode check was done, stop here
-                            // Otherwise continue so the the thing can go online and have the limited mode checked
+                            // If power is off and the device was previously confirmed not to be in limited mode,
+                            // stop here. Otherwise continue so the thing can go online and have limited mode checked.
                             if (!POWER_ON.equalsIgnoreCase(powerMode) && limitedMode == 0) {
                                 return;
                             }
