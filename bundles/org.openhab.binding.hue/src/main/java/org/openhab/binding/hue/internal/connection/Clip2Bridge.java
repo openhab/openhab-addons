@@ -531,16 +531,22 @@ public class Clip2Bridge implements Closeable {
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
     /**
-     * Execute either a GET or a PUT HTTPS request.
+     * Execute either a GET or a PUT HTTP request via an HTTP/1.1 connection. If the response is a redirect to
+     * HTTPS, it will automatically follow the redirect and execute the request.
      * 
      * @param url the target URL
      * @param method either GET or PUT
      * @param request the JSON content body to send
+     * @param sslContext the SSL context to use if the connection gets redirected to HTTPS
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
     private static String doHTTP(String url, String method, @Nullable String request, SSLContext sslContext)
             throws IOException {
+        if (url.toLowerCase().startsWith("https")) {
+            return doHTTPS(url, method, request, sslContext);
+        }
+
         HttpURLConnection connection = null;
         try {
             URL destination = new URI(url).toURL();
@@ -582,12 +588,14 @@ public class Clip2Bridge implements Closeable {
     }
 
     /**
-     * Execute either a GET or a PUT HTTPS request. Since we may not yet have the certificate configuration
-     * parameters for a real bridge we use a trustAll policy and disable host name verification.
+     * Execute either a GET or a PUT HTTPS request request via an HTTP/1.1 connection. Some callers may not yet
+     * have the certificate configuration parameters for a real bridge they may use use a trustAll policy and
+     * disable host name verification.
      * 
      * @param url the target URL
      * @param method either GET or PUT
      * @param request the JSON content body to send
+     * @param sslContext the SSL context to use for HTTPS connections
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
