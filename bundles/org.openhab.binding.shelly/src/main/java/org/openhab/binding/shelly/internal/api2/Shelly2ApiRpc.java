@@ -1340,6 +1340,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void reconnect() throws ShellyApiException {
+        if (!alwaysOn) {
+            // battery devices do have a RPC connection
+            return;
+        }
+
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
