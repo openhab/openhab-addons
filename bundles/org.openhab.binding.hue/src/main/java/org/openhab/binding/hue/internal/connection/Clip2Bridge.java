@@ -78,9 +78,9 @@ import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise.Completable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.hue.internal.api.dto.clip1.BridgeConfig;
 import org.openhab.binding.hue.internal.api.dto.clip1.CreateUserRequest;
 import org.openhab.binding.hue.internal.api.dto.clip1.SuccessResponse;
-import org.openhab.binding.hue.internal.api.dto.clip2.BridgeConfig;
 import org.openhab.binding.hue.internal.api.dto.clip2.Event;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
@@ -621,7 +621,7 @@ public class Clip2Bridge implements Closeable {
     private @Nullable Future<?> checkAliveTask;
 
     private static final String IPV4_PART = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)";
-    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "$";
+    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "(?::\\d{1,5})?$";
     private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     /**
@@ -638,7 +638,6 @@ public class Clip2Bridge implements Closeable {
             HueTlsTrustManagerProvider trustManagerProvider, String hostName, String applicationKey)
             throws ApiException {
         LOGGER.debug("Clip2Bridge()");
-        httpClient = httpClientFactory.getCommonHttpClient();
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -651,6 +650,7 @@ public class Clip2Bridge implements Closeable {
         if (IPV4_PATTERN.matcher(hostName).matches()) {
             sslContextFactory.setEndpointIdentificationAlgorithm("");
         }
+        httpClient = httpClientFactory.createHttpClient("hue-clip2-http1", sslContextFactory);
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
