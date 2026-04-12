@@ -1273,7 +1273,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
-            if (!alwaysOn) { // battery devices do have a RPC connection
+            if (!alwaysOn) { // battery devices do not have a RPC connection
                 reconnect(); // make sure WS is connected
             }
 
