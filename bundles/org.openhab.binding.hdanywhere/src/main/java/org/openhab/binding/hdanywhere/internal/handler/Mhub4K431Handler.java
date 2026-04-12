@@ -97,8 +97,8 @@ public class Mhub4K431Handler extends BaseThingHandler {
             String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, TIMEOUT);
 
             if (response != null) {
-                String trimmedResponse = response.trim();
-                response = trimmedResponse.substring(1, trimmedResponse.length() - 1);
+                response = response.trim();
+                response = response.substring(1, response.length() - 1);
                 updateStatus(ThingStatus.ONLINE);
 
                 java.lang.reflect.Type type = new TypeToken<Map<String, String>>() {
