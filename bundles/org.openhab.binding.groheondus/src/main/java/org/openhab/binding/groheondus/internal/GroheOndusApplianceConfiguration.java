@@ -13,7 +13,6 @@
 package org.openhab.binding.groheondus.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
@@ -21,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class GroheOndusApplianceConfiguration {
 
-    public @Nullable String applianceId;
+    public String applianceId = "";
     public int roomId;
     public int locationId;
     public int pollingInterval = 0;
