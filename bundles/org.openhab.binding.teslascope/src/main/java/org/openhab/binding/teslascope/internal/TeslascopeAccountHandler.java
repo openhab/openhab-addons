@@ -73,8 +73,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
             } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        "Communication problem: " + e.getMessage());
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Communication problem: " + e.getMessage());
             }
         }
         return "";
@@ -89,8 +88,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
             } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        "Communication problem: " + e.getMessage());
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Communication problem: " + e.getMessage());
             }
         }
         return "";
@@ -105,8 +103,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
             } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        "Communication problem: " + e.getMessage());
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Communication problem: " + e.getMessage());
             }
         }
     }
@@ -120,8 +117,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
             } catch (TeslascopeCommunicationException e) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                        "Communication problem: " + e.getMessage());
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Communication problem: " + e.getMessage());
             }
         }
     }
