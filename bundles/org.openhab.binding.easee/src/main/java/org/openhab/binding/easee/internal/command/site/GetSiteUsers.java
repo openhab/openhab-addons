@@ -44,8 +44,7 @@ public class GetSiteUsers extends AbstractCommand {
     @Override
     protected String getURL() {
         String url = GET_SITE_USERS_URL;
-        url = url.replaceAll("\\{siteId\\}", handler.getBridgeConfiguration().getSiteId());
-        return url;
+        return url.replaceAll("\\{siteId\\}", handler.getBridgeConfiguration().getSiteId());
     }
 
     @Override
