@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -140,12 +141,6 @@ public class RokuHandler extends BaseThingHandler {
                     try {
                         deviceInfo = communicator.getDeviceInfo();
 
-                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
-                            final String powerMode = deviceInfo.getPowerMode();
-                            updateState(POWER_STATE, new StringType(powerMode));
-                            updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
-                        }
-
                         if (!deviceInfoLoaded) {
                             thing.setProperty(PROPERTY_MODEL_NAME, deviceInfo.getModelName());
                             thing.setProperty(PROPERTY_MODEL_NUMBER, deviceInfo.getModelNumber());
@@ -153,11 +148,27 @@ public class RokuHandler extends BaseThingHandler {
                             thing.setProperty(PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
                             thing.setProperty(PROPERTY_DEVICE_ID, deviceInfo.getDeviceId());
                             thing.setProperty(PROPERTY_SOFTWARE_VERSION, deviceInfo.getSoftwareVersion());
-                            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase());
+                            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase(Locale.ENGLISH));
                             deviceInfoLoaded = true;
+                        }
+
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            final String powerMode = deviceInfo.getPowerMode();
+                            updateState(POWER_STATE, new StringType(powerMode));
+                            updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
+
+                            if (!POWER_ON.equalsIgnoreCase(powerMode)) {
+                                return;
+                            }
                         }
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info.", e);
+
+                        // Do not continue if unable to determine TV power state; non-TV will continue.
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            setStatusOffline();
+                            return;
+                        }
                     }
                 }
 
@@ -169,7 +180,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
 
                 updateState(ACTIVE_APP, new StringType(activeAppId));
-                updateState(ACTIVE_APPNAME, new StringType(appMap.get(activeAppId)));
+                updateState(ACTIVE_APPNAME, new StringType(appMap.getOrDefault(activeAppId, EMPTY)));
 
                 if (TV_APP.equals(activeAppId)) {
                     tvActive = true;
@@ -338,7 +349,6 @@ public class RokuHandler extends BaseThingHandler {
 
                         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_CHANNEL),
                                 channelListOptions);
-
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku tv-channels. Exception: {}", e.getMessage(), e);
                         isSuccess = false;
