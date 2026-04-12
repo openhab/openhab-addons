@@ -56,13 +56,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
@@ -571,9 +566,10 @@ public class Clip2Bridge implements Closeable {
                 }
             }
 
+            LOGGER.trace("[HTTP] {} {} HTTP/1.1 >> {}", method, url, request);
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("doHTTP() {} {} >> {}, << {}", method, status, request, response);
+                LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
                 return response;
             }
 
@@ -619,9 +615,10 @@ public class Clip2Bridge implements Closeable {
 
             int status = connection.getResponseCode();
 
+            LOGGER.trace("[HTTPS] {} {} HTTP/1.1 >> {}", method, url, request);
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("doHTTPS() {} {} >> {}, << {}", method, status, request, response);
+                LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
                 return response;
             }
 
@@ -691,7 +688,6 @@ public class Clip2Bridge implements Closeable {
         return false;
     }
 
-    private final HttpClient httpClient;
     private final HTTP2Client http2Client;
     private final String hostName;
     private final String baseUrl;
@@ -716,7 +712,7 @@ public class Clip2Bridge implements Closeable {
     private @Nullable Future<?> checkAliveTask;
 
     private static final String IPV4_PART = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)";
-    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "$";
+    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "(?::\\d{1,5})?$";
     private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     /**
@@ -756,7 +752,6 @@ public class Clip2Bridge implements Closeable {
             HueTlsTrustManagerProvider trustManagerProvider, String hostName, String applicationKey)
             throws ApiException {
         LOGGER.debug("Clip2Bridge()");
-        httpClient = httpClientFactory.getCommonHttpClient();
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -1368,24 +1363,9 @@ public class Clip2Bridge implements Closeable {
         String json = jsonParser.toJson((Objects.isNull(oldApplicationKey) || oldApplicationKey.isEmpty())
                 ? new CreateUserRequest(APPLICATION_ID)
                 : new CreateUserRequest(oldApplicationKey, APPLICATION_ID));
-        Request httpRequest = httpClient.newRequest(registrationUrl).method(HttpMethod.POST)
-                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(json), MediaType.APPLICATION_JSON);
-        ContentResponse contentResponse;
         try {
-            LOGGER.trace("POST {} HTTP/1.1 >> {}", registrationUrl, json);
-            contentResponse = httpRequest.send();
-        } catch (TimeoutException | ExecutionException e) {
-            throw new ApiException("HTTP processing error", e);
-        }
-        int httpStatus = contentResponse.getStatus();
-        json = contentResponse.getContentAsString().trim();
-        LOGGER.trace("HTTP/1.1 {} {} << {}", httpStatus, contentResponse.getReason(), json);
-        if (httpStatus != HttpStatus.OK_200) {
-            throw new ApiException(String.format("HTTP bad response '%d'", httpStatus));
-        }
-        try {
-            List<SuccessResponse> entries = jsonParser.fromJson(json, SuccessResponse.GSON_TYPE);
+            String responseJson = doHTTP(registrationUrl, "POST", json, hueContext);
+            List<SuccessResponse> entries = jsonParser.fromJson(responseJson, SuccessResponse.GSON_TYPE);
             if (Objects.nonNull(entries) && !entries.isEmpty()) {
                 SuccessResponse response = entries.get(0);
                 Map<String, Object> responseSuccess = response.success;
@@ -1396,6 +1376,9 @@ public class Clip2Bridge implements Closeable {
                     }
                 }
             }
+        } catch (IOException e) {
+            LOGGER.debug("registerApplicationKey() HTTP processing error", e);
+            throw new ApiException("HTTP processing error", e);
         } catch (JsonParseException e) {
             LOGGER.debug("registerApplicationKey() parsing error json:{}", json, e);
         }

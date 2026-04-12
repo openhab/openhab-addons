@@ -544,7 +544,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
+            HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress,
                     config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
