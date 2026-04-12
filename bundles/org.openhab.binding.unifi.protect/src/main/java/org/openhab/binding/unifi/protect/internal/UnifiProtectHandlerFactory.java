@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.unifi.protect.internal;
+
+import static org.openhab.binding.unifi.protect.internal.UnifiProtectBindingConstants.*;
+
+import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectCameraHandler;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectChimeHandler;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectDoorlockHandler;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectLightHandler;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectNVRHandler;
+import org.openhab.binding.unifi.protect.internal.handler.UnifiProtectSensorHandler;
+import org.openhab.binding.unifi.protect.internal.media.UnifiMediaService;
+import org.openhab.binding.unifi.protect.internal.util.TranslationService;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * The {@link UnifiProtectHandlerFactory} is responsible for creating things and thing handlers.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+@NonNullByDefault
+@Component(configurationPid = "binding.unifiprotect", service = ThingHandlerFactory.class)
+public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NVR, THING_TYPE_CAMERA,
+            THING_TYPE_LIGHT, THING_TYPE_SENSOR, THING_TYPE_DOORLOCK, THING_TYPE_CHIME);
+    private final TranslationService translationService;
+    private UnifiMediaService media;
+
+    @Activate
+    public UnifiProtectHandlerFactory(@Reference UnifiMediaService media,
+            @Reference TranslationService translationService) {
+        this.media = media;
+        this.translationService = translationService;
+    }
+
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
+
+    @Override
+    protected @Nullable ThingHandler createHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (THING_TYPE_NVR.equals(thingTypeUID)) {
+            return new UnifiProtectNVRHandler(thing);
+        } else if (THING_TYPE_CAMERA.equals(thingTypeUID)) {
+            return new UnifiProtectCameraHandler(thing, media, translationService);
+        } else if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
+            return new UnifiProtectLightHandler(thing);
+        } else if (THING_TYPE_SENSOR.equals(thingTypeUID)) {
+            return new UnifiProtectSensorHandler(thing);
+        } else if (THING_TYPE_DOORLOCK.equals(thingTypeUID)) {
+            return new UnifiProtectDoorlockHandler(thing);
+        } else if (THING_TYPE_CHIME.equals(thingTypeUID)) {
+            return new UnifiProtectChimeHandler(thing);
+        }
+
+        return null;
+    }
+}

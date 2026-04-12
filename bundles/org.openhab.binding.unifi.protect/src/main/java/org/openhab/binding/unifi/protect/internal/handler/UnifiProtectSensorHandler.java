@@ -1,0 +1,195 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.unifi.protect.internal.handler;
+
+import static org.openhab.binding.unifi.protect.internal.UnifiProtectBindingConstants.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.unifi.protect.internal.api.hybrid.UniFiProtectHybridClient;
+import org.openhab.binding.unifi.protect.internal.api.priv.dto.devices.Sensor;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.BaseEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorAlarmEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorClosedEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorExtremeValueEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorMotionEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorOpenEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorTamperEvent;
+import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.SensorWaterLeakEvent;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
+
+/**
+ * Child handler for a UniFi Protect Sensor.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+@NonNullByDefault
+public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler<Sensor> {
+
+    public UnifiProtectSensorHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String id = channelUID.getId();
+        if (command instanceof RefreshType) {
+            refreshState(id);
+            return;
+        }
+
+        // Private API Commands
+        UniFiProtectHybridClient api = getApiClient();
+        if (api == null) {
+            return;
+        }
+
+        switch (id) {
+            case CHANNEL_SENSOR_CLEAR_TAMPER:
+                if (command == OnOffType.ON) {
+                    logOnFailure(api.getPrivateClient().clearSensorTamper(deviceId), "clear sensor tamper");
+                    updateState(channelUID, OnOffType.OFF);
+                }
+                break;
+            case CHANNEL_DEVICE_REBOOT:
+                if (command == OnOffType.ON) {
+                    logOnFailure(api.getPrivateClient().rebootDevice("sensor", deviceId), "reboot sensor");
+                    updateState(channelUID, OnOffType.OFF);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void handleEvent(BaseEvent event, WSEventType eventType) {
+        if (event.type == null) {
+            return;
+        }
+
+        switch (event.type) {
+            case SENSOR_OPENED:
+                if (eventType == WSEventType.ADD && event instanceof SensorOpenEvent e) {
+                    String payload = e.metadata != null && e.metadata.sensorMountType != null
+                            && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
+                                    : "none";
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_OPENED), payload);
+                    updateState(CHANNEL_CONTACT, OpenClosedType.OPEN);
+                }
+                break;
+            case SENSOR_CLOSED:
+                if (eventType == WSEventType.ADD && event instanceof SensorClosedEvent e) {
+                    String payload = e.metadata != null && e.metadata.sensorMountType != null
+                            && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
+                                    : "none";
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_CLOSED), payload);
+                    updateState(CHANNEL_CONTACT, OpenClosedType.CLOSED);
+                }
+                break;
+            case SENSOR_MOTION:
+                if (event instanceof SensorMotionEvent) {
+                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_SENSOR_MOTION));
+                }
+                break;
+            case SENSOR_ALARM:
+                if (event instanceof SensorAlarmEvent e) {
+                    String payload = e.metadata != null && e.metadata.alarmType != null
+                            && e.metadata.alarmType.text != null ? e.metadata.alarmType.text.getApiValue() : "";
+                    if (payload.isEmpty()) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_ALARM));
+                    } else {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_ALARM), payload);
+                    }
+                    updateState(CHANNEL_ALARM_CONTACT,
+                            eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                }
+                break;
+            case SENSOR_WATER_LEAK:
+                if (event instanceof SensorWaterLeakEvent e) {
+                    String payload = e.metadata != null && e.metadata.sensorMountType != null
+                            && e.metadata.sensorMountType.text != null ? e.metadata.sensorMountType.text.getApiValue()
+                                    : "none";
+                    if (hasChannel(CHANNEL_WATER_LEAK)) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_WATER_LEAK), payload);
+                    }
+                    updateState(CHANNEL_WATER_LEAK_CONTACT,
+                            eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                }
+                break;
+            case SENSOR_TAMPER:
+                if (event instanceof SensorTamperEvent) {
+                    if (hasChannel(CHANNEL_TAMPER)) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_TAMPER));
+                    }
+                    updateState(CHANNEL_TAMPER_CONTACT,
+                            eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                }
+                break;
+            case SENSOR_EXTREME_VALUES:
+                if (event instanceof SensorExtremeValueEvent e && e.metadata != null && e.metadata.sensorType != null
+                        && e.metadata.sensorValue != null) {
+                    String type = e.metadata.sensorType.text;
+                    Double value = e.metadata.sensorValue.text;
+                    if (type != null && value != null) {
+                        switch (type) {
+                            case "temperature":
+                                updateDecimalChannel(CHANNEL_TEMPERATURE, value);
+                                break;
+                            case "humidity":
+                                updateDecimalChannel(CHANNEL_HUMIDITY, value);
+                                break;
+                            case "light":
+                                updateDecimalChannel(CHANNEL_ILLUMINANCE, value);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void refreshFromDevice(Sensor sensor) {
+        super.refreshFromDevice(sensor);
+        if (sensor.batteryStatus != null && sensor.batteryStatus.percentage != null) {
+            updateDecimalChannel(CHANNEL_BATTERY, sensor.batteryStatus.percentage);
+        }
+        updateContactChannel(CHANNEL_CONTACT, sensor.isOpened == null ? UnDefType.UNDEF
+                : sensor.isOpened ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        if (sensor.stats != null) {
+            if (sensor.stats.temperature != null) {
+                updateDecimalChannel(CHANNEL_TEMPERATURE, sensor.stats.temperature.value);
+            }
+            if (sensor.stats.humidity != null) {
+                updateDecimalChannel(CHANNEL_HUMIDITY, sensor.stats.humidity.value);
+            }
+            if (sensor.stats.light != null) {
+                updateDecimalChannel(CHANNEL_ILLUMINANCE, sensor.stats.light.value);
+            }
+        }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+}
