@@ -94,7 +94,6 @@ public class Mhub4K431Handler extends BaseThingHandler {
             String content = "{tag:ptn}";
             InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            @Nullable
             String response = HttpUtil.executeUrl(httpMethod, url, null, stream, null, TIMEOUT);
 
             if (response != null) {
@@ -105,15 +104,22 @@ public class Mhub4K431Handler extends BaseThingHandler {
                 }.getType();
 
                 Map<String, String> map = gson.fromJson(response, type);
-                if (map != null) {
-                    String inputChannel = map.get("Inputchannel");
-                    if (inputChannel != null) {
-                        for (int i = 0; i < NUMBER_OF_PORTS; i++) {
-                            DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
-                            updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
-                        }
-                    }
+                if (map == null) {
+                    logger.trace("Received null map from HDanywhere matrix. Response was '{}'", response);
+                    return;
                 }
+
+                String inputChannel = map.get("Inputchannel");
+                if (inputChannel == null) {
+                    logger.trace("Received null input channel from HDanywhere matrix. Response was '{}'", response);
+                    return;
+                }
+
+                for (int i = 0; i < NUMBER_OF_PORTS; i++) {
+                    DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
+                    updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
+                }
+
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
