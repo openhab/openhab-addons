@@ -117,7 +117,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     // Get device settings
                     String userId = config.getUserId();
                     String password = config.getPassword();
-                    if (userId.isEmpty() || password.isEmpty()) {
+                    if (userId.isBlank() || password.isBlank()) {
                         message = getMessageP("action.protect.id-missing", MCWARNING);
                         break;
                     }

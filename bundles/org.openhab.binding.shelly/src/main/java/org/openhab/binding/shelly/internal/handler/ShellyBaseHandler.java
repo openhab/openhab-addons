@@ -251,14 +251,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public ShellyThingConfiguration getThingConfig() {
-        ShellyThingConfiguration cfg = config;
-        return cfg;
+        return config;
     }
 
     @Override
     public ShellyApiConfiguration getApiConfig() {
-        ShellyApiConfiguration cfg = apiConfig;
-        return cfg;
+        return apiConfig;
     }
 
     @Override
@@ -339,7 +337,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Initialize API access, exceptions will be catched by initialize()
         api.initialize(thingName, apiConfig);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
-        if (getBool(device.auth) && apiConfig.getPassword().isEmpty()) {
+        if (getBool(device.auth) && apiConfig.getPassword().isBlank()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
@@ -1072,7 +1070,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             updateInterval = UPDATE_MIN_DELAY;
         }
         skipCount = updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
-        logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, updateInterval, skipCount);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, updateInterval, skipCount);
+        }
 
         return true;
     }

@@ -605,11 +605,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
-        // TODO: Figure out if the localIp check should be here or not, and if it shouldn't, remove the throws
-        // declaration
-        if (config.getLocalIp().isEmpty()) {
-            throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
-        }
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
                 // H&T adds the type=xx to report_url itself, so we need to ommit here

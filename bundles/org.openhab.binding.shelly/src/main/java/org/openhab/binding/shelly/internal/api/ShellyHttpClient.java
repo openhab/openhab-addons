@@ -123,8 +123,8 @@ public class ShellyHttpClient {
                 // If call doesn't throw an exception the device is reachable == no timeout
                 if (timeout) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors,
-                                timeoutsRecovered, apiResult.getUrl());
+                        logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors.get(),
+                                timeoutsRecovered.get(), apiResult.getUrl());
                     }
                     timeoutsRecovered.incrementAndGet();
                 }
@@ -149,7 +149,7 @@ public class ShellyHttpClient {
                 timeoutErrors.incrementAndGet(); // count the retries
                 retries--;
                 if (profile.alwaysOn && logger.isDebugEnabled()) {
-                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors.get(), e.toString());
                 }
             }
         }
