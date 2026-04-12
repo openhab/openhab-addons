@@ -157,7 +157,9 @@ public class RokuHandler extends BaseThingHandler {
                             updateState(POWER_STATE, new StringType(powerMode));
                             updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
 
-                            if (!POWER_ON.equalsIgnoreCase(powerMode)) {
+                            // If power off and limited mode check was done, stop here
+                            // Otherwise continue so the the thing can go online and have the limited mode checked
+                            if (!POWER_ON.equalsIgnoreCase(powerMode) && limitedMode == 0) {
                                 return;
                             }
                         }
@@ -463,6 +465,7 @@ public class RokuHandler extends BaseThingHandler {
      * Updates the ThingStatus and powerState channel to indicate that the Thing is offline
      */
     private void setStatusOffline() {
+        limitedMode = -1;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
             updateState(POWER_STATE, new StringType(OFFLINE));
