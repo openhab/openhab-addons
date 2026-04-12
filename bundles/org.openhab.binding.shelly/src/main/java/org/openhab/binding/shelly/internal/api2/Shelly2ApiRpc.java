@@ -1273,7 +1273,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
-            reconnect(); // make sure WS is connected
+            if (!alwaysOn) { // battery devices do have a RPC connection
+                reconnect(); // make sure WS is connected
+            }
+
             json = rpcPost(gson.toJson(req));
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
@@ -1340,11 +1343,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void reconnect() throws ShellyApiException {
-        if (!alwaysOn) {
-            // battery devices do have a RPC connection
-            return;
-        }
-
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
