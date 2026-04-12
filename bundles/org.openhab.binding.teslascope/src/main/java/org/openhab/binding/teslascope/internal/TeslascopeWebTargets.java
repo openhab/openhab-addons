@@ -105,10 +105,6 @@ public class TeslascopeWebTargets {
                 switch (status) {
                     case HttpStatus.UNAUTHORIZED_401:
                         throw new TeslascopeAuthenticationException("Unauthorized");
-                    case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                    case HttpStatus.BAD_GATEWAY_502:
-                        logger.debug("Http error 500/502 received, continuing");
-                        break;
                     default:
                         throw new TeslascopeCommunicationException(
                                 String.format("Teslascope returned error <%d> while invoking %s", status, uri));
