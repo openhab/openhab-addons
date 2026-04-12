@@ -654,6 +654,7 @@ public class Clip2Bridge implements Closeable {
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
+        startHttpClient();
         startHttp2Client();
         this.bridgeHandler = bridgeHandler;
         this.hostName = hostName;
@@ -712,6 +713,10 @@ public class Clip2Bridge implements Closeable {
             recreateThread.interrupt();
         }
         close2();
+        try {
+            stopHttpClient();
+        } catch (ApiException e) {
+        }
         try {
             stopHttp2Client();
         } catch (ApiException e) {
@@ -1283,11 +1288,27 @@ public class Clip2Bridge implements Closeable {
         throw new HttpUnauthorizedException("Application key registration failed");
     }
 
+    private void startHttpClient() throws ApiException {
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new ApiException("Error starting HTTP/1.1 client", e);
+        }
+    }
+
     private void startHttp2Client() throws ApiException {
         try {
             http2Client.start();
         } catch (Exception e) {
             throw new ApiException("Error starting HTTP/2 client", e);
+        }
+    }
+
+    private void stopHttpClient() throws ApiException {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            throw new ApiException("Error stopping HTTP/1.1 client", e);
         }
     }
 
