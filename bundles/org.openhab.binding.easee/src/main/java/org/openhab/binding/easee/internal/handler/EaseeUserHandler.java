@@ -48,7 +48,6 @@ public class EaseeUserHandler extends EaseeBaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize User");
         logger.debug("Easee User initialized with id: {}", getId());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
