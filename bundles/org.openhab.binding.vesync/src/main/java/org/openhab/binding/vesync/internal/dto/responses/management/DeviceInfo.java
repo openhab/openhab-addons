@@ -109,7 +109,7 @@ public class DeviceInfo {
     public String macId;
 
     public String getMacId() {
-        return macId;
+        return macId.toLowerCase();
     }
 
     @SerializedName("currentFirmVersion")
