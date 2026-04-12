@@ -97,20 +97,22 @@ public class TeslascopeWebTargets {
                 logger.trace("{} request for {}", HttpMethod.GET, uri);
             }
             ContentResponse response = request.send();
-            switch (response.getStatus()) {
-                case HttpStatus.OK_200:
-                    jsonResponse = response.getContentAsString();
-                    logger.trace("JSON response: '{}'", jsonResponse);
-                    break;
-                case HttpStatus.UNAUTHORIZED_401:
-                    throw new TeslascopeAuthenticationException("Unauthorized");
-                case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                case HttpStatus.BAD_GATEWAY_502:
-                    logger.debug("Http error 500/502 received, continuing");
-                    break;
-                default:
-                    throw new TeslascopeCommunicationException(
-                            String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+            status = response.getStatus();
+            if (HttpStatus.isSuccess(status)) {
+                jsonResponse = response.getContentAsString();
+                logger.trace("JSON response: '{}'", jsonResponse);
+            } else {
+                switch (status) {
+                    case HttpStatus.UNAUTHORIZED_401:
+                        throw new TeslascopeAuthenticationException("Unauthorized");
+                    case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                    case HttpStatus.BAD_GATEWAY_502:
+                        logger.debug("Http error 500/502 received, continuing");
+                        break;
+                    default:
+                        throw new TeslascopeCommunicationException(
+                                String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+                }
             }
         } catch (TimeoutException | ExecutionException | InterruptedException ex) {
             throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
