@@ -5,7 +5,6 @@
 
 	<type>binding</type>
 	<name>UniFi Binding</name>
-	<description>The UniFi binding integrates the UniFi controller from Ubiquiti Networks to facilitate tracking of Wi-Fi
-		clients.</description>
+	<description>Provides a shared UniFi console bridge used by the Network, Protect, and Access child bindings</description>
 	<connection>local</connection>
 </addon:addon>

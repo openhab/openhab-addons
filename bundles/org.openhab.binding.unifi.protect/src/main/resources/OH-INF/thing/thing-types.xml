@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifiprotect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge: NVR (child of unifi:controller) -->
+	<bridge-type id="nvr">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller" bindingId="unifi"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect NVR</label>
+		<description>UniFi Protect NVR bridge providing device and event streams</description>
+		<channels>
+			<channel id="storage-total" typeId="nvr-storage-total"/>
+			<channel id="storage-used" typeId="nvr-storage-used"/>
+			<channel id="storage-available" typeId="nvr-storage-available"/>
+			<channel id="storage-utilization" typeId="nvr-storage-utilization"/>
+			<channel id="storage-device-healthy" typeId="nvr-storage-device-healthy"/>
+			<channel id="camera-utilization" typeId="nvr-camera-utilization"/>
+			<channel id="recording-mode" typeId="nvr-recording-mode"/>
+			<channel id="recording-disabled" typeId="nvr-recording-disabled"/>
+			<channel id="recording-motion-only" typeId="nvr-recording-motion-only"/>
+			<channel id="recording-retention" typeId="nvr-recording-retention"/>
+			<channel id="is-away" typeId="nvr-is-away"/>
+			<channel id="geofencing-enabled" typeId="nvr-geofencing-enabled"/>
+			<channel id="smart-detection-available" typeId="nvr-smart-detection-available"/>
+			<channel id="insights-enabled" typeId="nvr-insights-enabled"/>
+			<channel id="vault-registered" typeId="nvr-vault-registered"/>
+			<channel id="can-auto-update" typeId="nvr-can-auto-update"/>
+			<channel id="last-update-at" typeId="nvr-last-update-at"/>
+			<channel id="protect-updatable" typeId="nvr-protect-updatable"/>
+		</channels>
+		<properties>
+			<property name="protectVersion">UniFi Protect software version</property>
+			<property name="ucoreVersion">UniFi OS Core version</property>
+			<property name="uiVersion">UniFi Protect UI version</property>
+			<property name="hardwarePlatform">Hardware platform/model</property>
+			<property name="marketName">Product marketing name</property>
+			<property name="isHardware">Hardware NVR (true/false)</property>
+			<property name="cameraCapacityMax">Maximum camera capacity</property>
+			<property name="hostname">NVR hostname</property>
+			<property name="host">NVR host address</property>
+			<property name="publicIp">Public IP address</property>
+			<property name="wanIp">WAN IP address</property>
+		</properties>
+		<config-description>
+			<parameter name="token" type="text" required="false">
+				<label>API Token (Optional)</label>
+				<description>Public API token. If not provided, one will be automatically created using the name
+					'openHAB-{thing-id}'</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Camera Thing -->
+	<thing-type id="camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect Camera</label>
+		<description>Individual Protect camera</description>
+		<!-- Channels are dynamically created based on the camera capabilities -->
+		<properties>
+			<property name="deviceId">Unique device identifier</property>
+			<property name="name">Device name</property>
+			<property name="model">Device model</property>
+			<property name="firmwareVersion">Firmware version</property>
+			<property name="macAddress">MAC address</property>
+			<property name="ipAddress">IP address</property>
+			<property name="platform">Camera platform type</property>
+			<property name="hasSpeaker">Has speaker capability (true/false)</property>
+			<property name="hasWifi">Has WiFi capability (true/false)</property>
+			<property name="hasBattery">Has battery (true/false)</property>
+			<property name="isThirdPartyCamera">Third-party camera (true/false)</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Unique device identifier</description>
+			</parameter>
+			<parameter name="enableWebRTC" type="boolean" required="true">
+				<default>true</default>
+				<label>Enable WebRTC</label>
+				<description>Enables WebRTC play and publish streams through openHAB</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Floodlight Thing -->
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect Floodlight</label>
+		<description>Protect floodlight</description>
+		<channels>
+			<channel id="light" typeId="light-switch"/>
+			<channel id="is-dark" typeId="is-dark"/>
+			<channel id="pir-motion" typeId="motion"/>
+			<channel id="last-motion" typeId="last-motion"/>
+			<channel id="light-mode" typeId="light-mode"/>
+			<channel id="enable-at" typeId="enable-at"/>
+			<channel id="indicator-enabled" typeId="indicator-enabled"/>
+			<channel id="pir-duration" typeId="pir-duration"/>
+			<channel id="pir-sensitivity" typeId="pir-sensitivity"/>
+			<channel id="led-level" typeId="led-level"/>
+		</channels>
+		<properties>
+			<property name="deviceId">Unique device identifier</property>
+			<property name="name">Device name</property>
+			<property name="model">Device model</property>
+			<property name="firmwareVersion">Firmware version</property>
+			<property name="macAddress">MAC address</property>
+			<property name="ipAddress">IP address</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Unique device identifier</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sensor Thing -->
+	<thing-type id="sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect Sensor</label>
+		<description>Protect environmental/contact sensor</description>
+		<channels>
+			<channel id="battery" typeId="battery"/>
+			<channel id="contact" typeId="contact"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="illuminance" typeId="illuminance"/>
+			<channel id="motion" typeId="motion"/>
+			<channel id="alarm-contact" typeId="alarm-contact"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="water-leak-contact" typeId="water-leak-contact"/>
+			<channel id="water-leak" typeId="water-leak"/>
+			<channel id="tamper-contact" typeId="tamper-contact"/>
+			<channel id="tamper" typeId="tamper"/>
+			<channel id="opened" typeId="opened"/>
+			<channel id="closed" typeId="closed"/>
+		</channels>
+		<properties>
+			<property name="deviceId">Unique device identifier</property>
+			<property name="name">Device name</property>
+			<property name="model">Device model</property>
+			<property name="firmwareVersion">Firmware version</property>
+			<property name="macAddress">MAC address</property>
+			<property name="ipAddress">IP address</property>
+			<property name="mountType">Sensor mounting type</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Unique device identifier</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="doorlock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect Doorlock</label>
+		<description>Smart door lock</description>
+		<channels>
+			<channel id="lock" typeId="lock"/>
+			<channel id="lock-status" typeId="lock-status"/>
+			<channel id="battery" typeId="battery"/>
+			<channel id="calibrate" typeId="calibrate-doorlock"/>
+			<channel id="auto-close-time" typeId="auto-close-time"/>
+		</channels>
+		<properties>
+			<property name="deviceId">Unique device identifier</property>
+			<property name="name">Device name</property>
+			<property name="model">Device model</property>
+			<property name="firmwareVersion">Firmware version</property>
+			<property name="macAddress">MAC address</property>
+			<property name="ipAddress">IP address</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Unique device identifier</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="chime">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect Chime</label>
+		<description>Doorbell chime</description>
+		<channels>
+			<channel id="play-chime" typeId="play-chime"/>
+			<channel id="play-buzzer" typeId="play-buzzer"/>
+			<channel id="volume" typeId="chime-volume"/>
+			<channel id="repeat-times" typeId="chime-repeat-times"/>
+		</channels>
+		<properties>
+			<property name="deviceId">Unique device identifier</property>
+			<property name="name">Device name</property>
+			<property name="model">Device model</property>
+			<property name="firmwareVersion">Firmware version</property>
+			<property name="macAddress">MAC address</property>
+			<property name="ipAddress">IP address</property>
+		</properties>
+		<representation-property>deviceId</representation-property>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Unique device identifier</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -10,23 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal;
+package org.openhab.binding.unifiaccess.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Constants for the shared UniFi parent binding that owns the {@code unifi:controller} bridge.
+ * The {@link UnifiAccessBridgeConfiguration} class contains fields mapping thing configuration parameters.
+ * <p>
+ * Since Phase F, connection details (host/username/password) come from the parent {@code unifi:controller}
+ * bridge. The Access bridge configuration only carries Access-specific options.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public final class UniFiBindingConstants {
-
-    public static final String BINDING_ID = "unifi";
-
-    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
-
-    private UniFiBindingConstants() {
-    }
+public class UnifiAccessBridgeConfiguration {
+    public int refreshInterval = 300;
 }

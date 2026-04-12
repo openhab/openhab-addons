@@ -13,20 +13,20 @@
 package org.openhab.binding.unifi.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Constants for the shared UniFi parent binding that owns the {@code unifi:controller} bridge.
+ * Configuration fields for the {@code unifi:controller} bridge. Bound by the framework from the thing's
+ * configuration.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public final class UniFiBindingConstants {
+public class UniFiControllerConfiguration {
 
-    public static final String BINDING_ID = "unifi";
-
-    public static final ThingTypeUID THING_TYPE_CONTROLLER = new ThingTypeUID(BINDING_ID, "controller");
-
-    private UniFiBindingConstants() {
-    }
+    public String host = "";
+    public String username = "";
+    public String password = "";
+    public int port = 443;
+    public boolean unifios = true;
+    public int timeoutSeconds = 30;
 }
