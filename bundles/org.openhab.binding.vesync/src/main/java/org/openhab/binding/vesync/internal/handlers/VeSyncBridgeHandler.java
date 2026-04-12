@@ -273,8 +273,8 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     @Override
     public String reqV2Authorized(final String url, final String macId, final AuthenticatedReq requestData)
             throws AuthenticationException, DeviceUnknownException {
-        // This is common to all call's check the response code for token expiry, if the token has expired
-        // then perform a new login before a final attempt. all errors such as invalid token or expired token all have
+        // This is common to all calls: check the response code for token expiry. If the token has expired
+        // then perform a new login before a final attempt. All errors such as invalid token or expired token all have
         // token
         // in the message.
         String result = api.reqV2Authorized(url, macId, requestData);

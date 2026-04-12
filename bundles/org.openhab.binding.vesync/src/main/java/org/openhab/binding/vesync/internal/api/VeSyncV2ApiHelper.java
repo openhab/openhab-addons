@@ -247,7 +247,7 @@ public class VeSyncV2ApiHelper {
             final LoginAuthV2Helper loginHelper = new LoginAuthV2Helper(client);
 
             if (!loginHelper.requestAuthToken(username, password)) {
-                // We cant continue if we don't have the authorizeCode parameter
+                // We can't continue if we don't have the authorizeCode parameter
                 throw new AuthenticationException("Invalid username or password");
             }
 
