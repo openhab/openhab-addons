@@ -59,9 +59,6 @@
 		<channel-groups>
 			<channel-group typeId="user-consumption" id="consumption"/>
 		</channel-groups>
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 		<config-description-ref uri="thing-type:easee:user"/>
 	</thing-type>
 </thing:thing-descriptions>
