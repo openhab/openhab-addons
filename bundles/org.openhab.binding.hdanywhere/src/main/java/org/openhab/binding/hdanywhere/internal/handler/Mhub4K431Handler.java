@@ -107,12 +107,14 @@ public class Mhub4K431Handler extends BaseThingHandler {
                 Map<String, String> map = gson.fromJson(response, type);
                 if (map == null) {
                     logger.trace("Received null map from HDanywhere matrix. Response was '{}'", response);
+                    updateStatus(ThingStatus.OFFLINE);
                     return;
                 }
 
                 String inputChannel = map.get("Inputchannel");
                 if (inputChannel == null) {
                     logger.trace("Received null input channel from HDanywhere matrix. Response was '{}'", response);
+                    updateStatus(ThingStatus.OFFLINE);
                     return;
                 }
 
@@ -120,7 +122,6 @@ public class Mhub4K431Handler extends BaseThingHandler {
                     DecimalType decimalType = new DecimalType(String.valueOf(inputChannel.charAt(i)));
                     updateState(new ChannelUID(getThing().getUID(), Port.get(i + 1).channelID()), decimalType);
                 }
-
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
