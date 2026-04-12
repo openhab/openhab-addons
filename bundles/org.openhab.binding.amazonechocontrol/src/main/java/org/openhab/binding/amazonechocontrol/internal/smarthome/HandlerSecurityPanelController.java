@@ -28,6 +28,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -84,7 +85,9 @@ public class HandlerSecurityPanelController extends AbstractInterfaceHandler {
         Boolean fireAlarmValue = null;
         Boolean waterAlarmValue = null;
         for (JsonObject state : stateList) {
-            String propertyValue = state.get("value").getAsJsonObject().get("value").getAsString();
+            JsonElement valueElement = state.get("value");
+            String propertyValue = valueElement.isJsonPrimitive() ? valueElement.getAsString()
+                    : valueElement.getAsJsonObject().get("value").getAsString();
             String propertyName = state.get("name").getAsString();
             if (ARM_STATE.propertyName.equals(propertyName)) {
                 if (armStateValue == null) {
