@@ -85,7 +85,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         ShellyManagerInterface th = getThingHandlers().get(uid);
         if (th != null) {
             properties = fillProperties(new HashMap<>(), uid, th);
-            ShellyApiConfiguration config = getThingConfig(th, properties);
+            ShellyApiConfiguration config = th.getApiConfig();
             ShellyDeviceProfile profile = th.getProfile();
             String deviceType = getDeviceType(properties);
 

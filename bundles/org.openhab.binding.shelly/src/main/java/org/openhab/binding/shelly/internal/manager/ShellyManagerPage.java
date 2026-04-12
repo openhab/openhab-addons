@@ -235,7 +235,7 @@ public class ShellyManagerPage {
                     !deviceName.isEmpty() ? deviceName : getString(properties.get(PROPERTY_SERVICE_NAME)));
         }
 
-        if (config.getUserId().isEmpty()) {
+        if (config.getUserId().isBlank()) {
             // Get defaults from Binding Config
             properties.put("userId", bindingConfig.defaultUserId);
             properties.put("password", bindingConfig.defaultPassword);
@@ -574,14 +574,6 @@ public class ShellyManagerPage {
             name = thing.getUID().getId();
         }
         return name;
-    }
-
-    protected ShellyApiConfiguration getThingConfig(ShellyManagerInterface th, Map<String, String> properties) {
-        ShellyApiConfiguration config = th.getApiConfig();
-        if (config.getUserId().isEmpty()) {
-            config.setCredentials(getString(properties.get("userId")), getString(properties.get("password")));
-        }
-        return config;
     }
 
     protected void scheduleUpdate(ShellyManagerInterface th, String name, int delay) {

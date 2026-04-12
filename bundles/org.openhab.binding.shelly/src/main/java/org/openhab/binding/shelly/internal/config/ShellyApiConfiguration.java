@@ -95,12 +95,11 @@ public class ShellyApiConfiguration {
      */
     public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
             String realm, boolean gen2) {
-
         this.localIp = bindingConfig.localIP;
         this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
         this.realm.set(realm);
 
-        // deviceIP can be, an IP address, IP address:port or a FQDN, which needs to be resolved
+        // deviceIP can be an IP address, IP address:port or a FQDN, which needs to be resolved
         // deviceAddress is the MAC address for BLU device or the resolved IP address
         if (!thingConfig.getDeviceAddress().isEmpty()) {
             // BLU: remove : from MAC address and convert to lower case
