@@ -219,7 +219,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         DanfossAirUnitCommunicationController communicationController = this.communicationController;
         if (communicationController != null) {
-            communicationController.disconnect();
+            communicationController.close();
         }
         this.communicationController = null;
     }

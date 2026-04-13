@@ -79,7 +79,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     }
 
     @Override
-    public synchronized void disconnect() {
+    public synchronized void close() {
         try {
             Socket socket = this.socket;
             if (socket != null && !socket.isClosed()) {
@@ -115,7 +115,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         } catch (IOException suppressedException) {
             logger.debug("{} request failed, retrying once: {}", parameter, suppressedException.getMessage());
 
-            disconnect();
+            close();
 
             try {
                 connect();
