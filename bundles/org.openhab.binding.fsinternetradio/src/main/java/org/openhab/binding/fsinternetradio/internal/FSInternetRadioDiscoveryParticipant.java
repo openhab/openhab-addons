@@ -16,6 +16,7 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -223,67 +224,81 @@ public class FSInternetRadioDiscoveryParticipant implements UpnpDiscoveryPartici
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         final DeviceDetails details = device.getDetails();
-        final String friendlyName = details.getFriendlyName();
-        logger.debug("Discovered unit:  {}", friendlyName);
+        if (details == null) {
+            return null;
+        }
 
-        if (details != null) {
-            final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
-            final ModelDetails modelDetails = details.getModelDetails();
-            if (modelDetails != null) {
-                // check manufacturer and model number
-                final String manufacturer = manufacturerDetails == null ? null : manufacturerDetails.getManufacturer();
-                final String modelNumber = modelDetails.getModelNumber();
-                String serialNumber = details.getSerialNumber();
-                logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
-                if (modelNumber != null) {
-                    if (manufacturer != null) {
-                        final Set<@Nullable String> supportedRadios = SUPPORTED_RADIO_MODELS
-                                .get(manufacturer.trim().toUpperCase());
-                        if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                        }
-                    }
-                    // check model name and number
-                    final String modelName = modelDetails.getModelName();
-                    if (modelName != null) {
-                        final Set<@Nullable String> supportedRadios = SUPPORTED_RADIO_MODELS
-                                .get(modelName.trim().toUpperCase());
-                        if (supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase())) {
-                            return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                        }
-                        // Teufel reports empty manufacturer and model, but friendly name
-                        if (friendlyName.contains("Teufel")) {
-                            logger.debug("haha");
-                        }
-                        if (!friendlyName.isEmpty()) {
-                            for (Set<@Nullable String> models : SUPPORTED_RADIO_MODELS.values()) {
-                                for (String model : models) {
-                                    if ((model != null) && !model.isEmpty() && friendlyName.contains(model)) {
-                                        return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        final @Nullable String friendlyName = details.getFriendlyName();
+        logger.debug("Discovered unit: {}", friendlyName);
 
-                if (((manufacturer == null) || manufacturer.trim().isEmpty())
-                        && ((modelNumber == null) || modelNumber.trim().isEmpty())) {
-                    // Some devices report crappy UPnP device description so manufacturer and model are ""
-                    // In this case we try to find the match in friendlyName
-                    final String uname = friendlyName.toUpperCase();
-                    for (Set<@Nullable String> set : SUPPORTED_RADIO_MODELS.values()) {
-                        for (String model : set) {
-                            if ((model != null) && !model.isEmpty() && uname.contains(model)) {
-                                return new ThingUID(THING_TYPE_RADIO, serialNumber);
-                            }
-                        }
-                    }
+        final ModelDetails modelDetails = details.getModelDetails();
+        if (modelDetails == null) {
+            return null;
+        }
+
+        final ManufacturerDetails manufacturerDetails = details.getManufacturerDetails();
+        final @Nullable String manufacturer = manufacturerDetails == null ? null
+                : manufacturerDetails.getManufacturer();
+        final @Nullable String modelNumber = modelDetails.getModelNumber();
+        final @Nullable String modelName = modelDetails.getModelName();
+        final @Nullable String serialNumber = details.getSerialNumber();
+        if (serialNumber == null || isBlank(serialNumber)) {
+            logger.debug("Discovered unit without serial number: {} {} - {}", manufacturer, modelNumber, friendlyName);
+            return null;
+        } else {
+            logger.debug("Discovered unit: {} {} - {}", manufacturer, modelNumber, friendlyName);
+        }
+
+        if (modelNumber != null) {
+            if (isSupportedByVendorKey(manufacturer, modelNumber)) {
+                return new ThingUID(THING_TYPE_RADIO, serialNumber);
+            }
+
+            // Some radios report vendor information in modelName instead of manufacturer.
+            if (isSupportedByVendorKey(modelName, modelNumber)) {
+                return new ThingUID(THING_TYPE_RADIO, serialNumber);
+            }
+
+            if (hasSupportedModelInFriendlyName(friendlyName)) {
+                return new ThingUID(THING_TYPE_RADIO, serialNumber);
+            }
+        }
+
+        if (isBlank(manufacturer) && isBlank(modelNumber) && hasSupportedModelInFriendlyName(friendlyName)) {
+            return new ThingUID(THING_TYPE_RADIO, serialNumber);
+        }
+
+        return null;
+    }
+
+    private boolean isSupportedByVendorKey(@Nullable String vendorKey, String modelNumber) {
+        if (vendorKey == null) {
+            return false;
+        }
+
+        final Set<@Nullable String> supportedRadios = SUPPORTED_RADIO_MODELS
+                .get(vendorKey.trim().toUpperCase(Locale.ROOT));
+        return supportedRadios != null && supportedRadios.contains(modelNumber.toUpperCase(Locale.ROOT));
+    }
+
+    private boolean hasSupportedModelInFriendlyName(@Nullable String friendlyName) {
+        if (friendlyName == null || friendlyName.isEmpty()) {
+            return false;
+        }
+
+        final String normalizedFriendlyName = friendlyName.toUpperCase(Locale.ROOT);
+        for (Set<@Nullable String> models : SUPPORTED_RADIO_MODELS.values()) {
+            for (String model : models) {
+                if (model != null && !model.isEmpty()
+                        && normalizedFriendlyName.contains(model.toUpperCase(Locale.ROOT))) {
+                    return true;
                 }
             }
-            // maybe we can add further indicators, whether the device is a supported one
         }
-        // device not supported
-        return null;
+        return false;
+    }
+
+    private boolean isBlank(@Nullable String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

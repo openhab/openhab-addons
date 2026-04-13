@@ -16,6 +16,7 @@ import static org.openhab.binding.fsinternetradio.internal.radio.FrontierSilicon
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
  * @author Patrick Koenemann - improvements
  * @author Mihaela Memova - removed duplicated check for the percent value range
  */
+@NonNullByDefault
 public class FrontierSiliconRadio {
 
     /** The http connection/session used for controlling the radio. */
