@@ -91,7 +91,7 @@ public class HandlerSecurityPanelController extends AbstractInterfaceHandler {
             String propertyName = state.get("name").getAsString();
             if (ARM_STATE.propertyName.equals(propertyName)) {
                 if (armStateValue == null) {
-                    armStateValue = state.get("value").getAsString();
+                    armStateValue = propertyValue;
                 }
             } else if (BURGLARY_ALARM.propertyName.equals(propertyName)) {
                 if (burglaryAlarmValue == null) {

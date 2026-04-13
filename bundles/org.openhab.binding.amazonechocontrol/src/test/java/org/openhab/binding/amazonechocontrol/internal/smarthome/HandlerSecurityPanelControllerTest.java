@@ -76,4 +76,16 @@ public class HandlerSecurityPanelControllerTest {
         verify(handler).updateState(eq("armState"), eq(new StringType("ARMED_AWAY")));
         verify(handler).updateState(eq("burglaryAlarm"), eq(OpenClosedType.CLOSED));
     }
+
+    @Test
+    public void testArmStateLegacyFormat() {
+        HandlerSecurityPanelController sut = new HandlerSecurityPanelController(handler);
+        List<JsonObject> states = List.of(stateObject("armState", "{\"value\":\"DISARMED\"}"),
+                stateObject("fireAlarm", "{\"value\":\"OK\"}"));
+
+        sut.updateChannels(HandlerSecurityPanelController.INTERFACE, states, new UpdateChannelResult());
+
+        verify(handler).updateState(eq("armState"), eq(new StringType("DISARMED")));
+        verify(handler).updateState(eq("fireAlarm"), eq(OpenClosedType.OPEN));
+    }
 }
