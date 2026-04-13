@@ -88,6 +88,57 @@
 		</config-description>
 
 	</thing-type>
+	<thing-type id="serverHDR">
+		<label>Hyperion.ng Server</label>
+		<description>This is a Hyperion.ng server</description>
+		<channels>
+			<channel id="hyperionenabled" typeId="enabled"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="effect" typeId="effect"/>
+			<channel id="clear" typeId="clear"/>
+			<channel id="color" typeId="color"/>
+			<channel id="blackborder" typeId="blackborder"/>
+			<channel id="smoothing" typeId="smoothing"/>
+			<channel id="kodichecker" typeId="kodichecker"/>
+			<channel id="forwarder" typeId="forwarder"/>
+			<channel id="udplistener" typeId="udplistener"/>
+			<channel id="boblightserver" typeId="boblightserver"/>
+			<channel id="grabber" typeId="grabber"/>
+			<channel id="v4l" typeId="v4l"/>
+			<channel id="leddevice" typeId="leddevice"/>
+			<channel id="hdr" typeId="hdr"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host Address</label>
+				<context>network-address</context>
+				<description>The host address of the Hyperion server JSON API.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>The port of the Hyperion server JSON API.</description>
+				<default>19444</default>
+			</parameter>
+			<parameter name="priority" type="integer" required="false">
+				<label>Priority</label>
+				<description>The priority associated with updates sent to the Hyperion server.</description>
+				<default>50</default>
+			</parameter>
+			<parameter name="poll_frequency" type="integer" required="false" min="1">
+				<label>Polling Frequency</label>
+				<description>How often (in seconds) to poll the Hyperion server for value changes.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="origin" type="text" required="false">
+				<label>Origin</label>
+				<description>The origin used on color and effect commands.</description>
+				<default>openHAB</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
 
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
@@ -190,6 +241,12 @@
 		<item-type>Switch</item-type>
 		<label>LED Device</label>
 		<description>Shows the current state of the LED component and allows the LED component to be enabled or disabled</description>
+	</channel-type>
+
+	<channel-type id="hdr">
+		<item-type>Switch</item-type>
+		<label>HDR Tonemapping</label>
+		<description>Enable or disable HDR tonemapping</description>
 	</channel-type>
 
 </thing:thing-descriptions>
