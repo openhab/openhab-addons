@@ -141,12 +141,37 @@ public class DahuaEventClient implements Runnable {
     public void openDoor(int doorNo) {
         try {
             String path = "/cgi-bin/accessControl.cgi?action=openDoor&UserID=101&Type=Remote&channel=" + doorNo;
-            sendOpenDoorRequest(path);
+            sendAuthenticatedGetRequest(path, "Open Door");
         } catch (DahuaHttpRedirectException e) {
             errorInformer.accept(e.getRedirectMessage());
         } catch (Exception e) {
             logger.warn("Could not open door {} on {}", doorNo, host, e);
         }
+    }
+
+    /**
+     * Applies the audio codec fix required for WebRTC compatibility.
+     * Sets the VTO audio encoding to G.711A / 8 kHz on both main and sub streams via the
+     * Dahua configManager CGI API. This setting resets on device reboot and must be
+     * re-applied after each {@code SIPRegisterResult} event.
+     *
+     * @return {@code true} if the CGI call succeeded (HTTP 200), {@code false} otherwise
+     */
+    public boolean fixAudioCodec() {
+        String path = "/cgi-bin/configManager.cgi?action=setConfig"
+                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Compression=G.711A"
+                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Frequency=8000"
+                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Compression=G.711A"
+                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Frequency=8000";
+        try {
+            sendAuthenticatedGetRequest(path, "Audio codec fix");
+            return true;
+        } catch (DahuaHttpRedirectException e) {
+            logger.warn("Audio codec fix redirected on {}: {}", host, e.getMessage());
+        } catch (Exception e) {
+            logger.warn("Audio codec fix failed on {}", host, e);
+        }
+        return false;
     }
 
     /**
@@ -237,10 +262,14 @@ public class DahuaEventClient implements Runnable {
     }
 
     /**
-     * Sends an open-door request with Digest auth.
+     * Sends an authenticated GET request with Digest auth.
+     * Used for door open and audio codec fix requests.
      * Same sequential two-connection pattern as sendSnapshotRequest.
+     *
+     * @param path the CGI path to request
+     * @param actionName label used for logging (e.g. "Open Door", "Audio codec fix")
      */
-    private void sendOpenDoorRequest(String path) throws Exception {
+    private void sendAuthenticatedGetRequest(String path, String actionName) throws Exception {
         boolean useHttps = httpsAvailable;
         int port = useHttps ? 443 : 80;
         int maxAttempts = 3;
@@ -252,7 +281,7 @@ public class DahuaEventClient implements Runnable {
                     writeHttpGet(socket.getOutputStream(), path, null, false);
                     OpenDoorHttpResponse response = parseOpenDoorResponse(socket.getInputStream());
                     if (response.statusCode == HttpStatus.OK_200) {
-                        logger.debug("Open Door Success");
+                        logger.debug("{} succeeded on {}", actionName, host);
                         return;
                     }
                     if (response.statusCode == HttpStatus.UNAUTHORIZED_401) {
@@ -262,10 +291,10 @@ public class DahuaEventClient implements Runnable {
                         }
                     } else {
                         if (response.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
-                            throw new DahuaHttpRedirectException("Open door request to " + host
+                            throw new DahuaHttpRedirectException(actionName + " request to " + host
                                     + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
-                            logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
+                            logger.warn("{} request to {} failed with unexpected HTTP status {}", actionName, host,
                                     response.statusCode);
                         }
                         return;
@@ -280,18 +309,18 @@ public class DahuaEventClient implements Runnable {
                         writeHttpGet(authSocket.getOutputStream(), path, digestHeader, false);
                         OpenDoorHttpResponse authResponse = parseOpenDoorResponse(authSocket.getInputStream());
                         if (authResponse.statusCode == HttpStatus.OK_200) {
-                            logger.debug("Open Door Success (with authentication)");
+                            logger.debug("{} succeeded (with authentication) on {}", actionName, host);
                         } else if (authResponse.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
-                            throw new DahuaHttpRedirectException("Open door request to " + host
+                            throw new DahuaHttpRedirectException(actionName + " request to " + host
                                     + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
-                            logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
+                            logger.warn("{} request to {} failed with unexpected HTTP status {}", actionName, host,
                                     authResponse.statusCode);
                         }
                         return;
                     }
                 }
-                logger.debug("Open door request failed: no Digest challenge received from {}", host);
+                logger.debug("{} request failed: no Digest challenge received from {}", actionName, host);
                 return;
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
@@ -299,8 +328,8 @@ public class DahuaEventClient implements Runnable {
             } catch (IOException e) {
                 if (attempt < maxAttempts - 1) {
                     long delayMs = 750L * (1 << attempt); // 750 ms, 1.5 s
-                    logger.debug("Open door attempt {}/{} via {} to {} failed ({}), retrying in {} ms", attempt + 1,
-                            maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
+                    logger.debug("{} attempt {}/{} via {} to {} failed ({}), retrying in {} ms", actionName,
+                            attempt + 1, maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
                     try {
                         Thread.sleep(delayMs);
                     } catch (InterruptedException ie) {
