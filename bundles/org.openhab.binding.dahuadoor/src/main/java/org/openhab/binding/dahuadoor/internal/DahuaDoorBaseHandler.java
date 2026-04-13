@@ -25,8 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DHIPEventListener;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
+import org.openhab.binding.dahuadoor.internal.media.Go2RtcManager;
+import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -58,9 +61,12 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected Gson gson = new Gson();
 
     protected @Nullable DahuaEventClient client = null;
+    private final PlayStreamServlet playStreamServlet;
+    private @Nullable Go2RtcManager go2rtcManager;
 
-    public DahuaDoorBaseHandler(Thing thing) {
+    public DahuaDoorBaseHandler(Thing thing, PlayStreamServlet playStreamServlet) {
         super(thing);
+        this.playStreamServlet = playStreamServlet;
     }
 
     @Override
@@ -113,8 +119,18 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
+        if (localConfig.enableWebRTC && localConfig.go2rtcPath.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-missing-go2rtc-path");
+            return;
+        }
+
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
+
+        if (localConfig.enableWebRTC) {
+            startWebRtc(localConfig);
+        }
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
@@ -122,10 +138,45 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     @Override
     public void dispose() {
+        stopWebRtc();
+
         DahuaEventClient localClient = client;
         if (localClient != null) {
             localClient.dispose();
             client = null;
+        }
+    }
+
+    private void startWebRtc(DahuaDoorConfiguration cfg) {
+        String thingUidSafe = getThing().getUID().toString().replace(':', '_').replace('-', '_').replace('.', '_');
+        String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe;
+
+        Go2RtcManager manager = new Go2RtcManager(cfg.go2rtcPath, cfg.go2rtcApiPort, cfg.webRtcPort, cfg.stunServer,
+                streamName, cfg.hostname, cfg.username, cfg.password, cfg.rtspChannel, cfg.rtspSubtype);
+        go2rtcManager = manager;
+
+        String proxyPath = WEBRTC_SERVLET_PATH + "/" + streamName;
+        updateState(CHANNEL_WEBRTC_URL, new StringType(proxyPath));
+
+        scheduler.submit(() -> {
+            try {
+                manager.start();
+                playStreamServlet.registerStream(streamName, cfg.go2rtcApiPort);
+                logger.info("WebRTC streaming active for {} at {}", streamName, proxyPath);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (IOException e) {
+                logger.warn("Failed to start WebRTC streaming for {}: {}", streamName, e.getMessage(), e);
+            }
+        });
+    }
+
+    private void stopWebRtc() {
+        Go2RtcManager localManager = go2rtcManager;
+        go2rtcManager = null;
+        if (localManager != null) {
+            playStreamServlet.unregisterStream(localManager.getStreamName());
+            localManager.stop();
         }
     }
 

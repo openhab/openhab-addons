@@ -34,4 +34,12 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="webrtc-url">
+		<item-type>String</item-type>
+		<label>WebRTC URL</label>
+		<description>Proxy path for WebRTC SDP offer/answer exchange (POST form body data=&lt;base64(SDP offer)&gt; to this
+			path on the openHAB HTTP port and receive base64(SDP answer) from go2rtc).</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -31,6 +31,13 @@ Single-button outdoor station.
 | password     | text    | Yes      |         | Password to access the device                                                                                                                                            |
 | snapshotPath | text    | Yes      |         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                             |
 | useHttps     | boolean | No       | false   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used. |
+| enableWebRTC | boolean | No       | false   | Enables local go2rtc sidecar management and publishes a `webrtc-url` channel.                                                                                             |
+| go2rtcPath   | text    | No       |         | Absolute path to the go2rtc binary (required when `enableWebRTC=true`).                                                                                                   |
+| go2rtcApiPort | integer | No      | 1984    | HTTP API port used by go2rtc for SDP exchange.                                                                                                                             |
+| webRtcPort   | integer | No       | 8555    | Port used by go2rtc for WebRTC media transport.                                                                                                                            |
+| stunServer   | text    | No       | stun.l.google.com:19302 | STUN server in `host:port` format used by go2rtc.                                                                                                    |
+| rtspChannel  | integer | No       | 1       | RTSP channel index on the Dahua device.                                                                                                                                    |
+| rtspSubtype  | integer | No       | 0       | RTSP stream subtype (`0` main stream, `1` sub stream).                                                                                                                     |
 
 **Note:** Windows paths are not currently supported.
 
@@ -54,6 +61,7 @@ keytool -importcert -alias dahua-door -file ca.crt \
 | door-image  | Image   | Read       | Camera snapshot taken when doorbell is pressed            |
 | open-door-1 | Switch  | Write      | Command to open door relay 1                              |
 | open-door-2 | Switch  | Write      | Command to open door relay 2                              |
+| webrtc-url  | String  | Read       | Proxy path for browser SDP offer/answer exchange via openHAB |
 
 ### VTO3211 Channels (Dual Button)
 
@@ -65,6 +73,21 @@ keytool -importcert -alias dahua-door -file ca.crt \
 | door-image-2  | Image   | Read       | Camera snapshot when button 2 is pressed           |
 | open-door-1   | Switch  | Write      | Command to open door relay 1                       |
 | open-door-2   | Switch  | Write      | Command to open door relay 2                       |
+| webrtc-url    | String  | Read       | Proxy path for browser SDP offer/answer exchange via openHAB |
+
+## WebRTC (go2rtc)
+
+When `enableWebRTC=true`, the binding starts a per-thing go2rtc process and writes the channel `webrtc-url` with a path like `/dahuadoor/webrtc/dahua_<thing_uid>`.
+
+MainUI widgets can use this channel directly as SDP endpoint. Example snippet:
+
+```yaml
+- component: oh-video-card
+    config:
+        title: Front Door
+        sourceType: webrtc
+        url: =items[props.webrtcUrlItem].state
+```
 
 ## Full Example
 
