@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.api;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.EMPTY_STRING;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
 import java.net.HttpURLConnection;
 import java.util.Locale;
@@ -29,13 +29,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthLoginWithAuthorizeCodeVeSync;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthTokenRequest;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncAuthTokenResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthCodeReq;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthTokenReq;
+import org.openhab.binding.vesync.internal.dto.requests.login.RegionSwitchReq;
+import org.openhab.binding.vesync.internal.dto.responses.login.AuthCodeResp;
+import org.openhab.binding.vesync.internal.dto.responses.login.AuthTokenResp;
+import org.openhab.binding.vesync.internal.dto.responses.login.UserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ class LoginAuthV2Helper {
 
     private final Logger logger = LoggerFactory.getLogger(LoginAuthV2Helper.class);
     private final HttpClient client;
-    private final VeSyncUserSession loginData = new VeSyncUserSession();
+    private final UserSession loginData = new UserSession();
 
     private static final String US_TOKEN_REQ_URL = US_SERVER + "/globalPlatform/api/accountAuth/v1/authByPWDOrOTM";
     private static final String US_AUTH_BY_TOKEN = US_SERVER + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
@@ -70,10 +69,8 @@ class LoginAuthV2Helper {
         loginData.serverUrl = US_SERVER;
     }
 
-    protected VeSyncLoginResponse getVeSyncLoginResponse() {
-        final VeSyncLoginResponse simResponse = new VeSyncLoginResponse();
-        simResponse.result = loginData;
-        return simResponse;
+    protected UserSession getUserSession() {
+        return loginData;
     }
 
     protected boolean requestAuthToken(final String username, final String password)
@@ -83,8 +80,8 @@ class LoginAuthV2Helper {
 
         request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
 
-        request.content(new StringContentProvider(
-                VeSyncConstants.GSON.toJson(new VeSyncAuthTokenRequest(username, password, ""))));
+        request.content(
+                new StringContentProvider(VeSyncConstants.GSON.toJson(new AuthTokenReq(username, password, ""))));
 
         final ContentResponse response = request.send();
 
@@ -94,8 +91,7 @@ class LoginAuthV2Helper {
             return false;
         }
 
-        VeSyncAuthTokenResponse resp = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                VeSyncAuthTokenResponse.class);
+        AuthTokenResp resp = VeSyncConstants.GSON.fromJson(response.getContentAsString(), AuthTokenResp.class);
 
         if (resp != null && resp.isMsgSuccess()) {
             // Check for account lockout scenario
@@ -129,16 +125,15 @@ class LoginAuthV2Helper {
 
         request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
 
-        request.content(new StringContentProvider(
-                VeSyncConstants.GSON.toJson(new VeSyncAuthLoginWithAuthorizeCodeVeSync(this.authorizeCode, ""))));
+        request.content(
+                new StringContentProvider(VeSyncConstants.GSON.toJson(new AuthCodeReq(this.authorizeCode, ""))));
 
         final ContentResponse response = request.send();
         if (response.getStatus() != HttpURLConnection.HTTP_OK) {
             return false;
         }
 
-        final VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse result = VeSyncConstants.GSON
-                .fromJson(response.getContentAsString(), VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.class);
+        final AuthCodeResp result = VeSyncConstants.GSON.fromJson(response.getContentAsString(), AuthCodeResp.class);
 
         if (result == null) {
             return false;
@@ -184,8 +179,7 @@ class LoginAuthV2Helper {
                 .timeout(VeSyncV2ApiHelper.RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, AUTH_CONTENT_TYPE);
 
-        VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange regionChange = new VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange(
-                this.authorizeCode, loginData.countryCode, this.bizToken);
+        RegionSwitchReq regionChange = new RegionSwitchReq(this.authorizeCode, loginData.countryCode, this.bizToken);
 
         request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(regionChange)));
 
@@ -195,8 +189,7 @@ class LoginAuthV2Helper {
             return false;
         }
 
-        final VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse result = VeSyncConstants.GSON
-                .fromJson(response.getContentAsString(), VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.class);
+        final AuthCodeResp result = VeSyncConstants.GSON.fromJson(response.getContentAsString(), AuthCodeResp.class);
 
         if (result == null) {
             return false;

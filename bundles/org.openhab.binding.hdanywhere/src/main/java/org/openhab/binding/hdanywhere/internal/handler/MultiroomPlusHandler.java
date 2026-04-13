@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdanywhere.internal.HDanywhereBindingConstants.Port;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class MultiroomPlusHandler extends BaseThingHandler {
 
     // List of Configurations constants
@@ -47,7 +50,7 @@ public class MultiroomPlusHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MultiroomPlusHandler.class);
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     /**
      * the timeout to use for connecting to a given host (defaults to 5000
@@ -132,9 +135,11 @@ public class MultiroomPlusHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing HDanywhere matrix handler.");
+
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 
@@ -147,9 +152,10 @@ public class MultiroomPlusHandler extends BaseThingHandler {
     }
 
     private synchronized void onUpdate() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
             int pollingInterval = ((BigDecimal) getConfig().get(POLLING_INTERVAL)).intValue();
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
+            this.pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1, pollingInterval, TimeUnit.SECONDS);
         }
     }
 }
