@@ -551,6 +551,8 @@ public class Clip2Bridge implements Closeable {
         try {
             URL destination = new URI(url).toURL();
             connection = (HttpURLConnection) destination.openConnection();
+            connection.setConnectTimeout(TIMEOUT_SECONDS * 1000);
+            connection.setReadTimeout(TIMEOUT_SECONDS * 1000);
             connection.setInstanceFollowRedirects(false);
             connection.setRequestMethod(method);
 
@@ -605,6 +607,8 @@ public class Clip2Bridge implements Closeable {
         try {
             URL destination = new URI(url).toURL();
             connection = (HttpsURLConnection) destination.openConnection();
+            connection.setConnectTimeout(TIMEOUT_SECONDS * 1000);
+            connection.setReadTimeout(TIMEOUT_SECONDS * 1000);
             connection.setSSLSocketFactory(sslContext.getSocketFactory());
             String host = destination.getHost();
             // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
@@ -1371,8 +1375,9 @@ public class Clip2Bridge implements Closeable {
         String json = jsonParser.toJson((Objects.isNull(oldApplicationKey) || oldApplicationKey.isEmpty())
                 ? new CreateUserRequest(APPLICATION_ID)
                 : new CreateUserRequest(oldApplicationKey, APPLICATION_ID));
+        String responseJson = null;
         try {
-            String responseJson = doHTTP(registrationUrl, "POST", json, hueContext);
+            responseJson = doHTTP(registrationUrl, "POST", json, hueContext);
             List<SuccessResponse> entries = jsonParser.fromJson(responseJson, SuccessResponse.GSON_TYPE);
             if (Objects.nonNull(entries) && !entries.isEmpty()) {
                 SuccessResponse response = entries.get(0);
@@ -1388,7 +1393,7 @@ public class Clip2Bridge implements Closeable {
             LOGGER.debug("registerApplicationKey() HTTP processing error", e);
             throw new ApiException("HTTP processing error", e);
         } catch (JsonParseException e) {
-            LOGGER.debug("registerApplicationKey() parsing error json:{}", json, e);
+            LOGGER.debug("registerApplicationKey() parsing error json:{}", responseJson, e);
         }
         throw new HttpUnauthorizedException("Application key registration failed");
     }

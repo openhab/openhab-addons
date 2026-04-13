@@ -62,7 +62,6 @@ public class SoftwareUpdateActions implements ThingActions {
         if (handler instanceof Clip2BridgeHandler bridgeHandler) {
             return bridgeHandler.installUpdate();
         }
-        logger.warn("SoftwareUpdateActions called on unsupported ThingHandler: {}", handler);
-        return "@text/install.update.error.unsupported-handler";
+        throw new IllegalStateException("ThingHandler is not an instance of Clip2BridgeHandler");
     }
 }

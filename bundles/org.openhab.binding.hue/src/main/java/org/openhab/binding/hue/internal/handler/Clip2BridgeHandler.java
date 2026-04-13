@@ -881,6 +881,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * bridge).
      */
     private void pollSoftwareStatus() {
+        @Nullable
         UpdateStatusV2 combinedStatus = getCombinedSoftwareStatus();
         Future<?> task = pollSoftwareStatusTask;
         if (task != null && !task.isCancelled()) {
@@ -902,7 +903,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         try {
             Map<String, @Nullable UpdateStatusV2> statusMap = getClip2Bridge().getUpdateStatusMap();
             statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
-            return refreshSoftwareStatusUI();
+            return refreshSoftwareStatusUI(); // call this anyway to refresh the UI even if the map is empty
         } catch (AssetNotLoadedException e) {
             logger.debug("getCombinedSoftwareStatus() error: {}", e.getMessage());
         }
