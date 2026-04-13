@@ -574,7 +574,7 @@ public class Clip2Bridge implements Closeable {
                 }
             }
 
-            LOGGER.trace("[HTTP] {} {} HTTP/1.1 >> {}", method, url, request);
+            LOGGER.trace("{} {} HTTP/1.1 {TCP} {}", method, url, request == null ? "" : ">> " + request);
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
@@ -627,7 +627,7 @@ public class Clip2Bridge implements Closeable {
 
             int status = connection.getResponseCode();
 
-            LOGGER.trace("[HTTPS] {} {} HTTP/1.1 >> {}", method, url, request);
+            LOGGER.trace("{} {} HTTP/1.1 {TLS} {}", method, url, request == null ? "" : ">> " + request);
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
