@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ftpserver.DataConnectionConfiguration;
+import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.DefaultFtplet;
@@ -35,6 +36,8 @@ import org.apache.ftpserver.ftplet.FtpletResult;
 import org.apache.ftpserver.ftplet.User;
 import org.apache.ftpserver.listener.Listener;
 import org.apache.ftpserver.listener.ListenerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,23 +47,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class FtpServer {
+@NonNullByDefault
+public class FtpServerManager {
 
-    private final Logger logger = LoggerFactory.getLogger(FtpServer.class);
+    public static final int DEFAULT_PORT = 2121;
 
-    private int port;
-    private DataConnectionConfiguration dataConnectionConfiguration;
+    private final Logger logger = LoggerFactory.getLogger(FtpServerManager.class);
+
+    private int port = DEFAULT_PORT;
+    private @Nullable DataConnectionConfiguration dataConnectionConfiguration;
     int idleTimeout;
 
-    private org.apache.ftpserver.FtpServer server;
+    private @Nullable FtpServer server;
     private List<FtpServerEventListener> listeners;
-    private MyFTPLet myFTPLet;
-    private FTPUserManager FTPUserManager;
-    private String ftpStartUpErrorReason;
+    private MyFTPLet myFTPLet = new MyFTPLet();
+    private FTPUserManager ftpUserManager;
+    private String ftpStartUpErrorReason = "";
 
-    public FtpServer() {
+    public FtpServerManager() {
         listeners = new ArrayList<>();
-        FTPUserManager = new FTPUserManager();
+        ftpUserManager = new FTPUserManager();
     }
 
     public void startServer(int port, int idleTimeout, DataConnectionConfiguration dataConnectionConfiguration)
@@ -69,11 +75,12 @@ public class FtpServer {
         this.port = port;
         this.idleTimeout = idleTimeout;
         this.dataConnectionConfiguration = dataConnectionConfiguration;
-        FTPUserManager.setIdleTimeout(idleTimeout);
+        ftpUserManager.setIdleTimeout(idleTimeout);
         initServer();
     }
 
     public void stopServer() {
+        FtpServer server = this.server;
         if (server != null) {
             server.stop();
         }
@@ -91,11 +98,11 @@ public class FtpServer {
 
     public synchronized void addAuthenticationCredentials(String username, String password)
             throws IllegalArgumentException {
-        FTPUserManager.addAuthenticationCredentials(username, password);
+        ftpUserManager.addAuthenticationCredentials(username, password);
     }
 
     public synchronized void removeAuthenticationCredentials(String username) {
-        FTPUserManager.removeAuthenticationCredentials(username);
+        ftpUserManager.removeAuthenticationCredentials(username);
     }
 
     public synchronized void removeEventListener(FtpServerEventListener listener) {
@@ -148,28 +155,31 @@ public class FtpServer {
         serverFactory.setFtplets(ftplets);
         serverFactory.setFileSystem(new FileSystemFactory() {
             @Override
-            public FileSystemView createFileSystemView(User user) throws FtpException {
+            public FileSystemView createFileSystemView(@NonNullByDefault({}) User user) throws FtpException {
                 logger.debug("createFileSystemView: {}", user.getName());
                 return new SimpleFileSystemView();
             }
         });
 
         // set the user manager
-        serverFactory.setUserManager(FTPUserManager);
-        server = serverFactory.createServer();
+        serverFactory.setUserManager(ftpUserManager);
+        FtpServer server = serverFactory.createServer();
 
         try {
             server.start();
-            ftpStartUpErrorReason = null;
+            this.server = server;
+            ftpStartUpErrorReason = "";
         } catch (FtpException | FtpServerConfigurationException e) {
             ftpStartUpErrorReason = "Failed to start FTP server";
-            if (!e.getMessage().isEmpty()) {
-                ftpStartUpErrorReason += ": " + e.getMessage();
+            String message = e.getMessage();
+            if (message != null && !message.isEmpty()) {
+                ftpStartUpErrorReason += ": " + message;
             }
             throw e;
         }
     }
 
+    @NonNullByDefault({})
     private class MyFTPLet extends DefaultFtplet {
         FtpletContext ftpletContext;
 
