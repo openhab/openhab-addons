@@ -216,10 +216,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.realm.get().isBlank()) {
-            config.realm.set(profile.device.hostname);
+        String realm = config.getRealm();
+        if (realm.isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
             if (logger.isTraceEnabled()) {
-                logger.trace("{}: {} is used as realm", thingName, config.realm.get());
+                logger.trace("{}: {} is used as realm", thingName, realm);
             }
         }
         profile.settings.fw = getString(device.fw);
@@ -1055,7 +1056,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.user = "admin";
-        params.realm = config.realm.get();
+        params.realm = config.getRealm();
         params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
         apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
 

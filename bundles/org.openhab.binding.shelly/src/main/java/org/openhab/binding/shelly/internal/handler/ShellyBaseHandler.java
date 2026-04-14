@@ -176,13 +176,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             this.api = new Shelly1HttpApi(thingName, apiConfig, this);
         }
 
-        coap = apiConfig.enableCoIOT.get() ? new Shelly1CoapHandler(this, thingName, apiConfig, coapServer) : null;
+        coap = apiConfig.getEnableCoIOT() ? new Shelly1CoapHandler(this, thingName, apiConfig, coapServer) : null;
     }
 
     @Override
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getDeviceAddress())
-                || key.equalsIgnoreCase(apiConfig.getDeviceIp()) || key.equalsIgnoreCase(apiConfig.realm.get())
+                || key.equalsIgnoreCase(apiConfig.getDeviceIp()) || key.equalsIgnoreCase(apiConfig.getRealm())
                 || key.equalsIgnoreCase(getThingName());
     }
 
@@ -310,7 +310,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug(
                     "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
                     thingName, getThing().getLabel(), thingType, apiConfig.getDeviceAddress().toUpperCase(Locale.ROOT),
-                    gen2, profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.enableCoIOT.get());
+                    gen2, profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
         if (apiConfig.getDeviceAddress().isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
@@ -330,7 +330,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
         Shelly1CoapHandler coap = this.coap;
-        if (coap != null && apiConfig.enableCoIOT.get() && !profile.alwaysOn) {
+        if (coap != null && apiConfig.getEnableCoIOT() && !profile.alwaysOn) {
             coap.start();
         }
 
@@ -341,8 +341,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
-        if (apiConfig.realm.get().isEmpty()) {
-            apiConfig.realm.set(getString(device.hostname).toLowerCase(Locale.ROOT));
+        if (apiConfig.getRealm().isEmpty()) {
+            apiConfig.setRealm(getString(device.hostname).toLowerCase(Locale.ROOT));
             api.setConfig(thingName, apiConfig); // update config
         }
 
@@ -394,7 +394,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         checkRangeExtender(tmpPrf);
 
         startCoap(tmpPrf);
-        if (!gen2 && !apiConfig.enableCoIOT.get()) {
+        if (!gen2 && !apiConfig.getEnableCoIOT()) {
             api.setActionURLs(); // register event urls
         }
 
@@ -903,7 +903,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
         if (thingName.equalsIgnoreCase(deviceName) || apiConfig.getDeviceAddress().equals(address)
-                || apiConfig.realm.get().equals(deviceName)) {
+                || apiConfig.getRealm().equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
             int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : 1;
@@ -1094,7 +1094,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
                 || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
-            if (!apiConfig.enableCoIOT.get()) {
+            if (!apiConfig.getEnableCoIOT()) {
                 logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }
             autoCoIoT = true;
@@ -1115,7 +1115,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     public void startCoap(ShellyDeviceProfile profile) throws ShellyApiException {
-        if (coap == null || !apiConfig.enableCoIOT.get()) {
+        if (coap == null || !apiConfig.getEnableCoIOT()) {
             return;
         }
         if (profile.settings.coiot != null && profile.settings.coiot.enabled != null) {
@@ -1134,7 +1134,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
-            apiConfig.enableCoIOT.set(true);
+            apiConfig.setEnableCoIOT(true);
             api.setConfig(thingName, apiConfig);
         }
 
@@ -1373,7 +1373,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, String> properties = fillDeviceProperties(profile);
         String deviceName = getString(profile.settings.name);
-        properties.put(PROPERTY_SERVICE_NAME, apiConfig.realm.get());
+        properties.put(PROPERTY_SERVICE_NAME, apiConfig.getRealm());
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);

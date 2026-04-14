@@ -140,7 +140,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
                 name = getString(devInfo.hostname);
-                config.realm.set(name);
+                config.setRealm(name);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;

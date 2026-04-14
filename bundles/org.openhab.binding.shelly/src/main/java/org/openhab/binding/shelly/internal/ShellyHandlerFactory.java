@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashMap;
@@ -104,7 +105,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         if (httpPort == -1) {
-            httpPort = 8080;
+            httpPort = DEFAULT_LOCAL_PORT;
         }
         logger.debug("Using OH HTTP port {}", httpPort);
         bindingConfig.localIP = localIP;
