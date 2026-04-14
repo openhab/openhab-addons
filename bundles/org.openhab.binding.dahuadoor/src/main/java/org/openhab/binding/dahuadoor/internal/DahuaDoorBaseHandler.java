@@ -196,12 +196,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     return;
                 }
 
-                // 1. Apply audio codec fix so go2rtc receives G.711A/8000 over RTSP
-                DahuaEventClient localClient = client;
-                if (localClient != null) {
-                    localClient.fixAudioCodec();
-                }
-
                 if (disposed || !Objects.equals(go2rtcManager, manager)) {
                     return;
                 }
@@ -622,13 +616,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             updateState(CHANNEL_SIP_REGISTERED, OnOffType.from(success));
             if (success) {
                 logger.debug("Event SIPRegisterResult, Success");
-                // Re-apply audio codec fix: VTO may have rebooted (SIP re-registers after boot)
-                DahuaDoorConfiguration localConfig = config;
-                DahuaEventClient localClient = client;
-                if (localConfig != null && localConfig.enableWebRTC && localClient != null) {
-                    final DahuaEventClient clientRef = localClient;
-                    scheduler.submit(() -> clientRef.fixAudioCodec());
-                }
             } else {
                 logger.debug("Event SIPRegisterResult, Failed");
             }
