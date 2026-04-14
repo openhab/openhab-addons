@@ -295,7 +295,7 @@ public class ShellyManagerPage {
             coiotEnabled = profile.settings.coiot.enabled;
         }
         properties.put(ATTRIBUTE_COIOT_STATUS, !coiotEnabled ? "Disabled in settings"
-                : "Events are " + (config.enableCoIOT.get() ? "enabled" : "disabled"));
+                : "Events are " + (config.getEnableCoIOT() ? "enabled" : "disabled"));
         properties.put(ATTRIBUTE_COIOT_PEER,
                 (profile.settings.coiot != null) && !getString(profile.settings.coiot.peer).isEmpty()
                         ? profile.settings.coiot.peer

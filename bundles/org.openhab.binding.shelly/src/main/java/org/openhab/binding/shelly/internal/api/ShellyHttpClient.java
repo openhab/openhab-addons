@@ -73,7 +73,6 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
 
-    // All access must be guarded by "this"
     protected volatile ShellyApiConfiguration config;
 
     protected final ShellyDeviceProfile profile;

@@ -256,10 +256,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.realm.get().isBlank()) {
-            config.realm.set(getString(profile.device.hostname));
+        String realm = config.getRealm();
+        if (realm.isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
             if (logger.isTraceEnabled()) {
-                logger.trace("{}: {} is used as realm", thingName, config.realm.get());
+                logger.trace("{}: {} is used as realm", thingName, realm);
             }
         }
         profile.settings.fw = getString(device.fw);

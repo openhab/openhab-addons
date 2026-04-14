@@ -304,7 +304,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
         if (profile.alwaysOn && (status == ThingStatus.ONLINE)) {
-            if (config.enableCoIOT.get() && profile.settings.coiot != null) {
+            if (config.getEnableCoIOT() && profile.settings.coiot != null) {
                 if (profile.settings.coiot.enabled != null && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
                 } else {

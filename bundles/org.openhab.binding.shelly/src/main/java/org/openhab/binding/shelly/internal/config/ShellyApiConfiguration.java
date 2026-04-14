@@ -36,9 +36,9 @@ public class ShellyApiConfiguration {
     private final Logger logger = LoggerFactory.getLogger(ShellyApiConfiguration.class);
 
     public static class ShellyAuthCredentials {
-        public final String userId;
-        public final String password;
-        public final String bearer;
+        private final String userId;
+        private final String password;
+        private final String bearer;
 
         public ShellyAuthCredentials(String defaultUserId, String defaultPassword, String userId, String password) {
             this.userId = userId.isBlank() ? defaultUserId : userId;
@@ -47,12 +47,15 @@ public class ShellyApiConfiguration {
         }
     }
 
-    public class ShellyApiUrls {
-        public final String deviceApi;
-        public final String websocketCallback;
-        public final String eventCallback;
+    public static class ShellyApiUrls {
+        private final String deviceApi;
+        private final String websocketCallback;
+        private final String eventCallback;
 
         public ShellyApiUrls(String localIp, String localPort, String deviceIp) {
+            if (localIp.isBlank()) {
+                throw new IllegalArgumentException("Local IP address was not detected");
+            }
             deviceApi = "http://" + deviceIp;
             websocketCallback = "ws://" + localIp + ":" + localPort + "/shelly/wsevent";
             eventCallback = "http://" + localIp + ":" + localPort + SHELLY1_CALLBACK_URI + "/";
@@ -81,8 +84,8 @@ public class ShellyApiConfiguration {
      * Those values are updated after device settings has been read
      */
 
-    public final AtomicReference<String> realm = new AtomicReference<>();
-    public final AtomicBoolean enableCoIOT = new AtomicBoolean(); // true: CoIoT/COAP enabled, event urls disabled
+    private final AtomicReference<String> realm = new AtomicReference<>("");
+    private final AtomicBoolean enableCoIOT = new AtomicBoolean(true); // true: CoIoT/COAP enabled, event urls disabled
 
     /**
      * Constructor for Thing handler
@@ -243,13 +246,29 @@ public class ShellyApiConfiguration {
         return localIp;
     }
 
+    public boolean getEnableCoIOT() {
+        return enableCoIOT.get();
+    }
+
+    public void setEnableCoIOT(boolean value) {
+        enableCoIOT.set(value);
+    }
+
+    public String getRealm() {
+        return realm.get();
+    }
+
+    public void setRealm(String value) {
+        realm.set(value);
+    }
+
     @Override
     public String toString() {
         ShellyAuthCredentials credentials = this.credentials.get();
         return "Device address=" + deviceAddress + ", HTTP user/password=" + credentials.userId + "/"
                 + (credentials.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: " + eventsButton
                 + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush + ", Roller: " + eventsRoller
-                + "Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n" + "Blu Gateway="
+                + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n" + "Blu Gateway="
                 + enableBluGateway + ", Range Extender: " + enableRangeExtender;
     }
 }
