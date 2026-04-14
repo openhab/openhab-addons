@@ -921,8 +921,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     /**
      * Add or remove the given device software update status entry to/from the map of all device software
      * update statuses.
-     * 
-     * @return the maximum update status of the bridge and all devices.
      */
     private void putSoftwareStatus(String id, @Nullable UpdateStatusV2 status) {
         if (status == null || status == UpdateStatusV2.NO_UPDATE) {

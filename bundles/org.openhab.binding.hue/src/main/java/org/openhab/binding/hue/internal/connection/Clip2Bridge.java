@@ -590,6 +590,10 @@ public class Clip2Bridge implements Closeable {
             }
 
             LOGGER.trace("{} {} HTTP/1.1 {TCP} {}", method, url, request == null ? "" : ">> " + request);
+            if (status > 299) {
+                LOGGER.debug("HTTP/1.1 {} {}", status, connection.getResponseMessage());
+                throw new IOException("HTTP error " + status);
+            }
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
@@ -643,6 +647,10 @@ public class Clip2Bridge implements Closeable {
             int status = connection.getResponseCode();
 
             LOGGER.trace("{} {} HTTP/1.1 {TLS} {}", method, url, request == null ? "" : ">> " + request);
+            if (status > 299) {
+                LOGGER.debug("HTTP/1.1 {} {}", status, connection.getResponseMessage());
+                throw new IOException("HTTP error " + status);
+            }
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
@@ -743,11 +751,10 @@ public class Clip2Bridge implements Closeable {
     private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     /**
-     * Static reference to the most recently created instance of this class, which allows the static
-     * doHTTPS() method to use the instance SSL context if available, otherwise fallback to the static
-     * TRUST_ALL_CONTEXT. This is necessary because the doHTTP() method is used for the initial
-     * registration call before the instance is created and the SSL context is configured, but we
-     * want to use the instance SSL context for all subsequent calls.
+     * In case the class has been instantiated we use the instance SSL context for the static doHTTP() method,
+     * otherwise we fall back to a static trust all SSL context. This allows the static doHTTP() method to be
+     * used for the initial registration call before the instance is created and the SSL context is configured,
+     * and to use the instance SSL context for all subsequent calls.
      */
     private static final SSLContext TRUST_ALL_CONTEXT = createTrustAllSslContext();
     private final SSLContext hueContext;
@@ -1461,7 +1468,7 @@ public class Clip2Bridge implements Closeable {
                 return config.getUpdateStatusMap();
             }
         } catch (IOException e) {
-            LOGGER.debug("getUpdateStatus() error '{}'", e.getMessage());
+            LOGGER.debug("getUpdateStatusMap() error '{}'", e.getMessage());
         }
         return new HashMap<>();
     }
