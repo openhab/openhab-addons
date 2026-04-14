@@ -15,11 +15,16 @@ package org.openhab.binding.jellyfin.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Field;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
+import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -172,6 +177,31 @@ class ClientHandlerStatusCheckTest {
         handler.handleCommand(channelUID, command);
 
         // Verify method completes (would be handled by command router in production)
+    }
+
+    @Test
+    void testPauseStringCommandStopsExtrapolationImmediately() throws Exception {
+        assertNotNull(mockThing);
+        assertNotNull(handler);
+        when(mockThing.getStatus()).thenReturn(ThingStatus.ONLINE);
+
+        ClientCommandRouter router = mock(ClientCommandRouter.class);
+        PlaybackExtrapolator extrapolator = mock(PlaybackExtrapolator.class);
+
+        Field routerField = ClientHandler.class.getDeclaredField("commandRouter");
+        routerField.setAccessible(true);
+        routerField.set(handler, router);
+
+        Field extrapolatorField = ClientHandler.class.getDeclaredField("extrapolator");
+        extrapolatorField.setAccessible(true);
+        extrapolatorField.set(handler, extrapolator);
+
+        ChannelUID channelUID = new ChannelUID(new ThingUID("jellyfin:client:server:device"), "media-control");
+        StringType command = new StringType("PAUSE");
+        handler.handleCommand(channelUID, command);
+
+        verify(router).route(channelUID, command);
+        verify(extrapolator).stop();
     }
 
     /**

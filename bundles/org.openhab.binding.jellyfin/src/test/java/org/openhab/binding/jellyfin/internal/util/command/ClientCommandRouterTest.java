@@ -105,6 +105,20 @@ class ClientCommandRouterTest {
     }
 
     @Test
+    void testPauseStringCommandSendsPause() {
+        route(Constants.MEDIA_CONTROL_CHANNEL, new StringType("PAUSE"));
+
+        verify(serverHandler).sendPlayStateCommand(SESSION_ID, PlaystateCommand.PAUSE, null);
+    }
+
+    @Test
+    void testPlayStringCommandSendsUnpause() {
+        route(Constants.MEDIA_CONTROL_CHANNEL, new StringType("PLAY"));
+
+        verify(serverHandler).sendPlayStateCommand(SESSION_ID, PlaystateCommand.UNPAUSE, null);
+    }
+
+    @Test
     void testNextTrackCommandSendsNextTrack() {
         route(Constants.MEDIA_CONTROL_CHANNEL, NextPreviousType.NEXT);
 

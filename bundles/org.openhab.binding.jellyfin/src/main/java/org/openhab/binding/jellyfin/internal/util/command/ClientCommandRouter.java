@@ -114,6 +114,31 @@ public final class ClientCommandRouter {
                 } else if (rw == RewindFastforwardType.REWIND) {
                     sendPlayStateCommand(PlaystateCommand.REWIND);
                 }
+            } else if (command instanceof StringType stringCommand) {
+                String value = stringCommand.toFullString().trim().toUpperCase();
+                switch (value) {
+                    case "PLAY":
+                        sendPlayStateCommand(PlaystateCommand.UNPAUSE);
+                        break;
+                    case "PAUSE":
+                        sendPlayStateCommand(PlaystateCommand.PAUSE);
+                        break;
+                    case "NEXT":
+                        sendPlayStateCommand(PlaystateCommand.NEXT_TRACK);
+                        break;
+                    case "PREVIOUS":
+                        sendPlayStateCommand(PlaystateCommand.PREVIOUS_TRACK);
+                        break;
+                    case "FASTFORWARD":
+                        sendPlayStateCommand(PlaystateCommand.FAST_FORWARD);
+                        break;
+                    case "REWIND":
+                        sendPlayStateCommand(PlaystateCommand.REWIND);
+                        break;
+                    default:
+                        logger.debug("Ignoring unsupported media-control StringType command: {}", value);
+                        break;
+                }
             }
             return;
         }

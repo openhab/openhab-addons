@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
@@ -23,6 +24,9 @@ import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
 import org.openhab.binding.jellyfin.internal.util.timeout.SessionTimeoutMonitor;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -236,6 +240,20 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             router.route(channelUID, command);
         } catch (Exception e) {
             logger.warn("Error handling command {} for channel {}: {}", command, channelUID, e.getMessage(), e);
+        }
+
+        // Stop extrapolation eagerly on pause/stop so the per-second tick cannot write
+        // PlayPauseType.PLAY back to the media-control channel before the server confirms.
+        boolean isPauseCommand = Constants.MEDIA_CONTROL_CHANNEL.equals(channelUID.getId())
+                && (command == PlayPauseType.PAUSE
+                        || (command instanceof StringType st && "PAUSE".equalsIgnoreCase(st.toFullString())));
+        boolean isStopCommand = Constants.MEDIA_STOP_CHANNEL.equals(channelUID.getId()) && (command == OnOffType.ON
+                || (command instanceof StringType st && "ON".equalsIgnoreCase(st.toFullString())));
+        if (isPauseCommand || isStopCommand) {
+            PlaybackExtrapolator extrap = extrapolator;
+            if (extrap != null) {
+                extrap.stop();
+            }
         }
     }
 

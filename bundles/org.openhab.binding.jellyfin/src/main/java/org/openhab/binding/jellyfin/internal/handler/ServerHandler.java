@@ -239,13 +239,71 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             return;
         }
         try {
+            String targetSessionId = resolveControllableSessionId(sessionId);
+            if (targetSessionId == null) {
+                logger.warn("Cannot send playstate command - no controllable session available for {}", sessionId);
+                return;
+            }
+            if (!targetSessionId.equals(sessionId)) {
+                logger.debug("Routing playstate command {} from session {} to controllable sibling {}", command,
+                        sessionId, targetSessionId);
+            }
+
             SessionApi sessionApi = new SessionApi(apiClient);
             // controllingUserId may be null
-            sessionApi.sendPlaystateCommand(sessionId, command, seekPositionTicks == null ? 0L : seekPositionTicks,
+            sessionApi.sendPlaystateCommand(targetSessionId, command,
+                    seekPositionTicks == null ? 0L : seekPositionTicks,
                     controllingUserId == null ? null : controllingUserId);
         } catch (Exception e) {
             logger.warn("Failed to send playstate command {} to session {}: {}", command, sessionId, e.getMessage());
         }
+    }
+
+    /**
+     * Resolves a session ID that accepts remote control commands.
+     *
+     * <p>
+     * Some Jellyfin Android clients expose two sibling sessions for the same physical device:
+     * a playback session (with NowPlayingItem) that may report {@code SupportsRemoteControl=false},
+     * and a control session (often short deviceId) that reports {@code SupportsRemoteControl=true}.
+     * When this split occurs, playstate commands must target the controllable sibling session.
+     */
+    private @Nullable String resolveControllableSessionId(String preferredSessionId) {
+        SessionInfoDto preferred = sessionManager.getSessions().get(preferredSessionId);
+        if (preferred == null) {
+            return preferredSessionId;
+        }
+
+        if (Boolean.TRUE.equals(preferred.getSupportsRemoteControl())) {
+            return preferredSessionId;
+        }
+
+        String preferredDeviceId = preferred.getDeviceId();
+        if (preferredDeviceId == null || preferredDeviceId.isBlank()) {
+            return preferredSessionId;
+        }
+
+        for (SessionInfoDto candidate : sessionManager.getSessions().values()) {
+            String candidateSessionId = candidate.getId();
+            if (candidateSessionId == null || candidateSessionId.equals(preferredSessionId)) {
+                continue;
+            }
+            if (!Boolean.TRUE.equals(candidate.getSupportsRemoteControl())) {
+                continue;
+            }
+            if (isSamePhysicalDevice(preferredDeviceId, candidate.getDeviceId())) {
+                return candidateSessionId;
+            }
+        }
+
+        return preferredSessionId;
+    }
+
+    private boolean isSamePhysicalDevice(String a, @Nullable String b) {
+        if (b == null || b.isBlank()) {
+            return false;
+        }
+        return a.startsWith(b) || b.startsWith(a);
     }
 
     /**
@@ -795,6 +853,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         try {
             Map<String, SessionInfoDto> newSessions = new HashMap<>();
             ClientListUpdater.updateClients(apiClient, Set.copyOf(activeUserIds), newSessions);
+
+            // Refresh known device IDs so that the dispatch map stays in sync after any
+            // serialNumber migrations performed by ClientDiscoveryService.
+            sessionManager.updateKnownDeviceIds(getConfiguredClientSerialNumbers());
 
             // Update session manager, which will publish events
             sessionManager.updateSessions(newSessions);

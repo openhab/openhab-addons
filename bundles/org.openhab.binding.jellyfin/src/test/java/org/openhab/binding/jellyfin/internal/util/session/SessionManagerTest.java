@@ -317,6 +317,64 @@ class SessionManagerTest {
         assertTrue(receivedUpdates.stream().anyMatch(r -> idB.equals(r.deviceId())));
     }
 
+    // --- Regression tests: stale knownCanonicalDeviceIds after serialNumber migration (issue #17674) ---
+
+    /**
+     * Regression: after ClientDiscoveryService migrates serialNumber from fullId to shortId,
+     * ServerHandler.updateClientList() refreshes knownCanonicalDeviceIds to [shortId] before calling
+     * updateSessions(). This test verifies that a short-ID session then reaches the short-ID subscriber
+     * (i.e. it is no longer silently re-routed to the stale full ID).
+     */
+    @Test
+    void updateSessions_shortIdDispatchedToSubscriber_whenKnownIdsReflectsMigratedConfig() {
+        String shortId = "93dbb268d5ccc56d";
+
+        // Post-migration: ClientHandler is subscribed on the short ID
+        eventBus.subscribe(shortId, session -> receivedUpdates.add(new SessionUpdateRecord(shortId, session)));
+
+        // Post-migration: knownCanonicalDeviceIds refreshed to [shortId] (current config value)
+        sessionManager.updateKnownDeviceIds(List.of(shortId));
+
+        // Server reports a session under the short ID only
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put("session-1", createSession("session-1", shortId));
+        sessionManager.updateSessions(sessions);
+
+        // Short-ID subscriber must receive the session update
+        assertEquals(1, receivedUpdates.size(), "Short-ID subscriber must receive the session update");
+        assertEquals(shortId, receivedUpdates.get(0).deviceId());
+        assertNotNull(receivedUpdates.get(0).session());
+    }
+
+    /**
+     * Regression guard: with stale knownCanonicalDeviceIds={fullId}, a session arriving under shortId
+     * gets re-routed to fullId — the shortId subscriber receives nothing. This documents the pre-fix
+     * behaviour. After the fix, ServerHandler.updateClientList() always refreshes knownCanonicalDeviceIds
+     * before calling updateSessions(), so this stale state can no longer persist across poll cycles.
+     */
+    @Test
+    void updateSessions_staleKnownDeviceIds_shortIdSubscriberReceivesNoUpdate() {
+        String shortId = "93dbb268d5ccc56d";
+        String fullId = "93dbb268d5ccc56dd700fbdb6af146b3b3c70644e708ad24";
+
+        // Post-migration: ClientHandler is subscribed on the short ID
+        eventBus.subscribe(shortId, session -> receivedUpdates.add(new SessionUpdateRecord(shortId, session)));
+
+        // STALE: knownCanonicalDeviceIds still holds the pre-migration full ID
+        sessionManager.updateKnownDeviceIds(List.of(fullId));
+
+        // Server reports a session under the short ID only
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put("session-1", createSession("session-1", shortId));
+        sessionManager.updateSessions(sessions);
+
+        // With stale full-ID routing, the short-ID session is dispatched to the (nonexistent)
+        // full-ID subscriber — the short-ID subscriber receives nothing
+        assertTrue(receivedUpdates.isEmpty(),
+                "With stale knownCanonicalDeviceIds, short-ID subscriber must not receive the update "
+                        + "— it is dispatched to the full-ID subscriber instead");
+    }
+
     /**
      * Record class to capture session update events for verification.
      */

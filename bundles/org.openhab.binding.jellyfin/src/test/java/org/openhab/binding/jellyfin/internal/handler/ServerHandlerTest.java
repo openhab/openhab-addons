@@ -25,7 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
+import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -643,5 +645,85 @@ class ServerHandlerTest {
         // The task should have been removed (or might not exist if test fails early)
         // This test verifies the structure is correct
         assertNotNull(tasksAfter, "Tasks map should exist");
+    }
+
+    @Test
+    void testResolveControllableSessionId_UsesSiblingSessionWhenPreferredNotRemoteControllable() throws Exception {
+        TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
+
+        Configuration config = new Configuration();
+        config.hostname = "test-server";
+        config.port = 8096;
+        config.ssl = false;
+        config.token = "token";
+
+        Thing mockThing = mock(Thing.class);
+        when(mockThing.getProperties()).thenReturn(new HashMap<>());
+
+        TestServerHandler testHandler = new TestServerHandler(TestServerHandler.setConfigForCtor(config), mockThing,
+                mockTaskManager);
+
+        var sessionManagerField = ServerHandler.class.getDeclaredField("sessionManager");
+        sessionManagerField.setAccessible(true);
+        SessionManager sessionManager = (SessionManager) sessionManagerField.get(testHandler);
+
+        SessionInfoDto playbackSession = new SessionInfoDto();
+        playbackSession.setId("playback-session");
+        playbackSession.setDeviceId("93dbb268d5ccc56dd700fbdb6af146b3b3c70644e708ad24");
+        playbackSession.setSupportsRemoteControl(false);
+
+        SessionInfoDto controlSession = new SessionInfoDto();
+        controlSession.setId("control-session");
+        controlSession.setDeviceId("93dbb268d5ccc56d");
+        controlSession.setSupportsRemoteControl(true);
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put(playbackSession.getId(), playbackSession);
+        sessions.put(controlSession.getId(), controlSession);
+        sessionManager.updateSessions(sessions);
+
+        var resolver = ServerHandler.class.getDeclaredMethod("resolveControllableSessionId", String.class);
+        resolver.setAccessible(true);
+
+        String resolved = (String) resolver.invoke(testHandler, "playback-session");
+        assertEquals("control-session", resolved);
+    }
+
+    @Test
+    void testResolveControllableSessionId_KeepsPreferredWhenAlreadyControllable() throws Exception {
+        TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
+
+        Configuration config = new Configuration();
+        config.hostname = "test-server";
+        config.port = 8096;
+        config.ssl = false;
+        config.token = "token";
+
+        Thing mockThing = mock(Thing.class);
+        when(mockThing.getProperties()).thenReturn(new HashMap<>());
+
+        TestServerHandler testHandler = new TestServerHandler(TestServerHandler.setConfigForCtor(config), mockThing,
+                mockTaskManager);
+
+        var sessionManagerField = ServerHandler.class.getDeclaredField("sessionManager");
+        sessionManagerField.setAccessible(true);
+        SessionManager sessionManager = (SessionManager) sessionManagerField.get(testHandler);
+
+        SessionInfoDto controllableSession = new SessionInfoDto();
+        controllableSession.setId("control-session");
+        controllableSession.setDeviceId("93dbb268d5ccc56d");
+        controllableSession.setSupportsRemoteControl(true);
+
+        Map<String, SessionInfoDto> sessions = new HashMap<>();
+        sessions.put(controllableSession.getId(), controllableSession);
+        sessionManager.updateSessions(sessions);
+
+        var resolver = ServerHandler.class.getDeclaredMethod("resolveControllableSessionId", String.class);
+        resolver.setAccessible(true);
+
+        String resolved = (String) resolver.invoke(testHandler, "control-session");
+        assertEquals("control-session", resolved);
     }
 }
