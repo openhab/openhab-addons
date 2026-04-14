@@ -49,4 +49,7 @@ public class RingDeviceTO {
     public String battery = "";
 
     public OwnerTO owner = new OwnerTO();
+
+    @SerializedName("battery_life_2")
+    public String battery2 = "";
 }
