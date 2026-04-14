@@ -252,8 +252,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         "@text/offline.api2.conf-error.not-authorized");
             }
         } catch (ApiException e) {
-            logger.debug("checkConnection() {}", e.getMessage(), e);
-            setStatusOfflineWithCommunicationError(e);
+            if (isUpdatingOwnFirmware()) {
+                // suppress stack trace and thing error status if offline due to a firmware update
+                logger.debug("checkConnection() {}", e.getMessage());
+            } else {
+                logger.debug("checkConnection() {}", e.getMessage(), e);
+                setStatusOfflineWithCommunicationError(e);
+            }
             retryConnection = connectRetriesRemaining > 0;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
@@ -268,8 +273,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             // short delay used during attempts to create or validate an application key
             milliSeconds = FAST_SCHEDULE_MILLI_SECONDS;
             applKeyRetriesRemaining--;
-        } else if (thing.getStatus() == ThingStatus.OFFLINE
-                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
+        } else if (isUpdatingOwnFirmware()) {
             // medium delay if already offline due to a firmware update which can take a few minutes
             milliSeconds = UPDATE_DURATION_SECONDS * 1000;
         } else {
@@ -290,10 +294,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     private void setStatusOfflineWithCommunicationError(Exception e) {
-        if (thing.getStatus() == ThingStatus.OFFLINE
-                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
-            // don't change status if already offline due to a firmware update which can take a few minutes
-        }
         Throwable cause = e.getCause();
         String causeMessage = cause == null ? null : cause.getMessage();
         if (causeMessage == null || causeMessage.isEmpty()) {
@@ -1196,5 +1196,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private String getText(String key) {
         String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
         return result == null ? key : result;
+    }
+
+    /**
+     * Returns true if the bridge is in process of updating its own firmware (self update).
+     */
+    public boolean isUpdatingOwnFirmware() {
+        return thing.getStatus() == ThingStatus.OFFLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING;
     }
 }

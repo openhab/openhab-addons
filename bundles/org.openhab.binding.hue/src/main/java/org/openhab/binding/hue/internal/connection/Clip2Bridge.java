@@ -289,6 +289,13 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClosed(@Nullable Stream stream) {
             Objects.requireNonNull(stream);
+            if (bridgeHandler.isUpdatingOwnFirmware()) {
+                // stream closes if firmware is updating; this is no error so just complete the future silently
+                if (!completable.isDone()) {
+                    completable.complete(Boolean.FALSE);
+                }
+                return;
+            }
             handleHttp2Error(Http2Error.CLOSED, stream.getSession());
         }
 
@@ -385,12 +392,20 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onClose(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
+            if (bridgeHandler.isUpdatingOwnFirmware()) {
+                // stream closes if firmware is updating; this is no error so return silently
+                return;
+            }
             fatalErrorDelayed(this, new Http2Exception(Http2Error.CLOSED), session);
         }
 
         @Override
         public void onFailure(@Nullable Session session, @Nullable Throwable failure) {
             Objects.requireNonNull(session);
+            if (bridgeHandler.isUpdatingOwnFirmware()) {
+                // stream closes if firmware is updating; this is no error so return silently
+                return;
+            }
             fatalErrorDelayed(this, new Http2Exception(Http2Error.FAILURE), session);
         }
 
