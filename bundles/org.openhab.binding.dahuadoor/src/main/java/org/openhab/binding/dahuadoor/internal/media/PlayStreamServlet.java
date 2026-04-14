@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.dahuadoor.internal.media;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Dictionary;
@@ -68,6 +70,8 @@ public class PlayStreamServlet extends HttpServlet {
 
     /** Timeout for the HTTP call to the go2rtc API. */
     private static final int GO2RTC_API_TIMEOUT_MS = 10_000;
+    /** Maximum accepted size for incoming request body. */
+    private static final int MAX_REQUEST_BODY_BYTES = 64 * 1024;
 
     private final HttpService httpService;
 
@@ -95,11 +99,17 @@ public class PlayStreamServlet extends HttpServlet {
      * @param apiPort go2rtc API port for that stream
      */
     public synchronized void registerStream(String streamName, int apiPort) {
-        streamApiPorts.put(streamName, apiPort);
-        if (registrationCount == 0) {
-            activate();
+        Integer previous = streamApiPorts.put(streamName, apiPort);
+        if (previous == null && registrationCount == 0) {
+            if (!activate()) {
+                streamApiPorts.remove(streamName);
+                LOGGER.warn("Could not register stream '{}' because servlet activation failed", streamName);
+                return;
+            }
         }
-        registrationCount++;
+        if (previous == null) {
+            registrationCount++;
+        }
         LOGGER.debug("Registered WebRTC stream '{}' on port {}", streamName, apiPort);
     }
 
@@ -109,12 +119,20 @@ public class PlayStreamServlet extends HttpServlet {
      * @param streamName go2rtc stream name
      */
     public synchronized void unregisterStream(String streamName) {
-        streamApiPorts.remove(streamName);
-        registrationCount = Math.max(0, registrationCount - 1);
-        if (registrationCount == 0) {
-            deactivate();
+        Integer removed = streamApiPorts.remove(streamName);
+        if (removed != null) {
+            registrationCount = Math.max(0, registrationCount - 1);
+            if (registrationCount == 0) {
+                deactivate();
+            }
         }
         LOGGER.debug("Unregistered WebRTC stream '{}'", streamName);
+    }
+
+    public synchronized void deactivateAll() {
+        streamApiPorts.clear();
+        registrationCount = 0;
+        deactivate();
     }
 
     // -------------------------------------------------------------------------
@@ -144,7 +162,13 @@ public class PlayStreamServlet extends HttpServlet {
 
         String requestBody;
         try (InputStream in = req.getInputStream()) {
-            requestBody = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            requestBody = new String(readLimitedBytes(in, MAX_REQUEST_BODY_BYTES), StandardCharsets.UTF_8);
+        } catch (RequestTooLargeException e) {
+            sendBase64Message(resp, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE,
+                    "Request body too large. Maximum supported size is " + MAX_REQUEST_BODY_BYTES + " bytes.");
+            LOGGER.warn("Rejected request for stream '{}': request body exceeded {} bytes", streamName,
+                    MAX_REQUEST_BODY_BYTES);
+            return;
         }
         if (requestBody.isBlank()) {
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Empty request body");
@@ -187,7 +211,8 @@ public class PlayStreamServlet extends HttpServlet {
         }
 
         // Forward to go2rtc API
-        String go2rtcUrl = "http://127.0.0.1:" + apiPort + "/api/webrtc?src=" + streamName;
+        String go2rtcUrl = "http://127.0.0.1:" + apiPort + "/api/webrtc?src="
+                + URLEncoder.encode(streamName, StandardCharsets.UTF_8);
 
         HttpURLConnection conn = (HttpURLConnection) URI.create(go2rtcUrl).toURL().openConnection();
         try {
@@ -225,7 +250,10 @@ public class PlayStreamServlet extends HttpServlet {
                 return;
             }
 
-            byte[] sdpAnswer = conn.getInputStream().readAllBytes();
+            byte[] sdpAnswer;
+            try (InputStream in = conn.getInputStream()) {
+                sdpAnswer = in.readAllBytes();
+            }
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
 
@@ -252,14 +280,16 @@ public class PlayStreamServlet extends HttpServlet {
     // Lifecycle
     // -------------------------------------------------------------------------
 
-    private void activate() {
+    private boolean activate() {
         Dictionary<String, String> params = new Hashtable<>();
         try {
             httpService.registerServlet(DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH, this, params,
                     httpService.createDefaultHttpContext());
             LOGGER.debug("PlayStreamServlet registered at {}", DahuaDoorBindingConstants.WEBRTC_SERVLET_PATH);
+            return true;
         } catch (ServletException | NamespaceException e) {
             LOGGER.error("Failed to register PlayStreamServlet: {}", e.getMessage(), e);
+            return false;
         }
     }
 
@@ -277,7 +307,6 @@ public class PlayStreamServlet extends HttpServlet {
     // -------------------------------------------------------------------------
 
     private static void addCorsHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
     }
@@ -288,5 +317,24 @@ public class PlayStreamServlet extends HttpServlet {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.getOutputStream().write(encoded);
+    }
+
+    private static byte[] readLimitedBytes(InputStream in, int maxBytes) throws IOException, RequestTooLargeException {
+        byte[] buffer = new byte[4096];
+        int total = 0;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            total += read;
+            if (total > maxBytes) {
+                throw new RequestTooLargeException();
+            }
+            out.write(buffer, 0, read);
+        }
+        return out.toByteArray();
+    }
+
+    private static final class RequestTooLargeException extends Exception {
+        private static final long serialVersionUID = 1L;
     }
 }

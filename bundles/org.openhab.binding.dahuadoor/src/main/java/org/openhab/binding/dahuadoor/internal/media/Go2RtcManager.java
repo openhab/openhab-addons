@@ -21,9 +21,11 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +55,8 @@ public class Go2RtcManager {
     private static final int HEALTH_CHECK_MAX_POLLS = 10;
     /** Delay between health-check polls in milliseconds. */
     private static final long HEALTH_CHECK_POLL_DELAY_MS = 500;
+    /** Maximum wait for go2rtc to exit after SIGTERM. */
+    private static final long STOP_TIMEOUT_SECONDS = 5;
 
     private final String go2rtcBinary;
     private final int apiPort;
@@ -63,6 +67,7 @@ public class Go2RtcManager {
     private final String password;
     private final int rtspChannel;
     private final int rtspSubtype;
+    private final int backchannelRtpPort;
     private final String streamName;
 
     private @Nullable Process process;
@@ -95,6 +100,7 @@ public class Go2RtcManager {
         this.password = password;
         this.rtspChannel = rtspChannel;
         this.rtspSubtype = rtspSubtype;
+        this.backchannelRtpPort = apiPort + 20000;
     }
 
     /**
@@ -174,7 +180,11 @@ public class Go2RtcManager {
             LOGGER.info("Stopping go2rtc (stream={}, PID={})", streamName, localProcess.pid());
             localProcess.destroy();
             try {
-                localProcess.waitFor();
+                if (!localProcess.waitFor(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    LOGGER.warn("go2rtc did not terminate in {}s, forcing shutdown (stream={})", STOP_TIMEOUT_SECONDS,
+                            streamName);
+                    localProcess.destroyForcibly();
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -218,13 +228,16 @@ public class Go2RtcManager {
      * as a host candidate on its own.
      */
     private String buildYaml() {
-        // URL-encode password chars that are special in URLs (%, @, :, /) for safety,
-        // but Dahua passwords are typically alphanumeric so this stays simple.
-        String rtspUrl = "rtsp://" + username + ":" + password + "@" + hostname + ":554/cam/realmonitor?channel="
-                + rtspChannel + "&subtype=" + rtspSubtype;
+        String userInfo = URLEncoder.encode(username, StandardCharsets.UTF_8) + ":"
+                + URLEncoder.encode(password, StandardCharsets.UTF_8);
+        String rtspUrl = "rtsp://" + userInfo + "@" + hostname + ":554/cam/realmonitor?channel=" + rtspChannel
+                + "&subtype=" + rtspSubtype;
         String backchannelExec = "exec:ffmpeg -use_wallclock_as_timestamps 1 -re -fflags nobuffer -f alaw -ar 8000 "
-                + "-ac 1 -i - -vn -acodec pcm_alaw -ar 8000 -ac 1 -payload_type 8 -f rtp "
-                + "rtp://127.0.0.1:21984#backchannel=1#audio=alaw/8000";
+                + "-ac 1 -i - -vn -acodec pcm_alaw -ar 8000 -ac 1 -payload_type 8 -f rtp " + "rtp://127.0.0.1:"
+                + backchannelRtpPort + "#backchannel=1#audio=alaw/8000";
+
+        String safeRtspUrl = rtspUrl.replace("'", "''");
+        String safeBackchannelExec = backchannelExec.replace("'", "''");
 
         StringBuilder candidates = new StringBuilder();
         String localIp = detectLocalIp();
@@ -234,9 +247,10 @@ public class Go2RtcManager {
         }
         candidates.append("    - stun:").append(stunServer).append("\n");
 
-        return "log:\n" + "  level: debug\n" + "streams:\n" + "  " + streamName + ":\n" + "    - '" + rtspUrl + "'\n"
-                + "    - '" + backchannelExec + "'\n" + "api:\n" + "  origin: \"*\"\n" + "  listen: \":" + apiPort
-                + "\"\n" + "webrtc:\n" + "  listen: \":" + webRtcPort + "\"\n" + "  candidates:\n" + candidates;
+        return "log:\n" + "  level: debug\n" + "streams:\n" + "  " + streamName + ":\n" + "    - '" + safeRtspUrl
+                + "'\n" + "    - '" + safeBackchannelExec + "'\n" + "api:\n" + "  origin: \"*\"\n" + "  listen: \":"
+                + apiPort + "\"\n" + "webrtc:\n" + "  listen: \":" + webRtcPort + "\"\n" + "  candidates:\n"
+                + candidates;
     }
 
     /**
