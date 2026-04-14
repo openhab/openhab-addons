@@ -62,6 +62,7 @@ public class SoftwareUpdateActions implements ThingActions {
         if (handler instanceof Clip2BridgeHandler bridgeHandler) {
             return bridgeHandler.installUpdate();
         }
+        logger.warn("ThingHandler is not an instance of Clip2BridgeHandler, cannot install update");
         throw new IllegalStateException("ThingHandler is not an instance of Clip2BridgeHandler");
     }
 }

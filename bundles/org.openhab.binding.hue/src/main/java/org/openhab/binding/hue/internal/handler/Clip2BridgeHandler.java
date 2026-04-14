@@ -99,7 +99,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int RECONNECT_MAX_TRIES = 5;
     private static final int POLL_INTERVAL_LOW = 5;
     private static final int POLL_INTERVAL_HIGH = 60;
-    private static final int UPDATE_DURATION_SECONDS = 90;
+    private static final int UPDATE_DURATION_SECONDS = 60;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
     private static final ResourceReference ROOM = new ResourceReference().setType(ResourceType.ROOM);
@@ -268,6 +268,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             // short delay used during attempts to create or validate an application key
             milliSeconds = FAST_SCHEDULE_MILLI_SECONDS;
             applKeyRetriesRemaining--;
+        } else if (thing.getStatus() == ThingStatus.OFFLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
+            // medium delay if already offline due to a firmware update which can take a few minutes
+            milliSeconds = UPDATE_DURATION_SECONDS * 1000;
         } else {
             // default delay, set via configuration parameter, used as heart-beat 'just-in-case'
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
@@ -286,6 +290,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     private void setStatusOfflineWithCommunicationError(Exception e) {
+        if (thing.getStatus() == ThingStatus.OFFLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
+            // don't change status if already offline due to a firmware update which can take a few minutes
+        }
         Throwable cause = e.getCause();
         String causeMessage = cause == null ? null : cause.getMessage();
         if (causeMessage == null || causeMessage.isEmpty()) {
