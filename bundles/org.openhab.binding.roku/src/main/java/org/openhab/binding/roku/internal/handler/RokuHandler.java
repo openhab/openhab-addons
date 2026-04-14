@@ -163,6 +163,11 @@ public class RokuHandler extends BaseThingHandler {
                                 return;
                             }
                         }
+                    } catch (RokuUnknownHostException e) {
+                        logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                HOST_RESOLVE_ERROR_MSG);
+                        return;
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info.", e);
 
@@ -198,8 +203,8 @@ public class RokuHandler extends BaseThingHandler {
                     tvActive = false;
                 }
             } catch (RokuUnknownHostException e) {
-                logger.debug("Unable to resolve host name: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to resolve host name");
+                logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, HOST_RESOLVE_ERROR_MSG);
                 return;
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
