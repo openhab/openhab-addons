@@ -43,8 +43,8 @@ public class SipBackchannelRtpRelay {
 
     private static final int MAX_PACKET_SIZE = 2048;
     private static final int RTP_HEADER_MIN_LEN = 12;
-    private static final int RTP_VERSION_MASK = 0xC0;
-    private static final int RTP_VERSION_2 = 0x80;
+    private static final byte RTP_VERSION_MASK = (byte) 0xC0;
+    private static final byte RTP_VERSION_2 = (byte) 0x80;
 
     static final class RelayTarget {
         final InetAddress remoteAddress;
