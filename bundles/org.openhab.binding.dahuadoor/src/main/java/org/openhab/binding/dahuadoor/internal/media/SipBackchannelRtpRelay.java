@@ -43,6 +43,7 @@ public class SipBackchannelRtpRelay {
 
     private static final int RTP_HEADER_MIN_LEN = 12;
     private static final int MAX_PACKET_SIZE = 2048;
+    private static final byte RTP_VERSION_MASK = (byte) 0xC0;
     private static final byte RTP_VERSION_2 = (byte) 0x80;
 
     private enum TargetCodec {
@@ -249,7 +250,7 @@ public class SipBackchannelRtpRelay {
         if (length < RTP_HEADER_MIN_LEN) {
             return -1;
         }
-        if ((packet[0] & RTP_VERSION_2) != RTP_VERSION_2) {
+        if ((packet[0] & RTP_VERSION_MASK) != RTP_VERSION_2) {
             return -1;
         }
 
