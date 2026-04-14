@@ -148,7 +148,7 @@ public class SipClient implements SipListener {
      * @param sipExtension SIP extension to register (e.g., "9901#2")
      * @param username SIP username (typically same as extension)
      * @param password SIP password
-     * @param localSipPort Local UDP port for SIP communication (e.g., 5062)
+     * @param localSipPort Local UDP port for SIP communication (e.g., 5060)
      * @param localIp Local IP address (auto-detected)
      * @param realm SIP realm (typically "VDP" for Dahua)
      * @param listener Callback interface for SIP events
@@ -259,7 +259,7 @@ public class SipClient implements SipListener {
             Request request = msgFactory.createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader,
                     fromHeader, toHeader, viaHeaders, maxForwards);
 
-            // Contact: <sip:9901%232@192.168.x.x:5062>
+            // Contact: <sip:9901%232@192.168.x.x:5060>
             SipURI contactURI = addrFactory.createSipURI(encodedExtension, localIp);
             contactURI.setPort(localSipPort);
             Address contactAddress = addrFactory.createAddress(contactURI);
