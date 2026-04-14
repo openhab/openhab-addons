@@ -58,7 +58,9 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
     @Deactivate
     public void deactivate() {
+        playStreamServlet.deactivateAll();
         sipCallControlServlet.deactivate();
+        handlersByThingUid.clear();
     }
 
     @Override
@@ -81,6 +83,14 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof DahuaDoorBaseHandler) {
+            handlersByThingUid.remove(thingHandler.getThing().getUID());
+        }
+        super.removeHandler(thingHandler);
     }
 
     public @Nullable DahuaDoorBaseHandler getDahuaHandler(String thingUid) {
