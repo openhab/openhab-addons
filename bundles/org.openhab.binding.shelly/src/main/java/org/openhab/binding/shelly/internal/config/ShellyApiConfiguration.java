@@ -64,7 +64,8 @@ public class ShellyApiConfiguration {
 
     private final String deviceIp; // device ip address
     private final String deviceAddress; // resolved IP address or MAC adress for BLU devices
-    private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(); // auth credentials
+    private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
+            new ShellyAuthCredentials("", "", "", "")); // auth credentials
     private final ShellyApiUrls urls;
 
     private final boolean eventsButton; // true: register for Relay btn_xxx events
@@ -265,7 +266,7 @@ public class ShellyApiConfiguration {
     @Override
     public String toString() {
         ShellyAuthCredentials credentials = this.credentials.get();
-        return "Device address=" + deviceAddress + ", HTTP user/password=" + credentials.userId + "/"
+        return "Device address=" + deviceAddress + ", HTTP user/password=" + getUserId() + "/"
                 + (credentials.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: " + eventsButton
                 + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush + ", Roller: " + eventsRoller
                 + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n" + "Blu Gateway="
