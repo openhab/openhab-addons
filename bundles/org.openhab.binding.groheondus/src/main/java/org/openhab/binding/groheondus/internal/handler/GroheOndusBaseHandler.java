@@ -154,7 +154,8 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable T getAppliance(OndusService ondusService) {
         try {
-            BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
+            BaseAppliance appliance = config.applianceId.isEmpty() ? null
+                    : ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
             if (appliance != null) {
                 if (appliance.getType() != getType()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.wrongtype");
