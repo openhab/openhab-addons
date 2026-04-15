@@ -264,8 +264,8 @@ public class MyRenaultHttpSession {
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/"
                 + config.vin + "/actions/hvac-start?country=" + getCountry(config);
         postKamereonRequest(path,
-                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
-                        + hvacTargetTemperature + "\"}}}");
+                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":"
+                        + hvacTargetTemperature + "}}}");
     }
 
     public void actionChargeMode(ChargingMode mode) throws RenaultForbiddenException, RenaultNotImplementedException,
