@@ -68,9 +68,14 @@ public class NtfyWebSocket {
     public void onMessage(String message) {
         logger.debug("Message from Server: {}", message);
 
-        BaseEvent fromJson = GsonDeserializer.deserialize(message);
-        if (fromJson != null) {
-            listener.messageRecieved(fromJson);
+        try {
+            BaseEvent fromJson = GsonDeserializer.deserialize(message);
+            if (fromJson != null) {
+                listener.messageReceived(fromJson);
+            }
+        } catch (RuntimeException e) {
+            logger.warn("Failed to deserialize websocket message: {}", message, e);
+            listener.connectionError(e);
         }
     }
 

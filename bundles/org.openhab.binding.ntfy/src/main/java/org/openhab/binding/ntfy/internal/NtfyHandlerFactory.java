@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -42,20 +41,20 @@ import org.osgi.service.component.annotations.Reference;
 public class NtfyHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(NTFY_CONNECTION_THING, NTFY_TOPIC_THING);
-    private HttpClient httpClient;
+    private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
 
     /**
      * OSGi activation constructor. Initializes the handler factory with the
      * shared HTTP client and a WebSocketFactory used to create WebSocket clients.
      *
-     * @param httpClientFactory factory providing a common {@link HttpClient}
+     * @param httpClientFactory factory providing a common
      * @param webSocketFactory factory used to create {@link org.eclipse.jetty.websocket.client.WebSocketClient}
      */
     @Activate
     public NtfyHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference WebSocketFactory webSocketFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.webSocketFactory = webSocketFactory;
     }
 
@@ -69,11 +68,11 @@ public class NtfyHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NTFY_CONNECTION_THING.equals(thingTypeUID)) {
-            return new NtfyConnectionHandler((Bridge) thing, webSocketFactory);
+            return new NtfyConnectionHandler((Bridge) thing, webSocketFactory, httpClientFactory.getCommonHttpClient());
         }
 
         if (NTFY_TOPIC_THING.equals(thingTypeUID)) {
-            return new NtfyTopicHandler(thing, httpClient);
+            return new NtfyTopicHandler(thing);
         }
 
         return null;

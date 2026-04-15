@@ -35,6 +35,7 @@ public class NtfyMessageHeaderBuilder {
     private static final String X_TAGS = "X-Tags";
     private static final String X_PRIORITY = "X-Priority";
     private static final String X_DELAY = "X-Delay";
+    private static final String X_TITLE = "X-Title";
 
     private NtfyMessage ntfyMessage;
     private Request request;
@@ -61,6 +62,10 @@ public class NtfyMessageHeaderBuilder {
             request.header(X_CLICK, ntfyMessage.getClickAction().toString());
         }
 
+        if (ntfyMessage.hasTitle()) {
+            request.header(X_TITLE, ntfyMessage.getTitle());
+        }
+
         String tags = String.join(",", ntfyMessage.getTags());
         if (!tags.isEmpty()) {
             request.header(X_TAGS, tags);
@@ -85,8 +90,8 @@ public class NtfyMessageHeaderBuilder {
             }
         }
 
-        String actions = String.join(";",
-                ntfyMessage.getActions().stream().map(action -> action.getHeader()).collect(Collectors.toList()));
+        String actions = ntfyMessage.getActions().stream().map(action -> action.getHeader())
+                .collect(Collectors.joining(";"));
         if (!actions.isBlank()) {
             request.header(X_ACTIONS, actions);
         }

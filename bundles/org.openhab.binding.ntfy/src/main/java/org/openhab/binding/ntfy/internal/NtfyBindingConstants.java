@@ -24,14 +24,14 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class NtfyBindingConstants {
 
-    private static final String BINDING_ID = "ntfy";
+    public static final String BINDING_ID = "ntfy";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID NTFY_CONNECTION_THING = new ThingTypeUID(BINDING_ID, "ntfyConnection");
-    public static final ThingTypeUID NTFY_TOPIC_THING = new ThingTypeUID(BINDING_ID, "ntfyTopic");
+    public static final ThingTypeUID NTFY_CONNECTION_THING = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID NTFY_TOPIC_THING = new ThingTypeUID(BINDING_ID, "ntfy-topic");
 
     // List of all Channel ids
-    public static final String CHANNEL_NTFY_LASTMESSAGE = "lastMessage";
-    public static final String CHANNEL_NTFY_LASTMESSAGETIME = "lastMessageTime";
-    public static final String CHANNEL_NTFY_LASTMESSAGEID = "lastMessageMessageId";
+    public static final String CHANNEL_LASTMESSAGE = "last-message";
+    public static final String CHANNEL_LASTMESSAGETIME = "last-message-time";
+    public static final String CHANNEL_LASTMESSAGEID = "last-message-id";
 }

@@ -18,6 +18,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ntfy.internal.models.BaseEvent;
+import org.openhab.binding.ntfy.internal.models.MessageDeleteEvent;
 import org.openhab.binding.ntfy.internal.models.MessageEvent;
 import org.openhab.binding.ntfy.internal.models.OpenEvent;
 
@@ -48,6 +49,8 @@ public class EventDeserializer implements JsonDeserializer<BaseEvent> {
                     return context.deserialize(jsonObject, MessageEvent.class);
                 case "open":
                     return context.deserialize(jsonObject, OpenEvent.class);
+                case "message_delete":
+                    return context.deserialize(jsonObject, MessageDeleteEvent.class);
             }
         }
 

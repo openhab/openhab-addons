@@ -35,8 +35,10 @@ public class ViewActionButton extends ActionButtonBase {
      * @param clearNotification whether executing the action should clear the notification
      * @param url the URL to open when the action is executed
      * @throws MalformedURLException when the provided URL is not valid
+     * @throws IllegalArgumentException when the provided URL is not valid
      */
-    public ViewActionButton(String label, Boolean clearNotification, String url) throws MalformedURLException {
+    public ViewActionButton(String label, Boolean clearNotification, String url)
+            throws IllegalArgumentException, MalformedURLException {
         super(label, clearNotification);
 
         this.url = URI.create(url).toURL();

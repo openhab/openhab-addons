@@ -20,6 +20,7 @@ import org.openhab.binding.ntfy.internal.models.BaseEvent;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Helper wrapper around Gson used to deserialize incoming ntfy JSON messages
@@ -39,7 +40,7 @@ public class GsonDeserializer {
      * @param message the raw JSON message
      * @return the deserialized {@link BaseEvent} or {@code null} when parsing failed
      */
-    public static @Nullable BaseEvent deserialize(String message) {
+    public static @Nullable BaseEvent deserialize(String message) throws JsonSyntaxException {
         return GSON.fromJson(message, BaseEvent.class);
     }
 

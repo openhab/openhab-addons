@@ -13,6 +13,7 @@
 package org.openhab.binding.ntfy.internal.network;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ntfy.internal.models.BaseEvent;
 
 /**
@@ -35,7 +36,7 @@ public interface WebSocketConnectionListener {
      *
      * @param reason A reason for the disconnection
      */
-    void connectionLost(String reason);
+    void connectionLost(@Nullable String reason);
 
     /**
      * Connection error
@@ -49,5 +50,5 @@ public interface WebSocketConnectionListener {
      *
      * @param messageEvent the parsed {@link BaseEvent}
      */
-    void messageRecieved(BaseEvent messageEvent);
+    void messageReceived(BaseEvent messageEvent);
 }

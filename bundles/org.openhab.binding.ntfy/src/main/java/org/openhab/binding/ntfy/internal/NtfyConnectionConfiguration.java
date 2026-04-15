@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class NtfyConnectionConfiguration {
 
     /**
-     * Hostname of the ntfy server, e.g. "ntfy.sh"
+     * Hostname of the ntfy server, e.g. "https://ntfy.sh"
      */
     public String hostname = "";
 
@@ -54,6 +54,8 @@ public class NtfyConnectionConfiguration {
      *         {@code false} otherwise
      */
     public boolean isAuthHeaderNeeded() {
+        final @Nullable String username = this.username;
+        final @Nullable String password = this.password;
         return username != null && !username.isBlank() && password != null && !password.isBlank();
     }
 

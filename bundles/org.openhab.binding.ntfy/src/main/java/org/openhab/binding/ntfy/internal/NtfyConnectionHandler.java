@@ -12,14 +12,20 @@
  */
 package org.openhab.binding.ntfy.internal;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.ntfy.internal.network.NtfySender;
 import org.openhab.binding.ntfy.internal.network.NtfyWebSocket;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -48,6 +54,9 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
     private NtfyConnectionConfiguration config;
     private Map<ThingUID, WebSocketClient> webSocketConnections = new HashMap<>();
     private WebSocketFactory webSocketFactory;
+    private HttpClient httpClient;
+    private @Nullable ScheduledFuture<?> retryConnectionFuture;
+    private @Nullable String scheme;
 
     /**
      * Creates a new {@link NtfyConnectionHandler} for the given bridge (connection) thing.
@@ -55,9 +64,10 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
      * @param thing the bridge thing representing the ntfy connection
      * @param webSocketFactory factory used to create WebSocketClient instances
      */
-    public NtfyConnectionHandler(Bridge thing, WebSocketFactory webSocketFactory) {
+    public NtfyConnectionHandler(Bridge thing, WebSocketFactory webSocketFactory, HttpClient httpClient) {
         super(thing);
         this.webSocketFactory = webSocketFactory;
+        this.httpClient = httpClient;
         config = getConfigAs(NtfyConnectionConfiguration.class);
     }
 
@@ -65,13 +75,42 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    public NtfySender CreateSender(String topicName) {
+        return new NtfySender(topicName, httpClient, this);
+    }
+
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
+        cancelRetryFuture();
 
         config = getConfigAs(NtfyConnectionConfiguration.class);
 
-        scheduler.execute(() -> updateStatus(ThingStatus.ONLINE));
+        updateStatus(ThingStatus.UNKNOWN);
+
+        String scheme;
+        try {
+            scheme = (new URI(config.hostname)).getScheme();
+        } catch (URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            return;
+        }
+        if (!"http".equals(scheme) && !"https".equals(scheme)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "URI scheme is missing in hostname or unsupported URI scheme (only http or https are supported): "
+                            + config.hostname);
+            return;
+        }
+
+        this.scheme = scheme;
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void cancelRetryFuture() {
+        final @Nullable ScheduledFuture<?> retryConnectionFuture = this.retryConnectionFuture;
+        this.retryConnectionFuture = null;
+        if (retryConnectionFuture != null) {
+            retryConnectionFuture.cancel(true);
+        }
     }
 
     /**
@@ -82,8 +121,8 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
      * @param thing the thing for which to create and register the WebSocket client
      */
     public synchronized void createAndRegisterWebSocketClient(Thing thing) {
-        WebSocketClient newClient = webSocketFactory
-                .createWebSocketClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), "ntfy"));
+        WebSocketClient newClient = webSocketFactory.createWebSocketClient(
+                ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), NtfyBindingConstants.BINDING_ID));
 
         WebSocketClient client = webSocketConnections.get(thing.getUID());
 
@@ -91,8 +130,9 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
             try {
                 client.stop();
             } catch (Exception e) {
-                logger.error("Error stopping WebSocketConnection", e);
+                logger.warn("Error stopping WebSocketConnection", e);
             }
+            webSocketConnections.remove(thing.getUID());
         }
 
         webSocketConnections.put(thing.getUID(), newClient);
@@ -122,28 +162,49 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
         String topicName = getTopicNameFromThing(topicThing);
 
         if (client != null) {
-            try {
-                if (client.isStarted()) {
+            if (client.isStarted()) {
+                try {
                     client.stop();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.error("WebSocket connection was interrupted", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                    return false;
+                } catch (Exception e) {
+                    logger.warn("Error stopping WebSocket connection - ignore it and continue", e);
                 }
+            }
+            try {
                 client.start();
-                client.setMaxIdleTimeout(config.connectionTimeout);
-
-                client.connect(ntfyWebSocket,
-                        new URI("wss:"
-                                + (new URI(config.hostname + "/" + topicName + "/ws")).getRawSchemeSpecificPart()),
-                        setupRequest());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                return false;
             } catch (Exception e) {
-                logger.error("Error creating WebSocketConnection", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 return false;
             }
+
+            client.setMaxIdleTimeout(config.connectionTimeout);
+            String webSocketScheme = "http".equals(this.scheme) ? "ws" : "wss";
+
+            try {
+                client.connect(ntfyWebSocket,
+                        new URI(webSocketScheme + ":"
+                                + (new URI(config.hostname + "/" + topicName + "/ws")).getRawSchemeSpecificPart()),
+                        setupRequest());
+            } catch (IOException | URISyntaxException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                return false;
+            }
+            updateStatus(ThingStatus.ONLINE);
+
         }
         return true;
     }
 
     private String getTopicNameFromThing(Thing topicThing) {
-        return topicThing.getConfiguration().as(NtfyTopicConfiguration.class).topicname;
+        return topicThing.getConfiguration().as(NtfyTopicConfiguration.class).topicName;
     }
 
     /**
@@ -154,6 +215,26 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
      */
     public void connectionError(Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getLocalizedMessage());
-        scheduler.schedule(() -> updateStatus(ThingStatus.ONLINE), 30, TimeUnit.SECONDS);
+        retryConnectionFuture = scheduler.schedule(() -> {
+            retryConnectionFuture = null;
+            updateStatus(ThingStatus.ONLINE);
+        }, 30, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        cancelRetryFuture();
+
+        webSocketConnections.values().forEach(client -> {
+            try {
+                if (client.isRunning()) {
+                    client.stop();
+                }
+            } catch (Exception e) {
+                logger.warn("Error stopping WebSocketConnection", e);
+            }
+        });
     }
 }

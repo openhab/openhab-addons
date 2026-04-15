@@ -105,8 +105,6 @@ public class NtfyMessageHeaderBuilderTest {
 
         new NtfyMessageHeaderBuilder(message, request).build();
 
-        new NtfyMessageHeaderBuilder(message, request).build();
-
         assertEquals("5", headers.get("X-Priority"), () -> "X-Priority header was: " + headers.get("X-Priority"));
         assertEquals("https://example.org/click", headers.get("X-Click"),
                 () -> "X-Click header was: " + headers.get("X-Click"));
