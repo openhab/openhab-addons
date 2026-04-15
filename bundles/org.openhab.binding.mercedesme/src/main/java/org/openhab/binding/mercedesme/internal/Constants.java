@@ -326,12 +326,13 @@ public class Constants {
     public static final String WEBSOCKET_USER_AGENT_CN = "MyStarCN/1.27.0 (com.daimler.ris.mercedesme.cn.ios; build:1758; iOS 16.3.1) Alamofire/5.4.0";
     public static final String WEBSOCKET_USER_AGENT_PA = "mycar-store-ap v1.27.0, android 8.0.0, SDK 2.84.3";
 
-    // version updates according to https://github.com/weymann/mbapi2020/commit/ede9ab60c1e18293b9436dab568b9195db6381b9
-    public static final String RIS_APPLICATION_VERSION_NA = "3.61.0";
-    public static final String RIS_APPLICATION_VERSION_CN = "1.61.0";
-    public static final String RIS_APPLICATION_VERSION_PA = "1.61.0";
-    public static final String RIS_APPLICATION_VERSION = "1.61.0";
-    public static final String RIS_SDK_VERSION = "3.55.0";
+    // version updates according to
+    // https://github.com/evcc-io/evcc/pull/28938/changes/036c301c317199b03cd687724e3f5d516ad84814
+    public static final String RIS_APPLICATION_VERSION_NA = "3.65.0";
+    public static final String RIS_APPLICATION_VERSION_CN = "1.65.0";
+    public static final String RIS_APPLICATION_VERSION_PA = "1.65.0";
+    public static final String RIS_APPLICATION_VERSION = "1.65.1 (3174)";
+    public static final String RIS_SDK_VERSION = "4.4.2";
     public static final String RIS_SDK_VERSION_CN = "2.132.2";
     public static final String RIS_OS_VERSION = "12";
     public static final String RIS_OS_NAME = "android";
