@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -140,12 +141,6 @@ public class RokuHandler extends BaseThingHandler {
                     try {
                         deviceInfo = communicator.getDeviceInfo();
 
-                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
-                            final String powerMode = deviceInfo.getPowerMode();
-                            updateState(POWER_STATE, new StringType(powerMode));
-                            updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
-                        }
-
                         if (!deviceInfoLoaded) {
                             thing.setProperty(PROPERTY_MODEL_NAME, deviceInfo.getModelName());
                             thing.setProperty(PROPERTY_MODEL_NUMBER, deviceInfo.getModelNumber());
@@ -153,11 +148,34 @@ public class RokuHandler extends BaseThingHandler {
                             thing.setProperty(PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
                             thing.setProperty(PROPERTY_DEVICE_ID, deviceInfo.getDeviceId());
                             thing.setProperty(PROPERTY_SOFTWARE_VERSION, deviceInfo.getSoftwareVersion());
-                            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase());
+                            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase(Locale.ENGLISH));
                             deviceInfoLoaded = true;
                         }
+
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            final String powerMode = deviceInfo.getPowerMode();
+                            updateState(POWER_STATE, new StringType(powerMode));
+                            updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
+
+                            // If power is off and the device was previously confirmed not to be in limited mode,
+                            // stop here. Otherwise continue so the thing can go online and have limited mode checked.
+                            if (!POWER_ON.equalsIgnoreCase(powerMode) && limitedMode == 0) {
+                                return;
+                            }
+                        }
+                    } catch (RokuUnknownHostException e) {
+                        logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                HOST_RESOLVE_ERROR_MSG);
+                        return;
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info.", e);
+
+                        // Do not continue if unable to determine TV power state; non-TV will continue.
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            setStatusOffline();
+                            return;
+                        }
                     }
                 }
 
@@ -169,7 +187,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
 
                 updateState(ACTIVE_APP, new StringType(activeAppId));
-                updateState(ACTIVE_APPNAME, new StringType(appMap.get(activeAppId)));
+                updateState(ACTIVE_APPNAME, new StringType(appMap.getOrDefault(activeAppId, EMPTY)));
 
                 if (TV_APP.equals(activeAppId)) {
                     tvActive = true;
@@ -185,8 +203,8 @@ public class RokuHandler extends BaseThingHandler {
                     tvActive = false;
                 }
             } catch (RokuUnknownHostException e) {
-                logger.debug("Unable to resolve host name: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to resolve host name");
+                logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, HOST_RESOLVE_ERROR_MSG);
                 return;
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
@@ -338,7 +356,6 @@ public class RokuHandler extends BaseThingHandler {
 
                         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_CHANNEL),
                                 channelListOptions);
-
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku tv-channels. Exception: {}", e.getMessage(), e);
                         isSuccess = false;
@@ -453,6 +470,7 @@ public class RokuHandler extends BaseThingHandler {
      * Updates the ThingStatus and powerState channel to indicate that the Thing is offline
      */
     private void setStatusOffline() {
+        limitedMode = -1;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
             updateState(POWER_STATE, new StringType(OFFLINE));
