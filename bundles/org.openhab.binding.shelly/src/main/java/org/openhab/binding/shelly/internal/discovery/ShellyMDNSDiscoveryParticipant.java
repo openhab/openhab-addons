@@ -35,6 +35,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.Configuration;
@@ -65,7 +66,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
-    private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private final ShellyBindingConfiguration bindingConfig;
     private final ShellyTranslationProvider messages;
     private final ShellyThingTable thingTable;
     private final HttpClient httpClient;
@@ -82,12 +83,14 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
             @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
-            ComponentContext componentContext) {
+            @Reference NetworkAddressService networkAddressService, ComponentContext componentContext) {
         logger.debug("Activating Shelly mDNS discovery service");
         this.configurationAdmin = configurationAdmin;
         this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.thingTable = thingTable;
+
+        bindingConfig = new ShellyBindingConfiguration(networkAddressService);
         bindingConfig.updateFromProperties(componentContext.getProperties());
     }
 

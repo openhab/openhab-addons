@@ -144,8 +144,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (alwaysOn) {
             disconnect();
-            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
+            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client,
+                    scheduler);
             rpcSocket.addMessageHandler(this);
+            this.rpcSocket = rpcSocket;
         }
 
         initialized = true;

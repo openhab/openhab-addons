@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.net.NetworkAddressService;
 
 /**
  * The {@link ShellyBindingConfiguration} class contains fields mapping binding configuration parameters.
@@ -37,9 +38,22 @@ public class ShellyBindingConfiguration {
 
     public String defaultUserId = "admin"; // default for http basic user id
     public String defaultPassword = "admin"; // default for http basic auth password
-    public String localIP = ""; // default:use OH network config
+    public String localIP; // default:use OH network config
     public int httpPort = -1;
     public boolean autoCoIoT = true;
+
+    public ShellyBindingConfiguration() {
+        localIP = "";
+    }
+
+    public ShellyBindingConfiguration(NetworkAddressService networkAddressService) {
+        String primaryIp = networkAddressService.getPrimaryIpv4HostAddress();
+        if (primaryIp != null && !primaryIp.isBlank() && !primaryIp.startsWith("169.254")) {
+            localIP = primaryIp;
+        } else {
+            localIP = "";
+        }
+    }
 
     public void updateFromProperties(Map<String, Object> properties) {
         for (Map.Entry<String, Object> e : properties.entrySet()) {
@@ -75,4 +89,5 @@ public class ShellyBindingConfiguration {
         Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
         updateFromProperties(dictCopy);
     }
+
 }
