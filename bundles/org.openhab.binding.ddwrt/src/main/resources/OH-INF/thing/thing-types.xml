@@ -22,7 +22,7 @@
 			<parameter name="hostnames" type="text" required="false">
 				<context>network-addresses</context>
 				<label>Hostnames</label>
-				<description>Optional comma separated list of hostnames or IP addresses of the devices for discovery</description>
+				<description>Comma-separated list of hostnames or IP addresses. Optionally use user@host:port to override per-host.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="0" max="65535">
 				<label>SSH Port</label>
@@ -32,7 +32,15 @@
 			<parameter name="user" type="text" required="false">
 				<context>user</context>
 				<label>User</label>
-				<description>Default username to access the devices. If omitted, uses SSH config or system username.</description>
+				<description>Default SSH username. Precedence: user@ in hostnames > this parameter > ~/.ssh/config > system
+					username.</description>
+				<default>root</default>
+			</parameter>
+			<parameter name="useSystemUser" type="boolean">
+				<label>Use System User</label>
+				<description>Ignore the User field and resolve the username from ~/.ssh/config or the system username.</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
@@ -117,7 +125,14 @@
 			<parameter name="user" type="text" required="false" groupName="authentication">
 				<context>user</context>
 				<label>User</label>
-				<description>Username to access the device. If omitted, uses SSH config or system username.</description>
+				<description>SSH username. Precedence: this parameter > bridge user > ~/.ssh/config > system username.</description>
+				<default>root</default>
+			</parameter>
+			<parameter name="useSystemUser" type="boolean" groupName="authentication">
+				<label>Use System User</label>
+				<description>Ignore the User field and resolve the username from ~/.ssh/config or the system username.</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="authentication">
 				<context>password</context>

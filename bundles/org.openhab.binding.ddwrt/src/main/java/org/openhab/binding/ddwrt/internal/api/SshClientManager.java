@@ -39,6 +39,8 @@ import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.i2p.crypto.eddsa.EdDSASecurityProvider;
+
 /**
  * The {@link SshRunner} executing command in a ssh session.
  *
@@ -67,17 +69,16 @@ public class SshClientManager {
         }
 
         // In OSGi, JCA ServiceLoader doesn't auto-discover providers from other bundles.
-        // Explicitly register the EdDSA provider so Ed25519 keys work.
-        try {
-            Class<?> providerClass = Class.forName("net.i2p.crypto.eddsa.EdDSASecurityProvider");
-            java.security.Provider eddsaProvider = Objects
-                    .requireNonNull((java.security.Provider) providerClass.getDeclaredConstructor().newInstance());
-            if (java.security.Security.getProvider(eddsaProvider.getName()) == null) {
-                java.security.Security.addProvider(eddsaProvider);
-                logger.debug("Registered EdDSA security provider for Ed25519 support");
-            }
-        } catch (ReflectiveOperationException e) {
-            logger.debug("EdDSA provider not available, Ed25519 keys will not be supported: {}", e.getMessage());
+        // Directly instantiate (not via reflection) so the EdDSA classes are loaded by
+        // this bundle's classloader, which also sees sshd-osgi. This ensures JCA can
+        // resolve EdDSAPublicKeySpec when SSHD decodes Ed25519 keys from known_hosts.
+        // Insert at position 1 so this provider is found before the JDK's built-in SunEC
+        // provider. On Java 17+ SunEC also handles "EdDSA" but does not recognise
+        // net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec — it expects the JDK-native
+        // java.security.spec.EdECPublicKeySpec instead.
+        if (java.security.Security.getProvider(EdDSASecurityProvider.PROVIDER_NAME) == null) {
+            java.security.Security.insertProviderAt(new EdDSASecurityProvider(), 1);
+            logger.debug("Registered EdDSA security provider for Ed25519 support (priority 1)");
         }
 
         client = Objects.requireNonNull(SshClient.setUpDefaultClient());
@@ -244,9 +245,9 @@ public class SshClientManager {
     @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             Duration defaultTimeout) throws IOException {
-        // Pass empty string when user is not configured so the HostConfigEntryResolver
-        // can fill it from ~/.ssh/config User directive. The resolver falls back to the
-        // system username if SSH config also has no User for the host.
+        // Precedence: user@ in hostnames > user parameter > ~/.ssh/config > system username.
+        // The config default is "root" but the user can clear it to fall through to
+        // ~/.ssh/config or the system username via the HostConfigEntryResolver.
         String effectiveUser = (user == null || user.isBlank()) ? "" : user;
         logger.debug("Connecting to {} port {} as {}", host, port, effectiveUser);
         // Port 0 means "not set" — MINA SSHD resolves from ~/.ssh/config or defaults to 22
