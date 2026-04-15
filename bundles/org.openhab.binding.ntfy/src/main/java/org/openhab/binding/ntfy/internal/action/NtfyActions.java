@@ -39,11 +39,16 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class NtfyActions implements ThingActions {
 
     private @Nullable NtfyTopicHandler handler;
-    private final NtfyMessage ntfyMessage = new NtfyMessage();
+    private NtfyMessage ntfyMessage = new NtfyMessage();
+
+    private void resetNtfyMessage() {
+        ntfyMessage = new NtfyMessage();
+    }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
         this.handler = (NtfyTopicHandler) handler;
+        resetNtfyMessage();
     }
 
     @Override
@@ -267,13 +272,13 @@ public class NtfyActions implements ThingActions {
      * @param actions the ThingActions instance
      * @param label the action label
      * @param clearNotification whether to clear the notification
-     * @param url the value to copy
+     * @param value the value to copy
      * @return the modified ThingActions builder instance
      * @throws MalformedURLException never thrown by this wrapper but declared for API compatibility
      */
-    public static ThingActions withCopyAction(ThingActions actions, String label, Boolean clearNotification, String url)
-            throws MalformedURLException {
-        return ((NtfyActions) actions).withCopyAction(label, clearNotification, url);
+    public static ThingActions withCopyAction(ThingActions actions, String label, Boolean clearNotification,
+            String value) throws MalformedURLException {
+        return ((NtfyActions) actions).withCopyAction(label, clearNotification, value);
     }
 
     /**
@@ -329,7 +334,7 @@ public class NtfyActions implements ThingActions {
     public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withBroadcastAction(
             @ActionInput(name = "label") String label,
             @ActionInput(name = "clearNotification") Boolean clearNotification,
-            @ActionInput(name = "params") String params) {
+            @ActionInput(name = "params") @Nullable String params) {
         ntfyMessage.addBroadcastAction(label, clearNotification, params);
         return this;
     }
@@ -345,7 +350,7 @@ public class NtfyActions implements ThingActions {
      * @throws MalformedURLException never thrown by this wrapper but declared for API compatibility
      */
     public static ThingActions withBroadcastAction(ThingActions actions, String label, Boolean clearNotification,
-            String params) throws MalformedURLException {
+            @Nullable String params) throws MalformedURLException {
         return ((NtfyActions) actions).withBroadcastAction(label, clearNotification, params);
     }
 
@@ -400,6 +405,30 @@ public class NtfyActions implements ThingActions {
     }
 
     /**
+     * Adds a title to the internal message builder.
+     *
+     * @param title the title
+     * @return this {@link ThingActions} builder instance
+     */
+    @RuleAction(label = "add a title to the message", description = "Add a title to the content for the builder.")
+    public @ActionOutput(label = "Ntfy Actions", type = "org.openhab.core.thing.binding.ThingActions") ThingActions withTitle(
+            @ActionInput(name = "title") String title) {
+        ntfyMessage.setTitle(title);
+        return this;
+    }
+
+    /**
+     * Static helper to call {@link #withTitle(String)} from rule code.
+     *
+     * @param actions the ThingActions instance
+     * @param title the title
+     * @return the modified ThingActions builder instance
+     */
+    public static ThingActions withTitle(ThingActions actions, String title) {
+        return ((NtfyActions) actions).withTitle(title);
+    }
+
+    /**
      * Sends the message constructed via the builder-style methods and returns the
      * created message id.
      *
@@ -412,6 +441,12 @@ public class NtfyActions implements ThingActions {
         if (handler == null) {
             return "";
         }
+
+        if (!ntfyMessage.hasMessage() || ntfyMessage.getMessage().isBlank()) {
+            throw new IllegalStateException(
+                    "Cannot send message without content. Please set a message via withMessage() before sending.");
+        }
+
         return handler.sendMessage(ntfyMessage);
     }
 
@@ -491,5 +526,22 @@ public class NtfyActions implements ThingActions {
      */
     public static boolean delete(ThingActions actions, String sequenceId) throws URISyntaxException {
         return ((NtfyActions) actions).delete(sequenceId);
+    }
+
+    /**
+     * Clears the current in-progress message builder state.
+     */
+    @RuleAction(label = "clear ntfy message builder", description = "Reset the current ntfy message builder state.")
+    public void clearNtfyMessageBuilder() {
+        resetNtfyMessage();
+    }
+
+    /**
+     * Static helper to call {@link #clearNtfyMessageBuilder()} from rule code.
+     *
+     * @param actions the ThingActions instance
+     */
+    public static void clearNtfyMessageBuilder(ThingActions actions) {
+        ((NtfyActions) actions).clearNtfyMessageBuilder();
     }
 }

@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="ntfyConnection">
+	<bridge-type id="server">
 
 		<label>Ntfy Connection</label>
-		<description>Connection to a ntfy server</description>
+		<description>Connection to an ntfy server</description>
 		<representation-property>hostname</representation-property>
 
 		<config-description>
@@ -19,7 +19,7 @@
 			</parameter>
 			<parameter name="username" type="text" required="false">
 				<context>username</context>
-				<label>username</label>
+				<label>Username</label>
 				<description>Username to access the server</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
@@ -27,55 +27,53 @@
 				<label>Password</label>
 				<description>Password to access the server</description>
 			</parameter>
-			<parameter name="connectionTimeout" type="integer" required="true">
+			<parameter name="connectionTimeout" type="integer" required="false">
 				<context>time</context>
-				<label>Web-Socket timeout</label>
-				<description>Connection-Timeout for WebSocket</description>
-				<default>60000</default>
+				<label>Connection timeout</label>
+				<description>Connection timeout for web requests and web socket connections in milliseconds</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="ntfyTopic">
+	<thing-type id="ntfy-topic">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ntfyConnection"/>
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 		<label>Ntfy Topic</label>
 		<description>Topic of a ntfy server</description>
 
 		<channels>
-			<channel id="lastMessage" typeId="lastMessage"/>
-			<channel id="lastMessageTime" typeId="lastMessageTime"/>
-			<channel id="lastMessageSequenceId" typeId="lastMessageSequenceId"/>
+			<channel id="last-message" typeId="last-message"/>
+			<channel id="last-message-time" typeId="last-message-time"/>
+			<channel id="last-message-id" typeId="last-message-id"/>
 		</channels>
 
-		<representation-property>topicname</representation-property>
+		<representation-property>topicName</representation-property>
 
 		<config-description>
-			<parameter name="topicname" type="text" required="true">
-				<context>topicname</context>
+			<parameter name="topicName" type="text" required="true">
+				<context>topicName</context>
 				<label>Topic name</label>
 				<description>Name of the topic</description>
 			</parameter>
 		</config-description>
 
-
 	</thing-type>
 
-	<channel-type id="lastMessage">
+	<channel-type id="last-message">
 		<item-type>String</item-type>
 		<label>Last Message</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageMessageId">
+	<channel-type id="last-message-id">
 		<item-type>String</item-type>
 		<label>Message Id of the last message</label>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastMessageTime">
+	<channel-type id="last-message-time">
 		<item-type>DateTime</item-type>
 		<label>Time of the last message</label>
 		<state readOnly="true"/>

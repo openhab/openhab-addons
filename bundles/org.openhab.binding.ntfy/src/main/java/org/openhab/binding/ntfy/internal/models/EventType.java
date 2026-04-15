@@ -30,6 +30,9 @@ public enum EventType {
     /** An "open" event indicating the user opened the notification. */
     OPEN,
 
+    /** A "delete" event indicating the user deleted the notification. */
+    DELETE,
+
     /** Unknown or unsupported event type. */
     UNKNOWN;
 
@@ -49,6 +52,8 @@ public enum EventType {
                 return MESSAGE;
             case "open":
                 return OPEN;
+            case "message_delete":
+                return DELETE;
             default:
                 return UNKNOWN;
         }

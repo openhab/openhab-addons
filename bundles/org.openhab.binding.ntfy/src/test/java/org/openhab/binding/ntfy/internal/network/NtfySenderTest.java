@@ -86,7 +86,7 @@ public class NtfySenderTest {
 
         final NtfyConnectionHandler handler = java.util.Objects.requireNonNull(this.handler);
 
-        NtfySender sender = new NtfySender("topic", httpClient, () -> handler);
+        NtfySender sender = new NtfySender("topic", httpClient, handler);
 
         NtfyConnectionConfiguration cfg = new NtfyConnectionConfiguration();
         cfg.hostname = "http://example.org";
@@ -116,11 +116,12 @@ public class NtfySenderTest {
 
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(HttpMethod.DELETE)).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         when(request.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(200);
 
         final NtfyConnectionHandler handler = java.util.Objects.requireNonNull(this.handler);
-        NtfySender sender = new NtfySender("topic", httpClient, () -> handler);
+        NtfySender sender = new NtfySender("topic", httpClient, handler);
 
         NtfyConnectionConfiguration cfg = new NtfyConnectionConfiguration();
         cfg.hostname = "http://example.org";
@@ -145,7 +146,7 @@ public class NtfySenderTest {
         when(request.send()).thenThrow(new ExecutionException(new RuntimeException("boom")));
 
         final NtfyConnectionHandler handler = java.util.Objects.requireNonNull(this.handler);
-        NtfySender sender = new NtfySender("topic", httpClient, () -> handler);
+        NtfySender sender = new NtfySender("topic", httpClient, handler);
 
         NtfyConnectionConfiguration cfg = new NtfyConnectionConfiguration();
         cfg.hostname = "http://example.org";
@@ -179,10 +180,11 @@ public class NtfySenderTest {
         String json = "{\"sequence_id\":\"seq-file-1\",\"message\":\"uploaded\",\"priority\":4,\"event\":\"message\"}";
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn(json);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
 
         NtfyConnectionHandler handler = mock(NtfyConnectionHandler.class);
 
-        NtfySender sender = new NtfySender("topic", httpClient, () -> handler);
+        NtfySender sender = new NtfySender("topic", httpClient, handler);
 
         NtfyConnectionConfiguration cfg = new NtfyConnectionConfiguration();
         cfg.hostname = "http://example.org";

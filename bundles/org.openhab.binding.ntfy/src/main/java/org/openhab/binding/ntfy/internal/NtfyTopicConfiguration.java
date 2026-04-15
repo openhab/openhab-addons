@@ -25,5 +25,5 @@ public class NtfyTopicConfiguration {
     /**
      * Topic name to subscribe to
      */
-    public String topicname = "";
+    public String topicName = "";
 }

@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.ntfy.internal;
 
+import static org.openhab.binding.ntfy.internal.NtfyBindingConstants.*;
+
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ntfy.internal.action.NtfyActions;
 import org.openhab.binding.ntfy.internal.models.BaseEvent;
 import org.openhab.binding.ntfy.internal.models.MessageEvent;
@@ -28,6 +29,7 @@ import org.openhab.binding.ntfy.internal.network.NtfyWebSocket;
 import org.openhab.binding.ntfy.internal.network.WebSocketConnectionListener;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,7 +50,7 @@ import org.openhab.core.types.RefreshType;
 public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConnectionListener {
 
     private NtfyWebSocket ntfyWebSocket;
-    private NtfySender ntfySender;
+    private @Nullable NtfySender ntfySender;
     private boolean isInitializing;
     private @Nullable MessageEvent lastMessageEvent;
 
@@ -58,17 +60,21 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
      * @param thing the topic thing this handler belongs to
      * @param httpClient the HTTP client used by the sender to perform REST calls
      */
-    public NtfyTopicHandler(Thing thing, HttpClient httpClient) {
+    public NtfyTopicHandler(Thing thing) {
         super(thing);
 
         this.ntfyWebSocket = new NtfyWebSocket(this);
-        this.ntfySender = new NtfySender(this.getConfigAs(NtfyTopicConfiguration.class).topicname, httpClient,
-                this::getBridgeHandler);
     }
 
-    private NtfyConnectionHandler getBridgeHandler() {
-        return (NtfyConnectionHandler) (java.util.Objects
-                .requireNonNull(java.util.Objects.requireNonNull(getBridge()).getHandler()));
+    private @Nullable NtfyConnectionHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+
+        if (bridge != null) {
+            if (bridge.getHandler() instanceof NtfyConnectionHandler bridgeHandler) {
+                return bridgeHandler;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -80,18 +86,30 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
     public void thingUpdated(Thing thing) {
         super.thingUpdated(thing);
 
-        getBridgeHandler().createAndRegisterWebSocketClient(thing);
+        start(thing);
+    }
+
+    private void start(Thing thing) {
+        NtfyConnectionHandler bridgeHandler = getBridgeHandler();
+
+        if (bridgeHandler == null) {
+            return;
+        }
+        ntfySender = bridgeHandler.CreateSender(this.getConfigAs(NtfyTopicConfiguration.class).topicName);
+        bridgeHandler.createAndRegisterWebSocketClient(thing);
+        startConnection();
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initialize();
         } else {
-            super.bridgeStatusChanged(bridgeStatusInfo);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            ntfySender = null;
         }
+
+        super.bridgeStatusChanged(bridgeStatusInfo);
     }
 
     @Override
@@ -112,8 +130,7 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
 
         scheduler.execute(() -> {
             try {
-                getBridgeHandler().createAndRegisterWebSocketClient(thing);
-                startConnection();
+                start(thing);
             } finally {
                 this.isInitializing = false;
             }
@@ -122,7 +139,11 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
 
     private void startConnection() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            if (!getBridgeHandler().startWebSocketConnection(thing, ntfyWebSocket)) {
+            NtfyConnectionHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler == null) {
+                return;
+            }
+            if (!bridgeHandler.startWebSocketConnection(thing, ntfyWebSocket)) {
                 updateStatus(ThingStatus.OFFLINE);
             }
         }
@@ -134,16 +155,23 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
     }
 
     @Override
-    public void connectionLost(String reason) {
+    public void connectionLost(@Nullable String reason) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                reason == null || reason.isBlank() ? "WebSocket connection lost" : reason);
     }
 
     @Override
     public void connectionError(Throwable cause) {
-        getBridgeHandler().connectionError(cause);
+        NtfyConnectionHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        updateStatus(ThingStatus.OFFLINE);
+        bridgeHandler.connectionError(cause);
     }
 
     @Override
-    public void messageRecieved(BaseEvent event) {
+    public void messageReceived(BaseEvent event) {
         if (event instanceof MessageEvent message) {
             this.lastMessageEvent = message;
             updateChannels();
@@ -153,11 +181,9 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
     private void updateChannels() {
         final MessageEvent lastMessageEvent = this.lastMessageEvent;
         if (lastMessageEvent != null) {
-            updateState(NtfyBindingConstants.CHANNEL_NTFY_LASTMESSAGE,
-                    StringType.valueOf(lastMessageEvent.getMessage()));
-            updateState(NtfyBindingConstants.CHANNEL_NTFY_LASTMESSAGETIME,
-                    new DateTimeType(lastMessageEvent.getTime()));
-            updateState(NtfyBindingConstants.CHANNEL_NTFY_LASTMESSAGEID, StringType.valueOf(lastMessageEvent.getId()));
+            updateState(CHANNEL_LASTMESSAGE, StringType.valueOf(lastMessageEvent.getMessage()));
+            updateState(CHANNEL_LASTMESSAGETIME, new DateTimeType(lastMessageEvent.getTime()));
+            updateState(CHANNEL_LASTMESSAGEID, StringType.valueOf(lastMessageEvent.getId()));
         }
     }
 
@@ -169,8 +195,12 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
      * @throws URISyntaxException
      */
     public String sendMessage(NtfyMessage ntfyMessage) throws URISyntaxException {
-        @Nullable
-        MessageEvent sendMessage = ntfySender.sendMessage(ntfyMessage);
+        final @Nullable NtfySender sender = ntfySender;
+        if (sender == null) {
+            return "";
+        }
+
+        MessageEvent sendMessage = sender.sendMessage(ntfyMessage);
 
         if (sendMessage == null) {
             return "";
@@ -178,10 +208,26 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
         return sendMessage.getId();
     }
 
+    /**
+     * Uploads a local file to the configured topic via the underlying
+     * {@link NtfySender#sendFile(String, String, String)} and returns the
+     * created message id on success.
+     *
+     * @param file the filesystem path to the file to upload
+     * @param filename optional filename to present to recipients (may be null)
+     * @param sequenceId optional sequence id to associate with the uploaded message
+     * @return the created message id on success, or an empty string on failure
+     * @throws URISyntaxException when the constructed request URI is invalid
+     */
     public String sendFile(String file, @Nullable String filename, @Nullable String sequenceId)
             throws URISyntaxException {
+        final @Nullable NtfySender sender = ntfySender;
+        if (sender == null) {
+            return "";
+        }
+
         @Nullable
-        MessageEvent sendMessage = ntfySender.sendFile(file, filename, sequenceId);
+        MessageEvent sendMessage = sender.sendFile(file, filename, sequenceId);
 
         if (sendMessage == null) {
             return "";
@@ -197,6 +243,10 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
      * @throws URISyntaxException when the underlying request URI could not be constructed
      */
     public boolean deleteMessage(String sequenceId) throws URISyntaxException {
-        return ntfySender.deleteMessage(sequenceId);
+        final @Nullable NtfySender sender = ntfySender;
+        if (sender == null) {
+            return false;
+        }
+        return sender.deleteMessage(sequenceId);
     }
 }

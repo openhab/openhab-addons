@@ -15,7 +15,7 @@ package org.openhab.binding.ntfy.internal.network;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,14 +31,15 @@ public class NtfyMessage {
 
     private @Nullable String message;
     private int priority = 3;
-    private HashSet<String> tags = new HashSet<>();
-    private HashSet<ActionButtonBase> actions = new HashSet<>();
+    private LinkedHashSet<String> tags = new LinkedHashSet<>();
+    private LinkedHashSet<ActionButtonBase> actions = new LinkedHashSet<>();
     private @Nullable URI clickAction;
     private @Nullable URI icon;
     private @Nullable URI attachment;
     private @Nullable String attachmentFilename;
     private @Nullable String sequenceId;
     private @Nullable String delay;
+    private @Nullable String title;
 
     /**
      * Sets the message body to be sent.
@@ -69,6 +70,34 @@ public class NtfyMessage {
     }
 
     /**
+     * Sets the title for the message to be sent.
+     *
+     * @param message the message text
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Returns the title of the message.
+     *
+     * @return the title (never null when called after checking {@link #hasTitle()})
+     */
+    public String getTitle() {
+        return java.util.Objects.requireNonNull(title);
+    }
+
+    /**
+     * Checks whether the message has a title.
+     *
+     * @return {@code true} when the message has a title, {@code false} otherwise
+     */
+    public boolean hasTitle() {
+        final String title = this.title;
+        return title != null;
+    }
+
+    /**
      * Sets the message priority. Allowed range is 1..5.
      *
      * @param priority the priority value
@@ -76,7 +105,7 @@ public class NtfyMessage {
      */
     public void setPriority(int priority) {
         if (priority < 1 || priority > 5) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid priority " + priority + ". Allowed range is 1..5.");
         }
         this.priority = priority;
     }
@@ -296,6 +325,7 @@ public class NtfyMessage {
      * @return {@code true} when a sequence id is present and not blank
      */
     public boolean hasSequenceId() {
+        final String sequenceId = this.sequenceId;
         return sequenceId != null && !sequenceId.isBlank();
     }
 
@@ -324,6 +354,7 @@ public class NtfyMessage {
      * @return {@code true} when a delay is present and not blank
      */
     public boolean hasDelay() {
+        final String delay = this.delay;
         return delay != null && !delay.isBlank();
     }
 }
