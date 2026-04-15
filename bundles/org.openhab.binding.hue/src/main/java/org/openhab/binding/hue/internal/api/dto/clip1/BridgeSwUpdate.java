@@ -26,7 +26,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 @NonNullByDefault
 public class BridgeSwUpdate {
     private @SuppressWarnings("unused") @Nullable Boolean install;
-    private @Nullable String state;
+    private @Nullable UpdateStatusV1 state;
     private @Nullable BridgeSwUpdateBridge bridge;
 
     public @Nullable BridgeSwUpdateBridge getBridge() {
@@ -37,7 +37,7 @@ public class BridgeSwUpdate {
      * Reads the update status of the devices in the bridge in v1 protocol form and converts it to v2 protocol form.
      */
     public @Nullable UpdateStatusV2 getUpdateStatus() {
-        return UpdateStatusV2.of(UpdateStatusV1.of(state));
+        return UpdateStatusV2.of(state);
     }
 
     public BridgeSwUpdate setInstallUpdate() {

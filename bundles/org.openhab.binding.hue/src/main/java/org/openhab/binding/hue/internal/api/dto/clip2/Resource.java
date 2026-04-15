@@ -1039,10 +1039,11 @@ public class Resource {
      * is a software update status, if it is 'smart_scene' it is a smart scene state.
      */
     public @Nullable UpdateStatusV2 getUpdateStatus() {
-        if (ResourceType.DEVICE_SOFTWARE_UPDATE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
-            String state = statePrimitive.getAsString();
-            if (Objects.nonNull(state)) {
-                return UpdateStatusV2.of(state);
+        if (ResourceType.DEVICE_SOFTWARE_UPDATE == getType() && state instanceof JsonPrimitive statePrimitive) {
+            try {
+                return GSON.fromJson(statePrimitive, UpdateStatusV2.class);
+            } catch (JsonSyntaxException e) {
+                return null;
             }
         }
         return null;
