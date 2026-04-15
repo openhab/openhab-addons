@@ -24,9 +24,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DDWRTDeviceConfiguration {
 
     public String hostname = "";
-    public String user = "";
+    public String user = "root";
+    public boolean useSystemUser = false;
     public String password = "";
     public int port = 0;
     public int refreshInterval = 3;
     public String syslogPriority = "warning";
+
+    /**
+     * Returns the effective username for SSH connections.
+     * When {@link #useSystemUser} is true, returns empty string so the SSH client
+     * resolves from ~/.ssh/config or the system username.
+     */
+    public String getEffectiveUser() {
+        return useSystemUser ? "" : user;
+    }
 }

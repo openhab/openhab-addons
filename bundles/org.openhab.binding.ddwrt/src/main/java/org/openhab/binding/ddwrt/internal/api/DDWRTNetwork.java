@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,9 +51,19 @@ public class DDWRTNetwork {
     // Per-host locks to prevent concurrent createDevice calls for the same hostname
     private final Map<String, Object> hostLocks = new ConcurrentHashMap<>();
 
-    // Failure tracking for backoff logic
-    private final Map<String, Integer> hostFailureCount = new ConcurrentHashMap<>();
-    private final Map<String, Long> hostFailureTimes = new ConcurrentHashMap<>();
+    // Independent failure tracking: auth failures (lockout risk) vs network failures (no risk).
+    // Auth failure proves network is up, so it resets the network counters.
+    private final Map<String, Integer> hostAuthFailureCount = new ConcurrentHashMap<>();
+    private final Map<String, Long> hostAuthFailureTimes = new ConcurrentHashMap<>();
+    private final Map<String, Integer> hostNetFailureCount = new ConcurrentHashMap<>();
+    private final Map<String, Long> hostNetFailureTimes = new ConcurrentHashMap<>();
+
+    /**
+     * Stop retrying auth failures after this many attempts; wait for config change.
+     * Dropbear blocks after 5 failed auth attempts, so stop at 3 (1 initial + 2 retries)
+     * to leave headroom for the user to fix config without triggering the block.
+     */
+    private static final int MAX_AUTH_RETRY_FAILURES = 3;
 
     private final Logger logger = LoggerFactory.getLogger(DDWRTNetwork.class);
 
@@ -69,8 +80,13 @@ public class DDWRTNetwork {
 
             // Clear failure tracking for retry logic
             failedDeviceConfigs.clear();
-            hostFailureCount.clear();
-            hostFailureTimes.clear();
+            hostAuthFailureCount.clear();
+            hostAuthFailureTimes.clear();
+            hostNetFailureCount.clear();
+            hostNetFailureTimes.clear();
+
+            // Reset per-device recovery backoff so existing devices retry immediately
+            cache.getDevices().forEach(DDWRTBaseDevice::resetRecoveryBackoff);
 
             final List<String> hosts = Objects.requireNonNull(
                     Arrays.stream(netCfg.hostnames.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList());
@@ -87,9 +103,8 @@ public class DDWRTNetwork {
                 // Check if this is a config device or existing device
                 boolean isFromConfig = hosts.contains(hostname);
 
+                DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
                 try {
-                    DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
-
                     if (isFromConfig) {
                         // Use config-based settings
                         HostSpec spec = parseHostSpec(hostname, netCfg);
@@ -120,20 +135,21 @@ public class DDWRTNetwork {
                     DDWRTBaseDevice device = createDeviceLocked(devCfg);
                     if (device != null) {
                         device.startRefresh(netCfg.refreshInterval);
-                    } else if (isFromConfig) {
-                        // Only track failures for config devices
-                        addFailedDeviceConfig(hostname, devCfg);
                     }
                 } catch (Exception e) {
                     logger.debug("SSH to host {} failed: {}", hostname, e.getMessage(), e);
                     if (isFromConfig) {
-                        DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
-                        devCfg.hostname = hostname;
-                        devCfg.port = 0;
-                        devCfg.user = netCfg.user;
-                        devCfg.password = netCfg.password;
-                        devCfg.refreshInterval = netCfg.refreshInterval;
-                        addFailedDeviceConfig(hostname, devCfg);
+                        addFailedDeviceConfig(devCfg.hostname, devCfg);
+                        if (isAuthFailure(e)) {
+                            hostAuthFailureCount.put(devCfg.hostname, 1);
+                            hostAuthFailureTimes.put(devCfg.hostname, System.currentTimeMillis());
+                            // Auth failure proves network is up
+                            hostNetFailureCount.remove(devCfg.hostname);
+                            hostNetFailureTimes.remove(devCfg.hostname);
+                        } else {
+                            hostNetFailureCount.put(devCfg.hostname, 1);
+                            hostNetFailureTimes.put(devCfg.hostname, System.currentTimeMillis());
+                        }
                     }
                 }
             });
@@ -154,7 +170,7 @@ public class DDWRTNetwork {
 
     private static HostSpec parseHostSpec(String entry, DDWRTNetworkConfiguration defaults) {
         String trimmed = entry.trim();
-        String user = defaults.user;
+        String user = defaults.useSystemUser ? "" : defaults.user;
         String hostPort = trimmed;
 
         int atIdx = trimmed.indexOf('@');
@@ -257,37 +273,64 @@ public class DDWRTNetwork {
             Map<String, DDWRTDeviceConfiguration> copy = new ConcurrentHashMap<>(failedDeviceConfigs);
             copy.forEach((hostname, cfg) -> {
                 try {
-                    // Check if we should back off this host
-                    Long lastFailureTime = hostFailureTimes.get(hostname);
+                    int authFailures = hostAuthFailureCount.getOrDefault(hostname, 0);
+                    int netFailures = hostNetFailureCount.getOrDefault(hostname, 0);
                     long currentTime = System.currentTimeMillis();
-                    long backoffMs = calculateBackoffMs(hostFailureCount.getOrDefault(hostname, 0));
 
-                    if (lastFailureTime != null && (currentTime - lastFailureTime) < backoffMs) {
-                        logger.debug("Backing off retry for {} ({}ms remaining)", hostname,
-                                backoffMs - (currentTime - lastFailureTime));
+                    // Auth failures: stop after MAX_AUTH_RETRY_FAILURES; wait for config change
+                    if (authFailures >= MAX_AUTH_RETRY_FAILURES) {
+                        logger.debug("Host {} has {} auth failures, suspending retries until config change", hostname,
+                                authFailures);
                         return;
+                    }
+
+                    // Check auth backoff (higher priority — lockout risk)
+                    if (authFailures > 0) {
+                        Long lastAuthTime = hostAuthFailureTimes.get(hostname);
+                        long backoffMs = calculateAuthBackoffMs(authFailures);
+                        if (lastAuthTime != null && (currentTime - lastAuthTime) < backoffMs) {
+                            logger.debug("Backing off retry for {} ({}s remaining, auth)", hostname,
+                                    (backoffMs - (currentTime - lastAuthTime)) / 1000);
+                            return;
+                        }
+                    }
+
+                    // Check network backoff
+                    if (netFailures > 0) {
+                        Long lastNetTime = hostNetFailureTimes.get(hostname);
+                        long backoffMs = calculateNetworkBackoffMs(netFailures);
+                        if (lastNetTime != null && (currentTime - lastNetTime) < backoffMs) {
+                            logger.debug("Backing off retry for {} ({}s remaining, network)", hostname,
+                                    (backoffMs - (currentTime - lastNetTime)) / 1000);
+                            return;
+                        }
                     }
 
                     logger.debug("Retrying connection to failed device: {}", hostname);
                     DDWRTBaseDevice device = createDeviceLocked(cfg);
                     if (device != null) {
                         failedDeviceConfigs.remove(hostname);
-                        hostFailureCount.remove(hostname);
-                        hostFailureTimes.remove(hostname);
+                        hostAuthFailureCount.remove(hostname);
+                        hostAuthFailureTimes.remove(hostname);
+                        hostNetFailureCount.remove(hostname);
+                        hostNetFailureTimes.remove(hostname);
                         DDWRTNetworkConfiguration netCfg = config;
                         int interval = netCfg != null ? netCfg.refreshInterval : cfg.refreshInterval;
                         device.startRefresh(interval);
                         logger.info("Successfully reconnected to device: {}", hostname);
                     }
                 } catch (Exception e) {
-                    // Track failure count and time for backoff
-                    int failureCount = Objects.requireNonNull(hostFailureCount.merge(hostname, 1, Integer::sum));
-                    hostFailureTimes.put(hostname, System.currentTimeMillis());
-                    logger.debug("Retry failed for host {} (attempt {}): {}", hostname, failureCount, e.getMessage());
-
-                    // If too many failures, increase backoff significantly
-                    if (failureCount > 5) {
-                        logger.warn("Host {} has failed {} times, applying extended backoff", hostname, failureCount);
+                    if (isAuthFailure(e)) {
+                        int count = Objects.requireNonNull(hostAuthFailureCount.merge(hostname, 1, Integer::sum));
+                        hostAuthFailureTimes.put(hostname, System.currentTimeMillis());
+                        // Auth failure proves network is up
+                        hostNetFailureCount.remove(hostname);
+                        hostNetFailureTimes.remove(hostname);
+                        logger.debug("Retry auth failure for {} (attempt {}): {}", hostname, count, e.getMessage());
+                    } else {
+                        int count = Objects.requireNonNull(hostNetFailureCount.merge(hostname, 1, Integer::sum));
+                        hostNetFailureTimes.put(hostname, System.currentTimeMillis());
+                        logger.debug("Retry network failure for {} (attempt {}): {}", hostname, count, e.getMessage());
                     }
                 }
             });
@@ -299,7 +342,7 @@ public class DDWRTNetwork {
      * If another thread is already creating a device for the same host, this blocks until done,
      * then returns the cached device (if the first thread succeeded) or retries.
      */
-    private @Nullable DDWRTBaseDevice createDeviceLocked(DDWRTDeviceConfiguration cfg) {
+    private @Nullable DDWRTBaseDevice createDeviceLocked(DDWRTDeviceConfiguration cfg) throws IOException {
         Object lock = hostLocks.computeIfAbsent(cfg.hostname, k -> new Object());
         synchronized (Objects.requireNonNull(lock)) {
             // Check if device was already created by another thread while we waited
@@ -361,20 +404,50 @@ public class DDWRTNetwork {
         cache.getDevices().forEach(DDWRTBaseDevice::dispose);
         cache.clearAll();
         failedDeviceConfigs.clear();
-        hostFailureCount.clear();
-        hostFailureTimes.clear();
+        hostAuthFailureCount.clear();
+        hostAuthFailureTimes.clear();
+        hostNetFailureCount.clear();
+        hostNetFailureTimes.clear();
         hostLocks.clear();
     }
 
     /**
-     * Calculate exponential backoff time based on failure count.
-     * 1st failure: 3s, 2nd: 6s, 3rd: 12s, 4th: 24s, 5th+: 60s max
+     * Classify whether an exception indicates an authentication/block failure
+     * (triggers Dropbear lockout) vs a network-level failure (no lockout risk).
      */
-    private long calculateBackoffMs(int failureCount) {
+    static boolean isAuthFailure(Exception e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return false;
+        }
+        // "No more authentication methods available" — wrong key/password
+        // "Session is being closed" — Dropbear actively blocking this client
+        return msg.contains("authentication methods") || msg.contains("Session is being closed");
+    }
+
+    /**
+     * Backoff for auth/block failures. Aggressive because each attempt while
+     * Dropbear is blocking adds 5 minutes to the block timer.
+     * 1st: 30s, 2nd: 60s, 3rd: 120s, 4th: 240s, 5th+: suspended via MAX_AUTH_RETRY_FAILURES
+     */
+    private long calculateAuthBackoffMs(int failureCount) {
         if (failureCount <= 0) {
             return 0;
         }
-        long backoff = 3000L * (1L << Math.min(failureCount - 1, 4)); // Max 60s
-        return Math.min(backoff, 60000L);
+        long backoff = 30_000L * (1L << Math.min(failureCount - 1, 4));
+        return Math.min(backoff, 480_000L);
+    }
+
+    /**
+     * Backoff for network failures (unreachable, refused, timeout).
+     * No risk of Dropbear lockout, so use a gentler schedule.
+     * 1st: 10s, 2nd: 20s, 3rd: 40s, 4th: 80s, 5th: 160s, 6th+: 300s (5 min)
+     */
+    private long calculateNetworkBackoffMs(int failureCount) {
+        if (failureCount <= 0) {
+            return 0;
+        }
+        long backoff = 10_000L * (1L << Math.min(failureCount - 1, 5));
+        return Math.min(backoff, 300_000L);
     }
 }

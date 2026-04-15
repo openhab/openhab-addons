@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -166,6 +167,22 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     // Syslog follower for real-time log monitoring
     private volatile @Nullable SshLogFollower logFollower;
 
+    // Session recovery backoff — independent counters for auth vs network failures.
+    // Auth failure proves network is up, so it resets the network counter.
+    // Network failure is independent and does not affect the auth counter.
+    private volatile int recoveryAuthFailures = 0;
+    private volatile long lastRecoveryAuthAttemptMs = 0;
+    private volatile int recoveryNetFailures = 0;
+    private volatile long lastRecoveryNetAttemptMs = 0;
+
+    /** Reset recovery backoff so the next recovery attempt happens immediately. */
+    public void resetRecoveryBackoff() {
+        recoveryAuthFailures = 0;
+        lastRecoveryAuthAttemptMs = 0;
+        recoveryNetFailures = 0;
+        lastRecoveryNetAttemptMs = 0;
+    }
+
     // Updater callback (set by handler)
     protected volatile @Nullable DDWRTThingUpdater updater;
 
@@ -196,15 +213,17 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
     /**
      * Create and initialize a device by connecting via SSH and auto-detecting the chipset.
-     * Returns the appropriate subclass. If SSH fails, returns null and tracks the failure.
+     * Returns the appropriate subclass, or throws on failure so callers can classify the error.
      */
-    public static @Nullable DDWRTBaseDevice createDevice(DDWRTNetworkCache cache, DDWRTDeviceConfiguration cfg) {
+    public static @Nullable DDWRTBaseDevice createDevice(DDWRTNetworkCache cache, DDWRTDeviceConfiguration cfg)
+            throws IOException {
         Logger log = LoggerFactory.getLogger(DDWRTBaseDevice.class.getName() + "." + cfg.hostname);
         SshAuthSession ssh = null;
         try {
             String host = Objects.requireNonNull(cfg.hostname);
             Duration timeout = Objects.requireNonNull(Duration.ofSeconds(5));
-            ssh = SshClientManager.getInstance().openAuthSession(host, cfg.port, cfg.user, cfg.password, timeout);
+            ssh = SshClientManager.getInstance().openAuthSession(host, cfg.port, cfg.getEffectiveUser(), cfg.password,
+                    timeout);
 
             // Capture MOTD for firmware/chipset detection first
             String motd = stripControlCodes(ssh.captureMotd());
@@ -287,6 +306,16 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             cache.putDevice(mac, device);
             log.info("Created {} device: {} (MAC: {}, model: {})", result.chipset, cfg.hostname, mac, device.model);
             return device;
+        } catch (IOException e) {
+            log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
+            if (ssh != null) {
+                try {
+                    ssh.close();
+                } catch (Exception ignore) {
+                    // no-op
+                }
+            }
+            throw e;
         } catch (Exception e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
             if (ssh != null) {
@@ -296,7 +325,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     // no-op
                 }
             }
-            return null;
+            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -1766,19 +1795,56 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     protected @Nullable SshAuthSession recoverSession() {
+        // Independent backoff counters for auth vs network failures.
+        // Auth failures (triggers Dropbear lockout): 30s, 60s then stop at 3
+        // Network failures (no lockout risk): 10s, 20s, 40s, 80s, 160s, cap 300s, no stop
+        // Auth failure proves network reachability → resets network counter.
+        // Network failure does not affect auth counter.
+        long now = System.currentTimeMillis();
+
+        // Check auth backoff first (higher priority — lockout risk)
+        // Stop at 3 (1 initial + 2 retries) to stay under Dropbear's 5-attempt block threshold
+        if (recoveryAuthFailures >= 3) {
+            logger.debug("Recovery suspended for {} after {} auth failures", config.hostname, recoveryAuthFailures);
+            return null;
+        }
+        if (recoveryAuthFailures > 0) {
+            long backoffMs = Math.min(30_000L * (1L << Math.min(recoveryAuthFailures - 1, 4)), 480_000L);
+            long elapsed = now - lastRecoveryAuthAttemptMs;
+            if (elapsed < backoffMs) {
+                logger.debug("Recovery backoff for {} ({}s remaining, auth attempt {})", config.hostname,
+                        (backoffMs - elapsed) / 1000, recoveryAuthFailures);
+                return null;
+            }
+        }
+        // Check network backoff
+        if (recoveryNetFailures > 0) {
+            long backoffMs = Math.min(10_000L * (1L << Math.min(recoveryNetFailures - 1, 5)), 300_000L);
+            long elapsed = now - lastRecoveryNetAttemptMs;
+            if (elapsed < backoffMs) {
+                logger.debug("Recovery backoff for {} ({}s remaining, network attempt {})", config.hostname,
+                        (backoffMs - elapsed) / 1000, recoveryNetFailures);
+                return null;
+            }
+        }
+
         closeSessionQuietly();
         try {
             String host = Objects.requireNonNull(config.hostname);
             Duration timeout = Objects.requireNonNull(Duration.ofSeconds(5));
-            SshAuthSession newSession = SshClientManager.getInstance().openAuthSession(host, config.port, config.user,
-                    config.password, timeout);
+            SshAuthSession newSession = SshClientManager.getInstance().openAuthSession(host, config.port,
+                    config.getEffectiveUser(), config.password, timeout);
 
             // Test the session
             SshRunner runner = newSession.createRunner();
             String test = runner.execStdout("echo ok");
             if ("ok".equals(test)) {
                 authSession = newSession;
-                logger.info("Recovered SSH session");
+                recoveryAuthFailures = 0;
+                lastRecoveryAuthAttemptMs = 0;
+                recoveryNetFailures = 0;
+                lastRecoveryNetAttemptMs = 0;
+                logger.info("Recovered SSH session for {}", config.hostname);
                 SshLogFollower follower = logFollower;
                 if (follower != null) {
                     follower.wakeUp();
@@ -1786,10 +1852,25 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 return newSession;
             } else {
                 newSession.close();
+                recoveryNetFailures++;
+                lastRecoveryNetAttemptMs = now;
                 return null;
             }
         } catch (Exception e) {
-            logger.debug("Session recovery failed: {}", e.getMessage());
+            if (DDWRTNetwork.isAuthFailure(e)) {
+                recoveryAuthFailures++;
+                lastRecoveryAuthAttemptMs = now;
+                // Auth failure proves network is up — reset network counter
+                recoveryNetFailures = 0;
+                lastRecoveryNetAttemptMs = 0;
+                logger.debug("Session recovery auth failure for {} (attempt {}): {}", config.hostname,
+                        recoveryAuthFailures, e.getMessage());
+            } else {
+                recoveryNetFailures++;
+                lastRecoveryNetAttemptMs = now;
+                logger.debug("Session recovery network failure for {} (attempt {}): {}", config.hostname,
+                        recoveryNetFailures, e.getMessage());
+            }
             return null;
         }
     }

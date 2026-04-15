@@ -23,14 +23,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DDWRTNetworkConfiguration {
 
     /**
-     * Comma-separated host names or addresses of the DD-WRT devices to connect to.
+     * Comma-separated list of hostnames or IP addresses of the DD-WRT devices to connect to.
+     * Optionally each entry can use the format user@host:port to override the default user and port.
      */
     public String hostnames = "";
 
     /**
-     * User name used to authenticate with the DD-WRT device.
+     * Default user name used to authenticate with the DD-WRT devices.
+     * Precedence: user@ in hostnames entry > this parameter > ~/.ssh/config > system username.
      */
-    public String user = "";
+    public String user = "root";
+
+    /**
+     * When true, ignore the user parameter and let the SSH client resolve the username
+     * from ~/.ssh/config or fall back to the system username.
+     */
+    public boolean useSystemUser = false;
 
     /**
      * Password used to authenticate with the DD-WRT device.
