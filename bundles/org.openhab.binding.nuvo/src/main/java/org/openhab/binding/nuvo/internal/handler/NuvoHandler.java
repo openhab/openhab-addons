@@ -680,10 +680,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private synchronized void closeConnection() {
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             pollStatusNeeded = true;
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     /**

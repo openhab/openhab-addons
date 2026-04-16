@@ -52,4 +52,7 @@ public class RingDeviceTO {
 
     @SerializedName("settings")
     public DeviceSettingsTO deviceSettings = new DeviceSettingsTO();
+
+    @SerializedName("battery_life_2")
+    public String battery2 = "";
 }

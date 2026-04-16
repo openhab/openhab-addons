@@ -166,14 +166,11 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
     }
 
     private @Nullable String getSerialNumber(InetAddress address) {
-        var controller = new DanfossAirUnitCommunicationController(address, SOCKET_TIMEOUT_MILLISECONDS);
-        var unit = new DanfossAirUnit(controller, FixedTimeZoneProvider.of(ZoneId.of("UTC")));
-        try {
+        try (var controller = new DanfossAirUnitCommunicationController(address, SOCKET_TIMEOUT_MILLISECONDS)) {
+            var unit = new DanfossAirUnit(controller, FixedTimeZoneProvider.of(ZoneId.of("UTC")));
             return unit.getUnitSerialNumber();
         } catch (IOException | UnexpectedResponseValueException e) {
             return null;
-        } finally {
-            controller.disconnect();
         }
     }
 }

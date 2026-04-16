@@ -379,9 +379,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     /**

@@ -86,4 +86,6 @@ public class RokuBindingConstants {
     public static final String TV_APP = "tvinput.dtv";
     public static final String TV_INPUT = "tvinput";
     public static final String POWER_ON = "POWERON";
+    public static final String OFFLINE = "Offline";
+    public static final String HOST_RESOLVE_ERROR_MSG = "Unable to resolve host name";
 }

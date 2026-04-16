@@ -1273,7 +1273,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
-            reconnect(); // make sure WS is connected
+            // only always-on devices have an RPC WebSocket; battery devices use HTTP RPC only
+            if (alwaysOn) {
+                reconnect(); // make sure WS is connected
+            }
+
             json = rpcPost(gson.toJson(req));
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();

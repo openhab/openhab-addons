@@ -16,8 +16,11 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.*
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -198,8 +201,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         if (updatedAt == null) {
             return false;
         }
-
-        return updatedAt.isAfter(ZonedDateTime.now().minusMinutes(onlineIntervalM));
+        return updatedAt.toInstant().isAfter(Instant.now().minus(onlineIntervalM, ChronoUnit.MINUTES));
     }
 
     private synchronized void updateGroupePSAState() {
@@ -259,7 +261,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                     String id = opening.getIdentifier();
                     if (id != null) {
                         ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_GROUP_DOORS,
-                                id.toLowerCase());
+                                id.toLowerCase(Locale.ROOT));
                         updateState(channelUID, "open".equalsIgnoreCase(opening.getState()) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                     }
@@ -378,7 +380,7 @@ public class GroupePSAHandler extends BaseThingHandler {
             for (Opening opening : openings) {
                 String id = opening.getIdentifier();
                 if (id != null) {
-                    channelUID = new ChannelUID(getThing().getUID(), CHANNEL_GROUP_DOORS, id.toLowerCase());
+                    channelUID = new ChannelUID(getThing().getUID(), CHANNEL_GROUP_DOORS, id.toLowerCase(Locale.ROOT));
                     channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_DOOROPEN);
                     thingBuilder.withChannel(callback.createChannelBuilder(channelUID, channelTypeUID).build());
                 }
