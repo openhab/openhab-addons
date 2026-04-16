@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class SoftwareUpdateActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(SoftwareUpdateActions.class);
-    private @Nullable ThingHandler handler;
+    private @Nullable Clip2BridgeHandler handler;
 
     public static String installUpdate(ThingActions actions) {
         if (actions instanceof SoftwareUpdateActions softwareUpdateActions) {
