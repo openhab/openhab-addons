@@ -53,7 +53,9 @@ public class SoftwareUpdateActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = handler;
+        if (handler instanceof Clip2BridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
+        }
     }
 
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
