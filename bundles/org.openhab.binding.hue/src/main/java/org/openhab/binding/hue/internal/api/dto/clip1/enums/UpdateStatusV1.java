@@ -13,7 +13,8 @@
 package org.openhab.binding.hue.internal.api.dto.clip1.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Enum for bridge API v1.20+ software update status values.
@@ -23,27 +24,30 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum UpdateStatusV1 {
-    NOTUPDATABLE,
-    UNKNOWN,
-    NOUPDATES,
-    TRANSFERRING,
-    DOWNLOADING,
-    INSTALLING,
-    ALLREADYTOINSTALL,
-    ANYREADYTOINSTALL,
-    READYTOINSTALL;
+    @SerializedName("notupdatable")
+    NOT_UPDATABLE,
 
-    /**
-     * Create enum from a JSON string. Returns null if the input is null or does not match any enum value.
-     */
-    public static @Nullable UpdateStatusV1 of(@Nullable String value) {
-        if (value != null) {
-            try {
-                return valueOf(value.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
-        }
-        return null;
-    }
+    @SerializedName("unknown")
+    UNKNOWN,
+
+    @SerializedName("noupdates")
+    NO_UPDATES,
+
+    @SerializedName("transferring")
+    TRANSFERRING,
+
+    @SerializedName("downloading")
+    DOWNLOADING,
+
+    @SerializedName("installing")
+    INSTALLING,
+
+    @SerializedName("allreadytoinstall")
+    ALL_READY_TO_INSTALL,
+
+    @SerializedName("anyreadytoinstall")
+    ANY_READY_TO_INSTALL,
+
+    @SerializedName("readytoinstall")
+    READY_TO_INSTALL;
 }

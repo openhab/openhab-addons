@@ -16,6 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip1.enums.UpdateStatusV1;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Enum for device software update status.
  * 
@@ -26,31 +28,28 @@ import org.openhab.binding.hue.internal.api.dto.clip1.enums.UpdateStatusV1;
  */
 @NonNullByDefault
 public enum UpdateStatusV2 {
+    @SerializedName("no_update")
     NO_UPDATE("@text/update.state.no-update"),
+
+    @SerializedName("update_available")
     UPDATE_AVAILABLE("@text/update.state.update-available"),
+
+    @SerializedName("update_pending")
     UPDATE_PENDING("@text/update.state.update-pending"),
+
+    @SerializedName("ready_to_install")
     READY_TO_INSTALL("@text/update.state.update-ready-to-install"),
+
+    @SerializedName("installing")
     INSTALLING("@text/update.state.installing-update"),
+
+    @SerializedName("install_failed")
     INSTALL_FAILED("@text/update.state.update-install-failed");
 
     private final String i18nKey;
 
     UpdateStatusV2(String i18nKey) {
         this.i18nKey = i18nKey;
-    }
-
-    /**
-     * Create enum from a JSON string. Returns null if the input is null or does not match any enum value.
-     */
-    public static @Nullable UpdateStatusV2 of(@Nullable String value) {
-        if (value != null) {
-            try {
-                return valueOf(value.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
-        }
-        return null;
     }
 
     /**
@@ -61,7 +60,7 @@ public enum UpdateStatusV2 {
             return null;
         }
         return switch (statusV1) {
-            case ALLREADYTOINSTALL, ANYREADYTOINSTALL, READYTOINSTALL -> READY_TO_INSTALL;
+            case ALL_READY_TO_INSTALL, ANY_READY_TO_INSTALL, READY_TO_INSTALL -> READY_TO_INSTALL;
             case TRANSFERRING, DOWNLOADING -> UPDATE_PENDING;
             case INSTALLING -> INSTALLING;
             default -> NO_UPDATE;

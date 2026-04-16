@@ -25,12 +25,12 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
  */
 @NonNullByDefault
 public class BridgeSwUpdateBridge {
-    private @Nullable String state;
+    private @Nullable UpdateStatusV1 state;
 
     /**
      * Reads the update status of the bridge in v1 protocol form and converts it to v2 protocol form.
      */
     public @Nullable UpdateStatusV2 getUpdateStatus() {
-        return UpdateStatusV2.of(UpdateStatusV1.of(state));
+        return UpdateStatusV2.of(state);
     }
 }
