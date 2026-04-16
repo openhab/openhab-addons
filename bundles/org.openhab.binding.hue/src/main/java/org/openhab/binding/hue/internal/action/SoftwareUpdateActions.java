@@ -59,10 +59,9 @@ public class SoftwareUpdateActions implements ThingActions {
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
     public @ActionOutput(type = "java.lang.String", label = "@text/install.update.result.label", description = "@text/install.update.result.description") String installUpdate() {
         ThingHandler handler = this.handler;
-        if (handler instanceof Clip2BridgeHandler bridgeHandler) {
-            return bridgeHandler.installUpdate();
+        if (handler == null) {
+            return "";
         }
-        logger.warn("ThingHandler is not an instance of Clip2BridgeHandler, cannot install update");
-        throw new IllegalStateException("ThingHandler is not an instance of Clip2BridgeHandler");
+        return bridgeHandler.installUpdate();
     }
 }
