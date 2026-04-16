@@ -57,6 +57,8 @@
  *	7.2.2021    v1.23   Fixed compile error in RasPi.
  *	19.11.2022  v1.30   Support 16-bit addressing.
  *	26.12.2022  v1.31   Fixed serial settings (for RPi Zero 2 W + Waveshare RS485 CAN hat)
+ *	16.4.2026   v1.32   Added TCP serial port support (e.g. for ser2net / RFC2217 devices).
+ *                      Use tcp:<host>:<port> as device name, default port 4196.
  */
 
 #include <signal.h>
@@ -74,22 +76,94 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <time.h>
+#include <netdb.h>
 
-#define VERSION	"1.31"
+#define VERSION	"1.32"
 
 #define FALSE	0
 #define TRUE	1
+
+#define TCP_SERIAL_DEFAULT_PORT 4196
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 int verbose = 0;
 int testmode = FALSE;
+int tcp_serial_fd = -1;  /* fd for TCP-based serial connection */
 
 void signalCallbackHandler(int signum)
 {
 	if (verbose) printf("\nExit...caught by signal %d\n", signum);
 	exit(1);
+}
+
+/*
+ * Open a TCP connection to a remote serial server (e.g. ser2net).
+ * devicestr format: "tcp:<host>:<port>" or "tcp:<host>" (uses TCP_SERIAL_DEFAULT_PORT).
+ * Returns a connected socket fd, or -1 on error.
+ */
+int openTcpSerialPort(const char *devicestr)
+{
+	/* parse "tcp:<host>[:<port>]" */
+	char host[256];
+	int  port = TCP_SERIAL_DEFAULT_PORT;
+
+	/* skip leading "tcp:" */
+	const char *p = devicestr + 4;
+	const char *colon = strrchr(p, ':');
+
+	if (colon && colon != p)
+	{
+		size_t hlen = colon - p;
+		if (hlen >= sizeof(host)) hlen = sizeof(host) - 1;
+		strncpy(host, p, hlen);
+		host[hlen] = '\0';
+		port = atoi(colon + 1);
+		if (port <= 0) port = TCP_SERIAL_DEFAULT_PORT;
+	}
+	else
+	{
+		strncpy(host, p, sizeof(host) - 1);
+		host[sizeof(host) - 1] = '\0';
+	}
+
+	if (verbose) printf("Connecting to TCP serial server %s:%d\n", host, port);
+
+	struct addrinfo hints, *res, *rp;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family   = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+
+	char portstr[16];
+	snprintf(portstr, sizeof(portstr), "%d", port);
+
+	int rc = getaddrinfo(host, portstr, &hints, &res);
+	if (rc != 0)
+	{
+		fprintf(stderr, "TCP serial: getaddrinfo(%s): %s\n", host, gai_strerror(rc));
+		return -1;
+	}
+
+	int sockfd = -1;
+	for (rp = res; rp != NULL; rp = rp->ai_next)
+	{
+		sockfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+		if (sockfd < 0) continue;
+		if (connect(sockfd, rp->ai_addr, rp->ai_addrlen) == 0) break;
+		close(sockfd);
+		sockfd = -1;
+	}
+	freeaddrinfo(res);
+
+	if (sockfd < 0)
+	{
+		fprintf(stderr, "TCP serial: connect to %s:%d failed: %s\n", host, port, strerror(errno));
+		return -1;
+	}
+
+	if (verbose) printf("TCP serial connection established (fd=%d)\n", sockfd);
+	return sockfd;
 }
 
 int initSerialPort(int fd, int hwflowctrl)
@@ -145,6 +219,11 @@ void printMessage(const unsigned char* const message, int msglen)
 	printf("\n");
 }
 
+int isTcpDevice(const char *device)
+{
+	return (device != NULL && strncmp(device, "tcp:", 4) == 0);
+}
+
 int writeDataToSerialPort(int fd, const unsigned char* const message, int msglen)
 {
 	int retval = -1;
@@ -152,9 +231,16 @@ int writeDataToSerialPort(int fd, const unsigned char* const message, int msglen
 	if (verbose > 2) printf("Write data to serial port\n");
 	if (verbose > 2) printMessage(message, msglen);
 	
-	if( write( fd, message, msglen) == msglen)
+	ssize_t written;
+	if (tcp_serial_fd >= 0 && fd == tcp_serial_fd)
+		written = send(fd, message, msglen, MSG_NOSIGNAL);
+	else
+		written = write(fd, message, msglen);
+
+	if (written == msglen)
 	{
-		tcdrain (fd);
+		if (!(tcp_serial_fd >= 0 && fd == tcp_serial_fd))
+			tcdrain(fd);
 		retval = 0;
 	}
 	
@@ -321,6 +407,7 @@ void printUsage(char* appname)
 	"\t-h                 Print help\n" \
 	"\t-v                 Print debug information\n" \
 	"\t-d <device name>   Serial port device (default: /dev/ttyS0)\n" \
+	"\t                   Use 'tcp:<host>[:<port>]' for TCP serial (default port: 4196)\n" \
 	"\t-a <address>       Remote host address (default: 127.0.0.1)\n" \
 	"\t-p <port>          Remote UDP port (default: 9999)\n" \
 	"\t-f                 Disable flow control (default: HW)\n" \
@@ -433,8 +520,9 @@ int main(int argc, char **argv)
 		printf("NibeGW version:                    %s\n", VERSION);
 		printf("Verbose level:                     %i\n", verbose);
 		printf("Test mode:                         %s\n", testmode ? "TRUE" : "FALSE");
-		printf("Serial port:                       %s\n", device);
-		printf("Flow control:                      %s\n", hwflowctrl ? "HW" : "None");
+		printf("Serial port:                       %s%s\n", device,
+		       isTcpDevice(device) ? " [TCP mode]" : "");
+		printf("Flow control:                      %s\n", isTcpDevice(device) ? "N/A (TCP)" : (hwflowctrl ? "HW" : "None"));
 		printf("remote UDP address:                %s:%u\n", remoteHost, remotePort);
 		printf("server UDP address for read cmds:  %u\n", localPort4readCmds);
 		printf("server UDP address for write cmds: %u\n", localPort4writeCmds);
@@ -491,6 +579,15 @@ int main(int argc, char **argv)
 			{
 				if (verbose) printf("Use stdin as virtual serial port\n");
 				serialport_fd = STDIN_FILENO;
+			}
+			else if (isTcpDevice(device))
+			{
+				/* TCP serial mode: connect to remote ser2net / TCP-serial-server */
+				serialport_fd = openTcpSerialPort(device);
+				if (serialport_fd >= 0)
+					tcp_serial_fd = serialport_fd;
+				else
+					fprintf(stderr, "Failed to connect to TCP serial port %s\n", device);
 			}
 			else
 			{
@@ -676,11 +773,28 @@ int main(int argc, char **argv)
 				else
 				{
 					fprintf(stderr, "Read failed: %s\n", strerror(errno));
+					if (tcp_serial_fd >= 0 && serialport_fd == tcp_serial_fd)
+					{
+						if (verbose) printf("TCP serial connection lost, will reconnect...\n");
+						close(serialport_fd);
+						serialport_fd = -1;
+						tcp_serial_fd = -1;
+					}
 					sleep(1);
 				}
 			}
 			
 			if (log) fflush(stdout);
+
+			/* For TCP: read returning 0 means the remote end closed the connection */
+			if (len == 0 && tcp_serial_fd >= 0 && serialport_fd == tcp_serial_fd)
+			{
+				fprintf(stderr, "TCP serial connection closed by remote, will reconnect...\n");
+				close(serialport_fd);
+				serialport_fd = -1;
+				tcp_serial_fd = -1;
+				sleep(1);
+			}
 
 		}
 		else
@@ -689,6 +803,7 @@ int main(int argc, char **argv)
 		}
 	}
 	
+	if (tcp_serial_fd >= 0) tcp_serial_fd = -1;
 	close(serialport_fd);
 	close(udp_fd);
 	close(udp4writeCmds_fd);
