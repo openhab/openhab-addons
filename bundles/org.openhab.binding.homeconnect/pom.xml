@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Home Connect Binding</name>
 
   <properties>
-    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",tools.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>

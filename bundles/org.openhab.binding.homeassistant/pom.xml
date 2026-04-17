@@ -60,6 +60,13 @@
       <version>1.83</version>
       <scope>test</scope>
     </dependency>
+    <!-- TODO remove jackson once Groovy drops jackson 2.x -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.21.2</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
