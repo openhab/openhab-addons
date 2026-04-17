@@ -13,6 +13,7 @@
 package org.openhab.binding.homeconnect.internal.client;
 
 import static java.time.LocalDateTime.now;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.ZONE_ID;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 
 import java.time.Instant;
@@ -22,7 +23,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +86,7 @@ public class HomeConnectEventSourceListener {
         String type = inboundEvent.getName();
         String data = inboundEvent.readData();
 
-        lastEventReceived = now();
+        lastEventReceived = now(ZONE_ID);
 
         EventType eventType = valueOfType(type);
         if (eventType != null) {
@@ -162,7 +162,7 @@ public class HomeConnectEventSourceListener {
             logger.trace("Check event source connection ({}). Last event package received at {}.", haId,
                     lastEventReceived);
             if (lastEventReceived != null && ChronoUnit.MINUTES.between(lastEventReceived,
-                    now()) > SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT_MIN) {
+                    now(ZONE_ID)) > SSE_MONITOR_BROKEN_CONNECTION_TIMEOUT_MIN) {
                 logger.warn("Dead event source connection detected ({}).", haId);
 
                 client.unregisterEventListener(eventListener);
@@ -203,9 +203,9 @@ public class HomeConnectEventSourceListener {
                     EventLevel level = getJsonElementAsString(obj, "level").map(EventLevel::valueOfLevel).orElse(null);
                     EventHandling handling = getJsonElementAsString(obj, "handling").map(EventHandling::valueOfHandling)
                             .orElse(null);
-                    ZonedDateTime creation = getJsonElementAsLong(obj, "timestamp").map(timestamp -> ZonedDateTime
-                            .ofInstant(Instant.ofEpochSecond(timestamp), TimeZone.getDefault().toZoneId()))
-                            .orElse(ZonedDateTime.now());
+                    ZonedDateTime creation = getJsonElementAsLong(obj, "timestamp")
+                            .map(timestamp -> ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZONE_ID))
+                            .orElse(ZonedDateTime.now(ZONE_ID));
 
                     events.add(new Event(haId, type, key, name, uri, creation, level, handling, value, unit));
                 });
