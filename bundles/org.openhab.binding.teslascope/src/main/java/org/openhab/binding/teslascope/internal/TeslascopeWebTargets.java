@@ -104,7 +104,6 @@ public class TeslascopeWebTargets {
                 if (HttpStatus.isSuccess(status)) {
                     jsonResponse = response.getContentAsString();
                     logger.trace("JSON response: '{}'", jsonResponse);
-                    return jsonResponse;
                 } else {
                     switch (status) {
                         case HttpStatus.UNAUTHORIZED_401:
@@ -112,17 +111,18 @@ public class TeslascopeWebTargets {
                         case HttpStatus.INTERNAL_SERVER_ERROR_500:
                         case HttpStatus.BAD_GATEWAY_502:
                             logger.debug("Teslascope returned {}, retrying", status);
+                            Thread.sleep(2000);
                         default:
                             throw new TeslascopeCommunicationException(
                                     String.format("Teslascope returned error <%d> while invoking %s", status, uri));
                     }
                 }
-                Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
             } catch (TimeoutException | ExecutionException ex) {
-                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);            }
+                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
+            }
         }
         return jsonResponse;
     }
