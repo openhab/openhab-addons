@@ -184,7 +184,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 } catch (ICloudApiResponseException e) {
                     logger.debug("ICloudApiResponseException with status code {}", e.getStatusCode());
                     lastException = e;
-                    if (e.getStatusCode() == 450) {
+                    if (e.getStatusCode() == 421 || e.getStatusCode() == 450 || e.getStatusCode() == 500) {
+                        logger.debug("Authentication error detected (code {}), triggering re-authentication",
+                                e.getStatusCode());
                         checkLogin();
                     }
                 } catch (IllegalStateException e) {
