@@ -41,14 +41,14 @@ You can generate an access token in the Jellyfin web UI under **Dashboard → AP
 
 ## Server Thing Configuration
 
-| Config                    | Type    | Description                                                                                 |
-| ------------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| hostname                  | Text    | Hostname or IP address of the server (required)                                             |
-| port                      | Integer | Port of the server (required)                                                               |
-| ssl                       | Boolean | Connect through https (required)                                                            |
-| path                      | Text    | Base path of the server                                                                     |
-| refreshSeconds            | Integer | Interval to pull devices state from the server                                              |
-| token                     | Text    | The user access token                                                                       |
+| Config         | Type    | Description                                     |
+| -------------- | ------- | ----------------------------------------------- |
+| hostname       | Text    | Hostname or IP address of the server (required) |
+| port           | Integer | Port of the server (required)                   |
+| ssl            | Boolean | Connect through https (required)                |
+| path           | Text    | Base path of the server                         |
+| refreshSeconds | Integer | Interval to pull devices state from the server  |
+| token          | Text    | The user access token                           |
 
 ### Advanced: Client Discovery Filters
 
@@ -57,15 +57,15 @@ They only affect which Jellyfin clients appear in the openHAB Inbox; already-dis
 
 The client category is determined by the application name reported by the Jellyfin client to the server.
 
-| Config                   | Type    | Default | Description                                                                                 |
-| ------------------------ | ------- | ------- | ------------------------------------------------------------------------------------------- |
-| discoverWebClients       | Boolean | false   | Discover Jellyfin Web clients (e.g., `Jellyfin Web`)                                        |
-| discoverAndroidClients   | Boolean | true    | Discover Jellyfin Android clients (e.g., `Jellyfin for Android`)                            |
-| discoverAndroidTvClients | Boolean | true    | Discover Jellyfin Android TV clients (e.g., `Jellyfin for Android TV`)                      |
-| discoverIosClients       | Boolean | true    | Discover iOS clients (e.g., `Jellyfin iOS`, `Swiftfin`, `Infuse`)                           |
-| discoverKodiClients      | Boolean | true    | Discover Kodi clients (e.g., `JellyCon`, `Jellyfin for Kodi`)                               |
-| discoverRokuClients      | Boolean | true    | Discover Roku clients (e.g., `Jellyfin for Roku`)                                           |
-| discoverOtherClients     | Boolean | true    | Discover third-party clients not matched by any category above                              |
+| Config                   | Type    | Default | Description                                                            |
+| ------------------------ | ------- | ------- | ---------------------------------------------------------------------- |
+| discoverWebClients       | Boolean | false   | Discover Jellyfin Web clients (e.g., `Jellyfin Web`)                   |
+| discoverAndroidClients   | Boolean | true    | Discover Jellyfin Android clients (e.g., `Jellyfin for Android`)       |
+| discoverAndroidTvClients | Boolean | true    | Discover Jellyfin Android TV clients (e.g., `Jellyfin for Android TV`) |
+| discoverIosClients       | Boolean | true    | Discover iOS clients (e.g., `Jellyfin iOS`, `Swiftfin`, `Infuse`)      |
+| discoverKodiClients      | Boolean | true    | Discover Kodi clients (e.g., `JellyCon`, `Jellyfin for Kodi`)          |
+| discoverRokuClients      | Boolean | true    | Discover Roku clients (e.g., `Jellyfin for Roku`)                      |
+| discoverOtherClients     | Boolean | true    | Discover third-party clients not matched by any category above         |
 
 ### WebSocket Real-Time Updates
 
@@ -87,6 +87,37 @@ WebSocket connections require network connectivity and may not work correctly if
 - The server is temporarily unreachable
 
 In these cases, the automatic fallback to polling ensures the binding continues to function.
+
+## Client Thing Configuration
+
+| Config       | Type | Required | Description                                                   |
+| ------------ | ---- | -------- | ------------------------------------------------------------- |
+| serialNumber | Text | Yes      | The Jellyfin device ID as reported by the client application. |
+
+### Advanced — Now Playing Images
+
+These settings are visible under **Show advanced** in the openHAB UI.
+Each image type can be enabled independently.
+All types are disabled by default because image downloads add network load on every session update (every 30 seconds by default).
+
+When enabled, a dynamic `Image` channel is created automatically with the channel ID `playing-item-image-<type>` (lowercase type name).
+
+| Config               | Type    | Default | Description                                                          |
+| -------------------- | ------- | ------- | -------------------------------------------------------------------- |
+| imagePrimaryEnabled  | Boolean | false   | Enable download of the primary cover art (album cover, movie poster) |
+| imagePrimaryWidth    | Integer | 512     | Maximum width in pixels for the primary image (128/256/512/1024)     |
+| imageBackdropEnabled | Boolean | false   | Enable download of the background fanart / backdrop image            |
+| imageBackdropWidth   | Integer | 512     | Maximum width in pixels for the backdrop image (128/256/512/1024)    |
+| imageLogoEnabled     | Boolean | false   | Enable download of the transparent text or graphical logo            |
+| imageLogoWidth       | Integer | 512     | Maximum width in pixels for the logo image (128/256/512/1024)        |
+| imageThumbEnabled    | Boolean | false   | Enable download of the landscape thumbnail (wide-format still)       |
+| imageThumbWidth      | Integer | 512     | Maximum width in pixels for the thumb image (128/256/512/1024)       |
+| imageDiscEnabled     | Boolean | false   | Enable download of the CD, DVD or Blu-ray disc artwork               |
+| imageDiscWidth       | Integer | 512     | Maximum width in pixels for the disc image (128/256/512/1024)        |
+| imageArtEnabled      | Boolean | false   | Enable download of the ClearArt transparent promotional artwork      |
+| imageArtWidth        | Integer | 512     | Maximum width in pixels for the art image (128/256/512/1024)         |
+| imageBannerEnabled   | Boolean | false   | Enable download of the wide horizontal banner (TheTVDB-style)        |
+| imageBannerWidth     | Integer | 512     | Maximum width in pixels for the banner image (128/256/512/1024)      |
 
 ## Channels
 
@@ -119,6 +150,28 @@ In these cases, the automatic fallback to polling ensures the binding continues 
 | play-next-by-id            | String | Add to playback queue as next by id, works for series, episodes and movies                                      |
 | play-last-by-id            | String | Add to playback queue as last by id, works for series, episodes and movies                                      |
 | browse-by-id               | String | Browse media by id, works for series, episodes and movies                                                       |
+
+### Image Channels (Dynamic)
+
+Image channels are **dynamic** — they appear only when the corresponding image type is enabled in the client thing configuration (under **Show advanced → Now Playing Images**).
+
+When enabled, a channel of type `Image` is created automatically with the pattern `playing-item-image-<type>`.
+
+| Channel ID                  | Item Type | Description                                                      |
+| --------------------------- | --------- | ---------------------------------------------------------------- |
+| playing-item-image-primary  | Image     | Primary cover art (album cover, movie poster, or main thumbnail) |
+| playing-item-image-backdrop | Image     | Background fanart / backdrop (wide full-resolution scene image)  |
+| playing-item-image-logo     | Image     | Transparent text or graphical logo                               |
+| playing-item-image-thumb    | Image     | Landscape thumbnail (wide-format still or episode preview)       |
+| playing-item-image-disc     | Image     | CD, DVD or Blu-ray disc artwork                                  |
+| playing-item-image-art      | Image     | ClearArt — transparent promotional artwork                       |
+| playing-item-image-banner   | Image     | Wide horizontal banner (TheTVDB-style)                           |
+
+**State values:**
+
+- **JPEG image data** — image fetched successfully from the Jellyfin server
+- **NULL** — no item is currently playing, or the image type is not available for the current item
+- **UNDEF** — temporary network error while fetching the image; will retry on the next session update
 
 ### Terms Search
 
@@ -223,4 +276,14 @@ String strJellyfinAndroidPlayByTerms           { channel="jellyfin:client:exampl
 String strJellyfinAndroidPlayByNextTerms       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-next-by-terms" }
 String strJellyfinAndroidPlayByLastTerms       { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-last-by-terms" }
 String strJellyfinAndroidBrowseByTerms         { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:browse-by-terms" }
+```
+
+### Example Image Items (requires image types to be enabled in thing config)
+
+```java
+// Enable imagePrimaryEnabled=true in the client thing configuration to create these channels.
+Image imgJellyfinPrimary  { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-image-primary" }
+Image imgJellyfinBackdrop { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-image-backdrop" }
+Image imgJellyfinLogo     { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-image-logo" }
+Image imgJellyfinThumb    { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-image-thumb" }
 ```

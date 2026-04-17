@@ -69,7 +69,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
 
         String truncated = message.length() > LOG_TRUNCATE_LENGTH ? message.substring(0, LOG_TRUNCATE_LENGTH) + "..."
                 : message;
-        logger.debug("WebSocket message received (length={}): {}", Integer.valueOf(message.length()), truncated);
+        logger.trace("WebSocket message received (length={}): {}", Integer.valueOf(message.length()), truncated);
 
         try {
             JsonNode node = objectMapper.readTree(message);
@@ -77,7 +77,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
             String type = typeNode != null ? typeNode.asText() : null;
 
             if (!SessionMessageType.SESSIONS.toString().equals(type)) {
-                logger.debug("Ignoring non-session WebSocket message: {}", type);
+                logger.trace("Ignoring non-session WebSocket message: {}", type);
                 return;
             }
 
@@ -96,7 +96,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
             for (SessionInfoDto session : data) {
                 String sessionId = session.getId();
                 if (sessionId == null || sessionId.isBlank()) {
-                    logger.debug("Skipping session without id: {}", session);
+                    logger.trace("Skipping session without id: {}", session);
                     continue;
                 }
                 // Skip server-owned sessions (null userId / all-zeros UUID).
@@ -104,7 +104,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
                 // and must not appear as discoverable client devices.
                 UUID userId = session.getUserId();
                 if (userId == null || NULL_UUID.equals(userId)) {
-                    logger.debug("Skipping server-owned session (null userId): client={}, deviceId={}",
+                    logger.trace("Skipping server-owned session (null userId): client={}, deviceId={}",
                             session.getClient(), session.getDeviceId());
                     continue;
                 }
@@ -112,7 +112,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
             }
         }
 
-        logger.info("[WEBSOCKET] Real-time session update received: {} session(s)", newSessions.size());
+        logger.debug("Real-time session update received: {} session(s)", newSessions.size());
         sessionManager.updateSessions(newSessions);
     }
 }

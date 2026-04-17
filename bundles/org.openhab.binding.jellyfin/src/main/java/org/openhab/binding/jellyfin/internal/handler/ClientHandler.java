@@ -12,11 +12,17 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
+import org.openhab.binding.jellyfin.internal.config.ImageChannelConfig;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
@@ -24,16 +30,22 @@ import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
 import org.openhab.binding.jellyfin.internal.util.timeout.SessionTimeoutMonitor;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -91,6 +103,16 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     /** Command router – created (and disposed) alongside the handler lifecycle. */
     @Nullable
     private ClientCommandRouter commandRouter;
+
+    /** Tracks which image channel configs are currently active (volatile for cross-thread visibility). */
+    private volatile List<ImageChannelConfig> imageChannelConfigs = List.of();
+
+    /** The item ID of the last item for which images were fetched (volatile for cross-thread visibility). */
+    @Nullable
+    private volatile String lastPlayingItemId;
+
+    /** Last image tag seen per channel ID, used to skip redundant fetches. */
+    private final Map<String, String> lastImageTags = new ConcurrentHashMap<>();
 
     /**
      * Constructor for the client handler.
@@ -153,6 +175,9 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }, this::onSessionTimeout);
         logger.debug("Session timeout monitor started for device: {}", id);
 
+        // Sync dynamic image channels based on current configuration
+        syncImageChannels();
+
         // Client status will be determined by session updates
         updateClientState();
         logger.debug("ClientHandler initialized for thing {}", thing.getUID());
@@ -161,6 +186,11 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     @Override
     public void dispose() {
         logger.debug("Disposing ClientHandler for thing {}", thing.getUID());
+
+        // Reset image channel tracking state
+        imageChannelConfigs = List.of();
+        lastPlayingItemId = null;
+        lastImageTags.clear();
 
         // Stop timeout monitor
         timeoutMonitor.stop();
@@ -387,6 +417,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
                 }
             }
         }
+
+        updateImageChannels(session);
     }
 
     /**
@@ -417,6 +449,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         for (String ch : channels) {
             updateState(new ChannelUID(thing.getUID(), ch), UnDefType.NULL);
         }
+        imageChannelConfigs.forEach(cfg -> updateState(channel(cfg.channelId()), UnDefType.NULL));
     }
 
     @Nullable
@@ -429,5 +462,146 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             return serverHandler;
         }
         return null;
+    }
+
+    @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
+        syncImageChannels();
+    }
+
+    /**
+     * Creates or removes dynamic image channels based on the current thing configuration.
+     * Must be called on the framework thread (from {@link #initialize()} or {@link #thingUpdated}).
+     */
+    private void syncImageChannels() {
+        Configuration cfg = thing.getConfiguration();
+        List<ImageChannelConfig> newConfigs = new ArrayList<>();
+
+        record TypeEntry(String typeName, String typeNameLower) {
+        }
+        List<TypeEntry> types = List.of(new TypeEntry("Primary", "primary"), new TypeEntry("Backdrop", "backdrop"),
+                new TypeEntry("Logo", "logo"), new TypeEntry("Thumb", "thumb"), new TypeEntry("Disc", "disc"),
+                new TypeEntry("Art", "art"), new TypeEntry("Banner", "banner"));
+
+        ThingBuilder builder = editThing();
+
+        // Remove all existing image channels first
+        thing.getChannels().stream().filter(c -> c.getUID().getId().startsWith("playing-item-image-"))
+                .forEach(c -> builder.withoutChannel(c.getUID()));
+
+        for (TypeEntry type : types) {
+            String enabledKey = "image" + type.typeName() + "Enabled";
+            String widthKey = "image" + type.typeName() + "Width";
+            Object enabledObj = cfg.get(enabledKey);
+            if (!Boolean.TRUE.equals(enabledObj)) {
+                continue;
+            }
+            int width = 512;
+            Object widthObj = cfg.get(widthKey);
+            if (widthObj instanceof Number n) {
+                width = n.intValue();
+            }
+            String channelId = "playing-item-image-" + type.typeNameLower();
+            ChannelUID uid = new ChannelUID(thing.getUID(), channelId);
+            Channel ch = ChannelBuilder.create(uid, "Image")
+                    .withType(new ChannelTypeUID(Constants.BINDING_ID, Constants.IMAGE_CHANNEL_TYPE_ID))
+                    .withLabel("Playing Item Image (" + type.typeName() + ")").build();
+            builder.withChannel(ch);
+            newConfigs.add(new ImageChannelConfig(type.typeName(), channelId, width));
+        }
+
+        updateThing(builder.build());
+        imageChannelConfigs = List.copyOf(newConfigs);
+    }
+
+    /**
+     * Fetches and publishes images for the currently playing item based on active image channel configs.
+     * Skips fetches when item and tag are unchanged since the last update.
+     *
+     * @param session the current session snapshot, or {@code null} when nothing is playing
+     */
+    private void updateImageChannels(@Nullable SessionInfoDto session) {
+        List<ImageChannelConfig> configs = imageChannelConfigs;
+        if (configs.isEmpty()) {
+            return;
+        }
+
+        if (session == null || session.getNowPlayingItem() == null) {
+            lastPlayingItemId = null;
+            lastImageTags.clear();
+            configs.forEach(cfg -> updateState(channel(cfg.channelId()), UnDefType.NULL));
+            return;
+        }
+
+        var item = session.getNowPlayingItem();
+        if (item == null) {
+            configs.forEach(cfg -> updateState(channel(cfg.channelId()), UnDefType.NULL));
+            return;
+        }
+        var rawId = item.getId();
+        if (rawId == null) {
+            configs.forEach(cfg -> updateState(channel(cfg.channelId()), UnDefType.NULL));
+            return;
+        }
+        String itemId = rawId.toString();
+
+        // Collect current image tags from item
+        Map<String, String> currentTags = new HashMap<>();
+        Map<String, String> imageTags = item.getImageTags();
+        if (imageTags != null) {
+            currentTags.putAll(imageTags);
+        }
+
+        boolean itemChanged = !itemId.equals(lastPlayingItemId);
+
+        for (ImageChannelConfig cfg : configs) {
+            if (!isLinked(cfg.channelId())) {
+                continue;
+            }
+            String currentTag = currentTags.getOrDefault(cfg.imageType(), "");
+            String lastTag = lastImageTags.getOrDefault(cfg.channelId(), "");
+
+            if (!itemChanged && currentTag.equals(lastTag) && !lastTag.isEmpty()) {
+                // Same item, same tag — no fetch needed
+                continue;
+            }
+
+            if (itemChanged) {
+                updateState(channel(cfg.channelId()), UnDefType.NULL);
+            }
+
+            final String finalItemId = itemId;
+            final String finalTag = currentTag;
+            final int finalWidth = cfg.width();
+            final String finalType = cfg.imageType();
+            final String finalChannelId = cfg.channelId();
+
+            scheduler.submit(() -> {
+                ServerHandler sh = getServerHandler();
+                if (sh == null) {
+                    return;
+                }
+                try {
+                    byte @Nullable [] bytes = sh.getImage(finalItemId, finalType, finalTag.isEmpty() ? null : finalTag,
+                            finalWidth);
+                    if (bytes != null) {
+                        updateState(channel(finalChannelId), new RawType(bytes, "image/jpeg"));
+                    } else {
+                        updateState(channel(finalChannelId), UnDefType.NULL);
+                    }
+                    lastImageTags.put(finalChannelId, finalTag);
+                    lastPlayingItemId = finalItemId;
+                } catch (IOException e) {
+                    logger.warn("Network error fetching {} image for item {}: {}", finalType, finalItemId,
+                            e.getMessage());
+                    updateState(channel(finalChannelId), UnDefType.UNDEF);
+                }
+            });
+        }
+
+        if (itemChanged) {
+            lastPlayingItemId = itemId;
+        }
     }
 }

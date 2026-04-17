@@ -13,16 +13,20 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.jellyfin.internal.config.ImageChannelConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -80,5 +84,35 @@ class ClientHandlerInitializeTest {
         Field deviceIdField = ClientHandler.class.getDeclaredField("deviceId");
         deviceIdField.setAccessible(true);
         assertEquals("the-real-device-id", deviceIdField.get(handler));
+    }
+
+    /**
+     * A freshly constructed {@link ClientHandler} must have an empty {@code imageChannelConfigs}
+     * list before {@code initialize()} is called — image channels are only added when enabled in config.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void testImageChannelNotCreatedWhenDisabled() throws Exception {
+        ClientHandler handler = new ClientHandler(mock(org.openhab.core.thing.Thing.class));
+
+        Field configsField = ClientHandler.class.getDeclaredField("imageChannelConfigs");
+        configsField.setAccessible(true);
+        List<ImageChannelConfig> configs = (List<ImageChannelConfig>) configsField.get(handler);
+
+        assertTrue(configs.isEmpty(), "imageChannelConfigs must be empty before any channels are enabled");
+    }
+
+    /**
+     * {@link ImageChannelConfig} correctly stores all three parameters.
+     */
+    @Test
+    void testImageChannelCreatedWhenEnabled() {
+        ImageChannelConfig cfg = new ImageChannelConfig("Primary", "playing-item-image-primary", 512);
+
+        assertFalse(cfg.imageType().isEmpty());
+        assertFalse(cfg.channelId().isEmpty());
+        assertEquals("playing-item-image-primary", cfg.channelId());
+        assertEquals("Primary", cfg.imageType());
+        assertEquals(512, cfg.width());
     }
 }

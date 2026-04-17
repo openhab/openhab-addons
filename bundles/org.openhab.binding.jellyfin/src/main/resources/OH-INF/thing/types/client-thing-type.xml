@@ -41,9 +41,191 @@
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
+			<parameter-group name="images">
+				<label>Now Playing Images</label>
+				<description><![CDATA[
+					Download cover art for the item currently playing on this device.<br/>
+					Each image type can be enabled independently. All types are disabled by default
+					because image downloads add network load on every session update (every 30 seconds by default).<br/>
+					<b>Supported image types:</b>
+					<ul>
+						<li><b>Primary</b> – Album/movie poster or main cover art</li>
+						<li><b>Backdrop</b> – Full-resolution background/fanart</li>
+						<li><b>Logo</b> – Transparent text or graphical logo</li>
+						<li><b>Thumb</b> – Landscape thumbnail (episode still or wide-format preview)</li>
+						<li><b>Disc</b> – CD, DVD or Blu-ray disc artwork</li>
+						<li><b>Art</b> – ClearArt / transparent promotional artwork</li>
+						<li><b>Banner</b> – Wide horizontal banner (TheTVDB-style)</li>
+					</ul>
+				]]></description>
+				<advanced>true</advanced>
+			</parameter-group>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Device ID</label>
 				<description>The Jellyfin device ID as reported by the client application.</description>
+			</parameter>
+			<parameter name="imagePrimaryEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Primary Image</label>
+				<description><![CDATA[
+					Download the primary cover art (album cover, movie poster, or main thumbnail)
+					for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-primary</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imagePrimaryWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Primary Image Width</label>
+				<description>Maximum width in pixels for the downloaded primary image. Larger sizes provide better quality but
+					consume more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageBackdropEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Backdrop Image</label>
+				<description><![CDATA[
+					Download the background fanart / backdrop image for the item currently playing.
+					Typically a wide full-resolution scene image.<br/>
+					When enabled, a <code>playing-item-image-backdrop</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageBackdropWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Backdrop Image Width</label>
+				<description>Maximum width in pixels for the downloaded backdrop image. Larger sizes provide better quality but
+					consume more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageLogoEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Logo Image</label>
+				<description><![CDATA[
+					Download the transparent text or graphical logo for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-logo</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageLogoWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Logo Image Width</label>
+				<description>Maximum width in pixels for the downloaded logo image. Larger sizes provide better quality but consume
+					more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageThumbEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Thumb Image</label>
+				<description><![CDATA[
+					Download the landscape thumbnail (wide-format still or episode preview) for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-thumb</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageThumbWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Thumb Image Width</label>
+				<description>Maximum width in pixels for the downloaded thumb image. Larger sizes provide better quality but consume
+					more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageDiscEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Disc Image</label>
+				<description><![CDATA[
+					Download the CD, DVD or Blu-ray disc artwork for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-disc</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageDiscWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Disc Image Width</label>
+				<description>Maximum width in pixels for the downloaded disc image. Larger sizes provide better quality but consume
+					more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageArtEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Art Image</label>
+				<description><![CDATA[
+					Download the ClearArt (transparent promotional artwork) for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-art</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageArtWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Art Image Width</label>
+				<description>Maximum width in pixels for the downloaded art image. Larger sizes provide better quality but consume
+					more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="imageBannerEnabled" type="boolean" groupName="images">
+				<advanced>true</advanced>
+				<label>Enable Banner Image</label>
+				<description><![CDATA[
+					Download the wide horizontal banner (TheTVDB-style) for the item currently playing.<br/>
+					When enabled, a <code>playing-item-image-banner</code> channel is created automatically.
+				]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="imageBannerWidth" type="integer" groupName="images">
+				<advanced>true</advanced>
+				<label>Banner Image Width</label>
+				<description>Maximum width in pixels for the downloaded banner image. Larger sizes provide better quality but
+					consume more bandwidth and memory.</description>
+				<default>512</default>
+				<options>
+					<option value="128">128 px – Thumbnail</option>
+					<option value="256">256 px – Small</option>
+					<option value="512">512 px – Medium (default)</option>
+					<option value="1024">1024 px – Large</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>
 	</thing-type>

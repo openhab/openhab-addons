@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ImageCache;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
@@ -88,6 +93,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final ErrorEventBus errorEventBus;
     private final SessionEventBus sessionEventBus;
     private final ApiClient apiClient;
+    private final ImageCache imageCache = new ImageCache();
     private Configuration configuration;
     private final TaskManagerInterface taskManager;
 
@@ -860,9 +866,75 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
             // Update session manager, which will publish events
             sessionManager.updateSessions(newSessions);
+
+            // Evict cached images for items that are no longer playing
+            Set<String> activeItemIds = new java.util.HashSet<>();
+            for (SessionInfoDto session : newSessions.values()) {
+                var nowPlaying = session.getNowPlayingItem();
+                if (nowPlaying != null) {
+                    var itemId = nowPlaying.getId();
+                    if (itemId != null) {
+                        activeItemIds.add(itemId.toString());
+                    }
+                }
+            }
+            imageCache.evictUnused(activeItemIds);
         } catch (Exception e) {
-            logger.warn("Failed to update client list: {}", e.getMessage(), e);
+            logger.warn("Failed to update client list: {}", e.getMessage());
         }
+    }
+
+    /**
+     * Returns the API client used to communicate with the Jellyfin server.
+     *
+     * @return the API client
+     */
+    public ApiClient getApiClient() {
+        return apiClient;
+    }
+
+    /**
+     * Fetches an image for a Jellyfin item from the server (or from the in-process cache).
+     *
+     * @param itemId Jellyfin item UUID string
+     * @param imageType Jellyfin image type (e.g. {@code "Primary"}, {@code "Backdrop"})
+     * @param imageTag Optional image tag; pass {@code null} when not available
+     * @param maxWidth Maximum width in pixels for the image
+     * @return image bytes on success, or {@code null} when the server returns 404
+     * @throws IOException when a network or I/O error occurs during the fetch
+     */
+    public byte @Nullable [] getImage(String itemId, String imageType, @Nullable String imageTag, int maxWidth)
+            throws IOException {
+        String tag = imageTag != null ? imageTag : "notag";
+        String key = ImageCache.cacheKey(itemId, imageType, tag, maxWidth);
+        byte[] cached = imageCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        String url = apiClient.getBaseUri() + "/Items/" + itemId + "/Images/" + imageType + "?maxWidth=" + maxWidth
+                + "&format=Jpg";
+        HttpRequest.Builder reqBuilder = HttpRequest.newBuilder(URI.create(url)).GET().timeout(Duration.ofSeconds(10));
+        java.util.function.Consumer<HttpRequest.Builder> interceptor = apiClient.getRequestInterceptor();
+        if (interceptor != null) {
+            interceptor.accept(reqBuilder);
+        }
+        HttpResponse<byte[]> resp;
+        try {
+            resp = apiClient.getHttpClient().send(reqBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Image fetch interrupted", e);
+        }
+        int status = resp.statusCode();
+        if (status == 200) {
+            byte[] bytes = resp.body();
+            imageCache.put(key, bytes);
+            return bytes;
+        } else if (status == 404) {
+            return null;
+        }
+        logger.debug("Unexpected HTTP {} fetching {} image for item {}", status, imageType, itemId);
+        return null;
     }
 
     /**

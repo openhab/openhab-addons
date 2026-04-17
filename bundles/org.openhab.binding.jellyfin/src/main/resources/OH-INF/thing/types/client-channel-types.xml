@@ -332,4 +332,15 @@
 			<tag>MediaControl</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="playing-item-image-channel">
+		<item-type>Image</item-type>
+		<label>Now Playing Image</label>
+		<description>Cover art image for the currently playing item. The image is fetched from the Jellyfin server and
+			published as binary data.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

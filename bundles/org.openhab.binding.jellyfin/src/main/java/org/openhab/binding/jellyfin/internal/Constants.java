@@ -27,7 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class Constants {
 
-    static final String BINDING_ID = "jellyfin";
+    public static final String BINDING_ID = "jellyfin";
     static final String BINDING_PID = "binding.jellyfin";
 
     public static class ServerProperties {
@@ -96,4 +96,30 @@ public class Constants {
     public static final String CLIENT_FILTER_KODI = "kodi";
     public static final String CLIENT_FILTER_JELLYCON = "jellycon";
     public static final String CLIENT_FILTER_ROKU = "roku";
+
+    // Image download channels (dynamic — created when enabled in config)
+    public static final String IMAGE_CHANNEL_TYPE_ID = "playing-item-image-channel";
+    public static final String IMAGE_PRIMARY_CHANNEL = "playing-item-image-primary";
+    public static final String IMAGE_BACKDROP_CHANNEL = "playing-item-image-backdrop";
+    public static final String IMAGE_LOGO_CHANNEL = "playing-item-image-logo";
+    public static final String IMAGE_THUMB_CHANNEL = "playing-item-image-thumb";
+    public static final String IMAGE_DISC_CHANNEL = "playing-item-image-disc";
+    public static final String IMAGE_ART_CHANNEL = "playing-item-image-art";
+    public static final String IMAGE_BANNER_CHANNEL = "playing-item-image-banner";
+
+    // Image channel config keys
+    public static final String CONFIG_IMAGE_PRIMARY_ENABLED = "imagePrimaryEnabled";
+    public static final String CONFIG_IMAGE_PRIMARY_WIDTH = "imagePrimaryWidth";
+    public static final String CONFIG_IMAGE_BACKDROP_ENABLED = "imageBackdropEnabled";
+    public static final String CONFIG_IMAGE_BACKDROP_WIDTH = "imageBackdropWidth";
+    public static final String CONFIG_IMAGE_LOGO_ENABLED = "imageLogoEnabled";
+    public static final String CONFIG_IMAGE_LOGO_WIDTH = "imageLogoWidth";
+    public static final String CONFIG_IMAGE_THUMB_ENABLED = "imageThumbEnabled";
+    public static final String CONFIG_IMAGE_THUMB_WIDTH = "imageThumbWidth";
+    public static final String CONFIG_IMAGE_DISC_ENABLED = "imageDiscEnabled";
+    public static final String CONFIG_IMAGE_DISC_WIDTH = "imageDiscWidth";
+    public static final String CONFIG_IMAGE_ART_ENABLED = "imageArtEnabled";
+    public static final String CONFIG_IMAGE_ART_WIDTH = "imageArtWidth";
+    public static final String CONFIG_IMAGE_BANNER_ENABLED = "imageBannerEnabled";
+    public static final String CONFIG_IMAGE_BANNER_WIDTH = "imageBannerWidth";
 }
