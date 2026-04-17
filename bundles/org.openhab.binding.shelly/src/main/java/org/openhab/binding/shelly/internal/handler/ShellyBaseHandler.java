@@ -1092,7 +1092,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
             }
         }
-        if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+        if (!gen2 && bindingConfig.isAutoCoIoT() && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
                 || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
             if (!apiConfig.getEnableCoIOT()) {
                 logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
@@ -1138,7 +1138,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             api.setConfig(thingName, apiConfig);
         }
 
-        logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
+        logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.isAutoCoIoT(), autoCoIoT);
         Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.start();

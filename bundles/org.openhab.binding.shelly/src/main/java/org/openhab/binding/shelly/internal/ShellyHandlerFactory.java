@@ -66,7 +66,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private ShellyBindingConfiguration bindingConfig;
+    private volatile ShellyBindingConfiguration bindingConfig;
 
     /**
      * Activate the bundle: save properties
@@ -92,20 +92,16 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
 
-        bindingConfig = new ShellyBindingConfiguration(networkAddressService);
-        bindingConfig.updateFromProperties(configProperties);
-        String localIP = bindingConfig.localIP;
-        if (localIP.isEmpty()) {
+        String localIP = new ShellyBindingConfiguration(networkAddressService).getLocalIP();
+        bindingConfig = ShellyBindingConfiguration.fromProperties(localIP, configProperties);
+        if (bindingConfig.getLocalIP().isEmpty()) {
             logger.warn("{}", messages.get("message.init.noipaddress"));
         }
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-        if (httpPort == -1) {
-            httpPort = DEFAULT_LOCAL_PORT;
-        }
-        logger.debug("Using OH HTTP port {}", httpPort);
-        bindingConfig.httpPort = httpPort;
+        logger.debug("Using OH HTTP port {}", httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT);
+        bindingConfig = bindingConfig.withHttpPort(httpPort);
 
         this.coapServer = new Shelly1CoapServer();
         this.thingTable.startDiscoveryService(bundleContext);

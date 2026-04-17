@@ -81,7 +81,6 @@ public class ShellyManagerPage {
     private final ShellyHandlerFactory handlerFactory;
     protected final HttpClient httpClient;
     protected final ConfigurationAdmin configurationAdmin;
-    protected final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     protected final String localIp;
     protected final int localPort;
 
@@ -194,9 +193,10 @@ public class ShellyManagerPage {
 
     protected Map<String, String> fillProperties(Map<String, String> properties, String uid,
             ShellyManagerInterface th) {
+        ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
         try {
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
-            bindingConfig.updateFromProperties(serviceConfig.getProperties());
+            bindingConfig = ShellyBindingConfiguration.fromProperties("", serviceConfig.getProperties());
         } catch (IOException e) {
             logger.debug("ShellyManager: Unable to get bindingConfig");
         }
@@ -237,8 +237,8 @@ public class ShellyManagerPage {
 
         if (config.getUserId().isBlank()) {
             // Get defaults from Binding Config
-            properties.put("userId", bindingConfig.defaultUserId);
-            properties.put("password", bindingConfig.defaultPassword);
+            properties.put("userId", bindingConfig.getDefaultUserId());
+            properties.put("password", bindingConfig.getDefaultPassword());
         }
 
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
