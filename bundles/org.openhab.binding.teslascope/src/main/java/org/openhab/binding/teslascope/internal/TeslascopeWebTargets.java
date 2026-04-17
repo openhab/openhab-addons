@@ -87,31 +87,38 @@ public class TeslascopeWebTargets {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
         int status = 0;
-        try {
-            Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
-            if (!personalAccessToken.isBlank()) {
-                request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("{} request for {}", HttpMethod.GET, uri);
-            }
-            ContentResponse response = request.send();
-            status = response.getStatus();
-            if (HttpStatus.isSuccess(status)) {
-                jsonResponse = response.getContentAsString();
-                logger.trace("JSON response: '{}'", jsonResponse);
-            } else {
-                switch (status) {
-                    case HttpStatus.UNAUTHORIZED_401:
-                        throw new TeslascopeAuthenticationException("Unauthorized");
-                    default:
-                        throw new TeslascopeCommunicationException(
-                                String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+        int retry = 0;
+        for (int retryCounter = 1; retryCounter <= 3; retryCounter++) {
+            try {
+                Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
+                        TimeUnit.MILLISECONDS);
+                if (!personalAccessToken.isBlank()) {
+                    request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
                 }
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} request for {}", HttpMethod.GET, uri);
+                }
+                ContentResponse response = request.send();
+                status = response.getStatus();
+                if (HttpStatus.isSuccess(status)) {
+                    jsonResponse = response.getContentAsString();
+                    logger.trace("JSON response: '{}'", jsonResponse);
+                } else {
+                    switch (status) {
+                        case HttpStatus.UNAUTHORIZED_401:
+                            throw new TeslascopeAuthenticationException("Unauthorized");
+                        case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                        case HttpStatus.BAD_GATEWAY_502:
+                            logger.debug("Teslascope returned {}, retrying", status);
+                        default:
+                            throw new TeslascopeCommunicationException(
+                                    String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+                    }
+                }
+                Thread.sleep(2000);
+            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
             }
-        } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-            throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
         }
         return jsonResponse;
     }
