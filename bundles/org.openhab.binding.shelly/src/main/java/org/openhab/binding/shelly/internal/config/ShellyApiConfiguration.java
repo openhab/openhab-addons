@@ -99,8 +99,8 @@ public class ShellyApiConfiguration {
      */
     public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
             String realm, boolean gen2) {
-        this.localIp = bindingConfig.localIP;
-        this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
+        this.localIp = bindingConfig.getLocalIP();
+        this.localPort = String.valueOf(bindingConfig.getHttpPort());
         this.realm.set(realm);
 
         // deviceIP can be an IP address, IP address:port or a FQDN, which needs to be resolved
@@ -113,8 +113,8 @@ public class ShellyApiConfiguration {
             deviceIp = deviceAddress = resolveIp(thingConfig.getDeviceIp());
         }
 
-        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.defaultUserId,
-                bindingConfig.defaultPassword, thingConfig.getUserId(), thingConfig.getPassword()));
+        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
+                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword()));
 
         enableBluGateway = thingConfig.getEnableBluGateway();
         enableRangeExtender = thingConfig.getEnableRangeExtender();
@@ -141,10 +141,10 @@ public class ShellyApiConfiguration {
         this.deviceIp = deviceIp;
         this.deviceAddress = resolveIp(deviceIp);
 
-        localIp = getString(bindingConfig.localIP);
-        localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
-        credentials.set(new ShellyAuthCredentials(getString(bindingConfig.defaultUserId),
-                getString(bindingConfig.defaultPassword), "", ""));
+        localIp = bindingConfig.getLocalIP();
+        localPort = String.valueOf(bindingConfig.getHttpPort());
+        credentials.set(new ShellyAuthCredentials(bindingConfig.getDefaultUserId(), bindingConfig.getDefaultPassword(),
+                "", ""));
 
         // Disable all features, which are not required in discoverymode
         enableCoIOT.set(false);
