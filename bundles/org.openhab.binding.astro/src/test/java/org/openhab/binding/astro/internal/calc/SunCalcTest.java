@@ -315,7 +315,7 @@ public class SunCalcTest {
     }
 
     @Test
-    public void testRangesForCoherenceBetweenSunRiseEndAndDaylightStart() {
+    public void testRangesForCoherenceBetweenSunRiseStartAndDaylightStart() {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
@@ -323,11 +323,11 @@ public class SunCalcTest {
         assertNotNull(range);
         Range range2 = sun.getAllRanges().get(SunPhase.DAYLIGHT);
         assertNotNull(range2);
-        assertEquals(range.getEnd(), range2.getStart());
+        assertEquals(range.getStart(), range2.getStart());
     }
 
     @Test
-    public void testRangesForCoherenceBetweenDaylightEndAndSunSetStart() {
+    public void testRangesForCoherenceBetweenDaylightEndAndSunSetEnd() {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
@@ -335,7 +335,7 @@ public class SunCalcTest {
         assertNotNull(range);
         Range range2 = sun.getAllRanges().get(SunPhase.SUN_SET);
         assertNotNull(range2);
-        assertEquals(range.getEnd(), range2.getStart());
+        assertEquals(range.getEnd(), range2.getEnd());
     }
 
     @Test
@@ -417,7 +417,7 @@ public class SunCalcTest {
 
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
-        assertEquals(SunPhase.SUN_RISE, sun.getSunPhase());
+        assertEquals(SunPhase.DAYLIGHT, sun.getSunPhase());
     }
 
     @Test

@@ -210,7 +210,7 @@ public class SunCalc {
                         DateTimeUtils.truncateToMidnight(DateTimeUtils.addDays(calendar, 1)));
             }
         } else {
-            daylightRange = new Range(sun.getRise().getEnd(), sun.getSet().getStart());
+            daylightRange = new Range(sun.getRise().getStart(), sun.getSet().getEnd());
         }
         sun.setRange(SunPhase.DAYLIGHT, daylightRange);
 
