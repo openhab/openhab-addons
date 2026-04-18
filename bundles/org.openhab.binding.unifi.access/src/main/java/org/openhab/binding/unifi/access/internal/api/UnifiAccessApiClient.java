@@ -51,7 +51,7 @@ import org.openhab.binding.unifi.access.internal.dto.DoorState;
 import org.openhab.binding.unifi.access.internal.dto.Image;
 import org.openhab.binding.unifi.access.internal.dto.Notification;
 import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException;
-import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException.AuthState;
+import org.openhab.binding.unifi.api.UniFiException.AuthState;
 import org.openhab.binding.unifi.api.UniFiSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +80,8 @@ public final class UnifiAccessApiClient implements Closeable {
 
     private static final long HTTP_TIMEOUT_MS = 30_000;
     private static final String V2_BASE = "/proxy/access/api/v2";
+    /** WebSocket close code reported when the heartbeat monitor escalates a silent-peer close. */
+    private static final int WS_CLOSE_HEARTBEAT_TIMEOUT = 4000;
 
     private final HttpClient httpClient;
     private final String host;
@@ -215,6 +217,12 @@ public final class UnifiAccessApiClient implements Closeable {
      * the extension's target_config.
      */
     private void resolveBuildingLevelHubState(JsonArray deviceGroups, List<Door> doors) {
+        Map<String, Door> doorsById = new HashMap<>(doors.size());
+        for (Door d : doors) {
+            if (d.id != null) {
+                doorsById.put(d.id, d);
+            }
+        }
         for (JsonElement dgEl : deviceGroups) {
             JsonObject hubObj = findHubDevice(dgEl);
             if (hubObj == null) {
@@ -235,7 +243,7 @@ public final class UnifiAccessApiClient implements Closeable {
                 if (!"door".equals(targetType) || targetDoorId == null) {
                     continue;
                 }
-                Door door = doors.stream().filter(d -> targetDoorId.equals(d.id)).findFirst().orElse(null);
+                Door door = doorsById.get(targetDoorId);
                 if (door == null || (door.doorLockRelayStatus != null && door.doorPositionStatus != null)) {
                     continue;
                 }
@@ -766,6 +774,9 @@ public final class UnifiAccessApiClient implements Closeable {
         }
         this.onClosedCallback = onClosed;
         this.closedNotified.set(false);
+        // Seed the heartbeat timestamp so the monitor doesn't see the default 0 and immediately escalate
+        // if its first tick races with onWebSocketConnect.
+        this.lastHeartbeatEpochMs = System.currentTimeMillis();
         try {
             URI wsUri = URI.create("wss://" + host + V2_BASE + "/ws/notification");
             logger.debug("Notifications WebSocket URI: {}", wsUri);
@@ -1081,7 +1092,7 @@ public final class UnifiAccessApiClient implements Closeable {
         } catch (Exception e) {
             logger.debug("Error closing notifications WebSocket: {}", e.getMessage());
         }
-        notifyClosedOnce(4000, reason);
+        notifyClosedOnce(WS_CLOSE_HEARTBEAT_TIMEOUT, reason);
     }
 
     // Fires the onClosed callback at most once per WebSocket lifecycle so the

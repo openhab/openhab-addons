@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -122,19 +121,9 @@ public class NetworkRefreshCoordinator {
     }
 
     private void runRefresh() {
-        UniFiSession session;
-        try {
-            session = bridgeHandler.getSessionAsync().get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-        } catch (TimeoutException e) {
-            logger.trace("Timed out waiting for bridge session; skipping refresh");
-            return;
-        } catch (Exception e) {
-            logger.debug("Bridge session not available, skipping refresh: {}", e.getMessage());
-            lastError = e;
-            notifySubscribers();
+        UniFiSession session = bridgeHandler.getSession();
+        if (session == null) {
+            logger.trace("Bridge session not available yet; skipping refresh");
             return;
         }
 

@@ -13,50 +13,27 @@
 package org.openhab.binding.unifi.access.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.api.UniFiException;
 
 /**
- * Exception for UniFi Access API errors.
+ * Exception for UniFi Access API errors. Extends the shared {@link UniFiException} so the
+ * {@link UniFiException.AuthState} classification is consistent across Access, Protect, and Network.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiAccessApiException extends Exception {
+public class UnifiAccessApiException extends UniFiException {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Classification of authentication-related failures.
-     * <ul>
-     * <li>{@link #OK} — not an auth error</li>
-     * <li>{@link #REJECTED} — credentials definitively rejected (HTTP 401); user must fix config</li>
-     * <li>{@link #THROTTLED} — request forbidden (HTTP 403); usually controller-side rate limiting, treat as
-     * transient</li>
-     * </ul>
-     */
-    public enum AuthState {
-        OK,
-        REJECTED,
-        THROTTLED
-    }
-
-    private final AuthState authState;
 
     public UnifiAccessApiException(String message) {
         super(message);
-        this.authState = AuthState.OK;
     }
 
-    public UnifiAccessApiException(String message, @Nullable Throwable cause) {
+    public UnifiAccessApiException(String message, Throwable cause) {
         super(message, cause);
-        this.authState = AuthState.OK;
     }
 
     public UnifiAccessApiException(String message, AuthState authState) {
-        super(message);
-        this.authState = authState;
-    }
-
-    public AuthState getAuthState() {
-        return authState;
+        super(message, authState);
     }
 }

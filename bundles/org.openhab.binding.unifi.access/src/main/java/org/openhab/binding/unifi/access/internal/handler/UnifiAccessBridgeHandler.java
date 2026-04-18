@@ -31,7 +31,7 @@ import org.openhab.binding.unifi.access.internal.dto.Device;
 import org.openhab.binding.unifi.access.internal.dto.Door;
 import org.openhab.binding.unifi.access.internal.dto.DoorEmergencySettings;
 import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException;
-import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException.AuthState;
+import org.openhab.binding.unifi.api.UniFiException.AuthState;
 import org.openhab.binding.unifi.api.UniFiSession;
 import org.openhab.binding.unifi.handler.UniFiControllerBridgeHandler;
 import org.openhab.core.library.types.OnOffType;
