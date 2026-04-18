@@ -30,7 +30,7 @@
         "precipitation_amount_max": 0,
         "precipitation_amount_median": 0,
         "probability_of_precipitation": 0,
-        "precipitation_frozen_part": -9,
+        "precipitation_frozen_part": 14,
         "predominant_precipitation_type_at_surface": 0,
         "symbol_code": 3
       }
