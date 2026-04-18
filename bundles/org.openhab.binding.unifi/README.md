@@ -82,6 +82,7 @@ If you already have one (from the Network binding), skip ahead to Step 2.
 1. In the openHAB UI, add a new thing from the **UniFi Binding** → **UniFi Controller**.
 1. Enter the **hostname**, **username**, and **password** of your UniFi console (the same credentials you previously had on your `unifiprotect:nvr` or `unifiaccess:bridge`).
 1. For a modern UniFi OS console (UDM / UDM Pro / UDR / UNVR / Cloud Key Gen2 Plus) the defaults (`port=443`, `unifios=true`) are correct.
+
 For a **legacy stand-alone Network Controller**, set `port=8443` and `unifios=false`.
 
 ### Step 2 — Reparent existing Protect and Access bridges

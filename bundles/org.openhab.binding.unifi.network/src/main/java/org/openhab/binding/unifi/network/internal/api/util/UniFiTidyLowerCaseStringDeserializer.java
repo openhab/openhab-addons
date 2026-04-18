@@ -13,6 +13,7 @@
 package org.openhab.binding.unifi.network.internal.api.util;
 
 import java.lang.reflect.Type;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +37,6 @@ public class UniFiTidyLowerCaseStringDeserializer implements JsonDeserializer<St
     public @Nullable String deserialize(final JsonElement json, final Type type,
             final JsonDeserializationContext context) throws JsonParseException {
         final String s = json.getAsJsonPrimitive().getAsString();
-        return s.trim().toLowerCase();
+        return s.trim().toLowerCase(Locale.ROOT);
     }
 }

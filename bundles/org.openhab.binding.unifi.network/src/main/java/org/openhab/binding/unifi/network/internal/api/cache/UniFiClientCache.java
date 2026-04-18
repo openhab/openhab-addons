@@ -18,6 +18,8 @@ import static org.openhab.binding.unifi.network.internal.api.cache.UniFiCache.Pr
 import static org.openhab.binding.unifi.network.internal.api.cache.UniFiCache.Prefix.MAC;
 import static org.openhab.binding.unifi.network.internal.api.cache.UniFiCache.Prefix.NAME;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.network.internal.api.dto.UniFiClient;
@@ -57,6 +59,6 @@ class UniFiClientCache extends UniFiCache<UniFiClient> {
     }
 
     private static @Nullable String safeTidy(final @Nullable String value) {
-        return value == null ? null : value.trim().toLowerCase();
+        return value == null ? null : value.trim().toLowerCase(Locale.ROOT);
     }
 }
