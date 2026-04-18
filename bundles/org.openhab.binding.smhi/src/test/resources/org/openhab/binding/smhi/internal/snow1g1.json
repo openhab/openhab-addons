@@ -17,7 +17,7 @@
         "relative_humidity": 86,
         "air_pressure_at_mean_sea_level": 1010.9,
         "visibility_in_air": 13.3,
-        "thunderstorm_probability": 0,
+        "thunderstorm_probability": 18,
         "probability_of_frozen_precipitation": 0,
         "cloud_area_fraction": 4,
         "low_type_cloud_area_fraction": 3,
@@ -30,7 +30,7 @@
         "precipitation_amount_max": 0,
         "precipitation_amount_median": 0,
         "probability_of_precipitation": 0,
-        "precipitation_frozen_part": -9,
+        "precipitation_frozen_part": 14,
         "predominant_precipitation_type_at_surface": 0,
         "symbol_code": 3
       }
