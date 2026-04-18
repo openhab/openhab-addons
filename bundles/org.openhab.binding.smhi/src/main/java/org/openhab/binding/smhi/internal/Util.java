@@ -59,8 +59,8 @@ public class Util {
             case WIND_DIRECTION -> new QuantityType<>(value, Units.DEGREE_ANGLE);
             case WIND_SPEED, GUST -> new QuantityType<>(value, Units.METRE_PER_SECOND);
             case RELATIVE_HUMIDITY, PRECIPITATION_PROBABILITY -> new QuantityType<>(value, Units.PERCENT);
-            case FROZEN_PROBABILITY, THUNDER_PROBABILITY ->
-                new QuantityType<>(value.multiply(FRACTION_TO_PERCENT), Units.PERCENT);
+            case FROZEN_PROBABILITY -> new QuantityType<>(value.multiply(FRACTION_TO_PERCENT), Units.PERCENT);
+            case THUNDER_PROBABILITY -> new QuantityType<>(value, Units.PERCENT);
             // Smhi returns -9 for precipitation_frozen_part if there's no precipitation, replace with -1
             case PERCENT_FROZEN -> value.intValue() == -9 ? new QuantityType<>(-1, Units.PERCENT)
                     : new QuantityType<>(value.multiply(FRACTION_TO_PERCENT), Units.PERCENT);
