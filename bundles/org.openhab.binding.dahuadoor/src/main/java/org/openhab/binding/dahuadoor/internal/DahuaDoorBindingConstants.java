@@ -39,4 +39,11 @@ public class DahuaDoorBindingConstants {
     public static final String CHANNEL_DOOR_IMAGE_2 = "door-image-2";
     public static final String CHANNEL_OPEN_DOOR_1 = "open-door-1";
     public static final String CHANNEL_OPEN_DOOR_2 = "open-door-2";
+    public static final String CHANNEL_WEBRTC_URL = "webrtc-url";
+
+    // go2rtc stream name prefix (stream name = prefix + URL-safe thing UID)
+    public static final String GO2RTC_STREAM_PREFIX = "dahua_";
+
+    // Path under which the WebRTC SDP proxy servlet is registered
+    public static final String WEBRTC_SERVLET_PATH = "/dahuadoor/webrtc";
 }

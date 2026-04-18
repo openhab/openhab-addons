@@ -14,6 +14,7 @@ package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
+import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -28,8 +29,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
 
-    public DahuaVto2202Handler(Thing thing) {
-        super(thing);
+    public DahuaVto2202Handler(Thing thing, PlayStreamServlet playStreamServlet) {
+        super(thing, playStreamServlet);
     }
 
     @Override

@@ -18,12 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link DahuaDoorHandlerFactory} is responsible for creating things and thing
@@ -36,6 +40,12 @@ import org.osgi.service.component.annotations.Component;
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO2202, THING_TYPE_VTO3211);
+    private final PlayStreamServlet playStreamServlet;
+
+    @Activate
+    public DahuaDoorHandlerFactory(@Reference HttpService httpService) {
+        this.playStreamServlet = new PlayStreamServlet(httpService);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,9 +57,9 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
-            return new DahuaVto2202Handler(thing);
+            return new DahuaVto2202Handler(thing, playStreamServlet);
         } else if (THING_TYPE_VTO3211.equals(thingTypeUID)) {
-            return new DahuaVto3211Handler(thing);
+            return new DahuaVto3211Handler(thing, playStreamServlet);
         }
 
         return null;

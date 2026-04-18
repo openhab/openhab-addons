@@ -34,4 +34,11 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="webrtc-url">
+		<item-type>String</item-type>
+		<label>WebRTC Proxy Path</label>
+		<description>Relative proxy path used by MainUI widgets to communicate with the binding.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
 </thing:thing-descriptions>
