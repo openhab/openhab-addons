@@ -1,0 +1,67 @@
+name: Update Maven Wrapper
+
+on:
+  schedule:
+    - cron: '0 19 * * 5'
+  workflow_dispatch:
+
+jobs:
+  update:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Get latest Maven version
+        # This fetches latest Maven release from maven.org - not the download page; it might be delayed a few days after releases.
+        # Note that the "gav" at the end of the URL is necessary to retrieve more than one version. jq will filter out rc versions.
+        id: maven
+        run: |
+          LATEST=$(curl -s "https://repo1.maven.org/maven2/org/apache/maven/apache-maven/maven-metadata.xml" \
+            | grep -oP '<version>\K[^<]+' \
+            | grep -viE 'rc|alpha|beta|snapshot|milestone' \
+            | tail -1)
+          if [[ -z "$LATEST" || ! "$LATEST" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: failed to determine a valid Maven version (got: '${LATEST}')" >&2
+            exit 1
+          fi
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+
+      - name: Update wrapper
+        # Update Maven wrapper scripts AND maven-wrapper.properties.
+        # Note that this removes the SHA from properties file.
+        env:
+          VERSION: ${{ steps.maven.outputs.version }}
+        run: ./mvnw wrapper:wrapper -Dmaven="${VERSION}"
+
+      - name: Patch SHA512 into wrapper properties
+        # Add the SHA to properties file.
+        # We might need the -L for curl, as after a new release all old SHA files will move to archive folder.
+        env:
+          VERSION: ${{ steps.maven.outputs.version }}
+        run: |
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          SHA=$(curl -sL "https://downloads.apache.org/maven/maven-${MAJOR}/${VERSION}/binaries/apache-maven-${VERSION}-bin.zip.sha512")
+          if [[ ! "$SHA" =~ ^[0-9a-f]{128}$ ]]; then
+            echo "Error: invalid SHA-512 checksum downloaded for Maven ${VERSION}" >&2
+            exit 1
+          fi
+          PROPS=".mvn/wrapper/maven-wrapper.properties"
+          sed -i '/^distributionSha512Sum=/d' "$PROPS"
+          echo "distributionSha512Sum=${SHA}" >> "$PROPS"
+
+      - name: Open PR if changed
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # 8.1.1
+        with:
+          commit-message: "Update maven wrapper to ${{ steps.maven.outputs.version }}"
+          title: "Update Maven Wrapper to ${{ steps.maven.outputs.version }}"
+          branch: gha/update-maven-wrapper
+          delete-branch: true
+          labels: infrastructure
