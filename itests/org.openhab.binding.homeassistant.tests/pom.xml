@@ -16,6 +16,7 @@
 
   <properties>
     <mqttbroker.port>1883</mqttbroker.port>
+    <bouncycastle.version>1.83</bouncycastle.version>
   </properties>
 
   <dependencies>
@@ -103,6 +104,21 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.truffle.truffle-runtime</artifactId>
       <version>${graalvm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcutil-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
     </dependency>
     <!-- added due to inconsistency of resolved versions -->
     <dependency>
