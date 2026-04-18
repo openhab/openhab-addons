@@ -54,7 +54,6 @@ public class DigestAuthHelper {
 
             // response = MD5(HA1:nonce:HA2)
             return md5(ha1 + ":" + nonce + ":" + ha2);
-
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("MD5 algorithm not available", e);
         }

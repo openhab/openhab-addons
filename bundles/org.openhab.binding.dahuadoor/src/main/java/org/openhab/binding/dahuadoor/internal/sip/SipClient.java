@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.dahuadoor.internal.sip;
 
-import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.BINDING_ID;
-
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.TooManyListenersException;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,16 +32,21 @@ import javax.sip.Dialog;
 import javax.sip.DialogState;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
+import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.TimeoutEvent;
 import javax.sip.TransactionTerminatedEvent;
+import javax.sip.TransportNotSupportedException;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
@@ -86,6 +91,7 @@ import org.slf4j.LoggerFactory;
 public class SipClient implements SipListener {
 
     private final Logger logger = LoggerFactory.getLogger(SipClient.class);
+    private static final String BINDING_PREFIX = "dahuadoor";
 
     // Configuration
     private final String vtoIp;
@@ -110,7 +116,7 @@ public class SipClient implements SipListener {
     private static final long TERMINATING_TIMEOUT_SECONDS = 5;
     private static final long ANSWERING_TIMEOUT_SECONDS = 15;
     private final ScheduledExecutorService callStateTimeoutScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread thread = new Thread(r, BINDING_ID + "-sip-answering-timeout");
+        Thread thread = new Thread(r, BINDING_PREFIX + "-sip-answering-timeout");
         thread.setDaemon(true);
         return thread;
     });
@@ -147,10 +153,16 @@ public class SipClient implements SipListener {
      * @param realm SIP realm (typically "VDP" for Dahua)
      * @param listener Callback interface for SIP events
      * @param errorHandler Error callback
-     * @throws Exception if SIP stack initialization fails
+     * @throws PeerUnavailableException if SIP factory components cannot be created
+     * @throws TransportNotSupportedException if UDP transport cannot be initialized
+     * @throws InvalidArgumentException if SIP parameters are invalid
+     * @throws ObjectInUseException if SIP resources are already in use
+     * @throws TooManyListenersException if SIP listener registration fails
      */
     public SipClient(String vtoIp, String sipExtension, String username, String password, int localSipPort,
-            String localIp, String realm, SipEventListener listener, Consumer<String> errorHandler) throws Exception {
+            String localIp, String realm, SipEventListener listener, Consumer<String> errorHandler)
+            throws PeerUnavailableException, TransportNotSupportedException, InvalidArgumentException,
+            ObjectInUseException, TooManyListenersException {
         this.vtoIp = vtoIp;
         this.sipExtension = sipExtension;
         this.username = username;
@@ -164,7 +176,8 @@ public class SipClient implements SipListener {
         initializeSipStack();
     }
 
-    public void initializeSipStack() throws Exception {
+    public void initializeSipStack() throws PeerUnavailableException, TransportNotSupportedException,
+            InvalidArgumentException, ObjectInUseException, TooManyListenersException {
         SipFactory sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
 
@@ -194,7 +207,7 @@ public class SipClient implements SipListener {
 
     private String buildSipStackName() {
         String stackIdentity = sipExtension + ":" + localSipPort + ":" + localIp;
-        return BINDING_ID + "-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
+        return BINDING_PREFIX + "-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -267,8 +280,8 @@ public class SipClient implements SipListener {
 
             logger.debug("Sent REGISTER (unauthenticated)");
 
-        } catch (Exception e) {
-            logger.error("Failed to send REGISTER: {}", e.getMessage(), e);
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
+            logger.warn("Failed to send REGISTER: {}", e.getMessage(), e);
             errorHandler.accept("SIP REGISTER failed: " + e.getMessage());
         }
     }
@@ -340,8 +353,8 @@ public class SipClient implements SipListener {
 
             logger.debug("Sent REGISTER (with Digest auth)");
 
-        } catch (Exception e) {
-            logger.error("Failed to send authenticated REGISTER: {}", e.getMessage(), e);
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
+            logger.warn("Failed to send authenticated REGISTER: {}", e.getMessage(), e);
             errorHandler.accept("SIP auth failed: " + e.getMessage());
         }
     }
@@ -394,7 +407,7 @@ public class SipClient implements SipListener {
             }
 
             logger.debug("SIP client disposed successfully");
-        } catch (Exception e) {
+        } catch (SipException | RuntimeException e) {
             logger.warn("Error disposing SIP client: {}", e.getMessage());
         }
     }
@@ -428,8 +441,8 @@ public class SipClient implements SipListener {
             } else if (Request.BYE.equals(method)) {
                 handleBye(request, serverTransaction);
             }
-        } catch (Exception e) {
-            logger.error("Error processing SIP request: {}", e.getMessage(), e);
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
+            logger.warn("Error processing SIP request: {}", e.getMessage(), e);
         }
     }
 
@@ -467,13 +480,14 @@ public class SipClient implements SipListener {
         }
     }
 
-    private void handleInvite(Request request, @Nullable ServerTransaction serverTransaction) throws Exception {
+    private void handleInvite(Request request, @Nullable ServerTransaction serverTransaction)
+            throws SipException, ParseException, InvalidArgumentException {
         MessageFactory msgFactory = messageFactory;
         HeaderFactory hdrFactory = headerFactory;
         AddressFactory addrFactory = addressFactory;
 
         if (msgFactory == null || hdrFactory == null || addrFactory == null || serverTransaction == null) {
-            logger.error("Cannot handle INVITE: SIP stack not ready or transaction null");
+            logger.debug("Cannot handle INVITE: SIP stack not ready or transaction null");
             return;
         }
 
@@ -520,11 +534,12 @@ public class SipClient implements SipListener {
         listener.onInviteReceived(callerId);
     }
 
-    private void handleCancel(Request request, @Nullable ServerTransaction serverTransaction) throws Exception {
+    private void handleCancel(Request request, @Nullable ServerTransaction serverTransaction)
+            throws SipException, ParseException, InvalidArgumentException {
         MessageFactory msgFactory = messageFactory;
 
         if (msgFactory == null || serverTransaction == null) {
-            logger.error("Cannot handle CANCEL: SIP stack not ready or transaction null");
+            logger.debug("Cannot handle CANCEL: SIP stack not ready or transaction null");
             return;
         }
 
@@ -570,11 +585,12 @@ public class SipClient implements SipListener {
         }
     }
 
-    private void handleBye(Request request, @Nullable ServerTransaction serverTransaction) throws Exception {
+    private void handleBye(Request request, @Nullable ServerTransaction serverTransaction)
+            throws SipException, ParseException, InvalidArgumentException {
         MessageFactory msgFactory = messageFactory;
 
         if (msgFactory == null || serverTransaction == null) {
-            logger.error("Cannot handle BYE: SIP stack not ready or transaction null");
+            logger.debug("Cannot handle BYE: SIP stack not ready or transaction null");
             return;
         }
 
@@ -608,7 +624,7 @@ public class SipClient implements SipListener {
                 sendAuthenticatedRegister(nonce);
             }
         } else if (statusCode == Response.OK) {
-            logger.info("SIP registration successful");
+            logger.debug("SIP registration successful");
             listener.onRegistrationSuccess();
         } else {
             String reasonPhrase = response.getReasonPhrase();
@@ -637,7 +653,7 @@ public class SipClient implements SipListener {
             AddressFactory addrFactory = addressFactory;
 
             if (msgFactory == null || hdrFactory == null || addrFactory == null) {
-                logger.error("Cannot send 200 OK: SIP stack not initialized");
+                logger.warn("Cannot send 200 OK: SIP stack not initialized");
                 return false;
             }
 
@@ -668,9 +684,9 @@ public class SipClient implements SipListener {
             activeDialog = localInviteServerTransaction.getDialog();
             callState = SipCallState.ANSWERING;
             scheduleAnsweringTimeout();
-            logger.info("Sent 200 OK for incoming INVITE");
+            logger.debug("Sent 200 OK for incoming INVITE");
             return true;
-        } catch (Exception e) {
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
             logger.warn("Failed to send 200 OK: {}", e.getMessage(), e);
             return false;
         }
@@ -720,7 +736,7 @@ public class SipClient implements SipListener {
                 currentCallerId = null;
                 pendingHangupAfterAck = false;
                 cancelAnsweringTimeout();
-                logger.info("Rejected incoming INVITE with 486 Busy Here");
+                logger.debug("Rejected incoming INVITE with 486 Busy Here");
                 listener.onCallEnded();
                 return true;
             }
@@ -744,10 +760,10 @@ public class SipClient implements SipListener {
                         callState = SipCallState.TERMINATING;
                         pendingHangupAfterAck = false;
                         scheduleAnsweringTimeout();
-                        logger.info("Sent BYE for SIP call in ANSWERING state (trigger={})", trigger);
+                        logger.debug("Sent BYE for SIP call in ANSWERING state (trigger={})", trigger);
                         listener.onCallTerminating();
                         return true;
-                    } catch (Exception e) {
+                    } catch (SipException | RuntimeException e) {
                         logger.debug("Could not send BYE in ANSWERING state yet: {}", e.getMessage());
                     }
                 }
@@ -803,10 +819,10 @@ public class SipClient implements SipListener {
             callState = SipCallState.TERMINATING;
             pendingHangupAfterAck = false;
             scheduleAnsweringTimeout();
-            logger.info("Sent BYE for active SIP call");
+            logger.debug("Sent BYE for active SIP call");
             listener.onCallTerminating();
             return true;
-        } catch (Exception e) {
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
             String message = e.getMessage();
             if (message != null && message.contains("not yet established or terminated")) {
                 logger.debug("Ignoring BYE for non-established or terminated dialog");
