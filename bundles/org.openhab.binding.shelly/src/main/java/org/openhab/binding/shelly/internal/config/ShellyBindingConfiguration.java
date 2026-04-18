@@ -48,7 +48,7 @@ public class ShellyBindingConfiguration {
 
     /** No-arg constructor: empty localIP, all other fields use defaults. */
     public ShellyBindingConfiguration() {
-        this("", "admin", "admin", -1, true);
+        this("", "admin", "", -1, true);
     }
 
     /**
@@ -56,7 +56,7 @@ public class ShellyBindingConfiguration {
      * Combine with {@link #fromProperties} to apply binding.cfg overrides on top.
      */
     public ShellyBindingConfiguration(NetworkAddressService networkAddressService) {
-        this(resolveLocalIP(networkAddressService), "admin", "admin", -1, true);
+        this(resolveLocalIP(networkAddressService), "admin", "", -1, true);
     }
 
     private ShellyBindingConfiguration(String localIP, String defaultUserId, String defaultPassword, int httpPort,
