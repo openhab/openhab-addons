@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +57,7 @@ public class SourceLocator {
             return FilePosition.empty();
         }
 
-        try (Scanner scanner = new Scanner(new ByteArrayInputStream(yamlBytes))) {
+        try (Scanner scanner = new Scanner(new ByteArrayInputStream(yamlBytes), StandardCharsets.UTF_8)) {
             int lineNumber = 1;
             int keyIndex = 0;
 

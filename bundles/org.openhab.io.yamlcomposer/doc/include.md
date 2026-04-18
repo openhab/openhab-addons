@@ -2,7 +2,7 @@
 
 `!include` inserts the referenced file or structure exactly at the position where the include appears.
 
-YAML Composer supports including external YAML files to facilitate modular, reusable, and maintainable configurations.****
+YAML Composer supports including external YAML files to facilitate modular, reusable, and maintainable configurations.
 This is especially useful for modular reuse, creating device [packages](packages.md), or separating concerns across multiple files.
 
 [[toc]]

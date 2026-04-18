@@ -37,7 +37,7 @@ For a general introduction to YAML, see [YAML Basics](doc/basics.md).
 
 ## Packaging Example
 
-**CONF/yamlcompose/LivingRoom.yaml:**
+**CONF/yamlcomposer/LivingRoom.yaml:**
 
 ```yaml
 version: 1
@@ -62,7 +62,7 @@ packages:
       <<: *LIGHT_VARS
 ```
 
-**CONF/yamlcompose/pkg/zigbee_light.inc.yaml:**
+**CONF/yamlcomposer/pkg/zigbee_light.inc.yaml:**
 
 ```yaml
 # This is the package file, i.e. the template for a zigbee light
