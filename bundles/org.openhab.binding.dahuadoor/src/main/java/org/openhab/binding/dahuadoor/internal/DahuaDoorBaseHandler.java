@@ -22,8 +22,14 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
+import javax.sip.TransportNotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -221,7 +227,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
                 logger.info("SIP client started for extension {} at {}:{}", cfg.sipExtension, localIp,
                         cfg.localSipPort);
-            } catch (Exception e) {
+            } catch (IOException | PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
+                    | ObjectInUseException | TooManyListenersException e) {
                 logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
                 updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
             }
@@ -245,7 +252,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
     }
 
-    private String detectLocalIp(String vtoHostname) throws Exception {
+    private String detectLocalIp(String vtoHostname) throws IOException {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName(vtoHostname), 5060);
             return socket.getLocalAddress().getHostAddress();
