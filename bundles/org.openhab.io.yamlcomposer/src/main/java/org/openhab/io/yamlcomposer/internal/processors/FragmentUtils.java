@@ -48,7 +48,7 @@ public class FragmentUtils {
 
     private static @Nullable Parameters parseMapParameters(Map<?, ?> paramsMap, String objectName) {
         if (!(paramsMap.get(objectName) instanceof String name)) {
-            return null;
+            return new Parameters(null, Map.of());
         }
         if (!(paramsMap.get("vars") instanceof Map<?, ?> varsMap)) {
             return new Parameters(name, Map.of());
