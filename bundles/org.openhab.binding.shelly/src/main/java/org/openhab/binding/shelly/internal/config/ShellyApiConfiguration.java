@@ -63,7 +63,7 @@ public class ShellyApiConfiguration {
     }
 
     private final String deviceIp; // device ip address
-    private final String deviceAddress; // resolved IP address or MAC adress for BLU devices
+    private final String deviceAddress; // resolved IP address or MAC address for BLU devices
     private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
             new ShellyAuthCredentials("", "", "", "")); // auth credentials
     private final ShellyApiUrls urls;

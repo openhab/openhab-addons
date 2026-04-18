@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ShellyThingConfiguration {
-    private String deviceIp = ""; // IP address of thedevice
+    private String deviceIp = ""; // IP address of the device
     private String deviceAddress = ""; // IP address or MAC address for BLU devices
     private String userId = ""; // userid for http basic auth
     private String password = ""; // password for http basic auth
