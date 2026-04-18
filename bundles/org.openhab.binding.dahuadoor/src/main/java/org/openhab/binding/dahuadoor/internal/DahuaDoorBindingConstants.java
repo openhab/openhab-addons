@@ -40,6 +40,8 @@ public class DahuaDoorBindingConstants {
     public static final String CHANNEL_OPEN_DOOR_1 = "open-door-1";
     public static final String CHANNEL_OPEN_DOOR_2 = "open-door-2";
     public static final String CHANNEL_WEBRTC_URL = "webrtc-url";
+    public static final String CHANNEL_SIP_REGISTERED = "sip-registered";
+    public static final String CHANNEL_SIP_CALL_STATE = "sip-call-state";
 
     // go2rtc stream name prefix (stream name = prefix + URL-safe thing UID)
     public static final String GO2RTC_STREAM_PREFIX = "dahua_";

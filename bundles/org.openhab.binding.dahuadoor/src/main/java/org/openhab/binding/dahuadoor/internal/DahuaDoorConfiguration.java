@@ -40,4 +40,11 @@ public class DahuaDoorConfiguration {
     public String stunServer = "stun.l.google.com:19302";
     public int rtspChannel = 1;
     public int rtspSubtype = 0;
+
+    // SIP client settings
+    public boolean enableSip = false;
+    public String sipExtension = "";
+    public String sipPassword = "";
+    public int localSipPort = 5062;
+    public String sipRealm = "VDP";
 }
