@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +122,8 @@ public class ShellyDeviceProfile {
 
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
 
-    public ShellyDeviceProfile() {
+    public ShellyDeviceProfile(ThingTypeUID thingTypeUID) {
+        initFromThingType(thingTypeUID);
     }
 
     public ShellyDeviceProfile initialize(ThingTypeUID thingTypeUID, String jsonIn, ShellySettingsDevice device)
@@ -149,10 +151,11 @@ public class ShellyDeviceProfile {
 
         // General settings
         if (getString(device.hostname).isEmpty() && !getString(device.mac).isEmpty()) {
-            device.hostname = device.mac.length() >= 12 ? "shelly-" + device.mac.toUpperCase().substring(6, 11)
+            device.hostname = device.mac.length() >= 12
+                    ? "shelly-" + device.mac.toUpperCase(Locale.ROOT).substring(6, 11)
                     : "unknown";
         }
-        device.mode = getString(settings.mode).toLowerCase();
+        device.mode = getString(settings.mode).toLowerCase(Locale.ROOT);
         name = getString(settings.name);
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
@@ -190,8 +193,8 @@ public class ShellyDeviceProfile {
     }
 
     public boolean containsEventUrl(String json, String eventType) {
-        String settings = json.toLowerCase();
-        return settings.contains((eventType + SHELLY_EVENTURL_SUFFIX).toLowerCase());
+        String settings = json.toLowerCase(Locale.ROOT);
+        return settings.contains((eventType + SHELLY_EVENTURL_SUFFIX).toLowerCase(Locale.ROOT));
     }
 
     public boolean isInitialized() {

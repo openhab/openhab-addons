@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,9 +67,9 @@ public class PiHoleActions implements ThingActions {
 
     @RuleAction(label = "@text/action.disable.label", description = "@text/action.disable.description")
     public void disableBlocking(
-            @ActionInput(name = "time", label = "@text/action.disable.timeLabel", description = "@text/action.disable.timeDescription") long time)
+            @ActionInput(name = "time", label = "@text/action.disable.timeLabel", description = "@text/action.disable.timeDescription") Number time)
             throws PiHoleException {
-        disableBlocking(time, null);
+        disableBlocking(time.longValue(), null);
     }
 
     public static void disableBlocking(@Nullable ThingActions actions, long time) throws PiHoleException {

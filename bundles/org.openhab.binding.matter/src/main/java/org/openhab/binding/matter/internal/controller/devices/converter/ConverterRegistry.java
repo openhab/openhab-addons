@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,12 +28,22 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluste
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEnergyMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowerMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.FormaldehydeConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.NetworkCommissioningCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.NitrogenDioxideConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OtaSoftwareUpdateRequestorCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OzoneConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm10ConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm1ConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm25ConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.RadonConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidityMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.SmokeCoAlarmCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.SwitchCluster;
@@ -41,6 +51,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.TemperatureMea
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThermostatCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadBorderRouterManagementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.TotalVolatileOrganicCompoundsConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WindowCoveringCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
@@ -80,6 +91,22 @@ public class ConverterRegistry {
                 CarbonDioxideConcentrationMeasurementConverter.class);
         ConverterRegistry.registerConverter(CarbonMonoxideConcentrationMeasurementCluster.CLUSTER_ID,
                 CarbonMonoxideConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(Pm1ConcentrationMeasurementCluster.CLUSTER_ID,
+                Pm1ConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(Pm10ConcentrationMeasurementCluster.CLUSTER_ID,
+                Pm10ConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(Pm25ConcentrationMeasurementCluster.CLUSTER_ID,
+                Pm25ConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(OzoneConcentrationMeasurementCluster.CLUSTER_ID,
+                OzoneConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(NitrogenDioxideConcentrationMeasurementCluster.CLUSTER_ID,
+                NitrogenDioxideConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(FormaldehydeConcentrationMeasurementCluster.CLUSTER_ID,
+                FormaldehydeConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(TotalVolatileOrganicCompoundsConcentrationMeasurementCluster.CLUSTER_ID,
+                TotalVolatileOrganicCompoundsConcentrationMeasurementConverter.class);
+        ConverterRegistry.registerConverter(RadonConcentrationMeasurementCluster.CLUSTER_ID,
+                RadonConcentrationMeasurementConverter.class);
         ConverterRegistry.registerConverter(SmokeCoAlarmCluster.CLUSTER_ID, SmokeCoAlarmConverter.class);
         ConverterRegistry.registerConverter(ElectricalPowerMeasurementCluster.CLUSTER_ID,
                 ElectricalPowerMeasurementConverter.class);
@@ -89,6 +116,11 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        ConverterRegistry.registerConverter(OtaSoftwareUpdateRequestorCluster.CLUSTER_ID,
+                OtaSoftwareUpdateRequestorConverter.class);
+        ConverterRegistry.registerConverter(NetworkCommissioningCluster.CLUSTER_ID,
+                NetworkCommissioningConverter.class);
+        ConverterRegistry.registerConverter(GeneralDiagnosticsCluster.CLUSTER_ID, GeneralDiagnosticsConverter.class);
         // Robotic Vacuum Cleaner converters
         ConverterRegistry.registerConverter(
                 org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,

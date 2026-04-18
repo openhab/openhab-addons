@@ -1,12 +1,13 @@
-# Pulseaudio Binding
+# PulseAudio Binding
 
-This binding integrates pulseaudio devices.
+This binding integrates PulseAudio devices.
 
 ## Supported Things
 
-The Pulseaudio bridge is required as a "bridge" for accessing any other Pulseaudio devices.
+The PulseAudio Bridge is required as a bridge for accessing any other PulseAudio devices.
 
-You need a running pulseaudio server with module **module-cli-protocol-tcp** loaded and accessible by the server which runs your openHAB instance. The following pulseaudio devices are supported:
+You need a running PulseAudio server with the **module-cli-protocol-tcp** module loaded and accessible by the server that runs your openHAB instance.
+The following PulseAudio devices are supported:
 
 - Sink
 - Source
@@ -16,18 +17,20 @@ You need a running pulseaudio server with module **module-cli-protocol-tcp** loa
 
 ## Discovery
 
-The Pulseaudio bridge is discovered through mDNS in the local network.
+The PulseAudio Bridge is discovered through mDNS on the local network.
 
 ## Binding Configuration (optional)
 
-The Pulseaudio binding can be customized to handle different devices. The Sink and Source support is activated by default and you need no further action to use it. If you want to use another type of device, or disable the Sink/Source type, you have to switch the corresponding binding property.
+The PulseAudio binding can be customized to handle different devices.
+Sink and Source support is enabled by default and requires no further action.
+To enable another device type, or disable Sink/Source, change the corresponding binding property.
 
-- **sink:** Allow the binding to parse sink devices from the pulseaudio server
-- **source:** Allow the binding to parse source devices from the pulseaudio server
-- **sinkInput:** Allow the binding to parse sink-input devices from the pulseaudio server
-- **sourceOutput:** Allow the binding to parse source-output devices from the pulseaudio server
+- **sink:** Allow the binding to parse sink devices from the PulseAudio server
+- **source:** Allow the binding to parse source devices from the PulseAudio server
+- **sinkInput:** Allow the binding to parse sink-input devices from the PulseAudio server
+- **sourceOutput:** Allow the binding to parse source-output devices from the PulseAudio server
 
-You can use the GUI on the bindings page (click on the pulseaudio binding then "Expand for details"), or create a `<openHAB-conf>/services/pulseaudio.cfg` file and use the above options like this:
+You can use the UI on the Add-ons page (click the PulseAudio binding, then "Expand for details"), or create a `<openHAB-conf>/services/pulseaudio.cfg` file and use the options like this:
 
 ```ini
 binding.pulseaudio:sink=true
@@ -38,17 +41,18 @@ binding.pulseaudio:sourceOutput=false
 
 ## Thing Configuration
 
-The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.
-A Pulseaudio device requires at least an identifier.
+The PulseAudio Bridge requires the host (IP address or host name) and a port (default: 4712) so the binding knows how to reach it.
+A PulseAudio device requires at least an identifier.
 For sinks and sources, you can use the name or the description.
 For sink inputs and source outputs, you can use the name or the application name.
-To know without hesitation the correct value to use, you should use the command line utility `pactl`. For example, to find the name of a sink:
+To determine the correct value to use, you can use the command-line utility `pactl`. For example, to find the name of a sink:
 
 ```bash
-`pactl -s <ip-address|hostname> list sinks | grep "name:"`
+pactl -s <ip-address|hostname> list sinks | grep "name:"
 ```
 
-If you need to narrow the identification of a device (in case name or description are not consistent and sufficient), you can use the `additionalFilters` parameter (optional/advanced parameter), in the form of one or several (separator '###') regular expression(s), each one matching a property value of the pulseaudio device. You can use every properties listed with `pactl`.
+If you need to narrow the identification of a device (if name or description are not consistent or sufficient), you can use the `additionalFilters` parameter (optional/advanced), in the form of one or several (separator `###`) regular expressions, each matching a property value of the PulseAudio device.
+You can use every property listed with `pactl`.
 
 ## Channels
 
@@ -56,7 +60,7 @@ All devices support some of the following channels:
 
 | Channel Type ID | Item Type | Description                                                             |
 |-----------------|-----------|-------------------------------------------------------------------------|
-| volume          | Dimmer    | Volume of an audio device in percent                                    |
+| volume          | Dimmer    | Volume of an audio device as a percentage                               |
 | mute            | Switch    | Mutes the device                                                        |
 | state           | String    | Current state of the device (suspended, idle, running, corked, drained) |
 | slaves          | String    | Slave sinks of a combined sink                                          |
@@ -64,57 +68,57 @@ All devices support some of the following channels:
 
 ## Audio sink
 
-Sink things can register themselves as audio sink in openHAB. MP3 and WAV files are supported.
-Use the appropriate parameter in the sink thing to activate this possibility (activateSimpleProtocolSink).
-This requires the module **module-simple-protocol-tcp** to be present on the server which runs your openHAB instance. The binding will try to command (if not discovered first) the load of this module on the pulseaudio server.
+Sink Things can register themselves as an audio sink in openHAB. MP3 and WAV files are supported.
+Use the appropriate parameter in the sink Thing to enable this (activateSimpleProtocolSink).
+This requires the **module-simple-protocol-tcp** module to be present on the server that runs your openHAB instance. The binding will try to load this module on the PulseAudio server if needed.
 
 ### Thing Configuration
 
-| Config Name                 | Item Type   | Description                                                                                       |
+| Config Name                 | Type        | Description                                                                                       |
 |-----------------------------|-------------|---------------------------------------------------------------------------------------------------|
 | name                        | text        | The name of one specific device. You can also use the description                                 |
 | activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in openHAB                                                     |
-| additionalFilters           | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
+| additionalFilters           | text        | Additional filters to select the proper device on the PulseAudio server, in case of ambiguity     |
 | simpleProtocolIdleModules   | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
-| simpleProtocolMinPort       | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
-| simpleProtocolMaxPort       | integer     | Max port used by simple protocol module instances created by the binding on the pulseaudio host   |
-| simpleProtocolSOTimeout     | integer     | Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp          |
+| simpleProtocolMinPort       | integer     | Min port used by simple protocol module instances created by the binding on the PulseAudio host   |
+| simpleProtocolMaxPort       | integer     | Max port used by simple protocol module instances created by the binding on the PulseAudio host   |
+| simpleProtocolSOTimeout     | integer     | Socket SO timeout when connecting to the PulseAudio server through module-simple-protocol-tcp     |
 
 ## Audio source
 
-Source things can register themselves as audio source in openHAB.
-WAV input format, rate and channels can be configured on the thing configuration. (defaults to pcm_signed,16000,1)
-Use the appropriate parameter in the source thing to activate this possibility (activateSimpleProtocolSource).
-This requires the module **module-simple-protocol-tcp** to be present on the target pulseaudio server. The binding will load this module on the pulseaudio server.
+Source Things can register themselves as an audio source in openHAB.
+WAV input format, rate, and channels can be configured on the Thing (defaults to pcm_signed, 16000, 1).
+Use the appropriate parameter in the source Thing to enable this (activateSimpleProtocolSource).
+This requires the **module-simple-protocol-tcp** module to be present on the target PulseAudio server.
+The binding will try to load this module on the PulseAudio server if needed.
 
 ### Thing Configuration
 
-| Config ID                    | Item Type   | Description                                                                                       |
+| Config ID                    | Type        | Description                                                                                       |
 |------------------------------|-------------|---------------------------------------------------------------------------------------------------|
 | name                         | text        | The name of one specific device. You can also use the description                                 |
 | activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in openHAB                                                     |
-| additionalFilters            | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
+| additionalFilters            | text        | Additional filters to select the proper device on the PulseAudio server, in case of ambiguity     |
 | simpleProtocolIdleModules    | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
-| simpleProtocolMinPort        | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
-| simpleProtocolMaxPort        | integer     | Max port used by simple protocol module instances created by the binding on the pulseaudio host   |
-| simpleProtocolSOTimeout      | integer     | Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp          |
-| simpleProtocolSourceFormat   | text        | The audio format to be used by module-simple-protocol-tcp on the pulseaudio server                |
-| simpleProtocolSourceRate     | integer     | The audio sample rate to be used by module-simple-protocol-tcp on the pulseaudio server           |
-| simpleProtocolSourceChannels | integer     | The audio channel number to be used by module-simple-protocol-tcp on the pulseaudio server        |
+| simpleProtocolMinPort        | integer     | Min port used by simple protocol module instances created by the binding on the PulseAudio host   |
+| simpleProtocolMaxPort        | integer     | Max port used by simple protocol module instances created by the binding on the PulseAudio host   |
+| simpleProtocolSOTimeout      | integer     | Socket SO timeout when connecting to the PulseAudio server through module-simple-protocol-tcp     |
+| simpleProtocolSourceFormat   | text        | The audio format to be used by module-simple-protocol-tcp on the PulseAudio server                |
+| simpleProtocolSourceRate     | integer     | The audio sample rate to be used by module-simple-protocol-tcp on the PulseAudio server           |
+| simpleProtocolSourceChannels | integer     | The audio channel number to be used by module-simple-protocol-tcp on the PulseAudio server        |
 
 ## Full Example
 
 ### pulseaudio.things
 
 ```java
-Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
-  Things:
-    Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, additionalFilters="analog-stereo###internal"]
-    Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo", activateSimpleProtocolSource=true]
-    Thing sink-input    openhabTTS      "OH-Voice"           @ "Room"       [name="alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1"]
-    Thing source-output remotePulseSink "Other Room Speaker" @ "Other Room" [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
-    Thing combined-sink hdmiAndAnalog   "Zone 1+2"           @ "Room"       [name="combined"]
-  }
+Bridge pulseaudio:bridge:<bridgename> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
+    Thing sink          multiroom       "Snapcast"           @ "Room"       [ name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, additionalFilters="analog-stereo###internal" ]
+    Thing source        microphone      "Microphone"         @ "Room"       [ name="alsa_input.pci-0000_00_14.2.analog-stereo", activateSimpleProtocolSource=true ]
+    Thing sink-input    openhabTTS      "OH-Voice"           @ "Room"       [ name="alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1" ]
+    Thing source-output remotePulseSink "Other Room Speaker" @ "Other Room" [ name="alsa_input.pci-0000_00_14.2.analog-stereo" ]
+    Thing combined-sink hdmiAndAnalog   "Zone 1+2"           @ "Room"       [ name="combined" ]
+}
 ```
 
 <!--

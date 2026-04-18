@@ -38,7 +38,7 @@ For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 
 > e.g. FRITZ!DECT 200 is now called FRITZ!Smart Energy 200 or FRITZ!DECT 302 is now called FRITZ!Smart Thermo 302.
 > Otherwise, everything will remain typically FRITZ!.
 > FRITZ!Smart contains FRITZ!DECT's convenience, sophisticated technology, and familiar ease of use.
-> In terms of technology, the FRITZ!Smart products are identical with FRITZ!DECT. 
+> In terms of technology, the FRITZ!Smart products are identical with FRITZ!DECT.
 
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 

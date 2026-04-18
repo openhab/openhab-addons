@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,6 +183,15 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return getItems();
+    }
+
+    @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        Item item = itemRegistry.get(itemName);
+        if (item == null) {
+            return null;
+        }
+        return getItem(item, alias);
     }
 
     /**

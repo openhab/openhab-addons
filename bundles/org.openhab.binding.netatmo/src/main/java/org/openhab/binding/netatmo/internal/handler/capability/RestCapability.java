@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  *
  */
 @NonNullByDefault
-public abstract class RestCapability<T extends RestManager> extends DeviceCapability {
+public abstract class RestCapability<T extends RestManager> extends Capability {
     private @Nullable T api;
     private Class<T> restManagerClass;
 
@@ -61,7 +61,7 @@ public abstract class RestCapability<T extends RestManager> extends DeviceCapabi
         return result;
     }
 
-    protected List<NAObject> updateReadings(T api) {
+    protected List<NAObject> updateReadings(@SuppressWarnings("unused") T api) {
         return List.of();
     }
 

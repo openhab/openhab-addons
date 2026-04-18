@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,15 +39,17 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccHeatingHandler.class);
 
-    private static final Map<String, String> JSON_KEYS = Map.ofEntries(
-            Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
-            Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
-            Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
-            Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
-            Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC));
+    // SortedMap to have a stable replacement result, the unit test is relying on it
+    private static final SortedMap<String, String> JSON_KEYS = new TreeMap<>(
+            Map.ofEntries(Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
+                    Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
+                    Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
+                    Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
+                    Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC)));
 
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
+        type = PROPERTY_TYPE_HEATING;
     }
 
     @Override
@@ -73,12 +77,12 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
         updateJSON(state);
-        updateStatesFromApiResponse(state);
+        super.prepareApiResponseForChannelStateUpdate(state);
     }
 
     protected void updateJSON(JsonObject state) {
         JsonObject heatingState = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
-        renameJsonKeys(heatingState); // rename the json keys
+        renameJsonKeys(heatingState); // rename the JSON keys
         state.getAsJsonArray(JSON_KEY_LOADPOINTS).set(index, heatingState); // Update the keys in the original JSON
     }
 

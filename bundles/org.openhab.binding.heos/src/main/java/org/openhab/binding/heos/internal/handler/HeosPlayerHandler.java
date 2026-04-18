@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.heos.internal.configuration.PlayerConfiguration;
 import org.openhab.binding.heos.internal.exception.HeosFunctionalException;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
 import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;
 import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class HeosPlayerHandler extends HeosThingBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(HeosPlayerHandler.class);
 
-    private @NonNullByDefault({}) String pid;
+    private @Nullable String pid;
     private @Nullable Future<?> scheduledFuture;
 
     public HeosPlayerHandler(Thing thing, HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider) {
@@ -83,6 +84,11 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     private synchronized void delayedInitialize() {
+        String pid = this.pid;
+        if (pid == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Player ID is missing");
+            return;
+        }
         try {
             refreshPlayState(pid);
 
@@ -117,7 +123,11 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public String getId() {
+    public String getId() throws HeosNotFoundException {
+        String pid = this.pid;
+        if (pid == null) {
+            throw new HeosNotFoundException();
+        }
         return pid;
     }
 
@@ -127,7 +137,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void playerStateChangeEvent(HeosEventObject eventObject) {
-        if (!pid.equals(eventObject.getAttribute(PLAYER_ID))) {
+        String pid = this.pid;
+        if (pid == null || !pid.equals(eventObject.getAttribute(PLAYER_ID))) {
             return;
         }
 
@@ -141,7 +152,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void playerStateChangeEvent(HeosResponseObject<?> responseObject) throws HeosFunctionalException {
-        if (!pid.equals(responseObject.getAttribute(PLAYER_ID))) {
+        String pid = this.pid;
+        if (pid == null || !pid.equals(responseObject.getAttribute(PLAYER_ID))) {
             return;
         }
 
@@ -149,8 +161,8 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public void playerMediaChangeEvent(String eventPid, Media media) {
-        if (!pid.equals(eventPid)) {
+    public void playerMediaChangeEvent(String pid, Media media) {
+        if (!pid.equals(this.pid)) {
             return;
         }
 

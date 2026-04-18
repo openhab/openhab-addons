@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,6 @@ public class EnergyRuntimeBlockAllWpm extends EnergyBlock {
     public HeatPumpEnergyRuntimeInfo[] heatPumps;
 
     public EnergyRuntimeBlockAllWpm(int heatpumpCount) {
-        super();
         this.heatPumps = new HeatPumpEnergyRuntimeInfo[heatpumpCount];
         for (int i = 0; i < heatpumpCount; i++) {
             this.heatPumps[i] = new HeatPumpEnergyRuntimeInfo();

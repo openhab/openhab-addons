@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,6 +72,7 @@ public class EnOceanBindingConstants {
     public static final ThingTypeUID THING_TYPE_ENVIRONMENTALSENSOR = new ThingTypeUID(BINDING_ID,
             "environmentalSensor");
     public static final ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
+    public static final ThingTypeUID THING_TYPE_DATAGRAMINJECTOR = new ThingTypeUID(BINDING_ID, "datagramInjector");
     public static final ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
     public static final ThingTypeUID THING_TYPE_MULTFUNCTIONSMOKEDETECTOR = new ThingTypeUID(BINDING_ID,
             "multiFunctionSmokeDetector");
@@ -85,10 +86,10 @@ public class EnOceanBindingConstants {
             THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL,
             THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GASSENSOR, THING_TYPE_GENERICTHING,
-            THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR,
-            THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR,
-            THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION,
-            THING_TYPE_WINDOWSASHHANDLESENSOR);
+            THING_TYPE_DATAGRAMINJECTOR, THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR,
+            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
+            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
+            THING_TYPE_HEATRECOVERYVENTILATION, THING_TYPE_WINDOWSASHHANDLESENSOR);
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -101,6 +102,7 @@ public class EnOceanBindingConstants {
 
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
+    public static final String CHANNEL_STATEMACHINESTATE = "state-machine";
     public static final String CHANNEL_ANGLE = "angle";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
@@ -242,6 +244,9 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_ROLLERSHUTTER,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER),
                             CoreItemFactory.ROLLERSHUTTER)),
+            Map.entry(CHANNEL_STATEMACHINESTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATEMACHINESTATE),
+                            CoreItemFactory.STRING)),
             Map.entry(CHANNEL_ANGLE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
                             CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName())),
@@ -613,6 +618,7 @@ public class EnOceanBindingConstants {
 
     // Thing config parameter
     public static final String PARAMETER_SENDERIDOFFSET = "senderIdOffset";
+    public static final String PARAMETER_SENDERID = "senderId";
     public static final String PARAMETER_SENDINGEEPID = "sendingEEPId";
     public static final String PARAMETER_RECEIVINGEEPID = "receivingEEPId";
 

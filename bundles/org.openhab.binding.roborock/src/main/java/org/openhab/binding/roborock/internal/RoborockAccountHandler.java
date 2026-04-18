@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,6 +84,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttConnectTask;
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
+    private volatile boolean disposed = false;
     private String country = "";
     private String countryCode = "";
     private String token = "";
@@ -108,6 +109,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     public String getToken() {
         return token;
+    }
+
+    public String getEndpointPrefix() {
+        return ProtocolUtils.getEndpoint(rriot);
     }
 
     public ThingUID getUID() {
@@ -138,7 +143,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public HomeData refreshHomeData() {
         try {
             Home home = homeCache.getValue();
-            if (home == null) {
+            if (home == null || home.data == null) {
                 return new HomeData();
             }
             return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
@@ -175,6 +180,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void initialize() {
+        disposed = false;
         RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
         if (localConfig.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -189,7 +195,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void handleRemoval() {
-        teardown(false);
+        teardown();
         super.handleRemoval();
     }
 
@@ -198,7 +204,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
         if (childHandler instanceof RoborockVacuumHandler vacuumHandler) {
-            childDevices.put(childThing.getUID().getId(), vacuumHandler);
+            String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                    childThing.getUID().getId());
+            childDevices.put(routingKey, vacuumHandler);
+            if (!routingKey.equals(childThing.getUID().getId())) {
+                childDevices.put(childThing.getUID().getId(), vacuumHandler);
+            }
+            logger.debug("Registered child routing key '{}' for thing {}", routingKey, childThing.getUID());
         } else {
             logger.debug("Initialized child handler is not a RoborockVacuumHandler: {}",
                     childHandler.getClass().getName());
@@ -209,10 +221,27 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child released from gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
+        String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                childThing.getUID().getId());
+        childDevices.remove(routingKey);
         childDevices.remove(childThing.getUID().getId());
     }
 
+    static String buildRoutingKey(@Nullable Object configuredDuid, String fallbackThingId) {
+        if (configuredDuid != null) {
+            String value = configuredDuid.toString();
+            if (!value.isBlank()) {
+                return value;
+            }
+        }
+        return fallbackThingId;
+    }
+
     private void initAPI() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting API init");
+            return;
+        }
         RoborockAccountConfiguration localConfig = config;
         if (localConfig == null) {
             return;
@@ -248,20 +277,24 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
                 if (localConfig.twofa.isBlank()) {
-                    String response = webTargets.requestCodeV4(baseUri, localConfig.email);
+                    if (country != null && !country.isBlank()) {
+                        webTargets.requestCodeV4(baseUri, localConfig.email);
+                    } else {
+                        webTargets.requestCode(baseUri, localConfig.email);
+                    }
                     updateStatus(ThingStatus.UNKNOWN);
                     return;
                 } else {
                     String response = "";
-                    if (!country.isBlank()) {
+                    if (country != null && !country.isBlank()) {
                         response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
                                 localConfig.twofa);
-                        Configuration configuration = editConfiguration();
-                        configuration.put("twofa", "");
-                        updateConfiguration(configuration);
                     } else {
                         response = webTargets.doLogin(baseUri, localConfig.email, localConfig.twofa);
                     }
+                    Configuration configuration = editConfiguration();
+                    configuration.put("twofa", "");
+                    updateConfiguration(configuration);
                     int code = 0;
                     String message = "";
                     if (response != null && !response.isEmpty()
@@ -295,17 +328,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttConnectTask.submit();
     }
 
-    private synchronized void teardown(boolean scheduleReconnection) {
+    private synchronized void teardown() {
+        disposed = true;
         initTask.cancel();
         mqttConnectTask.cancel();
         disconnectMqttClient();
-
-        if (scheduleReconnection) {
-            initTask.submit();
-        }
     }
 
     private void establishMQTTConnection() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting MQTT connection");
+            return;
+        }
         if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
                 || rriot.u.isEmpty()) {
             logger.debug("token and/or rriot are empty, delay connection to MQTT server");
@@ -325,7 +359,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void dispose() {
         super.dispose();
-        teardown(false);
+        teardown();
     }
 
     public void connectMqttClient() throws MqttException {
@@ -362,6 +396,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectComplete");
+            return;
+        }
         logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
 
         // Subscribe to topics after a successful connection
@@ -381,11 +419,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectionLost(@Nullable Throwable cause) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectionLost");
+            return;
+        }
         // Additional logic can be placed here if specific actions are needed on disconnect
     }
 
     @Override
     public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT messageArrived");
+            return;
+        }
         String localTopic = topic;
         MqttMessage localMessage = message;
         if (localTopic == null || localMessage == null) {
@@ -518,6 +564,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void onEventStreamFailure(Throwable error) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring event stream failure");
+            return;
+        }
         logger.debug("Device connection failed, reconnecting", error);
         mqttConnectTask.schedule(60);
     }

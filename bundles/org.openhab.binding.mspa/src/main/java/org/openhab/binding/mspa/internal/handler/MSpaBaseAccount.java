@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -152,12 +153,12 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      */
     public String getToken() {
         if (MSpaUtils.isTokenValid(token)) {
-            return token.getAccessToken();
+            return Objects.requireNonNullElse(token.getAccessToken(), UNKNOWN);
         } else {
             requestToken();
             // token shall be fine now.
             if (MSpaUtils.isTokenValid(token)) {
-                return token.getAccessToken();
+                return Objects.requireNonNullElse(token.getAccessToken(), UNKNOWN);
             } // else fall through to UNKNOWN
         }
         return UNKNOWN;

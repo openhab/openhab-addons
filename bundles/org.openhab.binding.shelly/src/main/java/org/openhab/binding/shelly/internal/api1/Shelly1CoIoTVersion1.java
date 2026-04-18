@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,10 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
@@ -80,10 +80,10 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
         Integer rIndex = Integer.parseInt(sen.links) + 1;
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
-        switch (sen.type.toLowerCase()) {
+        switch (sen.type.toLowerCase(Locale.ROOT)) {
             case "t": // Temperature +
                 Double value = getDouble(s.value);
-                switch (sen.desc.toLowerCase()) {
+                switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "temperature": // Sensor Temp
                         if (getString(getProfile().settings.temperatureUnits)
                                 .equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT)) {
@@ -127,7 +127,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                 break;
             case "s" /* CatchAll */:
-                switch (sen.desc.toLowerCase()) {
+                switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "overtemp":
                         if (s.value == 1) {
                             thingHandler.postEvent(ALARM_TYPE_OVERTEMP, true);
@@ -240,7 +240,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * @return fixed Sensor description (sen)
      */
     @Override
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
         // Shelly1: reports null descr+type "Switch" -> map to S
         // Shelly1PM: reports null descr+type "Overtemp" -> map to O
         // Shelly1PM: reports null descr+type "W" -> add description
@@ -251,13 +251,13 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
         // Shelly RGBW2 is reporting Brightness, Power, VSwitch for each channel, but all with L=0
-        if (sen == null) {
-            throw new IllegalArgumentException("sen should not be null!");
-        }
         if (sen.desc == null) {
             sen.desc = "";
         }
-        String desc = sen.desc.toLowerCase();
+        if (sen.type == null) {
+            sen.type = "";
+        }
+        String desc = sen.desc.toLowerCase(Locale.ROOT);
 
         // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
         // we break it up to Power with L:0, Power with L:1...
@@ -278,7 +278,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
             }
         }
 
-        switch (sen.type.toLowerCase()) {
+        switch (sen.type.toLowerCase(Locale.ROOT)) {
             case "w": // old devices/firmware releases use "W", new ones "P"
                 sen.type = "P";
                 sen.desc = "Power";
@@ -303,7 +303,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                 break;
         }
 
-        switch (sen.desc.toLowerCase()) {
+        switch (sen.desc.toLowerCase(Locale.ROOT)) {
             case "motion": // fix acc to spec it's T=M
                 sen.type = "M";
                 sen.desc = "Motion";
@@ -326,13 +326,13 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
             case "e cnt 1 [w-min]":
             case "e cnt 2 [w-min]":
             case "e cnt total [w-min]": // 4 Pro
-                sen.desc = sen.desc.toLowerCase().replace("e cnt", "energy counter");
+                sen.desc = sen.desc.toLowerCase(Locale.ROOT).replace("e cnt", "energy counter");
                 break;
 
         }
 
         if (sen.desc.isEmpty()) {
-            switch (sen.type.toLowerCase()) {
+            switch (sen.type.toLowerCase(Locale.ROOT)) {
                 case "p":
                     sen.desc = "Power";
                     break;

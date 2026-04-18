@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,8 @@ public class MiIoVacuumHandlerTest {
     private @Mock @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) MiIoAsyncCommunication connection;
-    private @NonNullByDefault({}) @Mock TranslationProvider translationProvider;
-    private @NonNullByDefault({}) @Mock LocaleProvider localeProvider;
+    private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
+    private @Mock @NonNullByDefault({}) LocaleProvider localeProvider;
 
     private final Configuration configuration = new Configuration();
     private ThingUID thingUID = new ThingUID(MiIoBindingConstants.THING_TYPE_VACUUM, "TestThing");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -186,6 +186,37 @@ class FineOffsetDataParserTest {
                 .containsExactly(new Tuple("piezo-rain-rate", "0 mm/h"), new Tuple("piezo-rain-day", "0.9 mm"),
                         new Tuple("piezo-rain-week", "0.9 mm"), new Tuple("piezo-rain-month", "19.9 mm"),
                         new Tuple("piezo-rain-year", "19.9 mm"), new Tuple("piezo-rain-event", "0 mm"));
+    }
+
+    @Test
+    void testLiveDataWH46() {
+        byte[] data = HexUtils.hexToBytes(
+                "FFFF27005E0100E6063008270E09270E02005D07550A00B00B00080C000A150000F596160030170019001A0E0000100000110000120000000013000000000D00006B00DE34001300100013001002D302DE0112000E00130010056C00014F08D0");
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_WS980_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> measuredValues = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(data,
+                debugDetails);
+        Assertions.assertThat(measuredValues)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "23 °C"), new Tuple("humidity-indoor", "48 %"),
+                        new Tuple("pressure-absolute", "999.8 hPa"), new Tuple("pressure-relative", "999.8 hPa"),
+                        new Tuple("temperature-outdoor", "9.3 °C"), new Tuple("humidity-outdoor", "85 %"),
+                        new Tuple("direction-wind", "176 °"), new Tuple("speed-wind", "0.8 m/s"),
+                        new Tuple("speed-gust", "1 m/s"), new Tuple("illumination", "6287 lx"),
+                        new Tuple("irradiation-uv", "4.8 mW/m²"), new Tuple("uv-index", "0"),
+                        new Tuple("wind-max-day", "2.6 m/s"), new Tuple("rain-rate", "0 mm/h"),
+                        new Tuple("rain-day", "0 mm"), new Tuple("rain-week", "0 mm"), new Tuple("rain-month", "0 mm"),
+                        new Tuple("rain-year", "0 mm"), new Tuple("rain-event", "0 mm"),
+                        new Tuple("sensor-co2-temperature", "22.2 °C"), new Tuple("sensor-co2-humidity", "52 %"),
+                        new Tuple("sensor-co2-pm10", "1.9 µg/m³"),
+                        new Tuple("sensor-co2-pm10-24-hour-average", "1.6 µg/m³"),
+                        new Tuple("sensor-co2-pm25", "1.9 µg/m³"),
+                        new Tuple("sensor-co2-pm25-24-hour-average", "1.6 µg/m³"),
+                        new Tuple("sensor-co2-co2", "723 ppm"), new Tuple("sensor-co2-co2-24-hour-average", "734 ppm"),
+                        new Tuple("sensor-co2-wh46-battery-level", "20 %"), new Tuple("sensor-co2-pm1", "460.8 µg/m³"),
+                        new Tuple("sensor-co2-pm1-24-hour-average", "358.4 µg/m³"),
+                        new Tuple("sensor-co2-pm4", "486.4 µg/m³"),
+                        new Tuple("sensor-co2-pm4-24-hour-average", "410.1 µg/m³"),
+                        new Tuple("free-heap-size", "85768 B"));
     }
 
     @Test

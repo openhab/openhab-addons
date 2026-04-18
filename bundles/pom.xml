@@ -36,9 +36,11 @@
     <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
+    <module>org.openhab.transform.geocoding</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
+    <module>org.openhab.transform.math</module>
     <module>org.openhab.transform.regex</module>
     <module>org.openhab.transform.rollershutterposition</module>
     <module>org.openhab.transform.scale</module>
@@ -67,6 +69,7 @@
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
+    <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
@@ -74,6 +77,7 @@
     <module>org.openhab.binding.bambulab</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
+    <module>org.openhab.binding.bluelink</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.airthings</module>
     <module>org.openhab.binding.bluetooth.am43</module>
@@ -107,7 +111,7 @@
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
-    <module>org.openhab.binding.coronastats</module>
+    <module>org.openhab.binding.dahuadoor</module>
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
@@ -143,6 +147,7 @@
     <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
+    <module>org.openhab.binding.energyforecast</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enphase</module>
@@ -243,6 +248,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
+    <module>org.openhab.binding.linkplay</module>
     <module>org.openhab.binding.linktap</module>
     <module>org.openhab.binding.liquidcheck</module>
     <module>org.openhab.binding.lirc</module>
@@ -296,7 +302,6 @@
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mspa</module>
-    <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
@@ -448,7 +453,9 @@
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tuya</module>
+    <module>org.openhab.binding.twilio</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.unifiaccess</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.unifiprotect</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -502,6 +509,7 @@
     <module>org.openhab.persistence.mapdb</module>
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
+    <module>org.openhab.persistence.timescaledb</module>
     <!-- voice -->
     <module>org.openhab.voice.googlestt</module>
     <module>org.openhab.voice.googletts</module>
@@ -522,6 +530,7 @@
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
     <dep.noembedding/>
+    <markdownlint.skip>false</markdownlint.skip>
   </properties>
 
   <dependencies>
@@ -675,7 +684,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.10.0</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>
@@ -760,13 +769,12 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
         <configuration>
           <validationSets>
             <validationSet>
               <dir>.</dir>
               <includes>**/src/main/resources/OH-INF/thing/*.xml</includes>
-              <systemId>https://openhab.org/schemas/thing-description-1.0.0.xsd</systemId>
             </validationSet>
           </validationSets>
           <catalogs>
@@ -778,6 +786,48 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 4. Run markdownlint -->
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>2.0.0</version>
+
+        <configuration>
+          <!-- Central toolchain for markdownlint (Node 24) -->
+          <installDirectory>${maven.multiModuleProjectDirectory}/target/.mvn/node-markdownlint</installDirectory>
+          <nodeVersion>v24.12.0</nodeVersion>
+
+          <!-- Recommended: pin npm too for reproducibility -->
+          <npmVersion>11.6.2</npmVersion>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>install-node-and-npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>validate</phase>
+            <configuration>
+              <skip>${markdownlint.skip}</skip>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>markdownlint</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>validate</phase>
+            <configuration>
+              <skip>${markdownlint.skip}</skip>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml</arguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>

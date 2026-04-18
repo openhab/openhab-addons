@@ -14,10 +14,11 @@
 			<channel id="lightweightPackaging" typeId="collectionDateLightweightPackaging"/>
 			<channel id="bioWaste" typeId="collectionDateBioWaste"/>
 			<channel id="paper" typeId="collectionDatePaper"/>
+			<channel id="christmasTree" typeId="collectionDateChristmasTree"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -87,6 +88,15 @@
 		</tags>
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
-
+	<channel-type id="collectionDateChristmasTree">
+		<item-type>DateTime</item-type>
+		<label>Christmas Tree</label>
+		<description>Next collection day for Christmas trees</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
 
 </thing:thing-descriptions>

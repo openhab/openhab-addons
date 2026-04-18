@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -70,6 +71,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.Strictness;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -152,17 +154,16 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             ContentResponse response = req.send();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.OK_200) {
                 logger.warn("HTTP request failed in fetchSysapVersion with status [{}] and reason [{}]",
                         response.getStatus(), response.getReason());
                 return false;
             }
 
-            String configString = new String(response.getContent());
+            String configString = response.getContentAsString();
 
             JsonReader reader = new JsonReader(new StringReader(configString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
-                                     // backward compatibility with older library versions.
+            reader.setStrictness(Strictness.LENIENT);
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -236,7 +237,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             ContentResponse response = req.send();
 
             // Get component List
-            String componentListString = new String(response.getContent());
+            String componentListString = response.getContentAsString();
 
             JsonElement jsonTree = JsonParser.parseString(componentListString);
 
@@ -309,17 +310,11 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             response = req.send();
 
             // Get component List
-            String deviceString = new String(response.getContent());
+            String deviceString = response.getContentAsString();
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
-                                     // backward compatibility with older library versions.
+            reader.setStrictness(Strictness.LENIENT);
             JsonElement jsonTree = JsonParser.parseReader(reader);
-
-            if (!jsonTree.isJsonObject()) {
-                throw new FreeAtHomeHttpCommunicationException(0,
-                        "No data is received by getDatapoint with the URL [ " + url + " ]");
-            }
 
             if (!jsonTree.isJsonObject()) {
                 throw new FreeAtHomeHttpCommunicationException(0,
@@ -386,15 +381,16 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             ContentResponse response = req.send();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.OK_200) {
+                logger.warn("HTTP request failed in getDatapoint with status [{}] and reason [{}]",
+                        response.getStatus(), response.getReason());
                 throw new FreeAtHomeHttpCommunicationException(response.getStatus(), response.getReason());
             }
 
-            String deviceString = new String(response.getContent());
+            String deviceString = response.getContentAsString();
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
-                                     // backward compatibility with older library versions.
+            reader.setStrictness(Strictness.LENIENT);
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -459,7 +455,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             ContentResponse response = req.send();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() != HttpStatus.OK_200) {
                 throw new FreeAtHomeHttpCommunicationException(response.getStatus(), response.getReason());
             }
         } catch (InterruptedException e) {
@@ -485,8 +481,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     public void setDatapointOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
-                                 // backward compatibility with older library versions.
+        reader.setStrictness(Strictness.LENIENT);
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
@@ -522,8 +517,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     public void markDeviceRemovedOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
-                                 // backward compatibility with older library versions.
+        reader.setStrictness(Strictness.LENIENT);
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
@@ -629,7 +623,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         Base64.Encoder bas64Encoder = Base64.getEncoder();
 
         // Encode the authentication string to Base64
-        String authStringEnc = bas64Encoder.encodeToString(authString.getBytes());
+        String authStringEnc = bas64Encoder.encodeToString(authString.getBytes(StandardCharsets.UTF_8));
 
         // Set the Authorization header value
         authField = "Basic " + authStringEnc;
@@ -1031,7 +1025,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         Session localSession = websocketSession;
 
         if (localSession != null) {
-            localSession.getRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
+            localSession.getRemote().sendPing(ByteBuffer.wrap("ping".getBytes(StandardCharsets.UTF_8)));
         }
     }
 

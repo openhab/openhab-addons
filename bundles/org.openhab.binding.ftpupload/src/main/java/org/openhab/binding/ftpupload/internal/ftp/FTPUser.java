@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.util.List;
 import org.apache.ftpserver.ftplet.Authority;
 import org.apache.ftpserver.ftplet.AuthorizationRequest;
 import org.apache.ftpserver.ftplet.User;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +28,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class FTPUser implements User {
-    private static Logger logger = LoggerFactory.getLogger(FTPUser.class);
+    private final Logger logger = LoggerFactory.getLogger(FTPUser.class);
 
     private final String login;
     private final int idleTimeout;
@@ -38,7 +41,7 @@ public class FTPUser implements User {
     }
 
     @Override
-    public AuthorizationRequest authorize(final AuthorizationRequest authRequest) {
+    public AuthorizationRequest authorize(@NonNullByDefault({}) final AuthorizationRequest authRequest) {
         logger.trace("authorize: {}", authRequest);
         return authRequest;
     }
@@ -68,19 +71,19 @@ public class FTPUser implements User {
     }
 
     @Override
-    public List<Authority> getAuthorities() {
+    public @Nullable List<Authority> getAuthorities() {
         logger.trace("getAuthorities");
         return null;
     }
 
     @Override
-    public List<Authority> getAuthorities(Class<? extends Authority> arg0) {
+    public @Nullable List<Authority> getAuthorities(@NonNullByDefault({}) Class<? extends Authority> arg0) {
         logger.trace("getAuthorities: {}", arg0);
         return null;
     }
 
     @Override
-    public String getPassword() {
+    public @Nullable String getPassword() {
         logger.trace("getPassword");
         return null;
     }

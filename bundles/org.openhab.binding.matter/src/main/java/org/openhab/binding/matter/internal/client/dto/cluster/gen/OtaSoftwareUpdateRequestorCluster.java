@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,13 +32,11 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002A;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateRequestor";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateRequestor";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_DEFAULT_OTA_PROVIDERS = "defaultOtaProviders";
     public static final String ATTRIBUTE_UPDATE_POSSIBLE = "updatePossible";
     public static final String ATTRIBUTE_UPDATE_STATE = "updateState";
     public static final String ATTRIBUTE_UPDATE_STATE_PROGRESS = "updateStateProgress";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This field is a list of ProviderLocation whose entries shall be set by Administrators, either during
      * Commissioning or at a later time, to set the ProviderLocation for the default OTA Provider Node to use for
@@ -314,7 +311,6 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "defaultOtaProviders : " + defaultOtaProviders + "\n";
         str += "updatePossible : " + updatePossible + "\n";
         str += "updateState : " + updateState + "\n";

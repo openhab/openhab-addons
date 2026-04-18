@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Sure Petcare Binding</name>
-	<description>This binding interacts with the Sure Petcare Connect range of pet/cat flaps, feeders and waterstations</description>
+	<description>This binding interacts with the Sure Petcare Connect range of pet/cat flaps, feeders, and waterstations.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

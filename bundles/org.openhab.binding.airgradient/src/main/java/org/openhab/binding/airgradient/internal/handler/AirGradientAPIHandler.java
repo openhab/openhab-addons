@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             for (Thing t : getThing().getThings()) {
                 if (t.getHandler() instanceof AirGradientLocationHandler handler) {
                     String locationId = handler.getLocationId();
-                    @Nullable
                     Measure measure = measureMap.get(locationId);
                     if (measure != null) {
                         handler.setMeasurment(measure);

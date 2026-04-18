@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,10 +73,6 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     @Nullable
     public String getTemplateUID() {
         return delegate.getTemplateUID();
-    }
-
-    public void setTemplateUID(@Nullable String templateUID) {
-        delegate.setTemplateUID(templateUID);
     }
 
     @Override

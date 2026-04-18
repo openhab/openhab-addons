@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,7 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
                     // Only add imports for classes that are available to the classloader
                     getClass().getClassLoader().loadClass(canonicalName);
                     importCustomizer.addImport(entry.getKey(), canonicalName);
+                    scriptEngine.put(entry.getKey(), clazz);
                     logger.debug("Added import for {} as {}", entry.getKey(), canonicalName);
                 } catch (ClassNotFoundException e) {
                     logger.debug("Unable to add import for {} as {}", entry.getKey(), canonicalName, e);

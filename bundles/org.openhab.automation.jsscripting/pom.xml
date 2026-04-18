@@ -17,7 +17,7 @@
   <properties>
     <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
     <node.version>v22.17.1</node.version>
-    <ohjs.version>openhab@5.16.2</ohjs.version>
+    <ohjs.version>openhab@5.17.1</ohjs.version>
   </properties>
 
   <dependencies>
@@ -47,6 +47,7 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <version>2.0.0</version>
         <configuration>
+          <installDirectory>target/js</installDirectory>
           <nodeVersion>${node.version}</nodeVersion>
           <workingDirectory>target/js</workingDirectory>
         </configuration>
@@ -65,7 +66,7 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@^5.101.3 webpack-cli@^6.0.1 --prefix .</arguments>
+              <arguments>install ${ohjs.version} webpack@^5.105.0 webpack-cli@^6.0.1 --prefix .</arguments>
               <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
             </configuration>
           </execution>

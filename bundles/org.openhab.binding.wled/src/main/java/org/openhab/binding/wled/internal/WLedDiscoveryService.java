@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,10 +95,11 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         if (label.isEmpty()) {
             label = "WLED @ " + address[0];
         }
-        String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
+
+        String macAddress = WLedHelper.getMacAddress(response);
         if (!macAddress.isBlank()) {
             String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
-            ThingUID thingUID = new ThingUID(THING_TYPE_JSON, macAddress);
+            ThingUID thingUID = new ThingUID(THING_TYPE_JSON, macAddress.replaceAll(":", ""));
             Map<String, Object> properties = Map.of(Thing.PROPERTY_MAC_ADDRESS, macAddress,
                     Thing.PROPERTY_FIRMWARE_VERSION, firmware, CONFIG_ADDRESS, address[0]);
             return DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperties(properties)

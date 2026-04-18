@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -664,5 +664,12 @@ class DPTTest {
             // print failures in a useful format
             Assertions.assertEquals(String.format("(%.4f %.4f) %.1f %%", dx, dy, dY), result);
         }
+    }
+
+    @Test
+    void testRawFormat() {
+        // DPT 0.000: special handling as raw format, should be passed through as a string
+        byte[] data = new byte[] { 0x01, 0x02, 0x03, (byte) 0xff };
+        assertEquals("010203ff", ((StringType) ValueDecoder.decode("0.000", data, StringType.class)).toString());
     }
 }

@@ -1,0 +1,95 @@
+[
+	{
+		"id": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_1",
+		"relationId": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1",
+		"type": "sensor",
+		"deviceType": "environmentSensor",
+		"createdAt": "2026-01-09T10:38:12.000Z",
+		"isReachable": true,
+		"lastSeen": "2026-01-09T10:38:27.000Z",
+		"customIcon": "products_environment_sensor",
+		"attributes": {
+			"identifyPeriod": 0,
+			"identifyStarted": "2026-01-08T16:30:27.000Z",
+			"currentTemperature": 20.280000686645508,
+			"customName": "TIMMERFLOTTE temp/hmd sen",
+			"firmwareVersion": "1.0.18",
+			"hardwareVersion": "P2.1",
+			"manufacturer": "IKEA of Sweden",
+			"model": "TIMMERFLOTTE temp/hmd sensor",
+			"productCode": "E2314",
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"discriminator": -1,
+			"permittingJoin": false,
+			"qrCode": "",
+			"setupCode": "",
+			"windowOpen": false,
+			"otaPolicy": "autoUpdate",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"otaScheduleStart": "00:00",
+			"otaState": "checkInProgress",
+			"otaStatus": "upToDate",
+			"batteryPercentage": 95
+		},
+		"capabilities": {
+			"canSend": [],
+			"canReceive": [
+				"customName",
+				"windowOpen"
+			]
+		},
+		"room": {
+			"id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+			"name": "Lobby HWR",
+			"color": "ikea_pink_no_4",
+			"icon": "rooms_drill"
+		},
+		"deviceSet": [],
+		"remoteLinks": [],
+		"isHidden": false
+	},
+	{
+		"id": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1_2",
+		"relationId": "94f3d9d7-95ee-496d-9b83-2d5de9a7c2c1",
+		"type": "sensor",
+		"deviceType": "environmentSensor",
+		"createdAt": "2026-01-09T10:38:12.000Z",
+		"isReachable": true,
+		"lastSeen": "2026-01-09T10:38:27.000Z",
+		"attributes": {
+			"identifyPeriod": 0,
+			"identifyStarted": "2026-01-08T16:30:27.000Z",
+			"currentRH": 69,
+			"customName": "TIMMERFLOTTE temp/hmd sensor",
+			"firmwareVersion": "1.0.18",
+			"hardwareVersion": "P2.1",
+			"manufacturer": "IKEA of Sweden",
+			"model": "TIMMERFLOTTE temp/hmd sensor",
+			"productCode": "E2314",
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"discriminator": -1,
+			"permittingJoin": false,
+			"qrCode": "",
+			"setupCode": "",
+			"windowOpen": false,
+			"otaPolicy": "autoUpdate",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"otaScheduleStart": "00:00",
+			"otaState": "checkInProgress",
+			"otaStatus": "upToDate",
+			"batteryPercentage": 95
+		},
+		"capabilities": {
+			"canSend": [],
+			"canReceive": [
+				"customName",
+				"windowOpen"
+			]
+		},
+		"deviceSet": [],
+		"remoteLinks": [],
+		"isHidden": false
+	}
+]

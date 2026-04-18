@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class ChildLockService extends BoschSHCService<ChildLockServiceState> {
     public ChildLockService() {
+        // note: apparently the service is named incorrectly in the Bosch API as "Thermostat" instead of "ChildLock"
         super("Thermostat", ChildLockServiceState.class);
     }
 

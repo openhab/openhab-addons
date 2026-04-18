@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,7 +29,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x005C;
     public static final String CLUSTER_NAME = "SmokeCoAlarm";
     public static final String CLUSTER_PREFIX = "smokeCoAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_EXPRESSED_STATE = "expressedState";
     public static final String ATTRIBUTE_SMOKE_STATE = "smokeState";
@@ -46,7 +44,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final String ATTRIBUTE_SMOKE_SENSITIVITY_LEVEL = "smokeSensitivityLevel";
     public static final String ATTRIBUTE_EXPIRY_DATE = "expiryDate";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the visibly- and audibly-expressed state of the alarm. When multiple alarm conditions are being
@@ -441,7 +438,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "expressedState : " + expressedState + "\n";
         str += "smokeState : " + smokeState + "\n";

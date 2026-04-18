@@ -99,6 +99,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | multiFunctionSmokeDetector      | D2-14/F6-05       | 0x30/02                 | smokeDetection, batteryLow                                  | Insafe+, Afriso ASD     | Discovery |
 | heatRecoveryVentilation         | D2-50             | 0x00,01,10,11           | a lot of different state channels                           | Dimplex DL WE2          | Discovery |
 | classicDevice                   | F6-02             | 0x01-02                 | virtualRockerswitchA, virtualRockerswitchB                  | -                       | Teach-in  |
+| datagramInjector                | D5-00-01/A5-07-01 | 0x01/01                 | switch                                                      | FTK-like contact and motion use cases | Manually |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
@@ -171,6 +172,8 @@ Each EnOcean gateway supports 127 unique SenderIds.
 The SenderId of a thing can be set manually or determined automatically by the binding.
 In case of an UTE teach-in the next unused SenderId is taken automatically.
 To set this SenderId to a specific one, you have to use the nextSenderId parameter of your gateway.
+For actuator things you can also set a full `senderId` (8 hex chars) directly.
+This option is available as advanced parameter and is only applicable when the bridge parameter `rs485=true` (Eltako RS485 bus).
 
 ## Thing Configuration
 
@@ -179,6 +182,9 @@ Therefore if you do not want to use the UI, a mixed mode configuration approach 
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
+
+For actuator thing types (`centralCommand`, `classicDevice`, `genericThing`, `measurementSwitch`, `rollershutter`, `thermostat`, `heatRecoveryVentilation`) the optional `senderId` parameter is marked as advanced and only used when the bridge is configured with `rs485=true`.
+Otherwise `senderIdOffset` is used and direct `senderId` values are rejected during validation.
 
 |Thing type                       | Parameter         | Meaning                     | Possible Values |
 |---------------------------------|-------------------|-----------------------------|---|
@@ -224,12 +230,14 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
 |                                 | enoceanId         | | |
 | centralCommand                  | senderIdOffset    | SenderId used for sending msg. If omitted, nextSenderId of bridge is used | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
 |                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
 |                                 | receivingEEPId    |                             | F6_00_00, A5_38_08_02, A5_11_04 |
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
@@ -237,6 +245,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON |
 |                                 | receivingEEPId¹   |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON, A5_12_01 |
@@ -248,19 +257,29 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
 |                                 | enoceanId         | | |
 | heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | receivingEEPId    |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | suppressRepeating |                             | true, false |
+| datagramInjector                | senderId          | Virtual sender address used by injector telegrams (RS485 only) | 8 hex chars |
+|                                 | sendingProfileId  | Profile used for command encoding | FTK_D5_00_01, MOTION_A5_07_01 |
+|                                 | suppressRepeating | Suppress repeating of msg | true, false |
 
 ¹ multiple values possible, EEPs have to be of different EEP families.
 If you want to receive messages of your EnOcean devices you have to set **the enoceanId to the EnOceanId of your device**.
+
+In some cases you can have more than one `receivingEEPId`.
+For example, an Eltako FTKB typically has the `receivingEEPId` `D5_00_01`.
+However, this means that the additional data available for the energy storage and the battery voltage is not accessible.
+By adding an additional `receivingEEPId` `A5_14_01_ELTAKO` (for example, configuring `receivingEEPId` as `D5_00_01, A5_14_01_ELTAKO`), the corresponding channels for the energy storage and the battery voltage will be created.
 
 ## Channels
 
@@ -443,6 +462,40 @@ Switch Garage_Light "Switch" {
 }
 ```
 
+## Datagram Injector
+
+The `datagramInjector` thing is a send-only profile based injector for EnOcean telegrams.
+It can only be used when RS485 mode is enabled on the bridge.
+It supports the following profiles: `FTK_D5_00_01`, `MOTION_A5_07_01`.
+
+For profile `FTK_D5_00_01` the channel command is converted as follows (only `ON`/`OFF` are supported):
+
+- `ON`  -> telegram payload `0x09`
+- `OFF` -> telegram payload `0x08`
+
+For profile `MOTION_A5_07_01` the channel command is converted as follows:
+
+- `ON` -> sends motion detected telegram (retriggers periodically while `ON`)
+- `OFF` -> stops periodic retrigger, no telegram sent
+
+Example Thing DSL definition:
+
+```xtend
+Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
+  Thing datagramInjector ftkTx "FTK TX" [
+    sendingProfileId="FTK_D5_00_01",
+    senderId="00AABBCC",
+    suppressRepeating=false
+  ]
+}
+```
+
+Example Item linking:
+
+```xtend
+Switch Window_Contact_TX "Window Contact TX" { channel="enocean:datagramInjector:gtwy:ftkTx:switch" }
+```
+
 ## Generic Things
 
 If an EnOcean device uses an unsupported EEP or _A5-3F-7F_, you have to create a `genericThing`.
@@ -453,6 +506,7 @@ These conversion functions can be defined with the help of transformation functi
 |Thing type                       | Parameter         | Meaning                    | Possible Values |
 |---------------------------------|-------------------|----------------------------|---|
 | genericThing                    | senderIdOffset    |                            | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 |                                 | sendingEEPId      | EEP used for sending msg   | F6_FF_FF, A5_FF_FF, D2_FF_FF |
 |                                 | receivingEEPId    | EEP used for receiving msg | F6_FF_FF, A5_FF_FF, D2_FF_FF |

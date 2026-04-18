@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class Go2RtcConfigBuilder {
 
     private final Map<String, List<String>> streams = new LinkedHashMap<>();
     private String ffmpegOptions = "-use_wallclock_as_timestamps 1 -re -fflags nobuffer -f alaw -ar 8000 -ac 1 -i - -vn -b:a 32k -application voip -frame_duration 20";
-    private String ffmpegOutputOptions = "-acodec lib%s -ar %d -sample_fmt s%d  -f rtp %s#backchannel=1";
+    private String ffmpegOutputOptions = "-acodec lib%s -ar %d -sample_fmt s%d  -f rtp %s#backchannel=1#audio=pcma/8000";
 
     public Go2RtcConfigBuilder(String host, int port) {
         this.listenHost = host;

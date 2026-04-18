@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
@@ -51,7 +53,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State state) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase().replaceAll("co2|price", "");
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase(Locale.ROOT).replaceAll("co2|price",
+                    "");
             String value;
             if (state instanceof OnOffType) {
                 value = state == OnOffType.ON ? "true" : "false";
@@ -63,9 +66,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            if (sendCommand(url)) {
-                updateState(channelUID, state);
-            }
+            performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);
         }
@@ -114,12 +115,6 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
                 default:
                     state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
             }
-        }
-        // Backwards compatibility for evcc 0.209.8 and older
-        JsonElement startup = state.get("startup");
-        if (null != startup && startup.isJsonPrimitive() && startup.getAsJsonPrimitive().isBoolean()) {
-            state.add("startupComplete", startup);
-            state.remove("startup");
         }
         state.remove(JSON_KEY_GRID);
         state.remove(JSON_KEY_GRID_CONFIGURED);

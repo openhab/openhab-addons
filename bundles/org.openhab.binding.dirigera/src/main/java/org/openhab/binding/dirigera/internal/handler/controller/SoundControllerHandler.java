@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.DEVICE_TYPE_SPEAKER;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_SPEAKER;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
 
@@ -35,14 +34,5 @@ public class SoundControllerHandler extends BaseHandler {
         super.setChildHandler(this);
         // links of types which can be established towards this device
         linkCandidateTypes = List.of(DEVICE_TYPE_SPEAKER);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
     }
 }

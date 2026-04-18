@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class GroupAddressConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(GroupAddressConfiguration.class);
 
     private static final Pattern PATTERN_GA_CONFIGURATION = Pattern.compile(
-            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<modifier>[<>])?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
+            "^((?<dpt>[0-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<modifier>[<>])?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
     private static final Pattern PATTERN_LISTEN_GA = Pattern
             .compile("\\+((?<read><)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
 

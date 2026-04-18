@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -951,8 +951,8 @@ public class HomeConnectApiClient {
             trackAndLogApiRequest(haId, request, requestPayload, response, responseBody);
 
             responseBody = responseBody == null ? "" : responseBody;
-            if (code == HttpStatus.CONFLICT_409 && responseBody.toLowerCase().contains("error")
-                    && responseBody.toLowerCase().contains("offline")) {
+            if (code == HttpStatus.CONFLICT_409 && responseBody.toLowerCase(DEFAULT_LOCALE).contains("error")
+                    && responseBody.toLowerCase(DEFAULT_LOCALE).contains("offline")) {
                 throw new ApplianceOfflineException(code, message, responseBody);
             } else {
                 throw new CommunicationException(code, message, responseBody);
@@ -1130,7 +1130,7 @@ public class HomeConnectApiClient {
 
     private void trackApiRequest(HomeConnectRequest homeConnectRequest,
             @Nullable HomeConnectResponse homeConnectResponse) {
-        communicationQueue.add(new ApiRequest(ZonedDateTime.now(), homeConnectRequest, homeConnectResponse));
+        communicationQueue.add(new ApiRequest(ZonedDateTime.now(ZONE_ID), homeConnectRequest, homeConnectResponse));
     }
 
     private HomeConnectRequest map(Request request, @Nullable String requestBody) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.sensorcommunity.internal.handler;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sensorcommunity.internal.SensorCommunityConfiguration;
+import org.openhab.binding.sensorcommunity.internal.config.SensorCommunityConfiguration;
 import org.openhab.binding.sensorcommunity.internal.utils.DateTimeUtils;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -49,7 +48,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
     protected @Nullable ScheduledFuture<?> refreshJob;
-    private Optional<String> sensorUrl = Optional.empty();
+    private String sensorUrl = "";
     private boolean firstUpdate = true;
 
     public enum ConfigStatus {
@@ -141,11 +140,11 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     private ConfigStatus checkConfig(@Nullable SensorCommunityConfiguration c) {
         if (c != null) {
             if (!c.ipAddress.isBlank()) {
-                sensorUrl = Optional.of("http://" + c.ipAddress + "/data.json");
+                sensorUrl = "http://" + c.ipAddress + "/data.json";
                 return ConfigStatus.INTERNAL_SENSOR_OK;
             } else {
                 if (c.sensorid >= 0) {
-                    sensorUrl = Optional.of("http://data.sensor.community/airrohr/v1/sensor/" + c.sensorid + "/");
+                    sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/" + c.sensorid + "/";
                     return ConfigStatus.EXTERNAL_SENSOR_OK;
                 } else {
                     return ConfigStatus.SENSOR_ID_NEGATIVE;
@@ -161,14 +160,17 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void dataUpdate() {
-        if (sensorUrl.isPresent()) {
-            HTTPHandler.getHandler().request(sensorUrl.get(), this);
+        if (sensorUrl.isBlank()) {
+            logger.warn("Sensor URL not configured yet");
+            return;
+        } else {
+            HTTPHandler.getHandler().request(sensorUrl, this);
         }
     }
 
     public void onResponse(String data) {
         if (firstUpdate) {
-            logger.debug("{} delivers {}", sensorUrl.get(), data);
+            logger.debug("{} delivers {}", sensorUrl, data);
             firstUpdate = false;
         }
         if (configStatus == ConfigStatus.INTERNAL_SENSOR_OK) {
@@ -181,7 +183,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     public void onError(String errorReason) {
         statusUpdate(UpdateStatus.CONNECTION_EXCEPTION,
-                errorReason + " / " + LocalDateTime.now().format(DateTimeUtils.DTF));
+                errorReason + " / " + ZonedDateTime.now().format(DateTimeUtils.DTF));
     }
 
     protected void statusUpdate(UpdateStatus updateStatus, String details) {

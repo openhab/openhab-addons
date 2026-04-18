@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.enocean.internal.transceiver;
 import java.lang.reflect.ParameterizedType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.messages.Response;
 
 /**
@@ -23,7 +22,7 @@ import org.openhab.binding.enocean.internal.messages.Response;
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public abstract class ResponseListenerIgnoringTimeouts<T extends @Nullable Response> extends ResponseListener<T> {
+public abstract class ResponseListenerIgnoringTimeouts<T extends Response> extends ResponseListener<T> {
 
     @SuppressWarnings({ "unchecked", "null" })
     public ResponseListenerIgnoringTimeouts() {

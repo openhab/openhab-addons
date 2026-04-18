@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ public record Circadian(int brightness, int temperature) {
     public static final long MIN_COLOR_TEMP = 2500;
     public static final long MAX_COLOR_TEMP = 5500;
 
-    public static final Circadian DEFAULT = new Circadian(0, MIN_COLOR_TEMP);
+    public static final Circadian NONE = new Circadian(0, MIN_COLOR_TEMP);
 
     public Circadian {
         if (brightness < 0 || brightness > 100) {

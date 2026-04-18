@@ -7,9 +7,9 @@ You'll receive your API Key by mail.
 ## Supported Things
 
 - `api`: bridge used to connect to the AirParif service. Provides some general information for the whole area.
-- `location`: Presents the pollen and air quality information for a given location.
+- `location`: Presents the air quality information for a given location.
 
-Of course, you can add multiple `location`s, e.g. for gathering pollen or air quality data for different locations.
+Of course, you can add multiple `location`s, e.g. for gathering air quality data for different locations.
 
 ## Discovery
 
@@ -40,9 +40,6 @@ Please check that proposed value is correct according to the place.
 
 | Group                | Channel        | Type           | Read/Write | Description                                  |
 |----------------------|----------------|----------------|------------|----------------------------------------------|
-| pollens              | comment        | String         | R          | Current pollens situation                    |
-| pollens              | begin-validity | DateTime       | R          | Bulletin validity start                      |
-| pollens              | end-validity   | DateTime       | R          | Bulletin validity end                        |
 | aq-bulletin          | comment        | String         | R          | General message for the air quality bulletin |
 | aq-bulletin          | no2-min        | Number:Density | R          | Minimum level of NO2 concentration           |
 | aq-bulletin          | no2-max        | Number:Density | R          | Maximum level of NO2 concentration           |
@@ -68,25 +65,6 @@ Please check that proposed value is correct according to the place.
 
 | Group   | Channel    | Type           | Read/Write | Description                                              |
 |---------|------------|----------------|------------|----------------------------------------------------------|
-| pollens | cypress    | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | hazel      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | alder      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | poplar     | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | willow     | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | ash        | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | hornbeam   | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | birch      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | plane      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | oak        | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | olive      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | linden     | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | chestnut   | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | rumex      | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | grasses    | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | plantain   | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | urticaceae | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | wormwood   | Number         | R          | Alert level associated to this taxon (*)                 |
-| pollens | ragweed    | Number         | R          | Alert level associated to this taxon (*)                 |
 | indice  | message    | String         | R          | Alert message associated to the value of the index       |
 | indice  | timestamp  | DateTime       | R          | Timestamp of the evaluation                              |
 | indice  | alert      | Number         | R          | ATMO Index associated to highest pollutant concentration |
@@ -103,15 +81,6 @@ Please check that proposed value is correct according to the place.
 | pm10    | value      | Number:Density | R          | Concentration of the given pollutant                     |
 | pm10    | alert      | Number         | R          | Alert Level associated to pollutant concentration (**)   |
 
-(*) Each pollen alert level has an associated color and description:
-
-| Code | Color  | Description           |
-|------|--------|-----------------------|
-| 0    | Green  | No allergic risk      |
-| 1    | Yellow | Low allergic risk     |
-| 2    | Orange | Average allergic risk |
-| 3    | Red    | High allergic risk    |
-
 (*) Each pollutant concentration is associated to an alert level (and an icon) :
 
 | Code | Description   |
@@ -127,29 +96,9 @@ Please check that proposed value is correct according to the place.
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name              | Dynamic | Illustration |
-|------------------------|---------|--------------|
-| oh:airparif:aq         |   Yes   | ![Air Quality](doc/images/aq.svg) |
-| oh:airparif:alder      |   Yes   | ![Alder](doc/images/alder.svg) |
-| oh:airparif:ash        |   Yes   | ![Ash](doc/images/ash.svg) |
-| oh:airparif:birch      |   Yes   | ![Birch](doc/images/birch.svg) |
-| oh:airparif:chestnut   |   Yes   | ![Chestnut](doc/images/chestnut.svg) |
-| oh:airparif:cypress    |   Yes   | ![Cypress](doc/images/cypress.svg) |
-| oh:airparif:grasses    |   Yes   | ![Grasses](doc/images/grasses.svg) |
-| oh:airparif:hazel      |   Yes   | ![Hazel](doc/images/hazel.svg) |
-| oh:airparif:hornbeam   |   Yes   | ![Hornbeam](doc/images/hornbeam.svg) |
-| oh:airparif:linden     |   Yes   | ![Linden](doc/images/linden.svg) |
-| oh:airparif:oak        |   Yes   | ![Oak](doc/images/oak.svg) |
-| oh:airparif:olive      |   Yes   | ![Olive](doc/images/olive.svg) |
-| oh:airparif:plane      |   Yes   | ![Plane](doc/images/plane.svg) |
-| oh:airparif:plantain   |   Yes   | ![Plantain](doc/images/plantain.svg) |
-| oh:airparif:pollen     |   Yes   | x |
-| oh:airparif:poplar     |   Yes   | ![Poplar](doc/images/poplar.svg) |
-| oh:airparif:ragweed    |   Yes   | ![Ragweed](doc/images/ragweed.svg) |
-| oh:airparif:rumex      |   Yes   | ![Rumex](doc/images/rumex.svg) |
-| oh:airparif:urticaceae |   Yes   | ![Urticaceae](doc/images/urticaceae.svg) |
-| oh:airparif:willow     |   Yes   | ![Willow](doc/images/willow.svg) |
-| oh:airparif:wormwood   |   Yes   | ![Wormwood](doc/images/wormwood.svg) |
+| Icon Name              | Dynamic | Illustration                             |
+|------------------------|---------|------------------------------------------|
+| oh:airparif:aq         |   Yes   | ![Air Quality](doc/images/aq.svg)        |
 
 ## Full Example
 
@@ -164,9 +113,6 @@ Bridge airparif:api:local "AirParif" [ apikey="xxxxx-dddd-cccc-4321-zzzzzzzzzzzz
 ### Item Configurationn
 
 ```java
-String           AirParifPollensComment              "Situation"        {channel="airparif:api:local:pollens#comment"}
-DateTime         AirParifPollensBeginValidity        "Begin validity"   {channel="airparif:api:local:pollens#begin-validity"}
-DateTime         AirParifPollensEndValidity          "End validity"     {channel="airparif:api:local:pollens#end-validity"}
 String           AirParifAqBulletinComment           "Message"          {channel="airparif:api:local:aq-bulletin#comment"}
 Number:Density   AirParifAqBulletinNo2Min            "No2 min"          {channel="airparif:api:local:aq-bulletin#no2-min"}
 Number:Density   AirParifAqBulletinNo2Max            "No2 max"          {channel="airparif:api:local:aq-bulletin#no2-max"}
@@ -188,25 +134,6 @@ Number:Density   AirParifAqBulletinTomorrowPm25Max   "Pm 2.5 max"       {channel
 String           AirParifDailyMessage                "Message"          {channel="airparif:api:local:daily#message"}
 String           AirParifDailyTomorrow               "Tomorrow"         {channel="airparif:api:local:daily#tomorrow"}
 
-Number           Yvelines_Pollens_Cypress      "Cypress"         {channel="airparif:location:local:78:pollens#cypress"}
-Number           Yvelines_Pollens_Hazel        "Hazel level"     {channel="airparif:location:local:78:pollens#hazel"}
-Number           Yvelines_Pollens_Alder        "Alder"           {channel="airparif:location:local:78:pollens#alder"}
-Number           Yvelines_Pollens_Poplar       "Poplar"          {channel="airparif:location:local:78:pollens#poplar"}
-Number           Yvelines_Pollens_Willow       "Willow"          {channel="airparif:location:local:78:pollens#willow"}
-Number           Yvelines_Pollens_Ash          "Ash"             {channel="airparif:location:local:78:pollens#ash"}
-Number           Yvelines_Pollens_Hornbeam     "Hornbeam"        {channel="airparif:location:local:78:pollens#hornbeam"}
-Number           Yvelines_Pollens_Birch        "Birch level"     {channel="airparif:location:local:78:pollens#birch"}
-Number           Yvelines_Pollens_Plane        "Plane"           {channel="airparif:location:local:78:pollens#plane"}
-Number           Yvelines_Pollens_Oak          "Oak"             {channel="airparif:location:local:78:pollens#oak"}
-Number           Yvelines_Pollens_Olive        "Olive"           {channel="airparif:location:local:78:pollens#olive"}
-Number           Yvelines_Pollens_Linden       "Linden"          {channel="airparif:location:local:78:pollens#linden"}
-Number           Yvelines_Pollens_Chestnut     "Chestnut"        {channel="airparif:location:local:78:pollens#chestnut"}
-Number           Yvelines_Pollens_Rumex        "Rumex"           {channel="airparif:location:local:78:pollens#rumex"}
-Number           Yvelines_Pollens_Grasses      "Grasses"         {channel="airparif:location:local:78:pollens#grasses"}
-Number           Yvelines_Pollens_Plantain     "Plantain"        {channel="airparif:location:local:78:pollens#plantain"}
-Number           Yvelines_Pollens_Urticaceae   "Urticacea"       {channel="airparif:location:local:78:pollens#urticaceae"}
-Number           Yvelines_Pollens_Wormwood     "Wormwood"        {channel="airparif:location:local:78:pollens#wormwood"}
-Number           Yvelines_Pollens_Ragweed      "Ragweed"         {channel="airparif:location:local:78:pollens#ragweed"}
 String           Yvelines_Indice_Message       "Message"         {channel="airparif:location:local:78:indice#message"}
 DateTime         Yvelines_Indice_Timestamp     "Timestamp"       {channel="airparif:location:local:78:indice#timestamp"}
 Number           Yvelines_Indice_Alert         "Index"           {channel="airparif:location:local:78:indice#alert"}

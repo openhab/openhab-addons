@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public class OppoBindingConstants {
     public static final String OFF = "OFF";
     public static final String ONE = "1";
     public static final String ZERO = "0";
-    public static final String UNDEF = "UNDEF";
     public static final String VERBOSE_2 = "2";
     public static final String VERBOSE_3 = "3";
     public static final String MUTE = "MUTE";

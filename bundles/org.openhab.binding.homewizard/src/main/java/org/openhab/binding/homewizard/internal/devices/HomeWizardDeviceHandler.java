@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.homewizard.internal.devices;
 
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,13 +38,21 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
+import org.openhab.binding.homewizard.internal.devices.water_meter.HomeWizardWaterMeterMeasurementPayload;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link HomeWizardDeviceHandler} is a base class for all
@@ -60,6 +73,9 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
+
+    private final String SYSTEM_URL = "system";
+    private final String BATTERIES_URL = "batteries";
 
     private static final String BEARER = "Bearer";
     private static final String API_VERSION_HEADER = "X-Api-Version";
@@ -84,7 +100,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
-    public String apiURL = "";
+    private String apiURL = "";
 
     /**
      * Constructor
@@ -114,7 +130,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                     keyStore.load(null, null);
                     keyStore.setCertificateEntry(CERTIFICATE_ALIAS, CertificateFactory.getInstance(CERTIFICATE_TYPE)
                             .generateCertificate(classloader.getResourceAsStream(caCertPath)));
-                } catch (Exception ex) {
+                } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException ex) {
                 }
 
                 SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -163,7 +179,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         try {
             httpClient.setConnectTimeout(30000);
             httpClient.start();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // No specific exception is thrown by the start method
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to reach device", ex);
@@ -174,17 +190,57 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Not listening to any commands.
+     * Listening to commands for the system api.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            return;
+        }
+
+        var cmd = "";
+
+        switch (channelUID.getIdWithoutGroup()) {
+            case HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED: {
+                boolean onOff = command.equals(OnOffType.ON);
+                cmd = String.format("{\"cloud_enabled\": %b}", onOff);
+                break;
+            }
+            case HomeWizardBindingConstants.CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS: {
+                cmd = String.format("{\"status_led_brightness_pct\": %s}", command.toFullString());
+                break;
+            }
+            default: {
+                logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
+                return;
+            }
+        }
+
+        sendSystemCommand(cmd);
     }
 
     /**
      * The actual polling loop
      */
     protected void retrieveData() {
-        retrieveMeasurementData();
+        try {
+            handleSystemData(getSystemData());
+            handleMeasurementData(getMeasurementData());
+            updateStatus(ThingStatus.ONLINE);
+        } catch (JsonSyntaxException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get data from the API", ex);
+            return;
+        }
+    }
+
+    protected String getApiUrl() {
+        if (config.isUsingApiVersion2()) {
+            return apiURL;
+        } else {
+            return apiURL + "v1/";
+        }
     }
 
     private boolean processDeviceInformation() {
@@ -192,7 +248,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
         try {
             deviceInformation = getDeviceInformationData();
-        } catch (Exception ex) {
+        } catch (SecurityException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
@@ -243,7 +299,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         pollingJob = null;
         try {
             httpClient.stop();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // No specific exception is thrown by the stop method
             logger.debug("Error stopping the http client: {}", ex.getMessage());
         }
     }
@@ -256,76 +312,182 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * @param channelID id of the channel, which was updated
      * @param state new state
      */
-    protected void updateState(String groupID, String channelID, State state) {
-        updateState(groupID + "#" + channelID, state);
+    public void updateState(String groupID, String channelID, State state) {
+        if (!groupID.isEmpty()) {
+            updateState(groupID + "#" + channelID, state);
+        } else {
+            updateState(channelID, state);
+        }
     }
 
     /**
      * Device specific handling of the returned measurement data.
      *
-     * @param payload The data obtained form the API call
+     * @param payload The data obtained from the API call
+     * @throws JsonSyntaxException when the returned data cannot be parsed
      */
-    protected abstract void handleMeasurementData(String data);
+    protected void handleMeasurementData(String data) throws JsonSyntaxException {
+        if (!config.isUsingApiVersion2()) {
+            // We're only interested in the Wi-Fi data and the water meter payload processes these data.
+            HomeWizardWaterMeterMeasurementPayload payload = null;
+            payload = gson.fromJson(data, HomeWizardWaterMeterMeasurementPayload.class);
 
-    protected ContentResponse putDataTo(String url, String data)
-            throws InterruptedException, TimeoutException, ExecutionException {
+            if (payload != null) {
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID, new StringType(payload.getWifiSsid()));
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI, new DecimalType(payload.getWifiRssi()));
+            }
+        }
+    }
+
+    /**
+     * Device specific handling of the returned batteries data.
+     *
+     * @param data The data obtained from the API call
+     */
+    protected void handleBatteriesData(String data) {
+    }
+
+    /**
+     * Device specific handling of the returned system data.
+     *
+     * @param data The data obtained from the API call
+     * @throws JsonSyntaxException when the returned data cannot be parsed
+     */
+    protected void handleSystemData(String data) throws JsonSyntaxException {
+        HomeWizardSystemPayload payload = null;
+        payload = gson.fromJson(data, HomeWizardSystemPayload.class);
+        if (payload != null) {
+            if (config.isUsingApiVersion2()) {
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID, new StringType(payload.getWifiSsid()));
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI, new DecimalType(payload.getWifiRssi()));
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_UPTIME,
+                        new QuantityType<>(payload.getUptime(), Units.SECOND));
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                        HomeWizardBindingConstants.CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS,
+                        new DecimalType(payload.getStatusLedBrightness()));
+            }
+            updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
+                    HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED, OnOffType.from(payload.isCloudEnabled()));
+        }
+    }
+
+    protected @Nullable ContentResponse putDataTo(String url, String data) {
         var request = httpClient.newRequest(url).method(HttpMethod.PUT).content(new StringContentProvider(data));
 
         return sendRequest(request);
     }
 
-    protected ContentResponse getResponseFrom(String url)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public @Nullable ContentResponse getResponseFrom(String url) {
         return sendRequest(httpClient.newRequest(url));
     }
 
-    private ContentResponse sendRequest(Request request)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    private @Nullable ContentResponse sendRequest(Request request) {
         if (config.isUsingApiVersion2()) {
             request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
             request.header(API_VERSION_HEADER, "2");
         }
-        return request.timeout(20, TimeUnit.SECONDS).send();
+        try {
+            return request.timeout(20, TimeUnit.SECONDS).send();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt(); // restore interrupt status
+            return null;
+        } catch (TimeoutException | ExecutionException ex) {
+            logger.debug("Error sending request", ex);
+            return null;
+        }
     }
 
     /**
-     * @return json response from the device information api
-     * @throws InterruptedException, TimeoutException, ExecutionException, SecurityException
+     * @return json response from the device information api or an empty string if no data is available
+     * @throws SecurityException
      */
-    public String getDeviceInformationData()
-            throws InterruptedException, TimeoutException, ExecutionException, SecurityException {
+    public String getDeviceInformationData() throws SecurityException {
         var response = getResponseFrom(apiURL);
+        if (response == null) {
+            logger.warn("No Device Information data available");
+            return "";
+        }
         if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             throw new SecurityException("Bearer token is invalid.");
         }
-        return response.getContentAsString();
+        if (response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No Device Information data available");
+            return "";
+        }
     }
 
     /**
-     * @return json response from the measurement api
-     * @throws InterruptedException, TimeoutException, ExecutionException
+     * @return json response from the system api or an empty string if no data is available
+     *
      */
-    public String getMeasurementData() throws InterruptedException, TimeoutException, ExecutionException {
-        var url = apiURL;
+    public String getSystemData() {
+        var response = getResponseFrom(getApiUrl() + SYSTEM_URL);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No System data available");
+            return "";
+        }
+    }
+
+    public void sendSystemCommand(String command) {
+        var url = getApiUrl() + SYSTEM_URL;
+        var response = putDataTo(url, command);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            handleSystemData(response.getContentAsString());
+        } else {
+            logger.warn("Failed to send command {} to {}", command, url);
+        }
+    }
+
+    /**
+     * @return json response from the measurement api or an empty string if no data is available
+     * 
+     */
+    public String getMeasurementData() {
+        var url = getApiUrl();
         if (config.isUsingApiVersion2()) {
             url += "measurement";
         } else {
-            url += "v1/data";
+            url += "data";
         }
-        return getResponseFrom(url).getContentAsString();
+        var response = getResponseFrom(url);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No Measurements data available");
+            return "";
+        }
     }
 
-    protected void retrieveMeasurementData() {
-        final String measurementData;
-        try {
-            measurementData = getMeasurementData();
-        } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-device-offline");
-            logger.debug("Unable to get measurement data", ex);
-            return;
+    /**
+     * @return json response from the batteries api or an empty string if no data is available
+     * 
+     */
+    public String getBatteriesData() {
+        var response = getResponseFrom(getApiUrl() + BATTERIES_URL);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No Batteries data available");
+            return "";
         }
-        updateStatus(ThingStatus.ONLINE);
-        handleMeasurementData(measurementData);
+    }
+
+    protected void sendBatteriesCommand(String command) {
+        var url = getApiUrl() + BATTERIES_URL;
+        var response = putDataTo(url, command);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            handleBatteriesData(response.getContentAsString());
+        } else {
+            logger.warn("Failed to send command {} to {}", command, url);
+        }
     }
 }

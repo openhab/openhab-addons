@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_STATUS_REQUEST_EVENT;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
@@ -196,6 +196,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    protected void setState(ChannelUID channelUID, State state) {
+        updateState(channelUID, state);
     }
 
     protected State getCurrentState(String channelId) {

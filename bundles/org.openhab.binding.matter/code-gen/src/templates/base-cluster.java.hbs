@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -37,6 +36,16 @@ import com.google.gson.Gson;
     public int endpointId;
     public int id;
     public String name;
+
+    // Global cluster attribute name constants
+{{#each globalAttributes}}
+    public static final String ATTRIBUTE_{{asUpperSnakeCase name}} = "{{asLowerCamelCase name}}";
+{{/each}}
+
+    // Global cluster attributes (present in all clusters per Matter spec)
+{{#each globalAttributes}}
+    public {{{mappedType}}} {{asLowerCamelCase name}}; // {{id}} {{type}}
+{{/each}}
 
     public interface MatterEnum {
         Integer getValue();

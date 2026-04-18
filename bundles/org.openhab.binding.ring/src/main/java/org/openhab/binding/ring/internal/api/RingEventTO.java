@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,8 @@ public class RingEventTO {
     public boolean favorite;
     @SerializedName("snapshot_url")
     public @Nullable String snapshotUrl;
+    @SerializedName("cv_properties")
+    public CVPropertiesTO cvProperties = new CVPropertiesTO();
     public Map<String, String> recording = Map.of();
     public List<Object> events = List.of();
     public DoorbotTO doorbot = new DoorbotTO();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Defines common constants which are used across the whole HomeKit binding.
@@ -47,6 +48,12 @@ public class HomekitBindingConstants {
     public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-%d-%s-%s";
 
     /**
+     * Channel ID and Channel-Type UID for IP camera snapshot channels
+     */
+    public static final String CHANNEL_SNAPSHOT = "snapshot";
+    public static final ChannelTypeUID CHANNEL_TYPE_SNAPSHOT = new ChannelTypeUID(BINDING_ID, CHANNEL_SNAPSHOT);
+
+    /**
      * format string for channel-definition IDs like '[characteristicIdentifier]-[characteristicIid]'
      * used to instantiate channels and labels like '[thingName]-[accessoryAid]' used to discover
      * things; examples:
@@ -59,6 +66,7 @@ public class HomekitBindingConstants {
 
     // labels for things e.g. 'Living Room Light (11:22:33:44:55:66-1234)'
     public static final String THING_LABEL_FMT = "%s (%s)";
+    public static final Pattern THING_LABEL_PATTERN = Pattern.compile("^(.*?)\\((.*?)\\)$");
 
     // configuration parameters
     public static final String CONFIG_HTTP_HOST_HEADER = "httpHostHeader";
@@ -71,6 +79,7 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
     public static final String PROPERTY_UNIQUE_ID = CONFIG_UNIQUE_ID;
+    public static final String PROPERTY_CONVERTED_FROM_ACCESSORY = "convertedFromStandaloneAccessory";
 
     // channel properties
     public static final String PROPERTY_IID = "iid";
@@ -82,25 +91,37 @@ public class HomekitBindingConstants {
     public static final String ENDPOINT_CHARACTERISTICS = "/characteristics";
     public static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
     public static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
+    public static final String ENDPOINT_RESOURCE = "/resource";
 
     public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
+    public static final String CONTENT_TYPE_JPEG = "image/jpeg";
+
+    public static final String CONFIG_SNAPSHOT_WIDTH = "imageWidth";
+    public static final String CONFIG_SNAPSHOT_HEIGHT = "imageHeight";
 
     // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX
-    public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");
+    public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("^(\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8})$");
 
     // pattern matcher for host ipv4 address 123.123.123.123:12345
     public static final Pattern IPV4_PATTERN = Pattern.compile(
             "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
 
-    // pattern matcher for a fully qualified host name like foobar._hap._tcp.local. or foobar._hap._tcp.local.:12345
-    // NOTE: this specially allows space characters in the host name -- even if normally not allowed by the RFC
-    public static final Pattern HOST_PATTERN = Pattern.compile(
-            "^([a-zA-Z0-9\\-\\x20]+)\\._hap\\._tcp\\.local\\.(?::([1-9]\\d{0,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5]))?$");
+    // pattern matcher for a host name header like foobar-2.local or foo\032bar._hap._tcp.local:12345
+    public static final Pattern HOST_PATTERN = Pattern
+            .compile("^(?:[A-Za-z0-9_-]|\\\\032)+(?:\\._[A-Za-z]+\\._[A-Za-z]+)?\\.local(?::\\d{1,5})?$");
 
     // result messages for ThingActions; !! DO NOT LOCALIZE !!
     public static final String ACTION_RESULT_OK = "OK";
     public static final String ACTION_RESULT_OK_FORMAT = ACTION_RESULT_OK + " (%s)";
     public static final String ACTION_RESULT_ERROR = "ERROR";
     public static final String ACTION_RESULT_ERROR_FORMAT = ACTION_RESULT_ERROR + " (%s)";
+
+    // short suffixes that we expand to identify the i18n text id for displaying communication error messages
+    public static final String I18N_SUFFIX_POLLING_ERROR = "polling error"; // yields i18n id 'error.polling-error'
+    public static final String I18N_SUFFIX_EVENT_SUBSCRIBE_ERROR = "event subscribe error";
+    public static final String I18N_SUFFIX_ACCESSORY_FETCH_ERROR = "accessory fetch error";
+    public static final String I18N_SUFFIX_ERROR_SENDING_COMMAND = "error sending command";
+
+    public static final String CHECK_MARK = "✓";
 }

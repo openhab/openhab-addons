@@ -13,16 +13,21 @@ This Binding was tested with an `air-Q Pro` device with 14 sensors. It also work
 
 ## Discovery
 
-Auto-discovery is not supported.
+air-Q devices on the local network are discovered automatically via mDNS.
+Discovered devices appear in the openHAB Inbox.
+To add a discovered device, click **OK → EDIT** in the Inbox dialog, then enter the device password in the Configuration section and save.
+The device IP address is filled in automatically by discovery.
+
+If auto-discovery does not work (e.g. due to network segmentation), you can still add the device manually using its IP address.
 
 ## Thing Configuration
 
-The air-Q Thing must be configured with (both mandatory):
+The air-Q Thing must be configured with:
 
-| Parameter | Description                        |
-|-----------|------------------------------------|
-| ipAddress | Network address, e.g. 192.168.0.68 |
-| password  | Password of the air-Q device       |
+| Parameter | Description                        | Required              |
+|-----------|------------------------------------|-----------------------|
+| ipAddress | Network address, e.g. 192.168.0.68 | Yes (auto-filled by discovery) |
+| password  | Password of the air-Q device       | Yes                   |
 
 The Thing provides the following properties:
 
@@ -74,13 +79,14 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
 | fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
 | pressure                  | Number:Pressure      |    | Barometric Pressure                                                 |
+| radon                     | Number:RadiationSpecificActivity |    | Radon concentration                                                 |
 | so2                       | Number               |    | Sulfur dioxide (SO₂) concentration                                  |
 | sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
 | timestamp                 | DateTime             |    | Timestamp of measurement                                            |
 | tvoc                      | Number:Dimensionless |    | VOC concentration                                                   |
-| virus-free                | Number:Dimensionless | r  | Virus-Free index in percent; the lower the index, the higher the potential virus risk. |
-| mold-free                 | Number:Dimensionless | r  | Mold-Free index in percent; the lower the index, the higher the potential mold risk. |
+| virus_free                | Number:Dimensionless | r  | Virus-Free index in percent; the lower the index, the higher the potential virus risk. |
+| mold_free                 | Number:Dimensionless | r  | Mold-Free index in percent; the lower the index, the higher the potential mold risk. |
 | uptime                    | Number:Time          |    | uptime in seconds                                                   |
 | wifi                      | Switch               |    | WLAN on or off                                                      |
 | ssid                      | String               |    | WLAN SSID                                                           |
@@ -164,6 +170,7 @@ Number                airQ_fineDustConc01         "Fine Dust Concentration >1µ"
 Number                airQ_fineDustConc02_5       "Fine Dust Concentration >2.5µ"         {channel="airq:airq:1:fineDustConc02_5"}
 Number                airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:fineDustConc10"}
 Number:Pressure       airQ_pressure               "Pressure"                              {channel="airq:airq:1:pressure"}
+Number:RadiationSpecificActivity airQ_radon       "Radon Concentration"                   {channel="airq:airq:1:radon"}
 Number                airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:so2"}
 Number:Dimensionless  airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:temperature"}

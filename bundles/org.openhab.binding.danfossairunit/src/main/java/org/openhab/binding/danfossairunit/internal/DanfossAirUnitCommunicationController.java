@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,11 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.danfossairunit.internal.protocol.Parameter;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,47 +39,51 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     private static final int TCP_PORT = 30046;
     private static final int READ_TIMEOUT_MILLISECONDS = 5_000;
     private static final int DEFAULT_CONNECT_TIMEOUT_MILLISECONDS = 5_000;
+    private static final int RESPONSE_LENGTH = 63;
+    private static final byte[] EMPTY = new byte[0];
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitCommunicationController.class);
-    private final InetAddress inetAddr;
+    private final InetAddress hostAddress;
     private final int connectTimeoutMilliseconds;
 
-    private boolean connected = false;
     private @Nullable Socket socket;
     private @Nullable OutputStream outputStream;
     private @Nullable InputStream inputStream;
 
-    public DanfossAirUnitCommunicationController(InetAddress inetAddr) {
-        this(inetAddr, DEFAULT_CONNECT_TIMEOUT_MILLISECONDS);
+    public DanfossAirUnitCommunicationController(InetAddress hostAddress) {
+        this(hostAddress, DEFAULT_CONNECT_TIMEOUT_MILLISECONDS);
     }
 
-    public DanfossAirUnitCommunicationController(InetAddress inetAddr, int connectTimeoutMilliseconds) {
-        this.inetAddr = inetAddr;
+    public DanfossAirUnitCommunicationController(InetAddress hostAddress, int connectTimeoutMilliseconds) {
+        this.hostAddress = hostAddress;
         this.connectTimeoutMilliseconds = connectTimeoutMilliseconds;
     }
 
-    @Override
-    public synchronized void connect() throws IOException {
-        if (connected) {
+    private synchronized void connect() throws IOException {
+        Socket socket = this.socket;
+        if (socket != null && !socket.isClosed()) {
+            // Already connected
             return;
         }
-        Socket socket = this.socket = new Socket();
-        socket.connect(new InetSocketAddress(inetAddr, TCP_PORT), connectTimeoutMilliseconds);
+
+        socket = new Socket();
+        socket.connect(new InetSocketAddress(hostAddress, TCP_PORT), connectTimeoutMilliseconds);
         socket.setSoTimeout(READ_TIMEOUT_MILLISECONDS);
-        outputStream = socket.getOutputStream();
-        inputStream = socket.getInputStream();
-        connected = true;
+
+        OutputStream outputStream = socket.getOutputStream();
+        InputStream inputStream = socket.getInputStream();
+
+        this.socket = socket;
+        this.outputStream = outputStream;
+        this.inputStream = inputStream;
     }
 
     @Override
-    public synchronized void disconnect() {
-        if (!connected) {
-            return;
-        }
+    public synchronized void close() {
         try {
-            Socket localSocket = this.socket;
-            if (localSocket != null) {
-                localSocket.close();
+            Socket socket = this.socket;
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
             }
         } catch (IOException ioe) {
             logger.debug("Connection to air unit could not be closed gracefully. {}", ioe.getMessage());
@@ -88,51 +92,78 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
             this.inputStream = null;
             this.outputStream = null;
         }
-        connected = false;
     }
 
     @Override
     public byte[] sendRobustRequest(Parameter parameter) throws IOException {
-        return sendRobustRequest(parameter, new byte[] {});
+        return sendRobustRequest(parameter, EMPTY);
     }
 
     @Override
     public synchronized byte[] sendRobustRequest(Parameter parameter, byte[] value) throws IOException {
-        connect();
         byte[] request = parameter.getRequest(value);
+
         try {
-            return sendRequestInternal(request);
-        } catch (IOException ioe) {
-            // retry once if there was connection problem
-            disconnect();
             connect();
-            return sendRequestInternal(request);
+
+            byte[] response = sendRequestInternal(request);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} response: {}", parameter, HexUtils.bytesToHex(response));
+            }
+
+            return response;
+        } catch (IOException suppressedException) {
+            logger.debug("{} request failed, retrying once: {}", parameter, suppressedException.getMessage());
+
+            close();
+
+            try {
+                connect();
+
+                byte[] response = sendRequestInternal(request);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} response: {}", parameter, HexUtils.bytesToHex(response));
+                }
+
+                return response;
+            } catch (IOException e) {
+                suppressedException.addSuppressed(e);
+                throw suppressedException;
+            }
         }
     }
 
-    private synchronized byte[] sendRequestInternal(byte[] request) throws IOException {
-        OutputStream localOutputStream = this.outputStream;
+    private byte[] sendRequestInternal(byte[] request) throws IOException {
+        OutputStream outputStream = this.outputStream;
+        InputStream inputStream = this.inputStream;
 
-        if (localOutputStream == null) {
-            throw new IOException(
-                    String.format("Output stream is null while sending request: %s", Arrays.toString(request)));
-        }
-        localOutputStream.write(request);
-        localOutputStream.flush();
-
-        byte[] result = new byte[63];
-        InputStream localInputStream = this.inputStream;
-        if (localInputStream == null) {
-            throw new IOException(
-                    String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
+        if (outputStream == null || inputStream == null) {
+            throw new IOException("Input/output streams not initialized");
         }
 
-        int bytesRead = localInputStream.read(result, 0, 63);
-        if (bytesRead < 63) {
-            throw new IOException(String.format(
-                    "Error reading from stream, read returned %d as number of bytes read into the buffer", bytesRead));
+        outputStream.write(request);
+        outputStream.flush();
+
+        return readExact(inputStream, RESPONSE_LENGTH);
+    }
+
+    private byte[] readExact(InputStream inputStream, int length) throws IOException {
+        byte[] response = new byte[length];
+        int offset = 0;
+
+        while (offset < length) {
+            int bytesRead = inputStream.read(response, offset, length - offset);
+
+            if (bytesRead == -1) {
+                throw new IOException("Stream closed while reading response");
+            }
+            if (bytesRead == 0) {
+                throw new IOException("Read returned 0 bytes, possible stream stall");
+            }
+
+            offset += bytesRead;
         }
 
-        return result;
+        return response;
     }
 }

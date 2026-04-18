@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,9 +60,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+import org.thymeleaf.templateresolver.WebApplicationTemplateResolver;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.JavaxServletWebApplication;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -117,11 +118,12 @@ public class HomeConnectServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(HomeConnectServlet.class);
     private final HttpService httpService;
     private final TemplateEngine templateEngine;
+    private final JavaxServletWebApplication application;
     private final Set<HomeConnectBridgeHandler> bridgeHandlers;
     private final Gson gson;
 
     @Activate
-    public HomeConnectServlet(@Reference HttpService httpService) {
+    public HomeConnectServlet(@Reference HttpService httpService) throws ServletException, NamespaceException {
         bridgeHandlers = new CopyOnWriteArraySet<>();
         gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, (JsonSerializer<ZonedDateTime>) (src,
                 typeOfSrc, context) -> new JsonPrimitive(src.format(DateTimeFormatter.ISO_DATE_TIME))).create();
@@ -133,17 +135,18 @@ public class HomeConnectServlet extends HttpServlet {
             httpService.registerServlet(SERVLET_PATH, this, null, httpService.createDefaultHttpContext());
             httpService.registerResources(ASSETS_PATH, "assets", null);
         } catch (ServletException | NamespaceException e) {
-            logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH, e);
+            logger.warn("Could not register Home Connect servlet! ({})", SERVLET_PATH);
+            throw e;
         }
 
         // setup template engine
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(getServletContext());
+        application = JavaxServletWebApplication.buildApplication(getServletContext());
+        WebApplicationTemplateResolver templateResolver = new WebApplicationTemplateResolver(application);
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setPrefix("/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setCacheable(true);
         templateEngine = new TemplateEngine();
-        templateEngine.addDialect(new Java8TimeDialect());
         templateEngine.setTemplateResolver(templateResolver);
     }
 
@@ -252,7 +255,8 @@ public class HomeConnectServlet extends HttpServlet {
     }
 
     private void getAppliancesPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        WebContext context = new WebContext(request, response, request.getServletContext());
+        IWebExchange exchange = application.buildExchange(request, response);
+        WebContext context = new WebContext(exchange);
         context.setVariable("bridgeHandlers", bridgeHandlers);
         templateEngine.process("appliances", context, response.getWriter());
     }
@@ -376,7 +380,8 @@ public class HomeConnectServlet extends HttpServlet {
     }
 
     private void getBridgesPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        WebContext context = new WebContext(request, response, request.getServletContext());
+        IWebExchange exchange = application.buildExchange(request, response);
+        WebContext context = new WebContext(exchange);
         context.setVariable("bridgeHandlers", bridgeHandlers);
         templateEngine.process("bridges", context, response.getWriter());
     }
@@ -414,7 +419,8 @@ public class HomeConnectServlet extends HttpServlet {
                 }
                 bridgeHandler.reinitialize();
 
-                WebContext context = new WebContext(request, response, request.getServletContext());
+                IWebExchange exchange = application.buildExchange(request, response);
+                WebContext context = new WebContext(exchange);
                 context.setVariable("action",
                         bridgeHandler.getThing().getUID().getAsString() + ACTION_CLEAR_CREDENTIALS);
                 context.setVariable("bridgeHandlers", bridgeHandlers);
@@ -430,7 +436,8 @@ public class HomeConnectServlet extends HttpServlet {
         bridgeHandlers.forEach(homeConnectBridgeHandler -> requests
                 .addAll(homeConnectBridgeHandler.getApiClient().getLatestApiRequests()));
 
-        WebContext context = new WebContext(request, response, request.getServletContext());
+        IWebExchange exchange = application.buildExchange(request, response);
+        WebContext context = new WebContext(exchange);
         context.setVariable("bridgeHandlers", bridgeHandlers);
         context.setVariable("requests", gson.toJson(requests));
         templateEngine.process("log-requests", context, response.getWriter());
@@ -440,7 +447,7 @@ public class HomeConnectServlet extends HttpServlet {
         Optional<HomeConnectBridgeHandler> bridgeHandler = getBridgeHandler(bridgeId);
         if (bridgeHandler.isPresent()) {
             response.setContentType(MediaType.APPLICATION_JSON);
-            String fileName = String.format("%s__%s__requests.json", now().format(FILE_EXPORT_DTF),
+            String fileName = String.format("%s__%s__requests.json", now(ZONE_ID).format(FILE_EXPORT_DTF),
                     bridgeId.replaceAll("[^a-zA-Z0-9]", "_"));
             response.setHeader("Content-disposition", "attachment; filename=" + fileName);
 
@@ -464,7 +471,8 @@ public class HomeConnectServlet extends HttpServlet {
     }
 
     private void getEventLogPage(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        WebContext context = new WebContext(request, response, request.getServletContext());
+        IWebExchange exchange = application.buildExchange(request, response);
+        WebContext context = new WebContext(exchange);
         context.setVariable("bridgeHandlers", bridgeHandlers);
         templateEngine.process("log-events", context, response.getWriter());
     }
@@ -473,7 +481,7 @@ public class HomeConnectServlet extends HttpServlet {
         Optional<HomeConnectBridgeHandler> bridgeHandler = getBridgeHandler(bridgeId);
         if (bridgeHandler.isPresent()) {
             response.setContentType(MediaType.APPLICATION_JSON);
-            String fileName = String.format("%s__%s__events.json", now().format(FILE_EXPORT_DTF),
+            String fileName = String.format("%s__%s__events.json", now(ZONE_ID).format(FILE_EXPORT_DTF),
                     bridgeId.replaceAll("[^a-zA-Z0-9]", "_"));
             response.setHeader("Content-disposition", "attachment; filename=" + fileName);
 
@@ -495,8 +503,9 @@ public class HomeConnectServlet extends HttpServlet {
         Optional<HomeConnectBridgeHandler> bridgeHandler = getBridgeHandler(state);
         if (bridgeHandler.isPresent()) {
             try {
-                String redirectUri = bridgeHandler.get().getConfiguration().isSimulator()
-                        ? request.getRequestURL().toString()
+                StringBuffer requestURL = request.getRequestURL();
+                String redirectUri = bridgeHandler.get().getConfiguration().isSimulator() && requestURL != null
+                        ? requestURL.toString()
                         : null;
                 AccessTokenResponse accessTokenResponse = bridgeHandler.get().getOAuthClientService()
                         .getAccessTokenResponseByAuthorizationCode(code, redirectUri);
@@ -506,7 +515,8 @@ public class HomeConnectServlet extends HttpServlet {
                 // inform bridge
                 bridgeHandler.get().reinitialize();
 
-                WebContext context = new WebContext(request, response, request.getServletContext());
+                IWebExchange exchange = application.buildExchange(request, response);
+                WebContext context = new WebContext(exchange);
                 context.setVariable("action", bridgeHandler.get().getThing().getUID().getAsString() + ACTION_AUTHORIZE);
                 context.setVariable("bridgeHandlers", bridgeHandlers);
                 templateEngine.process("bridges", context, response.getWriter());

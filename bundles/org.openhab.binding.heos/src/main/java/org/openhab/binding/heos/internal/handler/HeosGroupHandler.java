@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,11 +122,11 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public String getId() throws HeosNotFoundException {
-        String localGroupId = this.gid;
-        if (localGroupId == null) {
+        String gid = this.gid;
+        if (gid == null) {
             throw new HeosNotFoundException();
         }
-        return localGroupId;
+        return gid;
     }
 
     public String getGroupMemberHash() {
@@ -155,10 +155,10 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             return;
         }
 
-        String localGid = this.gid;
+        String gid = this.gid;
         String eventGroupId = eventObject.getAttribute(HeosCommunicationAttribute.GROUP_ID);
         String eventPlayerId = eventObject.getAttribute(HeosCommunicationAttribute.PLAYER_ID);
-        if (localGid == null || !(localGid.equals(eventGroupId) || localGid.equals(eventPlayerId))) {
+        if (gid == null || !(gid.equals(eventGroupId) || gid.equals(eventPlayerId))) {
             return;
         }
 

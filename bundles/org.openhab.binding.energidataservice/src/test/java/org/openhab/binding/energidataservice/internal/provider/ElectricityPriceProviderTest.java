@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,11 +66,11 @@ import org.openhab.core.scheduler.SchedulerRunnable;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ElectricityPriceProviderTest {
 
-    private @NonNullByDefault({}) @Mock Scheduler scheduler;
-    private @NonNullByDefault({}) @Mock ApiController apiController;
-    private @NonNullByDefault({}) @Mock TimeZoneProvider timeZoneProvider;
-    private @NonNullByDefault({}) @Mock MockedListener listener1;
-    private @NonNullByDefault({}) @Mock MockedListener listener2;
+    private @Mock @NonNullByDefault({}) Scheduler scheduler;
+    private @Mock @NonNullByDefault({}) ApiController apiController;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) MockedListener listener1;
+    private @Mock @NonNullByDefault({}) MockedListener listener2;
     private @NonNullByDefault({}) ElectricityPriceProvider provider;
 
     @SuppressWarnings("unchecked")

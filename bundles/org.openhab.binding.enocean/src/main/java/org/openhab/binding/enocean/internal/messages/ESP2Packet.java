@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.enocean.internal.messages;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
-import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.EnOceanException;
@@ -31,6 +31,7 @@ public class ESP2Packet {
 
     public static final byte ENOCEAN_ESP2_FIRSTSYNC_BYTE = (byte) 0xA5;
     public static final byte ENOCEAN_ESP2_SECONDSYNC_BYTE = 0x5A;
+    public static final byte ENOCEAN_ESP2_INTERNAL_COMMAND_BYTE = (byte) 0xFC;
 
     private static final int ESP2_SYNC_BYTE_LENGTH = 2;
     private static final int ESP2_HEADER_LENGTH = 1;
@@ -104,10 +105,10 @@ public class ESP2Packet {
     }
 
     public enum ESP2PacketType {
-        Receive_Radio_Telegram((byte) 0x00),
-        Transmit_Radio_Telegram((byte) 0x03),
-        Receive_Message_Telegram((byte) 0x04),
-        Transmit_Command_Telegram((byte) 0x05);
+        RECEIVE_RADIO_TELEGRAM((byte) 0x00),
+        TRANSMIT_RADIO_TELEGRAM((byte) 0x03),
+        RECEIVE_MESSAGE_TELEGRAM((byte) 0x04),
+        TRANSMIT_COMMAND_TELEGRAM((byte) 0x05);
 
         private byte value;
 
@@ -122,7 +123,8 @@ public class ESP2Packet {
                 }
             }
 
-            throw new InvalidParameterException("Unknown ESP2 PacketType value");
+            throw new IllegalArgumentException(
+                    "Unknown ESP2 PacketType value '0x" + HexFormat.of().toHexDigits(packetType) + '\'');
         }
     }
 
@@ -135,10 +137,10 @@ public class ESP2Packet {
     private ESP2PacketType convertToESP2PacketType(ESPPacketType espPacketType) {
         switch (espPacketType) {
             case COMMON_COMMAND:
-                return ESP2PacketType.Transmit_Command_Telegram;
+                return ESP2PacketType.TRANSMIT_COMMAND_TELEGRAM;
             case RADIO_ERP1:
             case RADIO_ERP2:
-                return ESP2PacketType.Transmit_Radio_Telegram;
+                return ESP2PacketType.TRANSMIT_RADIO_TELEGRAM;
             case RESPONSE: // Response is not intended for outbound data (at least for ESP2)
             default:
                 throw new IllegalArgumentException("ESPPacketType not supported");
@@ -154,7 +156,7 @@ public class ESP2Packet {
             case _4BS:
                 return ORG._4BS.value;
             default:
-                throw new InvalidParameterException("RORG is not supported by ESP2");
+                throw new IllegalArgumentException("RORG is not supported by ESP2");
         }
     }
 
@@ -181,7 +183,7 @@ public class ESP2Packet {
                     System.arraycopy(message.getPayload(ESP2_ORG_LENGTH, 4), 0, data, ESP2_ORG_LENGTH, 4);
                     break;
                 default:
-                    throw new InvalidParameterException("CCMessage is not supported by ESP2");
+                    throw new IllegalArgumentException("CCMessage is not supported by ESP2");
             }
         }
 
@@ -251,12 +253,16 @@ public class ESP2Packet {
         }
     }
 
-    public static boolean validateCheckSum(byte[] data, int length, byte checkSum) {
+    public static boolean validateCheckSum(byte[] data, int start, int length) {
         int sum = 0;
-        for (int i = 0; i < length; i++) {
+        int end = start + length;
+        if (data.length <= end) {
+            return false;
+        }
+        for (int i = start; i < end; i++) {
             sum += (data[i] & 0xff);
         }
 
-        return (sum & 0xff) == (checkSum & 0xff);
+        return (sum & 0xff) == (data[end] & 0xff);
     }
 }

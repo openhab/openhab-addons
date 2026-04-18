@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -29,19 +33,19 @@ import javax.measure.quantity.Angle;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.enums.StatusCode;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
-import org.openhab.binding.homekit.internal.temporary.LightModel;
-import org.openhab.binding.homekit.internal.temporary.LightModel.LightCapabilities;
-import org.openhab.binding.homekit.internal.temporary.LightModel.RgbDataType;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -55,13 +59,17 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -73,10 +81,12 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
+import org.openhab.core.util.LightModel;
+import org.openhab.core.util.LightModel.LightCapabilities;
+import org.openhab.core.util.LightModel.RgbDataType;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,9 +112,17 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.COLOR_TEMPERATURE,
             CharacteristicType.ON);
 
+    // Accessory Categories relevant for snapshot channel
+    private static final Set<AccessoryCategory> CAMERA_ACCESSORY_CATEGORIES = Set.of(AccessoryCategory.IP_CAMERA,
+            AccessoryCategory.VIDEO_DOORBELL);
+
+    // Characteristic iids relevant for triggering snapshot channel refreshes
+    private static final Map<Long, CharacteristicType> SNAPSHOT_REFRESH_TRIGGERS = new HashMap<>();
+
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
+    private final ManagedThingProvider managedThingProvider;
 
     /*
      * Light model to manage combined light characteristics (hue, saturation, brightness, color temperature).
@@ -128,12 +146,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     private final List<LightModelLink> lightModelLinks = new ArrayList<>();
 
+    /*
+     * Assets used for migrating a Thing to a Bridge
+     */
+    private static final int MIGRATION_DELAY_SECONDS = 1;
+    private final AtomicBoolean migrating = new AtomicBoolean(false);
+    private final AtomicBoolean disposing = new AtomicBoolean(false);
+
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle) {
-        super(thing, typeProvider, keyStore, i18nProvider, bundle);
+            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
+            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
+        this.managedThingProvider = managedThingProvider;
     }
 
     /**
@@ -293,7 +320,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     if (acceptedItemType.startsWith(CoreItemFactory.NUMBER)) {
                         String[] itemTypeParts = acceptedItemType.split(":");
                         if (itemTypeParts.length > 1
-                                && getStateDescription(channel) instanceof StateDescriptionFragment stateDescription
+                                && getStateDescription(channel) instanceof StateDescription stateDescription
                                 && UnitUtils.parseUnit(stateDescription.getPattern()) instanceof Unit<?> channelUnit
                                 && itemTypeParts[1].equalsIgnoreCase(UnitUtils.getDimensionName(channelUnit))) {
                             yield QuantityType.valueOf(value.getAsNumber().doubleValue(), channelUnit);
@@ -380,12 +407,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             Channel channel = builder.build();
                             uniqueChannelsMap.put(channelId, channel);
-
-                            logger.trace(
-                                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
-                                    channel.getDescription(), channel.getKind(), channel.getLabel(),
-                                    channel.getProperties(), channel.getUID());
+                            logChannelInformation(channel);
                         }
                     }
                 });
@@ -395,10 +417,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
         eventingPollingFinalize(accessory, uniqueChannelsMap);
-
-        String oldLabel = thing.getLabel();
-        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
-        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
 
         Map<String, String> oldProperties = new HashMap<>(thing.getProperties());
         Map<String, String> getProperties = accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle);
@@ -410,21 +428,34 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             newProperties = null;
         }
 
-        String oldEquipmentTag = thing.getSemanticEquipmentTag();
-        SemanticTag newEquipmentTag;
-        if (oldEquipmentTag != null && oldEquipmentTag.isEmpty()) {
-            newEquipmentTag = null;
-        } else {
-            newEquipmentTag = accessory.getSemanticEquipmentTag();
-            if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
-                    && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
-                    && AccessoryCategory.OTHER != category) {
-                newEquipmentTag = accessory.getSemanticEquipmentTag(category);
-            }
-            if (newEquipmentTag == null) {
-                newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
-            }
+        SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
+        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && AccessoryCategory.OTHER != category) {
+            newEquipmentTag = accessory.getSemanticEquipmentTag(category);
         }
+        if (newEquipmentTag == null) {
+            newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
+        }
+
+        String oldEquipmentTag = thing.getSemanticEquipmentTag();
+        if (oldEquipmentTag != null && !oldEquipmentTag.isEmpty()) {
+            newEquipmentTag = null;
+        }
+
+        if (isCamera(accessory)) {
+            ChannelBuilder builder = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
+                    .withType(CHANNEL_TYPE_SNAPSHOT);
+            Channel channel = builder.build();
+            uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
+            logChannelInformation(channel);
+            snapshotTriggersFinalize(accessory);
+        }
+
+        String oldLabel = thing.getLabel();
+        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
+        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
             ThingBuilder builder = editThing();
@@ -451,7 +482,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         if (command == RefreshType.REFRESH) {
-            requestManualRefresh();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                scheduleSnapshotRefresh();
+            } else {
+                requestManualRefresh();
+            }
             return;
         }
         try {
@@ -496,18 +531,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag but otherwise do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' sending command '{}' to '{}', reconnecting..", thing.getUID(),
-                        e.getMessage(), command, channelUID, e);
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' sending command '{}' to '{}'", thing.getUID(), e.getMessage(),
-                        command, channelUID, e);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    THING_STATUS_FMT.formatted("error.error-sending-command", e.getMessage()));
+            onCommunicationError(e, I18N_SUFFIX_ERROR_SENDING_COMMAND);
         }
     }
 
@@ -529,11 +553,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     public void dispose() {
+        disposing.set(true);
         lightModel = null;
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
-        eventedCharacteristics.clear();
-        polledCharacteristics.clear();
+        stopMoveChannel = null;
         super.dispose();
     }
 
@@ -700,10 +724,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
                 .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
         channels.put(uid.getId(), channel); // add to channels map
-        logger.trace(
-                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        logChannelInformation(channel);
         lightModelClientHSBTypeChannel = uid;
     }
 
@@ -730,11 +751,33 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Sets up the map of characteristic iids that shall trigger snapshot refreshes. Checks the given
+     * accessory for any services containing MOTION_DETECTED or INPUT_EVENT characteristics.
+     *
+     * @param accessory the accessory containing the characteristics
+     */
+    private void snapshotTriggersFinalize(Accessory accessory) {
+        SNAPSHOT_REFRESH_TRIGGERS.clear();
+        for (Service service : accessory.services) {
+            for (Characteristic cxx : service.characteristics) {
+                if (cxx.type instanceof String type) {
+                    CharacteristicType cxxType = Characteristic.getCharacteristicType(type);
+                    switch (cxxType) {
+                        case MOTION_DETECTED, INPUT_EVENT:
+                            SNAPSHOT_REFRESH_TRIGGERS.put(cxx.iid, cxxType);
+                        default:
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Finalizes the polled and evented characteristics by identifying which characteristics are linked
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
      * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
-     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristsics to
-     * the list of polled and evented characteristics.
+     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristics to
+     * the list of polled and evented characteristics. The camera snapshot channel is not included.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to check for polled and evented characteristics
@@ -750,6 +793,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                continue; // skip camera snapshot channel
+            }
             if (isLinked(channelUID)) {
                 Long iid = 0L;
                 boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
@@ -864,6 +910,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Long aid = getAccessoryId();
         ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
+        boolean snapshotChannelExists = thing.getChannel(CHANNEL_SNAPSHOT) != null;
+        boolean snapshotChannelRefresh = false;
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
@@ -882,10 +930,25 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 case STATE -> updateState(channelUID, state);
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
+                            // check for snapshot refresh triggers
+                            if (snapshotChannelExists && !snapshotChannelRefresh && SNAPSHOT_REFRESH_TRIGGERS
+                                    .get(cxx.iid) instanceof CharacteristicType triggerCxxType) {
+                                switch (triggerCxxType) {
+                                    case MOTION_DETECTED:
+                                        snapshotChannelRefresh |= OpenClosedType.OPEN == state;
+                                        break;
+                                    case INPUT_EVENT:
+                                        snapshotChannelRefresh = true;
+                                    default:
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+        if (snapshotChannelRefresh) {
+            scheduleSnapshotRefresh();
         }
         if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -916,7 +979,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
-        createProperties();
+        createProperties(); // we need the properties before eventually starting a migration
+        if (isMigratable() && setupMigration()) {
+            return; // skip further processing if migrating
+        }
         createChannels();
         markAsReady(thing);
     }
@@ -1004,5 +1070,248 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Logs detailed trace information about the given channel if trace logging is enabled.
+     */
+    private void logChannelInformation(Channel channel) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        }
+    }
+
+    /**
+     * Returns true if the given accessory has camera like functions;
+     * <ul>
+     * <li>its category as declared in its JSON is a camera category</li>
+     * <li>its category as discovered by mDNS is a camera category</li>
+     * <li>one of its JSON services supports camera RTP stream management</li>
+     * <li>one of its JSON characteristics supports video stream configuration</li>
+     * </ul>
+     * 
+     * @param accessory the accessory to check
+     * @return true if the accessory is a camera, false otherwise
+     */
+    private boolean isCamera(Accessory accessory) {
+        if (CAMERA_ACCESSORY_CATEGORIES.contains(accessory.getAccessoryType())) {
+            return true;
+        }
+        if (thing.getProperties().get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && CAMERA_ACCESSORY_CATEGORIES.contains(category)) {
+            return true;
+        }
+        if (accessory.services instanceof List<Service> services) {
+            for (Service service : services) {
+                if (ServiceType.CAMERA_RTP_STREAM_MANAGEMENT == service.getServiceType()) {
+                    return true;
+                }
+                if (service.characteristics instanceof List<Characteristic> characteristics) {
+                    for (Characteristic characteristic : characteristics) {
+                        if (CharacteristicType.SUPPORTED_VIDEO_STREAM_CONFIGURATION == characteristic
+                                .getCharacteristicType()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Introduce this getter so we can override it in the JUnit test class.
+     */
+    protected ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    /**
+     * Determines if the existing Thing is eligible for migration to a Bridge. This is the case if the Thing is of
+     * type Accessory, has embedded accessories (i.e. child accessories), and is a managed Thing. If the Thing is not
+     * eligible for migration, logs an appropriate message to inform the user about the reason and how to fix it.
+     *
+     * @return true if the Thing is eligible for migration, false otherwise
+     */
+    private boolean isMigratable() {
+        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1) {
+            if (managedThingProvider.get(thing.getUID()) == null) {
+                logger.info("{} has embedded accessories; try editing Thing-Type from 'accessory' to 'bridge'.",
+                        thing.getUID());
+                return false;
+            }
+            if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) == null) {
+                logger.warn("{} is missing unique ID; cannot auto-migrate it", thing.getUID());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sets up migration of an accessory Thing to a Bridge. Purpose is to remove the current Thing from the registry
+     * and create a new Bridge that inherits the current Thing's network attributes, and create a new bridged accessory
+     * Thing as a child of the Bridge that will host the current Thing's channels. The channels and tags are not
+     * directly inherited because the new Thing handler recreates them dynamically (albeit with different ChannelUIDs).
+     * Critically the Bridge inherits the same IP network configuration and HomeKit UniqueID so the new Bridge continues
+     * to use the old Thing's stored pairing key. The migration does not execute if either of the 'disposing' or
+     * 'migrating' flags are set. And this method sets the 'migrating' flag to prevent overlapping calls. The migration
+     * is performed asynchronously on a separate thread after a short delay.
+     * 
+     * @return true if the migration was successfully scheduled, false otherwise
+     */
+    private boolean setupMigration() {
+        // create a copy of the old Thing that is to be migrated
+        Thing sourceThing = ThingBuilder.create(thing).build();
+
+        if (!(sourceThing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String sourceUniqueId)) {
+            logger.warn("{} is missing unique ID; cannot auto-migrate it", thing.getUID());
+            return false;
+        }
+
+        // create new Bridge with old Thing's Id and all its attributes, except channels and tag
+        Bridge targetBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, sourceThing.getUID().getId()) //
+                .withConfiguration(sourceThing.getConfiguration()) //
+                .withLabel(sourceThing.getLabel()) //
+                .withLocation(sourceThing.getLocation()) //
+                .withProperties(sourceThing.getProperties()) //
+                .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
+                .build();
+
+        if (managedThingProvider.get(targetBridge.getUID()) != null) {
+            logger.warn("{} already exists; cannot auto-migrate {}", targetBridge.getUID(), thing.getUID());
+            return false;
+        }
+
+        // apply converted-from-accessory property (actual value is irrelevant, only absence or presence counts)
+        targetBridge.setProperty(PROPERTY_CONVERTED_FROM_ACCESSORY, CHECK_MARK);
+
+        // create new bridged accessory #1 child Thing that will host the old Thing's channels
+        Configuration targetConfiguration = new Configuration();
+        targetConfiguration.put(CONFIG_ACCESSORY_ID, BigDecimal.valueOf(1));
+
+        String targetLabel = sourceThing.getLabel();
+        Matcher matcher = THING_LABEL_PATTERN.matcher(targetLabel);
+        if (matcher.matches()) {
+            String baseLabel = matcher.group(1);
+            String suffix = matcher.group(2);
+            if (baseLabel != null && !baseLabel.isBlank() && suffix != null && !suffix.isBlank()) {
+                targetLabel = baseLabel.trim() + " (" + suffix + "-1)";
+            } else {
+                targetLabel = targetLabel + " (1)";
+            }
+        } else {
+            targetLabel = targetLabel + " (1)";
+        }
+
+        String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
+        ThingUID targetUID = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, targetBridge.getUID(), "1");
+        Thing targetThing = ThingBuilder.create(THING_TYPE_BRIDGED_ACCESSORY, targetUID) //
+                .withBridge(targetBridge.getUID()) //
+                .withConfiguration(targetConfiguration) //
+                .withLabel(targetLabel) //
+                .withLocation(sourceThing.getLocation()) //
+                .withProperty(PROPERTY_UNIQUE_ID, targetUniqueId) //
+                .withSemanticEquipmentTag(sourceThing.getSemanticEquipmentTag()) //
+                .build();
+
+        if (managedThingProvider.get(targetThing.getUID()) != null) {
+            logger.warn("{} already exists; cannot auto-migrate {}", targetThing.getUID(), thing.getUID());
+            return false;
+        }
+
+        if (!disposing.get() && !migrating.getAndSet(true)) {
+            try {
+                getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
+                        MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
+                logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/status.migrating-accessory-to-bridge");
+                return true;
+            } catch (Exception e) {
+                migrating.set(false);
+                logger.warn("{} auto-migrating {}", e.getMessage(), thing.getUID(), e);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Task to remove the given existing accessory Thing from the registry and add the new Bridge.
+     * <p>
+     * NOTE: There is currently no dedicated framework API to migrate an existing Thing to a Bridge
+     * while preserving its identifier and configuration. In this specific migration scenario we are
+     * therefore forced perform an explicit remove+add ourself on the ThingRegistry:
+     *
+     * <ul>
+     * <li>The old accessory Thing is first removed using its current UID.</li>
+     * <li>A new Bridge with the same id, configuration, properties, label, location and tag is then added.</li>
+     * <li>Suppress mDNS discovery for the old Thing id (being identically the new Bridge id) so as to prevent
+     * re-discovery of the original accessory Thing.</li>
+     * </ul>
+     *
+     * This operation is executed asynchronously and only when the handler has determined that the
+     * existing accessory Thing must be upgraded to a Bridge (for accessories with child accessories). The
+     * caller has set the handler status to OFFLINE before the conversion starts to reflect that the
+     * conversion is in progress. Because the original attributes are deliberately copied to the new Bridge,
+     * and because the change is a one-time structural migration, this direct registry manipulation is
+     * considered safe in this context.
+     * <p>
+     * Clears the 'migrating' flag if the migration fails so thing can potentially continue to be used.
+     * 
+     * @param uniqueId the unique ID of both the existing Thing and the new Bridge
+     * @param oldThing the existing Thing to be removed
+     * @param newBridge the new Bridge instance to be added
+     * @param newThing the new child Thing that will host the existing Thing's channels
+     */
+    private void doMigration(String uniqueId, Thing oldThing, Bridge newBridge, Thing newThing) {
+        if (disposing.get() || !migrating.get()) {
+            return;
+        }
+        boolean bridgeAdded = false;
+        boolean thingAdded = false;
+        try {
+            managedThingProvider.add(newBridge);
+            bridgeAdded = true;
+            managedThingProvider.add(newThing);
+            thingAdded = true;
+            managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
+        } catch (Exception e) {
+            if (thingAdded) {
+                try {
+                    managedThingProvider.remove(newThing.getUID());
+                } catch (Exception e1) {
+                    logger.warn("{} while rolling back adding of {}", e1.getMessage(), newThing.getUID());
+                }
+            }
+            if (bridgeAdded) {
+                try {
+                    managedThingProvider.remove(newBridge.getUID());
+                } catch (Exception e1) {
+                    logger.warn("{} while rolling back adding of {}", e1.getMessage(), newBridge.getUID());
+                }
+            }
+            logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
+                    e.getMessage(), oldThing.getUID(), newBridge.getUID());
+            migrating.set(false);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "@text/status.migrating-accessory-to-bridge-failed");
+            return;
+        }
+        discoveryParticipant.suppressId(uniqueId, true); // suppress re-discovery of existing (now old) thing
+        logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
+                newThing.getUID());
+    }
+
+    @Override
+    protected String unpairInner() {
+        // prevent un-pairing (which would erase the pairing keys) while migration is in progress
+        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("auto-migration in progress")
+                : super.unpairInner();
     }
 }

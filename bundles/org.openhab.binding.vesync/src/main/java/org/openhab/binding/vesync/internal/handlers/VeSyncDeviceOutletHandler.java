@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -25,10 +25,12 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassEnergyHistory.EnergyHistory.Result.EnergyInfo;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassOutletStatus;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.GetEnergyHistory;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.outlet.EnergyHistoryInfoSnapshot;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.outlet.EnergyHistoryResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.outlet.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -91,8 +93,7 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         scheduler.submit(() -> {
             if (command instanceof OnOffType) {
                 if (channelUID.getId().equals(DEVICE_CHANNEL_ENABLED)) {
-                    sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                            new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON), 0));
+                    sendV2BypassControlCommand(DEVICE_SET_SWITCH, new SetSwitch(command.equals(OnOffType.ON), 0));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();
@@ -124,21 +125,20 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         String responseStatus = EMPTY_STRING;
         String responseEnergyHistory = EMPTY_STRING;
         String responses;
-        VeSyncV2BypassOutletStatus outletStatus;
-        VeSyncV2BypassEnergyHistory energyHistory;
+        StatusResp outletStatus;
+        EnergyHistoryResp energyHistory;
         synchronized (pollLock) {
             responses = cachedResponse.getValue();
             boolean cachedDataUsed = responses != null;
             if (responses == null) {
                 logger.trace("Requesting fresh response");
-                responseStatus = sendV2BypassCommand(DEVICE_GET_OUTLET_STATUS,
-                        new VeSyncRequestManagedDeviceBypassV2.EmptyPayload());
+                responseStatus = sendV2BypassCommand(DEVICE_GET_OUTLET_STATUS, new EmptyPayload());
 
                 try {
                     long end = getTimestampForToday();
                     long start = end - SECONDS_IN_MONTH; // 30 days
                     responseEnergyHistory = sendV2BypassCommand(DEVICE_GET_ENEGERGY_HISTORY,
-                            new VeSyncRequestManagedDeviceBypassV2.GetEnergyHistory(start, end));
+                            new GetEnergyHistory(start, end));
                 } catch (ParseException e) {
                     logger.error("Could not parse timestamp: {}", e.getMessage());
                 }
@@ -155,8 +155,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                 return;
             }
 
-            outletStatus = VeSyncConstants.GSON.fromJson(responseStatus, VeSyncV2BypassOutletStatus.class);
-            energyHistory = VeSyncConstants.GSON.fromJson(responseEnergyHistory, VeSyncV2BypassEnergyHistory.class);
+            outletStatus = VeSyncConstants.GSON.fromJson(responseStatus, StatusResp.class);
+            energyHistory = VeSyncConstants.GSON.fromJson(responseEnergyHistory, EnergyHistoryResp.class);
 
             if (outletStatus == null || energyHistory == null) {
                 return;
@@ -201,8 +201,8 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
         return instant.toEpochMilli() / 1000;
     }
 
-    private static double getEnergy(VeSyncV2BypassEnergyHistory energyHistory, int days) {
-        List<EnergyInfo> energyList = energyHistory.result.result.energyInfos;
+    private static double getEnergy(EnergyHistoryResp energyHistory, int days) {
+        List<EnergyHistoryInfoSnapshot> energyList = energyHistory.result.result.energyInfos;
         double energy = 0;
         for (byte i = 0; i < days; i++) {
             energy += energyList.get(i).energy;

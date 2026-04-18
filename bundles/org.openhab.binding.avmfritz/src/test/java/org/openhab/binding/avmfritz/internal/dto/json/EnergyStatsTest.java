@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.avmfritz.internal.dto.json;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.avmfritz.internal.dto.json.EnergyStats.INVALID_VALUE;
 
 import java.io.IOException;
 
@@ -33,11 +34,28 @@ public class EnergyStatsTest extends AbstractJSONTest {
         EnergyStats energyStats = getObjectFromJson("EnergyStats.json", EnergyStats.class, gson);
         assertNotNull(energyStats);
 
-        assertEquals(-9999, energyStats.mMValueVolt);
-        assertEquals(-99.99, energyStats.getScaledVoltage(), DELTA);
+        assertEquals(INVALID_VALUE, energyStats.mMValueAmp);
+        assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
+        assertEquals(INVALID_VALUE, energyStats.mMValueVolt);
+        assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
         assertEquals(36100, energyStats.mMValuePower);
-        assertEquals(361.00, energyStats.getScaledPower(), DELTA);
+        assertEquals(361.0, energyStats.getScaledPower(), DELTA);
         assertEquals(17849392, energyStats.mMValueEnergy);
         assertEquals(17849.392, energyStats.getScaledEnergy(), DELTA);
+    }
+
+    @Test
+    public void currentStateUpdateWithInvalidValuesTest() throws IOException {
+        EnergyStats energyStats = getObjectFromJson("EnergyStatsInvalid.json", EnergyStats.class, gson);
+        assertNotNull(energyStats);
+
+        assertEquals(INVALID_VALUE, energyStats.mMValueAmp);
+        assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
+        assertEquals(INVALID_VALUE, energyStats.mMValueVolt);
+        assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
+        assertEquals(INVALID_VALUE, energyStats.mMValuePower);
+        assertEquals(0.0, energyStats.getScaledPower(), DELTA);
+        assertEquals(91000, energyStats.mMValueEnergy);
+        assertEquals(91.0, energyStats.getScaledEnergy(), DELTA);
     }
 }

@@ -19,8 +19,8 @@
 				<description>The sunset event range</description>
 			</channel-group>
 			<channel-group id="noon" typeId="sunRange">
-				<label>Noon</label>
-				<description>The noon event range</description>
+				<label>Solar Noon</label>
+				<description>The solar noon event range</description>
 			</channel-group>
 			<channel-group id="night" typeId="sunRange">
 				<label>Night</label>
@@ -58,6 +58,10 @@
 				<label>Evening Night</label>
 				<description>The evening night event range</description>
 			</channel-group>
+			<channel-group id="midnight" typeId="sunRange">
+				<label>Solar Midnight</label>
+				<description>The solar midnight event range</description>
+			</channel-group>
 			<channel-group id="daylight" typeId="sunRange">
 				<label>Daylight</label>
 				<description>The daylight event range</description>
@@ -74,7 +78,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>geolocation</representation-property>

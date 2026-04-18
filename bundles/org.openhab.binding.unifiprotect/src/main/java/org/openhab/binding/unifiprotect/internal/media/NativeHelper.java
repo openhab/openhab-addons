@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NativeHelper {
-    private static final String GO2RTC_VERSION = "1.9.9";
+    private static final String GO2RTC_VERSION = "1.9.14";
     private static final String FFMPEG_VERSION = "2.2.0";
     private static final String GO2RTC_URL = "https://github.com/AlexxIT/go2rtc/releases/download/v" + GO2RTC_VERSION
             + "/";
@@ -61,14 +61,14 @@ public class NativeHelper {
     }
 
     public Path ensureGo2Rtc() throws IOException {
-        return ensureBinary("go2rtc", getGo2RtcUrl());
+        return ensureBinary("go2rtc", getGo2RtcUrl(), GO2RTC_VERSION);
     }
 
     public Path ensureFfmpeg() throws IOException {
-        return ensureBinary("ffmpeg", getFfmpegUrl());
+        return ensureBinary("ffmpeg", getFfmpegUrl(), FFMPEG_VERSION);
     }
 
-    private Path ensureBinary(String name, String url) throws IOException {
+    private Path ensureBinary(String name, String url, String version) throws IOException {
         // if on PATH, just return
         if (isOnPath(name)) {
             return Paths.get(name);
@@ -81,7 +81,7 @@ public class NativeHelper {
             throw new IllegalStateException("Unsupported platform " + osName + " " + arch);
         }
         String osArch = osName.toLowerCase(Locale.ROOT) + "-" + arch.toLowerCase(Locale.ROOT);
-        Path destDir = baseDir.resolve(osArch);
+        Path destDir = baseDir.resolve(osArch).resolve(version);
         Files.createDirectories(destDir);
         Path destBinary = destDir.resolve(name + (isWindows() ? ".exe" : ""));
         logger.debug("Checking for {} in {}", name, destBinary);

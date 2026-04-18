@@ -6338,7 +6338,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | on                         | Switch               | Heater - Power                           |            |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
@@ -6354,7 +6354,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
 | countdown-time             | Number:Time          | Countdown - Countdown Time               |            |
@@ -13269,7 +13269,6 @@ Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:power
 Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
-
 
 ### Country Servers
 

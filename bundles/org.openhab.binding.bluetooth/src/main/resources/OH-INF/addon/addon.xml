@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Bluetooth Binding</name>
 	<description>This binding supports the Bluetooth protocol.</description>
+	<keywords>AirThings,AM43Blind,BLE,BlueGiga,BlueZ,BluKii,DaikinMadoka,EnOcean,Govee,GrundfosAlpha,HunterDouglasLuxaflexPowerView,Listener,RadonEye,Roaming,RuuviAir,RuuviTag</keywords>
 	<connection>local</connection>
 
 	<discovery-methods>

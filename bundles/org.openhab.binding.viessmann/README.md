@@ -156,7 +156,7 @@ Thing viessmann:device:heating "Heating Device" @ "Home" [
 - Added new `account` and `gateway` things for gateway selection.  
   Existing `device` things can be switched manually to the new `gateway` as bridge.  
   After that, the `bridge` thing can be removed.
-- Reorganization of channel-types: Starting the binding takes about 3 minutes   
+- Reorganization of channel-types: Starting the binding takes about 3 minutes  
   and results in the following warnings, which will not occur on the next restart:
 
 ```text

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.shelly.internal.api2;
 
 import com.google.gson.annotations.SerializedName;
@@ -84,6 +83,7 @@ public class ShellyBluJsonDTO {
         public Long firmware32;
 
         public Integer rssi;
-        public Integer tx_power;
+        @SerializedName("tx_power")
+        public Integer txPower;
     }
 }

@@ -2,7 +2,7 @@
 
 This binding enables you to retrieve water consumption data for consumers in the Île-de-France region of France.
 
-It is based on the new Sedif - Eau Ile de France website : https://www.sedif.com/.
+It is based on the new Sedif - Eau Ile de France website: <https://www.sedif.com/>.
 
 ## Supported Things
 
@@ -17,7 +17,7 @@ To retrieve data, you need a `gateway` bridge linked to your Sedif Web account.
 
 You will need to create an account prior to configuring your bridge.  
 Go to the login page and click on the "Je crée mon espace" button:  
-https://connexion.leaudiledefrance.fr/s/login/
+<https://connexion.leaudiledefrance.fr/s/login/>
 
 After this, add your bridge and fill in your username and password.
 
@@ -41,7 +41,7 @@ You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
 
 If you have multiple meters on the same contract, you will also need to get your(s) meterId's.
-MeterId is displayed at the contract details page. 
+MeterId is displayed at the contract details page.
 Just click on the contract number in the contract list, and you will have a detailed pages with a label Compteur n°D08MAxxxxxx.
 
 Note that you do not need to create the meter manually.
@@ -54,9 +54,9 @@ Once you create the gateway, the inbox will be populated automatically with all 
 
 ```java
 Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
-	[  
-		contractId="907....", meterId="D08MA......"
-	]  
+  [  
+    contractId="907....", meterId="D08MA......"
+  ]  
 ``
 
 ### Meter Thing Channels
@@ -117,7 +117,7 @@ Number:Volume ConsoDayMinus3   "Conso Day-3 [%.0f %unit%]"      <energy> { chann
 
 
 Number:Volume ConsoWeekly      "Weekly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:weekly-consumption#consumption"  }
-Number:Volume 	ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#thisWeek"     }
+Number:Volume ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#thisWeek"     }
 Number:Volume ConsoLastWeek    "Conso Last Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#lastWeek"     }
 Number:Volume ConsoWeekMinus2  "Conso Week - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:weekly-consumption#week-2"       }
 

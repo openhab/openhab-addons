@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -192,7 +192,12 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
                 result = localOAuthService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password,
                         localVendorConstants.scope);
             }
-            return result.getAccessToken();
+            String token = result.getAccessToken();
+            if (token == null) {
+                throw new GroupePSACommunicationException("Unable to authenticate, no access token available");
+            } else {
+                return token;
+            }
         } catch (OAuthException | IOException | OAuthResponseException e) {
             throw new GroupePSACommunicationException("Unable to authenticate: " + getRootCause(e).getMessage(), e);
         }

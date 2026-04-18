@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
+import java.time.InstantSource;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,9 +66,9 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         AstroThingHandler thingHandler = null;
         if (thingTypeUID.equals(THING_TYPE_SUN)) {
-            thingHandler = new SunHandler(thing, scheduler, timeZoneProvider, localeProvider);
+            thingHandler = new SunHandler(thing, scheduler, timeZoneProvider, localeProvider, InstantSource.system());
         } else if (thingTypeUID.equals(THING_TYPE_MOON)) {
-            thingHandler = new MoonHandler(thing, scheduler, timeZoneProvider, localeProvider);
+            thingHandler = new MoonHandler(thing, scheduler, timeZoneProvider, localeProvider, InstantSource.system());
         }
         return thingHandler;
     }

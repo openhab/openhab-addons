@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
  */
 
 @NonNullByDefault
-public class HomeData extends NAThing implements NAModule, LocationEx {
+public class HomeData extends NAThing implements NAModule, Location {
     public class HomesDataResponse extends ApiResponse<ListBodyResponse<HomeData>> {
     }
 
@@ -104,14 +104,12 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         return coordinates;
     }
 
-    @Override
     public Optional<String> getCountry() {
         return Optional.ofNullable(country);
     }
 
-    @Override
-    public @Nullable String getTimezone() {
-        return timezone;
+    public Optional<String> getTimezone() {
+        return Optional.ofNullable(timezone);
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {

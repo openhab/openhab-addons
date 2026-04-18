@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class ChatGPTHandler extends BaseThingHandler {
 
-    private static final int REQUEST_TIMEOUT_MS = 10_000;
+    static final int DEFAULT_REQUEST_TIMEOUT_S = 10;
+
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHandler.class);
 
     private HttpClient httpClient;
@@ -83,7 +84,8 @@ public class ChatGPTHandler extends BaseThingHandler {
             String queryJson = prepareRequestBody(channelUID);
 
             if (queryJson != null) {
-                String response = sendPrompt(queryJson);
+                final var timeout = resolveTimeout(channelUID);
+                String response = sendPrompt(queryJson, timeout);
                 processChatResponse(channelUID, response);
             }
         }
@@ -168,9 +170,14 @@ public class ChatGPTHandler extends BaseThingHandler {
     }
 
     public @Nullable String sendPrompt(String queryJson) {
+        return sendPrompt(queryJson, config != null ? config.requestTimeout : null);
+    }
+
+    public @Nullable String sendPrompt(String queryJson, @Nullable Integer timeoutSeconds) {
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
+                .timeout(timeoutSeconds != null ? timeoutSeconds : DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
+                .header("Content-Type", "application/json").header("Authorization", "Bearer " + apiKey)
+                .content(new StringContentProvider(queryJson));
         logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
@@ -194,6 +201,18 @@ public class ChatGPTHandler extends BaseThingHandler {
         return this.config;
     }
 
+    private @Nullable Integer resolveTimeout(ChannelUID channelUID) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel != null) {
+            ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
+                    .as(ChatGPTChannelConfiguration.class);
+            if (channelConfig.requestTimeout != null) {
+                return channelConfig.requestTimeout;
+            }
+        }
+        return config != null ? config.requestTimeout : null;
+    }
+
     @Override
     public void initialize() {
         this.config = getConfigAs(ChatGPTConfiguration.class);
@@ -210,11 +229,23 @@ public class ChatGPTHandler extends BaseThingHandler {
         this.apiUrl = config.apiUrl;
         this.modelUrl = config.modelUrl;
 
+        if (!isValidTimeout(config.requestTimeout)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/requestTimeout.configuration-error");
+            return;
+        }
+        if (thing.getChannels().stream()
+                .map(channel -> channel.getConfiguration().as(ChatGPTChannelConfiguration.class))
+                .anyMatch(config -> !isValidTimeout(config.requestTimeout))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/requestTimeout.configuration-error");
+            return;
+        }
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
-                Request request = httpClient.newRequest(modelUrl).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                Request request = httpClient.newRequest(modelUrl).timeout(DEFAULT_REQUEST_TIMEOUT_S, TimeUnit.SECONDS)
                         .method(HttpMethod.GET).header("Authorization", "Bearer " + apiKey);
                 ContentResponse response = request.send();
                 if (response.getStatus() == 200) {
@@ -259,5 +290,9 @@ public class ChatGPTHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(ChatGPTModelOptionProvider.class, ChatGPTHLIService.class);
+    }
+
+    private boolean isValidTimeout(@Nullable Integer timeout) {
+        return timeout == null || timeout > 0;
     }
 }

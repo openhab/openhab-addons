@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,6 +121,11 @@ public class HTTPHandler {
         logger.warn("Response: {}", response);
         String json = GSON.toJson(dto);
         logger.warn("GSon: {}", json);
+    }
+
+    public boolean isRadiation(@Nullable List<SensorDataValue> valueList) {
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
+                .filter(t -> t.endsWith(RADIATION_CPM) || t.endsWith(RADIATION_PULSES)).findAny().isPresent();
     }
 
     public boolean isParticulate(@Nullable List<SensorDataValue> valueList) {

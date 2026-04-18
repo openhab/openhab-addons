@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public record StatAnswer(Queries queries, Clients client, Gravity gravity, double took) {
-    record Clients(int active, int total) {
+public record StatAnswer(Queries queries, Clients clients, Gravity gravity, double took) {
+    public record Clients(int active, int total) {
 
     }
 

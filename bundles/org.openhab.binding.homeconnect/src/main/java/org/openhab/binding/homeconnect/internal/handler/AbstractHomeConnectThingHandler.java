@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,6 +80,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -718,9 +719,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @return color code e.g. #001122
      */
     protected String mapColor(HSBType color) {
-        String redValue = String.format("%02X", (int) (color.getRed().floatValue() * 2.55));
-        String greenValue = String.format("%02X", (int) (color.getGreen().floatValue() * 2.55));
-        String blueValue = String.format("%02X", (int) (color.getBlue().floatValue() * 2.55));
+        int[] rgb = ColorUtil.hsbToRgb(color);
+        String redValue = String.format("%02X", rgb[0]);
+        String greenValue = String.format("%02X", rgb[1]);
+        String blueValue = String.format("%02X", rgb[2]);
         return "#" + redValue + greenValue + blueValue;
     }
 
@@ -1214,7 +1216,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void handleTemperatureCommand(final ChannelUID channelUID, final Command command,
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             String value;
             String unit;
 
@@ -1225,8 +1227,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     value = String.valueOf(quantityCommand.intValue());
                 } else {
                     logger.debug("Converting target temperature from {}{} to °C value. thing={}, haId={}",
-                            quantityCommand.intValue(), quantityCommand.getUnit().toString(), getThingLabel(),
-                            getThingHaId());
+                            quantityCommand.intValue(), quantityCommand.getUnit(), getThingLabel(), getThingHaId());
                     unit = "°C";
                     var celsius = quantityCommand.toUnit(SIUnits.CELSIUS);
                     if (celsius == null) {

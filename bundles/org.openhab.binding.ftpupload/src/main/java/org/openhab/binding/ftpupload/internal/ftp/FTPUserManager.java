@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,10 @@ public class FTPUserManager implements UserManager {
     public User authenticate(final @Nullable Authentication inAuth) throws AuthenticationFailedException {
         logger.trace("authenticate: {}", inAuth);
 
-        UsernamePasswordAuthentication upa = (UsernamePasswordAuthentication) inAuth;
+        if (!(inAuth instanceof UsernamePasswordAuthentication upa)) {
+            throw new AuthenticationFailedException("Only username/password authentication is supported!");
+        }
+
         String login = upa.getUsername();
         String password = upa.getPassword();
 
@@ -85,7 +88,7 @@ public class FTPUserManager implements UserManager {
     }
 
     @Override
-    public User getUserByName(final @Nullable String login) throws FtpException {
+    public User getUserByName(@NonNullByDefault({}) final String login) throws FtpException {
         logger.trace("getUserByName: {}", login);
         return new FTPUser(login, idleTimeout);
     }

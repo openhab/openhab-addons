@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,8 +51,10 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     private final Logger logger = LoggerFactory.getLogger(ShellyManagerActionPage.class);
 
     public ShellyManagerActionPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override
@@ -425,10 +427,9 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
         if (!gen2 && profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
-            boolean debug_enable = getBool(profile.settings.debugEnable);
-            list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
-                    !debug_enable ? "Enable Debug" : "Disable Debug");
-            if (debug_enable) {
+            boolean debugEnable = getBool(profile.settings.debugEnable);
+            list.put(!debugEnable ? ACTION_ENDEBUG : ACTION_DISDEBUG, !debugEnable ? "Enable Debug" : "Disable Debug");
+            if (debugEnable) {
                 list.put(ACTION_GETDEB, "Get Debug log");
                 list.put(ACTION_GETDEB1, "Get Debug log1");
             }

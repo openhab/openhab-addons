@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,12 @@ package org.openhab.binding.viessmann.internal;
 
 import static java.util.Map.entry;
 
-import java.util.List;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,9 +40,14 @@ public class ViessmannBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
+    public static final String THING_TYPE_VERSION = "thingTypeVersion";
+    public static final int DEVICE_THING_TYPE_VERSION = 5;
+
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Set.of(THING_TYPE_DEVICE);
 
     public static final String COUNT_API_CALLS = "count-api-calls";
+    public static final LocalTime RESET_API_CALLS_FROM = LocalTime.of(0, 0, 1);
+    public static final LocalTime RESET_API_CALLS_TO = LocalTime.of(1, 0, 0);
 
     // References for needed API identifiers
     public static final String VIESSMANN_HOST = "api.viessmann-climatesolutions.com";
@@ -62,23 +68,32 @@ public class ViessmannBindingConstants {
 
     public static final Map<String, String> UNIT_MAP = Map.ofEntries(entry("celsius", SIUnits.CELSIUS.getSymbol()), //
             entry("kelvin", Units.KELVIN.toString()), //
+            entry("wattHour", Units.WATT_HOUR.toString()), //
             entry("kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("kilowattpeak", "kilowattpeak"), //
             entry("kilowattHour/year", "kilowattHour/year"), //
             entry("gas-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("heat-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("percent", Units.PERCENT.toString()), //
+            entry("seconds", Units.SECOND.toString()), //
             entry("minute", Units.MINUTE.toString()), //
             entry("hour", Units.HOUR.toString()), //
             entry("hours", Units.HOUR.toString()), //
             entry("liter", Units.LITRE.toString()), //
             entry("liter/minute", Units.LITRE_PER_MINUTE.toString()), //
             entry("cubicMeter", SIUnits.CUBIC_METRE.toString()), //
+            entry("cubicMeter/hour", Units.CUBICMETRE_PER_HOUR.toString()), //
             entry("watt", Units.WATT.toString()), //
             entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
             entry("bar", Units.BAR.toString()), //
             entry("ampere", Units.AMPERE.toString()), //
-            entry("revolutionsPerSecond", Units.HERTZ.toString()));
+            entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()), //
+            entry("volt", Units.VOLT.toString()), //
+            entry("revolutionsPerSecond", Units.HERTZ.toString()), //
+            entry("meter", SIUnits.METRE.toString()), //
+            entry("degree", Units.DEGREE_ANGLE.toString()), //
+            entry("kiloJoule", MetricPrefix.KILO(Units.JOULE).toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "volume", //
@@ -91,20 +106,4 @@ public class ViessmannBindingConstants {
     public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";
     public static final String CHANNEL_RUN_QUERY_ONCE = "run-query-once";
     public static final String CHANNEL_RUN_ERROR_QUERY_ONCE = "run-error-query-once";
-
-    public static final List<String> PROPERTIES_URIS = List.of( //
-            "setNameUri", //
-            "setCurveUri", //
-            "setScheduleUri", //
-            "setModeUri", //
-            "setTemperatureUri", //
-            "temperatureUri", //
-            "activateUri", //
-            "deactivateUri", //
-            "changeEndDateUri", //
-            "scheduleUri", //
-            "unscheduleUri", //
-            "setMinUri", //
-            "setMaxUri", //
-            "setHysteresisUri");
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,10 +29,8 @@ public class FixedLabelCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0040;
     public static final String CLUSTER_NAME = "FixedLabel";
     public static final String CLUSTER_PREFIX = "fixedLabel";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_LABEL_LIST = "labelList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This is a list of string tuples. Each entry is a LabelStruct.
      */
@@ -45,15 +42,15 @@ public class FixedLabelCluster extends BaseCluster {
      */
     public static class LabelStruct {
         /**
-         * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;,
-         * &quot;group&quot;, &quot;direction&quot;.
+         * The Label or Value semantic is not defined here.
+         * Label examples: &quot;room&quot;, &quot;zone&quot;, &quot;group&quot;, &quot;direction&quot;.
          */
         public String label; // string
         /**
          * The Label or Value semantic is not defined here. The Value is a discriminator for a Label that may have
-         * multiple instances. Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;,
-         * &quot;orientation&quot;:&quot;North&quot;, &quot;floor&quot;:&quot;2&quot;,
-         * &quot;direction&quot;:&quot;up&quot;
+         * multiple instances.
+         * Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;, &quot;orientation&quot;:&quot;North&quot;,
+         * &quot;floor&quot;:&quot;2&quot;, &quot;direction&quot;:&quot;up&quot;
          */
         public String value; // string
 
@@ -74,7 +71,6 @@ public class FixedLabelCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "labelList : " + labelList + "\n";
         return str;
     }

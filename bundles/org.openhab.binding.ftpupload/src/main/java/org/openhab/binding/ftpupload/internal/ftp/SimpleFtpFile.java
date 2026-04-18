@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,11 @@ public class SimpleFtpFile implements FtpFile {
     MyOutputStream file;
 
     public byte[] getData() {
+        MyOutputStream file = this.file;
+        if (file == null) {
+            logger.debug("No data");
+            return new byte[0];
+        }
         return file.getData();
     }
 
@@ -50,8 +55,7 @@ public class SimpleFtpFile implements FtpFile {
     @Override
     public OutputStream createOutputStream(long arg0) throws IOException {
         logger.trace("createOutputStream: {}", arg0);
-        MyOutputStream file = this.file = new MyOutputStream();
-        return file;
+        return this.file = new MyOutputStream();
     }
 
     @Override

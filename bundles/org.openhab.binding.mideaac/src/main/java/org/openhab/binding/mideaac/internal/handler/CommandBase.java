@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,6 +174,7 @@ public class CommandBase {
 
         AUTO3(102, 3),
         FULL3(0, 3),
+        HIGH4(100, 3),
         HIGH3(80, 3),
         MEDIUM3(60, 3),
         LOW3(40, 3),
@@ -228,7 +229,7 @@ public class CommandBase {
         @Override
         public String toString() {
             // Drops the trailing 2 or 3 from the fan speed
-            return super.toString().replace("2", "").replace("3", "");
+            return super.toString().replace("2", "").replace("3", "").replace("4", "");
         }
     }
 

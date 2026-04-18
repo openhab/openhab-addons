@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,15 +44,18 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final StorageService storageService;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public RoborockHandlerFactory(@Reference StorageService storageService,
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
-            @Reference ChannelTypeRegistry channelTypeRegistry) {
+            @Reference ChannelTypeRegistry channelTypeRegistry,
+            @Reference RoborockStateDescriptionOptionProvider stateDescriptionProvider) {
         super.activate(componentContext);
         this.storageService = storageService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.httpClientFactory = httpClientFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class RoborockHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             return new RoborockAccountHandler((Bridge) thing, storage, httpClientFactory.getCommonHttpClient());
         } else {
-            return new RoborockVacuumHandler(thing, channelTypeRegistry);
+            return new RoborockVacuumHandler(thing, channelTypeRegistry, stateDescriptionProvider);
         }
     }
 }

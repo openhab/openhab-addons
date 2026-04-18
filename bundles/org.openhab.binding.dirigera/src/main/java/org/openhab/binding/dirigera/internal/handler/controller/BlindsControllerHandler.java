@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.DEVICE_TYPE_BLINDS;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_BLINDS;
 
 import java.util.List;
 import java.util.Map;
@@ -37,15 +37,6 @@ public class BlindsControllerHandler extends BaseHandler {
         super.setChildHandler(this);
         // links of types which can be established towards this device
         linkCandidateTypes = List.of(DEVICE_TYPE_BLINDS);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
     }
 
     @Override

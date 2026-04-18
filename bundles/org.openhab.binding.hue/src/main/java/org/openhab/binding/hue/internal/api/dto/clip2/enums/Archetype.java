@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.enums;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public enum Archetype {
     // device archetypes
     BRIDGE_V2,
+    BRIDGE_V3,
     UNKNOWN_ARCHETYPE,
     CLASSIC_BULB,
     SULTAN_BULB,
@@ -66,6 +69,28 @@ public enum Archetype {
     HUE_TUBE,
     HUE_SIGNE,
     STRING_LIGHT,
+    HUE_CHIME,
+    VINTAGE_CANDLE_BULB,
+    ELLIPSE_BULB,
+    TRIANGLE_BULB,
+    SMALL_GLOBE_BULB,
+    LARGE_GLOBE_BULB,
+    EDISON_BULB,
+    PENDANT_SPOT,
+    CEILING_HORIZONTAL,
+    CEILING_TUBE,
+    UP_AND_DOWN,
+    UP_AND_DOWN_UP,
+    UP_AND_DOWN_DOWN,
+    HUE_FLOODLIGHT_CAMERA,
+    TWILIGHT,
+    TWILIGHT_FRONT,
+    TWILIGHT_BACK,
+    HUE_PLAY_WALLWASHER,
+    HUE_OMNIGLOW,
+    HUE_NEON,
+    STRING_GLOBE,
+    STRING_PERMANENT,
     // room archetypes
     LIVING_ROOM,
     KITCHEN,
@@ -107,6 +132,8 @@ public enum Archetype {
     BARBECUE,
     POOL,
     OTHER;
+
+    public static final Set<Archetype> BRIDGES = Set.of(BRIDGE_V2, BRIDGE_V3);
 
     public static Archetype of(@Nullable String value) {
         if (value != null) {

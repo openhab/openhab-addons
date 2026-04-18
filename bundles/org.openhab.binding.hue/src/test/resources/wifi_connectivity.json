@@ -1,0 +1,11 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "056b2f03-d0f4-7a2b-c823-bea197b411b9",
+			"type": "wifi_connectivity",
+			"status": "disconnected",
+			"has_ssid": false
+		}
+	]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,9 +32,6 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0029;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateProvider";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateProvider";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     /**
@@ -192,7 +188,6 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

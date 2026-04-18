@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="64"
+   width="64"
+   viewBox="0 0 36 36"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="moon_phase-waning_crescent.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     id="namedview10"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.2428543"
+     inkscape:cx="28.089207"
+     inkscape:cy="63.312181"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <circle
+     fill="#ffd983"
+     cx="24.587683"
+     cy="-6.5899482"
+     r="18"
+     id="circle1"
+     transform="rotate(60)" />
+  <path
+     fill="#66757f"
+     d="M 27.000905,33.58704 C 18.391745,38.557542 7.3829463,35.607743 2.4124465,26.998585 2.2654499,26.743973 2.1475615,26.48179 2.0146857,26.223641 1.2896746,19.839887 5.2851812,12.638305 12.500905,8.4723053 19.715762,4.3068039 27.951133,4.4468867 33.116256,8.267141 c 0.157125,0.2441477 0.326106,0.4768313 0.473105,0.7314425 4.970501,8.6091585 2.020702,19.6179575 -6.588456,24.5884565 z"
+     id="path1"
+     style="fill:#ff792e;fill-opacity:1" />
+  <circle
+     fill="#ffcc4d"
+     cx="12.587683"
+     cy="-15.589949"
+     r="1"
+     id="circle7"
+     transform="rotate(60)" />
+  <circle
+     fill="#ffcc4d"
+     cx="10.587683"
+     cy="-5.5899482"
+     r="2"
+     id="circle9"
+     transform="rotate(60)" />
+  <g
+     id="g10"
+     style="fill:#756b4d;fill-opacity:1">
+    <circle
+       fill="#5b6876"
+       cx="32.087685"
+       cy="-16.089949"
+       r="3.5"
+       id="circle2"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="22.587683"
+       cy="-8.5899487"
+       r="3"
+       id="circle3"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="21.087683"
+       cy="2.9100547"
+       r="3.5"
+       id="circle4"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="21.587683"
+       cy="-18.589949"
+       r="2"
+       id="circle5"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="39.587681"
+       cy="-6.5899482"
+       r="1"
+       id="circle6"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="27.587683"
+       cy="6.4100528"
+       r="1"
+       id="circle8"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+    <circle
+       fill="#5b6876"
+       cx="32.587685"
+       cy="-1.5899471"
+       r="2"
+       id="circle10"
+       transform="rotate(60)"
+       style="fill:#756b4d;fill-opacity:1" />
+  </g>
+</svg>

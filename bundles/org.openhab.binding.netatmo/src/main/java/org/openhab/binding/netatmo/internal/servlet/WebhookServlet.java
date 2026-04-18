@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public class WebhookServlet extends NetatmoServlet {
         processEvent(new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     }
 
-    private void processEvent(String data) throws IOException {
+    private void processEvent(String data) {
         if (!data.isEmpty()) {
             logger.debug("Event transmitted from restService: {}", data);
             try {
@@ -121,8 +121,7 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(WebhookEvent event) {
         event.getNAObjectList().forEach(id -> {
-            Capability module = dataListeners.get(id);
-            if (module != null) {
+            if (dataListeners.get(id) instanceof Capability module) {
                 logger.trace("Dispatching webhook event to {}", id);
                 module.setNewData(event);
             }

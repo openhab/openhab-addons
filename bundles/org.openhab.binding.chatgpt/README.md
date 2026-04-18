@@ -21,19 +21,20 @@ The binding supports a single thing type `account`, which corresponds to the Ope
 The `account` thing requires the API key that allows accessing the account.
 API keys can be created and managed under <https://platform.openai.com/account/api-keys>.
 
-| Name             | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default                                    | Required | Advanced |
-|------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|----------|----------|
-| apiKey           | text    | The API key to be used for the requests                                                                                                                                                                                                                                                                                                | N/A                                        | yes      | no       |
-| temperature      | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.                                                                                                                                                                             | 0.5                                        | no       | no       |
-| topP             | decimal | A value between 0 and 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both. | 1.0                                        | no       | yes      |
+| Name             | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default                                      | Required | Advanced |
+|------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|----------|----------|
+| apiKey           | text    | The API key to be used for the requests                                                                                                                                                                                                                                                                                                | N/A                                          | yes      | no       |
+| temperature      | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.                                                                                                                                                                             | 0.5                                          | no       | no       |
+| topP             | decimal | A value between 0 and 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both. | 1.0                                          | no       | yes      |
 | apiUrl           | text    | The server API where to reach the AI service                                                                                                                                                                                                                                                                                           | <https://api.openai.com/v1/chat/completions> | no       | yes      |
 | modelUrl         | text    | The model url where to retrieve the available models from                                                                                                                                                                                                                                                                              | <https://api.openai.com/v1/models>           | no       | yes      |
-| model            | text    | The model to be used for the HLI service                                                                                                                                                                                                                                                                                               | gpt-4o-mini                                | no       | yes      |
-| systemMessage    | text    | Here you need to describe your openHAB system that will help AI control your smart home.                                                                                                                                                                                                                                               | N/A                                        | if HLI   | yes      |
-| maxTokens        | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 500                                        | no       | yes      |
-| keepContext      | decimal | How long should the HLI service retain context between requests (in minutes)                                                                                                                                                                                                                                                           | 2                                          | no       | yes      |
-| contextThreshold | decimal | Limit total tokens included in context.                                                                                                                                                                                                                                                                                                | 10000                                      | no       | yes      |
-| useSemanticModel | boolean | Use the semantic model to determine the location of an item.                                                                                                                                                                                                                                                                           | true                                       | no       | yes      |
+| model            | text    | The model to be used for the HLI service                                                                                                                                                                                                                                                                                               | gpt-4o-mini                                  | no       | yes      |
+| systemMessage    | text    | Here you need to describe your openHAB system that will help AI control your smart home.                                                                                                                                                                                                                                               | N/A                                          | if HLI   | yes      |
+| maxTokens        | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 500                                          | no       | yes      |
+| keepContext      | decimal | How long should the HLI service retain context between requests (in minutes)                                                                                                                                                                                                                                                           | 2                                            | no       | yes      |
+| contextThreshold | decimal | Limit total tokens included in context.                                                                                                                                                                                                                                                                                                | 10000                                        | no       | yes      |
+| useSemanticModel | boolean | Use the semantic model to determine the location of an item.                                                                                                                                                                                                                                                                           | true                                         | no       | yes      |
+| requestTimeout   | decimal | Timeout in seconds for chat API requests. Used as default for all channels.                                                                                                                                                                                                                                                            | 10                                           | no       | yes      |
 
 The advanced parameters `apiUrl` and `modelUrl` can be used, if any other ChatGPT-compatible service is used, e.g. a local installation of [LocalAI](https://github.com/go-skynet/LocalAI).
 
@@ -48,13 +49,14 @@ It is possible to extend the thing with further channels of type `chat`, so that
 
 Each channel of type `chat` takes the following configuration parameters:
 
-| Name          | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default | Required | Advanced |
-|---------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| model         | text    | The model to be used for the responses.                                                                                                                                                                                                                                                                                                | gpt-4o  | yes      | no       |
-| systemMessage | text    | The system message helps set the behavior of the assistant.                                                                                                                                                                                                                                                                            | N/A     | yes      | no       |
-| temperature   | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.                                                                                                                                                                             | 0.5     | no       | yes      |
-| topP          | decimal | A value between 0 and 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both. | 1.0     | no       | yes      |
-| maxTokens     | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 1000    | no       | yes      |
+| Name           | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default | Required | Advanced |
+|----------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| model          | text    | The model to be used for the responses.                                                                                                                                                                                                                                                                                                | gpt-4o  | yes      | no       |
+| systemMessage  | text    | The system message helps set the behavior of the assistant.                                                                                                                                                                                                                                                                            | N/A     | yes      | no       |
+| temperature    | decimal | A value between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.                                                                                                                                                                             | 0.5     | no       | yes      |
+| topP           | decimal | A value between 0 and 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both. | 1.0     | no       | yes      |
+| maxTokens      | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 1000    | no       | yes      |
+| requestTimeout | decimal | Timeout in seconds for this channel. Overrides the thing-level timeout.                                                                                                                                                                                                                                                                | N/A     | no       | yes      |
 
 ## Items Configuration
 
@@ -64,9 +66,7 @@ In this case, the item names must follow the naming convention '\<Location>_***'
 
 ## Full Examples
 
-### Prerequisites
-
-**Thing Configuration**
+### Thing Configuration
 
 ```java
 Thing chatgpt:account:1 [
@@ -88,9 +88,9 @@ Thing chatgpt:account:1 [
 
 ### Example: Improving messages
 
-**Items**
+#### Items
 
-```
+```java
 String Weather_Announcement { channel="chatgpt:account:1:chat" }
 String Morning_Message      { channel="chatgpt:account:1:morningMessage" }
 
@@ -98,7 +98,7 @@ Number Temperature_Forecast_Low
 Number Temperature_Forecast_High
 ```
 
-**Rules**
+#### Rules
 
 ```java
 rule "Weather forecast update"
@@ -136,30 +136,30 @@ The state updates can be used for a text-to-speech output and they will give you
 
 ### Example: Item control using voice
 
-**Item**
+#### Item
 
-```
+```java
 Dimmer Kitchen_Dimmer "Kitchen main light" [ "ChatGPT" ]
 ```
 
-**UI Configuration of the HLI Service**
+#### UI Configuration of the HLI Service
 
 To enable the HLI service, go to Settings -> Voice and choose "ChatGPT Human Language Interpreter".
 
-**For voice control**
+#### For voice control
 
 A text-to-speech service must be configured in the HLI Service.
 
 Use the HLI service as with e.g. a keyword recognizer, SST and a TTS module to start listening on a keyword, get from speach to text with the SST module, have it interpreted by ChatGPT through the HLI part of this plugin and read out to you via TTS.
 
-**Explanation**
+#### Explanation
 
 The binding includes a function named `items_control` which can be used by ChatGPT to send commands to items and output their status. To enable ChatGPT to access that function, the ChatGPT _Thing_ (not the channel) needs to be configured with a system message like
 
 > You are the manager of the openHAB smart home. You know how to manage devices in a smart home or provide their current status. You can also answer questions not related to the devices in the house, or, for example, compose a story upon request.
 > I will provide information about the smart home; if necessary, you can perform the requested function. If there is not enough information to perform it, ask for clarification briefly, without listing all available devices or parameters.
 > If the question is not related to devices in the smart home, answer it briefly — maximum 3 sentences in everyday language.
-> 
+>
 > The name, current status, and location of devices are listed in 'Available devices'.
 > Use the items_control function only for the requested actions, not for providing current states.
 >
@@ -171,26 +171,26 @@ The important bits of the message are to mention the list of 'Available devices'
 
 ### Example: Item control with a simple chat
 
-**UI Configuration of the HLI Service**
+#### UI Configuration of the HLI Service
 
 To enable the HLI service, go to Settings -> Voice and choose "ChatGPT Human Language Interpreter".
 
-**Items**
+#### Items
 
 For chat input and output
 
-```
+```java
 String hli_chat_input "ChatGPT HLI Input" [Setpoint]
 String hli_chat_output "ChatGPT HLI Output" [Calculation]
 ```
 
 For having something to control
 
-```
+```java
 Dimmer Kitchen_Dimmer "Kitchen main light" [ "ChatGPT" ]
 ```
 
-**Rule**
+#### Rule
 
 This (UI defined) rule will read the current text from `hli_chat_input` upon change, interpret with the _default_ interpreter (you should have set ChatGPT to be that interpreter in `UI Configuration of the HLI Service`) and write the interpretation result to the item `hli_chat_output` or, depending on the message, trigger an update for your items (never both).
 
@@ -216,6 +216,6 @@ actions:
     type: script.ScriptAction
 ```
 
-**Further Instructions**
+#### Further Instructions
 
 You can now add an input field with a "send" button to you UI, to update `hli_chat_input`, and an output field (e.g. a label) to display the response in `hli_chat_output`

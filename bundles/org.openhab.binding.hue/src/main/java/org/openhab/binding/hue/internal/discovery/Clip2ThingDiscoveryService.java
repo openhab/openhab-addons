@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
@@ -58,18 +58,31 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
     /**
-     * Map of resource types and respective thing types that shall be discovered.
+     * Resource types and respective thing types to be discovered for v2 bridges.
      */
-    private static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES = Map.of( //
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V2 = Map.of( //
             ResourceType.DEVICE, THING_TYPE_DEVICE, //
             ResourceType.ROOM, THING_TYPE_ROOM, //
             ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
             ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
+
+    /**
+     * Resource types and respective thing types to be discovered for v3+ bridges.
+     */
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V3 = Map.of( //
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
+            ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA);
 
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE),
+        super(Clip2BridgeHandler.class,
+                Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP),
                 DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
@@ -94,13 +107,16 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = thingHandler.getThing().getUID();
-                for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.entrySet()) {
+                for (Entry<ResourceType, ThingTypeUID> entry : (thingHandler.getBridgeGeneration() >= 3
+                        ? DISCOVERY_TYPES_V3
+                        : DISCOVERY_TYPES_V2).entrySet()) {
                     for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
-                        MetaData metaData = resource.getMetaData();
-                        if (Objects.nonNull(metaData) && (metaData.getArchetype() == Archetype.BRIDGE_V2)) {
-                            // the bridge device is handled by a bridge thing handler
+                        ProductData productData = resource.getProductData();
+                        if (Objects.nonNull(productData)
+                                && Archetype.BRIDGES.contains(productData.getProductArchetype())) {
+                            // bridges are discovered elsewhere and handled by bridge thing handlers
                             continue;
                         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -200,6 +200,8 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
                 return WasteType.PAPER;
             case AhaWasteCollectionBindingConstants.GENERAL_WASTE:
                 return WasteType.GENERAL_WASTE;
+            case AhaWasteCollectionBindingConstants.CHRISTMAS_TREE:
+                return WasteType.CHRISTMAS_TREES;
             default:
                 throw new IllegalArgumentException("Unknown channel type: " + channelId);
         }

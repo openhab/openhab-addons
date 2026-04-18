@@ -19,7 +19,6 @@
   <modules>
     <module>org.openhab.automation.groovyscripting.tests</module>
     <module>org.openhab.automation.jsscriptingnashorn.tests</module>
-    <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.feed.tests</module>
     <module>org.openhab.binding.homeassistant.tests</module>
@@ -80,7 +79,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.10.0</version>
         <executions>
           <execution>
             <id>unpack-eea</id>
