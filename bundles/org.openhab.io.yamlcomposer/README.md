@@ -271,12 +271,12 @@ YAML Composer reads enhanced-syntax YAML files and performs a compilation pass t
 During compilation, YAML Composer performs the following steps:
 
 1. **YAML Parsing**: The source file is parsed into an internal structure.
-2. **Variable Substitution (`${..}`)**: Expressions are evaluated and injected.
-3. **Conditionals (`!if`)**: Conditional logic determines which blocks remain.
-4. **Template and Include Expansion**: `!insert` and `!include` bring in referenced content, often using resolved variables.
-5. **Package Expansion**: External or local packages are loaded and expanded into their component sections.
-6. **Recursive Merging**: Merge keys and package structures are combined into the main document.
-7. **Hidden Key Removal**: Keys beginning with `.` are removed from the final output.
+1. **Variable Substitution (`${..}`)**: Expressions are evaluated and injected.
+1. **Conditionals (`!if`)**: Conditional logic determines which blocks remain.
+1. **Template and Include Expansion**: `!insert` and `!include` bring in referenced content, often using resolved variables.
+1. **Package Expansion**: External or local packages are loaded and expanded into their component sections.
+1. **Recursive Merging**: Merge keys and package structures are combined into the main document.
+1. **Hidden Key Removal**: Keys beginning with `.` are removed from the final output.
 
 The resulting YAML contains:
 
