@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and resolve dependencies
         id: build
-        # call mvnw directly to avoid filtering of the log by the wrapper,
+        # call mvnw directly instead of the repo's log-filtering wrapper script,
         # use more cores, safe to do so as we skip tests (which might depend on load)
         run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver'
         env:
