@@ -585,7 +585,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
             this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.protocol);
+                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
+                    configuration.protocol);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
         }
@@ -616,7 +617,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
                 this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,
+                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
                         configuration.protocol);
             } catch (IllegalArgumentException e) {
                 logger.warn("{}", e.getMessage());
