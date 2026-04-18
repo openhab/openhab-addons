@@ -29,7 +29,8 @@ public class UnifiAccessApiException extends Exception {
      * <ul>
      * <li>{@link #OK} — not an auth error</li>
      * <li>{@link #REJECTED} — credentials definitively rejected (HTTP 401); user must fix config</li>
-     * <li>{@link #THROTTLED} — request forbidden (HTTP 403); usually NVR-side rate limiting, treat as transient</li>
+     * <li>{@link #THROTTLED} — request forbidden (HTTP 403); usually controller-side rate limiting, treat as
+     * transient</li>
      * </ul>
      */
     public enum AuthState {

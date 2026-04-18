@@ -197,7 +197,7 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
 
         UniFiSession session;
         try {
-            session = parentHandler.getSessionAsync().join();
+            session = parentHandler.getSessionAsync().get(30, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.debug("Parent bridge session not available: {}", e.getMessage());
             setOfflineAndReconnect(e.getMessage(), false);

@@ -139,14 +139,6 @@ public final class UnifiAccessApiClient implements Closeable {
         stopWsMonitor();
     }
 
-    /**
-     * No-op kept for backward compatibility — the session is now always supplied at construction time by the
-     * parent {@code unifi:controller} bridge handler.
-     */
-    public void login() throws UnifiAccessApiException {
-        // Session is injected via constructor from the parent bridge; nothing to do here.
-    }
-
     // ---- Bootstrap ----
 
     private volatile @Nullable JsonObject cachedBootstrap;
@@ -772,18 +764,13 @@ public final class UnifiAccessApiClient implements Closeable {
         if (session != null && session.isOpen()) {
             return;
         }
-        // Ensure we have a valid session before connecting
-        if (unifiSession == null) {
-            login();
-        }
         this.onClosedCallback = onClosed;
         this.closedNotified.set(false);
         try {
             URI wsUri = URI.create("wss://" + host + V2_BASE + "/ws/notification");
             logger.debug("Notifications WebSocket URI: {}", wsUri);
             ClientUpgradeRequest req = new ClientUpgradeRequest();
-            UniFiSession us = unifiSession;
-            String cookie = us == null ? null : us.getAuthCookie();
+            String cookie = unifiSession.getAuthCookie();
             if (cookie != null) {
                 req.setHeader("Cookie", cookie);
             }
@@ -887,19 +874,11 @@ public final class UnifiAccessApiClient implements Closeable {
      */
     private Request newAuthenticatedRequest(HttpMethod method, String path, @Nullable String body)
             throws UnifiAccessApiException {
-        UniFiSession us = unifiSession;
-        if (us == null) {
-            login();
-            us = unifiSession;
-        }
-
         URI uri = baseUri(path);
         Request req = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, "application/json")
                 .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        if (us != null) {
-            us.addAuthHeaders(req);
-        }
+        unifiSession.addAuthHeaders(req);
 
         if (body != null) {
             req.header(HttpHeader.CONTENT_TYPE, "application/json");
@@ -931,18 +910,14 @@ public final class UnifiAccessApiClient implements Closeable {
 
         int sc = resp.getStatus();
         if (sc == HttpStatus.UNAUTHORIZED_401) {
-            UniFiSession us = unifiSession;
-            if (us != null) {
-                try {
-                    logger.debug("Received 401 for {}, re-authenticating via shared session", action);
-                    us.reauthenticate().join();
-                } catch (java.util.concurrent.CompletionException ce) {
-                    throw new UnifiAccessApiException("Authentication failed for " + action + ": " + ce.getMessage(),
-                            AuthState.REJECTED);
-                }
-                throw new UnifiAccessApiException("Re-authenticated after 401 for " + action + ", retry required");
+            try {
+                logger.debug("Received 401 for {}, re-authenticating via shared session", action);
+                unifiSession.reauthenticate().get(30, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                throw new UnifiAccessApiException("Authentication failed for " + action + ": " + e.getMessage(),
+                        AuthState.REJECTED);
             }
-            throw new UnifiAccessApiException("Authentication rejected for " + action + ": " + sc, AuthState.REJECTED);
+            throw new UnifiAccessApiException("Re-authenticated after 401 for " + action + ", retry required");
         }
         if (sc == HttpStatus.FORBIDDEN_403) {
             throw new UnifiAccessApiException("Forbidden for " + action + " (likely throttled): " + sc,
@@ -955,10 +930,7 @@ public final class UnifiAccessApiClient implements Closeable {
         // Update CSRF token from response if present — delegate to session so all family bindings see it.
         String updatedCsrf = resp.getHeaders().get("X-Updated-CSRF-Token");
         if (updatedCsrf != null && !updatedCsrf.isBlank()) {
-            UniFiSession us = unifiSession;
-            if (us != null) {
-                us.updateCsrfToken(updatedCsrf);
-            }
+            unifiSession.updateCsrfToken(updatedCsrf);
         }
     }
 

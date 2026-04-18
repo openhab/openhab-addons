@@ -92,6 +92,7 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
         if (config.host.isBlank() || config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Host, username, and password are required");
+            sessionFuture.completeExceptionally(new UniFiException("Missing configuration"));
             return;
         }
 
@@ -103,6 +104,7 @@ public class UniFiControllerBridgeHandler extends BaseBridgeHandler {
             logger.debug("Failed to start HTTP client for {}: {}", thing.getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Failed to start HTTP client: " + e.getMessage());
+            sessionFuture.completeExceptionally(new UniFiException("Failed to start HTTP client", e));
             return;
         }
         httpClient = client;

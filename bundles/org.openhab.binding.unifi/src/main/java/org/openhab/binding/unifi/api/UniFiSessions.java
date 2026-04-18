@@ -22,14 +22,17 @@ import org.openhab.binding.unifi.internal.api.UniFiRequestThrottler;
 import org.openhab.binding.unifi.internal.api.UniFiSessionImpl;
 
 /**
- * Factory for creating {@link UniFiSession} instances that share the same auth / CSRF / throttle / persistence
- * machinery as the parent {@code unifi:controller} bridge.
+ * Factory for creating standalone {@link UniFiSession} instances that apply the same auth / CSRF / throttle /
+ * persistence policy as the parent {@code unifi:controller} bridge.
  * <p>
  * Child bindings that need to talk directly to a UniFi console (for example the UniFi Protect legacy
  * {@code unifiprotect:nvr} bridge when not yet migrated to {@code unifi:controller}) obtain a session via this
- * factory instead of rolling their own login. The returned session uses the same 7-req/s throttle as the parent,
- * persists its auth cookie + CSRF token to {@code $OH_USERDATA/cache/unifi/}, and transparently re-authenticates
- * on 401.
+ * factory instead of rolling their own login. Each session gets its own {@link UniFiRequestThrottler} configured
+ * with the same 7-req/s policy as the parent — these limiters are NOT shared across sessions, so callers that
+ * create multiple sessions for the same console should prefer reusing the parent bridge's session via
+ * {@link org.openhab.binding.unifi.handler.UniFiControllerBridgeHandler#getSessionAsync()} to stay under the
+ * aggregate rate limit. Sessions persist their auth cookie + CSRF token to {@code $OH_USERDATA/cache/unifi/} and
+ * transparently re-authenticate on 401.
  *
  * @author Dan Cunningham - Initial contribution
  */
