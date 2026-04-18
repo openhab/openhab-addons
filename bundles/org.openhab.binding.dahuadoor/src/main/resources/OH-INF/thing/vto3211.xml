@@ -34,7 +34,11 @@
 				<label>Open Door 2</label>
 				<description>Relay control to open door 2</description>
 			</channel>
+			<channel id="webrtc-url" typeId="webrtc-url"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>macAddress</representation-property>
 
 		<config-description>
@@ -62,6 +66,47 @@
 				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.
 					Disable for plain HTTP (port 80).</description>
 				<default>false</default>
+			</parameter>
+			<parameter name="enableWebRTC" type="boolean">
+				<label>Enable WebRTC</label>
+				<description>Start a local go2rtc instance to bridge the RTSP stream to WebRTC. Requires go2rtcPath to be set.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="go2rtcPath" type="text">
+				<label>go2rtc Binary Path</label>
+				<description>Absolute path to the go2rtc binary (e.g. /opt/go2rtc). Required when Enable WebRTC is on.</description>
+				<default></default>
+			</parameter>
+			<parameter name="go2rtcApiPort" type="integer">
+				<advanced>true</advanced>
+				<label>go2rtc API Port</label>
+				<description>HTTP API port for the go2rtc instance (default 1984). Must be unique per thing if multiple things run
+					WebRTC.</description>
+				<default>1984</default>
+			</parameter>
+			<parameter name="webRtcPort" type="integer">
+				<advanced>true</advanced>
+				<label>WebRTC Port</label>
+				<description>UDP/TCP port for WebRTC data (default 8555). Must be unique per thing if multiple things run WebRTC.</description>
+				<default>8555</default>
+			</parameter>
+			<parameter name="stunServer" type="text">
+				<advanced>true</advanced>
+				<label>STUN Server</label>
+				<description>STUN server for WebRTC NAT traversal in host:port format (default stun.l.google.com:19302).</description>
+				<default>stun.l.google.com:19302</default>
+			</parameter>
+			<parameter name="rtspChannel" type="integer">
+				<advanced>true</advanced>
+				<label>RTSP Channel</label>
+				<description>RTSP channel index on the device (default 1).</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="rtspSubtype" type="integer">
+				<advanced>true</advanced>
+				<label>RTSP Sub-type</label>
+				<description>RTSP sub-type index: 0 = main stream, 1 = sub stream (default 0).</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
