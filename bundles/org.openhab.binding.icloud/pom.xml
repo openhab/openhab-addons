@@ -17,7 +17,7 @@
     multiple Apple devices connected to an iCloud account.</description>
 
   <properties>
-    <bouncycastle.version>1.81</bouncycastle.version>
+    <bouncycastle.version>1.84</bouncycastle.version>
   </properties>
 
   <dependencies>
