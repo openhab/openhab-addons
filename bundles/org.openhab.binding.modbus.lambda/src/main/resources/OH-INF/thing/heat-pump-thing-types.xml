@@ -166,7 +166,7 @@
 	<channel-type id="heat-pump-vol-sink">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Heatpump Volume flow heat sink</label>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heat-pump-t-eqin">
@@ -184,7 +184,7 @@
 	<channel-type id="heat-pump-vol-source">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Heatpump Volume flow energy source</label>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heat-pump-compressor-rating">
