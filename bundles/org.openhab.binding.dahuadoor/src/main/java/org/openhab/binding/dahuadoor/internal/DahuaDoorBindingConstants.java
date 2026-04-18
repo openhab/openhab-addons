@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DahuaDoorBindingConstants {
 
-    private static final String BINDING_ID = "dahuadoor";
+    public static final String BINDING_ID = "dahuadoor";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VTO2202 = new ThingTypeUID(BINDING_ID, "vto2202");

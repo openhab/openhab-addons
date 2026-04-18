@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dahuadoor.internal.sip;
 
+import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.BINDING_ID;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +110,7 @@ public class SipClient implements SipListener {
     private static final long TERMINATING_TIMEOUT_SECONDS = 5;
     private static final long ANSWERING_TIMEOUT_SECONDS = 15;
     private final ScheduledExecutorService callStateTimeoutScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread thread = new Thread(r, "dahuadoor-sip-answering-timeout");
+        Thread thread = new Thread(r, BINDING_ID + "-sip-answering-timeout");
         thread.setDaemon(true);
         return thread;
     });
@@ -192,7 +194,7 @@ public class SipClient implements SipListener {
 
     private String buildSipStackName() {
         String stackIdentity = sipExtension + ":" + localSipPort + ":" + localIp;
-        return "dahuadoor-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
+        return BINDING_ID + "-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -320,15 +322,14 @@ public class SipClient implements SipListener {
             request.addHeader(userAgentHeader);
 
             // Add Authorization header with Digest
-            SipURI authUri = addrFactory.createSipURI(null, vtoIp);
-            String uri = authUri.toString();
+            String uri = requestURI.toString();
             String response = DigestAuthHelper.calculateResponse(username, realm, password, "REGISTER", uri, nonce);
 
             AuthorizationHeader authHeader = hdrFactory.createAuthorizationHeader("Digest");
             authHeader.setUsername(username);
             authHeader.setRealm(realm);
             authHeader.setNonce(nonce);
-            authHeader.setURI(authUri);
+            authHeader.setURI(requestURI);
             authHeader.setResponse(response);
             authHeader.setAlgorithm("MD5");
             request.addHeader(authHeader);
@@ -590,6 +591,7 @@ public class SipClient implements SipListener {
             currentCallerId = null;
             pendingHangupAfterAck = false;
         }
+        listener.onCallEnded();
         logger.info("Call terminated by remote BYE");
     }
 

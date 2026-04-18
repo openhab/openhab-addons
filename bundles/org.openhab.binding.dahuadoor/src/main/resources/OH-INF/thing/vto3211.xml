@@ -39,7 +39,7 @@
 			<channel id="sip-call-state" typeId="sip-call-state"/>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>macAddress</representation-property>
 
