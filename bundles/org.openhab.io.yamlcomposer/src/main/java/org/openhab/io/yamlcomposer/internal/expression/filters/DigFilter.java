@@ -23,7 +23,7 @@ import com.hubspot.jinjava.lib.filter.Filter;
 
 /**
  * Custom Jinjava filter to dig into nested maps/lists.
- * Supports negative indices for lists to acess elements from the end.
+ * Supports negative indices for lists to access elements from the end.
  *
  * Usage: variable|dig("key1", "key2", 0) to access variable["key1"]["key2"][0]
  * Also supports dot-notation in a single argument: variable|dig("key1.key2.0")

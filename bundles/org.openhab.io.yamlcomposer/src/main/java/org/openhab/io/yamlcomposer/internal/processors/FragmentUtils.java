@@ -47,8 +47,9 @@ public class FragmentUtils {
     }
 
     private static @Nullable Parameters parseMapParameters(Map<?, ?> paramsMap, String objectName) {
-        @Nullable
-        String name = (String) paramsMap.get(objectName);
+        if (!(paramsMap.get(objectName) instanceof String name)) {
+            return null;
+        }
         if (!(paramsMap.get("vars") instanceof Map<?, ?> varsMap)) {
             return new Parameters(name, Map.of());
         }
@@ -95,7 +96,7 @@ public class FragmentUtils {
         return new Parameters(finalName, vars);
     }
 
-    private static void parsePair(String input, int start, int end, Map<String, Object> vars) {
+    private static void parsePair(String input, int start, int end, Map<String, @Nullable Object> vars) {
         int eq = input.indexOf('=', start);
 
         // If eq is outside our current segment, there is no value

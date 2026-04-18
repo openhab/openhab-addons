@@ -161,7 +161,7 @@ server:
   port: 8080
   <<: !if
     if: is_prod
-    value: { ssl: true, cache: true }
+    then: { ssl: true, cache: true }
 ```
 
 ### Substitution
