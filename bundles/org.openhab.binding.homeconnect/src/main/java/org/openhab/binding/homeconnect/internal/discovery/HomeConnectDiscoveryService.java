@@ -72,7 +72,8 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
                 ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
 
                 if (thingTypeUID != null) {
-                    logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
+                    logger.debug("Found {} ({}).", appliance.getHaId(),
+                            appliance.getType().toUpperCase(DEFAULT_LOCALE));
 
                     Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
                     String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";
