@@ -45,6 +45,10 @@
 		<item-type>Switch</item-type>
 		<label>SIP Registered</label>
 		<description>ON when the device has successfully registered with the SIP server.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -52,6 +56,10 @@
 		<item-type>String</item-type>
 		<label>SIP Call State</label>
 		<description>Current SIP call state (IDLE, RINGING, ANSWERING, ACTIVE, TERMINATING, HUNGUP).</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 

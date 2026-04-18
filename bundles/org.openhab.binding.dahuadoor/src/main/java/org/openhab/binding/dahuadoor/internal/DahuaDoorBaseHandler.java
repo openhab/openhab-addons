@@ -197,6 +197,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private void startSip(DahuaDoorConfiguration cfg) {
         if (cfg.sipExtension.isBlank()) {
             logger.warn("SIP enabled but sipExtension not configured - skipping SIP registration");
+            updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+            updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
             return;
         }
 
@@ -239,6 +241,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             localSipClient.dispose();
             logger.debug("SIP client stopped");
         }
+        updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
     }
 
     private String detectLocalIp(String vtoHostname) throws Exception {
