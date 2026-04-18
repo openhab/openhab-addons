@@ -38,6 +38,11 @@ Outdoor station device configuration.
 | stunServer    | text    | No       | stun.l.google.com:19302 | STUN server in `host:port` format used by go2rtc.                                                                                                                        |
 | rtspChannel   | integer | No       | 1                       | RTSP channel index on the Dahua device.                                                                                                                                  |
 | rtspSubtype   | integer | No       | 0                       | RTSP stream subtype (`0` main stream, `1` sub stream).                                                                                                                   |
+| enableSip     | boolean | No       | false                   | Enables local SIP client registration for call signaling and SIP state channels.                                                                                         |
+| sipExtension  | text    | No       |                         | SIP extension used for registration (for example `9901#2`).                                                                                                              |
+| sipPassword   | text    | No       |                         | SIP password used for SIP authentication (falls back to `password` when empty).                                                                                          |
+| localSipPort  | integer | No       | 5062                    | Local UDP port used by the SIP client. Must be unique per thing when multiple SIP clients are active.                                                                   |
+| sipRealm      | text    | No       | VDP                     | SIP authentication realm used for digest authentication.                                                                                                                  |
 
 **Note:** Windows paths are not currently supported.
 
@@ -62,6 +67,8 @@ keytool -importcert -alias dahua-door -file ca.crt \
 | open-door-1 | Switch  | Write      | Command to open door relay 1                              |
 | open-door-2 | Switch  | Write      | Command to open door relay 2                              |
 | webrtc-url  | String  | Read       | Proxy path for WebRTC SDP offer/answer exchange           |
+| sip-registered | Switch | Read      | ON when SIP client registration is active                 |
+| sip-call-state | String | Read      | Current SIP call state (IDLE, RINGING, ANSWERING, ACTIVE, TERMINATING, HUNGUP) |
 
 ### VTO3211 Channels (Dual Button)
 
@@ -74,6 +81,8 @@ keytool -importcert -alias dahua-door -file ca.crt \
 | open-door-1   | Switch  | Write      | Command to open door relay 1                       |
 | open-door-2   | Switch  | Write      | Command to open door relay 2                       |
 | webrtc-url    | String  | Read       | Proxy path for WebRTC SDP offer/answer exchange    |
+| sip-registered | Switch | Read      | ON when SIP client registration is active           |
+| sip-call-state | String | Read      | Current SIP call state (IDLE, RINGING, ANSWERING, ACTIVE, TERMINATING, HUNGUP) |
 
 ## Intercom Operation
 
