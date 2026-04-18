@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeslascopeWebTargets {
     private static final int TIMEOUT_MS = 30000;
+    private static final int MAX_RETRIES = 3;
     private static final String BASE_URI = "https://teslascope.com/api/";
     private static final String BASE_VEHICLE_URI = BASE_URI + "vehicle/";
     private final Logger logger = LoggerFactory.getLogger(TeslascopeWebTargets.class);
@@ -87,30 +88,43 @@ public class TeslascopeWebTargets {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
         int status = 0;
-        try {
-            Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
-            if (!personalAccessToken.isBlank()) {
-                request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("{} request for {}", HttpMethod.GET, uri);
-            }
-            ContentResponse response = request.send();
-            status = response.getStatus();
-            jsonResponse = response.getContentAsString();
-            logger.trace("JSON response: '{}'", jsonResponse);
-            if (status == HttpStatus.UNAUTHORIZED_401) {
-                throw new TeslascopeAuthenticationException("Unauthorized");
-            }
-            if (!HttpStatus.isSuccess(status)) {
-                throw new TeslascopeCommunicationException(
-                        String.format("Teslascope returned error <%d> while invoking %s", status, uri));
-            }
-        } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-            throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
-        }
 
+        for (int retryCounter = 1; retryCounter <= MAX_RETRIES; retryCounter++) {
+            try {
+                Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
+                        TimeUnit.MILLISECONDS);
+                if (!personalAccessToken.isBlank()) {
+                    request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
+                }
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} request for {}", HttpMethod.GET, uri);
+                }
+                ContentResponse response = request.send();
+                status = response.getStatus();
+                if (HttpStatus.isSuccess(status)) {
+                    jsonResponse = response.getContentAsString();
+                    logger.trace("JSON response: '{}'", jsonResponse);
+                } else {
+                    switch (status) {
+                        case HttpStatus.UNAUTHORIZED_401:
+                            throw new TeslascopeAuthenticationException("Unauthorized");
+                        case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                        case HttpStatus.BAD_GATEWAY_502:
+                            logger.debug("Teslascope returned {}, retrying", status);
+                            Thread.sleep(2000);
+                            break;
+                        default:
+                            throw new TeslascopeCommunicationException(
+                                    String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+                    }
+                }
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
+            } catch (TimeoutException | ExecutionException ex) {
+                throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
+            }
+        }
         return jsonResponse;
     }
 }
