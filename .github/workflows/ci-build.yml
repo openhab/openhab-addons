@@ -102,7 +102,7 @@ jobs:
 
       - name: Build
         id: build
-        run: bash 'bash ./.github/scripts/maven-build'
+        run: bash './.github/scripts/maven-build'
         env:
           MAVEN_BUILD_ADDON: ${{ needs.plan-shards.outputs.selected_addon }}
           MAVEN_BUILD_PART: ${{ matrix.build_task.build_part }}
