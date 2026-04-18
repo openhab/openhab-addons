@@ -112,6 +112,7 @@ public class TeslascopeWebTargets {
                         case HttpStatus.BAD_GATEWAY_502:
                             logger.debug("Teslascope returned {}, retrying", status);
                             Thread.sleep(2000);
+                            break;
                         default:
                             throw new TeslascopeCommunicationException(
                                     String.format("Teslascope returned error <%d> while invoking %s", status, uri));
