@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.access.internal.api.UniFiAccessApiClient;
+import org.openhab.binding.unifi.access.internal.api.UnifiAccessApiClient;
 import org.openhab.binding.unifi.access.internal.config.UnifiAccessDeviceConfiguration;
 import org.openhab.binding.unifi.access.internal.dto.Device;
 import org.openhab.binding.unifi.access.internal.dto.DeviceAccessMethodSettings;
@@ -85,7 +85,7 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
             return;
         }
         UnifiAccessBridgeHandler bridge = getBridgeHandler();
-        UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
+        UnifiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
         if (api == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
             api.updateDeviceConfig(deviceId, configKey, configValue);
             // Update local configMap and channel
             lastConfigMap.put(configKey, configValue);
-            var settings = UniFiAccessApiClient.buildSettingsFromConfigs(lastConfigMap);
+            var settings = UnifiAccessApiClient.buildSettingsFromConfigs(lastConfigMap);
             updateFromSettings(settings);
         } catch (Exception e) {
             logger.debug("Command failed for device {}: {}", deviceId, e.getMessage());

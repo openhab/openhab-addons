@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifi.api.UniFiException;
+import org.openhab.binding.unifi.api.UniFiException.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,9 +131,13 @@ public class UniFiAuthenticator {
             ContentResponse response = request.send();
 
             int status = response.getStatus();
-            if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403
-                    || status == HttpStatus.BAD_REQUEST_400) {
-                throw new UniFiException("Authentication rejected by console (HTTP " + status + ")");
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                throw new UniFiException("Authentication rejected by console (HTTP " + status + ")",
+                        AuthState.REJECTED);
+            }
+            if (status == HttpStatus.FORBIDDEN_403 || status == HttpStatus.TOO_MANY_REQUESTS_429) {
+                throw new UniFiException("Authentication throttled by console (HTTP " + status + ")",
+                        AuthState.THROTTLED);
             }
             if (status != HttpStatus.OK_200) {
                 throw new UniFiException("Authentication failed: " + status + " " + response.getReason());

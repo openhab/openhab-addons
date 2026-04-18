@@ -19,7 +19,6 @@ It connects to your UniFi console using the internal API, providing real-time do
 
 1. First create a `unifi:controller` bridge from the parent UniFi binding pointing at your UniFi console with a local user account.
 1. Then add a `bridge` as a child of that controller bridge.
-No host/username/password is needed on the Access bridge itself — they are inherited from the parent.
 1. Once the Access `bridge` is ONLINE, `door`s and reader `device`s are discovered automatically and appear in the Inbox.
 1. Approve discovered items or create them manually using `deviceId`.
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.access.internal.UnifiAccessBindingConstants;
-import org.openhab.binding.unifi.access.internal.api.UniFiAccessApiClient;
+import org.openhab.binding.unifi.access.internal.api.UnifiAccessApiClient;
 import org.openhab.binding.unifi.access.internal.config.UnifiAccessDeviceConfiguration;
 import org.openhab.binding.unifi.access.internal.dto.Door;
 import org.openhab.binding.unifi.access.internal.dto.DoorLockRule;
@@ -34,7 +34,7 @@ import org.openhab.binding.unifi.access.internal.dto.Notification;
 import org.openhab.binding.unifi.access.internal.dto.Notification.LocationState;
 import org.openhab.binding.unifi.access.internal.dto.Notification.LocationUpdateV2Data;
 import org.openhab.binding.unifi.access.internal.dto.Notification.RemoteViewChangeData;
-import org.openhab.binding.unifi.access.internal.dto.UniFiAccessApiException;
+import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -97,7 +97,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
             return;
         }
         UnifiAccessBridgeHandler bridge = getBridgeHandler();
-        UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
+        UnifiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
         if (api == null) {
             return;
         }
@@ -204,7 +204,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
     protected void handleLocationUpdateV2(LocationUpdateV2Data locationUpdate) {
         if (locationUpdate.thumbnail != null) {
             UnifiAccessBridgeHandler bridge = getBridgeHandler();
-            UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
+            UnifiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
             if (api == null) {
                 return;
             }
@@ -257,7 +257,7 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
         // Fetch initial thumbnail from bootstrap if available
         String thumbPath = door.doorThumbnail;
         if (thumbPath != null) {
-            UniFiAccessApiClient api = getApiClient();
+            UnifiAccessApiClient api = getApiClient();
             if (api != null) {
                 try {
                     Image thumbnail = api.getDoorThumbnail(thumbPath);
@@ -268,12 +268,12 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                 }
             }
         }
-        UniFiAccessApiClient api = getApiClient();
+        UnifiAccessApiClient api = getApiClient();
         if (api != null) {
             try {
                 DoorLockRule rule = api.getDoorLockRule(door.id);
                 updateLockRule(rule);
-            } catch (UniFiAccessApiException e) {
+            } catch (UnifiAccessApiException e) {
                 logger.debug("Failed to get door lock rule for door {}: {}", door.id, e.getMessage());
             }
         }

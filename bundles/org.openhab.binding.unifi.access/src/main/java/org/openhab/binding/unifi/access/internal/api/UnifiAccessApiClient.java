@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -49,7 +50,8 @@ import org.openhab.binding.unifi.access.internal.dto.DoorLockRule;
 import org.openhab.binding.unifi.access.internal.dto.DoorState;
 import org.openhab.binding.unifi.access.internal.dto.Image;
 import org.openhab.binding.unifi.access.internal.dto.Notification;
-import org.openhab.binding.unifi.access.internal.dto.UniFiAccessApiException;
+import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException;
+import org.openhab.binding.unifi.access.internal.dto.UnifiAccessApiException.AuthState;
 import org.openhab.binding.unifi.api.UniFiSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +74,9 @@ import com.google.gson.JsonParser;
  * @author Dan Cunningham - Refactored onto shared UniFiSession
  */
 @NonNullByDefault
-public final class UniFiAccessApiClient implements Closeable {
+public final class UnifiAccessApiClient implements Closeable {
 
-    private final Logger logger = LoggerFactory.getLogger(UniFiAccessApiClient.class);
+    private final Logger logger = LoggerFactory.getLogger(UnifiAccessApiClient.class);
 
     private static final long HTTP_TIMEOUT_MS = 30_000;
     private static final String V2_BASE = "/proxy/access/api/v2";
@@ -89,11 +91,13 @@ public final class UniFiAccessApiClient implements Closeable {
     private long lastHeartbeatEpochMs;
     private @Nullable ScheduledFuture<?> wsMonitorFuture;
     private boolean closed = false;
+    private volatile @Nullable BiConsumer<Integer, String> onClosedCallback;
+    private final AtomicBoolean closedNotified = new AtomicBoolean(false);
 
     /** Shared authenticated session owned by the parent {@code unifi:controller} bridge. */
     private final UniFiSession unifiSession;
 
-    public UniFiAccessApiClient(HttpClient httpClient, String host, Gson gson, UniFiSession session,
+    public UnifiAccessApiClient(HttpClient httpClient, String host, Gson gson, UniFiSession session,
             ScheduledExecutorService executor) {
         this.httpClient = httpClient;
         this.host = host;
@@ -112,6 +116,9 @@ public final class UniFiAccessApiClient implements Closeable {
     @Override
     public synchronized void close() {
         closed = true;
+        // Suppress the close callback so a deliberate shutdown doesn't trigger a bridge reconnect.
+        closedNotified.set(true);
+        onClosedCallback = null;
         try {
             Session s = wsSession;
             if (s != null) {
@@ -136,7 +143,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * No-op kept for backward compatibility — the session is now always supplied at construction time by the
      * parent {@code unifi:controller} bridge handler.
      */
-    public void login() throws UniFiAccessApiException {
+    public void login() throws UnifiAccessApiException {
         // Session is injected via constructor from the parent bridge; nothing to do here.
     }
 
@@ -152,7 +159,7 @@ public final class UniFiAccessApiClient implements Closeable {
      *
      * @return the raw bootstrap JSON object (first element of the data array)
      */
-    public synchronized JsonObject getBootstrap() throws UniFiAccessApiException {
+    public synchronized JsonObject getBootstrap() throws UnifiAccessApiException {
         JsonObject cached = this.cachedBootstrap;
         if (cached != null && (System.currentTimeMillis() - bootstrapCacheTimeMs) < BOOTSTRAP_CACHE_TTL_MS) {
             return cached;
@@ -165,7 +172,7 @@ public final class UniFiAccessApiClient implements Closeable {
 
         JsonArray dataArray = root.getAsJsonArray("data");
         if (dataArray == null || dataArray.isEmpty()) {
-            throw new UniFiAccessApiException("Empty bootstrap data array");
+            throw new UnifiAccessApiException("Empty bootstrap data array");
         }
         JsonObject result = dataArray.get(0).getAsJsonObject();
         this.cachedBootstrap = result;
@@ -179,7 +186,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * Extracts doors from the bootstrap topology.
      * Flattens: bootstrap.floors[].doors[] into a single list.
      */
-    public List<Door> getDoors() throws UniFiAccessApiException {
+    public List<Door> getDoors() throws UnifiAccessApiException {
         JsonObject bootstrap = getBootstrap();
         List<Door> doors = new ArrayList<>();
 
@@ -375,7 +382,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * Extracts all devices from the bootstrap topology.
      * Flattens device_groups from floors and doors into a single list.
      */
-    public List<Device> getDevices() throws UniFiAccessApiException {
+    public List<Device> getDevices() throws UnifiAccessApiException {
         JsonObject bootstrap = getBootstrap();
         List<Device> devices = new ArrayList<>();
 
@@ -543,7 +550,7 @@ public final class UniFiAccessApiClient implements Closeable {
     /**
      * Unlocks a door by its location ID.
      */
-    public boolean unlockDoor(String locationId) throws UniFiAccessApiException {
+    public boolean unlockDoor(String locationId) throws UnifiAccessApiException {
         ContentResponse resp = execPut(V2_BASE + "/location/" + locationId + "/unlock", "{}");
         ensure2xx(resp, "unlockDoor");
         return checkV2SuccessBool(resp, "unlockDoor");
@@ -554,14 +561,14 @@ public final class UniFiAccessApiClient implements Closeable {
      * The v2 API does not support actor parameters on unlock, so they are ignored.
      */
     public boolean unlockDoor(String locationId, @Nullable String actorId, @Nullable String actorName,
-            @Nullable Map<String, Object> extra) throws UniFiAccessApiException {
+            @Nullable Map<String, Object> extra) throws UnifiAccessApiException {
         return unlockDoor(locationId);
     }
 
     /**
      * Sets a lock rule on a device.
      */
-    public boolean setDoorLockRule(String deviceId, DoorLockRule rule) throws UniFiAccessApiException {
+    public boolean setDoorLockRule(String deviceId, DoorLockRule rule) throws UnifiAccessApiException {
         JsonObject body = new JsonObject();
         if (rule.type != null) {
             body.addProperty("type", gson.toJson(rule.type).replace("\"", ""));
@@ -574,32 +581,32 @@ public final class UniFiAccessApiClient implements Closeable {
         return checkV2SuccessBool(resp, "setDoorLockRule");
     }
 
-    public boolean keepDoorUnlocked(String deviceId) throws UniFiAccessApiException {
+    public boolean keepDoorUnlocked(String deviceId) throws UnifiAccessApiException {
         return setDoorLockRule(deviceId, DoorLockRule.keepUnlock());
     }
 
-    public boolean keepDoorLocked(String deviceId) throws UniFiAccessApiException {
+    public boolean keepDoorLocked(String deviceId) throws UnifiAccessApiException {
         return setDoorLockRule(deviceId, DoorLockRule.keepLock());
     }
 
-    public boolean unlockForMinutes(String deviceId, int minutes) throws UniFiAccessApiException {
+    public boolean unlockForMinutes(String deviceId, int minutes) throws UnifiAccessApiException {
         if (minutes <= 0) {
             throw new IllegalArgumentException("minutes must be > 0");
         }
         return setDoorLockRule(deviceId, DoorLockRule.customMinutes(minutes));
     }
 
-    public boolean resetDoorLockRule(String deviceId) throws UniFiAccessApiException {
+    public boolean resetDoorLockRule(String deviceId) throws UnifiAccessApiException {
         return setDoorLockRule(deviceId, DoorLockRule.reset());
     }
 
     /** End an active keep-unlock/custom early (lock immediately). */
-    public boolean lockEarly(String deviceId) throws UniFiAccessApiException {
+    public boolean lockEarly(String deviceId) throws UnifiAccessApiException {
         return setDoorLockRule(deviceId, DoorLockRule.lockEarly());
     }
 
     /** Terminate both unlock schedule and temporary unlock, locking immediately. */
-    public boolean lockNow(String deviceId) throws UniFiAccessApiException {
+    public boolean lockNow(String deviceId) throws UnifiAccessApiException {
         return setDoorLockRule(deviceId, DoorLockRule.lockNow());
     }
 
@@ -607,7 +614,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * Gets the current lock rule for a door. The v2 API does not have a dedicated
      * endpoint for this, so we return a default reset rule.
      */
-    public DoorLockRule getDoorLockRule(String doorId) throws UniFiAccessApiException {
+    public DoorLockRule getDoorLockRule(String doorId) throws UnifiAccessApiException {
         // The v2 topology does not expose a separate lock_rule GET endpoint.
         // Return a default "reset" rule; actual state is derived from bootstrap/notifications.
         return DoorLockRule.reset();
@@ -617,8 +624,8 @@ public final class UniFiAccessApiClient implements Closeable {
      * Trigger a doorbell ring on a device.
      * Not yet supported on the v2 internal API.
      */
-    public void triggerDoorbell(String deviceId) throws UniFiAccessApiException {
-        throw new UniFiAccessApiException("triggerDoorbell is not supported on the v2 internal API");
+    public void triggerDoorbell(String deviceId) throws UnifiAccessApiException {
+        throw new UnifiAccessApiException("triggerDoorbell is not supported on the v2 internal API");
     }
 
     // ---- Device Settings ----
@@ -628,10 +635,10 @@ public final class UniFiAccessApiClient implements Closeable {
      * The v2 API does not have a separate /settings endpoint; settings are in the
      * device's configs array with tag "open_door_mode" and "device_setting".
      */
-    public DeviceAccessMethodSettings getDeviceAccessMethodSettings(String deviceId) throws UniFiAccessApiException {
+    public DeviceAccessMethodSettings getDeviceAccessMethodSettings(String deviceId) throws UnifiAccessApiException {
         // This is called with a deviceId but we need the configs.
         // If this is called without configs, search the last bootstrap.
-        throw new UniFiAccessApiException("Use buildSettingsFromConfigs(configMap) instead");
+        throw new UnifiAccessApiException("Use buildSettingsFromConfigs(configMap) instead");
     }
 
     /**
@@ -682,7 +689,7 @@ public final class UniFiAccessApiClient implements Closeable {
     /**
      * Updates a single device config key/value via the v2 configs API.
      */
-    public void updateDeviceConfig(String deviceId, String key, String value) throws UniFiAccessApiException {
+    public void updateDeviceConfig(String deviceId, String key, String value) throws UnifiAccessApiException {
         JsonObject entry = new JsonObject();
         entry.addProperty("key", key);
         entry.addProperty("value", value);
@@ -699,7 +706,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * Updates device access method settings for a reader (legacy - uses configs API).
      */
     public DeviceAccessMethodSettings updateDeviceAccessMethodSettings(String deviceId,
-            DeviceAccessMethodSettings settings) throws UniFiAccessApiException {
+            DeviceAccessMethodSettings settings) throws UnifiAccessApiException {
         ContentResponse resp = execPut(V2_BASE + "/device/" + deviceId + "/configs", gson.toJson(settings));
         ensure2xx(resp, "updateDeviceAccessMethodSettings");
         String json = resp.getContentAsString();
@@ -708,7 +715,7 @@ public final class UniFiAccessApiClient implements Closeable {
 
         JsonElement dataEl = root.get("data");
         if (dataEl == null || dataEl.isJsonNull()) {
-            throw new UniFiAccessApiException("Missing data in updateDeviceAccessMethodSettings response");
+            throw new UnifiAccessApiException("Missing data in updateDeviceAccessMethodSettings response");
         }
         DeviceAccessMethodSettings result = gson.fromJson(dataEl, DeviceAccessMethodSettings.class);
         return Objects.requireNonNull(result);
@@ -716,7 +723,7 @@ public final class UniFiAccessApiClient implements Closeable {
 
     // ---- Emergency Settings ----
 
-    public DoorEmergencySettings getEmergencySettings() throws UniFiAccessApiException {
+    public DoorEmergencySettings getEmergencySettings() throws UnifiAccessApiException {
         ContentResponse resp = execGet(V2_BASE + "/doors/settings/emergency");
         ensure2xx(resp, "getEmergencySettings");
         String json = resp.getContentAsString();
@@ -725,20 +732,20 @@ public final class UniFiAccessApiClient implements Closeable {
 
         JsonElement dataEl = root.get("data");
         if (dataEl == null || dataEl.isJsonNull()) {
-            throw new UniFiAccessApiException("Missing data in getEmergencySettings response");
+            throw new UnifiAccessApiException("Missing data in getEmergencySettings response");
         }
         DoorEmergencySettings result = gson.fromJson(dataEl, DoorEmergencySettings.class);
         return Objects.requireNonNull(result);
     }
 
-    public void setEmergencySettings(DoorEmergencySettings settings) throws UniFiAccessApiException {
+    public void setEmergencySettings(DoorEmergencySettings settings) throws UnifiAccessApiException {
         ContentResponse resp = execPut(V2_BASE + "/doors/settings/emergency", gson.toJson(settings));
         ensure2xx(resp, "setEmergencySettings");
     }
 
     // ---- Thumbnails ----
 
-    public Image getDoorThumbnail(String path) throws UniFiAccessApiException {
+    public Image getDoorThumbnail(String path) throws UnifiAccessApiException {
         // Thumbnails are served by the Access service behind the UniFi OS proxy
         String normalized = path.startsWith("/") ? path : "/" + path;
         String thumbnailPath = "/proxy/access" + normalized;
@@ -760,7 +767,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * Auth: Cookie header with session cookie
      */
     public synchronized void openNotifications(Runnable onOpen, Consumer<Notification> onMessage,
-            Consumer<Throwable> onError, BiConsumer<Integer, String> onClosed) throws UniFiAccessApiException {
+            Consumer<Throwable> onError, BiConsumer<Integer, String> onClosed) throws UnifiAccessApiException {
         Session session = wsSession;
         if (session != null && session.isOpen()) {
             return;
@@ -769,6 +776,8 @@ public final class UniFiAccessApiClient implements Closeable {
         if (unifiSession == null) {
             login();
         }
+        this.onClosedCallback = onClosed;
+        this.closedNotified.set(false);
         try {
             URI wsUri = URI.create("wss://" + host + V2_BASE + "/ws/notification");
             logger.debug("Notifications WebSocket URI: {}", wsUri);
@@ -838,40 +847,37 @@ public final class UniFiAccessApiClient implements Closeable {
                 @NonNullByDefault({})
                 public void onWebSocketClose(int statusCode, String reason) {
                     logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
-                    try {
-                        onClosed.accept(statusCode, reason);
-                    } catch (Exception callbackEx) {
-                        logger.debug("Error in onClosed callback: {}", callbackEx.getMessage());
-                    }
+                    stopWsMonitor();
+                    notifyClosedOnce(statusCode, reason != null ? reason : "");
                 }
             };
 
             wsClient.connect(socket, wsUri, req);
             startWsMonitor();
         } catch (IOException e) {
-            throw new UniFiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
+            throw new UnifiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
         }
     }
 
     // ---- HTTP Helpers ----
 
-    private ContentResponse execGet(String path) throws UniFiAccessApiException {
+    private ContentResponse execGet(String path) throws UnifiAccessApiException {
         try {
             return newAuthenticatedRequest(HttpMethod.GET, path, null).send();
-        } catch (UniFiAccessApiException e) {
+        } catch (UnifiAccessApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new UniFiAccessApiException("GET failed for " + path + ": " + e.getMessage(), e);
+            throw new UnifiAccessApiException("GET failed for " + path + ": " + e.getMessage(), e);
         }
     }
 
-    private ContentResponse execPut(String path, String body) throws UniFiAccessApiException {
+    private ContentResponse execPut(String path, String body) throws UnifiAccessApiException {
         try {
             return newAuthenticatedRequest(HttpMethod.PUT, path, body).send();
-        } catch (UniFiAccessApiException e) {
+        } catch (UnifiAccessApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new UniFiAccessApiException("PUT failed for " + path + ": " + e.getMessage(), e);
+            throw new UnifiAccessApiException("PUT failed for " + path + ": " + e.getMessage(), e);
         }
     }
 
@@ -880,7 +886,7 @@ public final class UniFiAccessApiClient implements Closeable {
      * {@link org.openhab.binding.unifi.api.UniFiSession}. If no session exists, triggers a login first.
      */
     private Request newAuthenticatedRequest(HttpMethod method, String path, @Nullable String body)
-            throws UniFiAccessApiException {
+            throws UnifiAccessApiException {
         UniFiSession us = unifiSession;
         if (us == null) {
             login();
@@ -912,7 +918,7 @@ public final class UniFiAccessApiClient implements Closeable {
     /**
      * Ensures the HTTP response is 2xx. On 401, attempts re-authentication.
      */
-    private void ensure2xx(ContentResponse resp, String action) throws UniFiAccessApiException {
+    private void ensure2xx(ContentResponse resp, String action) throws UnifiAccessApiException {
         if (logger.isTraceEnabled()) {
             String mediaType = resp.getMediaType();
             if ("image/jpeg".equalsIgnoreCase(mediaType) || "image/png".equalsIgnoreCase(mediaType)) {
@@ -931,18 +937,19 @@ public final class UniFiAccessApiClient implements Closeable {
                     logger.debug("Received 401 for {}, re-authenticating via shared session", action);
                     us.reauthenticate().join();
                 } catch (java.util.concurrent.CompletionException ce) {
-                    throw new UniFiAccessApiException("Authentication failed for " + action + ": " + ce.getMessage(),
-                            true);
+                    throw new UnifiAccessApiException("Authentication failed for " + action + ": " + ce.getMessage(),
+                            AuthState.REJECTED);
                 }
-                throw new UniFiAccessApiException("Re-authenticated after 401 for " + action + ", retry required");
+                throw new UnifiAccessApiException("Re-authenticated after 401 for " + action + ", retry required");
             }
-            throw new UniFiAccessApiException("Authentication failed for " + action + ": " + sc, true);
+            throw new UnifiAccessApiException("Authentication rejected for " + action + ": " + sc, AuthState.REJECTED);
         }
         if (sc == HttpStatus.FORBIDDEN_403) {
-            throw new UniFiAccessApiException("Forbidden for " + action + ": " + sc, true);
+            throw new UnifiAccessApiException("Forbidden for " + action + " (likely throttled): " + sc,
+                    AuthState.THROTTLED);
         }
         if (!HttpStatus.isSuccess(sc)) {
-            throw new UniFiAccessApiException("Non 2xx response for " + action + ": " + sc);
+            throw new UnifiAccessApiException("Non 2xx response for " + action + ": " + sc);
         }
 
         // Update CSRF token from response if present — delegate to session so all family bindings see it.
@@ -960,11 +967,11 @@ public final class UniFiAccessApiClient implements Closeable {
      * V2 responses use: {"code":200,"codeS":"SUCCESS","msg":"...","data":{...}}
      * Success check: codeS === "SUCCESS"
      */
-    private void checkV2Success(JsonObject root, String action) throws UniFiAccessApiException {
+    private void checkV2Success(JsonObject root, String action) throws UnifiAccessApiException {
         String codeS = getStringOrNull(root, "codeS");
         if (codeS == null || !"SUCCESS".equals(codeS)) {
             String msg = getStringOrNull(root, "msg");
-            throw new UniFiAccessApiException(
+            throw new UnifiAccessApiException(
                     action + " failed: codeS=" + codeS + ", msg=" + (msg != null ? msg : "unknown"));
         }
     }
@@ -972,7 +979,7 @@ public final class UniFiAccessApiClient implements Closeable {
     /**
      * Checks a v2 response for success and returns a boolean.
      */
-    private boolean checkV2SuccessBool(ContentResponse resp, String action) throws UniFiAccessApiException {
+    private boolean checkV2SuccessBool(ContentResponse resp, String action) throws UnifiAccessApiException {
         String json = resp.getContentAsString();
         if (json.isBlank()) {
             return true; // Some endpoints return empty body on success
@@ -1041,7 +1048,7 @@ public final class UniFiAccessApiClient implements Closeable {
      */
     @SuppressWarnings("unused")
     private <E> List<E> parseListMaybeWrapped(String json, java.lang.reflect.Type wrappedListType,
-            java.lang.reflect.Type rawListType, String action, String... altArrayKeys) throws UniFiAccessApiException {
+            java.lang.reflect.Type rawListType, String action, String... altArrayKeys) throws UnifiAccessApiException {
         if (json.isBlank()) {
             return Collections.emptyList();
         }
@@ -1062,9 +1069,9 @@ public final class UniFiAccessApiClient implements Closeable {
                 }
             }
         } catch (Exception e) {
-            throw new UniFiAccessApiException("Failed to parse list response for " + action + ": " + e.getMessage(), e);
+            throw new UnifiAccessApiException("Failed to parse list response for " + action + ": " + e.getMessage(), e);
         }
-        throw new UniFiAccessApiException("Failed to parse list response for " + action + ": unexpected JSON");
+        throw new UnifiAccessApiException("Failed to parse list response for " + action + ": unexpected JSON");
     }
 
     // ---- WebSocket Monitor ----
@@ -1079,17 +1086,9 @@ public final class UniFiAccessApiClient implements Closeable {
                     if (s != null && s.isOpen()) {
                         long sinceMs = System.currentTimeMillis() - lastHeartbeatEpochMs;
                         if (sinceMs > 10_000L) {
-                            logger.debug("Notifications heartbeat missing ({} ms). Reconnecting...", sinceMs);
-                            try {
-                                s.close();
-                            } catch (Exception e) {
-                                logger.debug("Error closing notifications WebSocket", e);
-                            } finally {
-                                wsSession = null;
-                            }
+                            logger.debug("Notifications heartbeat missing ({} ms), escalating close", sinceMs);
+                            escalateClose(s, "Heartbeat timeout after " + sinceMs + " ms");
                         }
-                    } else {
-                        logger.debug("Notifications WebSocket not open");
                     }
                 } catch (Exception e) {
                     logger.debug("WS monitor error: ", e);
@@ -1097,6 +1096,34 @@ public final class UniFiAccessApiClient implements Closeable {
             }, 5, 5, TimeUnit.SECONDS);
         } else {
             logger.debug("WS monitor already running!");
+        }
+    }
+
+    // Signal closure synchronously instead of waiting on Jetty's async close handshake,
+    // which can stall for many minutes when the remote side has silently disappeared.
+    private void escalateClose(Session s, String reason) {
+        stopWsMonitor();
+        wsSession = null;
+        try {
+            s.close();
+        } catch (Exception e) {
+            logger.debug("Error closing notifications WebSocket: {}", e.getMessage());
+        }
+        notifyClosedOnce(4000, reason);
+    }
+
+    // Fires the onClosed callback at most once per WebSocket lifecycle so the
+    // heartbeat-monitor escalation and Jetty's onWebSocketClose can't double-notify.
+    private void notifyClosedOnce(int statusCode, String reason) {
+        if (closedNotified.compareAndSet(false, true)) {
+            BiConsumer<Integer, String> cb = onClosedCallback;
+            if (cb != null) {
+                try {
+                    cb.accept(statusCode, reason);
+                } catch (Exception callbackEx) {
+                    logger.debug("Error in onClosed callback: {}", callbackEx.getMessage());
+                }
+            }
         }
     }
 

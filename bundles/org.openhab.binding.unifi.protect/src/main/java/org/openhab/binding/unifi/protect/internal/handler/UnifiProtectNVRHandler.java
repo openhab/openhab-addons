@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -45,6 +46,8 @@ import org.openhab.binding.unifi.protect.internal.api.priv.dto.system.Bootstrap;
 import org.openhab.binding.unifi.protect.internal.api.priv.dto.system.Event;
 import org.openhab.binding.unifi.protect.internal.api.priv.dto.system.Nvr;
 import org.openhab.binding.unifi.protect.internal.api.priv.dto.types.ModelType;
+import org.openhab.binding.unifi.protect.internal.api.priv.exception.AuthenticationException;
+import org.openhab.binding.unifi.protect.internal.api.priv.exception.ThrottledException;
 import org.openhab.binding.unifi.protect.internal.api.pub.dto.DeviceState;
 import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifi.protect.internal.api.pub.dto.events.EventType;
@@ -90,11 +93,17 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private final Gson gson;
     private volatile boolean shuttingDown = false;
 
-    private static final long WS_UPDATE_DEBOUNCE_MS = 500; // inactivity window
-    private static final long WS_UPDATE_MAX_WAIT_MS = 2000; // max wait per burst
-    private static final long CHILD_REFRESH_RETRY_DELAY_SECONDS = 10; // retry delay for failed child refresh
+    private static final long WS_UPDATE_DEBOUNCE_MS = 500;
+    private static final long WS_UPDATE_MAX_WAIT_MS = 2000;
+    private static final long CHILD_REFRESH_RETRY_DELAY_SECONDS = 10;
     private static final int WS_CONNECT_MAX_RETRIES = 3;
     private static final long WS_CONNECT_RETRY_DELAY_MS = 2000;
+    private static final int MAX_RECONNECT_DELAY_SECONDS = 300;
+    private static final int THROTTLED_INITIAL_DELAY_SECONDS = 60;
+    private static final int THROTTLED_MAX_DELAY_SECONDS = 1800;
+
+    private int reconnectAttempt = 0;
+    private int throttledReconnectAttempt = 0;
     private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
 
@@ -247,13 +256,31 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             }).whenComplete((result, ex) -> {
                 if (ex != null) {
                     logger.debug("Failed to enable Private API WebSocket", ex);
-                    setOfflineAndReconnect();
+                    handleInitFailure(ex);
                 }
             });
+            reconnectAttempt = 0;
+            throttledReconnectAttempt = 0;
             updateNVRStatus();
         } catch (Exception e) {
             logger.debug("Initialization failed", e);
-            setOfflineAndReconnect();
+            handleInitFailure(e);
+        }
+    }
+
+    private void handleInitFailure(Throwable e) {
+        Throwable cause = e;
+        while ((cause instanceof ExecutionException || cause instanceof CompletionException)
+                && cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        if (cause instanceof AuthenticationException) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-auth-rejected");
+        } else if (cause instanceof ThrottledException) {
+            setOfflineAndReconnect(true);
+        } else {
+            setOfflineAndReconnect(false);
         }
     }
 
@@ -447,15 +474,38 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void setOfflineAndReconnect() {
-        ScheduledFuture<?> reconnectTask = this.reconnectTask;
-        if (shuttingDown || (reconnectTask != null && !reconnectTask.isDone())) {
+    private synchronized void setOfflineAndReconnect(boolean throttled) {
+        ScheduledFuture<?> existing = this.reconnectTask;
+        if (shuttingDown) {
             return;
         }
-        updateStatus(ThingStatus.OFFLINE);
+        if (existing != null && !existing.isDone()) {
+            // Throttled supersedes any pending fast reconnect.
+            if (throttled) {
+                existing.cancel(false);
+            } else {
+                return;
+            }
+        }
         stopApiClient();
         stopTasks();
-        this.reconnectTask = scheduler.schedule(this::initialize, 5, TimeUnit.SECONDS);
+
+        int delay;
+        if (throttled) {
+            delay = Math.min((int) Math.pow(2, throttledReconnectAttempt) * THROTTLED_INITIAL_DELAY_SECONDS,
+                    THROTTLED_MAX_DELAY_SECONDS);
+            throttledReconnectAttempt++;
+            logger.debug("Scheduling reconnect in {} seconds (throttled, attempt {})", delay,
+                    throttledReconnectAttempt);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.login-throttled");
+        } else {
+            delay = Math.min((int) Math.pow(2, reconnectAttempt) * 5, MAX_RECONNECT_DELAY_SECONDS);
+            reconnectAttempt++;
+            logger.debug("Scheduling reconnect in {} seconds (attempt {})", delay, reconnectAttempt);
+            updateStatus(ThingStatus.OFFLINE);
+        }
+
+        this.reconnectTask = scheduler.schedule(this::initialize, delay, TimeUnit.SECONDS);
     }
 
     private void connectEventWebSocket(UniFiProtectHybridClient apiClient)
@@ -471,7 +521,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     scheduler.execute(() -> syncDevices());
                 }, (code, reason) -> {
                     logger.debug("Event WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect();
+                    setOfflineAndReconnect(false);
                 }, err -> logger.debug("Event WS error", err)).get();
                 return;
             } catch (ExecutionException e) {
@@ -533,7 +583,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     // ignore on-open
                 }, (code, reason) -> {
                     logger.debug("Device WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect();
+                    setOfflineAndReconnect(false);
                 }, err -> logger.debug("Device WS error", err)).get();
                 return;
             } catch (ExecutionException e) {

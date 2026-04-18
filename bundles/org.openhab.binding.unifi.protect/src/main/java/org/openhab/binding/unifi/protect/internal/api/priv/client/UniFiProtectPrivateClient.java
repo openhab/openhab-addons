@@ -51,6 +51,7 @@ import org.openhab.binding.unifi.protect.internal.api.priv.dto.types.SmartDetect
 import org.openhab.binding.unifi.protect.internal.api.priv.exception.AuthenticationException;
 import org.openhab.binding.unifi.protect.internal.api.priv.exception.BadRequestException;
 import org.openhab.binding.unifi.protect.internal.api.priv.exception.NvrException;
+import org.openhab.binding.unifi.protect.internal.api.priv.exception.ThrottledException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -277,11 +278,17 @@ public class UniFiProtectPrivateClient {
                             Response response = result.getResponse();
                             int status = response.getStatus();
 
-                            if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
-                                logger.debug("Authentication error, will retry: {}", status);
+                            if (status == HttpStatus.UNAUTHORIZED_401) {
+                                logger.debug("Authentication rejected: {}", status);
                                 authenticator.clearAuth();
                                 future.completeExceptionally(
-                                        new AuthenticationException("Authentication required: " + status));
+                                        new AuthenticationException("Authentication rejected: " + status));
+                                return;
+                            }
+                            if (status == HttpStatus.FORBIDDEN_403 || status == HttpStatus.TOO_MANY_REQUESTS_429) {
+                                logger.debug("Request throttled: {}", status);
+                                future.completeExceptionally(
+                                        new ThrottledException("Request throttled: " + status, status));
                                 return;
                             }
 

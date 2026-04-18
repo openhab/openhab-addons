@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.handler.UniFiControllerBridgeHandlerImpl;
+import org.openhab.binding.unifi.handler.UniFiControllerBridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -57,7 +57,7 @@ public class UniFiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_CONTROLLER.equals(thing.getThingTypeUID()) && thing instanceof Bridge bridge) {
-            return new UniFiControllerBridgeHandlerImpl(bridge, httpClientFactory);
+            return new UniFiControllerBridgeHandler(bridge, httpClientFactory);
         }
         return null;
     }

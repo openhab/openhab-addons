@@ -20,7 +20,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.unifi.api.UniFiSession;
 
 /**
- * Default {@link UniFiSession} implementation used by {@code UniFiControllerBridgeHandlerImpl}. Wraps a
+ * Default {@link UniFiSession} implementation used by {@code UniFiControllerBridgeHandler}. Wraps a
  * {@link UniFiAuthenticator} and a {@link UniFiRequestThrottler}: the throttler is applied inside
  * {@link #addAuthHeaders(Request)} so that every caller (Network, Protect, Access) obeys the same rate limit
  * against a shared console, and the authenticator supplies the Cookie + CSRF headers.
