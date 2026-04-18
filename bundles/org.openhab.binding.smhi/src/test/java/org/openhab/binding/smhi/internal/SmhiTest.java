@@ -154,8 +154,8 @@ public class SmhiTest {
         State pmean0 = forecast0.getParameterAsState(PRECIPITATION_MEAN);
         State pmedian0 = forecast0.getParameterAsState(PRECIPITATION_MEDIAN);
         State spp0 = forecast0.getParameterAsState(PERCENT_FROZEN);
+        State spp1 = forecast1.getParameterAsState(PERCENT_FROZEN);
         State fzpr0 = forecast0.getParameterAsState(FROZEN_PROBABILITY);
-        State fzpr1 = forecast1.getParameterAsState(FROZEN_PROBABILITY);
         State tp0 = forecast0.getParameterAsState(PRECIPITATION_PROBABILITY);
         State pcat0 = forecast0.getParameterAsState(PRECIPITATION_CATEGORY);
         State wsymb0 = forecast0.getParameterAsState(WEATHER_SYMBOL);
@@ -198,10 +198,10 @@ public class SmhiTest {
         assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmedian0);
         assertInstanceOf(QuantityType.class, spp0);
         assertEquals(new QuantityType<>(14, Units.PERCENT), spp0);
+        assertInstanceOf(QuantityType.class, spp1);
+        assertEquals(new QuantityType<>(-1, Units.PERCENT), spp1);
         assertInstanceOf(QuantityType.class, fzpr0);
         assertEquals(new QuantityType<>(0, Units.PERCENT), fzpr0);
-        assertInstanceOf(QuantityType.class, fzpr1);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), fzpr1);
         assertInstanceOf(QuantityType.class, tp0);
         assertEquals(new QuantityType<>(0, Units.PERCENT), tp0);
         assertInstanceOf(DecimalType.class, pcat0);
