@@ -22,14 +22,8 @@ import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.sip.InvalidArgumentException;
-import javax.sip.ObjectInUseException;
-import javax.sip.PeerUnavailableException;
-import javax.sip.TransportNotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -203,8 +197,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private void startSip(DahuaDoorConfiguration cfg) {
         if (cfg.sipExtension.isBlank()) {
             logger.warn("SIP enabled but sipExtension not configured - skipping SIP registration");
-            updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
-            updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
             return;
         }
 
@@ -227,8 +219,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
                 logger.info("SIP client started for extension {} at {}:{}", cfg.sipExtension, localIp,
                         cfg.localSipPort);
-            } catch (IOException | PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
-                    | ObjectInUseException | TooManyListenersException e) {
+            } catch (Exception e) {
                 logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
                 updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
             }
@@ -248,11 +239,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             localSipClient.dispose();
             logger.debug("SIP client stopped");
         }
-        updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
     }
 
-    private String detectLocalIp(String vtoHostname) throws IOException {
+    private String detectLocalIp(String vtoHostname) throws Exception {
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName(vtoHostname), 5060);
             return socket.getLocalAddress().getHostAddress();
