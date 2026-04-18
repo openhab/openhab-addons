@@ -70,9 +70,9 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (ondusService != null) {
-            ondusService = null;
-        }
+        this.ondusService = null;
+
+        ScheduledFuture<?> reloginFuture = this.reloginFuture;
         if (reloginFuture != null) {
             reloginFuture.cancel(true);
         }
@@ -81,7 +81,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     private void login() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
-        if (config.username == null || config.password == null) {
+        if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.login.missing.credentials");
         } else {
