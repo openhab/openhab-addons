@@ -201,15 +201,9 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final Map<String, Object> props = new java.util.HashMap<>();
             props.put("hostname", client.getHostname());
-            props.put("mac", client.getMac());
-            props.put("apMac", client.getApMac());
-            props.put("ssid", client.getSsid());
-            props.put("iface", client.getIface());
-            props.put("radioName", client.getRadioName());
-            props.put("ipAddress", client.getIpAddress());
-            props.put("channel", client.getChannel());
-            props.put("signal", client.getSignalDbm());
-            props.put("snr", client.getSnr());
+            if (!client.getMac().isEmpty()) {
+                props.put("mac", client.getMac());
+            }
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(client.getHostname()).withProperties(props).withRepresentationProperty("hostname")
@@ -219,11 +213,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
                     "Submitting discovery result for wireless client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
                     thingUID, client.getHostname(), client.getApMac(), client.getSsid(), client.getChannel(),
                     client.getSignalDbm(), client.getSnr());
-            logger.debug("Wireless client properties: MAC={}, IP={}, Hostname={}, Interface={}, Radio={}",
-                    client.getMac(), client.getIpAddress(), client.getHostname(), client.getIface(),
-                    client.getRadioName());
             thingDiscovered(result);
-            logger.debug("Submitted discovery result for wireless client: {}", thingUID);
         });
     }
 

@@ -11,6 +11,7 @@
 		<label>DD-WRT Network</label>
 		<description>A network of DD-WRT compatible devices managed via SSH</description>
 		<category>Network</category>
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 
 		<channels>
 			<channel id="total-clients" typeId="total-clients"/>
@@ -68,6 +69,7 @@
 		<label>DD-WRT Device</label>
 		<description>A DD-WRT, OpenWrt, or compatible Linux device managed via SSH</description>
 		<category>NetworkAppliance</category>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="online" typeId="online"/>
@@ -173,6 +175,7 @@
 		<label>Wireless Radio</label>
 		<description>A wireless radio interface on a DD-WRT device</description>
 		<category>Network</category>
+		<semantic-equipment-tag>WirelessAccessPoint</semantic-equipment-tag>
 
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -180,7 +183,7 @@
 			<channel id="channel" typeId="channel"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="client-count" typeId="client-count"/>
-			<channel id="assoclist" typeId="assoclist"/>
+			<channel id="assoc-list" typeId="assoc-list"/>
 		</channels>
 
 		<representation-property>interfaceId</representation-property>
@@ -209,6 +212,7 @@
 		<label>Wireless Client</label>
 		<description>A wireless client associated with a DD-WRT network device</description>
 		<category>Network</category>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="online" typeId="online"/>
@@ -251,6 +255,7 @@
 		<label>Firewall Rule</label>
 		<description>A GUI-configured firewall filter rule from nvram</description>
 		<category>Shield</category>
+		<semantic-equipment-tag>Firewall</semantic-equipment-tag>
 
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -277,6 +282,9 @@
 		<label>Online</label>
 		<description>Whether the device or client is currently online</description>
 		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -285,6 +293,10 @@
 		<label>Uptime Since</label>
 		<description>System boot time (updates only on reboot)</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -294,6 +306,9 @@
 		<item-type>Number</item-type>
 		<label>Total Clients</label>
 		<description>Total number of clients connected across all devices</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -301,6 +316,9 @@
 		<item-type>Number</item-type>
 		<label>Wireless Clients</label>
 		<description>Number of wireless clients connected across all devices</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -308,6 +326,9 @@
 		<item-type>Number</item-type>
 		<label>Wired Clients</label>
 		<description>Number of wired clients connected across all devices</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -318,6 +339,10 @@
 		<label>CPU Load</label>
 		<description>1-minute load average</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
@@ -326,6 +351,10 @@
 		<label>CPU Temperature</label>
 		<description>CPU temperature in degrees Celsius</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -342,6 +371,9 @@
 		<label>WAN In</label>
 		<description>Total bytes received on the WAN interface (only available on gateway devices)</description>
 		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -350,6 +382,9 @@
 		<label>WAN Out</label>
 		<description>Total bytes sent on the WAN interface (only available on gateway devices)</description>
 		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -358,6 +393,9 @@
 		<label>LAN In</label>
 		<description>Total bytes received on the LAN bridge interface (br0)</description>
 		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -366,6 +404,9 @@
 		<label>LAN Out</label>
 		<description>Total bytes sent on the LAN bridge interface (br0)</description>
 		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -374,6 +415,9 @@
 		<label>Reboot</label>
 		<description>Turn ON to reboot the device; automatically resets to OFF</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Radio -->
@@ -383,6 +427,9 @@
 		<label>Enabled</label>
 		<description>Whether the radio or rule is enabled</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ssid">
@@ -398,6 +445,9 @@
 		<label>Channel</label>
 		<description>Wireless channel number</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -413,10 +463,13 @@
 		<label>Client Count</label>
 		<description>Number of clients associated with this radio</description>
 		<category>Number</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="assoclist">
+	<channel-type id="assoc-list">
 		<item-type>String</item-type>
 		<label>Associated Clients</label>
 		<description>Comma-separated list of MAC addresses of associated wireless clients</description>
@@ -465,6 +518,10 @@
 		<label>Signal</label>
 		<description>Signal strength in dBm</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
@@ -473,6 +530,10 @@
 		<label>Signal-to-Noise Ratio</label>
 		<description>Signal-to-noise ratio in dB</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true" pattern="%d dB"/>
 	</channel-type>
 
@@ -480,6 +541,10 @@
 		<item-type>Number</item-type>
 		<label>RX Rate</label>
 		<description>Receive rate in Mbit/s</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
 
@@ -487,6 +552,10 @@
 		<item-type>Number</item-type>
 		<label>TX Rate</label>
 		<description>Transmit rate in Mbit/s</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
 
@@ -495,6 +564,10 @@
 		<label>Last Seen</label>
 		<description>Timestamp when the client was last seen online</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -513,6 +586,9 @@
 		<item-type>String</item-type>
 		<label>Last Warning Event</label>
 		<description>Last warning-level syslog line</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -520,6 +596,9 @@
 		<item-type>String</item-type>
 		<label>Last Error Event</label>
 		<description>Last error-level syslog line</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -527,6 +606,9 @@
 		<item-type>Number</item-type>
 		<label>Warning Events</label>
 		<description>Number of warning-level syslog events since startup</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -534,6 +616,9 @@
 		<item-type>Number</item-type>
 		<label>Error Events</label>
 		<description>Number of error-level syslog events since startup</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -541,6 +626,9 @@
 		<item-type>String</item-type>
 		<label>Last DHCP Event</label>
 		<description>Last DHCP lease, renewal, or release event</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -548,6 +636,9 @@
 		<item-type>String</item-type>
 		<label>Last Wireless Event</label>
 		<description>Last wireless association or deassociation event</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
