@@ -171,7 +171,7 @@ public class SmhiTest {
         assertInstanceOf(QuantityType.class, r0);
         assertEquals(new QuantityType<>(86, Units.PERCENT), r0);
         assertInstanceOf(QuantityType.class, tstm0);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), tstm0);
+        assertEquals(new QuantityType<>(18, Units.PERCENT), tstm0);
         assertInstanceOf(QuantityType.class, cdcb0);
         assertEquals(new QuantityType<>(-1, SIUnits.METRE), cdcb0);
         assertInstanceOf(QuantityType.class, cdct0);
