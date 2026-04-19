@@ -65,13 +65,10 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE1 = 0x200000080L;
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE2 = 0x800000200L;
     private static final long EFFECTIVE_FLAG_HOTWATER = 65536L;
-    // TODO: Confirm that the flags are properly defined
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE1 = 0x1000000000000L;
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2 = 0x1000000000000L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1 = 0x08L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE2 = 0x10L;
-    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE1 = 0L;
-    private static final long EFFECTIVE_FLAG_COOL_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE = 0x1000000000020L;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHeatpumpDeviceHandler.class);
@@ -79,9 +76,6 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private @Nullable MelCloudAccountHandler melCloudHandler;
     private @Nullable HeatpumpDeviceStatus heatpumpDeviceStatus;
     private @Nullable ScheduledFuture<?> refreshTask;
-
-    private final String[] operationalModes = { "Idle", "Heat water", "Heat zones", "Cooling", "Defrost", "Stand-by",
-            "Legionella" };
 
     public MelCloudHeatpumpDeviceHandler(Thing thing) {
         super(thing);
