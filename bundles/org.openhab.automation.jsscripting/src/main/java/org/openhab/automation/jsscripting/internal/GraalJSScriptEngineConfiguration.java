@@ -33,16 +33,22 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_SCRIPT_CONDITION_WRAPPER_ENABLED = "scriptConditionWrapperEnabled";
     private static final String CFG_EVENT_CONVERSION_ENABLED = "eventConversionEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
+    private static final String CFG_DEBUGGER_ENABLED = "debuggerEnabled";
+    private static final String CFG_DEBUGGER_PORT = "debuggerPort";
 
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 1;
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 2;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
+
+    private static final int DEBUGGER_PORT_DEFAULT = 9229;
 
     private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
     private boolean scriptConditionWrapperEnabled = false;
     private boolean eventConversionEnabled = true;
     private boolean dependencyTrackingEnabled = true;
+    private boolean debuggerEnabled = false;
+    private int debuggerPort = DEBUGGER_PORT_DEFAULT;
 
     /**
      * Create a new configuration instance from the given parameters.
@@ -63,6 +69,8 @@ public class GraalJSScriptEngineConfiguration {
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
         boolean oldScriptConditionWrapperEnabled = scriptConditionWrapperEnabled;
         boolean oldEventConversionEnabled = eventConversionEnabled;
+        boolean oldDebuggerEnabled = debuggerEnabled;
+        int oldDebuggerPort = debuggerPort;
 
         this.update(config);
 
@@ -91,6 +99,12 @@ public class GraalJSScriptEngineConfiguration {
                         "Disabled event conversion for JavaScript Scripting. Please resave your scripts to apply this change.");
             }
         }
+        if (oldDebuggerEnabled != debuggerEnabled) {
+            logger.warn("{} debugger for JavaScript Scripting. Restart openHAB to apply this change.",
+                    debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != debuggerPort) {
+            logger.warn("Reconfigured debugger for JavaScript Scripting. Restart openHAB to apply this change.");
+        }
     }
 
     /**
@@ -111,6 +125,8 @@ public class GraalJSScriptEngineConfiguration {
                 true);
         dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
                 Boolean.class, true);
+        debuggerEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEBUGGER_ENABLED), Boolean.class, false);
+        debuggerPort = ConfigParser.valueAsOrElse(config.get(CFG_DEBUGGER_PORT), Integer.class, DEBUGGER_PORT_DEFAULT);
     }
 
     /**
@@ -162,5 +178,13 @@ public class GraalJSScriptEngineConfiguration {
 
     public boolean isDependencyTrackingEnabled() {
         return dependencyTrackingEnabled;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return debuggerPort;
     }
 }
