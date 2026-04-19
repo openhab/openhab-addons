@@ -48,4 +48,7 @@ public class DahuaDoorBindingConstants {
 
     // Path under which the WebRTC SDP proxy servlet is registered
     public static final String WEBRTC_SERVLET_PATH = "/dahuadoor/webrtc";
+
+    // Path under which the SIP call control servlet is registered
+    public static final String SIP_CONTROL_SERVLET_PATH = "/dahuadoor/sip";
 }
