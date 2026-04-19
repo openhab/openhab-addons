@@ -141,16 +141,16 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
 
     @Nullable
     private BigDecimal convertOHValueToHPTemperature(Object command, double rounding) {
-        BigDecimal val = null;
-        if (command instanceof QuantityType) {
-            QuantityType<Temperature> quantity = new QuantityType<Temperature>(command.toString()).toUnit(CELSIUS);
-            if (quantity != null) {
-                val = quantity.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
-                // round nearest .5
-                double inverseRound = 1 / rounding;
-                double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
-                return new BigDecimal(v);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> normalizedCelsiusTemperature = quantityCommand.toUnit(SIUnits.CELSIUS);
+            if (normalizedCelsiusTemperature == null) {
+                logger.debug("Can't convert '{}' to unit Celsius", quantityCommand);
+                return null;
             }
+            BigDecimal val = normalizedCelsiusTemperature.toBigDecimal().setScale(1, RoundingMode.HALF_UP);
+            double inverseRound = 1 / rounding;
+            double v = Math.round(val.doubleValue() * inverseRound) / inverseRound;
+            return new BigDecimal(v);
         }
         logger.debug("Can't convert '{}' to set temperature", command);
         return null;
@@ -364,7 +364,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                 break;
             case CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2:
                 updateState(CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2,
-                        new StringType(heatpumpDeviceStatus.getOperationModeZone2().toString()));
+                        new DecimalType(heatpumpDeviceStatus.getOperationModeZone2()));
                 break;
             case CHANNEL_OPERATION_MODE:
                 updateState(MelCloudBindingConstants.CHANNEL_OPERATION_MODE,
