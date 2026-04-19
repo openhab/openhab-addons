@@ -175,28 +175,31 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
 
         BundleContext ctx = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        tracker = new ServiceTracker<>(ctx, WebhookService.class, new ServiceTrackerCustomizer<>() {
-            @Override
-            public WebhookService addingService(@Nullable ServiceReference<WebhookService> ref) {
-                WebhookService svc = ctx.getService(ref);
-                logger.info("WebhookService arrived !");
-                return svc;
-            }
+        try {
+            tracker = new ServiceTracker<>(ctx, WebhookService.class, new ServiceTrackerCustomizer<>() {
+                @Override
+                public WebhookService addingService(@Nullable ServiceReference<WebhookService> ref) {
+                    WebhookService svc = ctx.getService(ref);
+                    logger.info("WebhookService arrived !");
+                    return svc;
+                }
 
-            @Override
-            public void removedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
-                logger.info("WebhookService removed !");
-            }
+                @Override
+                public void removedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
+                    logger.info("WebhookService removed !");
+                }
 
-            @Override
-            public void modifiedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
-            }
-        });
-        tracker.open();
+                @Override
+                public void modifiedService(@Nullable ServiceReference<WebhookService> ref, WebhookService svc) {
+                }
+            });
+            tracker.open();
 
-        registerOAuth(false);
-        registerCloudWebhook();
-
+            registerOAuth(false);
+            registerCloudWebhook();
+        } catch (NoClassDefFoundError e) {
+            logger.info("No webhook service available - switching off push events from SmartThings cloud.");
+        }
         try {
             registerServlet();
         } catch (SmartThingsException e) {
