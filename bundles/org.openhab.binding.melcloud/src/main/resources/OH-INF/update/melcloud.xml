@@ -110,7 +110,7 @@
 				</tags>
 			</add-channel>
 
-			<add-channel id="heatPumpOperationMode">
+			<add-channel id="operationMode">
 				<type>melcloud:heatPumpOperationMode-channel</type>
 				<label>Operation Mode</label>
 				<description>Operation mode</description>
