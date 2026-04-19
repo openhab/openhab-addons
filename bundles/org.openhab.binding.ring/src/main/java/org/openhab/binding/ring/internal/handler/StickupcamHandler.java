@@ -155,12 +155,20 @@ public class StickupcamHandler extends RingDeviceHandler {
         RingDeviceTO deviceTO = device.getDeviceStatus();
         if (batterySupport) {
             int battery = 0;
-            if (!deviceTO.battery.isEmpty() && !deviceTO.battery2.isEmpty()) {
-                battery = (Integer.parseInt(deviceTO.battery) + Integer.parseInt(deviceTO.battery2)) / 2;
-            } else if (!deviceTO.battery.isEmpty()) {
-                battery = Integer.parseInt(deviceTO.battery);
-            } else if (!deviceTO.battery2.isEmpty()) {
-                battery = Integer.parseInt(deviceTO.battery2);
+            String b1Raw = deviceTO.battery;
+            String b2Raw = deviceTO.battery2;
+
+            Integer b1 = (b1Raw != null && !b1Raw.isEmpty()) ? Integer.parseInt(b1Raw) : null;
+            Integer b2 = (b2Raw != null && !b2Raw.isEmpty()) ? Integer.parseInt(b2Raw) : null;
+
+            if (b1 != null && b2 != null) {
+                battery = (b1 + b2) / 2;
+            } else if (b1 != null) {
+                battery = b1;
+            } else if (b2 != null) {
+                battery = b2;
+            } else {
+                battery = 0; // No battery data available
             }
             if (battery != lastBattery) {
                 logger.debug("Battery Level: {}", battery);

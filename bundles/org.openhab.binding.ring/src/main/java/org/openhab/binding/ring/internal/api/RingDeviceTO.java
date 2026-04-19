@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -46,7 +47,7 @@ public class RingDeviceTO {
     public HealthTO health = new HealthTO();
 
     @SerializedName("battery_life")
-    public String battery = "";
+    public @Nullable String battery = null;
 
     public OwnerTO owner = new OwnerTO();
 
@@ -54,5 +55,5 @@ public class RingDeviceTO {
     public DeviceSettingsTO deviceSettings = new DeviceSettingsTO();
 
     @SerializedName("battery_life_2")
-    public String battery2 = "";
+    public @Nullable String battery2 = null;
 }
