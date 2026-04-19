@@ -201,9 +201,6 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final Map<String, Object> props = new java.util.HashMap<>();
             props.put("hostname", client.getHostname());
-            if (!client.getMac().isEmpty()) {
-                props.put("mac", client.getMac());
-            }
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(client.getHostname()).withProperties(props).withRepresentationProperty("hostname")

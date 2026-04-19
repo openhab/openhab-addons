@@ -1844,7 +1844,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 lastRecoveryAuthAttemptMs = 0;
                 recoveryNetFailures = 0;
                 lastRecoveryNetAttemptMs = 0;
-                logger.info("Recovered SSH session for {}", config.hostname);
+                logger.debug("Recovered SSH session for {}", config.hostname);
                 SshLogFollower follower = logFollower;
                 if (follower != null) {
                     follower.wakeUp();
