@@ -182,13 +182,22 @@ public class RoundStateProfile implements TimeSeriesProfile {
     }
 
     private Instant roundInstant(Instant value, long unitNanos) {
-        long epochNanos = Math.addExact(Math.multiplyExact(value.getEpochSecond(), 1_000_000_000L), value.getNano());
-        long floor = Math.multiplyExact(Math.floorDiv(epochNanos, unitNanos), unitNanos);
-        if (floor == epochNanos) {
-            return instantFromEpochNanos(floor);
+        try {
+            long epochNanos = Math.addExact(Math.multiplyExact(value.getEpochSecond(), 1_000_000_000L), value.getNano());
+            long floor = Math.multiplyExact(Math.floorDiv(epochNanos, unitNanos), unitNanos);
+            if (floor == epochNanos) {
+                return instantFromEpochNanos(floor);
+            }
+            long ceiling = Math.addExact(floor, unitNanos);
+            return instantFromEpochNanos(selectRoundedEpochNanos(epochNanos, floor, ceiling, unitNanos));
+        } catch (ArithmeticException e) {
+            if (roundingMode == RoundingMode.UNNECESSARY) {
+                throw e;
+            }
+            logger.warn("Failed to round DateTime value '{}' at scale '{}' due to arithmetic overflow. Returning original value.",
+                    value, scale, e);
+            return value;
         }
-        long ceiling = Math.addExact(floor, unitNanos);
-        return instantFromEpochNanos(selectRoundedEpochNanos(epochNanos, floor, ceiling, unitNanos));
     }
 
     private long selectRoundedEpochNanos(long value, long floor, long ceiling, long unitNanos) {
