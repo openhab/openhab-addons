@@ -195,11 +195,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             });
             tracker.open();
 
-            registerOAuth(false);
             registerCloudWebhook();
         } catch (NoClassDefFoundError e) {
             logger.info("No webhook service available - switching off push events from SmartThings cloud.");
         }
+        registerOAuth(false);
         try {
             registerServlet();
         } catch (SmartThingsException e) {
