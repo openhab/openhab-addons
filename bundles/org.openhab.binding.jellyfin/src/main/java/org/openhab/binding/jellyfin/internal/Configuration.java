@@ -40,7 +40,7 @@ public class Configuration {
     /**
      * Use Https
      */
-    public Boolean ssl = true;
+    public boolean ssl = true;
     /**
      * Jellyfin base url
      */
