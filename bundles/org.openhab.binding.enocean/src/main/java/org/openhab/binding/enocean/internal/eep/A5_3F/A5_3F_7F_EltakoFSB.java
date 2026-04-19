@@ -102,7 +102,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     private void convertPosition(DecimalType percentCommand, Configuration config,
             Function<String, State> getCurrentStateFunc, STMStateMachine<BlindAction, BlindState> stm) {
-
         State channelRollershutter = getCurrentStateFunc.apply(CHANNEL_ROLLERSHUTTER);
         State channelDimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
         PercentType currentRollershutter = channelRollershutter.as(PercentType.class);
@@ -136,7 +135,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                 }
             }
-
         }
     }
 

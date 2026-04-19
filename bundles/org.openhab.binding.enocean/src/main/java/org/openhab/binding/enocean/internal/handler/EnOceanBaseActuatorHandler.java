@@ -121,8 +121,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return false;
         }
 
-        EEP eep = EEPFactory.createEEP(localEEPType);
-        if (!(eep instanceof StateMachineProvider<?, ?> stmEEP)) {
+        if (!(EEPFactory.createEEP(localEEPType) instanceof StateMachineProvider<?, ?> stmEEP)) {
             return false;
         }
 
@@ -167,8 +166,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         if (localEEPType == null) {
             return;
         }
-        EEP eep = EEPFactory.createEEP(localEEPType);
-        if (!(eep instanceof StateMachineProvider<?, ?> stmEEP)) {
+        if (!(EEPFactory.createEEP(localEEPType) instanceof StateMachineProvider<?, ?> stmEEP)) {
             return;
         }
         Set<String> toRemove = stmEEP.getChannelsToRemove(getThing());
@@ -252,8 +250,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             if (hasSenderId || validateSenderIdOffset(getConfiguration().senderIdOffset)) {
                 // Initialize state machine if the sending EEP provides one
                 stm = null;
-                EEP eep = EEPFactory.createEEP(localEEPType);
-                if (eep instanceof StateMachineProvider<?, ?> stmEEP) {
+                if (EEPFactory.createEEP(localEEPType) instanceof StateMachineProvider<?, ?> stmEEP) {
                     STMTransitionConfiguration<?, ?> transConfig = stmEEP.getTransitionConfiguration(getThing());
                     if (transConfig != null) {
                         stm = buildStateMachine(stmEEP, transConfig);
@@ -439,7 +436,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             STMTransitionConfiguration<?, ?> transConfig) {
         STMStateMachine stm = STMStateMachine.build((STMTransitionConfiguration) transConfig,
                 (Enum) stmEEP.getInitialState(), scheduler, this::onStateChanged);
-        for (Object action : ((StateMachineProvider) stmEEP).getRequiredCallbackActions(getThing())) {
+        StateMachineProvider smProvider = (StateMachineProvider) stmEEP;
+        for (Object action : smProvider.getRequiredCallbackActions(getThing())) {
             stm.register((Enum) action, this::processStoredCommand);
         }
         return stm;

@@ -588,6 +588,6 @@ The calibration/state-machine state is persisted internally by the binding using
 
 ### Hardware Requirements
 
-⚠️ **Important:** The FSB14 must send feedback telegrams for state machine operation.
+**Important:** The FSB14 must send feedback telegrams for state machine operation.
 Configure the FAM14 with the PCT14 tool: add the FSB14 to the feedback list and set the operating mode to 7.
 For FSB14 addresses > 126, a bus connection (FAM14/FGW14-USB) is required as feedback is not sent via radio.
