@@ -18,6 +18,7 @@ import static org.openhab.binding.ring.internal.ApiConstants.*;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Stickupcam;
@@ -155,7 +156,9 @@ public class StickupcamHandler extends RingDeviceHandler {
         RingDeviceTO deviceTO = device.getDeviceStatus();
         if (batterySupport) {
             int battery = 0;
+            @Nullable
             String b1Raw = deviceTO.battery;
+            @Nullable
             String b2Raw = deviceTO.battery2;
 
             Integer b1 = (b1Raw != null && !b1Raw.isEmpty()) ? Integer.parseInt(b1Raw) : null;
