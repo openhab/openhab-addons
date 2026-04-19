@@ -144,21 +144,22 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<BlindAction, BlindState> stm) {
 
         int shutTime = config.as(EnOceanChannelRollershutterConfig.class).shutTime;
+        byte shutTimeByte = (byte) Math.min(255, Math.max(0, shutTime));
 
         if (stm != null) {
             switch (stm.getState()) {
                 case INVALID:
                     // Can't process command immediately -> store it.
                     stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
-                    setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
+                    setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
                     stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
                     break;
                 case IDLE:
                     if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
-                        setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
+                        setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
-                        setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => move completely down
+                        setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => move completely down
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
                         convertPosition(percentCommand, config, getCurrentStateFunc, stm);
@@ -169,9 +170,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         } else { // Legacy Code
             State channelState = getCurrentStateFunc.apply(CHANNEL_ROLLERSHUTTER);
             if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
-                setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
+                setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
             } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
-                setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => move completely down
+                setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => move completely down
             } else {
                 PercentType current = channelState.as(PercentType.class);
                 if (current != null) {
@@ -197,11 +198,12 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<BlindAction, BlindState> stm) {
 
         int shutTime = config.as(EnOceanChannelRollershutterConfig.class).shutTime;
+        byte shutTimeByte = (byte) Math.min(255, Math.max(0, shutTime));
 
         if (stm != null) {
             if ((stm.getState() == BlindState.IDLE) || (stm.getState() == BlindState.INVALID)) {
                 if (upDownCommand == UpDownType.UP) {
-                    setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => 0 percent
+                    setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => 0 percent
                     if (stm.getState() == BlindState.IDLE) {
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else {
@@ -210,7 +212,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     }
 
                 } else if (upDownCommand == UpDownType.DOWN) {
-                    setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
+                    setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
                     if (stm.getState() == BlindState.IDLE) {
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
@@ -221,9 +223,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             }
         } else { // Legacy code
             if (upDownCommand == UpDownType.UP) {
-                setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => 0 percent
+                setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => 0 percent
             } else if (upDownCommand == UpDownType.DOWN) {
-                setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
+                setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
             }
         }
     }

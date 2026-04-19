@@ -53,7 +53,8 @@ public class EnOceanChannelRollershutterConfig {
                 }
             }
 
-            throw new IllegalArgumentException("Unknown ConfigMode");
+            throw new IllegalArgumentException(
+                    "Unknown ConfigMode: '" + value + "'. Allowed values are: legacy, rollershutter, blinds");
         }
     }
 

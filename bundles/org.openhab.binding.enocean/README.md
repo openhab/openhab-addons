@@ -584,7 +584,7 @@ On first use, the state machine must be calibrated. Two methods are available:
 1. **Manual:** Physically operate the blind/rollershutter (e.g., via wall switch) until it reaches an end stop
 
 In both cases, the state machine transitions from INVALID to IDLE state once calibration is complete.
-The calibration state is persisted via the linked state-machine item and restored after restart using openHAB's persistence layer.
+The calibration/state-machine state is persisted internally by the binding using StorageService (JSON in userdata) and restored automatically after restart. No linked state-machine item or openHAB persistence configuration is required for this internal persistence.
 
 ### Hardware Requirements
 
