@@ -264,4 +264,4 @@ Switch DoorOpener_GarageTrigger "Open Door 2" { channel="dahuadoor:vto2202:front
 
 The DahuaDoor Intercom widget for MainUI is available in the Marketplace:
 
-https://community.openhab.org/t/dahua-door-intercom-widget/169092
+[DahuaDoor Intercom Widget](https://community.openhab.org/t/dahua-door-intercom-widget/169092)
