@@ -75,7 +75,7 @@ public class DDWRTNetwork {
     /** Hand the entire bridge configuration to the network. */
     public void setConfig(DDWRTNetworkConfiguration netCfg) {
         if (!Objects.equals(this.config, netCfg)) {
-            logger.info("Config changed.");
+            logger.debug("Config changed.");
             this.config = netCfg;
 
             // Clear failure tracking for retry logic
@@ -252,7 +252,7 @@ public class DDWRTNetwork {
                 DDWRTNetworkConfiguration netCfg = config;
                 int interval = netCfg != null ? netCfg.refreshInterval : cfg.refreshInterval;
                 device.startRefresh(interval);
-                logger.info("Successfully connected to device: {} (MAC: {})", cfg.hostname, device.getMac());
+                logger.debug("Successfully connected to device: {} (MAC: {})", cfg.hostname, device.getMac());
                 return device;
             }
         } catch (Exception e) {
@@ -317,7 +317,7 @@ public class DDWRTNetwork {
                         DDWRTNetworkConfiguration netCfg = config;
                         int interval = netCfg != null ? netCfg.refreshInterval : cfg.refreshInterval;
                         device.startRefresh(interval);
-                        logger.info("Successfully reconnected to device: {}", hostname);
+                        logger.debug("Successfully reconnected to device: {}", hostname);
                     }
                 } catch (Exception e) {
                     if (isAuthFailure(e)) {

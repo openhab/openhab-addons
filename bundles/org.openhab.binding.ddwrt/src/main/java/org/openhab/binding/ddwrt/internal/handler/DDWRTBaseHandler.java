@@ -136,10 +136,10 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
             if (entity != null && network != null) {
                 try {
                     if (!handleCommand(network, entity, channelUID, command)) {
-                        logger.info("Ignoring unsupported command = {} for channel = {}", command, channelUID);
+                        logger.debug("Ignoring unsupported command = {} for channel = {}", command, channelUID);
                     }
                 } catch (Exception e) {
-                    logger.info("Error handling command = {} for channel = {}: {}", command, channelUID,
+                    logger.debug("Error handling command = {} for channel = {}: {}", command, channelUID,
                             e.getMessage());
                 }
             } else {

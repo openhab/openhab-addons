@@ -80,7 +80,7 @@ public class DDWRTFirewallRuleHandler extends DDWRTBaseHandler<DDWRTFirewallRule
             Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         if (CHANNEL_ENABLED.equals(channelId) && command instanceof OnOffType) {
-            logger.info("Firewall rule enable/disable not yet implemented for {}", rule.getRuleId());
+            logger.debug("Firewall rule enable/disable not yet implemented for {}", rule.getRuleId());
             return false;
         }
         return false;

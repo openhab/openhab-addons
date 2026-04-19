@@ -86,7 +86,7 @@ public class SshClientManager {
         Path knownHostsPath = getHomeSshDir() != null ? Objects.requireNonNull(getHomeSshDir()).resolve("known_hosts")
                 : Paths.get(ohPrivateKeyDirString, "known_hosts");
         ServerKeyVerifier verifier = new KnownHostsServerKeyVerifier((s, a, k) -> {
-            logger.info("TOFU: auto-accepting host key for {}", a);
+            logger.debug("TOFU: auto-accepting host key for {}", a);
             return true;
         }, knownHostsPath) {
             @Override
