@@ -217,6 +217,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                     commandToSend.setSetTankWaterTemperature(tankWaterTemperature.doubleValue());
                     commandToSend.setEffectiveFlags(EFFECTIVE_FLAG_TARGET_TANK_TEMPERATURE);
                 }
+                break;
             default:
                 logger.debug("Read-only or unknown channel {}, skipping update", channelUID);
         }
