@@ -187,6 +187,12 @@ public class SipCallControlServlet extends HttpServlet {
             return null;
         }
 
+        try {
+            new org.openhab.core.thing.ThingUID(thingUid);
+        } catch (IllegalArgumentException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid thing UID format: " + thingUid);
+            return null;
+        }
         DahuaDoorBaseHandler handler = handlerFactory.getDahuaHandler(thingUid);
         if (handler == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Thing not found or not initialized: " + thingUid);

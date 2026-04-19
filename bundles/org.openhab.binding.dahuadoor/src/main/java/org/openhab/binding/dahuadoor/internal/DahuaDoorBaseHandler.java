@@ -196,10 +196,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     return;
                 }
 
-                if (disposed || !Objects.equals(go2rtcManager, manager)) {
-                    return;
-                }
-
                 // 2. Start go2rtc (includes blocking health-check polling)
                 manager.start();
 
@@ -743,6 +739,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private void startSip(DahuaDoorConfiguration cfg) {
         if (cfg.sipExtension.isBlank()) {
             logger.warn("SIP enabled but sipExtension not configured - skipping SIP registration");
+            updateState(CHANNEL_SIP_REGISTERED, UnDefType.UNDEF);
+            updateState(CHANNEL_SIP_CALL_STATE, UnDefType.UNDEF);
             return;
         }
 
@@ -825,6 +823,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         sessionToClientId.clear();
         backchannelSessionsByHttpSession.clear();
         sipClients.clear();
+        updateState(CHANNEL_SIP_REGISTERED, UnDefType.UNDEF);
+        updateState(CHANNEL_SIP_CALL_STATE, UnDefType.UNDEF);
     }
 
     /**
