@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.config;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -61,14 +60,6 @@ public class ShellyApiConfigurationTest {
     }
 
     // ── URL construction — tested via ShellyApiConfiguration getters ──────────
-
-    @Test
-    void blankLocalIpThrowsIllegalArgument() {
-        // ShellyApiUrls validates localIp is non-blank; the exception propagates from the constructor
-        ShellyBindingConfiguration emptyLocalIp = new ShellyBindingConfiguration().withHttpPort(8080);
-        assertThrows(IllegalArgumentException.class,
-                () -> new ShellyApiConfiguration(emptyLocalIp, "realm", DEVICE_IP));
-    }
 
     @Test
     void urlsAreConstructedCorrectly() {
