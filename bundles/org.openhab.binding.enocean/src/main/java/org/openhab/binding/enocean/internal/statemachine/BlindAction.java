@@ -15,14 +15,19 @@ package org.openhab.binding.enocean.internal.statemachine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Example states for demonstrating state machine infrastructure.
- * This is a minimal example showing how to define custom states for a state machine.
+ * Actions that trigger state transitions in the blind/rollershutter state machine.
  *
  * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
-public enum ExampleState {
-    IDLE, // Ready to start
-    WARMUP, // Preparing
-    ACTIVE // Working
+public enum BlindAction {
+    POSITION_REQUEST_UP,
+    POSITION_REQUEST_DOWN,
+    SLATS_POS_REQUEST,
+    POSITION_DONE,
+    SLATS_POS_DONE,
+    CALIBRATION_REQUEST_UP,
+    CALIBRATION_REQUEST_DOWN,
+    CALIBRATION_DONE,
+    INVALID_REQUEST
 }
