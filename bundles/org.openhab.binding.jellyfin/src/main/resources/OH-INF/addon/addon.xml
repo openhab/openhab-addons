@@ -31,4 +31,31 @@
 
 	</config-description>
 
+	<discovery-methods>
+		<!-- UDP broadcast "who is JellyfinServer?" on port 7359 -->
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipBroadcast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>7359</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>requestPlain</name>
+					<value>who is JellyfinServer?</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*&quot;Name&quot;\s*:\s*&quot;Jellyfin&quot;.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
