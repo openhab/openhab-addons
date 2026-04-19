@@ -83,6 +83,8 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     private final MatterWebsocketService websocketService;
     // Set of nodes we are waiting to connect to
     private Set<BigInteger> outstandingNodeRequests = Collections.synchronizedSet(new HashSet<>());
+    // Set of nodes with an in-flight requestAllNodeData call
+    private Set<BigInteger> pendingDataRequests = Collections.synchronizedSet(new HashSet<>());
     // Set of nodes we need to try reconnecting to
     private Set<BigInteger> disconnectedNodes = Collections.synchronizedSet(new HashSet<>());
     // Nodes that we have linked to a handler
@@ -122,6 +124,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         client.removeListener(this);
         cancelReconnect();
         outstandingNodeRequests.clear();
+        pendingDataRequests.clear();
         disconnectedNodes.clear();
         linkedNodes.clear();
         client.disconnect();
@@ -201,7 +204,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             case CONNECTED:
                 updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                         translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
-                client.requestAllNodeData(message.nodeId);
+                requestAllNodeData(message.nodeId);
                 break;
             case STRUCTURECHANGED:
                 updateNode(message.nodeId);
@@ -325,7 +328,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
 
         return client.initializeNode(id, CONNECTION_TIMEOUT_MS).thenAccept((Void) -> {
             disconnectedNodes.remove(id);
-            client.requestAllNodeData(id);
             logger.debug("updateNode END {}", id);
         }).exceptionally(e -> {
             logger.debug("Could not update node {}", id, e);
@@ -342,8 +344,23 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     /**
+     * Request a full data refresh for a node, deduplicating against any in-flight request for the same node.
+     * requestAllData is expensive (reads every attribute of every cluster of every endpoint from the device),
+     * so overlapping calls can overwhelm slow Thread meshes.
+     *
+     * @param nodeId
+     */
+    private void requestAllNodeData(BigInteger nodeId) {
+        if (!pendingDataRequests.add(nodeId)) {
+            logger.debug("requestAllNodeData for {} already in progress, skipping", nodeId);
+            return;
+        }
+        client.requestAllNodeData(nodeId).whenComplete((v, e) -> pendingDataRequests.remove(nodeId));
+    }
+
+    /**
      * Update the endpoints (devices) for a node
-     * 
+     *
      * @param node
      */
     private synchronized void updateNode(Node node) {
