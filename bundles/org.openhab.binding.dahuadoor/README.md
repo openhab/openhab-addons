@@ -22,7 +22,7 @@ Devices in a different subnet or VLAN will not be found automatically and must b
 
 ### VTO2202/VTO3211 Device
 
-Single-button outdoor station.
+VTO2202 is a single-button outdoor station; VTO3211 is a dual-button outdoor station.
 
 | Parameter     | Type    | Required | Default                 | Description                                                                                                                                                              |
 | ------------- | ------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
