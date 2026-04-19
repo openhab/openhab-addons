@@ -65,7 +65,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE1 = 0x200000080L;
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE2 = 0x800000200L;
     private static final long EFFECTIVE_FLAG_HOTWATER = 65536L;
-    // TOOD: Confirm that the flags are properly defined
+    // TODO: Confirm that the flags are properly defined
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE1 = 281475043819552L;
     private static final long EFFECTIVE_FLAG_HEAT_FLOW_TEMPERATURE_ZONE2 = 0L;
     private static final long EFFECTIVE_FLAG_HEAT_MODE_TEMPERATURE_ZONE1 = 0x08L;
