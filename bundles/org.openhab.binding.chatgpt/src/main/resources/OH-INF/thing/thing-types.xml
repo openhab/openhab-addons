@@ -19,6 +19,10 @@
 				<label>Authentication</label>
 				<description>Authentication for connecting to OpenAI API.</description>
 			</parameter-group>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Connection settings for the OpenAI API.</description>
+			</parameter-group>
 			<parameter-group name="hli">
 				<label>HLI Configuration</label>
 				<description>Configure HLI service.</description>
@@ -47,6 +51,12 @@
 					<option value="https://api.openai.com/v1/models">https://api.openai.com/v1/models</option>
 				</options>
 				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="1" groupName="connection">
+				<label>Request Timeout</label>
+				<description>Timeout in seconds for chat API requests. Used as default for all channels.</description>
+				<default>10</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="model" type="text" required="true" groupName="hli">
 				<label>Model</label>
@@ -158,6 +168,11 @@
 					results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability
 					mass are considered. We generally recommend altering this or temperature but not both.</description>
 				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="1">
+				<label>Request Timeout</label>
+				<description>Timeout in seconds for this channel. Overrides the thing-level timeout.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

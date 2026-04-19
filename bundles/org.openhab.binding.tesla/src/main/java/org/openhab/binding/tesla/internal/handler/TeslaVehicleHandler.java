@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -326,6 +326,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     case SENTRY_MODE: {
                         if (command instanceof OnOffType) {
                             setSentryMode(command == OnOffType.ON);
+                        }
+                        break;
+                    }
+                    case SHARE: {
+                        if (command instanceof StringType) {
+                            shareAddress(command.toString());
                         }
                         break;
                     }
@@ -799,6 +805,19 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("on", isOn);
         sendCommand(COMMAND_STEERING_WHEEL_HEATER, gson.toJson(payloadObject), account.commandTarget);
+    }
+
+    public void shareAddress(String address) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("type", "share_ext_content_raw");
+        payloadObject.addProperty("locale", "en-US");
+        payloadObject.addProperty("timestamp_ms", String.valueOf(System.currentTimeMillis()));
+
+        JsonObject valueObject = new JsonObject();
+        valueObject.addProperty("android.intent.extra.TEXT", address);
+        payloadObject.add("value", valueObject);
+
+        sendCommand(COMMAND_SHARE, gson.toJson(payloadObject), account.commandTarget);
     }
 
     protected @Nullable Vehicle queryVehicle() {

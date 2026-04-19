@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,11 +101,12 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
         heatingObject.remove(JSON_KEY_LIMIT_SOC);
         heatingObject.remove(JSON_KEY_EFFECTIVE_PLAN_SOC);
         heatingObject.remove(JSON_KEY_VEHICLE_LIMIT_SOC);
+        // prepare expectation with alphabetically sorted keys, the handler is doing the same ordering
         heatingObject.addProperty("effectiveLimitTemperature", 80);
-        heatingObject.addProperty("vehicleTemperature", 48.3);
-        heatingObject.addProperty("limitTemperature", 80);
         heatingObject.addProperty("effectivePlanTemperature", 20);
+        heatingObject.addProperty("limitTemperature", 80);
         heatingObject.addProperty("vehicleLimitTemperature", 80);
+        heatingObject.addProperty("vehicleTemperature", 48.3);
     }
 
     @SuppressWarnings("null")

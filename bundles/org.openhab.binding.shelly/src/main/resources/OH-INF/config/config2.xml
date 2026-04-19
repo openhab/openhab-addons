@@ -6,117 +6,119 @@
 
 	<config-description uri="thing-type:shelly:relay-gen2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="enableBluGateway" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
-			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="enableRangeExtender" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableRangeExtender.label</label>
-			<description>@text/thing-type.config.shelly.enableRangeExtender.description</description>
+			<label>Enable Range Extender Support</label>
+			<description>Auto discovers devices, which are connected using the Shelly Range Extender support</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:roller-gen2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="favoriteUP" type="integer" min="0" max="4" required="false">
-			<label>@text/thing-type.config.shelly.roller.favoriteUP.label</label>
-			<description>@text/thing-type.config.shelly.roller.favoriteUP.description</description>
+			<label>Favorite ID for UP</label>
+			<description>Specifies the favorite ID that is used during the command UP on the roller#control channel (use the
+				Shelly App to configure favorites)</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="favoriteDOWN" type="integer" min="0" max="4" required="false">
-			<label>@text/thing-type.config.shelly.roller.favoriteDOWN.label</label>
-			<description>@text/thing-type.config.shelly.roller.favoriteDOWN.description</description>
+			<label>Favorite ID for DOWN</label>
+			<description>Specifies the favorite ID that is used during the command DOWN on the roller#control channel (use the
+				Shelly App to configure favorites)</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="enableBluGateway" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
-			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:rgbw-gen2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="enableBluGateway" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
-			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="enableRangeExtender" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableRangeExtender.label</label>
-			<description>@text/thing-type.config.shelly.enableRangeExtender.description</description>
+			<label>Enable Range Extender Support</label>
+			<description>Auto discovers devices, which are connected using the Shelly Range Extender support</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:shelly:battery-gen2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
-			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
-			<description>@text/thing-type.config.shelly.battery.lowBattery.description</description>
+			<label>Low Battery Threshold (%)</label>
+			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>900</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -125,30 +127,31 @@
 
 	<config-description uri="thing-type:shelly:dimmer-gen2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.light.brightnessAutoOn.label</label>
-			<description>@text/thing-type.config.shelly.light.brightnessAutoOn.description</description>
+			<label>Brightness Auto-ON</label>
+			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
+				device is not switched on</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="enableBluGateway" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
-			<description>@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>false</default>
 		</parameter>
 	</config-description>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,7 +32,6 @@ public class ModeSelectCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0050;
     public static final String CLUSTER_NAME = "ModeSelect";
     public static final String CLUSTER_PREFIX = "modeSelect";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_DESCRIPTION = "description";
     public static final String ATTRIBUTE_STANDARD_NAMESPACE = "standardNamespace";
@@ -42,7 +40,6 @@ public class ModeSelectCluster extends BaseCluster {
     public static final String ATTRIBUTE_START_UP_MODE = "startUpMode";
     public static final String ATTRIBUTE_ON_MODE = "onMode";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute describes the purpose of the server, in readable text.
@@ -73,8 +70,8 @@ public class ModeSelectCluster extends BaseCluster {
     /**
      * The StartUpMode attribute value indicates the desired startup mode for the server when it is supplied with power.
      * If this attribute is not null, the CurrentMode attribute shall be set to the StartUpMode value, when the server
-     * is powered up, except in the case when the OnMode attribute overrides the StartUpMode attribute (see
-     * OnModeWithPowerUp).
+     * is powered up, except in the case when the OnMode attribute overrides the StartUpMode attribute (see Section
+     * 1.9.6.6.1, “OnMode with Power Up”).
      * This behavior does not apply to reboots associated with OTA. After an OTA restart, the CurrentMode attribute
      * shall return to its value prior to the restart.
      * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
@@ -153,7 +150,7 @@ public class ModeSelectCluster extends BaseCluster {
         /**
          * 
          * This feature creates a dependency between an OnOff cluster instance and this cluster instance on the same
-         * endpoint. See OnMode for more information.
+         * endpoint. See Section 1.9.6.6, “OnMode Attribute” for more information.
          */
         public boolean onOff;
 
@@ -187,7 +184,6 @@ public class ModeSelectCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "description : " + description + "\n";
         str += "standardNamespace : " + standardNamespace + "\n";

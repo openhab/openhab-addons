@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,12 +45,6 @@ public class SmartPlugHandler extends PowerPlugHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        // update of values is handled in super class
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
@@ -72,8 +66,8 @@ public class SmartPlugHandler extends PowerPlugHandler {
         // handle reachable flag
         super.handleUpdate(update);
         // now device specific
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

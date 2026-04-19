@@ -6,17 +6,17 @@
 
 	<bridge-type id="neatoaccount">
 		<label>Neato Account</label>
-		<description>Access to Neato Account. Used to discover robots tied to account.</description>
+		<description>Access to a Neato account. Used to discover robots tied to the account.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
-				<label>E-mail Address</label>
-				<description>E-mail address for your Neato Cloud account.</description>
+				<label>Email Address</label>
+				<description>Email address for your Neato cloud account.</description>
 				<context>email</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Password for your Neato Cloud account.</description>
+				<description>Password for your Neato cloud account.</description>
 				<context>password</context>
 			</parameter>
 		</config-description>
@@ -29,7 +29,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Neato Vacuum Cleaner</label>
-		<description>Provides communication with Neato Vacuum cleaner.</description>
+		<description>Provides communication with a Neato vacuum cleaner.</description>
 		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="battery-level" typeId="system.battery-level"/>
@@ -51,7 +51,7 @@
 		<config-description>
 			<parameter name="serial" type="text" required="true">
 				<label>Neato Vacuum Serial</label>
-				<description>Serial number of the vacuum cleaner</description>
+				<description>Serial number of the vacuum cleaner.</description>
 			</parameter>
 
 			<parameter name="secret" type="text" required="true">
@@ -60,7 +60,7 @@
 			</parameter>
 
 			<parameter name="refresh" type="integer">
-				<label>Refresh Time Interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh time interval in seconds for updates from the Neato Web Service.</description>
 				<default>60</default>
 			</parameter>

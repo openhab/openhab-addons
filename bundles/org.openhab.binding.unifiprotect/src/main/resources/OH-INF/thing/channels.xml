@@ -1,0 +1,1865 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifiprotect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="doorbell-default-message">
+		<item-type>String</item-type>
+		<label>Doorbell Default Message</label>
+		<description>Default doorbell LCD message text configured on the NVR</description>
+	</channel-type>
+
+	<channel-type id="doorbell-default-message-reset-timeout" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Doorbell Default Message Reset Timeout</label>
+		<description>Default doorbell LCD message reset timeout</description>
+	</channel-type>
+
+	<channel-type id="device-added" advanced="true">
+		<kind>trigger</kind>
+		<label>Device Added</label>
+		<description>Device was added to Protect</description>
+		<event>
+			<options>
+				<option value="nvr">nvr</option>
+				<option value="camera">camera</option>
+				<option value="chime">chime</option>
+				<option value="light">light</option>
+				<option value="viewer">viewer</option>
+				<option value="speaker">speaker</option>
+				<option value="bridge">bridge</option>
+				<option value="doorlock">doorlock</option>
+				<option value="sensor">sensor</option>
+				<option value="aiprocessor">aiprocessor</option>
+				<option value="aiport">aiport</option>
+				<option value="linkstation">linkstation</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="device-updated" advanced="true">
+		<kind>trigger</kind>
+		<label>Device Updated</label>
+		<description>Device was updated in Protect</description>
+		<event>
+			<options>
+				<option value="nvr">nvr</option>
+				<option value="camera">camera</option>
+				<option value="chime">chime</option>
+				<option value="light">light</option>
+				<option value="viewer">viewer</option>
+				<option value="speaker">speaker</option>
+				<option value="bridge">bridge</option>
+				<option value="doorlock">doorlock</option>
+				<option value="sensor">sensor</option>
+				<option value="aiprocessor">aiprocessor</option>
+				<option value="aiport">aiport</option>
+				<option value="linkstation">linkstation</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="device-removed" advanced="true">
+		<kind>trigger</kind>
+		<label>Device Removed</label>
+		<description>Device was removed from Protect</description>
+		<event>
+			<options>
+				<option value="nvr">nvr</option>
+				<option value="camera">camera</option>
+				<option value="chime">chime</option>
+				<option value="light">light</option>
+				<option value="viewer">viewer</option>
+				<option value="speaker">speaker</option>
+				<option value="bridge">bridge</option>
+				<option value="doorlock">doorlock</option>
+				<option value="sensor">sensor</option>
+				<option value="aiprocessor">aiprocessor</option>
+				<option value="aiport">aiport</option>
+				<option value="linkstation">linkstation</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="light-switch">
+		<item-type>Switch</item-type>
+		<label>Main Light</label>
+		<description>Enable or disable the main floodlight</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="is-dark">
+		<item-type>Switch</item-type>
+		<label>Is Dark</label>
+		<description>Scene is currently dark</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="last-motion" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Motion</label>
+		<description>Timestamp of last motion detected</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="light-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Light Mode</label>
+		<description>When will floodlight turn on</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="always">always</option>
+				<option value="motion">motion</option>
+				<option value="off">off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="enable-at" advanced="true">
+		<item-type>String</item-type>
+		<label>Enable At</label>
+		<description>When the lighting mode is relevant</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="fulltime">fulltime</option>
+				<option value="dark">dark</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="indicator-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Status Indicator</label>
+		<description>Enable or disable floodlight status LED indicator</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="pir-duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>PIR Duration</label>
+		<description>How long the light stays on after motion</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="pir-sensitivity" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>PIR Sensitivity</label>
+		<description>PIR motion sensitivity (0-100)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="led-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>LED Level</label>
+		<description>Brightness level of the main LED (1-6)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state min="1" max="6" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="battery">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<description>Battery charge level (%)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Contact state (OPEN/CLOSED)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Ambient temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Ambient humidity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illuminance</label>
+		<description>Ambient light (Lux)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-contact">
+		<item-type>Contact</item-type>
+		<label>Alarm</label>
+		<description>Smoke or CO alarm state (OPEN = alarming)</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="alarm" advanced="true">
+		<kind>trigger</kind>
+		<label>Alarm</label>
+		<description>Smoke or CO alarm event</description>
+		<event>
+			<options>
+				<option value="smoke">smoke</option>
+				<option value="CO">CO</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="water-leak-contact">
+		<item-type>Contact</item-type>
+		<label>Water Leak</label>
+		<description>Water leak state (OPEN = leak detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="water-leak" advanced="true">
+		<kind>trigger</kind>
+		<label>Water Leak</label>
+		<description>Water leak detected</description>
+		<event>
+			<options>
+				<option value="door">door</option>
+				<option value="window">window</option>
+				<option value="garage">garage</option>
+				<option value="leak">leak</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="tamper-contact">
+		<item-type>Contact</item-type>
+		<label>Tamper</label>
+		<description>Tamper state (OPEN = tampering)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tampered</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="tamper" advanced="true">
+		<kind>trigger</kind>
+		<label>Tamper</label>
+		<description>Tampering detected</description>
+	</channel-type>
+
+	<channel-type id="opened" advanced="true">
+		<kind>trigger</kind>
+		<label>Opened</label>
+		<description>Sensor opened</description>
+		<event>
+			<options>
+				<option value="door">door</option>
+				<option value="window">window</option>
+				<option value="garage">garage</option>
+				<option value="leak">leak</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="closed" advanced="true">
+		<kind>trigger</kind>
+		<label>Closed</label>
+		<description>Sensor closed</description>
+		<event>
+			<options>
+				<option value="door">door</option>
+				<option value="window">window</option>
+				<option value="garage">garage</option>
+				<option value="leak">leak</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="ring" advanced="true">
+		<kind>trigger</kind>
+		<label>Doorbell Ring</label>
+		<description>Doorbell ring event</description>
+		<event>
+			<options>
+				<option value="PRESSED">pressed</option>
+				<option value="RELEASED">released</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="ring-contact">
+		<item-type>Contact</item-type>
+		<label>Doorbell Ring</label>
+		<description>Doorbell ring state (OPEN = doorbell ring detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+
+	<channel-type id="snapshot">
+		<item-type>Image</item-type>
+		<label>Snapshot</label>
+		<description>Latest camera snapshot image</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
+	</channel-type>
+
+	<channel-type id="mic-volume" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Microphone Volume</label>
+		<description>Microphone volume (0-100)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="video-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Mode</label>
+		<description>Current video mode of the camera</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="default">Default</option>
+				<option value="highFps">High FPS</option>
+				<option value="sport">Sport</option>
+				<option value="slowShutter">Slow Shutter</option>
+				<option value="lprReflex">LPR Reflex</option>
+				<option value="lprNoneReflex">LPR Non-Reflex</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hdr-type" advanced="true">
+		<item-type>String</item-type>
+		<label>HDR Mode</label>
+		<description>High Dynamic Range (HDR) mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="on">On</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="osd-name" advanced="true">
+		<item-type>Switch</item-type>
+		<label>OSD Name</label>
+		<description>Show the name on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="osd-date" advanced="true">
+		<item-type>Switch</item-type>
+		<label>OSD Date</label>
+		<description>Show the date on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="osd-logo" advanced="true">
+		<item-type>Switch</item-type>
+		<label>OSD Logo</label>
+		<description>Show the logo on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="rtsp-url" advanced="true">
+		<item-type>String</item-type>
+		<label>RTSP Stream URL</label>
+		<description>RTSP stream URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="webrtc-url">
+		<item-type>String</item-type>
+		<label>WebRTC URL</label>
+		<description>WebRTC stream URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="snapshot-url">
+		<item-type>String</item-type>
+		<label>Snapshot URL</label>
+		<description>Snapshot image URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="led-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Status LED</label>
+		<description>Enable or disable the camera status LED</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="recording-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Recording Mode</label>
+		<description>Camera recording mode</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="always">Always</option>
+				<option value="motion">Motion Only</option>
+				<option value="never">Never</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mic-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Microphone Enabled</label>
+		<description>Enable or disable microphone</description>
+		<category>Microphone</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ir-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>IR LED Mode</label>
+		<description>Infrared LED mode</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="on">On</option>
+				<option value="off">Off</option>
+				<option value="autoFilterOnly">Auto Filter Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="motion-detection-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Motion Detection</label>
+		<description>Enable or disable motion detection</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Motion</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="use-global-settings" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use Global Settings</label>
+		<description>Use NVR global settings instead of per-camera settings</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-person-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Person Detection</label>
+		<description>Enable person smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-vehicle-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Vehicle Detection</label>
+		<description>Enable vehicle smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-face-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Face Detection</label>
+		<description>Enable face smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-license-plate-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>License Plate Detection</label>
+		<description>Enable license plate smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-package-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Package Detection</label>
+		<description>Enable package smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="smart-detect-animal-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Animal Detection</label>
+		<description>Enable animal smart detection</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="active-patrol-slot">
+		<item-type>Number</item-type>
+		<label>Active Patrol Slot</label>
+		<description>Currently active PTZ patrol slot</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="motion" advanced="true">
+		<kind>trigger</kind>
+		<label>Motion</label>
+		<description>Camera motion detected</description>
+	</channel-type>
+
+	<channel-type id="motion-contact">
+		<item-type>Contact</item-type>
+		<label>Motion</label>
+		<description>Motion state (OPEN = motion detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Motion</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-audio" advanced="true">
+		<kind>trigger</kind>
+		<label>Smart Detect Audio</label>
+		<description>Audio-based smart detection event</description>
+		<event>
+			<options>
+				<option value="alrmSmoke">smoke alarm</option>
+				<option value="alrmCmonx">carbon monoxide alarm</option>
+				<option value="alrmSiren">siren</option>
+				<option value="alrmBabyCry">baby cry</option>
+				<option value="alrmSpeak">speech</option>
+				<option value="alrmBark">dog bark</option>
+				<option value="alrmBurglar">burglar alarm</option>
+				<option value="alrmCarHorn">car horn</option>
+				<option value="alrmGlassBreak">glass break</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="smart-detect-audio-contact">
+		<item-type>Contact</item-type>
+		<label>Smart Detect Audio</label>
+		<description>Smart audio detection state (OPEN = audio detection active)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-zone" advanced="true">
+		<kind>trigger</kind>
+		<label>Smart Detect Zone</label>
+		<description>Zone-based smart detection event</description>
+		<event>
+			<options>
+				<option value="person">person</option>
+				<option value="vehicle">vehicle</option>
+				<option value="package">package</option>
+				<option value="licensePlate">license plate</option>
+				<option value="face">face</option>
+				<option value="animal">animal</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="smart-detect-zone-contact">
+		<item-type>Contact</item-type>
+		<label>Smart Detect Zone</label>
+		<description>Smart detect zone state (OPEN = zone detection active)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+	<channel-type id="smart-detect-line" advanced="true">
+		<kind>trigger</kind>
+		<label>Smart Detect Line</label>
+		<description>Line-based smart detection event</description>
+		<event>
+			<options>
+				<option value="person">person</option>
+				<option value="vehicle">vehicle</option>
+				<option value="package">package</option>
+				<option value="licensePlate">license plate</option>
+				<option value="face">face</option>
+				<option value="animal">animal</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="smart-detect-line-contact">
+		<item-type>Contact</item-type>
+		<label>Smart Detect Line</label>
+		<description>Smart detect line state (OPEN = line detection active)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+	<channel-type id="smart-detect-loiter" advanced="true">
+		<kind>trigger</kind>
+		<label>Smart Detect Loiter</label>
+		<description>Loitering smart detection event</description>
+		<event>
+			<options>
+				<option value="person">person</option>
+				<option value="vehicle">vehicle</option>
+				<option value="package">package</option>
+				<option value="licensePlate">license plate</option>
+				<option value="face">face</option>
+				<option value="animal">animal</option>
+				<option value="none">none</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="smart-detect-loiter-contact">
+		<item-type>Contact</item-type>
+		<label>Smart Detect Loiter</label>
+		<description>Smart detect loiter state (OPEN = smart detect loiter detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Lock or unlock the door (ON = locked, OFF = unlocked)</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="lock-status">
+		<item-type>Contact</item-type>
+		<label>Lock Status</label>
+		<description>Current lock status (CLOSED = locked, OPEN = unlocked)</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="calibrate-doorlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Calibrate</label>
+		<description>Calibrate the doorlock (door must be open, lock unlocked)</description>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="auto-close-time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Auto-Close Time</label>
+		<description>Automatically lock after this duration (0 = disabled)</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state min="0" max="3600" step="1" pattern="%d s"/>
+	</channel-type>
+
+	<!-- Chime channel types -->
+	<channel-type id="play-chime" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Play Chime</label>
+		<description>Play chime sound</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="play-buzzer">
+		<item-type>Switch</item-type>
+		<label>Play Buzzer</label>
+		<description>Play buzzer sound</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="chime-volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Chime volume (0-100)</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="chime-repeat-times" advanced="true">
+		<item-type>Number</item-type>
+		<label>Repeat Times</label>
+		<description>Number of times to repeat chime (1-6)</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state min="1" max="6" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="ptz-relative-pan">
+		<item-type>Number</item-type>
+		<label>PTZ Relative Pan</label>
+		<description>Pan camera relatively (negative = left, positive = right)</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-relative-tilt">
+		<item-type>Number</item-type>
+		<label>PTZ Relative Tilt</label>
+		<description>Tilt camera relatively (negative = down, positive = up)</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-relative-zoom">
+		<item-type>Number</item-type>
+		<label>PTZ Relative Zoom</label>
+		<description>Zoom camera relatively (negative = out, positive = in)</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-center">
+		<item-type>String</item-type>
+		<label>PTZ Center</label>
+		<description>Center camera on coordinates (format: x,y,z where 0-1000)</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-create-preset" advanced="true">
+		<item-type>String</item-type>
+		<label>PTZ Create Preset</label>
+		<description>Create PTZ preset at current position (format: slot,name)</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-delete-preset" advanced="true">
+		<item-type>Number</item-type>
+		<label>PTZ Delete Preset</label>
+		<description>Delete PTZ preset by slot number</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="ptz-set-home" advanced="true">
+		<item-type>Switch</item-type>
+		<label>PTZ Set Home</label>
+		<description>Set PTZ home position to current position</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="camera-speaker-volume" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Speaker Volume</label>
+		<description>Camera speaker volume (0-100)</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="camera-zoom-level">
+		<item-type>Dimmer</item-type>
+		<label>Optical Zoom</label>
+		<description>Camera optical zoom level (0-100)</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="camera-wdr-level" advanced="true">
+		<item-type>Number</item-type>
+		<label>WDR Level</label>
+		<description>Wide Dynamic Range level (0-3)</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state min="0" max="3" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="doorbell-ring-volume" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Doorbell Ring Volume</label>
+		<description>Doorbell ring volume (0-100)</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="doorbell-chime-duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Doorbell Chime Duration</label>
+		<description>Doorbell chime duration in milliseconds</description>
+		<category>Time</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="device-reboot" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Reboot Device</label>
+		<description>Reboot the device</description>
+		<category>System</category>
+	</channel-type>
+
+	<channel-type id="sensor-clear-tamper" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Clear Tamper Flag</label>
+		<description>Clear the sensor tamper flag</description>
+		<category>Sensor</category>
+	</channel-type>
+
+	<channel-type id="light-mode-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Light Mode (Advanced)</label>
+		<description>Advanced light mode control</description>
+		<category>Light</category>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="motion">Motion</option>
+				<option value="dark">Dark</option>
+				<option value="always">Always</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="light-enable-schedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Light Enable Schedule</label>
+		<description>When light mode is active</description>
+		<category>Light</category>
+		<state>
+			<options>
+				<option value="">Always</option>
+				<option value="sunrise">Sunrise to Sunset</option>
+				<option value="sunset">Sunset to Sunrise</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="motion-thumbnail">
+		<item-type>Image</item-type>
+		<label>Motion Thumbnail</label>
+		<description>Thumbnail image from the most recent motion event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
+	</channel-type>
+
+	<channel-type id="motion-heatmap">
+		<item-type>Image</item-type>
+		<label>Motion Heatmap</label>
+		<description>Heatmap image showing motion zones from the most recent motion event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
+	</channel-type>
+
+	<channel-type id="motion-score" advanced="true">
+		<item-type>Number</item-type>
+		<label>Motion Score</label>
+		<description>Motion detection score (0-100) from the most recent motion event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-thumbnail">
+		<item-type>Image</item-type>
+		<label>Smart Detection Thumbnail</label>
+		<description>Thumbnail image from the most recent smart detection event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-score" advanced="true">
+		<item-type>Number</item-type>
+		<label>Smart Detection Score</label>
+		<description>Smart detection confidence score (0-100) from the most recent event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-types" advanced="true">
+		<item-type>String</item-type>
+		<label>Smart Detection Types</label>
+		<description>Types of objects detected in the most recent smart detection event (comma-separated)</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smart-detect-last-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Smart Detection Type</label>
+		<description>Primary object type from the most recent smart detection event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="person">Person</option>
+				<option value="vehicle">Vehicle</option>
+				<option value="package">Package</option>
+				<option value="animal">Animal</option>
+				<option value="licensePlate">License Plate</option>
+				<option value="face">Face</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smart-detect-timestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Smart Detection</label>
+		<description>Timestamp of the most recent smart detection event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-motion-detected">
+		<item-type>Switch</item-type>
+		<label>Motion Detected</label>
+		<description>Current motion detection state</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-smart-detected">
+		<item-type>Switch</item-type>
+		<label>Smart Detection Active</label>
+		<description>Current smart detection state</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-recording">
+		<item-type>Switch</item-type>
+		<label>Recording Active</label>
+		<description>Camera is currently recording</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-dark">
+		<item-type>Switch</item-type>
+		<label>Scene is Dark</label>
+		<description>Scene is currently dark (low light detected)</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-smart" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Smart Detection</label>
+		<description>Timestamp of the most recent smart detection event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-live-heatmap-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Live Heatmap Enabled</label>
+		<description>Live heatmap is enabled</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-reconfiguration-in-progress" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Video Reconfiguration</label>
+		<description>Video reconfiguration is in progress</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="phy-rate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Physical Connection Rate</label>
+		<description>Network physical connection rate (Mbps)</description>
+		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f Mbps"/>
+	</channel-type>
+
+	<channel-type id="is-probing-for-wifi" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Probing for WiFi</label>
+		<description>Camera is currently probing for WiFi</description>
+		<category>Network</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-poor-network" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Poor Network Quality</label>
+		<description>Network quality is poor</description>
+		<category>Network</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-wireless-uplink-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Wireless Uplink Enabled</label>
+		<description>Wireless uplink is enabled</description>
+		<category>Network</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Current voltage</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-percentage">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Percentage</label>
+		<description>Battery charge percentage</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="battery-is-charging">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<description>Battery is currently charging</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-sleep-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Sleep State</label>
+		<description>Battery sleep state</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wifi-channel" advanced="true">
+		<item-type>Number</item-type>
+		<label>WiFi Channel</label>
+		<description>WiFi channel number</description>
+		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="wifi-frequency" advanced="true">
+		<item-type>Number</item-type>
+		<label>WiFi Frequency</label>
+		<description>WiFi frequency (MHz)</description>
+		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d MHz"/>
+	</channel-type>
+
+	<channel-type id="wifi-signal-quality" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>WiFi Signal Quality</label>
+		<description>WiFi signal quality percentage</description>
+		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="wifi-signal-strength" advanced="true">
+		<item-type>Number</item-type>
+		<label>WiFi Signal Strength</label>
+		<description>WiFi signal strength (dBm)</description>
+		<category>Network</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="storage-used">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Used</label>
+		<description>Storage space used by this camera</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="storage-rate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Storage Rate</label>
+		<description>Storage write rate (bytes per second)</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f B/s"/>
+	</channel-type>
+
+	<channel-type id="high-fps-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>High FPS Mode</label>
+		<description>Enable high frame rate mode if supported by camera</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hdr-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>HDR Enabled</label>
+		<description>Enable High Dynamic Range mode if supported by camera</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="uptime-started" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Uptime Started</label>
+		<description>Timestamp when the device was last booted</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connected-since" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Connected Since</label>
+		<description>Timestamp when the device connected to the NVR</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-seen" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp when the device was last seen by the NVR</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ring-thumbnail">
+		<item-type>Image</item-type>
+		<label>Ring Thumbnail</label>
+		<description>Thumbnail image from the most recent doorbell ring event</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
+	</channel-type>
+
+	<channel-type id="is-ringing">
+		<item-type>Switch</item-type>
+		<label>Doorbell Ringing</label>
+		<description>Doorbell is currently being pressed</description>
+		<category>Status</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-ring" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Ring</label>
+		<description>Timestamp of the most recent doorbell ring</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lcd-message">
+		<item-type>String</item-type>
+		<label>LCD Message</label>
+		<description>Custom text message to display on doorbell LCD screen</description>
+		<category>Status</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="nvr-uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>NVR Uptime</label>
+		<description>NVR uptime in milliseconds</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d ms"/>
+	</channel-type>
+
+	<channel-type id="nvr-last-seen" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>NVR Last Seen</label>
+		<description>Timestamp when the NVR was last updated</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-last-updated" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>NVR Last Updated</label>
+		<description>Timestamp of the last NVR configuration update</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cpu-load">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CPU Load</label>
+		<description>Average CPU load percentage</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="cpu-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>CPU Temperature</label>
+		<description>CPU temperature</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="memory-available">
+		<item-type>Number:DataAmount</item-type>
+		<label>Available Memory</label>
+		<description>Available system memory</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="memory-free">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Memory</label>
+		<description>Free system memory</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="storage-total">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Storage</label>
+		<description>Total storage capacity</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="storage-used">
+		<item-type>Number:DataAmount</item-type>
+		<label>Used Storage</label>
+		<description>Used storage space</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="storage-available">
+		<item-type>Number:DataAmount</item-type>
+		<label>Available Storage</label>
+		<description>Available storage space</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="storage-utilization">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Storage Utilization</label>
+		<description>Storage utilization percentage</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="storage-is-recycling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Storage Recycling</label>
+		<description>Storage is recycling old recordings</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="recording-retention">
+		<item-type>Number:Time</item-type>
+		<label>Recording Retention</label>
+		<description>Maximum recording retention duration</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cloud-connected">
+		<item-type>Switch</item-type>
+		<label>Cloud Connected</label>
+		<description>NVR is connected to UniFi Cloud</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enable-automatic-backups" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Automatic Backups</label>
+		<description>Automatic NVR configuration backups enabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="alerts-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alerts Enabled</label>
+		<description>System alerts are enabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Alarm</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="device-state" advanced="true">
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>Current operational state of the device</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CONNECTED">Connected</option>
+				<option value="DISCONNECTED">Disconnected</option>
+				<option value="ADOPTING">Adopting</option>
+				<option value="UPDATING">Updating</option>
+				<option value="PROVISIONING">Provisioning</option>
+				<option value="REBOOTING">Rebooting</option>
+				<option value="FIRMWARE_MISMATCH">Firmware Mismatch</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="device-uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Device Uptime</label>
+		<description>Device uptime in milliseconds</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d ms"/>
+	</channel-type>
+
+	<channel-type id="nvr-storage-total" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Total</label>
+		<description>Total storage capacity</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-storage-used" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Used</label>
+		<description>Used storage space</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-storage-available" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Storage Available</label>
+		<description>Available storage space</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-storage-utilization">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Storage Utilization</label>
+		<description>Storage utilization percentage</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="nvr-storage-device-healthy">
+		<item-type>Switch</item-type>
+		<label>Storage Devices Healthy</label>
+		<description>All storage devices are healthy</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-camera-utilization" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Camera Utilization</label>
+		<description>Camera utilization percentage (current/max)</description>
+		<category>Status</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="nvr-recording-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>Recording Mode</label>
+		<description>Global recording mode</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="always">Always</option>
+				<option value="motion">Motion Only</option>
+				<option value="never">Never</option>
+				<option value="smartDetect">Smart Detect</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="nvr-recording-disabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Recording Disabled</label>
+		<description>Recording is globally disabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-recording-motion-only" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Recording Motion Only</label>
+		<description>Recording only on motion detection</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-recording-retention">
+		<item-type>Number:Time</item-type>
+		<label>Recording Retention</label>
+		<description>Recording retention duration</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-is-away" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Away Mode</label>
+		<description>System is in away mode</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-geofencing-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Geofencing Enabled</label>
+		<description>Geofencing is enabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-smart-detection-available" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Smart Detection Available</label>
+		<description>Smart detection feature is available</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-insights-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Insights Enabled</label>
+		<description>Insights feature is enabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-vault-registered" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Vault Registered</label>
+		<description>Cloud vault is registered</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-can-auto-update" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Can Auto Update</label>
+		<description>Automatic updates are enabled</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-last-update-at" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Update At</label>
+		<description>Timestamp of last software update</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nvr-protect-updatable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Protect Update Available</label>
+		<description>UniFi Protect software update is available</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

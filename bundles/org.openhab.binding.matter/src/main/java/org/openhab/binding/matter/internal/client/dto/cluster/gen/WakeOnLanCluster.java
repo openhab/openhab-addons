@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -29,11 +28,9 @@ public class WakeOnLanCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0503;
     public static final String CLUSTER_NAME = "WakeOnLan";
     public static final String CLUSTER_PREFIX = "wakeOnLan";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_MAC_ADDRESS = "macAddress";
     public static final String ATTRIBUTE_LINK_LOCAL_ADDRESS = "linkLocalAddress";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the current MAC address of the device. Only 48-bit MAC Addresses shall be used for this attribute as
      * required by the Wake on LAN protocol.
@@ -62,7 +59,6 @@ public class WakeOnLanCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "macAddress : " + macAddress + "\n";
         str += "linkLocalAddress : " + linkLocalAddress + "\n";
         return str;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,6 +91,10 @@ public class HomeWizardHandlerTest {
     }
 
     protected static ChannelUID getBatteriesChannelUid(Thing thing, String channelId) {
-        return new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES + "#" + channelId);
+        return new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES + "#" + channelId);
+    }
+
+    protected static ChannelUID getSystemChannelUid(Thing thing, String channelId) {
+        return new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM + "#" + channelId);
     }
 }

@@ -13,7 +13,6 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
-			<channel-group id="pollens" typeId="bridge-pollens"/>
 			<channel-group id="aq-bulletin" typeId="air-quality-bulletin">
 				<label>Today's Air Quality Bulletin</label>
 			</channel-group>
@@ -22,6 +21,10 @@
 			</channel-group>
 			<channel-group id="daily" typeId="daily"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="apikey" type="text" required="true">

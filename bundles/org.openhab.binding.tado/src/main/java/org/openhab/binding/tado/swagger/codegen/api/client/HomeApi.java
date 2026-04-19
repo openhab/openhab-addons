@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,10 +22,12 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
 import org.openhab.binding.tado.swagger.codegen.api.model.HomeInfo;
@@ -54,11 +56,55 @@ public class HomeApi {
 
     private Gson gson;
     private OAuthorizerV2 authorizer;
+    private final TadoHomeHandler homeHandler;
 
-    public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl) {
+    private void extractRateLimitInfo(ContentResponse response) {
+        int apiRateLimit = -1;
+        int apiRateDuration = -1;
+        int apiRateRemaining = -1;
+        int apiRateReset = -1;
+
+        HttpFields headersfields = response.getHeaders();
+
+        String rateLimitPolicyValueString = headersfields.get("RateLimit-Policy");
+        if (rateLimitPolicyValueString != null) {
+            String[] rateLimitPolicyValues = rateLimitPolicyValueString.split(";");
+            for (String value : rateLimitPolicyValues) {
+                if (value.startsWith("q=")) {
+                    apiRateLimit = safeParseInt(value.substring(2));
+                } else if (value.startsWith("w=")) {
+                    apiRateDuration = safeParseInt(value.substring(2));
+                }
+            }
+        }
+
+        String rateLimitValueString = headersfields.get("RateLimit");
+        if (rateLimitValueString != null) {
+            String[] rateLimitValues = rateLimitValueString.split(";");
+            for (String value : rateLimitValues) {
+                if (value.startsWith("r=")) {
+                    apiRateRemaining = safeParseInt(value.substring(2));
+                } else if (value.startsWith("w=")) { // some providers use 'w' as window/reset seconds
+                    apiRateReset = safeParseInt(value.substring(2));
+                }
+            }
+        }
+        homeHandler.updateRateLimitInfo(apiRateLimit, apiRateDuration, apiRateRemaining, apiRateReset);
+    }
+
+    private static int safeParseInt(String s) {
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public HomeApi(Gson gson, OAuthorizerV2 authorizer, String baseUrl, TadoHomeHandler homeHandler) {
         this.gson = gson;
         this.authorizer = authorizer;
         this.baseUrl = baseUrl;
+        this.homeHandler = homeHandler;
     }
 
     public void deleteZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
@@ -97,6 +143,7 @@ public class HomeApi {
         }
 
         int statusCode = response.getStatus();
+        extractRateLimitInfo(response);
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation deleteZoneOverlay failed with error " + statusCode);
         }
@@ -137,6 +184,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<HomeState>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -175,6 +223,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<MobileDevice>>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -213,6 +262,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<List<Zone>>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -251,6 +301,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<HomeInfo>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -284,6 +335,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<User>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -329,6 +381,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<GenericZoneCapabilities>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -374,6 +427,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<OverlayTemplate>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -419,6 +473,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Zone>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -464,6 +519,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Overlay>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -508,6 +564,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<ZoneState>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 
@@ -548,6 +605,7 @@ public class HomeApi {
         }
 
         int statusCode = response.getStatus();
+        extractRateLimitInfo(response);
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation updatePresenceLock failed with error " + statusCode);
         }
@@ -603,6 +661,7 @@ public class HomeApi {
 
         Type returnType = new TypeToken<Overlay>() {
         }.getType();
+        extractRateLimitInfo(response);
         return gson.fromJson(response.getContentAsString(), returnType);
     }
 

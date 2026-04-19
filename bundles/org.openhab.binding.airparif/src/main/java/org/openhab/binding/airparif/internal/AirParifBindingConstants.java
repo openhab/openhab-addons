@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ public class AirParifBindingConstants {
     public static final ThingTypeUID LOCATION_THING_TYPE = new ThingTypeUID(BINDING_ID, "location");
 
     // Channel group ids
-    public static final String GROUP_POLLENS = "pollens";
     public static final String GROUP_DAILY = "daily";
     public static final String GROUP_AQ_BULLETIN = "aq-bulletin";
     public static final String GROUP_AQ_BULLETIN_TOMORROW = GROUP_AQ_BULLETIN + "-tomorrow";

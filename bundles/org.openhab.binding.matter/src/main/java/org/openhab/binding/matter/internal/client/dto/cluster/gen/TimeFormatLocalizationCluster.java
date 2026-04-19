@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -30,13 +29,11 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002C;
     public static final String CLUSTER_NAME = "TimeFormatLocalization";
     public static final String CLUSTER_PREFIX = "timeFormatLocalization";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_HOUR_FORMAT = "hourFormat";
     public static final String ATTRIBUTE_ACTIVE_CALENDAR_TYPE = "activeCalendarType";
     public static final String ATTRIBUTE_SUPPORTED_CALENDAR_TYPES = "supportedCalendarTypes";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the format that the Node is currently configured to use when conveying the hour unit of time.
@@ -142,7 +139,6 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "hourFormat : " + hourFormat + "\n";
         str += "activeCalendarType : " + activeCalendarType + "\n";

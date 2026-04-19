@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,9 +40,9 @@ public final class PublishPlanetJob extends AbstractJob {
         try {
             handler.publishDailyInfo();
         } catch (Exception e) {
-            logger.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

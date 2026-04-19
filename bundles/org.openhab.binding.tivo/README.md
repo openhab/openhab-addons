@@ -26,11 +26,11 @@ TiVo devices with the network remote control interface enabled will be displayed
 ## Binding Configuration
 
 There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+All settings are through Thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter         | Display Name                         | Description                                                                                                                                                                                                                                                                        |
 |-------------------|--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -44,8 +44,8 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-- If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option. This will connect and lock the port in-use preventing any other device from connecting it. If you use some other application, disable this option. Performance is improved if the connection is kept open.
-- **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel. If openHAB is your only method of control, you can disable this option. Turning polling off, minimizes the periodic polling overhead on your hardware.
+- If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option. This will connect and lock the port in use, preventing any other device from connecting to it. If you use some other application, disable this option. Performance is improved if the connection is kept open.
+- **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or another application to change channel. If openHAB is your only method of control, you can disable this option. Turning polling off minimizes the periodic polling overhead on your hardware.
 
 ## Channels
 
@@ -64,7 +64,7 @@ All devices support the following channels:
 - To change channels simply post/send the number of the channel to channelSet or channelForce. For OTA channels, a decimal for the sub-channel must be specified (ie: 2.1), for all others just send the channel as a whole number (ie: 100).
 - Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports this command).
 - To send multiple copies of the same keyboard command, append an asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2.
-- Special characters must also be changed to the appropriate command e.g. the comma symbol(`,`) must not be sent it should be replaced by 'COMMA'.
+- Special characters must also be changed to the appropriate command, e.g., the comma symbol (`,`) must not be sent; it should be replaced with 'COMMA'.
 
 ### Available IR Commands to use with `irCommand` channel:
 

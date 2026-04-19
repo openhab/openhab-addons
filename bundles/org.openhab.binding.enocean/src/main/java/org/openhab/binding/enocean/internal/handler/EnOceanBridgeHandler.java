@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -341,6 +341,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         return smackClients.contains(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }
 
+    public boolean isRS485Enabled() {
+        return getConfigAs(EnOceanBridgeConfig.class).rs485;
+    }
+
     public @Nullable Integer getNextSenderId(Thing sender) {
         return getNextSenderId(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }
@@ -348,10 +352,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public @Nullable Integer getNextSenderId(String enoceanId) {
         EnOceanBridgeConfig config = getConfigAs(EnOceanBridgeConfig.class);
         Integer senderId = config.nextSenderId;
-        if (senderId == null) {
-            return null;
-        }
-        if (sendingThings[senderId] == null) {
+        if (senderId != null && sendingThings[senderId] == null) {
             Configuration c = this.editConfiguration();
             c.put(PARAMETER_NEXT_SENDERID, null);
             updateConfiguration(c);
@@ -382,8 +383,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         sendingThings[id] = null;
     }
 
-    public <T extends @Nullable Response> void sendMessage(BasePacket message,
-            @Nullable ResponseListener<T> responseListener) {
+    public <T extends Response> void sendMessage(BasePacket message, @Nullable ResponseListener<T> responseListener) {
         try {
             EnOceanTransceiver localTransceiver = transceiver;
             if (localTransceiver == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,12 +32,10 @@ public class AudioOutputCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050B;
     public static final String CLUSTER_NAME = "AudioOutput";
     public static final String CLUSTER_PREFIX = "audioOutput";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_OUTPUT_LIST = "outputList";
     public static final String ATTRIBUTE_CURRENT_OUTPUT = "currentOutput";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute provides the list of outputs supported by the device.
@@ -160,7 +157,6 @@ public class AudioOutputCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "outputList : " + outputList + "\n";
         str += "currentOutput : " + currentOutput + "\n";

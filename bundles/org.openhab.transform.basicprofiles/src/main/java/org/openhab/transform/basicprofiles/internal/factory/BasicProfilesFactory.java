@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.ThresholdStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.TimeRangeCommandProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.TimeweightedAverageStateProfile;
 import org.osgi.framework.Bundle;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -75,6 +76,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID TIME_RANGE_COMMAND_UID = new ProfileTypeUID(SCOPE, "time-range-command");
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
     public static final ProfileTypeUID INACTIVITY_UID = new ProfileTypeUID(SCOPE, "inactivity");
+    public static final ProfileTypeUID TIME_WEIGHTED_AVERAGE_UID = new ProfileTypeUID(SCOPE, "time-weighted-average");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -110,17 +112,20 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .build();
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
-
     private static final ProfileType PROFILE_TYPE_INACTIVITY = ProfileTypeBuilder
             .newState(INACTIVITY_UID, "No Input Activity").withSupportedItemTypes(CoreItemFactory.SWITCH).build();
+    private static final ProfileType PROFILE_TIME_WEIGHTED_AVERAGE = ProfileTypeBuilder
+            .newState(TIME_WEIGHTED_AVERAGE_UID, "Time-Weighted Average")
+            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER).withSupportedItemTypes(CoreItemFactory.NUMBER)
+            .build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID);
+            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID, TIME_WEIGHTED_AVERAGE_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
             PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY);
+            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY, PROFILE_TIME_WEIGHTED_AVERAGE);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
@@ -165,6 +170,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new StateFilterProfile(callback, context, itemRegistry);
         } else if (INACTIVITY_UID.equals(profileTypeUID)) {
             return new InactivityProfile(callback, context, linkRegistry);
+        } else if (TIME_WEIGHTED_AVERAGE_UID.equals(profileTypeUID)) {
+            return new TimeweightedAverageStateProfile(callback, context);
         }
         return null;
     }

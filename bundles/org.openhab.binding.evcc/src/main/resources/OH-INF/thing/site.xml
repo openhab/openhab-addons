@@ -444,24 +444,44 @@
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Feed in price per kWh</label>
 		<description>Indicates the current price per kWh for feed-in to the grid</description>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-grid">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Grid Price</label>
 		<description>Indicates the current price per kWh for consuming from the grid</description>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-price-home">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Home Price</label>
 		<description>Indicates the current price per kWh for your home</description>
+		<category>Price</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Price</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-price-loadpoints">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Loadpoint price per kWh</label>
 		<description>Indicates the current price per kWh for loadpoints</description>
+		<category>Price</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Price</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-tariff-solar">

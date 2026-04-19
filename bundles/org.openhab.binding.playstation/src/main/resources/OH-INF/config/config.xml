@@ -8,7 +8,7 @@
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP Address</label>
-			<description>The IP Address of the PlayStation 3.</description>
+			<description>The IP address of the PlayStation 3.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -16,52 +16,52 @@
 	<config-description uri="thing-type:playstation:PS4">
 		<parameter name="userCredential" type="text" required="true" min="64" max="64" pattern="[0-9A-Fa-f]*">
 			<label>User Credential</label>
-			<description>User Credential to Communicate with the PlayStation 4.</description>
+			<description>User credential to communicate with the PlayStation 4.</description>
 		</parameter>
 		<parameter name="passCode" type="text" min="4" max="4" pattern="[0-9]*">
 			<context>password</context>
 			<label>Pass Code</label>
-			<description>Pass Code to Log in to PlayStation 4.</description>
+			<description>Passcode to log in to the PlayStation 4.</description>
 		</parameter>
 		<parameter name="pairingCode" type="text" min="8" max="8" pattern="[0-9]*">
 			<label>Pairing Code</label>
-			<description>Code to Pair openHAB Device to PlayStation 4. Only Needed During Pairing.</description>
+			<description>Code to pair the openHAB device with the PlayStation 4. Only needed during pairing.</description>
 		</parameter>
 		<parameter name="connectionTimeout" type="integer" min="0" unit="s">
 			<label>Connection Timeout</label>
-			<description>How Many Seconds After the Last Command the Connection to the PS4 Closes Down. Use 0 to Never Close
-				Connection.</description>
+			<description>How many seconds after the last command the connection to the PS4 closes. Use 0 to never close the
+				connection.</description>
 			<default>60</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="autoConnect" type="boolean">
 			<label>Auto Connect</label>
-			<description>Should the Binding Try to Connect to the PS4 as Soon as it's Turned On.</description>
+			<description>Whether the binding should try to connect to the PS4 as soon as it's turned on.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="artworkSize" type="integer" min="128" max="1024">
 			<label>Artwork Size</label>
-			<description>The Width and Height of the Downloaded Artwork.</description>
+			<description>The width and height of the downloaded artwork.</description>
 			<default>320</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP Address</label>
-			<description>The IP Address of the PlayStation 4.</description>
+			<description>The IP address of the PlayStation 4.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ipPort" type="integer">
 			<label>IP Port</label>
-			<description>The IP Port Used to Communicate with the PlayStation 4.</description>
+			<description>The IP port used to communicate with the PlayStation 4.</description>
 			<default>997</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="outboundIP" type="text">
 			<context>network-address</context>
 			<label>Outbound IP</label>
-			<description>IP Address of the Network Interface to Use.</description>
+			<description>IP address of the network interface to use.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

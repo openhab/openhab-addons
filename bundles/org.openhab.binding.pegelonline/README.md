@@ -1,9 +1,9 @@
 # PegelOnline Binding
 
-Binding to observe water level from german rivers.
-Data is provided by german **Water-Route and Shipping Agency** [WSV](https://www.pegelonline.wsv.de/).
-Goal is to monitor actual water levels from rivers nearby your home.
-In case of changing water levels the corresponding warning level is lowered or raised.
+Binding to observe water levels from German rivers.
+Data is provided by the German **Water-Route and Shipping Agency** [WSV](https://www.pegelonline.wsv.de/).
+The goal is to monitor actual water levels from rivers nearby your home.
+In case of changing water levels, the corresponding warning level is lowered or raised.
 
 ## Supported Things
 
@@ -13,37 +13,37 @@ In case of changing water levels the corresponding warning level is lowered or r
 
 ## Discovery
 
-In case your home location coordinates are set the discovery will recognize all measurement stations within a radius of 50 km.
-Found Things are added in your Inbox.
+If your home location coordinates are set, the discovery will recognize all measurement stations within a radius of 50 km.
+Found Things are added to your Inbox.
 
 ## Thing Configuration
 
-Thing configuration contains 3 sections
+Thing configuration contains 3 sections:
 
-- [Station selection](station_selection)
-- [Warning Levels of selected station](warning_levels)
-- [Refresh rate](configuration_parameters)
+- [Station selection](#station-selection)
+- [Warning Levels of selected station](#warning-levels)
+- [Refresh rate](#configuration-parameters)
 
 ### Station selection
 
-Stations can be selected with an Universally Unique Identifier (uuid).
+Stations can be selected with a Universally Unique Identifier (uuid).
 It's automatically added by the Discovery.
-Configure a station manually using [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) and choose the uuid of your desired measurement station.
+To configure a station manually, use the [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) and choose the uuid of your desired measurement station.
 
 ### Warning Levels
 
 <img align="right" src="doc/Marburg.png" alt="Marburg water level measurement station" width="450" height="500"/>
 
-Each station has specific warning levels
+Each station has specific warning levels:
 
 - Warning Levels 1 (_lowest_) to 3 (_highest_)
 - Flooding Levels
 
-Unfortunately these levels cannot be queried automatically.
-Please select your [federal state](https://www.hochwasserzentralen.de/) and check if which levels they provide.
-The picture shows the levels of [measurement station Marburg of federal state Hesse](https://www.hlnug.de/static/pegel/wiskiweb2/stations/25830056/station.html?v=20210802152952)
+Unfortunately, these levels cannot be queried automatically.
+Please select your [federal state](https://www.hochwasserzentralen.de/) and check which levels they provide.
+The picture shows the levels of the [measurement station Marburg of federal state Hesse](https://www.hlnug.de/static/pegel/wiskiweb2/stations/25830056/station.html?v=20210802152952).
 
-If you cannot evaluate warning or flooding levels leave the parameter empty.
+If you cannot evaluate warning or flooding levels, leave the parameter empty.
 
 ### Configuration parameters
 
@@ -107,7 +107,7 @@ Thing pegelonline:station:giessen "Measurement Station Giessen" [
 
 ```java
 DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }
-Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }
+Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen"             {channel="pegelonline:station:giessen:level" }
 Number           Lahn_Giessen_Trend          "Water Level Trend Lahn Giessen"       {channel="pegelonline:station:giessen:trend"}
 Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}
 ```

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.fsinternetradio.internal.radio;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - changed the calling of the stopHttpClient() method, fixed the hardcoded URL path, fixed the
  *         for loop condition part
  */
+@NonNullByDefault
 public class FrontierSiliconRadioConnection {
 
     private final Logger logger = LoggerFactory.getLogger(FrontierSiliconRadioConnection.class);
@@ -49,10 +52,10 @@ public class FrontierSiliconRadioConnection {
     private final String pin;
 
     /** The session ID we get from the radio after logging in. */
-    private String sessionId;
+    private @Nullable String sessionId;
 
     /** http clients, store cookies, so it is kept in connection class. */
-    private HttpClient httpClient = null;
+    private final HttpClient httpClient;
 
     /** Flag indicating if we are successfully logged in. */
     private boolean isLoggedIn = false;
@@ -141,7 +144,7 @@ public class FrontierSiliconRadioConnection {
      * @return request result
      * @throws IOException if the request failed.
      */
-    public FrontierSiliconRadioApiResult doRequest(String requestString, String params) throws IOException {
+    public FrontierSiliconRadioApiResult doRequest(String requestString, @Nullable String params) throws IOException {
         // 3 retries upon failure
         for (int i = 0; i < 3; i++) {
             if (!isLoggedIn && !doLogin()) {
@@ -196,6 +199,6 @@ public class FrontierSiliconRadioConnection {
             }
         }
         isLoggedIn = false; // 3 tries failed. log in again next time, maybe our session went invalid (radio restarted?)
-        return null;
+        throw new IOException("Request failed after 3 attempts, giving up. Host " + hostname);
     }
 }

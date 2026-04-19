@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -154,6 +154,7 @@ class DimmableLightDeviceTest {
         dimmerDevice.updateState(dimmerItem, PercentType.ZERO);
         expectedStates.clear();
         expectedStates.add(new AttributeState("onOff", "onOff", false));
+        expectedStates.add(new AttributeState("levelControl", "currentLevel", 0));
         verify(client).setEndpointStates(any(), eq(expectedStates));
     }
 

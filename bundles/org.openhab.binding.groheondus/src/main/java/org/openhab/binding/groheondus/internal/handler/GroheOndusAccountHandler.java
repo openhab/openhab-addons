@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,9 +70,9 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (ondusService != null) {
-            ondusService = null;
-        }
+        this.ondusService = null;
+
+        ScheduledFuture<?> reloginFuture = this.reloginFuture;
         if (reloginFuture != null) {
             reloginFuture.cancel(true);
         }
@@ -81,7 +81,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     private void login() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
-        if (config.username == null || config.password == null) {
+        if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.login.missing.credentials");
         } else {

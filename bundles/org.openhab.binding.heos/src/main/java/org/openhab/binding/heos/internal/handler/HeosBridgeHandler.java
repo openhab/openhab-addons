@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -219,7 +219,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                     }
                 }
             } catch (HeosNotFoundException e) {
-                logger.debug("SKipping handler which reported not found", e);
+                logger.debug("Skipping handler which reported not found", e);
             }
         }
     }

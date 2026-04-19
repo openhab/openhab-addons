@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class HaID {
      * @param nodeID The node ID (can be the empty string)
      * @param component The component ID
      */
-    private HaID(String baseTopic, String objectID, String nodeID, String component) {
+    public HaID(String baseTopic, String objectID, String nodeID, String component) {
         this.baseTopic = baseTopic;
         this.objectID = objectID;
         this.nodeID = nodeID;

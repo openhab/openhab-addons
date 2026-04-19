@@ -105,7 +105,7 @@
 
 	<channel-type id="calciumHardness">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
-		<label>Calcium Hardess</label>
+		<label>Calcium Hardness</label>
 		<description>Calcium hardness (ppm).</description>
 		<tags>
 			<tag>Measurement</tag>

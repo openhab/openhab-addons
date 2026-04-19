@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,6 +82,7 @@ public class TuyaDevice implements ChannelFutureListener {
     private final byte[] deviceKey;
 
     private final String address;
+    private final int port;
     private final ProtocolVersion protocolVersion;
     private @Nullable Channel channel;
 
@@ -134,12 +135,13 @@ public class TuyaDevice implements ChannelFutureListener {
     }
 
     public TuyaDevice(Gson gson, DeviceStatusListener deviceStatusListener, EventLoopGroup eventLoopGroup,
-            String deviceId, byte[] deviceKey, String address, String protocolVersion) {
+            String deviceId, byte[] deviceKey, String address, int port, String protocolVersion) {
         this.deviceStatusListener = deviceStatusListener;
         this.eventLoopGroup = eventLoopGroup;
         this.deviceId = deviceId;
         this.deviceKey = deviceKey;
         this.address = address;
+        this.port = port;
         this.protocolVersion = ProtocolVersion.fromString(protocolVersion);
 
         bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class);
@@ -167,7 +169,7 @@ public class TuyaDevice implements ChannelFutureListener {
     private void connect() {
         logger.trace("{}: connecting", deviceId);
 
-        bootstrap.connect(address, 6668).addListener(this);
+        bootstrap.connect(address, port).addListener(this);
     }
 
     public void set(Map<Integer, @Nullable Object> command) {

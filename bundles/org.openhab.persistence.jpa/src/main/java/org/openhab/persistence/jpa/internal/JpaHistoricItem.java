@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,7 +134,7 @@ public class JpaHistoricItem implements HistoricItem {
                 }
             }
         } else if (item instanceof DimmerItem) {
-            state = new PercentType(Integer.parseInt(pItem.getValue()));
+            state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof SwitchItem) {
             state = OnOffType.valueOf(pItem.getValue());
         } else if (item instanceof ContactItem) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,6 @@ public class Decryption8370Result {
      * @param buffer buffer
      */
     public Decryption8370Result(ArrayList<byte[]> responses, byte[] buffer) {
-        super();
         this.responses = responses;
         this.buffer = buffer;
     }

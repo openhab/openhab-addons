@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -29,7 +28,6 @@ public class PressureMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0403;
     public static final String CLUSTER_NAME = "PressureMeasurement";
     public static final String CLUSTER_PREFIX = "pressureMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MEASURED_VALUE = "measuredValue";
     public static final String ATTRIBUTE_MIN_MEASURED_VALUE = "minMeasuredValue";
@@ -41,7 +39,6 @@ public class PressureMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_SCALED_TOLERANCE = "scaledTolerance";
     public static final String ATTRIBUTE_SCALE = "scale";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the pressure in kPa as follows:
@@ -64,18 +61,19 @@ public class PressureMeasurementCluster extends BaseCluster {
      */
     public Integer tolerance; // 3 uint16 R V
     /**
-     * Indicates the pressure in Pascals as follows: ScaledValue &#x3D; 10Scale x Pressure [Pa]
+     * Indicates the pressure in Pascals as follows:
+     * ScaledValue &#x3D; 10Scale x Pressure [Pa]
      * The null value indicates that the value is not available.
      */
     public Integer scaledValue; // 16 int16 R V
     /**
-     * Indicates the minimum value of ScaledValue that can be measured. The null value indicates that the value is not
-     * available.
+     * Indicates the minimum value of ScaledValue that can be measured.
+     * The null value indicates that the value is not available.
      */
     public Integer minScaledValue; // 17 int16 R V
     /**
-     * Indicates the maximum value of ScaledValue that can be measured. The null value indicates that the value is not
-     * available.
+     * Indicates the maximum value of ScaledValue that can be measured.
+     * The null value indicates that the value is not available.
      */
     public Integer maxScaledValue; // 18 int16 R V
     /**
@@ -113,7 +111,6 @@ public class PressureMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "measuredValue : " + measuredValue + "\n";
         str += "minMeasuredValue : " + minMeasuredValue + "\n";

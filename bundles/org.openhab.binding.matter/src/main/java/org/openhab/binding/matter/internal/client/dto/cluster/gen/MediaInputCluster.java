@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -33,12 +32,10 @@ public class MediaInputCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0507;
     public static final String CLUSTER_NAME = "MediaInput";
     public static final String CLUSTER_PREFIX = "mediaInput";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_INPUT_LIST = "inputList";
     public static final String ATTRIBUTE_CURRENT_INPUT = "currentInput";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall provide a list of the media inputs supported by the device.
@@ -59,7 +56,7 @@ public class MediaInputCluster extends BaseCluster {
          */
         public Integer index; // uint8
         /**
-         * ### This field shall indicate the type of input
+         * This field shall indicate the type of input
          */
         public InputTypeEnum inputType; // InputTypeEnum
         /**
@@ -164,8 +161,8 @@ public class MediaInputCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this command shall rename the input at a specific index in the Input List. Updates to the input
-     * name shall appear in the device’s settings menus.
+     * Upon receipt, this command shall rename the input at a specific index in the Input List.
+     * Updates to the input name shall appear in the device’s settings menus.
      */
     public static ClusterCommand renameInput(Integer index, String name) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -181,7 +178,6 @@ public class MediaInputCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "inputList : " + inputList + "\n";
         str += "currentInput : " + currentInput + "\n";

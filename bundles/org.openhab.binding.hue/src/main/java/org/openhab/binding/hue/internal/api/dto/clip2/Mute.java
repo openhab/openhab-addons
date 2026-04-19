@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,14 +23,14 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
  */
 @NonNullByDefault
 public class Mute {
-    private @Nullable MuteType mute;
+    private @Nullable String mute;
 
-    public @Nullable MuteType getMute() {
-        return this.mute;
+    public @Nullable MuteType getMuteType() {
+        return mute instanceof String m ? MuteType.of(m) : null;
     }
 
-    public Mute setMute(MuteType muteType) {
-        this.mute = muteType;
+    public Mute setMuteType(MuteType muteType) {
+        mute = muteType.name().toLowerCase();
         return this;
     }
 }

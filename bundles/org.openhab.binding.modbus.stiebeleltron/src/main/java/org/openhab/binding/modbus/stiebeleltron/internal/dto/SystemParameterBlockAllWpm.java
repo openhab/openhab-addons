@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,6 @@ public class SystemParameterBlockAllWpm extends SystemParameterBlock {
                 + "\n  flowTemperatureFanCooling=" + flowTemperatureFanCooling
                 + "\n  flowTemperatureHysteresisFanCooling=" + flowTemperatureHysteresisFanCooling
                 + "\n  roomTemperatureFanCooling=" + roomTemperatureFanCooling + "\n  reset=" + reset
-                + "\n  restartIsg=" + restartIsg + "\n}";
+                + "\n  restartIsg=" + restartIsg + "\n}" + "\n" + super.toString();
     }
 }

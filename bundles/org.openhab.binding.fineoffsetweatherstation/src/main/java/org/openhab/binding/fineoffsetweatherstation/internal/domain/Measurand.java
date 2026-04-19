@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,6 +147,27 @@ public enum Measurand {
 
     // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
     ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.MEMORY, CHANNEL_TYPE_FREE_HEAP_SIZE),
+
+    ITEM_SENSOR_CO2_WH46(0x6B,
+            new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
+            new MeasurandParser("sensor-co2-humidity", "Humidity (CO₂-Sensor)", MeasureType.PERCENTAGE),
+            new MeasurandParser("sensor-co2-pm10", "PM10 Air Quality (CO₂-Sensor)", MeasureType.PM10),
+            new MeasurandParser("sensor-co2-pm10-24-hour-average", "PM10 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM10),
+            new MeasurandParser("sensor-co2-pm25", "PM2.5 Air Quality (CO₂-Sensor)", MeasureType.PM25),
+            new MeasurandParser("sensor-co2-pm25-24-hour-average", "PM2.5 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM25),
+            new MeasurandParser("sensor-co2-co2", "CO₂", MeasureType.CO2),
+            new MeasurandParser("sensor-co2-co2-24-hour-average", "CO₂ 24 hour average", MeasureType.CO2),
+            // the battery status can only be retrieved here and not via Command.CMD_READ_SENSOR_ID_NEW, since WH46
+            // is not listed in the sensor array
+            new MeasurandParser("sensor-co2-wh46-battery-level", "Battery Level WH46", MeasureType.BATTERY_LEVEL),
+            new MeasurandParser("sensor-co2-pm1", "PM1 Air Quality (CO₂-Sensor)", MeasureType.PM1),
+            new MeasurandParser("sensor-co2-pm1-24-hour-average", "PM1 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM1),
+            new MeasurandParser("sensor-co2-pm4", "PM4 Air Quality (CO₂-Sensor)", MeasureType.PM4),
+            new MeasurandParser("sensor-co2-pm4-24-hour-average", "PM4 Air Quality 24 hour average (CO₂-Sensor)",
+                    MeasureType.PM4)),
 
     ITEM_SENSOR_CO2(0x70,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),

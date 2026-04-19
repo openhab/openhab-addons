@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventTriggered;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.common.registry.RegistryChangeListener;
@@ -81,8 +82,8 @@ import com.google.gson.JsonParseException;
 @ConfigurableService(category = "io", label = "Matter Bridge", description_uri = MatterBridge.CONFIG_URI)
 public class MatterBridge implements MatterClientListener {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
-    private static final String CONFIG_PID = "org.openhab.matter";
-    private static final String CONFIG_URI = "io:matter";
+    protected static final String CONFIG_PID = "org.openhab.matter";
+    protected static final String CONFIG_URI = "io:matter";
 
     // Matter Bridge Device Info *Basic Information Cluster*
     private static final String VENDOR_NAME = "openHAB";
@@ -269,6 +270,10 @@ public class MatterBridge implements MatterClientListener {
 
     @Override
     public void onEvent(NodeDataMessage message) {
+    }
+
+    @Override
+    public void onEvent(OtaUpdateAvailableMessage message) {
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import io.github.floriansw.ondus.api.model.Room;
 public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GroheOndusBaseHandler.class);
 
-    protected @Nullable GroheOndusApplianceConfiguration config;
+    protected @NonNullByDefault({}) GroheOndusApplianceConfiguration config;
 
     private @Nullable ScheduledFuture<?> poller;
 
@@ -154,7 +154,8 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable T getAppliance(OndusService ondusService) {
         try {
-            BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
+            BaseAppliance appliance = config.applianceId.isEmpty() ? null
+                    : ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
             if (appliance != null) {
                 if (appliance.getType() != getType()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.wrongtype");

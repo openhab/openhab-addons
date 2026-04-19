@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusPollingSkipException;
 import org.openhab.binding.fronius.internal.api.FroniusTlsTrustManagerProvider;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.Bridge;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
 public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
+    private final FroniusHttpUtil httpUtil = new FroniusHttpUtil();
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ServiceRegistration<?> tlsProviderService;
@@ -126,6 +128,10 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         unregisterTlsTrustManager();
     }
 
+    FroniusHttpUtil getHttpUtil() {
+        return httpUtil;
+    }
+
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
@@ -175,6 +181,9 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
                     for (FroniusBaseThingHandler service : services) {
                         service.refresh(config);
                     }
+                } catch (FroniusPollingSkipException e) {
+                    logger.debug("Skipping refresh for bridge '{}' because another request is still in progress.",
+                            getThing().getUID().getId());
                 } catch (FroniusCommunicationException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -185,6 +194,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     }
 
     private void checkBridgeOnline(FroniusBridgeConfiguration config) throws FroniusCommunicationException {
-        FroniusHttpUtil.executeUrl(HttpMethod.GET, "http://" + config.hostname, API_TIMEOUT);
+        httpUtil.executePollingUrl(HttpMethod.GET, config.scheme + "://" + config.hostname, API_TIMEOUT);
     }
 }

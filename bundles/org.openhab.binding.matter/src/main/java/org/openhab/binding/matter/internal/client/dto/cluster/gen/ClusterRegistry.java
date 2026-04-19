@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -37,7 +36,6 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1293, ApplicationBasicCluster.class);
         CLUSTER_IDS.put(1292, ApplicationLauncherCluster.class);
         CLUSTER_IDS.put(1291, AudioOutputCluster.class);
-        CLUSTER_IDS.put(769, BallastConfigurationCluster.class);
         CLUSTER_IDS.put(40, BasicInformationCluster.class);
         CLUSTER_IDS.put(30, BindingCluster.class);
         CLUSTER_IDS.put(69, BooleanStateCluster.class);
@@ -77,8 +75,8 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(70, IcdManagementCluster.class);
         CLUSTER_IDS.put(3, IdentifyCluster.class);
         CLUSTER_IDS.put(1024, IlluminanceMeasurementCluster.class);
+        CLUSTER_IDS.put(1875, JointFabricAdministratorCluster.class);
         CLUSTER_IDS.put(1874, JointFabricDatastoreCluster.class);
-        CLUSTER_IDS.put(1875, JointFabricPkiCluster.class);
         CLUSTER_IDS.put(1289, KeypadInputCluster.class);
         CLUSTER_IDS.put(74, LaundryDryerControlsCluster.class);
         CLUSTER_IDS.put(83, LaundryWasherControlsCluster.class);
@@ -109,8 +107,6 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(46, PowerSourceConfigurationCluster.class);
         CLUSTER_IDS.put(156, PowerTopologyCluster.class);
         CLUSTER_IDS.put(1027, PressureMeasurementCluster.class);
-        CLUSTER_IDS.put(66, ProxyConfigurationCluster.class);
-        CLUSTER_IDS.put(67, ProxyDiscoveryCluster.class);
         CLUSTER_IDS.put(512, PumpConfigurationAndControlCluster.class);
         CLUSTER_IDS.put(1071, RadonConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(87, RefrigeratorAlarmCluster.class);
@@ -137,7 +133,6 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1070, TotalVolatileOrganicCompoundsConcentrationMeasurementCluster.class);
         CLUSTER_IDS.put(45, UnitLocalizationCluster.class);
         CLUSTER_IDS.put(65, UserLabelCluster.class);
-        CLUSTER_IDS.put(68, ValidProxiesCluster.class);
         CLUSTER_IDS.put(129, ValveConfigurationAndControlCluster.class);
         CLUSTER_IDS.put(1283, WakeOnLanCluster.class);
         CLUSTER_IDS.put(148, WaterHeaterManagementCluster.class);

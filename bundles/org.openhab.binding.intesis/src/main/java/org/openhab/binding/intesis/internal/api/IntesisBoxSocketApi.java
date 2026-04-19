@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -168,10 +168,10 @@ public class IntesisBoxSocketApi {
         return message;
     }
 
-    public void readMessage(String message) {
+    public void readMessage(@Nullable String message) {
         IntesisBoxChangeListener listener = this.changeListener;
 
-        if (listener != null && !message.isEmpty()) {
+        if (listener != null && message != null && !message.isEmpty()) {
             listener.messageReceived(message);
         }
     }

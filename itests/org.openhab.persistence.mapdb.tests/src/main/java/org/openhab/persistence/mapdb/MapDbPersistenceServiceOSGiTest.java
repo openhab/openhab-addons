@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,13 +52,22 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
     private MapDbPersistenceService persistenceService;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
+        // Get service first, then deactivate to close database
         persistenceService = getService(QueryablePersistenceService.class, MapDbPersistenceService.class);
+        // Deactivate to close the current database instance
+        persistenceService.deactivate();
+
+        // Now clean up database files while they're not locked
+        removeDirRecursive("userdata/persistence/mapdb");
+
+        // Reactivate to create a fresh database
+        persistenceService.activate();
     }
 
     @AfterAll
     public static void tearDown() throws IOException {
-        // clean up database files ...
+        // Final cleanup of database files after all tests
         removeDirRecursive("userdata");
         removeDirRecursive("runtime");
     }

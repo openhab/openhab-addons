@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class DatahubPriceSubscriptionCache
 
     public static final int MAX_CACHE_SIZE = 24 * 2 + NUMBER_OF_HISTORIC_HOURS;
 
-    private final PriceListParser priceListParser = new PriceListParser();
+    private final PriceListParser priceListParser;
 
     private Collection<DatahubPricelistRecord> datahubRecords = new CopyOnWriteArrayList<>();
 
@@ -46,6 +46,7 @@ public class DatahubPriceSubscriptionCache
 
     public DatahubPriceSubscriptionCache(Clock clock) {
         super(clock);
+        this.priceListParser = new PriceListParser(clock);
     }
 
     /**

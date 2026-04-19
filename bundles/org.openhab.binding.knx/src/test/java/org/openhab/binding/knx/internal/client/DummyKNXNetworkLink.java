@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,12 +75,12 @@ public class DummyKNXNetworkLink implements KNXNetworkLink {
         return 0;
     }
 
-    public void sendRequest(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
+    public void sendRequest(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable... nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
         sendRequestWait(dst, p, nsdu);
     }
 
-    public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable [] nsdu)
+    public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable... nsdu)
             throws KNXTimeoutException, KNXLinkClosedException {
         if (nsdu == null) {
             return;

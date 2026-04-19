@@ -16,14 +16,15 @@ After (manually) adding a Teslascope Account bridge, registered vehicles will be
 
 Account configuration is necessary.
 The easiest way to do this is from the UI.
-Just add a new thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the apiKey from the Teslascope website.
+Just add a new Thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the personalAccessToken which can be generated from the Teslascope website.
 
-As a minimum, the apiKey is needed:
+As a minimum, the personalAccessToken or API key (deprecated) is needed:
 
-| Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
-|-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
-| apiKey          | N/A           | Yes      | No       | apiKey provided by Teslascope                                                        |
-| refreshInterval | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
+| Thing Parameter     | Default Value | Required | Advanced | Description                                                                          |
+|---------------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
+| apiKey              | N/A           | No       | No       | API Key from the Teslascope website (deprecated)                                     |
+| personalAccessToken | N/A           | No       | No       | Personal Access Token generated from the Teslascope website                          |
+| refreshInterval     | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
 ## `vehicle` Thing Configuration
 
@@ -73,7 +74,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-max        | Number:Dimensionless     | Charge Limit SOC Max          | Maximum charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-standard   | Number:Dimensionless     | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
-| charge-port-latch           | Switch                   | Charge Port Latch             | Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)                                     |
+| charge-port-latch           | Switch                   | Charge Port Latch             | Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)                                     |
 | charge-rate                 | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                          |
 | charger-power               | Number:Power             | Charger Power                 | Power actually delivered by the charger                                                                  |
 | charger-voltage             | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                            |
@@ -137,8 +138,8 @@ Additionally, these advanced channels are available (not all are available on al
 ### `demo.things` Example
 
 ```java
-Bridge teslascope:account:account [ apiKey="xxxx" ] {
-    teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
+Bridge teslascope:account:account [ personalAccessToken="xxxx" ] {
+    teslascope:vehicle:model3 [ publicID="aXb3" ]
 }
 ```
 

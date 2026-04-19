@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
@@ -162,10 +162,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     private long setpointEndTimeFromNow() {
-        return handler.getHomeCapability(HomeCapability.class).map(cap -> {
-            ZonedDateTime now = ZonedDateTime.now().plus(setPointDefaultDuration);
-            now = now.withZoneSameInstant(cap.zoneId);
-            return now.toEpochSecond();
-        }).orElseGet(() -> -1L);
+        Instant now = Instant.now().plus(setPointDefaultDuration);
+        return now.getEpochSecond();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,8 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
                 ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
 
                 if (thingTypeUID != null) {
-                    logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
+                    logger.debug("Found {} ({}).", appliance.getHaId(),
+                            appliance.getType().toUpperCase(DEFAULT_LOCALE));
 
                     Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
                     String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";

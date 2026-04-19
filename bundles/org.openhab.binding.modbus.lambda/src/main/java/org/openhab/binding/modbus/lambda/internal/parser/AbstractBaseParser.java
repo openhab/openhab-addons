@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,5 +153,14 @@ public class AbstractBaseParser {
 
     protected Long extractInt32(ModbusRegisterArray raw, int index, long def) {
         return Objects.requireNonNull(extractOptionalInt32(raw, index).orElse(def));
+    }
+
+    protected Optional<Long> extractOptionalInt32Swap(ModbusRegisterArray raw, int index) {
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT32_SWAP)
+                .map(DecimalType::longValue).filter(value -> value != 0);
+    }
+
+    protected Long extractInt32Swap(ModbusRegisterArray raw, int index, long def) {
+        return Objects.requireNonNull(extractOptionalInt32Swap(raw, index).orElse(def));
     }
 }

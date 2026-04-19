@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -294,11 +294,15 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      * Close the connection with the Kaleidescape component
      */
     private synchronized void closeConnection() {
+        if (getThing().getChannel(SYSTEM_READINESS_STATE) != null) {
+            updateState(SYSTEM_READINESS_STATE, new StringType("Offline"));
+        }
+
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     @Override

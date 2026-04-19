@@ -145,7 +145,6 @@ sitemap demo label="FENECON Example Sitemap" {
 ```perl
 Strategies {
     everyMinute : "0 * * * * ?"
-    default = everyChange
 }
 
 Items {

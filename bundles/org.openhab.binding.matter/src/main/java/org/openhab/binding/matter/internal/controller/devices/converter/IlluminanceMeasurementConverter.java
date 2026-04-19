@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,13 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.measure.quantity.Illuminance;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.binding.matter.internal.util.ValueUtils;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -61,8 +59,8 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
         switch (message.path.attributeName) {
             case IlluminanceMeasurementCluster.ATTRIBUTE_MEASURED_VALUE:
                 if (message.value instanceof Number number) {
-                    updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE,
-                            new QuantityType<Illuminance>(number.intValue(), Units.LUX));
+                    QuantityType<?> lux = ValueUtils.valueToIlluminance(number.intValue());
+                    updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE, lux != null ? lux : UnDefType.NULL);
                 }
                 break;
         }
@@ -71,9 +69,9 @@ public class IlluminanceMeasurementConverter extends GenericConverter<Illuminanc
 
     @Override
     public void initState() {
-        updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE,
-                initializingCluster.measuredValue != null
-                        ? new QuantityType<Illuminance>(initializingCluster.measuredValue, Units.LUX)
-                        : UnDefType.NULL);
+        QuantityType<?> lux = initializingCluster.measuredValue != null
+                ? ValueUtils.valueToIlluminance(initializingCluster.measuredValue)
+                : null;
+        updateState(CHANNEL_ID_ILLUMINANCEMEASURMENT_MEASUREDVALUE, lux != null ? lux : UnDefType.NULL);
     }
 }

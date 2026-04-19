@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,10 @@ public class NADeserializer {
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
                                 json.getAsJsonObject().has("therm_mode") ? HomeData.Energy.class
                                         : HomeData.Security.class))
-                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type, context) -> {
+                .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
+                    long netatmoTS = json.getAsJsonPrimitive().getAsLong();
+                    return Instant.ofEpochSecond(netatmoTS);
+                }).registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type, context) -> {
                     long netatmoTS = json.getAsJsonPrimitive().getAsLong();
                     Instant i = Instant.ofEpochSecond(netatmoTS);
                     return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());

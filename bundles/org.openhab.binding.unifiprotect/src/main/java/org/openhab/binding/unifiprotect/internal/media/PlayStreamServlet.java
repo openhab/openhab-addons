@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,8 +62,9 @@ public class PlayStreamServlet extends HttpServlet {
         if (req == null || resp == null) {
             return;
         }
-        resp.setStatus(200);
-        resp.getOutputStream().write("Only POST is supported".getBytes());
+        resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        resp.setHeader("Allow", "POST, OPTIONS");
+        resp.getOutputStream().write("Only POST is supported".getBytes(StandardCharsets.UTF_8));
         resp.getOutputStream().flush();
     }
 

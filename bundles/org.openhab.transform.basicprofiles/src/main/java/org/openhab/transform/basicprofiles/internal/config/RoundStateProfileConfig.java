@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
  */
 @NonNullByDefault
 public class RoundStateProfileConfig {
+    public @Nullable Integer precision;
     public @Nullable Integer scale;
     public String mode = RoundingMode.HALF_UP.name();
 }

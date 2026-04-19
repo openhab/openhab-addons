@@ -1,4 +1,4 @@
-# E3DC
+# Hager / E3DC Power Plants
 
 Integrates the Home Power Plants from E3/DC GmbH into openHAB.
 See [E3DC Website](https://www.e3dc.com/) to find more information about the device.
@@ -312,7 +312,6 @@ Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
     everyDay  : "0 0 0 * * ?"
-    default = everyChange
 }
 
 Items {

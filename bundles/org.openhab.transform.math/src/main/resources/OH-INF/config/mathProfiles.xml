@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:transform:ADD">
+		<parameter name="addend" type="text" required="true">
+			<label>Addend</label>
+			<description>Value to be added to the Item State.</description>
+		</parameter>
+		<parameter name="itemName" type="text">
+			<context>item</context>
+			<label>Item</label>
+			<description>Name of an alternative Item which State to be added to the linked Item State (will be prioritized if
+				given).</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:transform:MULTIPLY">
+		<parameter name="multiplicand" type="text" required="true">
+			<label>Multiplicand</label>
+			<description>Value to be multiplied by the Item State.</description>
+		</parameter>
+		<parameter name="itemName" type="text">
+			<context>item</context>
+			<label>Item</label>
+			<description>Name of an alternative Item which State to be multiplied by the linked Item State (will be prioritized
+				if given).</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:transform:DIVIDE">
+		<parameter name="divisor" type="text" required="true">
+			<label>Divisor</label>
+			<description>Value by which the Item State is divided.</description>
+		</parameter>
+		<parameter name="itemName" type="text">
+			<context>item</context>
+			<label>Item</label>
+			<description>Name of an alternative Item by which State the linked Item State is divided (will be prioritized if
+				given).</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:transform:BITAND">
+		<parameter name="mask" type="text" required="true">
+			<label>Mask</label>
+			<description>Value used to mask the Item State.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:transform:BITOR">
+		<parameter name="mask" type="text" required="true">
+			<label>Mask</label>
+			<description>Value used to mask the Item State.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:transform:BITXOR">
+		<parameter name="mask" type="text" required="true">
+			<label>Mask</label>
+			<description>Value used to mask the Item State.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

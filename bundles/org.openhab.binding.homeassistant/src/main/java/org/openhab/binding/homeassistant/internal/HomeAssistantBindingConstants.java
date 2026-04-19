@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,8 @@ public class HomeAssistantBindingConstants {
 
     public static final String LEGACY_BINDING_ID = "mqtt";
     public static final String BINDING_ID = "homeassistant";
+
+    public static final String DEVICE_COMPONENT = "device";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID LEGACY_MQTT_HOMEASSISTANT_THING = new ThingTypeUID(LEGACY_BINDING_ID,

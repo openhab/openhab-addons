@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -425,6 +425,7 @@ public enum EEPType {
 
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
+                    put(CHANNEL_STATEMACHINESTATE, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
                         {
                             put(PARAMETER_CHANNEL_TEACHINMSG, "fff80d80");
@@ -730,7 +731,11 @@ public enum EEPType {
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
         return supportedChannels.containsKey(channelId) || VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)
-                || supportedChannels.values().stream().anyMatch(c -> c.channelTypeUID.getId().equals(channelTypeId));
+                || supportedChannels.values().stream().anyMatch(c -> {
+                    String supportedChannelTypeId = c.channelTypeUID.getId();
+                    return supportedChannelTypeId.equals(channelTypeId)
+                            || supportedChannelTypeId.endsWith(":" + channelTypeId);
+                });
     }
 
     public @Nullable ThingTypeUID getThingTypeUID() {

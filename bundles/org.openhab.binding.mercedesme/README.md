@@ -104,13 +104,13 @@ If you encounter problems with this binding follow the instructions from [Troubl
 
 State
 
-- 0 : Locked
-- 1 : Unlocked
+- 2 : Locked
+- 0 : Unlocked
 
 Command
 
-- 0 : Lock
-- 1 : Unlock
+- 2 : Lock
+- 0 : Unlock
 
 Triggers `DOORSLOCK` and `DOORSUNLOCK` from [Command Name Mapping](#command-name-mapping)
 
@@ -465,6 +465,15 @@ States and controls are depending on your vehicle capabilities.
 - 5 : Slow Charging
 - 6 : Fast Charging
 - 7 : Discharging
+- 8 : Not charging
+- 9 : Slow Charging after reaching trip target
+- 10 : Charging after reaching trip target
+- 11 : Fast Charging after reaching trip target
+- 12 : Connected
+- 13 : AC Charging
+- 14 : DC Charging
+- 15 : Battery calibration active
+- 16 : Unknown
 
 #### Charge Error Mapping
 

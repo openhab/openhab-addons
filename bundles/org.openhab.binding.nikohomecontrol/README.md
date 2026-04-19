@@ -32,7 +32,7 @@ Niko Home Control alarm and notice messages are retrieved and made available in 
 The Niko Home Control Controller is represented as a bridge in the binding.
 Connected to a bridge, the Niko Home Control Binding supports all off actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds, thermostats, energy meters, access control devices (Niko Home Control II only) and alarm systems (Niko Home Control II only).
 
-The following thing types are available in the binding:
+The following Thing types are available in the binding:
 
 | Thing Type          | NHC I | NHC II | Description                                                                       |
 |---------------------|:-----:|:------:|-----------------------------------------------------------------------------------|
@@ -92,8 +92,8 @@ It is possible to trigger a manual scan for things on the Niko Home Control brid
 Note that Niko Home Control II will require the API token to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such.
-Locations can subsequently be changed through the thing location parameter.
+If the Niko Home Control system has locations configured, these will be copied to Thing locations and grouped as such.
+Locations can subsequently be changed through the Thing location parameter.
 
 ## Bridge Configuration
 
@@ -153,9 +153,9 @@ Open the file with an unzip tool to read its content.
 For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller.
 It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
-Discover and add the thing you want to add.
-You can directly create the textual configuration for the discovered thing in the UI.
-The same applies applies for `thermostatId`, `meterId`, `accessId`, `alarmId` and `carChargerId`.
+Discover and add the Thing you want to add.
+You can directly create the textual configuration for the discovered Thing in the UI.
+The same applies for `thermostatId`, `meterId`, `accessId`, `alarmId` and `carChargerId`.
 
 An example **action** textual configuration looks like:
 
@@ -218,11 +218,11 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | gasday            | R  |          | Number:Volume      | energyMeterHome, gasMeter | day gas meter reading                                                                               |
 | water             | R  |          | Number:Volume      | energyMeterHome, waterMeter | total water meter reading                                                                           |
 | waterday          | R  |          | Number:Volume      | energyMeterHome, waterMeter | day water meter reading                                                                             |
-| measurementtime   | R  |          | DateTimeType       | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter, carCharger | last meter reading time                                      |
+| measurementtime   | R  |          | DateTime           | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter, carCharger | last meter reading time                                      |
 | bellbutton        | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
 | ringandcomein     | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
-| lock              | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
-| arm               | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
+| lock              | RW |          | Switch             | access, accessRingAndComeIn | provide door lock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
+| arm               | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (HomeKit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
 | armed             | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
 | state             | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
 | status            | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
@@ -234,7 +234,7 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | targetdistance    | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
 | targettime        | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
 | boost             | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
-| reachabledistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
+| reachabledistance | R  |          | Number:Length      | carCharger  | reachable distance in current charging activity                                                     |
 | nextchargingtime  | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
 | alarm             |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
 | notice            |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
@@ -302,8 +302,8 @@ Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:ther
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime"}       # Get and set the overrule time
 String ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdemand"}      # Get the current heating/cooling demand
 Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeterLive:nhc1:6:power"} # Get current power consumption
-Number:Energy MyMeter          "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energy         # Get energy meter reading
-Number:Energy MyMeterDay       "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energyday      # Get energy meter day reading
+Number:Energy MyMeter          "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energy"}         # Get energy meter reading
+Number:Energy MyMeterDay       "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energyday"}      # Get energy meter day reading
 Switch AlarmControl     {channel="nikohomecontrol:onOff:nhc2:7:arm"}               # Switch to arm/disarm alarm
 Switch AlarmSwitch      {channel="nikohomecontrol:onOff:nhc2:7:armed"}             # Switch to arm/disarm alarm, on state delayed until after pre-arm phase
 String AlarmState       {channel="nikohomecontrol:onOff:nhc2:7:state"}             # State of the alarm system

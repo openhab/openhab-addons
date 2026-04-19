@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import org.openhab.binding.ring.internal.api.ProfileTO;
 import org.openhab.binding.ring.internal.api.RingDevicesTO;
 import org.openhab.binding.ring.internal.api.RingEventTO;
 import org.openhab.binding.ring.internal.api.SessionTO;
+import org.openhab.binding.ring.internal.api.SessionTimestampTO;
 import org.openhab.binding.ring.internal.api.TokenTO;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Tokens;
@@ -237,7 +238,48 @@ public class RestClient {
     }
 
     /**
-     * Get get the Ring devices
+     * Get the timestamp of the last camera snapshot
+     *
+     * @param id the device id of the Ring cameras
+     * @return a long of the timestamp of the last snapsnot
+     * @throws AuthenticationException when request is invalid.
+     */
+    public long getSnapshotTimestamp(String deviceId, Tokens tokens) throws AuthenticationException {
+        String input = "{\"doorbot_ids\":[" + deviceId + "]}";
+        String jsonResult = postRequest(ApiConstants.URL_SNAPSHOT_TIMESTAMPS, input, Map.of(), tokens);
+        SessionTimestampTO sessionTimestamp = Objects
+                .requireNonNull(gson.fromJson(jsonResult, SessionTimestampTO.class));
+        if (sessionTimestamp.data.length > 0) {
+            return sessionTimestamp.data[0].timestamp;
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Get the image from the camera
+     *
+     * @param id the device id of the Ring cameras
+     * @return a byte array of the camera image
+     * @throws AuthenticationException when request is invalid.
+     */
+    public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException {
+        try {
+            ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)
+                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            } else {
+                throw new AuthenticationException("Failed to download snapshot: " + response.getStatus());
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new AuthenticationException("Failed to download snapshot.");
+        }
+    }
+
+    /**
+     * Get the Ring devices
      *
      * @param tokens the tokens previously retrieved when authenticating.
      * @return the RingDevices instance filled with all available data.
@@ -300,10 +342,9 @@ public class RestClient {
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
                             if (obj.get("url").getAsString().startsWith("http")) {
                                 URL url = new URI(obj.get("url").getAsString()).toURL();
-                                InputStream in = url.openStream();
-                                Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
-                                in.close();
-                                logger.info("fullfilepath.length() = {}", fullfilepath.length());
+                                try (InputStream in = url.openStream()) {
+                                    Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
+                                }
                                 if (!fullfilepath.isEmpty()) {
                                     urlFound = true;
                                     break;
@@ -346,6 +387,46 @@ public class RestClient {
         } catch (IOException | InterruptedException e) {
             logger.warn("RingVideo: Unable to process request: {}", e.getMessage());
             return "";
+        }
+    }
+
+    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
+        sendCommand(endpoint, HttpMethod.PUT, null, tokens);
+    }
+
+    public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload, Tokens tokens)
+            throws AuthenticationException {
+        try {
+            Request request = httpClient.newRequest(endpoint);
+            request.method(httpMethod);
+            request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            request.agent(ApiConstants.API_USER_AGENT);
+            request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
+
+            if (payload != null) {
+                request.content(new StringContentProvider(payload), "application/json");
+            }
+            ContentResponse response = request.send();
+            int responseCode = response.getStatus();
+            switch (responseCode) {
+                case HttpStatus.OK_200, HttpStatus.CREATED_201:
+                    break;
+                case HttpStatus.BAD_REQUEST_400:
+                    throw new AuthenticationException("Bad request");
+                case HttpStatus.UNAUTHORIZED_401:
+                    throw new AuthenticationException("Invalid username or password");
+                case HttpStatus.TOO_MANY_REQUESTS_429:
+                    throw new AuthenticationException("Account rate-limited");
+                default:
+                    throw new AuthenticationException(
+                            "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
+            }
+
+        } catch (ExecutionException | InterruptedException e) {
+            logger.warn("RestApi error in sendCommand!", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            logger.warn("RestApi error in sendCommand!", e);
         }
     }
 }

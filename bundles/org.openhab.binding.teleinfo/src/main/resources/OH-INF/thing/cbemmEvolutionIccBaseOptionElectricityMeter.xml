@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="cbemm_evolution_icc_base_electricitymeter" listed="false">
+	<thing-type id="cbemm_evolution_icc_base_electricitymeter" listed="true">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialcontroller"/>
 		</supported-bridge-type-refs>
@@ -14,14 +14,14 @@
 			Monophasé Multitarif Evolution ICC")</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="isousc" typeId="isouscType"/>
-			<channel id="ptec" typeId="ptecType"/>
-			<channel id="imax" typeId="imaxType"/>
-			<channel id="adps" typeId="adpsType"/>
-			<channel id="papp" typeId="pappType"/>
-			<channel id="iinst" typeId="iinstType"/>
-			<channel id="lastUpdate" typeId="lastUpdateType"/>
-			<channel id="base" typeId="baseType"/>
+			<channel id="isousc" typeId="i-sousc"/>
+			<channel id="ptec" typeId="p-tec"/>
+			<channel id="imax" typeId="i-max"/>
+			<channel id="adps" typeId="adps"/>
+			<channel id="papp" typeId="p-app"/>
+			<channel id="iinst" typeId="i-inst"/>
+			<channel id="lastUpdate" typeId="last-update"/>
+			<channel id="base" typeId="base"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>

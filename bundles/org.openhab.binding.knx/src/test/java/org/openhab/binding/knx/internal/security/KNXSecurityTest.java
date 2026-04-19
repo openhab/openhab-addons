@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,9 +57,7 @@ public class KNXSecurityTest {
         GroupAddress ga = new GroupAddress(8, 0, 0);
         byte[] key800enc = keys.groups().get(ga);
         assertNotNull(key800enc);
-        if (key800enc != null) {
-            assertNotEquals(0, key800enc.length);
-        }
+        assertNotEquals(0, key800enc.length);
         byte[] key800dec = keys.decryptKey(key800enc, password);
         assertEquals(16, key800dec.length);
 

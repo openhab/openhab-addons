@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,11 +64,9 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly1HttpApi.class);
-    private final ShellyDeviceProfile profile;
 
     public Shelly1HttpApi(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
-        profile = thing.getProfile();
     }
 
     /**
@@ -79,12 +78,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      */
     public Shelly1HttpApi(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
-        this.profile = new ShellyDeviceProfile();
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        profile.device = getDeviceInfo();
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        setConfig(thingName, config);
     }
 
     @Override
@@ -191,7 +189,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
-        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(), String.class);
+        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(Locale.ROOT),
+                String.class);
     }
 
     @Override
@@ -201,7 +200,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
-        return callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
+        return callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(Locale.ROOT),
                 ShellyShortLightStatus.class);
     }
 
@@ -249,7 +248,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             status.charger = profile.settings.externalPower != 0;
         }
         if (status.tmp != null && status.tmp.tC == null && status.tmp.value != null) { // Motion is is missing tC and tF
-            status.tmp.tC = getString(status.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)
+            status.tmp.tC = getString(status.tmp.units).toUpperCase(Locale.ROOT).equals(SHELLY_TEMP_FAHRENHEIT)
                     ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(status.tmp.value).doubleValue()
                     : status.tmp.value;
         }

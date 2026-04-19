@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -133,6 +133,7 @@ public class SmhiTest {
     public void parameterTest() {
         assertNotNull(timeSeries1);
         Forecast forecast0 = timeSeries1.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
+        Forecast forecast1 = timeSeries1.getForecast(BASE_TIME, 1).orElseThrow(AssertionError::new);
 
         State pres0 = forecast0.getParameterAsState(PRESSURE);
         State t0 = forecast0.getParameterAsState(TEMPERATURE);
@@ -153,6 +154,7 @@ public class SmhiTest {
         State pmean0 = forecast0.getParameterAsState(PRECIPITATION_MEAN);
         State pmedian0 = forecast0.getParameterAsState(PRECIPITATION_MEDIAN);
         State spp0 = forecast0.getParameterAsState(PERCENT_FROZEN);
+        State spp1 = forecast1.getParameterAsState(PERCENT_FROZEN);
         State fzpr0 = forecast0.getParameterAsState(FROZEN_PROBABILITY);
         State tp0 = forecast0.getParameterAsState(PRECIPITATION_PROBABILITY);
         State pcat0 = forecast0.getParameterAsState(PRECIPITATION_CATEGORY);
@@ -171,7 +173,7 @@ public class SmhiTest {
         assertInstanceOf(QuantityType.class, r0);
         assertEquals(new QuantityType<>(86, Units.PERCENT), r0);
         assertInstanceOf(QuantityType.class, tstm0);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), tstm0);
+        assertEquals(new QuantityType<>(18, Units.PERCENT), tstm0);
         assertInstanceOf(QuantityType.class, cdcb0);
         assertEquals(new QuantityType<>(-1, SIUnits.METRE), cdcb0);
         assertInstanceOf(QuantityType.class, cdct0);
@@ -195,7 +197,9 @@ public class SmhiTest {
         assertInstanceOf(QuantityType.class, pmedian0);
         assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmedian0);
         assertInstanceOf(QuantityType.class, spp0);
-        assertEquals(new QuantityType<>(-1, Units.PERCENT), spp0);
+        assertEquals(new QuantityType<>(14, Units.PERCENT), spp0);
+        assertInstanceOf(QuantityType.class, spp1);
+        assertEquals(new QuantityType<>(-1, Units.PERCENT), spp1);
         assertInstanceOf(QuantityType.class, fzpr0);
         assertEquals(new QuantityType<>(0, Units.PERCENT), fzpr0);
         assertInstanceOf(QuantityType.class, tp0);
@@ -371,6 +375,7 @@ public class SmhiTest {
     public void backwardsCompParameterTest() {
         assertNotNull(timeSeries1);
         Forecast forecast0 = timeSeries1.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
+        Forecast forecast1 = timeSeries1.getForecast(BASE_TIME, 1).orElseThrow(AssertionError::new);
 
         State msl0 = forecast0.getParameterAsState(PMP3G_PRESSURE);
         State t0 = forecast0.getParameterAsState(PMP3G_TEMPERATURE);
@@ -412,7 +417,7 @@ public class SmhiTest {
         assertEquals(new QuantityType<>(86, Units.PERCENT), r0);
         assertInstanceOf(QuantityType.class, tstm0);
         assertEquals(Units.PERCENT, ((QuantityType<?>) tstm0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.PERCENT), tstm0);
+        assertEquals(new QuantityType<>(18, Units.PERCENT), tstm0);
         assertInstanceOf(QuantityType.class, tcc0);
         assertEquals(Units.PERCENT, ((QuantityType<?>) tcc0).getUnit());
         assertEquals(new QuantityType<>(50, Units.PERCENT), tcc0);
@@ -441,7 +446,7 @@ public class SmhiTest {
         assertEquals(Units.MILLIMETRE_PER_HOUR, ((QuantityType<?>) pmedian0).getUnit());
         assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmedian0);
         assertInstanceOf(QuantityType.class, spp0);
-        assertEquals(new QuantityType<>(-1, Units.PERCENT), spp0);
+        assertEquals(new QuantityType<>(14, Units.PERCENT), spp0);
         assertInstanceOf(DecimalType.class, pcat0);
         assertEquals(new DecimalType(0), pcat0);
         assertInstanceOf(DecimalType.class, wsymb0);

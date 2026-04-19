@@ -69,7 +69,7 @@ To do that, manually add the generic RFXCOM device named `RFXCOM USB Transceiver
 You will need to specify at least the serial port which has been assigned to the RFXCOM (see notes above).
 To configure the serial port within openHAB see the [general documentation about serial port configuration](/docs/administration/serial.html).
 
-Alternatively you can add the RFXCOM using a thing file such as:
+Alternatively you can add the RFXCOM using a Thing file such as:
 
 ```java
 Bridge rfxcom:bridge:usb0 [ serialPort="/dev/<device>" ] {
@@ -86,7 +86,7 @@ To start a TCP server for an RFXCOM device, you can use socat:
 socat tcp-listen:10001,fork,reuseaddr file:/dev/ttyUSB0,raw
 ```
 
-A TCP bridge, for use with socat on a remote host, can be configured manually, or by adding an "RFXCOM USB Transceiver over TCP/IP" device or in a thing file like this:
+A TCP bridge, for use with socat on a remote host, can be configured manually, or by adding an "RFXCOM USB Transceiver over TCP/IP" device or in a Thing file like this:
 
 ```java
 Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
@@ -136,7 +136,7 @@ Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
 
 ## Thing Configuration
 
-Configuration parameters are listed alongside each thing type.
+Configuration parameters are listed alongside each Thing type.
 Most devices only require a deviceId and a subType, but some things require additional configuration.
 The deviceId is used both when receiving and transmitting messages, the subType is mainly used when sending messages, but it can vary between device types.
 
@@ -662,13 +662,13 @@ By convention, the first 20 bits of this is used for deviceId, and the last 4 bi
 
 Depending on your device, you may have only one command, one pair of commands (on/off), or any other multiple, for example, a set of 4 sockets with an on/off pair for each and an additional pair for "all".
 
-Different device manufactures using this protocol will use different schemes for their commands, so to configure a thing using the lighting4 protocol, you must specify at least one commandId in the thing configuration.
+Different device manufactures using this protocol will use different schemes for their commands, so to configure a Thing using the lighting4 protocol, you must specify at least one commandId in the Thing configuration.
 If a device has multiple sets of commands, you can configure multiple things with the same device id, but different commandIds.
 
 Some devices will expect a specific pulse length.
-If required, that can also be specified as a thing configuration parameter.
+If required, that can also be specified as a Thing configuration parameter.
 
-Previously, openHAB would attempt to guess at the meaning of a commandId if it was not specified in the thing configuration based on devices seen in the wild.
+Previously, openHAB would attempt to guess at the meaning of a commandId if it was not specified in the Thing configuration based on devices seen in the wild.
 Due to the varying nature of devices, this behaviour is deprecated and will be removed in a future openHAB version.
 Until then, commands 1, 3, 5-13 and 15 are considered ON and 0, 2, 4 and 14 are considered OFF when the `onCommandId` or `offCommandId` for a device is not specified.
 
@@ -864,7 +864,7 @@ A Rain device
 These messages are included in the Pro firmware and represent messages for which the device does not understand the protocol.
 The raw message is a list of the length of the RF pulses before they have been interpreted as bytes.
 
-You can also send raw messages by recording the pulses of an incoming message and using them to configure a raw thing item.
+You can also send raw messages by recording the pulses of an incoming message and using them to configure a raw Thing item.
 
 #### Channels
 
@@ -915,7 +915,7 @@ This can be used to transmit raw messages.
 The first step is to work out the right pulses for the device.
 You can do this using RFXmngr, or you can do this using openhab:
 
-1. Set up a RAW thing to receive raw pulses:
+1. Set up a RAW Thing to receive raw pulses:
 
     ```java
     Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
@@ -935,7 +935,7 @@ You can do this using RFXmngr, or you can do this using openhab:
 
 Now you have the pulses, set up a send device:
 
-1. Set up a RAW thing to send a command:
+1. Set up a RAW Thing to send a command:
 
     ```java
     Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {

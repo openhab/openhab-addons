@@ -174,7 +174,7 @@
 	<channel-type id="floodlight-mode">
 		<item-type>String</item-type>
 		<label>Floodlight</label>
-		<description>State of the floodlight (On/Off/Auto)</description>
+		<description>State of the floodlight (ON/OFF/AUTO).</description>
 		<category>Lightbulb</category>
 		<tags>
 			<tag>Control</tag>
@@ -206,12 +206,12 @@
 	<channel-type id="sd-card-status">
 		<item-type>String</item-type>
 		<label>SD Card State</label>
-		<description>State of the SD card</description>
+		<description>State of the SD card.</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="SD_CARD_MISSING">Missing SD Card</option>
 				<option value="SD_CARD_INSERTED">SD Card inserted</option>
-				<option value="SD_CARD_FORMATTED">SD Card formated</option>
+				<option value="SD_CARD_FORMATTED">SD Card formatted</option>
 				<option value="SD_CARD_WORKING">Working SD Card</option>
 				<option value="SD_CARD_DEFECTIVE">Defective SD Card</option>
 				<option value="SD_CARD_INCOMPATIBLE_SPEED">Incompatible SD Card speed</option>
@@ -416,14 +416,14 @@
 				<option value="BOOT">Camera booting</option>
 				<option value="SD">SD card status changed</option>
 				<option value="ALIM">Power status changed</option>
-				<option value="ACCEPTED_CALL">Call is incoming</option>
-				<option value="INCOMING_CALL">Call has been answered by a user</option>
+				<option value="ACCEPTED_CALL">Call has been answered by a user</option>
+				<option value="INCOMING_CALL">Call is incoming</option>
 				<option value="RTC">Button pressed</option>
 				<option value="MISSED_CALL">Call has not been answered by anyone</option>
 				<option value="HUSH">Smoke detector status</option>
 				<option value="SMOKE">Smoke detection</option>
 				<option value="TAMPERED">Detector tamper</option>
-				<option value="WIFI_STATUS">Wifi status</option>
+				<option value="WIFI_STATUS">Wi-Fi status</option>
 				<option value="BATTERY_STATUS">Battery status</option>
 				<option value="DETECTION_CHAMBER_STATUS">Detection chamber status</option>
 				<option value="SOUND_TEST">Sound test</option>
@@ -441,7 +441,7 @@
 			<options>
 				<option value="SD_CARD_MISSING">Missing SD Card</option>
 				<option value="SD_CARD_INSERTED">SD Card inserted</option>
-				<option value="SD_CARD_FORMATTED">SD Card formated</option>
+				<option value="SD_CARD_FORMATTED">SD Card formatted</option>
 				<option value="SD_CARD_WORKING">Working SD Card</option>
 				<option value="SD_CARD_DEFECTIVE">Defective SD Card</option>
 				<option value="SD_CARD_INCOMPATIBLE_SPEED">Incompatible SD Card speed</option>
@@ -470,7 +470,7 @@
 				<option value="WIFI_STATUS_ERROR">Wi-Fi status error</option>
 				<option value="CO_OK">Carbon Monoxide OK</option>
 				<option value="CO_PRE_ALARM">Carbon Monoxide Pre-alarm</option>
-				<option value="CO_ALARM">Carbon Monoxide alarrm</option>
+				<option value="CO_ALARM">Carbon Monoxide alarm</option>
 			</options>
 		</state>
 	</channel-type>
@@ -612,7 +612,7 @@
 	<channel-type id="max-temp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temp</label>
-		<description>Maximum Temperature on current day.</description>
+		<description>Maximum temperature on the current day.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -620,7 +620,7 @@
 	<channel-type id="min-temp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Min Temp</label>
-		<description>Minimum Temperature on current day</description>
+		<description>Minimum temperature on the current day.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -628,7 +628,7 @@
 	<channel-type id="gust-angle">
 		<item-type>Number:Angle</item-type>
 		<label>Gust Angle</label>
-		<description>Direction of the last 5 minutes highest gust wind</description>
+		<description>Direction of the highest gust in the last 5 minutes.</description>
 		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -640,7 +640,7 @@
 	<channel-type id="gust-strength">
 		<item-type>Number:Speed</item-type>
 		<label>Gust Strength</label>
-		<description>Speed of the last 5 minutes highest gust wind</description>
+		<description>Speed of the highest gust in the last 5 minutes.</description>
 		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -652,7 +652,7 @@
 	<channel-type id="max-wind-strength" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Max Wind Strength</label>
-		<description>Maximum wind strength recorded</description>
+		<description>Maximum wind strength recorded.</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -660,7 +660,7 @@
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location</label>
-		<description>Location of the device</description>
+		<description>Location of the device.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>GeoLocation</tag>
@@ -676,7 +676,7 @@
 		<config-description>
 			<parameter name="quality" type="text">
 				<label>Quality Level</label>
-				<description>Defines quality level of the feed (the higher the more bandwidth)</description>
+				<description>Defines the feed quality level (higher uses more bandwidth).</description>
 				<options>
 					<option value="low">Low Quality</option>
 					<option value="poor">Poor Quality</option>
@@ -697,7 +697,7 @@
 	<channel-type id="live-picture-url" advanced="true">
 		<item-type>String</item-type>
 		<label>Live Snapshot URL</label>
-		<description>URL of the live snapshot for this camera (need scope access_camera).</description>
+		<description>URL of the live snapshot for this camera (requires access_camera scope).</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

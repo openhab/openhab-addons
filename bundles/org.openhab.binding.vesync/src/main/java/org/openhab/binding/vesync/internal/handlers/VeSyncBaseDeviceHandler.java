@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,13 +13,14 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V2_BYPASS_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.V2_BYPASS_ENDPOINT;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,10 +33,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.ManagedDeviceBypassReq;
+import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.cache.ExpiringCache;
@@ -173,7 +174,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            DeviceInfo metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
             return metadata != null && "online".equals(metadata.connectionStatus);
         }
         return false;
@@ -185,13 +186,13 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof VeSyncBridgeHandler veSyncBridgeHandler) {
             @Nullable
-            VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
+            DeviceInfo metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
             if (metadata == null) {
                 return;
             }
 
-            newProps = getMetadataProperities(metadata);
+            newProps = getMetadataProperties(metadata);
 
             deviceId = metadata.getUuid();
 
@@ -245,7 +246,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param metadata - the meta-data of a device
      * @return - Map of common props
      */
-    public Map<String, String> getMetadataProperities(final @Nullable VeSyncManagedDeviceBase metadata) {
+    public Map<String, String> getMetadataProperties(final @Nullable DeviceInfo metadata) {
         if (metadata == null) {
             return Map.of();
         }
@@ -296,8 +297,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             if (configMac != null) {
                 logger.debug("Searching for device mac id : {}", configMac);
                 @Nullable
-                VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap()
-                        .get(configMac.toLowerCase());
+                DeviceInfo metadata = vesyncBridgeHandler.api.getMacLookupMap()
+                        .get(configMac.toLowerCase(Locale.ENGLISH));
 
                 if (metadata != null && metadata.macId != null) {
                     return metadata.macId;
@@ -407,8 +408,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param payload - The payload to send in within the V2 bypass command
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassControlCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+    protected final String sendV2BypassControlCommand(final String method, final EmptyPayload payload) {
         return sendV2BypassControlCommand(method, payload, true);
     }
 
@@ -421,8 +421,8 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      *            should be run.
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassControlCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload, final boolean readbackDevice) {
+    protected final String sendV2BypassControlCommand(final String method, final EmptyPayload payload,
+            final boolean readbackDevice) {
         final String result = sendV2BypassCommand(method, payload);
         if (!EMPTY_STRING.equals(result) && readbackDevice) {
             performReadbackPoll();
@@ -430,11 +430,11 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request) {
+    protected final String sendV1ControlCommand(final String urlPath, final AuthenticatedReq request) {
         return sendV1ControlCommand(urlPath, request, true);
     }
 
-    protected final String sendV1ControlCommand(final String urlPath, final VeSyncAuthenticatedRequest request,
+    protected final String sendV1ControlCommand(final String urlPath, final AuthenticatedReq request,
             final boolean readbackDevice) {
         final String result = sendV1Command(urlPath, request);
         if (!EMPTY_STRING.equals(result) && readbackDevice) {
@@ -443,7 +443,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         return result;
     }
 
-    public final String sendV1Command(final String urlPath, final VeSyncAuthenticatedRequest request) {
+    public final String sendV1Command(final String urlPath, final AuthenticatedReq request) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
@@ -455,7 +455,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             }
             VeSyncClient client = getVeSyncClient();
             if (client != null) {
-                final String url = VeSyncProtocolConstants.SERVER_ENDPOINT + "/" + urlPath;
+                final String url = "/" + urlPath;
                 return client.reqV2Authorized(url, deviceLookupKey, request);
             } else {
                 throw new DeviceUnknownException("Missing client");
@@ -479,14 +479,13 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
      * @param payload - The payload to send in within the V2 bypass command
      * @return - The body of the response, or EMPTY_STRING if the command could not be issued.
      */
-    protected final String sendV2BypassCommand(final String method,
-            final VeSyncRequestManagedDeviceBypassV2.EmptyPayload payload) {
+    protected final String sendV2BypassCommand(final String method, final EmptyPayload payload) {
         if (ThingStatus.OFFLINE.equals(this.thing.getStatus())) {
             logger.debug("Command blocked as device is offline");
             return EMPTY_STRING;
         }
 
-        VeSyncRequestManagedDeviceBypassV2 readReq = new VeSyncRequestManagedDeviceBypassV2();
+        ManagedDeviceBypassReq readReq = new ManagedDeviceBypassReq();
         readReq.payload.method = method;
         readReq.payload.data = payload;
         readReq.deviceId = deviceId;

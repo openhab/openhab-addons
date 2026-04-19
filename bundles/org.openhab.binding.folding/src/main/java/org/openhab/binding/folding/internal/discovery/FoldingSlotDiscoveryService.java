@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.folding.internal.FoldingBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -33,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.folding")
 public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
 
@@ -45,7 +48,7 @@ public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
     }
 
-    protected String getLabel(String host, String description) {
+    protected String getLabel(String host, @Nullable String description) {
         if (description == null) {
             description = "slot";
         }
@@ -60,7 +63,7 @@ public class FoldingSlotDiscoveryService extends AbstractDiscoveryService {
         return description + " @ " + host;
     }
 
-    public void newSlot(ThingUID bridgeUID, String host, String id, String description) {
+    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, @Nullable String description) {
         if (isBackgroundDiscoveryEnabled() && id != null) {
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(FoldingBindingConstants.PARAM_SLOT_ID, id);

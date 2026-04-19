@@ -6,15 +6,14 @@
 
 	<config-description uri="thing-type:wiz:device">
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC address of the device</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="ipAddress" type="text" required="true">
 			<label>IP Address</label>
 			<context>network-address</context>
 			<description>IP address of the device</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="5">
 			<label>Update Interval</label>

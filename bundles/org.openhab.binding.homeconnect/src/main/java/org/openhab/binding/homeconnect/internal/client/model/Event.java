@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client.model;
 
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.ZONE_ID;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.EVENT;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.NOTIFY;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.STATUS;
@@ -56,7 +57,7 @@ public class Event {
         this.key = null;
         this.name = null;
         this.uri = null;
-        this.creation = ZonedDateTime.now();
+        this.creation = ZonedDateTime.now(ZONE_ID);
         this.level = null;
         this.handling = null;
         this.value = null;

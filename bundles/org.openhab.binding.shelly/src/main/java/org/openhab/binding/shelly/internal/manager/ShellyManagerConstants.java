@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -150,7 +150,4 @@ public class ShellyManagerConstants {
     public static final String FWREPO_TEST_URL = "https://repo.shelly.cloud/files/firmware/";
     public static final String FWREPO_ARCH_URL = "http://archive.shelly-tools.de/archive.php";
     public static final String FWREPO_ARCFILE_URL = "http://archive.shelly-tools.de/version/";
-
-    public static final int CACHE_TIMEOUT_DEF_MIN = 60; // Default timeout for cache entries
-    public static final int CACHE_TIMEOUT_FW_MIN = 15; // Cache entries for the firmware list 15min
 }

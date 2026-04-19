@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoUniversalDevice
 import org.openhab.binding.tapocontrol.internal.devices.wifi.bulb.TapoBulbHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.hub.TapoHubHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.lightstrip.TapoLightStripHandler;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.lightswitch.TapoLightSwitchHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.socket.TapoSocketHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.socket.TapoSocketStripHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -133,6 +134,8 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoWeatherSensorHandler(thing);
         } else if (SUPPORTED_SMART_SWITCHES.contains(thingTypeUID)) {
             return new TapoSmartSwitchHandler(thing);
+        } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(thingTypeUID)) {
+            return new TapoLightSwitchHandler(thing);
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
         }

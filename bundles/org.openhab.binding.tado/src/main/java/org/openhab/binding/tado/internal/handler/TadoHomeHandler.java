@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.HomeApiFactory;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
@@ -37,7 +40,10 @@ import org.openhab.binding.tado.swagger.codegen.api.model.UserHomes;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -47,6 +53,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +108,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
         OAuthClientService oAuthClientService = tadoHandlerFactory.subscribeOAuthClientService(this, user);
         oAuthClientService.addAccessTokenRefreshListener(this);
-        this.api = new HomeApiFactory().create(oAuthClientService, configuration.tadoApiUrl);
+        this.api = new HomeApiFactory().create(oAuthClientService, configuration.tadoApiUrl, this);
         this.oAuthClientService = oAuthClientService;
         logger.trace("initialize() api v2 created");
         confPendingText = CONF_PENDING_OAUTH_CREDS.formatted(TadoAuthenticationServlet.PATH,
@@ -286,5 +293,25 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
     @Override
     public void onAccessTokenResponse(AccessTokenResponse atr) {
         initializeBridgeStatusAndPropertiesIfOffline();
+    }
+
+    public void updateRateLimitInfo(int apiRateLimit, int apiRateDuration, int apiRateRemaining, int apiRateReset) {
+        updateAPIChannels(apiRateLimit, TadoBindingConstants.CHANNEL_API_RATE_LIMIT, Units.ONE);
+        updateAPIChannels(apiRateDuration, TadoBindingConstants.CHANNEL_API_RATE_DURATION, Units.SECOND);
+        updateAPIChannels(apiRateRemaining, TadoBindingConstants.CHANNEL_API_RATE_REMAINING, Units.ONE);
+        updateAPIChannels(apiRateReset, TadoBindingConstants.CHANNEL_API_RATE_RESET, Units.SECOND);
+    }
+
+    private void updateAPIChannels(int value, String channelName, Unit unit) {
+        if (value > -1) {
+            if (TadoBindingConstants.CHANNEL_API_RATE_LIMIT.equals(channelName)
+                    || TadoBindingConstants.CHANNEL_API_RATE_REMAINING.equals(channelName)) {
+                updateState(channelName, new DecimalType(value));
+            } else {
+                updateState(channelName, new QuantityType<>(value, unit));
+            }
+        } else {
+            updateState(channelName, UnDefType.UNDEF);
+        }
     }
 }

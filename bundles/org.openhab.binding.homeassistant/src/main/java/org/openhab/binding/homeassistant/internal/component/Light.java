@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,8 @@ public abstract class Light<C extends Light.LightConfiguration> extends Abstract
     public static Light<?> create(ComponentFactory.ComponentContext componentContext)
             throws UnsupportedComponentException {
         Map<String, @Nullable Object> config = componentContext.getPython()
-                .processDiscoveryConfig(componentContext.getHaID().component, componentContext.getConfigJSON());
+                .processDiscoveryConfig(componentContext.getHaID().toShortTopic(), componentContext.getConfigJSON())
+                .getFirst().getDiscoveryPayload();
 
         String schema = Objects.requireNonNull((String) config.get("schema"));
         switch (schema) {
