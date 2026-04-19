@@ -91,12 +91,11 @@ public class RingBindingConstants {
     public static final Set<String> INDOOR_CAM_KINDS = Set.of("stickup_cam_mini");
     public static final Set<String> INDOOR_CAM_GEN2_KINDS = Set.of("stickup_cam_mini_v2");
     public static final Set<String> INDOOR_CAM_PTZ_KINDS = Set.of("stickup_cam_mini_ptz_v1");
-    public static final Set<String> SPOTLIGHT_CAM_BATTERY_KINDS = Set.of("stickup_cam_v4");
+    public static final Set<String> SPOTLIGHT_CAM_BATTERY_KINDS = Set.of("stickup_cam_v4", "stickup_cam_lunar");
     public static final Set<String> SPOTLIGHT_CAM_WIRED_KINDS = Set.of("hp_cam_v2", "spotlightw_v2");
     public static final Set<String> SPOTLIGHT_CAM_PLUS_KINDS = Set.of("cocoa_spotlight");
     public static final Set<String> SPOTLIGHT_CAM_PRO_KINDS = Set.of("stickup_cam_longfin");
     public static final Set<String> STICKUP_CAM_KINDS = Set.of("stickup_cam", "stickup_cam_v3");
-    public static final Set<String> STICKUP_CAM_BATTERY_KINDS = Set.of("stickup_cam_lunar");
     public static final Set<String> STICKUP_CAM_ELITE_KINDS = Set.of("stickup_cam_elite", "stickup_cam_wired");
     public static final Set<String> STICKUP_CAM_GEN3_KINDS = Set.of("cocoa_camera");
     public static final Set<String> BEAM_KINDS = Set.of("beams_ct200_transformer");
@@ -105,9 +104,9 @@ public class RingBindingConstants {
 
     // battery kinds
     public static final Set<String> BATTERY_KINDS = Stream
-            .of(SPOTLIGHT_CAM_BATTERY_KINDS, STICKUP_CAM_KINDS, STICKUP_CAM_BATTERY_KINDS, STICKUP_CAM_GEN3_KINDS,
-                    SPOTLIGHT_CAM_PRO_KINDS, DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS,
-                    DOORBELL_4_KINDS, DOORBELL_GEN2_KINDS, DOORBELL_BATTERY_KINDS, PEEPHOLE_CAM_KINDS)
+            .of(SPOTLIGHT_CAM_BATTERY_KINDS, STICKUP_CAM_KINDS, STICKUP_CAM_GEN3_KINDS, SPOTLIGHT_CAM_PRO_KINDS,
+                    DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS, DOORBELL_4_KINDS,
+                    DOORBELL_GEN2_KINDS, DOORBELL_BATTERY_KINDS, PEEPHOLE_CAM_KINDS)
             .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     // light kinds
@@ -120,16 +119,16 @@ public class RingBindingConstants {
     public static final Set<String> SIREN_KINDS = Stream
             .of(FLOODLIGHT_CAM_KINDS, FLOODLIGHT_CAM_PRO_KINDS, FLOODLIGHT_CAM_PLUS_KINDS, INDOOR_CAM_KINDS,
                     INDOOR_CAM_GEN2_KINDS, INDOOR_CAM_PTZ_KINDS, SPOTLIGHT_CAM_BATTERY_KINDS, SPOTLIGHT_CAM_WIRED_KINDS,
-                    SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS, STICKUP_CAM_BATTERY_KINDS,
-                    STICKUP_CAM_ELITE_KINDS, STICKUP_CAM_GEN3_KINDS)
+                    SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS, STICKUP_CAM_ELITE_KINDS, STICKUP_CAM_GEN3_KINDS)
             .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     // motion detection kinds
-    public static final Set<String> MOTION_DETECTION_KINDS = Stream.of(FLOODLIGHT_CAM_KINDS, FLOODLIGHT_CAM_PRO_KINDS,
-            FLOODLIGHT_CAM_PLUS_KINDS, INDOOR_CAM_KINDS, INDOOR_CAM_GEN2_KINDS, INDOOR_CAM_PTZ_KINDS,
-            SPOTLIGHT_CAM_BATTERY_KINDS, SPOTLIGHT_CAM_WIRED_KINDS, SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS,
-            STICKUP_CAM_KINDS, STICKUP_CAM_BATTERY_KINDS, STICKUP_CAM_ELITE_KINDS, STICKUP_CAM_GEN3_KINDS,
-            DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS, DOORBELL_4_KINDS,
-            DOORBELL_PRO_KINDS, DOORBELL_PRO_2_KINDS, DOORBELL_WIRED_KINDS, DOORBELL_BATTERY_KINDS, DOORBELL_GEN2_KINDS,
-            DOORBELL_ELITE_KINDS, PEEPHOLE_CAM_KINDS).flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
+    public static final Set<String> MOTION_DETECTION_KINDS = Stream
+            .of(FLOODLIGHT_CAM_KINDS, FLOODLIGHT_CAM_PRO_KINDS, FLOODLIGHT_CAM_PLUS_KINDS, INDOOR_CAM_KINDS,
+                    INDOOR_CAM_GEN2_KINDS, INDOOR_CAM_PTZ_KINDS, SPOTLIGHT_CAM_BATTERY_KINDS, SPOTLIGHT_CAM_WIRED_KINDS,
+                    SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS, STICKUP_CAM_KINDS, STICKUP_CAM_ELITE_KINDS,
+                    STICKUP_CAM_GEN3_KINDS, DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS,
+                    DOORBELL_4_KINDS, DOORBELL_PRO_KINDS, DOORBELL_PRO_2_KINDS, DOORBELL_WIRED_KINDS,
+                    DOORBELL_BATTERY_KINDS, DOORBELL_GEN2_KINDS, DOORBELL_ELITE_KINDS, PEEPHOLE_CAM_KINDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 }
