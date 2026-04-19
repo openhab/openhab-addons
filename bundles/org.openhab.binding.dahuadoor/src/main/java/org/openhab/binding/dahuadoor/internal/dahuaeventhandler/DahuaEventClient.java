@@ -877,7 +877,6 @@ public class DahuaEventClient implements Runnable {
                 int frameStart = bbuffer.position();
                 lenRecved = bbuffer.getInt(frameStart + 16);
                 bbuffer.get(header, 0, 32); // advances position by 32 to payload start
-
             } else {
                 if (lenRecved > 0) {
                     // Ensure we have the full payload before reading it
