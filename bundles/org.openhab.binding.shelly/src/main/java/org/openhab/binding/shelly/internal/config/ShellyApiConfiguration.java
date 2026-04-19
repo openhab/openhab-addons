@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.config;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY1_CALLBACK_URI;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_USERID;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -53,12 +53,14 @@ public class ShellyApiConfiguration {
         private final String eventCallback;
 
         public ShellyApiUrls(String localIp, String localPort, String deviceIp) {
-            if (localIp.isBlank()) {
-                throw new IllegalArgumentException("Local IP address was not detected");
-            }
             deviceApi = "http://" + deviceIp;
-            websocketCallback = "ws://" + localIp + ":" + localPort + "/shelly/wsevent";
-            eventCallback = "http://" + localIp + ":" + localPort + SHELLY1_CALLBACK_URI + "/";
+            if (localIp.isBlank()) {
+                websocketCallback = "";
+                eventCallback = "";
+            } else {
+                websocketCallback = "ws://" + localIp + ":" + localPort + "/shelly/wsevent";
+                eventCallback = "http://" + localIp + ":" + localPort + SHELLY1_CALLBACK_URI + "/";
+            }
         }
     }
 

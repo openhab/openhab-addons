@@ -279,7 +279,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
-        logger.debug("{}: Thing config updated, re-initialize", thingName);
+        logger.debug("{}: Thing config was updated, re-initialize", thingName);
         Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.stop();
