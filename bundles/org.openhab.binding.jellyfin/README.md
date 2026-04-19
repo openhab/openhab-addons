@@ -215,11 +215,11 @@ INFO: WebSocket max retries exceeded, falling back to polling
    - Apache: Enable `mod_proxy_wstunnel`
    - Caddy: WebSocket support is enabled by default
 
-2. **Firewall rules**: Ensure WebSocket connections (typically on the same port as HTTP/HTTPS) are not blocked
+1. **Firewall rules**: Ensure WebSocket connections (typically on the same port as HTTP/HTTPS) are not blocked
 
-3. **Server compatibility**: Verify your Jellyfin server version is 10.10.7 or newer
+1. **Server compatibility**: Verify your Jellyfin server version is 10.10.7 or newer
 
-4. **Automatic fallback**: If WebSocket connections fail, the binding automatically falls back to polling using `refreshSeconds` interval
+1. **Automatic fallback**: If WebSocket connections fail, the binding automatically falls back to polling using `refreshSeconds` interval
 
 ### Delayed Updates
 
