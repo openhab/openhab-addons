@@ -33,7 +33,7 @@ public class Constants {
     public static class ServerProperties {
         public static final String API_VERSION = "apiVersion";
         public static final String SERVER_URI = "uri";
-        public static final String SERVER_VERSION = "Server Version";
+        public static final String SERVER_VERSION = "serverVersion";
     }
 
     // List of all Thing Type UIDs

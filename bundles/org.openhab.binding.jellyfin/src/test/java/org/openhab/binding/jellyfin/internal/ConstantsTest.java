@@ -142,7 +142,7 @@ class ConstantsTest {
         // Verify server properties are defined
         assertEquals("apiVersion", Constants.ServerProperties.API_VERSION);
         assertEquals("uri", Constants.ServerProperties.SERVER_URI);
-        assertEquals("Server Version", Constants.ServerProperties.SERVER_VERSION);
+        assertEquals("serverVersion", Constants.ServerProperties.SERVER_VERSION);
     }
 
     @Test
