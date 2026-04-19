@@ -389,7 +389,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     private void updateWebhookProperties(@Nullable String webHookUrl) {
-        Map<String, @Nullable String> properties = new HashMap<>(editProperties());
+        Map<String, String> properties = new HashMap<>(editProperties());
         if (webHookUrl == null) {
             properties.put(SmartThingsBindingConstants.WEBHOOK_URL, "");
         } else {
