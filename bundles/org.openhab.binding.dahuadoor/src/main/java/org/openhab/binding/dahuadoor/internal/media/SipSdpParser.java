@@ -45,9 +45,7 @@ public class SipSdpParser {
             return Optional.empty();
         }
 
-        @Nullable
         String sessionHost = null;
-        @Nullable
         String mediaHost = null;
         int mediaPort = -1;
         List<Integer> offeredPayloadTypes = new ArrayList<>();
@@ -151,7 +149,10 @@ public class SipSdpParser {
         }
 
         SipAudioOffer offer = parsedOffer.get();
-        int advertisedAudioPort = localAudioPort > 0 ? localAudioPort : offer.getRemotePort();
+        int advertisedAudioPort = localAudioPort > 0 ? localAudioPort : 0;
+        int audioPayloadType = offer.getPayloadType();
+        String audioCodecName = offer.getCodecName();
+        int audioClockRate = offer.getClockRate();
         int videoPayloadType = parseVideoPayloadType(inviteSdp).orElse(DEFAULT_VIDEO_PAYLOAD_TYPE);
         String videoFramerate = DEFAULT_VIDEO_FRAMERATE;
         long sessionId = Math.max(1L, System.currentTimeMillis() / 1000L);
@@ -161,11 +162,10 @@ public class SipSdpParser {
         answer.append("s=Dahua VT 1.5\r\n");
         answer.append("c=IN IP4 ").append(localIp).append("\r\n");
         answer.append("t=0 0\r\n");
-        answer.append("m=audio ").append(advertisedAudioPort).append(" RTP/AVP 0 97 101\r\n");
-        answer.append("a=rtpmap:97 PCM/16000\r\n");
-        answer.append("a=rtpmap:0 PCMU/8000\r\n");
-        answer.append("a=rtpmap:101 telephone-event/8000\r\n");
-        answer.append("a=fmtp:101 0-15\r\n");
+        answer.append("m=audio ").append(advertisedAudioPort).append(" RTP/AVP ").append(audioPayloadType)
+                .append("\r\n");
+        answer.append("a=rtpmap:").append(audioPayloadType).append(" ").append(audioCodecName).append("/")
+                .append(audioClockRate).append("\r\n");
         answer.append("a=sendrecv\r\n");
         answer.append("m=video ").append(DEFAULT_VIDEO_PORT).append(" RTP/AVP ").append(videoPayloadType)
                 .append("\r\n");

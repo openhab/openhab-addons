@@ -85,16 +85,14 @@ class SipSdpParserTest {
         String sdp = "v=0\r\n" + "o=- 1 1 IN IP4 172.18.0.2\r\n" + "s=-\r\n" + "c=IN IP4 172.18.0.2\r\n" + "t=0 0\r\n"
                 + "m=audio 5004 RTP/AVP 8\r\n" + "a=ptime:20\r\n";
 
-        Optional<String> answer = parser.buildAnswerSdp(sdp, "192.168.1.10", 0);
+        Optional<String> answer = parser.buildAnswerSdp(sdp, "192.168.1.10", 6000);
         assertTrue(answer.isPresent());
 
         String answerText = answer.get();
         assertTrue(answerText.contains("c=IN IP4 192.168.1.10\r\n"));
-        assertTrue(answerText.contains("m=audio 5004 RTP/AVP 0 97 101\r\n"));
-        assertTrue(answerText.contains("a=rtpmap:97 PCM/16000\r\n"));
-        assertTrue(answerText.contains("a=rtpmap:0 PCMU/8000\r\n"));
-        assertTrue(answerText.contains("a=rtpmap:101 telephone-event/8000\r\n"));
-        assertTrue(answerText.contains("a=fmtp:101 0-15\r\n"));
+        // Answer must only advertise payload types that were offered (offer had only PT 8 = PCMA)
+        assertTrue(answerText.contains("m=audio 6000 RTP/AVP 8\r\n"));
+        assertTrue(answerText.contains("a=rtpmap:8 PCMA/8000\r\n"));
         assertTrue(answerText.contains("a=sendrecv\r\n"));
         assertTrue(answerText.contains("m=video 30000 RTP/AVP 96\r\n"));
         assertTrue(answerText.contains("a=framerate:25.000000\r\n"));
