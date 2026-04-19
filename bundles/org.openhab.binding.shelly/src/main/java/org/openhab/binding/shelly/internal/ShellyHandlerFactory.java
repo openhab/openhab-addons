@@ -95,7 +95,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         String localIP = new ShellyBindingConfiguration(networkAddressService).getLocalIP();
         bindingConfig = ShellyBindingConfiguration.fromProperties(localIP, configProperties);
         if (bindingConfig.getLocalIP().isEmpty()) {
-            logger.warn("{}", messages.get("message.init.noipaddress"));
+            logger.error("{}", messages.get("message.init.noipaddress"));
+            throw new ComponentException("Failed to activate: Local IP can't be detected");
         }
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
