@@ -175,16 +175,16 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-    <channel-type id="tankTargetWaterTemperature-channel">
-        <item-type>Number:Temperature</item-type>
-        <label>Tank target temperature</label>
-        <description>Setpoint temperature of water</description>
-        <tags>
-            <tag>Setpoint</tag>
-            <tag>Temperature</tag>
-        </tags>
-        <state min="20" max="65" step="1" pattern="%.0f %unit%"/>
-    </channel-type>
+	<channel-type id="tankTargetWaterTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Tank target temperature</label>
+		<description>Setpoint temperature of water</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="20" max="65" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
 
 	<channel-type id="forcedHotWaterMode-channel">
 		<item-type>Switch</item-type>
