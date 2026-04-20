@@ -30,6 +30,9 @@ import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.groheondus.internal.GroheOndusApplianceConfiguration;
+import org.openhab.binding.groheondus.internal.GroheOndusSnoozeService;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -105,6 +108,19 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 break;
             case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT:
                 newState = sumWaterConsumptionSinceMidnight(dataPoint);
+                break;
+            case CHANNEL_SENSEGUARD_PAUSE:
+                OndusService pauseQueryService = getOndusService();
+                GroheOndusApplianceConfiguration pauseConfig = config;
+                if (pauseQueryService != null && pauseConfig != null) {
+                    try {
+                        boolean active = new GroheOndusSnoozeService(pauseQueryService)
+                                .isSnoozeActive(pauseConfig.locationId, pauseConfig.roomId, pauseConfig.applianceId);
+                        updateState(channelUID, active ? new DecimalType(1) : new DecimalType(0));
+                    } catch (IOException e) {
+                        logger.warn("Failed to query pause status: {}", e.getMessage());
+                    }
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
@@ -234,30 +250,61 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             return;
         }
 
-        if (!CHANNEL_VALVE_OPEN.equals(channelUID.getIdWithoutGroup())) {
-            return;
+        String channelId = channelUID.getIdWithoutGroup();
+        if (CHANNEL_VALVE_OPEN.equals(channelId)) {
+            if (!(command instanceof OnOffType)) {
+                logger.debug("Invalid command received for channel. Expected OnOffType, received {}.",
+                        command.getClass().getName());
+                return;
+            }
+            OnOffType openClosedCommand = (OnOffType) command;
+            boolean openState = openClosedCommand == OnOffType.ON;
+
+            OndusService service = getOndusService();
+            if (service == null) {
+                return;
+            }
+            Appliance appliance = getAppliance(service);
+            if (appliance == null) {
+                return;
+            }
+            try {
+                service.setValveOpen(appliance, openState);
+                updateChannels();
+            } catch (IOException e) {
+                logger.debug("Could not update valve open state", e);
+            }
+        } else if (CHANNEL_SENSEGUARD_PAUSE.equals(channelId)) {
+            handlePauseCommand(command);
         }
-        if (!(command instanceof OnOffType)) {
-            logger.debug("Invalid command received for channel. Expected OnOffType, received {}.",
-                    command.getClass().getName());
+    }
+
+    private void handlePauseCommand(Command command) {
+        if (!(command instanceof DecimalType))
             return;
-        }
-        OnOffType openClosedCommand = (OnOffType) command;
-        boolean openState = openClosedCommand == OnOffType.ON;
 
         OndusService service = getOndusService();
-        if (service == null) {
+        if (service == null)
             return;
-        }
-        Appliance appliance = getAppliance(service);
-        if (appliance == null) {
+
+        GroheOndusApplianceConfiguration cfg = getConfigAs(GroheOndusApplianceConfiguration.class);
+        if (cfg == null)
             return;
-        }
+
+        int minutes = ((DecimalType) command).intValue();
+        GroheOndusSnoozeService snoozeService = new GroheOndusSnoozeService(service);
+
         try {
-            service.setValveOpen(appliance, openState);
-            updateChannels();
+            if (minutes <= 0) {
+                snoozeService.deletePause(cfg.locationId, cfg.roomId, cfg.applianceId);
+                updateState(CHANNEL_SENSEGUARD_PAUSE, new DecimalType(0));
+            } else {
+                int clamped = Math.min(minutes, 240);
+                snoozeService.setPause(cfg.locationId, cfg.roomId, cfg.applianceId, clamped);
+                updateState(CHANNEL_SENSEGUARD_PAUSE, new DecimalType(clamped));
+            }
         } catch (IOException e) {
-            logger.debug("Could not update valve open state", e);
+            logger.warn("Failed to set Grohe Guard pause: {}", e.getMessage());
         }
     }
 }

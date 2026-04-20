@@ -38,6 +38,7 @@
 			<channel id="waterconsumption" typeId="waterconsumption"/>
 			<channel id="waterconsumption_since_midnight" typeId="waterconsumption_since_midnight"/>
 			<channel id="valve_open" typeId="valve_open"/>
+			<channel id="pause_duration" typeId="pause_duration"/>
 		</channels>
 
 		<representation-property>applianceId</representation-property>
@@ -177,5 +178,14 @@
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pause_duration">
+		<item-type>Number</item-type>
+		<label>Pause Duration</label>
+		<description>Set or query the pause/snooze duration in minutes (0-240). Set to 0 to cancel pause.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state min="0" max="240" step="1" pattern="%d" />
 	</channel-type>
 </thing:thing-descriptions>
