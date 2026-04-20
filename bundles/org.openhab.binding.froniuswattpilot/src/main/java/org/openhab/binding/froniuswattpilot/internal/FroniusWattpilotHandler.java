@@ -43,6 +43,7 @@ import dev.digiried.wattpilot.WattpilotClient;
 import dev.digiried.wattpilot.WattpilotClientListener;
 import dev.digiried.wattpilot.WattpilotInfo;
 import dev.digiried.wattpilot.WattpilotStatus;
+import dev.digiried.wattpilot.commands.SetAuthorizationStateCommand;
 import dev.digiried.wattpilot.commands.SetBoostCommand;
 import dev.digiried.wattpilot.commands.SetBoostSoCLimitCommand;
 import dev.digiried.wattpilot.commands.SetChargingCurrentCommand;
@@ -50,6 +51,7 @@ import dev.digiried.wattpilot.commands.SetChargingModeCommand;
 import dev.digiried.wattpilot.commands.SetEnforcedChargingStateCommand;
 import dev.digiried.wattpilot.commands.SetSurplusPowerThresholdCommand;
 import dev.digiried.wattpilot.commands.SetSurplusSoCThresholdCommand;
+import dev.digiried.wattpilot.dto.AuthorizationState;
 import dev.digiried.wattpilot.dto.ChargingMode;
 import dev.digiried.wattpilot.dto.EnforcedChargingState;
 
@@ -106,6 +108,14 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     if (command instanceof OnOffType oft) {
                         client.sendCommand(new SetEnforcedChargingStateCommand(
                                 oft == OnOffType.OFF ? EnforcedChargingState.OFF : EnforcedChargingState.NEUTRAL));
+                    } else {
+                        logger.debug("Command has wrong type, OnOffType required!");
+                    }
+                    break;
+                case CHANNEL_CHARGING_AUTHORIZED:
+                    if (command instanceof OnOffType oft) {
+                        client.sendCommand(new SetAuthorizationStateCommand(
+                                oft == OnOffType.ON ? AuthorizationState.AUTHORIZED : AuthorizationState.WAITING));
                     } else {
                         logger.debug("Command has wrong type, OnOffType required!");
                     }
@@ -274,6 +284,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_ALLOWED);
         updateState(channel,
                 status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_AUTHORIZED);
+        updateState(channel,
+                status.getAuthorizationState() == AuthorizationState.AUTHORIZED ? OnOffType.ON : OnOffType.OFF);
 
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_MODE);
         updateState(channel, new StringType(status.getChargingMode().toString()));
