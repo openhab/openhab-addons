@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
+public class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
 
     private static final int STACK_TRACE_LENGTH = 5;
