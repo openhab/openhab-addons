@@ -21,7 +21,8 @@ import javax.script.ScriptEngine;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.DebuggingGraalScriptEngine;
+import org.openhab.automation.jsscripting.internal.OpenhabGraalJSScriptEngine;
 
 /**
  * @author Florian Hotze - Initial contribution
@@ -42,10 +43,10 @@ public class GraalJSScriptEngineFactoryTest extends GraalJSOSGiTest {
 
     @Test
     public void createsScriptEngineForJs() {
-        final @Nullable ScriptEngine scriptEngine = scriptEngineFactory.createScriptEngine(SCRIPT_TYPE);
-        assertNotNull(scriptEngine);
-        assertInstanceOf(InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable.class,
-                scriptEngine);
+        try (DebuggingGraalScriptEngine<OpenhabGraalJSScriptEngine> scriptEngine = assertInstanceOf(
+                DebuggingGraalScriptEngine.class, scriptEngineFactory.createScriptEngine(SCRIPT_TYPE))) {
+            assertNotNull(scriptEngine);
+        }
     }
 
     @Test
