@@ -508,8 +508,8 @@
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /bundles/org.openhab.voice.whisperstt/ @GiviMAD
 /itests/org.openhab.automation.groovyscripting.tests/ @wborn
+/itests/org.openhab.automation.jsscripting.tests/ @florian-h05
 /itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
-/itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.homeassistant.tests/ @ccutrer
