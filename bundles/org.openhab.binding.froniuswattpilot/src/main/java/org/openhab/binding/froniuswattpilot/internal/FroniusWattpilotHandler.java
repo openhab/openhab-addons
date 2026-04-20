@@ -112,7 +112,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                         logger.debug("Command has wrong type, OnOffType required!");
                     }
                     break;
-                case CHANNEL_AUTHORIZATION_STATE:
+                case CHANNEL_CHARGING_AUTHORIZED:
                     if (command instanceof OnOffType oft) {
                         client.sendCommand(new SetAuthorizationStateCommand(
                                 oft == OnOffType.ON ? AuthorizationState.AUTHORIZED : AuthorizationState.WAITING));
@@ -285,7 +285,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         updateState(channel,
                 status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
 
-        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_AUTHORIZATION_STATE);
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_AUTHORIZED);
         updateState(channel,
                 status.getAuthorizationState() == AuthorizationState.AUTHORIZED ? OnOffType.ON : OnOffType.OFF);
 

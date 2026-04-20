@@ -19,7 +19,7 @@
 		<properties>
 			<property name="serialNumber"/>
 			<property name="firmwareVersion"/>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>hostname</representation-property>
@@ -43,7 +43,7 @@
 		<label>Charging Control</label>
 		<channels>
 			<channel id="charging-allowed" typeId="charging-allowed"/>
-			<channel id="authorization-state" typeId="authorization-state"/>
+			<channel id="charging-authorized" typeId="charging-authorized"/>
 			<channel id="charging-mode" typeId="charging-mode"/>
 			<channel id="charging-current" typeId="charging-current"/>
 			<channel id="pv-surplus-threshold" typeId="pv-surplus-threshold"/>
@@ -134,9 +134,9 @@
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="authorization-state">
+	<channel-type id="charging-authorized">
 		<item-type>Switch</item-type>
-		<label>Authorization State</label>
+		<label>Charging Authorized</label>
 		<description>Authorize charging or wait for authorization</description>
 		<category>Battery</category>
 		<tags>
