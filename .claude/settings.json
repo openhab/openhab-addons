@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(javap -p -classpath /home/openhab-dev/.m2/repository/org/grohe/ondus-api/1.0.0/ondus-api-1.0.0.jar org.grohe.ondus.api.client.ApiClient)",
+      "Bash(javap -p -classpath /home/openhab-dev/.m2/repository/org/grohe/ondus-api/1.0.0/ondus-api-1.0.0.jar org.grohe.ondus.api.client.HttpClient)",
+      "Bash(javap -p -classpath /home/openhab-dev/.m2/repository/org/grohe/ondus-api/1.0.0/ondus-api-1.0.0.jar org.grohe.ondus.api.model.guard.Appliance)",
+      "Bash(javap -classpath /home/openhab-dev/.m2/repository/org/grohe/ondus-api/1.0.0/ondus-api-1.0.0.jar org.grohe.ondus.api.model.ApplianceStatus)"
+    ]
+  }
+}
