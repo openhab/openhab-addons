@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
+
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.groheondus.internal.GroheOndusApplianceConfiguration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -26,6 +33,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +59,8 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     // Used to space scheduled updates apart by 1 second to avoid rate limiting from service
     private int thingCounter = 0;
+
+    private @Nullable Instant snoozeUntil;
 
     public GroheOndusBaseHandler(Thing thing, int applianceType, int thingCounter) {
         super(thing);
@@ -126,6 +137,69 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     protected abstract M getLastDataPoint(T appliance);
 
     protected abstract void updateChannel(ChannelUID channelUID, T appliance, M measurement);
+
+    protected State getPauseState() {
+        Instant snoozeUntil = this.snoozeUntil;
+        if (snoozeUntil == null) {
+            return UnDefType.UNDEF;
+        }
+
+        long remainingSeconds = Duration.between(Instant.now(), snoozeUntil).getSeconds();
+        if (remainingSeconds <= 0) {
+            this.snoozeUntil = null;
+            return new QuantityType<>(0, Units.MINUTE);
+        }
+
+        long remainingMinutes = (remainingSeconds + 59) / 60;
+        return new QuantityType<>(remainingMinutes, Units.MINUTE);
+    }
+
+    protected boolean handlePauseCommand(ChannelUID channelUID, Command command) {
+        if (!CHANNEL_PAUSE.equals(channelUID.getIdWithoutGroup())) {
+            return false;
+        }
+
+        Integer durationMinutes = null;
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> minutes = quantityCommand.toUnit(Units.MINUTE);
+            if (minutes != null) {
+                durationMinutes = minutes.intValue();
+            }
+        } else if (command instanceof DecimalType decimalCommand) {
+            durationMinutes = decimalCommand.intValue();
+        }
+
+        if (durationMinutes == null) {
+            logger.debug("Invalid command received for channel {}. Expected Number:Time, received {}.", channelUID,
+                    command.getClass().getName());
+            return true;
+        }
+        if (durationMinutes < 0 || durationMinutes > 240) {
+            logger.debug("Pause duration for thing {} must be between 0 and 240 minutes, got {}", thing.getUID(),
+                    durationMinutes);
+            return true;
+        }
+
+        OndusService ondusService = getOndusService();
+        if (ondusService == null) {
+            return true;
+        }
+        @Nullable
+        T appliance = getAppliance(ondusService);
+        if (appliance == null) {
+            return true;
+        }
+
+        try {
+            GroheOndusSnoozeHttpClient.setPauseDuration(ondusService, appliance, durationMinutes);
+            this.snoozeUntil = durationMinutes == 0 ? null
+                    : Instant.now().plusSeconds(durationMinutes.longValue() * 60);
+            updateChannels();
+        } catch (IOException e) {
+            logger.debug("Could not update pause duration for thing {}", thing.getUID(), e);
+        }
+        return true;
+    }
 
     public @Nullable OndusService getOndusService() {
         Bridge bridge = getBridge();

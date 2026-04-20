@@ -37,6 +37,7 @@
 			<channel id="temperature_guard" typeId="temperature_guard"/>
 			<channel id="waterconsumption" typeId="waterconsumption"/>
 			<channel id="waterconsumption_since_midnight" typeId="waterconsumption_since_midnight"/>
+			<channel id="pause" typeId="pause"/>
 			<channel id="valve_open" typeId="valve_open"/>
 		</channels>
 
@@ -78,6 +79,7 @@
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="pause" typeId="pause"/>
 		</channels>
 
 		<representation-property>applianceId</representation-property>
@@ -121,6 +123,11 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pause">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Pause</label>
+		<description>Pauses the appliance for the specified duration. Send 0 min to cancel the pause.</description>
 	</channel-type>
 	<channel-type id="valve_open">
 		<item-type>Switch</item-type>
