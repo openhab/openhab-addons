@@ -74,7 +74,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private static final String SERVICE_LABEL = "MapDB";
     private static final Path DB_DIR = new File(OpenHAB.getUserDataFolder(), "persistence").toPath().resolve("mapdb");
     private static final Path BACKUP_DIR = DB_DIR.resolve("backup");
-    private static final String DB_FILE_NAME = "storage.mapdb";
+    private static final String DB_FILE_NAME = "storage3.mapdb";
     private static final long DEACTIVATE_TIMEOUT_MS = 30000; // 30 seconds
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
@@ -108,8 +108,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
         File dbFile = DB_DIR.resolve(DB_FILE_NAME).toFile();
         try {
-            db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
-            map = db.createTreeMap("itemStore").makeOrGet();
+            db = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
+            map = db.treeMap("itemStore", org.mapdb.Serializer.STRING, org.mapdb.Serializer.STRING).createOrOpen();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
             if (cause instanceof ClassNotFoundException cnf) {
@@ -140,8 +140,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
                     return;
                 }
 
-                db = DBMaker.newFileDB(dbFile).closeOnJvmShutdown().make();
-                map = db.createTreeMap("itemStore").makeOrGet();
+                db = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
+                map = db.treeMap("itemStore", org.mapdb.Serializer.STRING, org.mapdb.Serializer.STRING).createOrOpen();
             } else {
                 logger.warn("Failed to create or open the MapDB: {}", re.getMessage());
                 logger.warn("MapDB persistence service activation has failed.");
