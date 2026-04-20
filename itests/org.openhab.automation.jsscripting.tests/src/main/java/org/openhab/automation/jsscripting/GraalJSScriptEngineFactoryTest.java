@@ -35,7 +35,7 @@ public class GraalJSScriptEngineFactoryTest extends GraalJSOSGiTest {
         final List<String> scriptTypes = scriptEngineFactory.getScriptTypes();
 
         assertTrue(scriptTypes.contains(SCRIPT_TYPE));
-        assertTrue(scriptTypes.contains("js"));
+        assertTrue(scriptTypes.contains(SCRIPT_FILE_EXTENSION));
 
         assertFalse(scriptTypes.contains("application/x-python3"));
         assertFalse(scriptTypes.contains("application/javascript;version=ECMAScript-5.1"));
@@ -43,8 +43,20 @@ public class GraalJSScriptEngineFactoryTest extends GraalJSOSGiTest {
 
     @Test
     public void createsScriptEngineForJs() {
+        // main MIME type:
         try (DebuggingGraalScriptEngine<OpenhabGraalJSScriptEngine> scriptEngine = assertInstanceOf(
                 DebuggingGraalScriptEngine.class, scriptEngineFactory.createScriptEngine(SCRIPT_TYPE))) {
+            assertNotNull(scriptEngine);
+        }
+        // file extension:
+        try (DebuggingGraalScriptEngine<OpenhabGraalJSScriptEngine> scriptEngine = assertInstanceOf(
+                DebuggingGraalScriptEngine.class, scriptEngineFactory.createScriptEngine(SCRIPT_FILE_EXTENSION))) {
+            assertNotNull(scriptEngine);
+        }
+        // backwards-compatibility with versioned MIME type:
+        try (DebuggingGraalScriptEngine<OpenhabGraalJSScriptEngine> scriptEngine = assertInstanceOf(
+                DebuggingGraalScriptEngine.class,
+                scriptEngineFactory.createScriptEngine("application/javascript;version=ECMAScript-2021"))) {
             assertNotNull(scriptEngine);
         }
     }

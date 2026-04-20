@@ -45,6 +45,7 @@ import org.openhab.core.test.java.JavaOSGiTest;
 @NonNullByDefault
 public abstract class GraalJSOSGiTest extends JavaOSGiTest {
     static final String SCRIPT_TYPE = "application/javascript";
+    static final String SCRIPT_FILE_EXTENSION = "js";
 
     final Map<String, Object> config;
 
