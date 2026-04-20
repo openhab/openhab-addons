@@ -40,6 +40,7 @@ public class FroniusWattpilotBindingConstants {
 
     // Wattpilot control channels
     public static final String CHANNEL_CHARGING_ALLOWED = "charging-allowed";
+    public static final String CHANNEL_AUTHORIZATION_STATE = "authorization-state";
     public static final String CHANNEL_CHARGING_MODE = "charging-mode";
     public static final String CHANNEL_CHARGING_CURRENT = "charging-current";
     public static final String CHANNEL_PV_SURPLUS_THRESHOLD = "pv-surplus-threshold";

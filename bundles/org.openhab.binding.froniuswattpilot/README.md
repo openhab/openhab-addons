@@ -33,6 +33,7 @@ After adding it from the inbox, you need to configure the password for accessing
 | Channel                      | Type                   | Read/Write | Description                                                                                             |
 |------------------------------|------------------------|------------|---------------------------------------------------------------------------------------------------------|
 | control#charging-allowed     | Switch                 | RW         | Allow (`ON`) or forbid (`OFF`) charging                                                                 |
+| control#authorization-state  | Switch                 | RW         | Charging authorization state: `ON` (`AUTHORIZED`) or `OFF` (`WAITING`)                                 |
 | control#charging-mode        | String                 | RW         | The mode of charging: `DEFAULT`, `ECO`, `NEXT_TRIP`                                                     |
 | control#charging-current     | Number:ElectricCurrent | RW         | The current to charge with                                                                              |
 | control#pv-surplus-threshold | Number:Power           | RW         | The PV surplus power at which surplus charging starts                                                   |
@@ -70,6 +71,7 @@ Group                     Wattpilot_Garage                             "Wattpilo
 
 // Control
 Switch                    Wattpilot_Garage_Charging_Allowed            "Charging Allowed"                      <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Enabled"]      {channel="froniuswattpilot:wattpilot:garage:control#charging-allowed"}
+Switch                    Wattpilot_Garage_Authorization_State         "Authorization State"                   <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Enabled"]      {channel="froniuswattpilot:wattpilot:garage:control#authorization-state"}
 String                    Wattpilot_Garage_Charging_Mode               "Charging Mode"                         <BatteryLevel>  (Wattpilot_Garage)  ["Control", "Mode"]         {channel="froniuswattpilot:wattpilot:garage:control#charging-mode"}
 Number:ElectricCurrent    Wattpilot_Garage_Charging_Current            "Charging Current [%d A]"               <Energy>        (Wattpilot_Garage)  ["Setpoint", "Current"]     {channel="froniuswattpilot:wattpilot:garage:control#charging-current", unit="A"}
 Number:Power              Wattpilot_Garage_PV_Surplus_Power_Threshold  "PV Surplus Power Threshold [%.1f kW]"  <SolarPlant>    (Wattpilot_Garage)  ["Setpoint", "Power"]       {channel="froniuswattpilot:wattpilot:garage:control#pv-surplus-threshold", unit="kW"}
