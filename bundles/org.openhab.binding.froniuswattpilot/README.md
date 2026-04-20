@@ -33,7 +33,7 @@ After adding it from the inbox, you need to configure the password for accessing
 | Channel                      | Type                   | Read/Write | Description                                                                                             |
 |------------------------------|------------------------|------------|---------------------------------------------------------------------------------------------------------|
 | control#charging-allowed     | Switch                 | RW         | Allow (`ON`) or forbid (`OFF`) charging                                                                 |
-| control#charging-authorized  | Switch                 | RW         | Charging authorization state: `ON` (`AUTHORIZED`) or `OFF` (`WAITING`)                                 |
+| control#charging-authorized  | Switch                 | RW         | Charging authorization state: Authorized (`ON`) or waiting (`OFF`)                                      |
 | control#charging-mode        | String                 | RW         | The mode of charging: `DEFAULT`, `ECO`, `NEXT_TRIP`                                                     |
 | control#charging-current     | Number:ElectricCurrent | RW         | The current to charge with                                                                              |
 | control#pv-surplus-threshold | Number:Power           | RW         | The PV surplus power at which surplus charging starts                                                   |
@@ -101,27 +101,3 @@ Number:Power              Wattpilot_Garage_Phase_3_Power               "Phase 3 
 Number:ElectricPotential  Wattpilot_Garage_Phase_3_Voltage             "Phase 3 Voltage [%d V]"                <Energy>        (Wattpilot_Garage)  ["Measurement", "Voltage"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-voltage", unit="V"}
 Number:ElectricCurrent    Wattpilot_Garage_Phase_3_Current             "Phase 3 Current [%.1f A]"              <Energy>        (Wattpilot_Garage)  ["Measurement", "Current"]  {channel="froniuswattpilot:wattpilot:garage:metrics#l3-current", unit="A"}
 ```
-
-## Upgrade Instructions
-
-### Upgrading from Earlier Versions
-
-#### Channel `control#authorization-state` renamed to `control#charging-authorized`
-
-The channel `control#authorization-state` has been renamed to `control#charging-authorized`.
-openHAB automatically removes the old channel and adds the new one when the thing is updated.
-However, any item-to-channel links pointing to `control#authorization-state` must be updated manually.
-
-Update your `.items` files by replacing:
-
-```java
-{channel="froniuswattpilot:wattpilot:<thingId>:control#authorization-state"}
-```
-
-with:
-
-```java
-{channel="froniuswattpilot:wattpilot:<thingId>:control#charging-authorized"}
-```
-
-If you are using the UI, remove the old channel link and create a new one pointing to `control#charging-authorized`.
