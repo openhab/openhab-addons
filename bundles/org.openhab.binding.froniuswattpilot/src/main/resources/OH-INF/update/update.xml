@@ -15,7 +15,7 @@
 				<type>froniuswattpilot:boost-soc</type>
 			</add-channel>
 		</instruction-set>
-		<instruction-set targetVersion="2">
+		<instruction-set targetVersion="3">
 			<add-channel groupIds="control" id="charging-authorized">
 				<type>froniuswattpilot:charging-authorized</type>
 			</add-channel>
