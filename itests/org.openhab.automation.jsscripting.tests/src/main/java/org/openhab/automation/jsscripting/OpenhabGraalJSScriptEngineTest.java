@@ -22,8 +22,8 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONT
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_EXTENSION_ACCESSOR;
 import static org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID;
 
-import java.io.Closeable;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -59,7 +59,8 @@ public class OpenhabGraalJSScriptEngineTest extends GraalJSOSGiTest {
     public void beforeEach() throws Exception {
         super.beforeEach();
 
-        scriptEngine = scriptEngineFactory.createScriptEngine(SCRIPT_TYPE);
+        scriptEngine = Objects.requireNonNull(scriptEngineFactory.createScriptEngine(SCRIPT_TYPE),
+                "Failed to create script engine for script type: " + SCRIPT_TYPE);
         ScriptContext context = scriptEngine.getContext();
         context.setAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER, ENGINE_IDENTIFIER, ScriptContext.ENGINE_SCOPE);
         context.setAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR, scriptExtensionAccessor, ScriptContext.ENGINE_SCOPE);
@@ -70,7 +71,7 @@ public class OpenhabGraalJSScriptEngineTest extends GraalJSOSGiTest {
     @Override
     @AfterEach
     public void afterEach() throws Exception {
-        if (scriptEngine instanceof Closeable closeable) {
+        if (scriptEngine instanceof AutoCloseable closeable) {
             closeable.close();
         }
         scriptEngine = null;

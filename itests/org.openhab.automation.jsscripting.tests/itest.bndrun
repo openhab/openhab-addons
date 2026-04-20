@@ -11,6 +11,9 @@ Import-Package: \
 	bnd.identity;id='org.graalvm.js.js-language',\
 	bnd.identity;id='org.graalvm.regex.regex'
 
+-runblacklist: \
+	bnd.identity;id='org.openhab.core.storage.json'
+
 #
 # done
 #
