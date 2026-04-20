@@ -15,9 +15,6 @@ Import-Package: \
 # done
 #
 
-# Notes:
-# Do NOT add org.apache.servicemix.specs.stax-api-1.2 or stax2-api as runbundle,
-# as they break the CI build causing issues with GraalJS
 -runbundles: \
 	biz.aQute.tester.junit-platform;version='[7.2.1,7.2.2)',\
 	ch.qos.logback.classic;version='[1.5.27,1.5.28)',\

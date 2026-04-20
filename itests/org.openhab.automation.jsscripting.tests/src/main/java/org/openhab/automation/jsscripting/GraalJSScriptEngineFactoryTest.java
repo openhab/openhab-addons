@@ -13,7 +13,6 @@
 package org.openhab.automation.jsscripting;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 
