@@ -60,10 +60,10 @@ public class SoftwareUpdateActions implements ThingActions {
 
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
     public @ActionOutput(type = "java.lang.String", label = "@text/install.update.result.label", description = "@text/install.update.result.description") String installUpdate() {
-        ThingHandler handler = this.handler;
+        Clip2BridgeHandler handler = this.handler;
         if (handler == null) {
             return "";
         }
-        return bridgeHandler.installUpdate();
+        return handler.installUpdate();
     }
 }
