@@ -115,7 +115,7 @@ class TrayTypeTest {
     @MethodSource
     void testPerformsCaseInsensitiveComparisonForAllEnumValues(String given, TrayType trayType) {
         assertThat(TrayType.findTrayType(given))//
-                .withFailMessage("For %s findTrayType whould return %s", given, trayType)//
+                .withFailMessage("For %s findTrayType should return %s", given, trayType)//
                 .isPresent()//
                 .hasValueSatisfying(type -> assertThat(type).isEqualTo(trayType));
     }
