@@ -64,7 +64,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
     protected synchronized void startScan() {
         var configuration = BindingConfiguration.getConfiguration(configurationService);
         ServerDiscovery discoverer = new ServerDiscovery(configuration.discoveryPort, configuration.discoveryTimeout,
-            configuration.discoveryMessage);
+                configuration.discoveryMessage);
 
         List<ServerDiscoveryResult> servers = discoverer.discoverServers();
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.i18n;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -25,10 +26,10 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static volatile TranslationProvider translationProvider = null;
-    private static volatile Bundle bundle = null;
+    private static volatile @Nullable TranslationProvider translationProvider = null;
+    private static volatile @Nullable Bundle bundle = null;
 
-    private static TranslationProvider lookupProvider() {
+    private static @Nullable TranslationProvider lookupProvider() {
         try {
             BundleContext ctx = null;
             Bundle b = FrameworkUtil.getBundle(ResourceHelper.class);

@@ -90,7 +90,6 @@ class ServerDiscovery {
                 Thread.currentThread().interrupt();
             }
         }
-        }
         return new ArrayList<>(serverList);
     }
 
