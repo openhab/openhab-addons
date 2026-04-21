@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,7 +53,7 @@ public class ApiClientUuidTest {
     @Test
     public void testApiClientCreateDefaultObjectMapper() throws Exception {
         // Test the static method directly
-        ObjectMapper mapper = ApiClient.createDefaultObjectMapper();
+        ObjectMapper mapper = ApiClientWrapper.createDefaultObjectMapper();
 
         String jsonWithJellyfinUuid = """
                 {
