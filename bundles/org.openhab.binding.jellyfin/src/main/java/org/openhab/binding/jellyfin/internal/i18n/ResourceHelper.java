@@ -25,20 +25,57 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(ResourceHelper.class)
-            .getBundleContext();
-    private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
-            .getServiceReference(TranslationProvider.class);
-    private static final Bundle BUNDLE = BUNDLE_CONTEXT.getBundle();
-    private static final TranslationProvider TRANSLATION_PROVIDER = BUNDLE_CONTEXT.getService(SERVICE_REFERENCE);
+    private static volatile TranslationProvider translationProvider = null;
+    private static volatile Bundle bundle = null;
+
+    private static TranslationProvider lookupProvider() {
+        try {
+            BundleContext ctx = null;
+            Bundle b = FrameworkUtil.getBundle(ResourceHelper.class);
+            if (b != null) {
+                ctx = b.getBundleContext();
+            }
+
+            if (ctx == null) {
+                return null;
+            }
+
+            ServiceReference<TranslationProvider> ref = ctx.getServiceReference(TranslationProvider.class);
+            if (ref == null) {
+                return null;
+            }
+
+            TranslationProvider tp = ctx.getService(ref);
+            if (tp != null) {
+                bundle = b;
+                return tp;
+            }
+        } catch (Throwable t) {
+            // defensive: any OSGi issues should not break callers
+        }
+        return null;
+    }
 
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 
         String missingKey = "Missing Translation: " + key;
 
-        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, null);
+        TranslationProvider provider = translationProvider;
+        if (provider == null) {
+            provider = lookupProvider();
+            translationProvider = provider; // cache (may be null)
+        }
 
-        return localizedString == null ? missingKey : localizedString;
+        if (provider == null || bundle == null) {
+            return missingKey;
+        }
+
+        try {
+            String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
+            return localizedString == null ? missingKey : localizedString;
+        } catch (Throwable t) {
+            return missingKey;
+        }
     }
 }
