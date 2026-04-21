@@ -15,9 +15,9 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.THING_FREEPLUG;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
@@ -73,8 +73,8 @@ public class FreeplugManager extends RestManager {
         return get(Networks.class).stream().map(Network::members).flatMap(List::stream).toList();
     }
 
-    public Optional<Freeplug> getPlug(MACAddress mac) throws FreeboxException {
-        return getPlugs().stream().filter(plug -> plug.id.equals(mac)).findFirst();
+    public @Nullable Freeplug getPlug(MACAddress mac) throws FreeboxException {
+        return getPlugs().stream().filter(plug -> plug.id.equals(mac)).findFirst().orElse(null);
     }
 
     public void reboot(MACAddress mac) throws FreeboxException {
