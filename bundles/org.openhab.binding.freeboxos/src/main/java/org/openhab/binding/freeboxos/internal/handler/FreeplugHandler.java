@@ -115,7 +115,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
         try {
             MACAddress mac = getCheckMac();
             getManager(FreeplugManager.class).reboot(mac);
-            logger.debug("Freeplug {} succesfully restarted", mac);
+            logger.debug("Freeplug {} successfully restarted", mac);
         } catch (FreeboxException e) {
             logger.warn("Error restarting freeplug {}: {}", thing.getUID(), e.getMessage());
         }
