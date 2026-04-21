@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.handler;
+package org.openhab.binding.iaqualink.internal.v1.handler;
 
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -36,14 +36,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.iaqualink.internal.IAqualinkBindingConstants;
-import org.openhab.binding.iaqualink.internal.api.IAqualinkClient;
-import org.openhab.binding.iaqualink.internal.api.IAqualinkClient.NotAuthorizedException;
-import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.dto.Device;
-import org.openhab.binding.iaqualink.internal.api.dto.Home;
-import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
 import org.openhab.binding.iaqualink.internal.config.IAqualinkConfiguration;
+import org.openhab.binding.iaqualink.internal.v1.api.IAqualinkClient;
+import org.openhab.binding.iaqualink.internal.v1.api.IAqualinkClient.NotAuthorizedException;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.OneTouch;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
