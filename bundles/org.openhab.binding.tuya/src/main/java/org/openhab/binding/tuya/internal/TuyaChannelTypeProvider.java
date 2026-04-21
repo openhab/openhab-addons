@@ -370,7 +370,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         } catch (URISyntaxException e) {
         }
 
-        if (!schemaDp.unit.isEmpty()) {
+        if (!schemaDp.unit.isEmpty() && acceptedItemType.startsWith(NUMBER + ":")) {
             channelTypeBuilder.withUnitHint(schemaDp.unit);
         }
 
