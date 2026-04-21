@@ -24,10 +24,10 @@
 			<channel-group id="sg-backup-information" typeId="sg-backup-information"/>
 			<channel-group id="sg-settings" typeId="sg-settings"/>
 		</channel-groups>
-		<config-description-ref uri="thing-type:sungrow:inverter"/>
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+		<config-description-ref uri="thing-type:sungrow:inverter"/>
 	</thing-type>
 
 	<channel-group-type id="sg-overview">
