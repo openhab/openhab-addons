@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class SoftwareUpdateActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(SoftwareUpdateActions.class);
-    private @Nullable Clip2BridgeHandler handler;
+    private @Nullable Clip2BridgeHandler bridgeHandler;
 
     public static String installUpdate(ThingActions actions) {
         if (actions instanceof SoftwareUpdateActions softwareUpdateActions) {
@@ -48,22 +48,23 @@ public class SoftwareUpdateActions implements ThingActions {
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        return bridgeHandler;
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof Clip2BridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
+            this.bridgeHandler = bridgeHandler;
         }
     }
 
     @RuleAction(label = "@text/install.update.label", description = "@text/install.update.description")
     public @ActionOutput(type = "java.lang.String", label = "@text/install.update.result.label", description = "@text/install.update.result.description") String installUpdate() {
-        Clip2BridgeHandler handler = this.handler;
-        if (handler == null) {
+        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            logger.warn("No bridge handler available for software update action");
             return "";
         }
-        return handler.installUpdate();
+        return bridgeHandler.installUpdate();
     }
 }
