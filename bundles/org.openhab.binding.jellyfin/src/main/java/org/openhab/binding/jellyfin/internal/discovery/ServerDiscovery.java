@@ -36,45 +36,60 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class ServerDiscovery {
-    private static final String DISCOVERY_MESSAGE = "who is JellyfinServer?";
+    private final String discoveryMessage;
 
     private final Logger logger = LoggerFactory.getLogger(ServerDiscovery.class);
 
     private final List<ServerDiscoveryResult> serverList = new CopyOnWriteArrayList<>();
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     private final int port;
     private final int timeout;
 
-    ServerDiscovery(int port, int timeout) {
+    ServerDiscovery(int port, int timeout, String discoveryMessage) {
         this.port = port;
         this.timeout = timeout;
+        this.discoveryMessage = discoveryMessage != null ? discoveryMessage : "who is JellyfinServer?";
     }
 
     List<ServerDiscoveryResult> discoverServers() {
         serverList.clear();
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            try {
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface networkInterface = interfaces.nextElement();
+                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                        logger.trace("Interface {} ignored.", networkInterface.getDisplayName());
+                        continue;
+                    }
 
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    logger.trace("Interface {} ignored.", networkInterface.getDisplayName());
-                    continue;
-                }
-
-                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                    InetAddress broadcast = interfaceAddress.getBroadcast();
-                    if (broadcast != null) {
-                        executorService.submit(() -> sendDiscoveryPacket(broadcast));
+                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                        InetAddress broadcast = interfaceAddress.getBroadcast();
+                        if (broadcast != null) {
+                            executor.submit(() -> sendDiscoveryPacket(broadcast));
+                        }
                     }
                 }
+
+                Thread.sleep(this.timeout);
+            } finally {
+                executor.shutdown();
+                try {
+                    if (!executor.awaitTermination(this.timeout, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                        executor.shutdownNow();
+                    }
+                } catch (InterruptedException ie) {
+                    executor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
             }
-            Thread.sleep(this.timeout);
         } catch (SocketException | InterruptedException e) {
             logger.error("Error during network interface enumeration or sleep: {}", e.getMessage());
-        } finally {
-            executorService.shutdown();
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        }
         }
         return new ArrayList<>(serverList);
     }
@@ -84,7 +99,7 @@ class ServerDiscovery {
             socket.setBroadcast(true);
             socket.setSoTimeout(this.timeout); // Set a timeout for receiving responses
 
-            byte[] sendData = DISCOVERY_MESSAGE.getBytes();
+            byte[] sendData = discoveryMessage.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcastAddress, this.port);
             socket.send(sendPacket);
 
