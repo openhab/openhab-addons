@@ -89,7 +89,8 @@ ROOT=$(pwd)
 
 OPENAPI_SPECIFICATION_DIR="tools/generate-sources/scripts/specifications"
 
-OUTPUT=.
+OUTPUT=$(mktemp -d "${ROOT}/.gen-temp.XXXXXX")
+THIRD_PARTY_OUTPUT_DIR="src/3rdparty/java"
 
 INDEX=0
 for i in "${VERSIONS[@]}"; do
@@ -160,14 +161,32 @@ for i in "${VERSIONS[@]}"; do
         --api-package ${PACKAGE_API} \
         --model-package ${PACKAGE_MODEL} \
         --config ${OPENAPI_JAVA_CONFIG} \
-        --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/$(basename ${FILENAME_YAML_INPUT}) -o ${OUTPUT} \
+        --input-spec ${OPENAPI_SPECIFICATION_DIR}/yaml/$(basename ${FILENAME_YAML_INPUT}) -o ${DOCKER_VOLUME_WORK}/$(realpath --relative-to=${ROOT} ${OUTPUT}) \
         >/dev/null
 
     # Clean up the temporary fixed file if it was created
     if [ -f "${FILENAME_YAML_FIXED}" ]; then
         rm ${FILENAME_YAML_FIXED}
     fi
+
+    # Move generated sources from temp dir to src/3rdparty/java
+    GENERATED_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen/${ALIAS}"
+    TARGET_SRC="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen/${ALIAS}"
+    rm -rf "${TARGET_SRC}"
+    mkdir -p "$(dirname ${TARGET_SRC})"
+    mv "${GENERATED_SRC}" "${TARGET_SRC}"
 done
+
+# Move shared infrastructure files from gen root (invoker package level)
+# These are produced once by the generator and shared across all API versions
+GEN_ROOT_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen"
+GEN_ROOT_TARGET="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen"
+find "${GEN_ROOT_SRC}" -maxdepth 1 -name "*.java" -type f | while read f; do
+    mv "${f}" "${GEN_ROOT_TARGET}/"
+done
+
+# Clean up temp output dir
+rm -rf "${OUTPUT}"
 
 cd ${ROOT}
 
@@ -180,13 +199,13 @@ MVN_OPT="--quiet"
 echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
 # Replace @NonNull with @Nullable on field declarations in model classes
 # This fixes compilation errors where fields are marked @NonNull but not initialized in default constructor
-find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
 
 echo "🔧 remove @NonNullByDefault from generated classes (covered by package-info.java)"
 # Remove @NonNullByDefault annotation and import from all generated classes
 # Null-safety is intentionally disabled for generated thirdparty API code via package-info.java
-find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
-find src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
 echo ""
 echo "🧹 apply formatting to generated code"

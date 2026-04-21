@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

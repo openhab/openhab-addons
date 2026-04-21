@@ -7,6 +7,7 @@ mkdocs.yml
 /.venv-docs/
 /.apt_generated/
 /.apt_generated_tests/
+/.gen-temp.*
 # Temporary (wip)
 .vscode
 .agents

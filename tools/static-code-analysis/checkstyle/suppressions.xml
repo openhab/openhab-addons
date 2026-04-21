@@ -22,10 +22,8 @@
     <suppress files=".+org.openhab.binding.astro.internal.handler.AstroThingHandler.java" checks="AvoidScheduleAtFixedRateCheck"/>
     <suppress files=".+[\\/]pom\.xml" checks="OnlyTabIndentationCheck|OnlyTabIndentationInXmlFilesCheck"/>
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
-    <!-- suppress header checks for imported and patched apache commons-io files in logreader binding -->
-    <suppress files=".+org.openhab.binding.logreader.internal.thirdparty.commonsio.+" checks="ParameterizedRegexpHeaderCheck|AuthorTagCheck" />
-    <!-- suppress author tag check for Jellyfin API client code generated from the OpenAPI specification -->
-    <suppress files=".+org.openhab.binding.jellyfin.internal.thirdparty.gen.+" checks="AuthorTagCheck" />
+    <!-- suppress license header and author tag checks for all 3rd-party code stored under src/3rdparty -->
+    <suppress files=".+[\\/]src[\\/]3rdparty[\\/].+\.java" checks="ParameterizedRegexpHeaderCheck|AuthorTagCheck" />
     <!-- Mail: Do not check org.apache.commons.mail usage -->
     <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilder\.java" checks="ForbiddenPackageUsageCheck"/>
     <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilderTest\.java" checks="ForbiddenPackageUsageCheck"/>
