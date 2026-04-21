@@ -36,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -56,34 +57,12 @@ import org.slf4j.LoggerFactory;
 public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService<ServerHandler> {
     private static final Logger logger = LoggerFactory.getLogger(ClientDiscoveryService.class);
 
-    /**
-     * Registry of all configured Things. Used to detect when a Jellyfin client has regenerated
-     * its device ID, so the existing Thing's configuration can be updated instead of creating
-     * a duplicate inbox entry.
-     *
-     * <p>
-     * Declared {@code @NonNullByDefault({})} because OSGi DS guarantees injection before activation
-     * and the field would otherwise require @Nullable despite being effectively non-null at runtime.
-     */
-    @NonNullByDefault({})
-    private volatile ThingRegistry thingRegistry;
+    private final ThingRegistry thingRegistry;
 
-    @Reference
-    public void setThingRegistry(ThingRegistry registry) {
-        this.thingRegistry = registry;
-    }
-
-    public void unsetThingRegistry(ThingRegistry registry) {
-        // Intentionally left unset — field is only used during active discovery runs
-    }
-
-    /**
-     * Creates a new instance of the client discovery service.
-     *
-     * @throws IllegalArgumentException if service initialization fails
-     */
-    public ClientDiscoveryService() throws IllegalArgumentException {
+    @Activate
+    public ClientDiscoveryService(final @Reference ThingRegistry thingRegistry) throws IllegalArgumentException {
         super(ServerHandler.class, DISCOVERABLE_CLIENT_THING_TYPES, DISCOVERY_RESULT_TTL_SEC, false);
+        this.thingRegistry = thingRegistry;
     }
 
     @Override

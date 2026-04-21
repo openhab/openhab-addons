@@ -76,9 +76,8 @@ class ClientDiscoveryServiceTest {
         // Return empty collection by default so existing tests are unaffected
         when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
 
-        discoveryService = new ClientDiscoveryService();
+        discoveryService = new ClientDiscoveryService(thingRegistry);
         discoveryService.setThingHandler(serverHandler);
-        discoveryService.setThingRegistry(thingRegistry);
     }
 
     // -------------------------------------------------------------------------
