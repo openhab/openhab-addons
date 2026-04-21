@@ -1205,7 +1205,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                             "@text/offline.api2.comm-error.zigbee-connectivity-issue");
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
-            } else if (thing.getStatus() != ThingStatus.ONLINE) {
+                return;
+            }
+            String fwState = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+            if (UpdateStatusV2.INSTALLING.toString().equals(fwState)) {
+                // firmware update still in progress; remain OFFLINE(FIRMWARE_UPDATING)
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                return;
+            }
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                // the updateStatus() override below takes care of setting the status detail and description
                 updateStatus(ThingStatus.ONLINE);
                 refreshAllChannels();
             }
@@ -1661,10 +1670,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
         UpdateStatusV2 status = resource.getUpdateStatus();
         if (status != null) {
             thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
-            // the updateStatus() override below takes care of setting the status detail and description
+            if (hasConnectivityIssue) {
+                return;
+            }
             if (status == UpdateStatusV2.INSTALLING) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
             } else {
+                // the updateStatus() override below takes care of setting the status detail and description
                 updateStatus(ThingStatus.ONLINE);
             }
         }
