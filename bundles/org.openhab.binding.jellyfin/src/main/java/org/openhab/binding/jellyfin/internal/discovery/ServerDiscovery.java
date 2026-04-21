@@ -16,18 +16,16 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,40 +51,29 @@ class ServerDiscovery {
 
     List<ServerDiscoveryResult> discoverServers() {
         serverList.clear();
+        List<String> broadcastAddresses = NetUtil.getAllBroadcastAddresses();
+        ExecutorService executor = Executors.newCachedThreadPool();
         try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            ExecutorService executor = Executors.newCachedThreadPool();
-            try {
-                while (interfaces.hasMoreElements()) {
-                    NetworkInterface networkInterface = interfaces.nextElement();
-                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                        logger.trace("Interface {} ignored.", networkInterface.getDisplayName());
-                        continue;
-                    }
-
-                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                        InetAddress broadcast = interfaceAddress.getBroadcast();
-                        if (broadcast != null) {
-                            executor.submit(() -> sendDiscoveryPacket(broadcast));
-                        }
-                    }
-                }
-
-                Thread.sleep(this.timeout);
-            } finally {
-                executor.shutdown();
+            for (String broadcastAddress : broadcastAddresses) {
                 try {
-                    if (!executor.awaitTermination(this.timeout, java.util.concurrent.TimeUnit.MILLISECONDS)) {
-                        executor.shutdownNow();
-                    }
-                } catch (InterruptedException ie) {
-                    executor.shutdownNow();
-                    Thread.currentThread().interrupt();
+                    InetAddress broadcast = InetAddress.getByName(broadcastAddress);
+                    executor.submit(() -> sendDiscoveryPacket(broadcast));
+                } catch (UnknownHostException e) {
+                    logger.warn("Skipping invalid broadcast address '{}': {}", broadcastAddress, e.getMessage());
                 }
             }
-        } catch (SocketException | InterruptedException e) {
-            logger.error("Error during network interface enumeration or sleep: {}", e.getMessage());
-            if (e instanceof InterruptedException) {
+            Thread.sleep(this.timeout);
+        } catch (InterruptedException e) {
+            logger.warn("Discovery interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        } finally {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(this.timeout, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException ie) {
+                executor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }
@@ -119,12 +106,12 @@ class ServerDiscovery {
                     // No more responses within the timeout
                     break;
                 } catch (IOException e) {
-                    logger.error("Error receiving discovery response: {}", e.getMessage());
+                    logger.warn("Error receiving discovery response: {}", e.getMessage());
                     break;
                 }
             }
         } catch (IOException e) {
-            logger.error("Error creating or sending discovery socket: {}", e.getMessage());
+            logger.warn("Error creating or sending discovery socket: {}", e.getMessage());
         }
     }
 }
