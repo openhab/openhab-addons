@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.api.dto;
+package org.openhab.binding.iaqualink.internal.v1.api.dto;
 
 /**
  * Device refers to an iAqualink Pool Controller.
