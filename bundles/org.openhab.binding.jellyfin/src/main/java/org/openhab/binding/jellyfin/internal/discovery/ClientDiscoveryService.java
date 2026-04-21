@@ -12,19 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.discovery;
 
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ANDROID;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ANDROID_TV;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_INFUSE;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_IOS;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_JELLYCON;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_KODI;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ROKU;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_SWIFTFIN;
-import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_WEB;
-import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERABLE_CLIENT_THING_TYPES;
-import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERY_RESULT_TTL_SEC;
-import static org.openhab.binding.jellyfin.internal.Constants.PROPERTY_DEVICE_NAME;
-import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFIN_CLIENT;
+import static org.openhab.binding.jellyfin.internal.Constants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
