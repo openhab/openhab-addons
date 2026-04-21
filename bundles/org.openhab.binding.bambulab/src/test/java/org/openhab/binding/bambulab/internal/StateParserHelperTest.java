@@ -102,6 +102,19 @@ class StateParserHelperTest {
     }
 
     @Test
+    @DisplayName("Given a hyphenated tray type, when parseTrayType is called, then it preserves the hyphenated state value")
+    void testParseTrayTypePreservesCanonicalStateValue() {
+        // Given
+        var trayType = "ASA-CF";
+
+        // When
+        var result = StateParserHelper.parseTrayType(trayType);
+
+        // Then
+        assertThat(result).contains(StringType.valueOf("ASA-CF"));
+    }
+
+    @Test
     @DisplayName("Given a valid dBm pattern string, when parseWifiChannel is called, then it returns QuantityType with DECIBEL_MILLIWATTS unit")
     void testParseWifiChannelConvertsValidDbmPatternToQuantityType() {
         // Given

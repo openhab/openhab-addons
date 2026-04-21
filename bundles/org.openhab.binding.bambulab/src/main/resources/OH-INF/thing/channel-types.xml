@@ -151,6 +151,7 @@
 				<option value="PC">PC</option>
 				<option value="PVA">PVA</option>
 				<option value="HIPS">HIPS</option>
+				<option value="ASA_CF">ASA-CF</option>
 			</options>
 		</state>
 	</channel-type>

@@ -148,7 +148,7 @@ public class AmsDeviceHandler extends BaseThingHandler {
                     }
                     return trayType;
                 })//
-                        .map(Enum::name)//
+                        .map(AmsChannel.TrayType::getTypeName)//
                         .map(value -> (State) StringType.valueOf(value));
             case CHANNEL_TRAY_COLOR -> key.map(StateParserHelper::parseColor);
             case CHANNEL_NOZZLE_TEMPERATURE_MAX -> key.flatMap(StateParserHelper::parseTemperatureType);

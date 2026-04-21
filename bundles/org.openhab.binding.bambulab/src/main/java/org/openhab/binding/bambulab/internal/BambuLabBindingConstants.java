@@ -210,20 +210,31 @@ public class BambuLabBindingConstants {
         }
 
         public static enum TrayType {
-            PLA,
-            PETG,
-            ABS,
-            TPU,
-            ASA,
-            PA,
-            PC,
-            PVA,
-            HIPS;
+            PLA("PLA"),
+            PETG("PETG"),
+            ABS("ABS"),
+            TPU("TPU"),
+            ASA("ASA"),
+            PA("PA"),
+            PC("PC"),
+            PVA("PVA"),
+            HIPS("HIPS"),
+            ASA_CF("ASA-CF");
+
+            private final String typeName;
+
+            TrayType(String typeName) {
+                this.typeName = typeName;
+            }
 
             public static Optional<TrayType> findTrayType(String name) {
                 return stream(values())//
-                        .filter(t -> t.name().equalsIgnoreCase(name))//
+                        .filter(t -> t.typeName.equalsIgnoreCase(name))//
                         .findAny();
+            }
+
+            public String getTypeName() {
+                return typeName;
             }
         }
     }
