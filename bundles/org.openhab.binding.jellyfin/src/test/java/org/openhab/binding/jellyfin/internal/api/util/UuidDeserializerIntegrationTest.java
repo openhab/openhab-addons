@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -181,7 +181,7 @@ public class UuidDeserializerIntegrationTest {
                 """;
 
         // Use the actual ApiClient ObjectMapper configuration (which now includes our custom UUID deserializer)
-        var objectMapper = ApiClient.createDefaultObjectMapper();
+        var objectMapper = ApiClientWrapper.createDefaultObjectMapper();
 
         // This should now work without throwing the UUID deserialization error
         List<UserDto> users = objectMapper.readValue(jellyfinUsersResponse, new TypeReference<List<UserDto>>() {

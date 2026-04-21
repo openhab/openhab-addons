@@ -13,7 +13,7 @@
 package org.openhab.binding.jellyfin.internal.handler.tasks;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class UpdateTask extends AbstractTask {
 
     private final Logger logger = LoggerFactory.getLogger(UpdateTask.class);
     @SuppressWarnings("unused") // TODO: Will be used when update logic is implemented
-    private final ApiClient client;
+    private final ApiClientWrapper client;
     private final ExceptionHandlerType exceptionHandler;
 
     /**
@@ -45,7 +45,7 @@ public class UpdateTask extends AbstractTask {
      * @param client The API client to use for updates
      * @param exceptionHandler The handler for exceptions
      */
-    public UpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
+    public UpdateTask(ApiClientWrapper client, ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
         this.client = client;
         this.exceptionHandler = exceptionHandler;

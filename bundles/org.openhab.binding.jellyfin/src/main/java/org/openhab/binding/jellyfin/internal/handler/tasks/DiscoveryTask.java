@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
@@ -59,7 +59,7 @@ public class DiscoveryTask extends AbstractTask {
     private final ExceptionHandlerType exceptionHandler;
 
     // New: API client and users handler used to fetch and process users before discovery
-    private final ApiClient client;
+    private final ApiClientWrapper client;
     private final Consumer<List<UserDto>> usersHandler;
 
     /**
@@ -71,7 +71,7 @@ public class DiscoveryTask extends AbstractTask {
      * @param usersHandler The handler to invoke with the retrieved users
      * @param exceptionHandler Handler for exceptions during discovery
      */
-    public DiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService, ApiClient client,
+    public DiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService, ApiClientWrapper client,
             Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, STARTUP_DELAY_SEC, INTERVAL_SEC);
         this.serverHandler = serverHandler;

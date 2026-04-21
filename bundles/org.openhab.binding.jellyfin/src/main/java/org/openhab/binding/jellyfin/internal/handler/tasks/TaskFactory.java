@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
@@ -40,7 +40,7 @@ public class TaskFactory implements TaskFactoryInterface {
      * @return A configured connection task
      */
     @Override
-    public ConnectionTask createConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
+    public ConnectionTask createConnectionTask(ApiClientWrapper client, Consumer<SystemInfo> connectionHandler,
             ExceptionHandlerType exceptionHandler) {
         return new ConnectionTask(client, connectionHandler, exceptionHandler);
     }
@@ -53,7 +53,7 @@ public class TaskFactory implements TaskFactoryInterface {
      * @return A configured update task
      */
     @Override
-    public UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
+    public UpdateTask createUpdateTask(ApiClientWrapper client, ExceptionHandlerType exceptionHandler) {
         return new UpdateTask(client, exceptionHandler);
     }
 
@@ -66,7 +66,7 @@ public class TaskFactory implements TaskFactoryInterface {
      * @return A configured server sync task
      */
     @Override
-    public ServerSyncTask createServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+    public ServerSyncTask createServerSyncTask(ApiClientWrapper client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler) {
         return new ServerSyncTask(client, usersHandler, exceptionHandler);
     }
@@ -81,7 +81,7 @@ public class TaskFactory implements TaskFactoryInterface {
      */
     @Override
     public DiscoveryTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ApiClient client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler) {
+            ApiClientWrapper client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler) {
         return new DiscoveryTask(serverHandler, discoveryService, client, usersHandler, exceptionHandler);
     }
 }

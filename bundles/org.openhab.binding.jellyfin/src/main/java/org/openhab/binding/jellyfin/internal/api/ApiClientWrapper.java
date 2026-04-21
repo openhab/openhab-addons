@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.util.UuidDeserializer;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient {
+public class ApiClientWrapper extends ApiClient {
 
     /**
      * Required dummy URI for constructor compatibility with generated code and factory pattern.
@@ -34,28 +35,28 @@ public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.
     private static final String INTERNAL_PLACEHOLDER_BASE_URI = "http://placeholder.invalid";
 
     /**
-     * Create an instance of ApiClient.
+     * Create an instance of ApiClientWrapper.
      * <p>
      * <b>Note:</b> This parameterless constructor is <b>mandatory</b> for compatibility with the generated code.
      * The generated API infrastructure (e.g., {@code Configuration.getDefaultApiClient()} and the default
-     * {@code apiClientFactory}) expects to instantiate {@code ApiClient} using a no-argument constructor via
-     * {@code ApiClient::new}.
+     * {@code apiClientFactory}) expects to instantiate {@code ApiClientWrapper} using a no-argument constructor via
+     * {@code ApiClientWrapper::new}.
      * Removing or changing this constructor would break integration with the generated API classes and factory pattern.
      * </p>
      */
-    public ApiClient() {
+    public ApiClientWrapper() {
         // Use the custom constructor with our ObjectMapper
         this(createDefaultHttpClientBuilder(), createDefaultObjectMapper(), INTERNAL_PLACEHOLDER_BASE_URI);
     }
 
     /**
-     * Create an instance of ApiClient.
+     * Create an instance of ApiClientWrapper.
      *
      * @param builder Http client builder.
      * @param mapper Object mapper.
      * @param baseUri Base URI
      */
-    public ApiClient(HttpClient.Builder builder, ObjectMapper mapper, String baseUri) {
+    public ApiClientWrapper(HttpClient.Builder builder, ObjectMapper mapper, String baseUri) {
         super(builder, mapper, baseUri);
     }
 
@@ -71,9 +72,7 @@ public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.
      */
     public static ObjectMapper createDefaultObjectMapper() {
         // Start with the default configuration from the generated ApiClient
-        // Keep fully-qualified name to avoid colliding with this ApiClient subclass
-        ObjectMapper mapper = org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient
-                .createDefaultObjectMapper();
+        ObjectMapper mapper = ApiClient.createDefaultObjectMapper();
 
         // Register custom UUID deserializer to handle Jellyfin's 32-character UUID format
         SimpleModule uuidModule = new SimpleModule();

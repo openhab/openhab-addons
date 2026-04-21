@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     /** Maximum backoff delay in seconds (cap) */
     private static final int MAX_BACKOFF_SECONDS = 60;
 
-    private final ApiClient apiClient;
+    private final ApiClientWrapper apiClient;
     private final String apiToken;
     private final WebSocketMessageHandler messageHandler;
     private final AtomicReference<ConnectionState> connectionState;
@@ -105,7 +105,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      * @param messageHandler The handler that will process incoming WebSocket messages
      * @param onMaxRetriesExceeded Optional callback invoked when max reconnection attempts exceeded
      */
-    public WebSocketTask(ApiClient apiClient, String apiToken, WebSocketMessageHandler messageHandler,
+    public WebSocketTask(ApiClientWrapper apiClient, String apiToken, WebSocketMessageHandler messageHandler,
             @Nullable Runnable onMaxRetriesExceeded) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
         this.apiClient = apiClient;
@@ -122,7 +122,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      * @param apiToken The API token for WebSocket authentication
      * @param messageHandler The handler that will process incoming WebSocket messages
      */
-    public WebSocketTask(ApiClient apiClient, String apiToken, WebSocketMessageHandler messageHandler) {
+    public WebSocketTask(ApiClientWrapper apiClient, String apiToken, WebSocketMessageHandler messageHandler) {
         this(apiClient, apiToken, messageHandler, null);
     }
 

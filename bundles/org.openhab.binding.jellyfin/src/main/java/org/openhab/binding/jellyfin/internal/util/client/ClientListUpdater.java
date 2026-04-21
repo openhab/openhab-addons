@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SessionApi;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 
@@ -56,7 +56,8 @@ public final class ClientListUpdater {
      * @param clientMap the map to update (will be cleared and repopulated)
      */
     @SuppressWarnings("null") // Generated API incorrectly marks optional parameters as @NonNull
-    public static void updateClients(ApiClient apiClient, Set<String> userIds, Map<String, SessionInfoDto> clientMap) {
+    public static void updateClients(ApiClientWrapper apiClient, Set<String> userIds,
+            Map<String, SessionInfoDto> clientMap) {
         var sessionApi = new SessionApi(apiClient);
         clientMap.clear();
         try {

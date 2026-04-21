@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionMessageType;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionsMessage;
@@ -56,7 +56,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
     private final ObjectMapper objectMapper;
     private final SessionManager sessionManager;
 
-    public SessionsMessageHandler(ApiClient apiClient, SessionManager sessionManager) {
+    public SessionsMessageHandler(ApiClientWrapper apiClient, SessionManager sessionManager) {
         this.objectMapper = apiClient.getObjectMapper();
         this.sessionManager = sessionManager;
     }

@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ForceKeepAliveMessage;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
@@ -36,14 +36,14 @@ import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
  */
 class SessionsMessageHandlerTest {
 
-    private ApiClient apiClient;
+    private ApiClientWrapper apiClient;
     private SessionEventBus eventBus;
     private SessionManager sessionManager;
     private SessionsMessageHandler handler;
 
     @BeforeEach
     void setUp() {
-        apiClient = new ApiClient();
+        apiClient = new ApiClientWrapper();
         apiClient.setBasePath("http://localhost:8096");
         eventBus = new SessionEventBus();
         sessionManager = new SessionManager(eventBus);

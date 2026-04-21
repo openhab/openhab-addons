@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
@@ -39,7 +39,7 @@ public class ServerSyncTask extends AbstractTask {
 
     private final Consumer<List<UserDto>> usersHandler;
     private final ExceptionHandlerType exceptionHandler;
-    private final ApiClient client;
+    private final ApiClientWrapper client;
 
     /**
      * Create a new ServerSyncTask to synchronize server state (users and sessions).
@@ -48,7 +48,7 @@ public class ServerSyncTask extends AbstractTask {
      * @param usersHandler The handler that will process the list of retrieved users
      * @param exceptionHandler The handler that will handle any exceptions that occur
      */
-    public ServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+    public ServerSyncTask(ApiClientWrapper client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
 

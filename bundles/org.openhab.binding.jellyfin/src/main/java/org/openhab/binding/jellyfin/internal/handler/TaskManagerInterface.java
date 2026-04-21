@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
@@ -55,7 +55,7 @@ public interface TaskManagerInterface {
      * @param discoveryService The discovery service for client discovery (may be null initially)
      * @return Map of initialized tasks by their IDs
      */
-    Map<String, AbstractTask> initializeTasks(ApiClient apiClient, ErrorEventBus errorEventBus,
+    Map<String, AbstractTask> initializeTasks(ApiClientWrapper apiClient, ErrorEventBus errorEventBus,
             Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
             @Nullable ClientDiscoveryService discoveryService);
 
@@ -92,5 +92,5 @@ public interface TaskManagerInterface {
      * @return The created DiscoveryTask
      */
     AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ErrorEventBus errorEventBus, ApiClient apiClient, Consumer<List<UserDto>> usersHandler);
+            ErrorEventBus errorEventBus, ApiClientWrapper apiClient, Consumer<List<UserDto>> usersHandler);
 }

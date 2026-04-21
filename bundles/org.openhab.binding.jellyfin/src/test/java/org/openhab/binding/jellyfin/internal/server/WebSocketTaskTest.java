@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.server.WebSocketTask.ConnectionState;
 
 /**
@@ -32,13 +32,13 @@ import org.openhab.binding.jellyfin.internal.server.WebSocketTask.ConnectionStat
  */
 public class WebSocketTaskTest {
 
-    private ApiClient apiClient;
+    private ApiClientWrapper apiClient;
     private String apiToken;
     private TestMessageHandler messageHandler;
 
     @BeforeEach
     public void setUp() {
-        apiClient = new ApiClient();
+        apiClient = new ApiClientWrapper();
         apiClient.setBasePath("http://localhost:8096");
         apiToken = "test-api-key-12345";
         messageHandler = new TestMessageHandler();

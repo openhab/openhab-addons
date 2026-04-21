@@ -20,7 +20,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.BindingConfiguration;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SystemApi;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -107,7 +107,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>();
 
         var uri = server.getAddress();
-        var client = new ApiClient();
+        var client = new ApiClientWrapper();
         client.updateBaseUri(uri);
 
         var systemApi = new SystemApi(client);

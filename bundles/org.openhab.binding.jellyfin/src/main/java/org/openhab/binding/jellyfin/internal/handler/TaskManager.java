@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
@@ -73,7 +73,7 @@ public class TaskManager implements TaskManagerInterface {
     }
 
     @Override
-    public Map<String, AbstractTask> initializeTasks(ApiClient apiClient, ErrorEventBus errorEventBus,
+    public Map<String, AbstractTask> initializeTasks(ApiClientWrapper apiClient, ErrorEventBus errorEventBus,
             Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
             @Nullable ClientDiscoveryService discoveryService) {
 
@@ -266,7 +266,7 @@ public class TaskManager implements TaskManagerInterface {
 
     @Override
     public AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ErrorEventBus errorEventBus, ApiClient apiClient, Consumer<List<UserDto>> usersHandler) {
+            ErrorEventBus errorEventBus, ApiClientWrapper apiClient, Consumer<List<UserDto>> usersHandler) {
         if (taskFactory == null) {
             throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
         }

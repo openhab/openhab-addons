@@ -30,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
@@ -53,7 +53,7 @@ class DiscoveryTaskTest {
     private @Nullable @Mock ExceptionHandlerType exceptionHandler;
     private @Nullable @Mock Bridge bridge;
 
-    private @Nullable @Mock ApiClient mockApiClient;
+    private @Nullable @Mock ApiClientWrapper mockApiClient;
     private @Nullable @Mock HttpClient mockHttpClient;
     private @Nullable @Mock HttpResponse<String> mockResponse;
     private @Nullable @Mock Consumer<List<UserDto>> usersHandler;
@@ -79,7 +79,7 @@ class DiscoveryTaskTest {
         when(Objects.requireNonNull(mockResponse).statusCode()).thenReturn(200);
         when(Objects.requireNonNull(mockResponse).body()).thenReturn("[]");
         when(mockApiClient.getObjectMapper())
-                .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClient.createDefaultObjectMapper());
+                .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClientWrapper.createDefaultObjectMapper());
 
         // Create task with users handler and mocked api client
         discoveryTask = new DiscoveryTask(Objects.requireNonNull(serverHandler),

@@ -55,7 +55,7 @@ class ServerHandlerTest {
         }
 
         TestServerHandler(Configuration config, Thing thing, TaskManagerInterface taskManager,
-                org.openhab.binding.jellyfin.internal.api.ApiClient apiClient) {
+                org.openhab.binding.jellyfin.internal.api.ApiClientWrapper apiClient) {
             super(mock(org.openhab.core.thing.Bridge.class), apiClient, taskManager);
             this.testConfig = config;
             configForCtor = null;
@@ -448,8 +448,8 @@ class ServerHandlerTest {
         when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(tasks);
 
         // Mock ApiClient to support WebSocketTask creation
-        org.openhab.binding.jellyfin.internal.api.ApiClient mockApiClient = mock(
-                org.openhab.binding.jellyfin.internal.api.ApiClient.class);
+        org.openhab.binding.jellyfin.internal.api.ApiClientWrapper mockApiClient = mock(
+                org.openhab.binding.jellyfin.internal.api.ApiClientWrapper.class);
         when(mockApiClient.getBaseUri()).thenReturn("http://test-server:8096");
 
         Configuration config = new Configuration();
@@ -530,8 +530,8 @@ class ServerHandlerTest {
         when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(tasks);
 
         // Mock ApiClient to support WebSocketTask creation
-        org.openhab.binding.jellyfin.internal.api.ApiClient mockApiClient = mock(
-                org.openhab.binding.jellyfin.internal.api.ApiClient.class);
+        org.openhab.binding.jellyfin.internal.api.ApiClientWrapper mockApiClient = mock(
+                org.openhab.binding.jellyfin.internal.api.ApiClientWrapper.class);
         when(mockApiClient.getBaseUri()).thenReturn("http://test-server:8096");
 
         Configuration config = new Configuration();
@@ -577,8 +577,8 @@ class ServerHandlerTest {
         when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(tasks);
 
         // Mock ApiClient to support WebSocketTask creation
-        org.openhab.binding.jellyfin.internal.api.ApiClient mockApiClient = mock(
-                org.openhab.binding.jellyfin.internal.api.ApiClient.class);
+        org.openhab.binding.jellyfin.internal.api.ApiClientWrapper mockApiClient = mock(
+                org.openhab.binding.jellyfin.internal.api.ApiClientWrapper.class);
         when(mockApiClient.getBaseUri()).thenReturn("http://test-server:8096");
 
         Configuration config = new Configuration();

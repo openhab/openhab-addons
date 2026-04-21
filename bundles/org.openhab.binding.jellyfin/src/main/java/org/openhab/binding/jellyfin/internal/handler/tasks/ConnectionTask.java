@@ -15,7 +15,7 @@ package org.openhab.binding.jellyfin.internal.handler.tasks;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
@@ -36,7 +36,7 @@ public class ConnectionTask extends AbstractTask {
 
     private final Consumer<SystemInfo> acceptedHandler;
     private final ExceptionHandlerType exceptionHandler;
-    private final ApiClient client;
+    private final ApiClientWrapper client;
 
     /**
      * Creates a new connection task with default startup delay and interval.
@@ -45,7 +45,7 @@ public class ConnectionTask extends AbstractTask {
      * @param connectionHandler The handler for the retrieved system info
      * @param exceptionHandler The handler for exceptions
      */
-    public ConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
+    public ConnectionTask(ApiClientWrapper client, Consumer<SystemInfo> connectionHandler,
             ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
 

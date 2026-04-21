@@ -34,7 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.api.ImageCache;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
@@ -92,7 +92,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ErrorEventBus errorEventBus;
     private final SessionEventBus sessionEventBus;
-    private final ApiClient apiClient;
+    private final ApiClientWrapper apiClient;
     private final ImageCache imageCache = new ImageCache();
     private Configuration configuration;
     private final TaskManagerInterface taskManager;
@@ -119,7 +119,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * @param apiClient The API client for Jellyfin communication
      * @param taskManager The task manager that handles all task operations
      */
-    public ServerHandler(Bridge bridge, ApiClient apiClient, TaskManagerInterface taskManager) {
+    public ServerHandler(Bridge bridge, ApiClientWrapper apiClient, TaskManagerInterface taskManager) {
         super(bridge);
 
         this.configuration = new Configuration();
@@ -889,7 +889,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      *
      * @return the API client
      */
-    public ApiClient getApiClient() {
+    public ApiClientWrapper getApiClient() {
         return apiClient;
     }
 

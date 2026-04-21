@@ -18,7 +18,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * Factory for creating and configuring {@link ApiClient} instances for Jellyfin server interactions.
+ * Factory for creating and configuring {@link ApiClientWrapper} instances for Jellyfin server interactions.
  * 
  * @author Patrik Gfeller - Initial Contribution
  */
@@ -30,15 +30,15 @@ public class ApiClientFactory {
     }
 
     /**
-     * Creates and configures a new instance of {@link ApiClient}.
+     * Creates and configures a new instance of {@link ApiClientWrapper}.
      * <p>
      * The client is initialized and can be further configured with an HTTP client factory and a base URL.
      * Additional configuration steps can be added as needed.
      *
-     * @return a newly created and partially configured {@link ApiClient} instance
+     * @return a newly created and partially configured {@link ApiClientWrapper} instance
      */
-    public ApiClient createApiClient() {
-        ApiClient client = new ApiClient();
+    public ApiClientWrapper createApiClient() {
+        ApiClientWrapper client = new ApiClientWrapper();
         // Configure the client with HTTP client factory and base URL
         // Add any additional configuration here
         return client;

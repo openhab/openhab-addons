@@ -15,7 +15,7 @@ package org.openhab.binding.jellyfin.internal.api.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,7 +29,7 @@ public class ApiClientUuidTest {
     @Test
     public void testApiClientUsesCustomUuidDeserializer() throws Exception {
         // Create an ApiClient and get its ObjectMapper
-        ApiClient client = new ApiClient();
+        ApiClientWrapper client = new ApiClientWrapper();
         ObjectMapper mapper = client.getObjectMapper();
 
         // Test with a simple JSON containing a 32-character UUID

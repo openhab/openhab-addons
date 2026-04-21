@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayMethod;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class WebSocketMessageTest {
 
-    private ObjectMapper mapper = new ApiClient().getObjectMapper();
+    private ObjectMapper mapper = new ApiClientWrapper().getObjectMapper();
 
     /**
      * Test deserialization of a minimal SessionsMessage with single session.

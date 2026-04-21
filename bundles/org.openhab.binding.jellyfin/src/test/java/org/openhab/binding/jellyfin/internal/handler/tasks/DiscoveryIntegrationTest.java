@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.handler.TaskManager;
@@ -51,7 +51,8 @@ class DiscoveryIntegrationTest {
         }
 
         TestServerHandler(org.openhab.binding.jellyfin.internal.Configuration config, Bridge bridge,
-                ApiClient apiClient, org.openhab.binding.jellyfin.internal.handler.TaskManagerInterface taskManager) {
+                ApiClientWrapper apiClient,
+                org.openhab.binding.jellyfin.internal.handler.TaskManagerInterface taskManager) {
             super(bridge, apiClient, taskManager);
             this.testConfig = config;
             configForCtor = null;
@@ -80,7 +81,7 @@ class DiscoveryIntegrationTest {
         // Arrange
         TaskManager taskManager = new TaskManager(new TaskFactory());
 
-        ApiClient mockApiClient = mock(ApiClient.class);
+        ApiClientWrapper mockApiClient = mock(ApiClientWrapper.class);
         HttpClient mockHttpClient = mock(HttpClient.class);
         HttpResponse<String> mockResponse = mock(HttpResponse.class);
 
@@ -100,7 +101,7 @@ class DiscoveryIntegrationTest {
                 """;
         when(mockResponse.body()).thenReturn(userJson);
         when(mockApiClient.getObjectMapper())
-                .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClient.createDefaultObjectMapper());
+                .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClientWrapper.createDefaultObjectMapper());
         // Make HttpClient.send return our mock response
         when(mockHttpClient.send(any(), any())).thenAnswer(invocation -> mockResponse);
 

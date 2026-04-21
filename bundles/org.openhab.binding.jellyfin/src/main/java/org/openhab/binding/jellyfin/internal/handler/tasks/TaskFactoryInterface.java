@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
@@ -40,7 +40,7 @@ public interface TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured connection task
      */
-    ConnectionTask createConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
+    ConnectionTask createConnectionTask(ApiClientWrapper client, Consumer<SystemInfo> connectionHandler,
             ExceptionHandlerType exceptionHandler);
 
     /**
@@ -50,7 +50,7 @@ public interface TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured update task
      */
-    UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler);
+    UpdateTask createUpdateTask(ApiClientWrapper client, ExceptionHandlerType exceptionHandler);
 
     /**
      * Creates a server sync task to synchronize server state (users and sessions).
@@ -60,7 +60,7 @@ public interface TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured server sync task
      */
-    ServerSyncTask createServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+    ServerSyncTask createServerSyncTask(ApiClientWrapper client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler);
 
     /**
@@ -74,5 +74,5 @@ public interface TaskFactoryInterface {
      * @return A configured discovery task
      */
     DiscoveryTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ApiClient client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler);
+            ApiClientWrapper client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler);
 }

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
@@ -58,7 +58,7 @@ class TaskManagerTest {
     private TaskFactoryInterface mockTaskFactory = mock(TaskFactoryInterface.class);
 
     @Mock
-    private ApiClient mockApiClient = mock(ApiClient.class);
+    private ApiClientWrapper mockApiClient = mock(ApiClientWrapper.class);
 
     @Mock
     private ErrorEventBus mockErrorEventBus = mock(ErrorEventBus.class);
