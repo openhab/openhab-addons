@@ -89,10 +89,8 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
                                 server.getName(), server.getAddress(), version);
                     }
                 } catch (Exception e) {
-                    LOG.warn("Failed to retrieve system info from Jellyfin server at {}: {}", server.getAddress(),
-                            e.getMessage());
-                    LOG.info("Discovered server {} @ {} will be ignored.", server.getName(), server.getAddress());
-
+                    LOG.warn("Failed to retrieve system info from Jellyfin server at {}: {}, server will be ignored.",
+                            server.getAddress(), e.getMessage());
                 }
             }
         }
