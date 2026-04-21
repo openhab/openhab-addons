@@ -37,7 +37,7 @@ public class ApiResponse<T> {
     /**
      * @param statusCode The status code of HTTP response
      * @param headers The headers of HTTP response
-     * @param data The object deserialized from response bod
+    * @param data The object deserialized from response body
      */
     public ApiResponse(int statusCode, Map<String, List<String>> headers, T data) {
         this.statusCode = statusCode;
