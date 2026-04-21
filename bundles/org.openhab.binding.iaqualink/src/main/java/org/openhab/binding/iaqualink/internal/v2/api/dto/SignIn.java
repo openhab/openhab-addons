@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.api.dto;
+package org.openhab.binding.iaqualink.internal.v2.api.dto;
 
 /**
  * Object used to login to service.
  *
- * @author Dan Cunningham - Initial contribution
+ * @author Jonathan Gilbert - Initial contribution
  *
  */
 public class SignIn {
@@ -27,6 +27,7 @@ public class SignIn {
     private String password;
 
     public SignIn(String apiKey, String email, String password) {
+        super();
         this.apiKey = apiKey;
         this.email = email;
         this.password = password;
