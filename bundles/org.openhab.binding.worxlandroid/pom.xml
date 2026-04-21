@@ -13,7 +13,9 @@
   <artifactId>org.openhab.binding.worxlandroid</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Worx Landroid Binding</name>
-
+  <properties>
+    <bnd.importpackage>!org.graalvm.nativeimage.hosted</bnd.importpackage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
@@ -25,18 +27,6 @@
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
       <version>0.44.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm.sdk</groupId>
-      <artifactId>nativeimage</artifactId>
-      <version>25.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm.sdk</groupId>
-      <artifactId>word</artifactId>
-      <version>25.0.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
