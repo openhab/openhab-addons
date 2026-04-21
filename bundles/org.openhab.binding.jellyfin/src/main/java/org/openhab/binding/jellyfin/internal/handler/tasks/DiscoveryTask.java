@@ -117,8 +117,12 @@ public class DiscoveryTask extends AbstractTask {
 
                 // Pass the result to the handler (ServerHandler.handleUsersList)
                 usersHandler.accept(users);
-            } catch (IOException | InterruptedException e) {
-                exceptionHandler.handle(e);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                exceptionHandler.handle(ie);
+                // If we were interrupted while fetching users, restore interrupt and proceed to discovery
+            } catch (IOException ioe) {
+                exceptionHandler.handle(ioe);
                 // If we couldn't fetch users, still attempt discovery to avoid complete stall
             } catch (Exception e) {
                 exceptionHandler.handle(e);
