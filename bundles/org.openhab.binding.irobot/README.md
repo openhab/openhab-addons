@@ -169,6 +169,42 @@ The easiest way to determine the pmapId, region_ids/zoneids and userPmapvId is t
 1. Roomba's built-in MQTT server, used for communication, supports only a single local connection at a time. Bear this in mind when you want to do something that requires local connection from your phone, like reconfiguring the network. Disable openHAB Thing before doing this.
 1. Sometimes during intensive testing Roomba just stopped communicating over the local connection. If this happens, try rebooting it. On my robot it's done by holding "Clean" button for about 10 seconds until all the LEDs come on. Release the button and the reboot tone will be played. It looks like there are some bugs in the firmware.
 
+### TLS Compatibility Issue
+
+The Thing may go OFFLINE (COMMUNICATION_ERROR) with:
+
+> Required TLS cipher (TLS_RSA_WITH_AES_256_CBC_SHA) is disabled by your Java security settings.
+
+Some Roomba models use an outdated TLS configuration and require the legacy cipher `TLS_RSA_WITH_AES_256_CBC_SHA`.
+
+Starting with OpenJDK 21.0.10 (and corresponding distributions such as Eclipse Temurin 21.0.10), Java disables all `TLS_RSA_*` cipher suites by default via the `jdk.tls.disabledAlgorithms` setting.
+As a result, connections to devices relying on these ciphers (such as some Roomba models) will fail.
+
+To allow the connection, you must re-enable this cipher in Java’s TLS configuration.
+
+:::warning
+Re-enabling `TLS_RSA_WITH_AES_256_CBC_SHA` has security implications:
+
+- No forward secrecy (RSA key exchange)
+- Uses older CBC-based cipher
+- Considered deprecated in modern TLS standards
+
+Only enable this on trusted/local networks.
+:::
+
+To proceed, modify the system Java configuration by editing (for example) `/usr/lib/jvm/temurin-21-jre-arm64/conf/security/java.security` and adjust the `jdk.tls.disabledAlgorithms` setting with the following contents:
+
+```ini
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, DTLSv1.0, RC4, DES, \
+    MD5withRSA, DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+    ECDH, TLS_RSA_WITH_AES_128_*, TLS_RSA_WITH_AES_256_CBC_SHA256, TLS_RSA_WITH_AES_256_GCM_SHA384, rsa_pkcs1_sha1 usage HandshakeSignature, \
+    ecdsa_sha1 usage HandshakeSignature, dsa_sha1 usage HandshakeSignature
+```
+
+:::warning
+This change affects all Java applications on the system and requires a restart of openHAB.
+:::
+
 ## Example
 
 ### `irobot.things` Example
