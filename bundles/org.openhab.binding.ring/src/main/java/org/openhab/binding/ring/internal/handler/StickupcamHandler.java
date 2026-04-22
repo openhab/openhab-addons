@@ -18,6 +18,7 @@ import static org.openhab.binding.ring.internal.ApiConstants.*;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Stickupcam;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -51,6 +52,7 @@ public class StickupcamHandler extends RingDeviceHandler {
     private boolean batterySupport = false;
     private boolean lightSupport = false;
     private boolean sirenSupport = false;
+    private boolean motionDetectionSupport = false;
 
     public StickupcamHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -92,6 +94,20 @@ public class StickupcamHandler extends RingDeviceHandler {
                     updateThing(thingBuilder.build());
                 }
             }
+            if (MOTION_DETECTION_KINDS.contains(kind)) {
+                motionDetectionSupport = true;
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_CONTROL_MOTION_DETECTION);
+                Channel channel = thing.getChannel(channelUID);
+                if (channel == null) {
+                    logger.debug("Adding channel for motion detection status, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH)
+                            .withLabel("Motion Detection Status")
+                            .withType(new ChannelTypeUID(BINDING_ID, "motionDetection")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+            }
         }
     }
 
@@ -100,14 +116,25 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (RefreshType.REFRESH == command) {
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_STATUS_LIGHT)) {
-            if (command instanceof OnOffType onOffCommand) {
-                lightCommand(onOffCommand == OnOffType.ON);
+        if (lightSupport) {
+            if (channelUID.getId().equals(CHANNEL_STATUS_LIGHT)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    lightCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
-        if (channelUID.getId().equals(CHANNEL_STATUS_SIREN)) {
-            if (command instanceof OnOffType onOffCommand) {
-                sirenCommand(onOffCommand == OnOffType.ON);
+        if (sirenSupport) {
+            if (channelUID.getId().equals(CHANNEL_STATUS_SIREN)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    sirenCommand(onOffCommand == OnOffType.ON);
+                }
+            }
+        }
+        if (motionDetectionSupport) {
+            if (channelUID.getId().equals(CHANNEL_CONTROL_MOTION_DETECTION)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    motionDetectionCommand(onOffCommand == OnOffType.ON);
+                }
             }
         }
     }
@@ -127,15 +154,30 @@ public class StickupcamHandler extends RingDeviceHandler {
 
         RingDeviceTO deviceTO = device.getDeviceStatus();
         if (batterySupport) {
-            if (deviceTO.health.batteryPercentage != lastBattery) {
-                logger.debug("Battery Level: {}", deviceTO.battery);
-                ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-                updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
-                lastBattery = deviceTO.health.batteryPercentage;
-            } else {
-                logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
-                        deviceTO.health.batteryPercentage, lastBattery);
+            int battery = 0;
+            String b1Raw = deviceTO.battery;
+            String b2Raw = deviceTO.battery2;
 
+            Integer b1 = (b1Raw != null && !b1Raw.isEmpty()) ? Integer.parseInt(b1Raw) : null;
+            Integer b2 = (b2Raw != null && !b2Raw.isEmpty()) ? Integer.parseInt(b2Raw) : null;
+
+            if (b1 != null && b2 != null) {
+                battery = (b1 + b2) / 2;
+            } else if (b1 != null) {
+                battery = b1;
+            } else if (b2 != null) {
+                battery = b2;
+            } else {
+                battery = 0; // No battery data available
+            }
+            if (battery != lastBattery) {
+                logger.debug("Battery Level: {}", battery);
+                ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
+                updateState(channelUID, new DecimalType(battery));
+                lastBattery = battery;
+            } else {
+                logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(), battery,
+                        lastBattery);
             }
         }
 
@@ -147,6 +189,11 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (sirenSupport) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SIREN);
             updateState(channelUID, OnOffType.from(deviceTO.health.sirenOn));
+        }
+
+        if (motionDetectionSupport) {
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_CONTROL_MOTION_DETECTION);
+            updateState(channelUID, OnOffType.from(deviceTO.deviceSettings.motionDetectionEnabled));
         }
 
         long timestamp = getSnapshotTimestamp();
@@ -170,5 +217,11 @@ public class StickupcamHandler extends RingDeviceHandler {
     protected void sirenCommand(boolean b) {
         String command = URL_SIREN + (b ? "on" : "off");
         sendCommand(URL_DOORBELLS, command);
+    }
+
+    protected void motionDetectionCommand(boolean b) {
+        String command = URL_SETTINGS;
+        String payload = "{\"motion_settings\": {\"motion_detection_enabled\": " + b + "}}";
+        sendCommand(URL_DEVICE, command, HttpMethod.PATCH, payload);
     }
 }

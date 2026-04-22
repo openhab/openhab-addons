@@ -31,4 +31,20 @@ public class DahuaDoorConfiguration {
     public String password = "";
     public String snapshotPath = "";
     public boolean useHttps = false;
+
+    // WebRTC / go2rtc settings
+    public boolean enableWebRTC = false;
+    public String go2rtcPath = "";
+    public int go2rtcApiPort = 1984;
+    public int webRtcPort = 8555;
+    public String stunServer = "stun.l.google.com:19302";
+    public int rtspChannel = 1;
+    public int rtspSubtype = 0;
+
+    // SIP client settings
+    public boolean enableSip = false;
+    public String sipExtension = "";
+    public String sipPassword = "";
+    public int localSipPort = 5062;
+    public String sipRealm = "VDP";
 }

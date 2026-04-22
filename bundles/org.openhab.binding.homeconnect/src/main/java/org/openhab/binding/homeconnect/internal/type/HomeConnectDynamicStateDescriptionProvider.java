@@ -27,7 +27,6 @@ import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.events.ThingEventFactory;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
-import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
@@ -57,8 +56,8 @@ public class HomeConnectDynamicStateDescriptionProvider extends BaseDynamicState
     }
 
     /**
-     * For a given {@link ChannelUID}, set a readyOnly flag that should be used for the channel, instead of the one
-     * defined statically in the {@link ChannelType}.
+     * For a given {@link ChannelUID}, set a readOnly flag that should be used for the channel, instead of the one
+     * defined statically in the {@link org.openhab.core.thing.type.ChannelType}.
      *
      * @param channelUID the {@link ChannelUID} of the channel
      * @param readOnly readOnly flag
@@ -67,8 +66,9 @@ public class HomeConnectDynamicStateDescriptionProvider extends BaseDynamicState
         Boolean oldReadOnly = channelReadOnlyMap.get(channelUID);
         if (oldReadOnly == null || oldReadOnly != readOnly) {
             channelReadOnlyMap.put(channelUID, readOnly);
+            ItemChannelLinkRegistry registry = itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
-                    itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
+                    registry != null ? registry.getLinkedItemNames(channelUID) : Set.of(),
                     StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).build(), null));
         }
     }

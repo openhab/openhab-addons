@@ -25,14 +25,14 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>4.33.2</version>
+      <version>4.33.6</version>
       <scope>compile</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java-util</artifactId>
-      <version>4.33.2</version>
+      <version>4.33.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DahuaDoorBindingConstants {
 
-    private static final String BINDING_ID = "dahuadoor";
+    public static final String BINDING_ID = "dahuadoor";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_VTO2202 = new ThingTypeUID(BINDING_ID, "vto2202");
@@ -39,4 +39,16 @@ public class DahuaDoorBindingConstants {
     public static final String CHANNEL_DOOR_IMAGE_2 = "door-image-2";
     public static final String CHANNEL_OPEN_DOOR_1 = "open-door-1";
     public static final String CHANNEL_OPEN_DOOR_2 = "open-door-2";
+    public static final String CHANNEL_WEBRTC_URL = "webrtc-url";
+    public static final String CHANNEL_SIP_REGISTERED = "sip-registered";
+    public static final String CHANNEL_SIP_CALL_STATE = "sip-call-state";
+
+    // go2rtc stream name prefix (stream name = prefix + URL-safe thing UID)
+    public static final String GO2RTC_STREAM_PREFIX = "dahua_";
+
+    // Path under which the WebRTC SDP proxy servlet is registered
+    public static final String WEBRTC_SERVLET_PATH = "/dahuadoor/webrtc";
+
+    // Path under which the SIP call control servlet is registered
+    public static final String SIP_CONTROL_SERVLET_PATH = "/dahuadoor/sip";
 }

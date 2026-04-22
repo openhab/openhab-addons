@@ -38,4 +38,6 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_BATTERY = "battery";
 
     public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
+
+    public static final int DEFAULT_POLLING_INTERVAL = 900;
 }

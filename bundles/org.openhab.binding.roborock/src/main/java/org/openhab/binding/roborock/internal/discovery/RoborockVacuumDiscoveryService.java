@@ -111,7 +111,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
     private void discover() {
         HomeData homeData = getHomeData();
 
-        if (homeData != null) {
+        if (homeData != null && homeData.result != null) {
             Devices devices[] = homeData.result.devices;
             findDevice(devices);
             // also check for shared devices

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.OtherDevice;
 import org.openhab.core.library.CoreItemFactory;
@@ -140,6 +141,6 @@ public class OtherDeviceHandler extends RingDeviceHandler {
 
         String payload = gson.toJson(payloadMap);
         logger.debug("payload = {}", payload);
-        sendCommand(URL_INTERCOM_COMMAND, command, payload);
+        sendCommand(URL_INTERCOM_COMMAND, command, HttpMethod.PUT, payload);
     }
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.RestClient;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.RingDeviceRegistry;
@@ -613,10 +614,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     @Override
-    public void sendCommand(String url, String payload) {
+    public void sendCommand(String url, HttpMethod httpMethod, String payload) {
         try {
             logger.trace("sending url {} with payload {} to Ring API", url, payload);
-            restClient.sendCommand(url, payload, tokens);
+            restClient.sendCommand(url, httpMethod, payload, tokens);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.invalid-response");

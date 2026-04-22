@@ -454,6 +454,7 @@
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
 /bundles/org.openhab.binding.wled/ @Skinah
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene
+/bundles/org.openhab.binding.worxlandroid/ @clinique
 /bundles/org.openhab.binding.wundergroundupdatereceiver/ @danieldemus
 /bundles/org.openhab.binding.x/ @computergeek1507
 /bundles/org.openhab.binding.xmltv/ @clinique
@@ -508,8 +509,8 @@
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /bundles/org.openhab.voice.whisperstt/ @GiviMAD
 /itests/org.openhab.automation.groovyscripting.tests/ @wborn
+/itests/org.openhab.automation.jsscripting.tests/ @florian-h05
 /itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
-/itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @openhab/add-ons-maintainers
 /itests/org.openhab.binding.homeassistant.tests/ @ccutrer
