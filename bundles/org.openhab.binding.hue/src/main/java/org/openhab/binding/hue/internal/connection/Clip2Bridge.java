@@ -108,8 +108,8 @@ import com.google.gson.JsonSyntaxException;
  *
  * <ul>
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
- * <li>The 'registerApplicationKey()', 'isClip2Supported()', 'getBridgeConfig()`, and 'putBridgeConfig()`
- * methods use HTTP(S)/1.1 over a Java HTTP(S) client.</li>
+ * <li>The registerApplicationKey(), getBridgeConfig(), and putBridgeConfig() methods use HTTP(S)/1.1 over
+ * {@link java.net.HttpURLConnection} or {@link javax.net.ssl.HttpsURLConnection} connections respectively.</li>
  * </ul>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
@@ -598,12 +598,11 @@ public class Clip2Bridge implements Closeable {
                     connection.setInstanceFollowRedirects(false);
                     break;
                 case HTTPS:
-                    HttpsURLConnection tlsConnection = (HttpsURLConnection) connection;
-                    tlsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    ((HttpsURLConnection) connection).setSSLSocketFactory(sslContext.getSocketFactory());
                     String host = connection.getURL().getHost();
                     // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
                     if (IPV4_PATTERN.matcher(host).matches()) {
-                        tlsConnection.setHostnameVerifier((h, s) -> true);
+                        ((HttpsURLConnection) connection).setHostnameVerifier((h, s) -> true);
                     }
             }
 
@@ -619,7 +618,7 @@ public class Clip2Bridge implements Closeable {
 
             switch (protocol) {
                 case HTTP:
-                    if (status == 301 || status == 302) {
+                    if (HttpURLConnection.HTTP_MOVED_PERM == status || HttpURLConnection.HTTP_MOVED_TEMP == status) {
                         String redirectUrl = connection.getHeaderField("Location");
                         if (redirectUrl != null && redirectUrl.startsWith("https://")) {
                             return doHTTP(HttpProtocol.HTTPS, method, redirectUrl, request, sslContext);
@@ -631,15 +630,15 @@ public class Clip2Bridge implements Closeable {
 
             LOGGER.trace("{} {} {}/1.1{}", method, url, protocol, request == null ? "" : " >> " + request);
 
-            if (status > 299) {
+            if (HttpURLConnection.HTTP_OK != status) {
                 LOGGER.debug("{}/1.1 {} {}", protocol, status, connection.getResponseMessage());
                 throw new IOException("HTTP error " + status);
             }
 
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("{}/1.1 {} (Content-Type: {}) << {}", protocol, status,
-                        connection.getHeaderField("Content-Type"), response);
+                LOGGER.trace("{}/1.1 {} (Content-Type: {}) << {}", protocol, status, connection.getContentType(),
+                        response);
                 return response;
             }
 
