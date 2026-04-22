@@ -108,8 +108,8 @@ import com.google.gson.JsonSyntaxException;
  *
  * <ul>
  * <li>The primary communication uses HTTP 2 streams over a shared permanent HTTP 2 session.</li>
- * <li>The 'registerApplicationKey()' method uses HTTP/1.1 over the OH common Jetty client.</li>
- * <li>The 'isClip2Supported()' static method uses HTTP/1.1 over the OH common Jetty client via 'HttpUtil'.</li>
+ * <li>The 'registerApplicationKey()', 'isClip2Supported()', 'getBridgeConfig()`, and 'putBridgeConfig()`
+ * methods use HTTP(S)/1.1 over a Java HTTP(S) client.</li>
  * </ul>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
@@ -546,17 +546,11 @@ public class Clip2Bridge implements Closeable {
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
     /**
-     * Enum of HTTP protocols with their transport types for logging purposes.
+     * Enum of HTTP protocols.
      */
     private enum HttpProtocol {
-        HTTP("TCP"),
-        HTTPS("TLS");
-
-        public final String transport;
-
-        HttpProtocol(String transport) {
-            this.transport = transport;
-        }
+        HTTP,
+        HTTPS
     }
 
     /**
@@ -635,17 +629,17 @@ public class Clip2Bridge implements Closeable {
                 case HTTPS:
             }
 
-            LOGGER.trace("{} {} HTTP/1.1 {{{}}}{}", method, url, protocol.transport,
-                    request == null ? "" : " >> " + request);
+            LOGGER.trace("{} {} {}/1.1{}", method, url, protocol, request == null ? "" : " >> " + request);
 
             if (status > 299) {
-                LOGGER.debug("HTTP/1.1 {} {}", status, connection.getResponseMessage());
+                LOGGER.debug("{}/1.1 {} {}", protocol, status, connection.getResponseMessage());
                 throw new IOException("HTTP error " + status);
             }
 
             try (InputStream in = connection.getInputStream()) {
                 String response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                LOGGER.trace("HTTP/1.1 {} {} << {}", status, connection.getResponseMessage(), response);
+                LOGGER.trace("{}/1.1 {} (Content-Type: {}) << {}", protocol, status,
+                        connection.getHeaderField("Content-Type"), response);
                 return response;
             }
 
@@ -1017,7 +1011,7 @@ public class Clip2Bridge implements Closeable {
                 SessionSynchronizer sessionSynchronizer = new SessionSynchronizer(false)) {
             Session session = getSession();
             String url = getUrl(reference);
-            LOGGER.trace("GET {} HTTP/2", url);
+            LOGGER.trace("GET {} {}/2", url, HttpProtocol.HTTPS);
             HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON);
             Completable<@Nullable Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
@@ -1028,7 +1022,7 @@ public class Clip2Bridge implements Closeable {
             String contentJson = contentStreamListener.awaitResult();
             String contentType = contentStreamListener.getContentType();
             int status = contentStreamListener.getStatus();
-            LOGGER.trace("HTTP/2 {} (Content-Type: {}) << {}", status, contentType, contentJson);
+            LOGGER.trace("{}/2 {} (Content-Type: {}) << {}", HttpProtocol.HTTPS, status, contentType, contentJson);
             if (status != HttpStatus.OK_200) {
                 throw new ApiException(String.format("Unexpected HTTP status '%d'", status));
             }
@@ -1307,7 +1301,7 @@ public class Clip2Bridge implements Closeable {
             String url = getUrl(new ResourceReference().setId(resource.getId()).setType(resource.getType()));
             HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON, "PUT", requestBytes.capacity(),
                     MediaType.APPLICATION_JSON);
-            LOGGER.trace("PUT {} HTTP/2 >> {}", url, requestJson);
+            LOGGER.trace("PUT {} {}/2 >> {}", url, HttpProtocol.HTTPS, requestJson);
             Completable<@Nullable Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
             session.newStream(headers, streamPromise, contentStreamListener);
@@ -1318,7 +1312,7 @@ public class Clip2Bridge implements Closeable {
             String contentJson = contentStreamListener.awaitResult();
             String contentType = contentStreamListener.getContentType();
             int status = contentStreamListener.getStatus();
-            LOGGER.trace("HTTP/2 {} (Content-Type: {}) << {}", status, contentType, contentJson);
+            LOGGER.trace("{}/2 {} (Content-Type: {}) << {}", HttpProtocol.HTTPS, status, contentType, contentJson);
             if (!HttpStatus.isSuccess(status)) {
                 throw new ApiException(String.format("Unexpected HTTP status '%d'", status));
             }
