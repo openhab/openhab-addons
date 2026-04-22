@@ -60,6 +60,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.RotationEventType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
@@ -1041,5 +1042,20 @@ class Clip2DtoTest {
         List<ResourceReference> children = item.getChildren();
         assertNotNull(children);
         assertEquals(4, children.size());
+    }
+
+    @Test
+    void testDeviceSoftwareUpdate() {
+        String json = load(ResourceType.DEVICE_SOFTWARE_UPDATE.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.DEVICE_SOFTWARE_UPDATE, item.getType());
+        UpdateStatusV2 status = item.getUpdateStatus();
+        assertNotNull(status);
+        assertEquals(UpdateStatusV2.NO_UPDATE, status);
     }
 }

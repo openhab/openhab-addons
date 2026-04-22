@@ -546,91 +546,51 @@ public class Clip2Bridge implements Closeable {
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
     /**
-     * Functional interface to handle the differences in setup/redirects between HTTP and HTTPS connections
-     * in the doCommonHTTP() method.
+     * Enum of HTTP protocols with their transport types for logging purposes.
      */
-    private interface CallingHttpMethod {
+    private enum HttpProtocol {
+        HTTP("TCP"),
+        HTTPS("TLS");
 
-        /**
-         * Implementation instances apply protocol specific settings (e.g. redirects or SSL) and return
-         * a response if they have fully handled the request, or null to continue with default processing.
-         * 
-         * @param connection the HTTP connection to be configured
-         * @return a JSON response if the request is handled, or null to continue default processing
-         * @throws IOException if an error occurs
-         */
-        public @Nullable String applySettingsAndRead(HttpURLConnection connection) throws IOException;
-    }
+        public final String transport;
 
-    /**
-     * Execute either a GET or a PUT HTTP request via an HTTP/1.1 connection. If the response is a redirect to
-     * HTTPS, it will automatically follow the redirect and execute the request.
-     * 
-     * @param url the target URL
-     * @param method either GET or PUT
-     * @param request the JSON content body to send
-     * @param sslContext the SSL context to use if the connection gets redirected to HTTPS
-     * @return a JSON string response
-     * @throws IOException if an error occurs
-     */
-    private static String doHTTP(String url, String method, @Nullable String request, SSLContext sslContext)
-            throws IOException {
-        if (url.toLowerCase().startsWith("https")) {
-            return doHTTPS(url, method, request, sslContext);
+        HttpProtocol(String transport) {
+            this.transport = transport;
         }
-        return doCommonHTTP(url, method, request, (connection) -> {
-            connection.setInstanceFollowRedirects(false);
-            int status = connection.getResponseCode();
-            if (status == 301 || status == 302) {
-                String redirectUrl = connection.getHeaderField("Location");
-                if (redirectUrl != null && redirectUrl.startsWith("https://")) {
-                    return doHTTPS(redirectUrl, method, request, sslContext);
-                }
-            }
-            return null; // continue default processing
-        });
     }
 
     /**
-     * Execute either a GET or a PUT HTTPS request request via an HTTP/1.1 connection. Some callers may not yet
-     * have the certificate configuration parameters for a real bridge so they may use use a trustAll policy and
-     * disable host name verification.
+     * Execute an HTTP(S) request.
      * 
+     * @param method e.g. GET, PUT, POST
      * @param url the target URL
-     * @param method either GET or PUT
-     * @param request the JSON content body to send
-     * @param sslContext the SSL context to use for HTTPS connections
+     * @param request the optional JSON content body to send
+     * @param sslContext the SSL context to use if the connection gets redirected to HTTPS
+     * 
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
-    private static String doHTTPS(String url, String method, @Nullable String request, SSLContext sslContext)
+    private static String doHTTP(String method, String url, @Nullable String request, SSLContext sslContext)
             throws IOException {
-        return doCommonHTTP(url, method, request, (connection) -> {
-            HttpsURLConnection secureConnection = (HttpsURLConnection) connection;
-            secureConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-            String host = connection.getURL().getHost();
-            // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
-            if (IPV4_PATTERN.matcher(host).matches()) {
-                secureConnection.setHostnameVerifier((h, s) -> true);
-            }
-            return null; // continue default processing
-        });
+        HttpProtocol protocol = url.toLowerCase().startsWith("https://") ? HttpProtocol.HTTPS : HttpProtocol.HTTP;
+        return doHTTP(protocol, method, url, request, sslContext);
     }
 
     /**
-     * Common method to execute either a GET or a PUT HTTP/1.1 request via an HTTP connection. The caller
-     * applies protocol specific settings (e.g. redirects or SSL) and returns a response if it has
-     * fully handled the request, or null to continue with default processing.
-     *
+     * Inner method to execute an HTTP request via the given HTTP/HTTPS protocol.
+     * If the response is a redirect to HTTPS it automatically follows it.
+     * 
+     * @param protocol the HTTP / HTTPS protocol to use
+     * @param method e.g. GET, PUT, POST
      * @param url the target URL
-     * @param method either GET or PUT
-     * @param request the JSON content body to send
-     * @param callingMethod the calling method which applies its protocol specific settings and handling
+     * @param request the optional JSON content body to send
+     * @param sslContext the SSL context to use if the connection gets redirected to HTTPS
+     * 
      * @return a JSON string response
      * @throws IOException if an error occurs
      */
-    private static String doCommonHTTP(String url, String method, @Nullable String request,
-            CallingHttpMethod callingMethod) throws IOException {
+    private static String doHTTP(HttpProtocol protocol, String method, String url, @Nullable String request,
+            SSLContext sslContext) throws IOException {
         HttpURLConnection connection = null;
         try {
             URL destination = new URI(url).toURL();
@@ -639,13 +599,18 @@ public class Clip2Bridge implements Closeable {
             connection.setReadTimeout(TIMEOUT_SECONDS * 1000);
             connection.setRequestMethod(method);
 
-            /**
-             * Apply protocol specific settings (redirects or SSL) and return the response if caller fully
-             * handled the request, or null if not.
-             */
-            String callingMethodResponse = callingMethod.applySettingsAndRead(connection);
-            if (callingMethodResponse != null) {
-                return callingMethodResponse;
+            switch (protocol) {
+                case HTTP:
+                    connection.setInstanceFollowRedirects(false);
+                    break;
+                case HTTPS:
+                    HttpsURLConnection tlsConnection = (HttpsURLConnection) connection;
+                    tlsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    String host = connection.getURL().getHost();
+                    // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
+                    if (IPV4_PATTERN.matcher(host).matches()) {
+                        tlsConnection.setHostnameVerifier((h, s) -> true);
+                    }
             }
 
             if (request != null) {
@@ -657,8 +622,21 @@ public class Clip2Bridge implements Closeable {
             }
 
             int status = connection.getResponseCode();
-            String protocol = connection instanceof HttpsURLConnection ? "TLS" : "TCP";
-            LOGGER.trace("{} {} HTTP/1.1 {{{}}} {}", method, url, protocol, request == null ? "" : ">> " + request);
+
+            switch (protocol) {
+                case HTTP:
+                    if (status == 301 || status == 302) {
+                        String redirectUrl = connection.getHeaderField("Location");
+                        if (redirectUrl != null && redirectUrl.startsWith("https://")) {
+                            return doHTTP(HttpProtocol.HTTPS, method, redirectUrl, request, sslContext);
+                        }
+                    }
+                    break;
+                case HTTPS:
+            }
+
+            LOGGER.trace("{} {} HTTP/1.1 {{{}}}{}", method, url, protocol.transport,
+                    request == null ? "" : " >> " + request);
 
             if (status > 299) {
                 LOGGER.debug("HTTP/1.1 {} {}", status, connection.getResponseMessage());
@@ -672,7 +650,7 @@ public class Clip2Bridge implements Closeable {
             }
 
         } catch (URISyntaxException e) {
-            throw new IOException("Invalid URL", e);
+            throw new IOException("Invalid URL %s".formatted(url), e);
         } finally {
             if (connection != null)
                 connection.disconnect();
@@ -690,7 +668,7 @@ public class Clip2Bridge implements Closeable {
     private static @Nullable BridgeConfig getBridgeConfig(String hostName, String applicationKey, SSLContext sslContext)
             throws IOException {
         String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
-        String json = doHTTP(url, "GET", null, sslContext);
+        String json = doHTTP("GET", url, null, sslContext);
         try {
             return new Gson().fromJson(json, BridgeConfig.class);
         } catch (JsonParseException e) {
@@ -710,7 +688,7 @@ public class Clip2Bridge implements Closeable {
             SSLContext sslContext) throws IOException {
         String url = FORMAT_URL_CONFIG.formatted(hostName, applicationKey);
         String json = new Gson().toJson(bridgeConfig);
-        doHTTP(url, "PUT", json, sslContext);
+        doHTTP("PUT", url, json, sslContext);
     }
 
     /**
@@ -1413,7 +1391,7 @@ public class Clip2Bridge implements Closeable {
                 : new CreateUserRequest(oldApplicationKey, APPLICATION_ID));
         String responseJson = null;
         try {
-            responseJson = doHTTP(registrationUrl, "POST", json, hueContext);
+            responseJson = doHTTP("POST", registrationUrl, json, hueContext);
             List<SuccessResponse> entries = jsonParser.fromJson(responseJson, SuccessResponse.GSON_TYPE);
             if (Objects.nonNull(entries) && !entries.isEmpty()) {
                 SuccessResponse response = entries.get(0);
