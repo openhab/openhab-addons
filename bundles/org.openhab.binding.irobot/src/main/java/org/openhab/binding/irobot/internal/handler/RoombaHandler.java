@@ -123,6 +123,11 @@ public class RoombaHandler extends BaseThingHandler {
             } else {
                 String message = (error != null) ? error.getMessage() : "Unknown reason";
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                if (error instanceof SecurityException) {
+                    logger.warn(
+                            "TLS_RSA_WITH_AES_256_CBC_SHA is disabled by Java TLS policy (jdk.tls.disabledAlgorithms), canceling reconnection attempts. Please consult binding documentation.");
+                    dispose();
+                }
             }
         }
     };
@@ -148,7 +153,7 @@ public class RoombaHandler extends BaseThingHandler {
     public void dispose() {
         Future<?> requester = credentialRequester;
         if (requester != null) {
-            requester.cancel(false);
+            requester.cancel(true);
             credentialRequester = null;
         }
 

@@ -19,6 +19,7 @@ import static org.openhab.binding.irobot.internal.IRobotBindingConstants.TRUST_M
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.Security;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -91,8 +92,16 @@ public abstract class IRobotConnectionHandler implements MqttConnectionObserver,
             connectionStateChanged(MqttConnectionState.DISCONNECTED, exception);
             return false;
         }).thenAccept(successful -> {
-            MqttConnectionState state = successful ? MqttConnectionState.CONNECTED : MqttConnectionState.DISCONNECTED;
-            connectionStateChanged(state, successful ? null : new TimeoutException("Timeout"));
+            if (successful) {
+                connectionStateChanged(MqttConnectionState.CONNECTED, null);
+            } else {
+                if (isRsaAes256CbcShaAvailable()) {
+                    connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
+                } else {
+                    connectionStateChanged(MqttConnectionState.DISCONNECTED, new SecurityException(
+                            "Required TLS cipher (TLS_RSA_WITH_AES_256_CBC_SHA) is disabled by your Java security settings."));
+                }
+            }
         });
 
         this.connection = connection;
@@ -174,5 +183,31 @@ public abstract class IRobotConnectionHandler implements MqttConnectionObserver,
             }
             connection.publish(topic, payload.getBytes(UTF_8), connection.getQos(), false);
         }
+    }
+
+    /**
+     * Check if the cipher suite <code>TLS_RSA_WITH_AES_256_CBC_SHA</code> is available.
+     *
+     * @return true if the cipher suite is available, false otherwise
+     */
+    private boolean isRsaAes256CbcShaAvailable() {
+        String disabledAlgorithms = Security.getProperty("jdk.tls.disabledAlgorithms");
+        if (disabledAlgorithms == null || disabledAlgorithms.isBlank()) {
+            return true;
+        }
+        logger.debug("jdk.tls.disabledAlgorithms: {}", disabledAlgorithms);
+
+        for (String token : disabledAlgorithms.split(",")) {
+            token = token.trim();
+
+            switch (token) {
+                case "TLS_RSA_*":
+                case "TLS_RSA_*_SHA":
+                case "TLS_RSA_WITH_AES_256_*":
+                case "TLS_RSA_WITH_AES_256_CBC_SHA":
+                    return false;
+            }
+        }
+        return true;
     }
 }
