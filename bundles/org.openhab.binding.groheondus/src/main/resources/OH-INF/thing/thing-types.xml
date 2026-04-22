@@ -128,6 +128,10 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Pause</label>
 		<description>Pauses the appliance for the specified duration. Send 0 min to cancel the pause.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="valve_open">
 		<item-type>Switch</item-type>

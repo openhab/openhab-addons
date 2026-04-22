@@ -15,6 +15,7 @@ package org.openhab.binding.groheondus.internal.handler;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
@@ -180,8 +181,17 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return true;
         }
 
+        GroheOndusAccountHandler accountHandler = getAccountHandler();
+        if (accountHandler == null) {
+            return true;
+        }
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
+            return true;
+        }
+        String authorizationHeader = accountHandler.getAuthorizationHeader();
+        if (authorizationHeader == null) {
+            logger.debug("Missing authorization header for thing {}", thing.getUID());
             return true;
         }
         @Nullable
@@ -191,27 +201,40 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
         }
 
         try {
-            GroheOndusSnoozeHttpClient.setPauseDuration(ondusService, appliance, durationMinutes);
+            GroheOndusSnoozeHttpClient.setPauseDuration(GroheOndusAccountHandler.BASE_URL, authorizationHeader,
+                    appliance, durationMinutes);
             this.snoozeUntil = durationMinutes == 0 ? null
                     : Instant.now().plusSeconds(durationMinutes.longValue() * 60);
             updateChannels();
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Pause update for thing {} was interrupted", thing.getUID(), e);
+            return true;
         } catch (IOException e) {
             logger.debug("Could not update pause duration for thing {}", thing.getUID(), e);
         }
         return true;
     }
 
-    public @Nullable OndusService getOndusService() {
+    protected @Nullable GroheOndusAccountHandler getAccountHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             return null;
         }
         BridgeHandler handler = bridge.getHandler();
-        if (!(handler instanceof GroheOndusAccountHandler)) {
+        if (handler instanceof GroheOndusAccountHandler accountHandler) {
+            return accountHandler;
+        }
+        return null;
+    }
+
+    public @Nullable OndusService getOndusService() {
+        GroheOndusAccountHandler handler = getAccountHandler();
+        if (handler == null) {
             return null;
         }
         try {
-            return ((GroheOndusAccountHandler) handler).getService();
+            return handler.getService();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return null;
