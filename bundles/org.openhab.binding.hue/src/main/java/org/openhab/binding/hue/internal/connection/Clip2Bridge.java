@@ -608,7 +608,7 @@ public class Clip2Bridge implements Closeable {
 
             if (request != null) {
                 connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Content-Type", MediaType.APPLICATION_JSON);
                 try (OutputStream out = connection.getOutputStream()) {
                     out.write(request.getBytes(StandardCharsets.UTF_8));
                 }
