@@ -65,7 +65,7 @@
             <phase>compile</phase>
             <configuration>
               <!-- There is a warning on the 'finalName' parameter when building, but it is really necessary -->
-              <finalName>helper</finalName>
+              <finalName>java223-helper</finalName>
               <classifier>lib</classifier>
               <outputDirectory>${basedir}/target/classes</outputDirectory>
               <includes>
