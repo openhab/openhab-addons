@@ -33,7 +33,6 @@ import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -345,13 +344,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
                 for (final var target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
-                        updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
-                                new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
-                        updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
-                                new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    }
+                    final String channel = switch (target.plugType()) {
+                        case DC -> CHANNEL_CHARGE_LIMIT_DC;
+                        case AC -> CHANNEL_CHARGE_LIMIT_AC;
+                    };
+                    updateState(GROUP_CHARGING, channel, new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                 }
             }
 
@@ -392,15 +389,15 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         updateState(GROUP_WARNINGS, CHANNEL_BRAKE_FLUID_WARNING, OnOffType.from(data.brakeOilStatus()));
         final var tirePressureWarning = data.tirePressureWarning();
         if (tirePressureWarning != null) {
-            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all() > 0));
+            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FR,
-                    OnOffType.from(tirePressureWarning.frontRight() > 0));
+                    OnOffType.from(tirePressureWarning.frontRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FL,
-                    OnOffType.from(tirePressureWarning.frontLeft() > 0));
+                    OnOffType.from(tirePressureWarning.frontLeft()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RR,
-                    OnOffType.from(tirePressureWarning.rearRight() > 0));
+                    OnOffType.from(tirePressureWarning.rearRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RL,
-                    OnOffType.from(tirePressureWarning.rearLeft() > 0));
+                    OnOffType.from(tirePressureWarning.rearLeft()));
         }
     }
 
