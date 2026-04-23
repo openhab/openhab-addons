@@ -85,5 +85,4 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	jul.to.slf4j;version='[2.0.17,2.0.18)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
-	org.openhab.core.semantics;version='[5.2.0,5.2.1)',\
-	bcprov;version='[1.84.0,1.84.1)'
+	org.openhab.core.semantics;version='[5.2.0,5.2.1)'
