@@ -150,7 +150,4 @@ Import-Package: \
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
-	bcpkix;version='[1.84.0,1.84.1)',\
-	bcprov;version='[1.84.0,1.84.1)',\
-	bcutil;version='[1.84.0,1.84.1)',\
 	jakarta.ws.rs-api;version='[2.1.6,2.1.7)'
