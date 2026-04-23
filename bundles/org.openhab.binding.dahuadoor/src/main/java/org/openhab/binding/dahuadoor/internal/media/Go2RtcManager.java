@@ -248,8 +248,9 @@ public class Go2RtcManager {
         candidates.append("    - stun:").append(stunServer).append("\n");
 
         return "log:\n" + "  level: debug\n" + "streams:\n" + "  " + streamName + ":\n" + "    - '" + safeRtspUrl
-                + "'\n" + "    - '" + safeBackchannelExec + "'\n" + "api:\n" + "  listen: \"127.0.0.1:" + apiPort
-                + "\"\n" + "webrtc:\n" + "  listen: \":" + webRtcPort + "\"\n" + "  candidates:\n" + candidates;
+                + "'\n" + "    - '" + safeBackchannelExec + "'\n" + "api:\n" + "  origin: \"*\"\n"
+                + "  listen: \"127.0.0.1:" + apiPort + "\"\n" + "webrtc:\n" + "  listen: \":" + webRtcPort + "\"\n"
+                + "  candidates:\n" + candidates;
     }
 
     /**
