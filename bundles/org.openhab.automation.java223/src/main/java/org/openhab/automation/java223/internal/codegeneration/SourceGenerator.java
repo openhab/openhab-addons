@@ -285,7 +285,7 @@ public class SourceGenerator {
             for (Method method : methods) {
                 String name = method.getName();
                 String returnValue = parseArgumentType(method.getGenericReturnType(), classesToImport);
-                ActionType actionType = findActionType(actions, scope, name);
+                ActionType actionType = findActionType(actions, scope, name, method);
 
                 List<ParameterDTO> parameters = mergeParameterInfos(method, actionType, classesToImport);
 
@@ -347,10 +347,22 @@ public class SourceGenerator {
         return null;
     }
 
-    private @Nullable ActionType findActionType(Collection<ActionType> actions, String scope, String name) {
-        for (ActionType actionType : actions) {
+    private @Nullable ActionType findActionType(Collection<ActionType> actions, String scope, String name,
+            Method method) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        actionType: for (ActionType actionType : actions) {
             String shouldStartWith = scope + "." + name + "#";
-            if (actionType.getUID().startsWith(shouldStartWith)) {
+            if (actionType.getUID().startsWith(shouldStartWith)
+                    && parameterTypes.length == actionType.getInputs().size()) {
+                // now verify method parameters
+                for (int i = 0; i < actionType.getInputs().size(); i++) {
+                    String parameterFromActionType = actionType.getInputs().get(i).getType();
+                    String parameterFromMethod = parameterTypes[i].getTypeName();
+                    if (!parameterFromActionType.equals(parameterFromMethod)) {
+                        continue actionType;
+                    }
+                }
+                // all parameters are ok, we found the action type
                 return actionType;
             }
         }

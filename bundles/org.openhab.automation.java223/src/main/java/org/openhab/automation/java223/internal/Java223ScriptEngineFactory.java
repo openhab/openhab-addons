@@ -83,7 +83,7 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
         implements ScriptEngineFactory, EventSubscriber, WatchService.WatchEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Java223ScriptEngineFactory.class);
-    public static final String HELPER_LIB_JAR = "helper-lib.jar";
+    public static final String HELPER_LIB_JAR = "java223-helper-lib.jar";
 
     private final BundleWiring bundleWiring;
 
