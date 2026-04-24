@@ -54,6 +54,7 @@ import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.ExpiresHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.HeaderFactory;
@@ -68,6 +69,9 @@ import javax.sip.message.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dahuadoor.internal.media.PitchToneRtpSender;
+import org.openhab.binding.dahuadoor.internal.media.SipAudioOffer;
+import org.openhab.binding.dahuadoor.internal.media.SipSdpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +96,7 @@ public class SipClient implements SipListener {
 
     private final Logger logger = LoggerFactory.getLogger(SipClient.class);
     private static final String BINDING_PREFIX = "dahuadoor";
+    private static final int LOCAL_AUDIO_RTP_PORT = 20000;
 
     // Configuration
     private final String vtoIp;
@@ -131,6 +136,11 @@ public class SipClient implements SipListener {
     private boolean pendingHangupAfterAck = false;
     private @Nullable ScheduledFuture<?> answeringTimeoutFuture;
     private SipCallState callState = SipCallState.IDLE;
+
+    // Audio talkback
+    private final SipSdpParser sdpParser = new SipSdpParser();
+    private final PitchToneRtpSender pitchToneSender = new PitchToneRtpSender();
+    private @Nullable SipAudioOffer currentAudioOffer;
 
     public enum SipCallState {
         IDLE,
@@ -366,12 +376,14 @@ public class SipClient implements SipListener {
     public void dispose() {
         try {
             cancelAnsweringTimeout();
+            pitchToneSender.stop();
             callStateTimeoutScheduler.shutdownNow();
             synchronized (this) {
                 callState = SipCallState.IDLE;
                 inviteRequest = null;
                 inviteServerTransaction = null;
                 currentInviteSdp = null;
+                currentAudioOffer = null;
                 activeDialog = null;
                 currentCallerId = null;
                 pendingHangupAfterAck = false;
@@ -466,12 +478,14 @@ public class SipClient implements SipListener {
         if (Request.REGISTER.equals(cseq.getMethod())) {
             handleRegisterResponse(response);
         } else if (Request.BYE.equals(cseq.getMethod()) && statusCode == Response.OK) {
+            pitchToneSender.stop();
             synchronized (this) {
                 cancelAnsweringTimeout();
                 callState = SipCallState.IDLE;
                 inviteRequest = null;
                 inviteServerTransaction = null;
                 currentInviteSdp = null;
+                currentAudioOffer = null;
                 activeDialog = null;
                 currentCallerId = null;
                 pendingHangupAfterAck = false;
@@ -508,6 +522,14 @@ public class SipClient implements SipListener {
             currentInviteSdp = inviteSdpRaw != null && inviteSdpRaw.length > 0
                     ? new String(inviteSdpRaw, StandardCharsets.UTF_8)
                     : null;
+            currentAudioOffer = sdpParser.parseAudioOffer(currentInviteSdp).orElse(null);
+            if (currentAudioOffer != null) {
+                logger.info("SIP INVITE audio target: {}:{} codec={} PT={}", currentAudioOffer.getRemoteHost(),
+                        currentAudioOffer.getRemotePort(), currentAudioOffer.getCodecName(),
+                        currentAudioOffer.getPayloadType());
+            } else {
+                logger.warn("SIP INVITE: could not parse audio offer from SDP");
+            }
             activeDialog = serverTransaction.getDialog();
             callState = SipCallState.RINGING;
         }
@@ -548,12 +570,14 @@ public class SipClient implements SipListener {
         serverTransaction.sendResponse(ok);
 
         logger.info("Call cancelled by VTO");
+        pitchToneSender.stop();
         synchronized (this) {
             cancelAnsweringTimeout();
             callState = SipCallState.IDLE;
             inviteRequest = null;
             inviteServerTransaction = null;
             currentInviteSdp = null;
+            currentAudioOffer = null;
             activeDialog = null;
             currentCallerId = null;
             pendingHangupAfterAck = false;
@@ -578,6 +602,15 @@ public class SipClient implements SipListener {
             shouldSendDeferredBye = pendingHangupAfterAck;
             pendingHangupAfterAck = false;
         }
+        SipAudioOffer offer;
+        synchronized (this) {
+            offer = currentAudioOffer;
+        }
+        if (offer != null) {
+            pitchToneSender.start(offer, LOCAL_AUDIO_RTP_PORT);
+        } else {
+            logger.warn("ACK received but no audio offer available – skipping RTP sender");
+        }
         listener.onCallActive();
         if (shouldSendDeferredBye) {
             logger.debug("ACK received, executing deferred hangup");
@@ -597,12 +630,14 @@ public class SipClient implements SipListener {
         Response ok = msgFactory.createResponse(Response.OK, request);
         serverTransaction.sendResponse(ok);
 
+        pitchToneSender.stop();
         synchronized (this) {
             cancelAnsweringTimeout();
             callState = SipCallState.HUNGUP;
             inviteRequest = null;
             inviteServerTransaction = null;
             currentInviteSdp = null;
+            currentAudioOffer = null;
             activeDialog = null;
             currentCallerId = null;
             pendingHangupAfterAck = false;
@@ -673,10 +708,18 @@ public class SipClient implements SipListener {
             ContactHeader contactHeader = hdrFactory.createContactHeader(contactAddress);
             ok.addHeader(contactHeader);
 
-            byte[] inviteSdp = localInviteRequest.getRawContent();
-            if (inviteSdp != null && inviteSdp.length > 0) {
-                logger.debug(
-                        "Incoming INVITE contains SDP offer, but no local SDP answer is available yet; sending 200 OK without SDP body");
+            String inviteSdp = currentInviteSdp;
+            if (inviteSdp != null && !inviteSdp.isBlank()) {
+                int localAudioPort = LOCAL_AUDIO_RTP_PORT;
+                sdpParser.buildAnswerSdp(inviteSdp, localIp, localAudioPort).ifPresentOrElse(answerSdp -> {
+                    try {
+                        ContentTypeHeader contentTypeHeader = hdrFactory.createContentTypeHeader("application", "sdp");
+                        ok.setContent(answerSdp, contentTypeHeader);
+                        logger.debug("Attached SDP answer to 200 OK with local audio port {}", localAudioPort);
+                    } catch (ParseException e) {
+                        throw new IllegalStateException("Failed to create SDP content type header", e);
+                    }
+                }, () -> logger.warn("Incoming INVITE contains SDP offer, but SDP answer generation failed"));
             }
 
             localInviteServerTransaction.sendResponse(ok);
