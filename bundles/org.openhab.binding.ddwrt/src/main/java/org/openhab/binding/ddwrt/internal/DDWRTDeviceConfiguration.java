@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link DDWRTDeviceConfiguration} class contains fields mapping thing configuration parameters for
- * {@link DDWRTDeviceHandler}.
+ * {@link DDWRTDeviceThingHandler}.
  *
  * @author Lee Ballard - Initial contribution
  */
