@@ -372,6 +372,9 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
 
         if (!schemaDp.unit.isEmpty() && acceptedItemType.startsWith(NUMBER + ":")) {
             channelTypeBuilder.withUnitHint(schemaDp.unit);
+        } else if (!schemaDp.unit.isEmpty() && !acceptedItemType.contains(":")) {
+            logger.warn("Channel {} has unit \"{}\" but the dimension is unknown, please report as bug.", channelTypeId,
+                    schemaDp.unit);
         }
 
         if (stateDescriptionFragmentBuilder != null) {
