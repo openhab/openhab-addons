@@ -60,6 +60,7 @@ public class DDWRTBindingConstants {
     // List of device channel ids
     public static final String CHANNEL_CPU_LOAD = "cpu-load";
     public static final String CHANNEL_CPU_TEMP = "cpu-temp";
+    public static final String CHANNEL_FIRMWARE = "firmware";
     public static final String CHANNEL_WAN_IP = "wan-ip";
     public static final String CHANNEL_WAN_IN = "wan-in";
     public static final String CHANNEL_WAN_OUT = "wan-out";

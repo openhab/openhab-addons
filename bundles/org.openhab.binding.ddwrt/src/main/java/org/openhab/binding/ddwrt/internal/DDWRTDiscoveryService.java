@@ -146,7 +146,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
                     devCfg.user, "refreshInterval", devCfg.refreshInterval, "mac", device.getMac(), "model",
-                    device.getModel(), "firmware", device.getFirmware());
+                    device.getModel());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(label).withProperties(props).withRepresentationProperty("mac").build();
