@@ -9,9 +9,25 @@ set -euo pipefail
 # INFO:
 # If you generate the API on a windows system using git bash some additional software is required:
 #
+# 1. Install required tools via winget:
 # > winget install GNU.Wget2 --silent
 # > winget install MikeFarah.yq --silent
 # > winget install jqlang.jq --silent
+# > winget install Microsoft.OpenJDK.21 --silent
+#
+# 2. Create shim scripts in ~/bin/ (add ~/bin to PATH in ~/.bashrc if needed).
+#    These shims wrap the Windows .exe tools so they work with Unix-style paths
+#    (MSYS_NO_PATHCONV=1 prevents Git Bash from converting paths in Docker args,
+#    but also causes Windows .exe tools to receive paths they cannot open).
+#
+#    ~/bin/wget  - wraps wget2.exe, converting --output-document= path
+#    ~/bin/yq    - wraps yq.exe, converting Unix-style path arguments
+#    ~/bin/jq    - wraps jq.exe, converting Unix-style path arguments
+#    ~/bin/mvn   - wraps the repo's ./mvnw, dynamically located by walking up
+#                  from $PWD; also sets JAVA_HOME to JDK 21 to avoid SSL
+#                  certificate failures that occur with older JRE 8 builds.
+#
+#    See the session notes or project wiki for the exact shim contents.
 
 # improve compatibility with windows systems (using git bash)
 export MSYS_NO_PATHCONV=1
