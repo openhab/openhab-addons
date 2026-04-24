@@ -342,6 +342,13 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onReset(@Nullable Stream stream, @Nullable ResetFrame frame) {
             Objects.requireNonNull(stream);
+            if (bridgeHandler.isUpdatingOwnFirmware()) {
+                // stream closes if firmware is updating; this is no error so just complete the future silently
+                if (!completable.isDone()) {
+                    completable.complete(Boolean.FALSE);
+                }
+                return;
+            }
             handleHttp2Error(Http2Error.RESET, stream.getSession());
         }
     }

@@ -1078,7 +1078,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         case FULL_STATE:
                             Resource cachedAutomation = automationsCache.get(resourceId);
                             if (Objects.isNull(cachedAutomation)) {
-                                requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
+                                requireUpdateChannels = true;
                             } else {
                                 if (resource.hasName() && !resource.getName().equals(cachedAutomation.getName())) {
                                     requireUpdateChannels = true;
