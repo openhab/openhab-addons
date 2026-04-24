@@ -233,7 +233,7 @@ public class Go2RtcManager {
         String rtspUrl = "rtsp://" + userInfo + "@" + hostname + ":554/cam/realmonitor?channel=" + rtspChannel
                 + "&subtype=" + rtspSubtype;
         String backchannelExec = "exec:ffmpeg -use_wallclock_as_timestamps 1 -re -fflags nobuffer -f alaw -ar 8000 "
-                + "-ac 1 -i - -vn -acodec pcm_alaw -ar 8000 -ac 1 -payload_type 8 -f rtp " + "rtp://127.0.0.1:"
+                + "-ac 1 -i - -vn -c:a pcm_s16be -ar 16000 -ac 1 -payload_type 97 -f rtp " + "rtp://127.0.0.1:"
                 + backchannelRtpPort + "#backchannel=1#audio=alaw/8000";
 
         String safeRtspUrl = rtspUrl.replace("'", "''");

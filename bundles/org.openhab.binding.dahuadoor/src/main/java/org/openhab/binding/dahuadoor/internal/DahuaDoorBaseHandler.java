@@ -38,6 +38,7 @@ import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DHIPEventListene
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.Go2RtcManager;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
+import org.openhab.binding.dahuadoor.internal.media.SipBackchannelRtpRelay;
 import org.openhab.binding.dahuadoor.internal.media.SipBackchannelSession;
 import org.openhab.binding.dahuadoor.internal.sip.SipClient;
 import org.openhab.binding.dahuadoor.internal.sip.SipEventListener;
@@ -78,6 +79,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     private final PlayStreamServlet playStreamServlet;
     private @Nullable Go2RtcManager go2rtcManager;
+    private @Nullable SipBackchannelRtpRelay sipBackchannelRelay;
     private @Nullable SipClient sipClient;
     private @Nullable Future<?> webRtcStartupJob;
     private @Nullable Future<?> sipStartupJob;
@@ -86,6 +88,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private final Map<String, SipClient> sipClients = new ConcurrentHashMap<>();
     private final Map<String, SipBackchannelSession> backchannelSessionsByHttpSession = new ConcurrentHashMap<>();
     private static final String[] AVAILABLE_CLIENT_IDS = { "client-1", "client-2", "client-3" };
+    private static final int SIP_BACKCHANNEL_SOURCE_RTP_PORT = 20000;
     private static final long DOORBELL_EVENT_DEDUP_MS = 1500;
     private static final long SESSION_TTL_MS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSION_MAPPINGS = 256;
@@ -158,6 +161,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
 
+        if (localConfig.enableWebRTC && localConfig.enableSip) {
+            startSipBackchannelRelay(localConfig);
+        }
+
         if (localConfig.enableWebRTC) {
             startWebRtc(localConfig);
         }
@@ -169,6 +176,26 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
+        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_SOURCE_RTP_PORT;
+        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(listenPort, SIP_BACKCHANNEL_SOURCE_RTP_PORT);
+        try {
+            relay.start();
+            sipBackchannelRelay = relay;
+        } catch (IOException e) {
+            sipBackchannelRelay = null;
+            logger.warn("Failed to start SIP backchannel RTP relay on 127.0.0.1:{}: {}", listenPort, e.getMessage(), e);
+        }
+    }
+
+    private void stopSipBackchannelRelay() {
+        SipBackchannelRtpRelay relay = sipBackchannelRelay;
+        sipBackchannelRelay = null;
+        if (relay != null) {
+            relay.stop();
+        }
     }
 
     /**
@@ -248,6 +275,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             playStreamServlet.unregisterStream(localManager.getStreamName());
             localManager.stop();
         }
+        stopSipBackchannelRelay();
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
@@ -758,7 +786,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
 
                 SipClient newSipClient = new SipClient(cfg.hostname, cfg.sipExtension, cfg.sipExtension, sipPass,
-                        cfg.localSipPort, localIp, cfg.sipRealm, this, this::errorInformer);
+                        cfg.localSipPort, localIp, cfg.sipRealm, SIP_BACKCHANNEL_SOURCE_RTP_PORT, sipBackchannelRelay,
+                        this, this::errorInformer);
 
                 if (disposed) {
                     newSipClient.dispose();
@@ -820,6 +849,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             localClient.dispose();
             logger.debug("SIP client stopped");
         }
+        stopSipBackchannelRelay();
         sessionToClientId.clear();
         backchannelSessionsByHttpSession.clear();
         sipClients.clear();
