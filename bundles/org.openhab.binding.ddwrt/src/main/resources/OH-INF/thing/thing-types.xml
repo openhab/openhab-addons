@@ -76,6 +76,7 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="cpu-load" typeId="cpu-load"/>
 			<channel id="cpu-temp" typeId="cpu-temp"/>
+			<channel id="firmware" typeId="firmware"/>
 			<channel id="wan-ip" typeId="wan-ip"/>
 			<channel id="wan-in" typeId="wan-in"/>
 			<channel id="wan-out" typeId="wan-out"/>
@@ -97,7 +98,6 @@
 		<properties>
 			<property name="mac">unknown</property>
 			<property name="model">unknown</property>
-			<property name="firmware">unknown</property>
 			<property name="chipset">unknown</property>
 		</properties>
 
@@ -356,6 +356,14 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="firmware">
+		<item-type>String</item-type>
+		<label>Firmware</label>
+		<description>Firmware version string (e.g., DD-WRT v3.0-r50000, OpenWrt 23.05)</description>
+		<category>Network</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="wan-ip">
