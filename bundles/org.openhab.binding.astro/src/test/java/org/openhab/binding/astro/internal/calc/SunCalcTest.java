@@ -417,7 +417,7 @@ public class SunCalcTest {
 
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
-        assertEquals(SunPhase.DAYLIGHT, sun.getSunPhase());
+        assertEquals(SunPhase.SUN_RISE, sun.getSunPhase());
     }
 
     @Test
