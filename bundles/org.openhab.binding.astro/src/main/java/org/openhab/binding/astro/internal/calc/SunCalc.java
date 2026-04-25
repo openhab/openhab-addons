@@ -359,7 +359,8 @@ public class SunCalc {
                 }
 
                 // For equal starts, sort by end descending so narrower ranges are processed last and win.
-                // Example case is start of SUN_RISE and start of DAYLIGHT being the same, but SUN_RISE should win over DAYLIGHT.
+                // Example case is start of SUN_RISE and start of DAYLIGHT being the same, but SUN_RISE should win over
+                // DAYLIGHT.
                 return Comparator.nullsLast(Calendar::compareTo).compare(p2Range.getEnd(), p1Range.getEnd());
             }
         });
