@@ -352,8 +352,9 @@ public class SunCalc {
             public int compare(Entry<SunPhase, Range> p1, Entry<SunPhase, Range> p2) {
                 Range p1Range = p1.getValue();
                 Range p2Range = p2.getValue();
-                int startComparison = Comparator.nullsFirst(Calendar::compareTo).compare(p1Range.getStart(),
-                        p2Range.getStart());
+                Calendar s1 = p1Range.getStart();
+                Calendar s2 = p2Range.getStart();
+                int startComparison = s1 == null ? (s2 == null ? 0 : -1) : s2 == null ? 1 : s1.compareTo(s2);
                 if (startComparison != 0) {
                     return startComparison;
                 }
@@ -361,7 +362,8 @@ public class SunCalc {
                 // For equal starts, sort by end descending so narrower ranges are processed last and win.
                 // Example case is start of SUN_RISE and start of DAYLIGHT being the same, but SUN_RISE should win over
                 // DAYLIGHT.
-                return Comparator.nullsLast(Calendar::compareTo).compare(p2Range.getEnd(), p1Range.getEnd());
+                Calendar e1 = p1Range.getEnd(), e2 = p2Range.getEnd();
+                return e2 == null ? (e1 == null ? 0 : 1) : e1 == null ? -1 : e2.compareTo(e1);
             }
         });
 
