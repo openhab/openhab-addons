@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
@@ -102,8 +103,9 @@ class TestMessages {
                 storageService.getStorage(BINDING_ID));
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
-            account.decodeDevices(content);
+            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            JSONArray deviceList = account.extractList(new JSONObject(content));
+            account.discovery(deviceList);
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);
