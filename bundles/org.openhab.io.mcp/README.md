@@ -8,7 +8,7 @@ Once you've connected a client, you can say things like:
 - _"Dim the office to 30%."_
 - _"Turn on the porch light every day at sunset."_
 - _"Let me know if the garage door opens while we're talking."_
-- _"Turn off the kitchen light at 10pm tonight."_ 
+- _"Turn off the kitchen light at 10pm tonight."_
 
 The assistant uses your home's semantic model (rooms, equipment, devices) to figure out which item you mean, so you rarely need to know exact item names.
 
@@ -53,7 +53,7 @@ Paste the token into your MCP client as an `Authorization: Bearer oh.…` header
 Tokens are tied to the user that created them, so the assistant's permissions match whatever that user can do through the openHAB UI.
 If you want to restrict what the assistant can touch, create a dedicated openHAB user with limited permissions and generate the token from that account.
 
-> Modern MCP clients (recent Claude, ChatGPT, `mcp-remote`) can drive a browser-based OAuth login — no token pasting needed. 
+> Modern MCP clients (recent Claude, ChatGPT, `mcp-remote`) can drive a browser-based OAuth login — no token pasting needed.
 > The server advertises the necessary OAuth metadata automatically; just give the client your server URL and it'll walk you through sign-in the first time.
 
 ## Connecting a client
@@ -71,6 +71,8 @@ Use this when the client is on the same LAN, connected via VPN, or you have a re
 
 #### 2. openHAB Cloud
 
+> **Warning** Exposing the MCP service via a webhook will make the openHAB login process available to anyone with the unique generated cloud URL.  This URL should be considered private and not shared outside of using it with trusted AI providers. To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
+
 Enable **`registerCloudWebhook`** in the add-on settings.
 The server registers with your openHAB Cloud service and you get a public HTTPS URL:
 
@@ -83,8 +85,6 @@ Use this URL in any MCP client — no port forwarding or reverse proxy needed.
 You can either include a static `oh.*` token in the client config, or let the client handle sign-in automatically via OAuth (Claude Desktop, ChatGPT, and `mcp-remote` all support this).
 
 > **First-time OAuth login:** you'll sign in twice — once to the openHAB Cloud service, then again to openHAB itself to authorize the MCP client. Subsequent connections reuse stored tokens.
-
-> **Warning** Exposing the MCP service via a webhook will make the openHAB login process available to anyone with the unique generated cloud URL.  This URL should be considered private and not shared outside of using it with trusted AI providers. To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
 
 #### 3. mcp-remote bridge (stdio)
 
