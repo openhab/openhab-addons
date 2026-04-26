@@ -10,7 +10,7 @@ Once you've connected a client, you can say things like:
 - _"Let me know if the garage door opens while we're talking."_
 - _"Turn off the kitchen light at 10pm tonight."_
 
-The assistant uses your home's semantic model (rooms, equipment, devices) to figure out which item you mean, so you rarely need to know exact item names.
+The assistant uses your home's semantic model (rooms, equipment, devices) along with fuzzy matching logic to understand which items you mean to monitor or control without having to use the exact item name.
 
 ## Installation
 
@@ -41,14 +41,14 @@ Tokens can be obtained in 2 different ways:
 
 ### Manual Token Generation
 
-Generate one in the openHAB UI:
+Generate a token in the openHAB UI:
 
 1. Click your user menu (bottom-left) → **Profile**.
 1. Open the **API Tokens** section → **+ Add API Token**.
 1. Give it a name (e.g. _"Claude"_) and a scope (leave blank for full access).
 1. Copy the token — it looks like `oh.abcDEF123…`. You won't see it again.
 
-Paste the token into your MCP client as an `Authorization: Bearer oh.…` header — the examples below show how for each client.
+Paste the token into your MCP client as an `Authorization: Bearer oh.…` header — the [examples](#client-setup) below show how for each client.
 
 Tokens are tied to the user that created them, so the assistant's permissions match whatever that user can do through the openHAB UI.
 If you want to restrict what the assistant can touch, create a dedicated openHAB user with limited permissions and generate the token from that account.
@@ -71,7 +71,9 @@ Use this when the client is on the same LAN, connected via VPN, or you have a re
 
 #### 2. openHAB Cloud
 
-> **Warning:** Exposing the MCP service via a webhook will make the openHAB user login UI available to anyone with the unique generated cloud URL.  This URL should be considered private and not shared outside of using it with trusted AI providers. To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
+> **Warning:** Exposing the MCP service via a webhook will make the openHAB user login UI available to anyone with the unique generated cloud URL.
+> This URL should be considered private and not shared outside of using it with trusted AI providers.
+> To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
 
 Enable **`registerCloudWebhook`** in the add-on settings.
 The server registers with your openHAB Cloud service and you get a public HTTPS URL:
@@ -84,7 +86,8 @@ The generated URL will be visible in the configuration menu under **Settings →
 Use this URL in any MCP client — no port forwarding or reverse proxy needed.
 You can either include a static `oh.*` token in the client config, or let the client handle sign-in automatically via OAuth (Claude Desktop, ChatGPT, and `mcp-remote` all support this).
 
-> **First-time OAuth login:** you'll sign in twice — once to the openHAB Cloud service, then again to openHAB itself to authorize the MCP client. Subsequent connections reuse stored tokens.
+> **First-time OAuth login:** you'll sign in twice — once to the openHAB Cloud service, then again to openHAB itself to authorize the MCP client.
+> Subsequent connections reuse stored tokens.
 
 #### 3. mcp-remote bridge (stdio)
 
@@ -158,7 +161,8 @@ Works with both direct LAN URLs and Cloud URLs.
 #### ChatGPT (chatgpt.com, desktop, mobile)
 
 ChatGPT requires a **public HTTPS URL**, so use the **openHAB Cloud** method.
-ChatGPT handles sign-in through a browser OAuth prompt — no token pasting needed. Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
+ChatGPT handles sign-in through a browser OAuth prompt — no token pasting needed.
+Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 
 1. Turn on **`registerCloudWebhook`** in the add-on settings and copy the hook URL from the openHAB log.
 1. In ChatGPT: **Settings → Apps & Connectors → Advanced settings** → toggle **Developer mode** on.
@@ -188,7 +192,8 @@ ChatGPT handles sign-in through a browser OAuth prompt — no token pasting need
 - _"Keep an eye on the garage door — tell me if it opens while we're talking."_
 - _"Is the dishwasher done yet?"_ — start watching once, ask again later for a summary.
 
-> Current MCP clients don't surface server-pushed notifications to the LLM yet, so the assistant can only report on changes **when you ask** — it won't interrupt you proactively. That will improve as clients add support; the server is already ready for it.
+> Current MCP clients don't surface server-pushed notifications to the LLM yet, so the assistant can only report on changes **when you ask** — it won't interrupt you proactively.
+> That will improve as clients add support; the server is already ready for it.
 
 ## What the assistant can do
 
