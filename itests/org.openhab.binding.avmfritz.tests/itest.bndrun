@@ -73,11 +73,11 @@ Fragment-Host: org.openhab.binding.avmfritz
 	org.objectweb.asm.tree.analysis;version='[9.9.1,9.9.2)',\
 	org.objectweb.asm.util;version='[9.9.1,9.9.2)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.3.3,2.3.4)',\
-	org.ops4j.pax.web.pax-web-api;version='[8.0.34,8.0.35)',\
-	org.ops4j.pax.web.pax-web-jetty;version='[8.0.34,8.0.35)',\
-	org.ops4j.pax.web.pax-web-runtime;version='[8.0.34,8.0.35)',\
-	org.ops4j.pax.web.pax-web-spi;version='[8.0.34,8.0.35)',\
-	org.ops4j.pax.web.pax-web-tomcat-common;version='[8.0.34,8.0.35)',\
+	org.ops4j.pax.web.pax-web-api;version='[8.0.35,8.0.36)',\
+	org.ops4j.pax.web.pax-web-jetty;version='[8.0.35,8.0.36)',\
+	org.ops4j.pax.web.pax-web-runtime;version='[8.0.35,8.0.36)',\
+	org.ops4j.pax.web.pax-web-spi;version='[8.0.35,8.0.36)',\
+	org.ops4j.pax.web.pax-web-tomcat-common;version='[8.0.35,8.0.36)',\
 	org.openhab.binding.avmfritz;version='[5.2.0,5.2.1)',\
 	org.openhab.binding.avmfritz.tests;version='[5.2.0,5.2.1)',\
 	org.openhab.core;version='[5.2.0,5.2.1)',\
