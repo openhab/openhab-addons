@@ -80,13 +80,17 @@ public class ShadeCapabilitiesDatabase {
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
             new Type(10).capabilities(0).text("Duette/Applause Skylift"),
             new Type(18).capabilities(1).text("Pirouette"),
+            new Type(19).capabilities(0).text("Provenance Woven Wood"),
             new Type(23).capabilities(1).text("Silhouette"),
             new Type(26).capabilities(3).text("Skyline Panel, Left Stack"),
             new Type(27).capabilities(3).text("Skyline Panel, Right Stack"),
             new Type(28).capabilities(3).text("Skyline Panel, Split Stack"),
             new Type(31).capabilities(0).text("Vignette"),
+            new Type(32).capabilities(0).text("Vignette"),
             new Type(33).capabilities(7).text("Duette Architella"),
             new Type(38).capabilities(9).text("Silhouette Duolite"),
+            new Type(39).capabilities(5).text("Parkland"),
+            new Type(40).capabilities(5).text("Everwood Blind"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
             // note: the following shade type has the functionality of a capabilities 1 shade
@@ -94,10 +98,13 @@ public class ShadeCapabilitiesDatabase {
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
+            new Type(52).capabilities(0).text("Banded Shades"),
+            new Type(53).capabilities(0).text("Sonnette"),
             // note: sometimes shade type 54/55/56 wrongly report capabilities:3 so force capabilities:4
             new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(4),
             new Type(55).capabilities(4).text("Vertical Slats Right Stack").capabilitiesOverride(4),
             new Type(56).capabilities(4).text("Vertical Slats Split Stack").capabilitiesOverride(4),
+            new Type(57).capabilities(0).text("Carole Roman Shade"),
             new Type(62).capabilities(2).text("Venetian"),
             new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(66).capabilities(5).text("Shutter"),
@@ -105,6 +112,8 @@ public class ShadeCapabilitiesDatabase {
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
+            new Type(84).capabilities(0).text("Vignette"),
+            new Type(95).capabilities(8).text("Vignette Duolite Illuminated"),
     // @formatter:on
             new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
 
