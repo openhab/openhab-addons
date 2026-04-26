@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,12 +83,13 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        // check stored token for basic validation like creation time and expiration
         getToken();
         if (MSpaUtils.isTokenValid(token)) {
-            updateStatus(ThingStatus.ONLINE);
             discovery.addAccount(this);
             startDiscovery();
         } else {
+            token = MSpaUtils.getInvalidToken();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.invalid-token");
         }
     }
@@ -97,42 +99,86 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         discovery.removeAccount(this);
     }
 
+    /**
+     * Discovery is started with a query to the current connected devices.
+     */
     public void startDiscovery() {
+        discovery(Objects.requireNonNullElseGet(getDeviceList(), JSONArray::new));
+    }
+
+    /**
+     * Get all devices connected to the account. Status of bridge changes according to this query. It's used for
+     * discovery but also to check if connected devices to this bridge are ONLINE.
+     *
+     * @return JSONArray with device information, empty array in case of error or no devices
+     */
+    public JSONArray getDeviceList() {
         Request discovery = getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
         try {
             ContentResponse cr = discovery.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
             String response = cr.getContentAsString();
-            if (status == 200) {
-                logger.trace("Device list {}", response);
-                decodeDevices(response);
+            logger.trace("Device list {}", response);
+            if (status == HttpStatus.OK_200) {
+                JSONObject responseJson = MSpaUtils.toJson(response);
+                int responseCode = responseJson.optInt("code", 0);
+                if (responseCode == 0) {
+                    updateStatus(ThingStatus.ONLINE);
+                    return extractList(responseJson);
+                } else {
+                    String responseMEssage = responseJson.optString("message", response);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/status.mspa.pool.request-failed [\"" + responseMEssage + "\"]");
+                    if (responseCode == 10001) {
+                        // make one retry to get new token
+                        tokenRefresh();
+                    }
+                }
             } else {
-                logger.warn("Failed to get device list - reason {}", response);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.mspa.pool.request-failed [\"" + response + "\"]");
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Failed to get device list - reason {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.mspa.pool.request-failed [\"" + e.getMessage() + "\"]");
             handlePossibleInterrupt(e);
         }
+        return new JSONArray();
     }
 
-    public void decodeDevices(String response) {
-        JSONObject devices = new JSONObject(response);
-        if (devices.has("data")) {
-            JSONObject data = devices.getJSONObject("data");
-            if (data.has("list")) {
-                JSONArray list = data.getJSONArray("list");
-                list.forEach(entry -> {
-                    if (entry instanceof JSONObject jsonEntry) {
-                        // ensure necessary ids are present
-                        if (jsonEntry.has("device_id") && jsonEntry.has("product_id")) {
-                            Map<String, Object> properties = jsonEntry.toMap();
-                            Map<String, Object> discoveryProperties = MSpaUtils.getDiscoveryProperties(properties);
-                            discovery.deviceDiscovered(THING_TYPE_POOL, this.getThing().getUID(), discoveryProperties);
-                        }
-                    }
-                });
+    /**
+     * Helper method to extract device list from device list response.
+     *
+     * @param responseJson JSON response from device list request
+     * @return JSON array with device information, empty array in case of error or no devices
+     */
+    public JSONArray extractList(JSONObject responseJson) {
+        JSONObject dataJson = responseJson.optJSONObject("data");
+        if (dataJson != null) {
+            JSONArray list = dataJson.optJSONArray("list");
+            if (list != null) {
+                return list;
             }
         }
+        return new JSONArray();
+    }
+
+    /**
+     * Post discovery results based on the device list.
+     *
+     * @param deviceList JSONArray with device information
+     */
+    public void discovery(JSONArray deviceList) {
+        deviceList.forEach(entry -> {
+            if (entry instanceof JSONObject jsonEntry) {
+                // ensure necessary ids are present
+                if (jsonEntry.has("device_id") && jsonEntry.has("product_id")) {
+                    Map<String, Object> properties = jsonEntry.toMap();
+                    Map<String, Object> discoveryProperties = MSpaUtils.getDiscoveryProperties(properties);
+                    discovery.deviceDiscovered(THING_TYPE_POOL, this.getThing().getUID(), discoveryProperties);
+                }
+            }
+        });
     }
 
     @Override
@@ -221,5 +267,17 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
         }
     }
 
+    private void tokenRefresh() {
+        // set token to invalid
+        token = MSpaUtils.getInvalidToken();
+        // clear token from persistence
+        clearToken();
+        // bridge will switch to ONLINE if token request is successful, otherwise stay OFFLINE with error message from
+        // token request
+        requestToken();
+    }
+
     public abstract void requestToken();
+
+    public abstract void clearToken();
 }
