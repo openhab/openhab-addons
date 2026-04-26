@@ -98,7 +98,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
             new Type(49).capabilities(0).text("AC Roller"),
             new Type(51).capabilities(2).text("Venetian"),
-            new Type(52).capabilities(0).text("Banded Shades"),
+            new Type(52).capabilities(0).text("Banded Shade"),
             new Type(53).capabilities(0).text("Sonnette"),
             // note: sometimes shade type 54/55/56 wrongly report capabilities:3 so force capabilities:4
             new Type(54).capabilities(4).text("Vertical Slats Left Stack").capabilitiesOverride(4),
