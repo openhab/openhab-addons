@@ -76,7 +76,12 @@ public class SubscriptionManager {
 
     public Set<String> watched(String sessionId) {
         SessionState s = bySession.get(sessionId);
-        return s == null ? Set.of() : Set.copyOf(s.watchedItems);
+        if (s == null) {
+            return Set.of();
+        }
+        synchronized (s.watchedItems) {
+            return Set.copyOf(s.watchedItems);
+        }
     }
 
     /**

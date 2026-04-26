@@ -18,7 +18,7 @@
     <mcp.sdk.version>1.1.1</mcp.sdk.version>
     <reactor.version>3.7.6</reactor.version>
     <dep.noembedding>jackson-databind,jackson-core,jackson-annotations,jackson-dataformat-yaml</dep.noembedding>
-    <bnd.importpackage>io.projectreactor.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,org.yaml.snakeyaml.*;resolution:=optional,io.micrometer.*;resolution:=optional,reactor.blockhound.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.graalvm.polyglot.*;resolution:=optional,org.jcodings.*;resolution:=optional,org.joni.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>jakarta.servlet.*;resolution:=optional,io.projectreactor.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,org.yaml.snakeyaml.*;resolution:=optional,io.micrometer.*;resolution:=optional,reactor.blockhound.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.graalvm.polyglot.*;resolution:=optional,org.jcodings.*;resolution:=optional,org.joni.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>

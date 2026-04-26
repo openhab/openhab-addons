@@ -71,7 +71,7 @@ Use this when the client is on the same LAN, connected via VPN, or you have a re
 
 #### 2. openHAB Cloud
 
-> **Warning** Exposing the MCP service via a webhook will make the openHAB login process available to anyone with the unique generated cloud URL.  This URL should be considered private and not shared outside of using it with trusted AI providers. To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
+> **Warning:** Exposing the MCP service via a webhook will make the openHAB user login UI available to anyone with the unique generated cloud URL.  This URL should be considered private and not shared outside of using it with trusted AI providers. To remove the webhook, disable the option from the settings menu. Enabling will generate a new unique URL.
 
 Enable **`registerCloudWebhook`** in the add-on settings.
 The server registers with your openHAB Cloud service and you get a public HTTPS URL:

@@ -44,6 +44,7 @@ import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.io.mcp.internal.auth.McpAuthenticator;
+import org.openhab.io.mcp.internal.servlet.JavaxStreamableServerTransportProvider;
 import org.openhab.io.mcp.internal.servlet.OAuthMetadataServlet;
 import org.openhab.io.mcp.internal.servlet.OAuthRegisterServlet;
 import org.openhab.io.mcp.internal.servlet.OAuthTokenProxyServlet;
@@ -148,7 +149,7 @@ public class McpService {
         try {
             this.httpClient.start();
         } catch (Exception e) {
-            logger.debug("Failed to start MCP HTTP client: {}", e.getMessage(), e);
+            logger.warn("Failed to start MCP HTTP client: {}", e.getMessage(), e);
             return;
         }
 
@@ -203,15 +204,20 @@ public class McpService {
         try {
             McpJsonMapper jsonMapper = new JacksonMcpJsonMapper(new ObjectMapper());
 
+            ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("mcp");
+
             McpCloudWebhookService webhook = null;
             if (config.registerCloudWebhook) {
                 webhook = new McpCloudWebhookService(bundleContext, SERVLET_PATH, httpClient);
-                String mcpHook = webhook.register() ? webhook.getPublicUrl() : null;
-                if (mcpHook != null) {
-                    logger.debug("MCP cloud webhook URL: {}", mcpHook);
-                }
-                persistWebhookUrl(mcpHook != null ? mcpHook : "");
                 this.cloudWebhook = webhook;
+                McpCloudWebhookService webhookRef = webhook;
+                scheduler.execute(() -> {
+                    String mcpHook = webhookRef.register() ? webhookRef.getPublicUrl() : null;
+                    if (mcpHook != null) {
+                        logger.debug("MCP cloud webhook URL: {}", mcpHook);
+                    }
+                    persistWebhookUrl(mcpHook != null ? mcpHook : "");
+                });
             } else {
                 persistWebhookUrl("");
             }
@@ -310,7 +316,6 @@ public class McpService {
             McpEventBridge eventBridge = new McpEventBridge(server, subscriptions, config.resourceCoalesceMs);
             serviceRegistrations.add(bundleContext.registerService(EventSubscriber.class, eventBridge, null));
 
-            ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("mcp");
             cleanupTask = scheduler.scheduleWithFixedDelay(this::cleanupOneshotRules, CLEANUP_INTERVAL_SECONDS,
                     CLEANUP_INTERVAL_SECONDS, TimeUnit.SECONDS);
 

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.mcp.internal;
+package org.openhab.io.mcp.internal.servlet;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.io.mcp.internal.McpCloudWebhookService;
 import org.openhab.io.mcp.internal.auth.McpAuthenticator;
 import org.openhab.io.mcp.internal.util.SubscriptionManager;
 import org.slf4j.Logger;
