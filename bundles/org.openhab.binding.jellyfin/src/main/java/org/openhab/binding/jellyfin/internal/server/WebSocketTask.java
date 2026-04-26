@@ -135,9 +135,8 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
         // Check if max reconnection attempts exceeded
         if (reconnectionAttempts >= MAX_RECONNECTION_ATTEMPTS) {
-            logger.warn("[WEBSOCKET] ⚠️ Max reconnection attempts ({}) exceeded, triggering fallback to polling",
+            logger.warn("[WEBSOCKET] Max reconnection attempts ({}) exceeded, triggering fallback to polling",
                     MAX_RECONNECTION_ATTEMPTS);
-            logger.info("[MODE] Switching from WebSocket to POLLING mode due to connection failures");
             connectionState.set(ConnectionState.FAILED);
             Runnable callback = this.onMaxRetriesExceeded;
             if (callback != null) {
@@ -149,14 +148,14 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         try {
             // Apply exponential backoff delay for retry attempts
             if (reconnectionAttempts > 0) {
-                logger.info("[WEBSOCKET] Reconnection attempt {}/{} after {}s backoff", reconnectionAttempts,
+                logger.debug("[WEBSOCKET] Reconnection attempt {}/{} after {}s backoff", reconnectionAttempts,
                         MAX_RECONNECTION_ATTEMPTS, currentBackoffSeconds);
             } else {
-                logger.info("[WEBSOCKET] Initial connection attempt to Jellyfin server");
+                logger.debug("[WEBSOCKET] Initial connection attempt to Jellyfin server");
             }
 
             connectionState.set(ConnectionState.CONNECTING);
-            logger.info("[WEBSOCKET] Connecting to Jellyfin server...");
+            logger.debug("[WEBSOCKET] Connecting to Jellyfin server");
 
             // Construct WebSocket URI from API client configuration
             URI webSocketUri = buildWebSocketUri();
@@ -195,10 +194,10 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
             // Calculate next backoff delay with exponential growth
             currentBackoffSeconds = Math.min(INITIAL_BACKOFF_SECONDS * (1 << (reconnectionAttempts - 1)),
                     MAX_BACKOFF_SECONDS);
-            logger.info("[WEBSOCKET] ⏱️ Will retry in {}s (attempt {}/{})", currentBackoffSeconds, reconnectionAttempts,
+            logger.debug("[WEBSOCKET] Will retry in {}s (attempt {}/{})", currentBackoffSeconds, reconnectionAttempts,
                     MAX_RECONNECTION_ATTEMPTS);
         } else {
-            logger.warn("[WEBSOCKET] ✗ Maximum reconnection attempts ({}) reached", MAX_RECONNECTION_ATTEMPTS);
+            logger.warn("[WEBSOCKET] Maximum reconnection attempts ({}) reached", MAX_RECONNECTION_ATTEMPTS);
         }
     }
 
@@ -208,10 +207,10 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      */
     private void resetReconnectionState() {
         if (reconnectionAttempts > 0) {
-            logger.info("[WEBSOCKET] ✓ Connection successful after {} attempt(s), resetting reconnection state",
+            logger.debug("[WEBSOCKET] Connection successful after {} attempt(s), resetting reconnection state",
                     reconnectionAttempts);
         } else {
-            logger.info("[WEBSOCKET] ✓ Initial connection successful");
+            logger.debug("[WEBSOCKET] Initial connection successful");
         }
         reconnectionAttempts = 0;
         currentBackoffSeconds = INITIAL_BACKOFF_SECONDS;
@@ -370,7 +369,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
             session.getRemote().sendString("{\"MessageType\":\"SessionsStart\",\"Data\":\"0,1500\"}");
             logger.info("[WEBSOCKET] ✓ Sent SessionsStart subscription (0 ms delay, 1 500 ms interval)");
         } catch (IOException e) {
-            logger.warn("[WEBSOCKET] ⚠️ Failed to send SessionsStart subscription: {}", e.getMessage());
+            logger.warn("[WEBSOCKET] Failed to send SessionsStart subscription: {}", e.getMessage());
         }
     }
 
@@ -403,8 +402,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         if (statusCode == 1000) {
             logger.info("[WEBSOCKET] Connection closed normally: {} - {} (state: DISCONNECTED)", statusCode, reason);
         } else {
-            logger.warn("[WEBSOCKET] ⚠️ Connection closed abnormally: {} - {} (state: DISCONNECTED)", statusCode,
-                    reason);
+            logger.debug("[WEBSOCKET] Connection closed abnormally: {} - {} (state: DISCONNECTED)", statusCode, reason);
         }
 
         // Clean up session reference
@@ -412,7 +410,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
         // Trigger reconnection logic if not a clean shutdown
         if (statusCode != 1000) { // 1000 = normal closure
-            logger.info("[WEBSOCKET] Abnormal closure detected, will attempt reconnection");
+            logger.debug("[WEBSOCKET] Abnormal closure detected, will attempt reconnection");
             handleConnectionFailure();
         }
     }
@@ -421,9 +419,9 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     public void onWebSocketError(@Nullable Throwable cause) {
         connectionState.set(ConnectionState.FAILED);
         if (cause != null) {
-            logger.error("[WEBSOCKET] ✗ Error occurred: {} (state: FAILED)", cause.getMessage(), cause);
+            logger.debug("[WEBSOCKET] Connection error, will retry: {}", cause.getMessage(), cause);
         } else {
-            logger.error("[WEBSOCKET] ✗ Unknown error occurred (state: FAILED)");
+            logger.debug("[WEBSOCKET] Unknown connection error occurred, will retry");
         }
 
         // Trigger reconnection logic

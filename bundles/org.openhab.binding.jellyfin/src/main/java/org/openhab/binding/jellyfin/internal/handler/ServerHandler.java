@@ -178,7 +178,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 logger.info("[MODE] WebSocket mode initialized (real-time updates enabled with automatic fallback)");
             }
         } catch (Exception ex) {
-            logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage());
+            logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage(), ex);
         }
     }
 
@@ -188,8 +188,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * Stops WebSocket task and starts polling task (ServerSyncTask).
      */
     private void handleWebSocketFallback() {
-        logger.warn("[MODE] ⚠️ WebSocket fallback triggered: switching to POLLING mode");
-        logger.info("[MODE] Real-time updates disabled, using periodic polling instead");
+        logger.info("[MODE] Switching from WebSocket to POLLING mode after repeated connection failures");
 
         // Stop WebSocket task
         ScheduledFuture<?> wsSchedule = this.scheduledTasks.get(WebSocketTask.TASK_ID);

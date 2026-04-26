@@ -49,7 +49,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
     private static final boolean DEFAULT_BACKGROUND_SCAN = false; // Disable background scan
     private static final String MIN_SUPPORTED_VERSION = "10.10.7"; // Minimum supported server version
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServerDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryService.class);
     private final ConfigurationAdmin configurationService;
 
     @Activate
@@ -70,7 +70,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
 
         if (!servers.isEmpty()) {
             for (ServerDiscoveryResult server : servers) {
-                LOG.debug("Server {} @ {}", server.getName(), server.getAddress());
+                logger.debug("Server {} @ {}", server.getName(), server.getAddress());
 
                 var uid = new ThingUID(Constants.THING_TYPE_SERVER, server.getId());
                 try {
@@ -85,12 +85,13 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
 
                         this.thingDiscovered(result);
                     } else {
-                        LOG.info("Discovered server {} @ {} will be ignored. Version {} is not supported.",
+                        logger.info("Discovered server {} @ {} will be ignored. Version {} is not supported.",
                                 server.getName(), server.getAddress(), version);
                     }
                 } catch (Exception e) {
-                    LOG.warn("Failed to retrieve system info from Jellyfin server at {}: {}, server will be ignored.",
-                            server.getAddress(), e.getMessage());
+                    logger.warn(
+                            "Failed to retrieve system info from Jellyfin server at {}: {}, server will be ignored.",
+                            server.getAddress(), e.getMessage(), e);
                 }
             }
         }
@@ -140,7 +141,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
      */
     private boolean isVersionSupported(String version) {
         if (version == null || version.isEmpty()) {
-            LOG.warn("Empty version string provided, assuming supported version");
+            logger.warn("Empty version string provided, assuming supported version");
             return true;
         }
 
@@ -175,8 +176,8 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
 
             return currentPatch >= minPatch;
         } catch (NumberFormatException e) {
-            LOG.warn("Failed to parse version '{}' as semantic version: {}. Assuming supported version.", version,
-                    e.getMessage());
+            logger.warn("Failed to parse version '{}' as semantic version: {}. Assuming supported version.", version,
+                    e.getMessage(), e);
             return true;
         }
     }
