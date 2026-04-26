@@ -747,16 +747,19 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected abstract void onButtonPressed(int lockNumber);
 
     /**
-     * Determines whether DHIP invite events should be processed.
+     * Processes a resolved doorbell event after the button mapping is known.
      *
-     * When SIP is enabled, SIP is the single authoritative invite path and DHIP invite events are ignored.
-     * When SIP is disabled, DHIP invite remains active.
+     * DHIP invite events provide the authoritative button mapping (`LockNum`). SIP INVITE only establishes
+     * the ringing state and must not guess the target button.
      *
-     * @return true if DHIP invite handling is active, false otherwise
+     * @param source event source label for logging
+     * @param lockNumber resolved button/lock number
      */
-    protected boolean isDhipInviteActive() {
-        DahuaDoorConfiguration localConfig = config;
-        return localConfig == null || !localConfig.enableSip;
+    protected void handleResolvedDoorbellEvent(String source, int lockNumber) {
+        if (!shouldProcessDoorbellEvent(source)) {
+            return;
+        }
+        onButtonPressed(lockNumber);
     }
 
     /**
@@ -938,13 +941,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     @Override
     public void onInviteReceived(String callerId) {
         logger.info("SIP INVITE received from {}", callerId);
-        if (!shouldProcessDoorbellEvent("SIP")) {
-            return;
-        }
         updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.RINGING.name()));
-        // Phase 1: Just trigger the existing doorbell logic
-        // In the future, this could be enhanced to manage dialog state
-        onButtonPressed(1); // Default to button 1 for SIP calls
+        logger.debug("Waiting for DHIP invite event to resolve button mapping");
     }
 
     @Override
