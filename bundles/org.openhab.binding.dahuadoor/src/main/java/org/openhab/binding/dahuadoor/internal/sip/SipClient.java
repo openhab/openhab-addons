@@ -69,7 +69,6 @@ import javax.sip.message.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dahuadoor.internal.media.PitchToneRtpSender;
 import org.openhab.binding.dahuadoor.internal.media.SipAudioOffer;
 import org.openhab.binding.dahuadoor.internal.media.SipBackchannelRtpRelay;
 import org.openhab.binding.dahuadoor.internal.media.SipSdpParser;
@@ -141,7 +140,6 @@ public class SipClient implements SipListener {
 
     // Audio talkback
     private final SipSdpParser sdpParser = new SipSdpParser();
-    private final PitchToneRtpSender pitchToneSender = new PitchToneRtpSender();
     private @Nullable SipAudioOffer currentAudioOffer;
 
     public enum SipCallState {
@@ -164,7 +162,7 @@ public class SipClient implements SipListener {
      * @param localIp Local IP address (auto-detected)
      * @param realm SIP realm (typically "VDP" for Dahua)
      * @param localAudioRtpPort Local RTP source port advertised in the SDP answer
-     * @param backchannelRelay relay for real browser audio; if absent, the tone sender fallback is used
+     * @param backchannelRelay relay for browser backchannel audio
      * @param listener Callback interface for SIP events
      * @param errorHandler Error callback
      * @throws PeerUnavailableException if SIP factory components cannot be created
@@ -908,14 +906,20 @@ public class SipClient implements SipListener {
     private void activateAudioPath(SipAudioOffer offer) {
         SipBackchannelRtpRelay relay = backchannelRelay;
         if (relay != null) {
+            logger.debug("Activating SIP audio path via backchannel relay for {}:{} (pt={}, codec={} rate={}Hz)",
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), offer.getCodecName(),
+                    offer.getClockRate());
             relay.setTarget(offer, "ack");
         } else {
-            pitchToneSender.start(offer, localAudioRtpPort);
+            logger.warn(
+                    "No backchannel relay available - skipping SIP audio path activation for {}:{} (pt={}, codec={} rate={}Hz)",
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), offer.getCodecName(),
+                    offer.getClockRate());
         }
     }
 
     private void clearAudioPath(String reason) {
-        pitchToneSender.stop();
+        logger.debug("Clearing SIP audio path (reason={})", reason);
         SipBackchannelRtpRelay relay = backchannelRelay;
         if (relay != null) {
             relay.setTarget(null, reason);

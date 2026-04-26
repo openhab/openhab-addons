@@ -69,6 +69,13 @@ public class SipBackchannelRtpRelay {
     private @Nullable Thread workerThread;
 
     private volatile boolean running;
+    private volatile long receivedPackets;
+    private volatile long forwardedPackets;
+    private volatile long droppedNoTargetPackets;
+    private volatile long droppedInvalidPackets;
+    private volatile long lastIncomingPacketAtMillis;
+    private volatile long targetSetAtMillis;
+    private volatile long lastNoInputWarningAtMillis;
 
     public SipBackchannelRtpRelay(int listenPort, int sourcePort) {
         this.listenPort = listenPort;
@@ -90,6 +97,13 @@ public class SipBackchannelRtpRelay {
             DatagramSocket localSendSocket = new DatagramSocket(sourcePort);
 
             running = true;
+            receivedPackets = 0;
+            forwardedPackets = 0;
+            droppedNoTargetPackets = 0;
+            droppedInvalidPackets = 0;
+            lastIncomingPacketAtMillis = System.currentTimeMillis();
+            targetSetAtMillis = 0;
+            lastNoInputWarningAtMillis = 0;
             receiveSocket = localReceiveSocket;
             sendSocket = localSendSocket;
 
@@ -142,12 +156,17 @@ public class SipBackchannelRtpRelay {
             }
         }
 
-        LOGGER.info("SIP backchannel RTP relay stopped (listenPort={}, sourcePort={})", listenPort, sourcePort);
+        LOGGER.info(
+                "SIP backchannel RTP relay stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
+                listenPort, sourcePort, receivedPackets, forwardedPackets, droppedNoTargetPackets,
+                droppedInvalidPackets);
     }
 
     public void setTarget(@Nullable SipAudioOffer offer, String reason) {
         if (offer == null) {
             relayTarget = null;
+            targetSetAtMillis = 0;
+            lastNoInputWarningAtMillis = 0;
             LOGGER.info("SIP backchannel relay target cleared (reason={})", reason);
             return;
         }
@@ -164,6 +183,8 @@ public class SipBackchannelRtpRelay {
 
             InetAddress address = InetAddress.getByName(offer.getRemoteHost());
             relayTarget = new RelayTarget(address, offer.getRemotePort(), offer.getPayloadType());
+            targetSetAtMillis = System.currentTimeMillis();
+            lastNoInputWarningAtMillis = 0;
             LOGGER.info("SIP backchannel relay target set to {}:{} (pt={}, codec={}, reason={})", offer.getRemoteHost(),
                     offer.getRemotePort(), offer.getPayloadType(), codecName, reason);
         } catch (IOException e) {
@@ -187,6 +208,18 @@ public class SipBackchannelRtpRelay {
             try {
                 localReceiveSocket.receive(incoming);
             } catch (SocketTimeoutException e) {
+                RelayTarget target = relayTarget;
+                if (target != null) {
+                    long now = System.currentTimeMillis();
+                    if (now - targetSetAtMillis >= 2000 && now - lastIncomingPacketAtMillis >= 2000
+                            && now - lastNoInputWarningAtMillis >= 2000) {
+                        LOGGER.debug(
+                                "SIP backchannel relay has active target {}:{} but no incoming RTP on 127.0.0.1:{} for {} ms",
+                                target.remoteAddress.getHostAddress(), target.remotePort, listenPort,
+                                now - lastIncomingPacketAtMillis);
+                        lastNoInputWarningAtMillis = now;
+                    }
+                }
                 continue;
             } catch (SocketException e) {
                 if (running) {
@@ -200,13 +233,25 @@ public class SipBackchannelRtpRelay {
                 continue;
             }
 
+            receivedPackets++;
+            lastIncomingPacketAtMillis = System.currentTimeMillis();
             RelayTarget target = relayTarget;
             if (target == null) {
+                droppedNoTargetPackets++;
+                if (droppedNoTargetPackets == 1 || droppedNoTargetPackets % 100 == 0) {
+                    LOGGER.debug("SIP backchannel relay dropping RTP packet without target (count={}, listenPort={})",
+                            droppedNoTargetPackets, listenPort);
+                }
                 continue;
             }
 
             byte[] forwardedPacket = buildForwardPacket(incoming, target);
             if (forwardedPacket == null) {
+                droppedInvalidPackets++;
+                if (droppedInvalidPackets == 1 || droppedInvalidPackets % 100 == 0) {
+                    LOGGER.debug("SIP backchannel relay dropped invalid RTP packet (count={}, length={})",
+                            droppedInvalidPackets, incoming.getLength());
+                }
                 continue;
             }
 
@@ -214,6 +259,12 @@ public class SipBackchannelRtpRelay {
                     target.remotePort);
             try {
                 localSendSocket.send(forwarded);
+                forwardedPackets++;
+                if (forwardedPackets == 1 || forwardedPackets % 100 == 0) {
+                    LOGGER.debug("SIP backchannel relay forwarded RTP packet (count={}, bytes={}, target={}:{}, pt={})",
+                            forwardedPackets, forwardedPacket.length, target.remoteAddress.getHostAddress(),
+                            target.remotePort, target.payloadType);
+                }
             } catch (IOException e) {
                 LOGGER.debug("SIP backchannel relay forward failed to {}:{}: {}", target.remoteAddress,
                         target.remotePort, e.getMessage());
