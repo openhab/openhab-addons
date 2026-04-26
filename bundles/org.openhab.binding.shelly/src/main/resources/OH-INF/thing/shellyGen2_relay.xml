@@ -122,7 +122,7 @@
 
 	<thing-type id="shellyplusplug">
 		<label>ShellyPlus Plug</label>
-		<description>Shelly Plus Plug S/IT/UK. Outlet with Power Meter</description>
+		<description>Shelly Plus Plug S/M/IT/UK. Outlet with Power Meter</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
