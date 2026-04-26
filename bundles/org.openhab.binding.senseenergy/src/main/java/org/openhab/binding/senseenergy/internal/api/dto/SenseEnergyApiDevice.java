@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.senseenergy.internal.api.dto;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SenseEnergyApiDevice } is the dto for the api sense discovered devices
  *
@@ -24,29 +28,20 @@ public class SenseEnergyApiDevice {
     public SenseEnergyApiDeviceTags tags;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         SenseEnergyApiDevice that = (SenseEnergyApiDevice) o;
-        if (id != null ? !id.equals(that.id) : that.id != null)
-            return false;
-        if (name != null ? !name.equals(that.name) : that.name != null)
-            return false;
-        if (icon != null ? !icon.equals(that.icon) : that.icon != null)
-            return false;
-        if (tags != null ? !tags.equals(that.tags) : that.tags != null)
-            return false;
-        return true;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(icon, that.icon)
+                && Objects.equals(tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (icon != null ? icon.hashCode() : 0);
-        result = 31 * result + (tags != null ? tags.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, icon, tags);
     }
 }

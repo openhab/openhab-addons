@@ -216,7 +216,10 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         logger.trace("SenseEnergyMonitorHandler: heartbeat");
         refreshDevices();
-        reconcileDiscoveredDeviceChannels(null);
+        if (senseDevicesDirty) {
+            reconcileDiscoveredDeviceChannels(null);
+            senseDevicesDirty = false;
+        }
 
         if (!webSocket.isRunning()) {
             logger.debug("heartbeat: webSocket not running");
@@ -377,6 +380,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
         } catch (SenseEnergyApiException e) {
             handleApiException(e);
+            return;
         }
 
         if (!newSenseDevices.equals(senseDevices)) {
@@ -398,10 +402,6 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         ChannelGroupType channelGroupType = Objects
                 .requireNonNull(channelGroupTypeRegistry.getChannelGroupType(CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE));
         List<ChannelDefinition> channelDefinitions = channelGroupType.getChannelDefinitions();
-
-        if (!senseDevicesDirty) {
-            return;
-        }
 
         Set<String> senseIDs = new HashSet<>(senseDevices.keySet());
         senseIDs.remove("solar"); // don't create solar as a separate channel
