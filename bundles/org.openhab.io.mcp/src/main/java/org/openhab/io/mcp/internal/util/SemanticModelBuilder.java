@@ -75,11 +75,18 @@ public class SemanticModelBuilder {
                 .map(GroupItem.class::cast).filter(item -> isSemanticType(item, DefaultSemanticTags.LOCATION))
                 .collect(Collectors.toSet());
 
+        // Only emit root locations at the top level — sub-locations will appear nested
+        // via buildLocation() recursion, avoiding duplicates.
+        List<GroupItem> rootLocations = locationItems.stream()
+                .filter(loc -> locationItems.stream()
+                        .noneMatch(parent -> !parent.equals(loc) && parent.getMembers().contains(loc)))
+                .collect(Collectors.toList());
+
         // Build lookup: locationName -> items that declared hasLocation metadata for it.
         Map<String, List<Item>> hasLocationItems = buildHasLocationIndex(locationItems);
 
         Set<String> assignedItems = new HashSet<>();
-        for (GroupItem location : locationItems) {
+        for (GroupItem location : rootLocations) {
             Map<String, Object> locationMap = buildLocation(location, hasLocationItems, assignedItems);
             locations.add(locationMap);
         }

@@ -480,7 +480,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
         McpCloudWebhookService hook = cloudWebhook;
         String hookUrl = hook != null ? hook.getPublicUrl() : null;
         String metadataUrl = hookUrl != null ? hookUrl + "/.well-known/oauth-protected-resource"
-                : "/.well-known/oauth-protected-resource";
+                : OAuthMetadataServlet.PATH_PROTECTED_RESOURCE;
         String challenge = "Bearer realm=\"openhab-mcp\", resource_metadata=\"" + metadataUrl + "\"";
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setHeader("WWW-Authenticate", challenge);
