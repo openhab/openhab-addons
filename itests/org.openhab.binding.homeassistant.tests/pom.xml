@@ -16,7 +16,7 @@
 
   <properties>
     <mqttbroker.port>1883</mqttbroker.port>
-    <bouncycastle.version>1.83</bouncycastle.version>
+    <bouncycastle.version>1.84</bouncycastle.version>
   </properties>
 
   <dependencies>
