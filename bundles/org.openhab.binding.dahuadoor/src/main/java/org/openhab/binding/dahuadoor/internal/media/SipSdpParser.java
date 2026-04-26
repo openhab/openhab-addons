@@ -243,10 +243,10 @@ public class SipSdpParser {
         if (CODEC_PCM.equals(codecName) && clockRate == 16000) {
             return 0;
         }
-        if (CODEC_PCMU.equals(codecName) && clockRate == 8000) {
+        if (CODEC_PCMA.equals(codecName) && clockRate == 8000) {
             return 1;
         }
-        if (CODEC_PCMA.equals(codecName) && clockRate == 8000) {
+        if (CODEC_PCMU.equals(codecName) && clockRate == 8000) {
             return 2;
         }
         return Integer.MAX_VALUE;
