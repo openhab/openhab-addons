@@ -128,6 +128,8 @@ public class SipClient implements SipListener {
     });
 
     private long cseqCounter = 1;
+    private @Nullable String registerCallId;
+    private @Nullable String registerFromTag;
 
     private @Nullable ServerTransaction inviteServerTransaction;
     private @Nullable Request inviteRequest;
@@ -224,6 +226,28 @@ public class SipClient implements SipListener {
         return BINDING_PREFIX + "-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
     }
 
+    private synchronized long nextRegisterCSeq() {
+        return cseqCounter++;
+    }
+
+    private synchronized String ensureRegisterFromTag() {
+        String fromTag = registerFromTag;
+        if (fromTag == null || fromTag.isBlank()) {
+            fromTag = UUID.randomUUID().toString().substring(0, 8);
+            registerFromTag = fromTag;
+        }
+        return fromTag;
+    }
+
+    private synchronized String ensureRegisterCallId(SipProvider provider) {
+        String callId = registerCallId;
+        if (callId == null || callId.isBlank()) {
+            callId = provider.getNewCallId().getCallId();
+            registerCallId = callId;
+        }
+        return callId;
+    }
+
     /**
      * Send REGISTER request (unauthenticated).
      * This triggers 401 Unauthorized response with nonce, which then triggers authenticated REGISTER.
@@ -249,8 +273,7 @@ public class SipClient implements SipListener {
             SipURI fromURI = addrFactory.createSipURI(encodedExtension, vtoIp);
             fromURI.setPort(5060);
             Address fromAddress = addrFactory.createAddress(fromURI);
-            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress,
-                    UUID.randomUUID().toString().substring(0, 8));
+            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress, ensureRegisterFromTag());
 
             // To: <sip:9901%232@172.18.1.111:5060>
             ToHeader toHeader = hdrFactory.createToHeader(fromAddress, null);
@@ -261,10 +284,10 @@ public class SipClient implements SipListener {
             viaHeaders.add(viaHeader);
 
             // Call-ID
-            CallIdHeader callIdHeader = provider.getNewCallId();
+            CallIdHeader callIdHeader = hdrFactory.createCallIdHeader(ensureRegisterCallId(provider));
 
             // CSeq
-            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(cseqCounter++, Request.REGISTER);
+            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(nextRegisterCSeq(), Request.REGISTER);
 
             // Max-Forwards
             MaxForwardsHeader maxForwards = hdrFactory.createMaxForwardsHeader(70);
@@ -320,8 +343,7 @@ public class SipClient implements SipListener {
             SipURI fromURI = addrFactory.createSipURI(encodedExtension, vtoIp);
             fromURI.setPort(5060);
             Address fromAddress = addrFactory.createAddress(fromURI);
-            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress,
-                    UUID.randomUUID().toString().substring(0, 8));
+            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress, ensureRegisterFromTag());
 
             ToHeader toHeader = hdrFactory.createToHeader(fromAddress, null);
 
@@ -329,8 +351,8 @@ public class SipClient implements SipListener {
             List<ViaHeader> viaHeaders = new ArrayList<>();
             viaHeaders.add(viaHeader);
 
-            CallIdHeader callIdHeader = provider.getNewCallId();
-            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(cseqCounter++, Request.REGISTER);
+            CallIdHeader callIdHeader = hdrFactory.createCallIdHeader(ensureRegisterCallId(provider));
+            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(nextRegisterCSeq(), Request.REGISTER);
             MaxForwardsHeader maxForwards = hdrFactory.createMaxForwardsHeader(70);
 
             Request request = msgFactory.createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader,
