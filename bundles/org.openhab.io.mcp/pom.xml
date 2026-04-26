@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.io.mcp</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: IO :: Model Context Protocol Server</name>
+
+  <properties>
+    <mcp.sdk.version>1.1.1</mcp.sdk.version>
+    <reactor.version>3.7.6</reactor.version>
+    <dep.noembedding>jackson-databind,jackson-core,jackson-annotations,jackson-dataformat-yaml</dep.noembedding>
+    <bnd.importpackage>io.projectreactor.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,org.yaml.snakeyaml.*;resolution:=optional,io.micrometer.*;resolution:=optional,reactor.blockhound.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.graalvm.polyglot.*;resolution:=optional,org.jcodings.*;resolution:=optional,org.joni.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.modelcontextprotocol.sdk</groupId>
+      <artifactId>mcp-core</artifactId>
+      <version>${mcp.sdk.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.modelcontextprotocol.sdk</groupId>
+      <artifactId>mcp-json-jackson2</artifactId>
+      <version>${mcp.sdk.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ethlo.time</groupId>
+      <artifactId>itu</artifactId>
+      <version>1.14.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
+      <version>${reactor.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+      <version>1.0.4</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <configuration>
+          <bnd><![CDATA[${oh.bndDefaults}
+Service-Component: OSGI-INF/*.xml
+]]></bnd>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
