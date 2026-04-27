@@ -32,20 +32,24 @@ import net.minidev.json.JSONArray;
  */
 @NonNullByDefault
 public record ChannelDef(String id, String label, String itemType, String typeId, JsonPath valuePath,
-        @Nullable JsonPath appliesPath) {
+        JsonPath updatePath, @Nullable JsonPath appliesPath) {
 
-    public ChannelDef(String id, String label, String itemType, String typeId, String valuePath,
-            @Nullable String appliesPath) {
-        this(id, label, itemType, typeId, JsonPath.compile(valuePath),
-                appliesPath != null ? JsonPath.compile(appliesPath) : null);
+    private static final String READ_PREFIX = "$.state.reported.";
+    private static final String WRITE_PREFIX = "$.state.desired.";
+
+    public ChannelDef(String id, String label, String itemType, String typeId, String relativePath,
+            @Nullable String appliesRelativePath) {
+        this(id, label, itemType, typeId, JsonPath.compile(READ_PREFIX + relativePath),
+                JsonPath.compile(WRITE_PREFIX + relativePath),
+                appliesRelativePath != null ? JsonPath.compile(READ_PREFIX + appliesRelativePath) : null);
 
         if (!this.valuePath.isDefinite()) {
-            throw new IllegalArgumentException("valuePath must be definite: " + valuePath);
+            throw new IllegalArgumentException("valuePath must be definite: " + relativePath);
         }
     }
 
-    public ChannelDef(String id, String label, String itemType, String typeId, String valuePath) {
-        this(id, label, itemType, typeId, valuePath, null);
+    public ChannelDef(String id, String label, String itemType, String typeId, String relativePath) {
+        this(id, label, itemType, typeId, relativePath, null);
     }
 
     public @Nullable Object value(DeviceState deviceState) {
@@ -59,7 +63,7 @@ public record ChannelDef(String id, String label, String itemType, String typeId
 
     public DeviceState updateJson(Object value) {
         DocumentContext ctx = JsonPath.parse("{}");
-        String[] segments = valuePath.getPath().split("(?=\\[)");
+        String[] segments = updatePath.getPath().split("(?=\\[)");
 
         for (int i = 1; i < segments.length; i++) {
             String subpath = String.join("", Arrays.copyOfRange(segments, 0, i));

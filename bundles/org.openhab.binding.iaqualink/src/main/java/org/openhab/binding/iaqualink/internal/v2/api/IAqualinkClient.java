@@ -130,8 +130,12 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
     private final PropertyStorage propertyStorage;
 
     public CompletableFuture<PublishResult> publishUpdate(String deviceId, String msg) {
-        return getMqttClient().publish(mqttMessage(String.format(TOPIC_THINGS_SHADOW + TOPIC_SUFFIX_UPDATE, deviceId),
-                msg.getBytes(StandardCharsets.UTF_8)));
+
+        String topic = String.format(TOPIC_THINGS_SHADOW + TOPIC_SUFFIX_UPDATE, deviceId);
+
+        logger.trace("MQTT message published on {}: {}", topic, msg);
+
+        return getMqttClient().publish(mqttMessage(topic, msg.getBytes(StandardCharsets.UTF_8)));
     }
 
     @SuppressWarnings("serial")
@@ -294,8 +298,7 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
 
             String payload = new String(publishReturn.getPublishPacket().getPayload(), StandardCharsets.UTF_8);
 
-            logger.debug("MQTT message received on {}: {}", topic,
-                    Arrays.toString(publishReturn.getPublishPacket().getPayload()));
+            logger.trace("MQTT message received on {}: {}", topic, payload);
 
             String[] parts = topic.split("/");
             if (parts.length != 6) {
