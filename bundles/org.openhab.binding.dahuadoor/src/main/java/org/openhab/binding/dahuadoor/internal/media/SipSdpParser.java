@@ -35,8 +35,6 @@ public class SipSdpParser {
     private static final int DEFAULT_PTIME_MS = 20;
 
     private static final String CODEC_PCM = "PCM";
-    private static final String CODEC_PCMA = "PCMA";
-    private static final String CODEC_PCMU = "PCMU";
     private static final int DEFAULT_VIDEO_PAYLOAD_TYPE = 96;
     private static final int DEFAULT_VIDEO_PORT = 30000;
     private static final String DEFAULT_VIDEO_FRAMERATE = "25.000000";
@@ -129,11 +127,10 @@ public class SipSdpParser {
         int bestPreference = Integer.MAX_VALUE;
         for (int offeredPt : offeredPayloadTypes) {
             String offeredCodec = resolveCodecName(offeredPt, payloadCodecs);
-            if (!isSupportedCodec(offeredCodec)) {
+            int offeredClockRate = payloadClockRates.getOrDefault(offeredPt, DEFAULT_CLOCK_RATE);
+            if (!isSupportedCodec(offeredCodec, offeredClockRate)) {
                 continue;
             }
-
-            int offeredClockRate = payloadClockRates.getOrDefault(offeredPt, DEFAULT_CLOCK_RATE);
             int preference = codecPreference(offeredCodec, offeredClockRate);
             if (preference < bestPreference) {
                 bestPreference = preference;
@@ -226,28 +223,16 @@ public class SipSdpParser {
         if (mapped != null) {
             return mapped;
         }
-        if (payloadType == 8) {
-            return CODEC_PCMA;
-        }
-        if (payloadType == 0) {
-            return CODEC_PCMU;
-        }
         return "";
     }
 
-    private static boolean isSupportedCodec(String codecName) {
-        return CODEC_PCM.equals(codecName) || CODEC_PCMA.equals(codecName) || CODEC_PCMU.equals(codecName);
+    private static boolean isSupportedCodec(String codecName, int clockRate) {
+        return CODEC_PCM.equals(codecName) && clockRate == 16000;
     }
 
     private static int codecPreference(String codecName, int clockRate) {
         if (CODEC_PCM.equals(codecName) && clockRate == 16000) {
             return 0;
-        }
-        if (CODEC_PCMA.equals(codecName) && clockRate == 8000) {
-            return 1;
-        }
-        if (CODEC_PCMU.equals(codecName) && clockRate == 8000) {
-            return 2;
         }
         return Integer.MAX_VALUE;
     }

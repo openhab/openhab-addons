@@ -127,7 +127,7 @@ public class DahuaEventClient implements Runnable {
             return sendSnapshotRequest(SNAPSHOT_PATH);
         } catch (DahuaHttpRedirectException e) {
             errorInformer.accept(e.getRedirectMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not retrieve snapshot from {}", host, e);
         }
         return null;
@@ -144,7 +144,7 @@ public class DahuaEventClient implements Runnable {
             sendAuthenticatedGetRequest(path, "Open Door");
         } catch (DahuaHttpRedirectException e) {
             errorInformer.accept(e.getRedirectMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not open door {} on {}", doorNo, host, e);
         }
     }
@@ -168,7 +168,7 @@ public class DahuaEventClient implements Runnable {
             return true;
         } catch (DahuaHttpRedirectException e) {
             logger.warn("Audio codec fix redirected on {}: {}", host, e.getMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Audio codec fix failed on {}", host, e);
         }
         return false;
@@ -180,7 +180,7 @@ public class DahuaEventClient implements Runnable {
      * Step 1: open connection, get 401 + challenge, close connection.
      * Step 2: open fresh connection, send authenticated request.
      */
-    private byte @Nullable [] sendSnapshotRequest(String path) throws Exception {
+    private byte @Nullable [] sendSnapshotRequest(String path) throws IOException, DahuaHttpRedirectException {
         boolean useHttps = httpsAvailable;
         int port = useHttps ? 443 : 80;
         int maxAttempts = 3;
@@ -269,7 +269,8 @@ public class DahuaEventClient implements Runnable {
      * @param path the CGI path to request
      * @param actionName label used for logging (e.g. "Open Door", "Audio codec fix")
      */
-    private void sendAuthenticatedGetRequest(String path, String actionName) throws Exception {
+    private void sendAuthenticatedGetRequest(String path, String actionName)
+            throws IOException, DahuaHttpRedirectException {
         boolean useHttps = httpsAvailable;
         int port = useHttps ? 443 : 80;
         int maxAttempts = 3;
@@ -616,7 +617,7 @@ public class DahuaEventClient implements Runnable {
         return 0;
     }
 
-    private @Nullable String createDigestAuthorizationHeader(String challenge, String requestPath) throws Exception {
+    private @Nullable String createDigestAuthorizationHeader(String challenge, String requestPath) {
         if (!challenge.toLowerCase(Locale.ROOT).startsWith("digest")) {
             return null;
         }
@@ -698,14 +699,18 @@ public class DahuaEventClient implements Runnable {
         return result;
     }
 
-    private String md5Hex(String value) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        byte[] hash = digest.digest(value.getBytes(StandardCharsets.ISO_8859_1));
-        StringBuilder builder = new StringBuilder(hash.length * 2);
-        for (byte b : hash) {
-            builder.append(String.format("%02x", b));
+    private String md5Hex(String value) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(value.getBytes(StandardCharsets.ISO_8859_1));
+            StringBuilder builder = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                builder.append(String.format("%02x", b));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 digest algorithm not available", e);
         }
-        return builder.toString();
     }
 
     private String randomHex(int length) {

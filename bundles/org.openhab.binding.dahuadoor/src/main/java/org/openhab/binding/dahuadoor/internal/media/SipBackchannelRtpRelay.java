@@ -46,7 +46,7 @@ public class SipBackchannelRtpRelay {
     private static final int RTP_VERSION_MASK = 0xC0;
     private static final int RTP_VERSION_2 = 0x80;
 
-    private static final class RelayTarget {
+    static final class RelayTarget {
         final InetAddress remoteAddress;
         final int remotePort;
         final int payloadType;
@@ -67,6 +67,7 @@ public class SipBackchannelRtpRelay {
     private @Nullable DatagramSocket receiveSocket;
     private @Nullable DatagramSocket sendSocket;
     private @Nullable Thread workerThread;
+    private volatile int resolvedSourcePort;
 
     private volatile boolean running;
     private volatile long receivedPackets;
@@ -80,10 +81,19 @@ public class SipBackchannelRtpRelay {
     public SipBackchannelRtpRelay(int listenPort, int sourcePort) {
         this.listenPort = listenPort;
         this.sourcePort = sourcePort;
+        this.resolvedSourcePort = sourcePort;
     }
 
     public int getListenPort() {
         return listenPort;
+    }
+
+    public int getSourcePort() {
+        DatagramSocket localSendSocket = sendSocket;
+        if (localSendSocket != null) {
+            return localSendSocket.getLocalPort();
+        }
+        return resolvedSourcePort;
     }
 
     public void start() throws IOException {
@@ -95,6 +105,7 @@ public class SipBackchannelRtpRelay {
             DatagramSocket localReceiveSocket = new DatagramSocket(new InetSocketAddress("127.0.0.1", listenPort));
             localReceiveSocket.setSoTimeout(500);
             DatagramSocket localSendSocket = new DatagramSocket(sourcePort);
+            resolvedSourcePort = localSendSocket.getLocalPort();
 
             running = true;
             receivedPackets = 0;
@@ -113,7 +124,7 @@ public class SipBackchannelRtpRelay {
             workerThread = worker;
 
             LOGGER.info("SIP backchannel RTP relay started on 127.0.0.1:{} with source port {}", listenPort,
-                    sourcePort);
+                    resolvedSourcePort);
         }
     }
 
@@ -158,7 +169,7 @@ public class SipBackchannelRtpRelay {
 
         LOGGER.info(
                 "SIP backchannel RTP relay stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
-                listenPort, sourcePort, receivedPackets, forwardedPackets, droppedNoTargetPackets,
+                listenPort, getSourcePort(), receivedPackets, forwardedPackets, droppedNoTargetPackets,
                 droppedInvalidPackets);
     }
 
@@ -272,7 +283,7 @@ public class SipBackchannelRtpRelay {
         }
     }
 
-    private static byte @Nullable [] buildForwardPacket(DatagramPacket incoming, RelayTarget target) {
+    static byte @Nullable [] buildForwardPacket(DatagramPacket incoming, RelayTarget target) {
         int length = incoming.getLength();
         if (length < RTP_HEADER_MIN_LEN) {
             return null;
@@ -289,12 +300,12 @@ public class SipBackchannelRtpRelay {
         return packet;
     }
 
-    private static void rewriteRtpPayloadType(byte[] packet, int payloadType) {
+    static void rewriteRtpPayloadType(byte[] packet, int payloadType) {
         int markerBit = packet[1] & 0x80;
         packet[1] = (byte) (markerBit | (payloadType & 0x7F));
     }
 
-    private static int getRtpPayloadOffset(byte[] packet, int length) {
+    static int getRtpPayloadOffset(byte[] packet, int length) {
         if (length < RTP_HEADER_MIN_LEN) {
             return -1;
         }

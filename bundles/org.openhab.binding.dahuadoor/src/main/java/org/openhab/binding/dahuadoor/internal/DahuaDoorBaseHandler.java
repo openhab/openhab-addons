@@ -26,11 +26,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TooManyListenersException;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
+import javax.sip.TransportNotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,8 +68,7 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link DahuaDoorBaseHandler} is responsible for handling commands, which
- * are
- * sent to one of the channels.
+ * are sent to one of the channels.
  *
  * @author Sven Schad - Initial contribution
  */
@@ -88,7 +93,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private final Map<String, SipClient> sipClients = new ConcurrentHashMap<>();
     private final Map<String, SipBackchannelSession> backchannelSessionsByHttpSession = new ConcurrentHashMap<>();
     private static final String[] AVAILABLE_CLIENT_IDS = { "client-1", "client-2", "client-3" };
-    private static final int SIP_BACKCHANNEL_SOURCE_RTP_PORT = 20000;
+    private static final int SIP_BACKCHANNEL_LISTEN_PORT_OFFSET = 20000;
     private static final long DOORBELL_EVENT_DEDUP_MS = 1500;
     private static final long SESSION_TTL_MS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSION_MAPPINGS = 256;
@@ -179,10 +184,22 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
-        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_SOURCE_RTP_PORT;
-        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(listenPort, SIP_BACKCHANNEL_SOURCE_RTP_PORT);
+        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
+        if (!isValidPort(listenPort)) {
+            logger.warn(
+                    "SIP backchannel relay port {} is outside valid range (go2rtcApiPort={}, offset={}) - relay disabled",
+                    listenPort, cfg.go2rtcApiPort, SIP_BACKCHANNEL_LISTEN_PORT_OFFSET);
+            return;
+        }
+        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(listenPort, 0);
         try {
             relay.start();
+            int sourcePort = relay.getSourcePort();
+            if (!isValidPort(sourcePort)) {
+                relay.stop();
+                logger.warn("SIP backchannel relay source port {} is outside valid range - relay disabled", sourcePort);
+                return;
+            }
             sipBackchannelRelay = relay;
         } catch (IOException e) {
             sipBackchannelRelay = null;
@@ -640,6 +657,11 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             updateState(CHANNEL_SIP_REGISTERED, OnOffType.from(success));
             if (success) {
                 logger.debug("Event SIPRegisterResult, Success");
+                DahuaDoorConfiguration localConfig = config;
+                DahuaEventClient localClient = client;
+                if (localConfig != null && localConfig.enableWebRTC && localClient != null) {
+                    scheduler.submit(localClient::fixAudioCodec);
+                }
             } else {
                 logger.debug("Event SIPRegisterResult, Failed");
             }
@@ -784,10 +806,20 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 // Use sipExtension as SIP username (extension == username in Dahua VTO)
                 // Use separate SIP password if provided, otherwise fall back to API password
                 String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
+                int localAudioPort = 0;
+                SipBackchannelRtpRelay relay = sipBackchannelRelay;
+                if (relay != null) {
+                    localAudioPort = relay.getSourcePort();
+                    if (!isValidPort(localAudioPort)) {
+                        logger.warn("SIP backchannel relay source port {} is outside valid range - disabling SDP audio",
+                                localAudioPort);
+                        localAudioPort = 0;
+                    }
+                }
 
                 SipClient newSipClient = new SipClient(cfg.hostname, cfg.sipExtension, cfg.sipExtension, sipPass,
-                        cfg.localSipPort, localIp, cfg.sipRealm, SIP_BACKCHANNEL_SOURCE_RTP_PORT, sipBackchannelRelay,
-                        this, this::errorInformer);
+                        cfg.localSipPort, localIp, cfg.sipRealm, localAudioPort, sipBackchannelRelay, this,
+                        this::errorInformer);
 
                 if (disposed) {
                     newSipClient.dispose();
@@ -813,14 +845,21 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     }
                     try {
                         localClient.sendRegister();
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         logger.warn("Failed to re-register SIP client: {}", e.getMessage());
                     }
                 }, 50, 50, TimeUnit.SECONDS);
 
                 logger.info("SIP client started for extension {} at {}:{}", cfg.sipExtension, localIp,
                         cfg.localSipPort);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
+                updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+            } catch (PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
+                    | ObjectInUseException | TooManyListenersException e) {
+                logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
+                updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+            } catch (RuntimeException e) {
                 logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
                 updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
             }
@@ -863,9 +902,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
      *
      * @param vtoHostname VTO hostname or IP address
      * @return Local IP address as string
-     * @throws Exception if detection fails
+     * @throws IOException if detection fails
      */
-    private String detectLocalIp(String vtoHostname) throws Exception {
+    private String detectLocalIp(String vtoHostname) throws IOException {
         // Create a UDP socket and "connect" to VTO (doesn't actually send data)
         // This makes the OS select the correct network interface
         try (DatagramSocket socket = new DatagramSocket()) {
@@ -874,6 +913,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             logger.debug("Detected outbound IP for VTO {}: {}", vtoHostname, localIp);
             return localIp;
         }
+    }
+
+    private static boolean isValidPort(int port) {
+        return port > 0 && port <= 65535;
     }
 
     // ============================================================================

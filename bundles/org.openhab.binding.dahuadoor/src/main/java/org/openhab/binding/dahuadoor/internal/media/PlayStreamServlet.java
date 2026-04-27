@@ -210,7 +210,9 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
 
-        LOGGER.debug("WebRTC offer for stream '{}' audio={}", streamName, summarizeAudioSdpDirection(sdpOffer));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("WebRTC offer for stream '{}' audio={}", streamName, summarizeAudioSdpDirection(sdpOffer));
+        }
 
         // Forward to go2rtc API
         String go2rtcUrl = "http://127.0.0.1:" + apiPort + "/api/webrtc?src="
@@ -257,8 +259,10 @@ public class PlayStreamServlet extends HttpServlet {
                 sdpAnswer = in.readAllBytes();
             }
 
-            LOGGER.debug("WebRTC answer for stream '{}' audio={}", streamName,
-                    summarizeAudioSdpDirection(new String(sdpAnswer, StandardCharsets.UTF_8)));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("WebRTC answer for stream '{}' audio={}", streamName,
+                        summarizeAudioSdpDirection(new String(sdpAnswer, StandardCharsets.UTF_8)));
+            }
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
 
@@ -345,8 +349,8 @@ public class PlayStreamServlet extends HttpServlet {
                 continue;
             }
 
-            if (line.equals("a=sendrecv") || line.equals("a=sendonly") || line.equals("a=recvonly")
-                    || line.equals("a=inactive")) {
+            if ("a=sendrecv".equals(line) || "a=sendonly".equals(line) || "a=recvonly".equals(line)
+                    || "a=inactive".equals(line)) {
                 String direction = line.substring(2);
                 if (inAudioSection) {
                     mediaDirection = direction;
