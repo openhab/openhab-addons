@@ -34,8 +34,7 @@ public class SipSdpParser {
     private static final int DEFAULT_CLOCK_RATE = 8000;
     private static final int DEFAULT_PTIME_MS = 20;
 
-    private static final String CODEC_PCMA = "PCMA";
-    private static final String CODEC_PCMU = "PCMU";
+    private static final String CODEC_PCM = "PCM";
     private static final int DEFAULT_VIDEO_PAYLOAD_TYPE = 96;
     private static final int DEFAULT_VIDEO_PORT = 30000;
     private static final String DEFAULT_VIDEO_FRAMERATE = "25.000000";
@@ -125,12 +124,18 @@ public class SipSdpParser {
         int payloadType = -1;
         @Nullable
         String codecName = null;
+        int bestPreference = Integer.MAX_VALUE;
         for (int offeredPt : offeredPayloadTypes) {
             String offeredCodec = resolveCodecName(offeredPt, payloadCodecs);
-            if (isSupportedCodec(offeredCodec)) {
+            int offeredClockRate = payloadClockRates.getOrDefault(offeredPt, DEFAULT_CLOCK_RATE);
+            if (!isSupportedCodec(offeredCodec, offeredClockRate)) {
+                continue;
+            }
+            int preference = codecPreference(offeredCodec, offeredClockRate);
+            if (preference < bestPreference) {
+                bestPreference = preference;
                 payloadType = offeredPt;
                 codecName = offeredCodec;
-                break;
             }
         }
 
@@ -218,17 +223,18 @@ public class SipSdpParser {
         if (mapped != null) {
             return mapped;
         }
-        if (payloadType == 8) {
-            return CODEC_PCMA;
-        }
-        if (payloadType == 0) {
-            return CODEC_PCMU;
-        }
         return "";
     }
 
-    private static boolean isSupportedCodec(String codecName) {
-        return CODEC_PCMA.equals(codecName) || CODEC_PCMU.equals(codecName);
+    private static boolean isSupportedCodec(String codecName, int clockRate) {
+        return CODEC_PCM.equals(codecName) && clockRate == 16000;
+    }
+
+    private static int codecPreference(String codecName, int clockRate) {
+        if (CODEC_PCM.equals(codecName) && clockRate == 16000) {
+            return 0;
+        }
+        return Integer.MAX_VALUE;
     }
 
     private static @Nullable String parseConnectionHost(String connectionLine) {

@@ -54,6 +54,7 @@ import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.ExpiresHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.HeaderFactory;
@@ -68,6 +69,9 @@ import javax.sip.message.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dahuadoor.internal.media.SipAudioOffer;
+import org.openhab.binding.dahuadoor.internal.media.SipBackchannelRtpRelay;
+import org.openhab.binding.dahuadoor.internal.media.SipSdpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,6 +105,8 @@ public class SipClient implements SipListener {
     private final int localSipPort;
     private final String localIp;
     private final String realm;
+    private final int localAudioRtpPort;
+    private final @Nullable SipBackchannelRtpRelay backchannelRelay;
     private final SipEventListener listener;
     private final Consumer<String> errorHandler;
 
@@ -122,6 +128,8 @@ public class SipClient implements SipListener {
     });
 
     private long cseqCounter = 1;
+    private @Nullable String registerCallId;
+    private @Nullable String registerFromTag;
 
     private @Nullable ServerTransaction inviteServerTransaction;
     private @Nullable Request inviteRequest;
@@ -131,6 +139,10 @@ public class SipClient implements SipListener {
     private boolean pendingHangupAfterAck = false;
     private @Nullable ScheduledFuture<?> answeringTimeoutFuture;
     private SipCallState callState = SipCallState.IDLE;
+
+    // Audio talkback
+    private final SipSdpParser sdpParser = new SipSdpParser();
+    private @Nullable SipAudioOffer currentAudioOffer;
 
     public enum SipCallState {
         IDLE,
@@ -148,9 +160,11 @@ public class SipClient implements SipListener {
      * @param sipExtension SIP extension to register (e.g., "9901#2")
      * @param username SIP username (typically same as extension)
      * @param password SIP password
-     * @param localSipPort Local UDP port for SIP communication (e.g., 5062)
+     * @param localSipPort Local UDP port for SIP communication (e.g., 5060)
      * @param localIp Local IP address (auto-detected)
      * @param realm SIP realm (typically "VDP" for Dahua)
+     * @param localAudioRtpPort Local RTP source port advertised in the SDP answer
+     * @param backchannelRelay relay for browser backchannel audio
      * @param listener Callback interface for SIP events
      * @param errorHandler Error callback
      * @throws PeerUnavailableException if SIP factory components cannot be created
@@ -160,9 +174,9 @@ public class SipClient implements SipListener {
      * @throws TooManyListenersException if SIP listener registration fails
      */
     public SipClient(String vtoIp, String sipExtension, String username, String password, int localSipPort,
-            String localIp, String realm, SipEventListener listener, Consumer<String> errorHandler)
-            throws PeerUnavailableException, TransportNotSupportedException, InvalidArgumentException,
-            ObjectInUseException, TooManyListenersException {
+            String localIp, String realm, int localAudioRtpPort, @Nullable SipBackchannelRtpRelay backchannelRelay,
+            SipEventListener listener, Consumer<String> errorHandler) throws PeerUnavailableException,
+            TransportNotSupportedException, InvalidArgumentException, ObjectInUseException, TooManyListenersException {
         this.vtoIp = vtoIp;
         this.sipExtension = sipExtension;
         this.username = username;
@@ -170,6 +184,8 @@ public class SipClient implements SipListener {
         this.localSipPort = localSipPort;
         this.localIp = localIp;
         this.realm = realm;
+        this.localAudioRtpPort = localAudioRtpPort;
+        this.backchannelRelay = backchannelRelay;
         this.listener = listener;
         this.errorHandler = errorHandler;
 
@@ -210,6 +226,28 @@ public class SipClient implements SipListener {
         return BINDING_PREFIX + "-sip-client-" + UUID.nameUUIDFromBytes(stackIdentity.getBytes(StandardCharsets.UTF_8));
     }
 
+    private synchronized long nextRegisterCSeq() {
+        return cseqCounter++;
+    }
+
+    private synchronized String ensureRegisterFromTag() {
+        String fromTag = registerFromTag;
+        if (fromTag == null || fromTag.isBlank()) {
+            fromTag = UUID.randomUUID().toString().substring(0, 8);
+            registerFromTag = fromTag;
+        }
+        return fromTag;
+    }
+
+    private synchronized String ensureRegisterCallId(SipProvider provider) {
+        String callId = registerCallId;
+        if (callId == null || callId.isBlank()) {
+            callId = provider.getNewCallId().getCallId();
+            registerCallId = callId;
+        }
+        return callId;
+    }
+
     /**
      * Send REGISTER request (unauthenticated).
      * This triggers 401 Unauthorized response with nonce, which then triggers authenticated REGISTER.
@@ -235,8 +273,7 @@ public class SipClient implements SipListener {
             SipURI fromURI = addrFactory.createSipURI(encodedExtension, vtoIp);
             fromURI.setPort(5060);
             Address fromAddress = addrFactory.createAddress(fromURI);
-            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress,
-                    UUID.randomUUID().toString().substring(0, 8));
+            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress, ensureRegisterFromTag());
 
             // To: <sip:9901%232@172.18.1.111:5060>
             ToHeader toHeader = hdrFactory.createToHeader(fromAddress, null);
@@ -247,10 +284,10 @@ public class SipClient implements SipListener {
             viaHeaders.add(viaHeader);
 
             // Call-ID
-            CallIdHeader callIdHeader = provider.getNewCallId();
+            CallIdHeader callIdHeader = hdrFactory.createCallIdHeader(ensureRegisterCallId(provider));
 
             // CSeq
-            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(cseqCounter++, Request.REGISTER);
+            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(nextRegisterCSeq(), Request.REGISTER);
 
             // Max-Forwards
             MaxForwardsHeader maxForwards = hdrFactory.createMaxForwardsHeader(70);
@@ -259,7 +296,7 @@ public class SipClient implements SipListener {
             Request request = msgFactory.createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader,
                     fromHeader, toHeader, viaHeaders, maxForwards);
 
-            // Contact: <sip:9901%232@192.168.x.x:5062>
+            // Contact: <sip:9901%232@192.168.x.x:5060>
             SipURI contactURI = addrFactory.createSipURI(encodedExtension, localIp);
             contactURI.setPort(localSipPort);
             Address contactAddress = addrFactory.createAddress(contactURI);
@@ -306,8 +343,7 @@ public class SipClient implements SipListener {
             SipURI fromURI = addrFactory.createSipURI(encodedExtension, vtoIp);
             fromURI.setPort(5060);
             Address fromAddress = addrFactory.createAddress(fromURI);
-            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress,
-                    UUID.randomUUID().toString().substring(0, 8));
+            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress, ensureRegisterFromTag());
 
             ToHeader toHeader = hdrFactory.createToHeader(fromAddress, null);
 
@@ -315,8 +351,8 @@ public class SipClient implements SipListener {
             List<ViaHeader> viaHeaders = new ArrayList<>();
             viaHeaders.add(viaHeader);
 
-            CallIdHeader callIdHeader = provider.getNewCallId();
-            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(cseqCounter++, Request.REGISTER);
+            CallIdHeader callIdHeader = hdrFactory.createCallIdHeader(ensureRegisterCallId(provider));
+            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(nextRegisterCSeq(), Request.REGISTER);
             MaxForwardsHeader maxForwards = hdrFactory.createMaxForwardsHeader(70);
 
             Request request = msgFactory.createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader,
@@ -366,15 +402,10 @@ public class SipClient implements SipListener {
     public void dispose() {
         try {
             cancelAnsweringTimeout();
+            clearAudioPath("dispose");
             callStateTimeoutScheduler.shutdownNow();
             synchronized (this) {
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
+                clearCallContextLocked(SipCallState.IDLE);
             }
 
             SipProvider provider = sipProvider;
@@ -396,8 +427,6 @@ public class SipClient implements SipListener {
                 if (stack != null) {
                     stack.deleteSipProvider(provider);
                 }
-
-                sipProvider = null;
             }
 
             // Stop SIP stack
@@ -405,8 +434,6 @@ public class SipClient implements SipListener {
                 stack.stop();
                 sipStack = null;
             }
-
-            logger.debug("SIP client disposed successfully");
         } catch (SipException | RuntimeException e) {
             logger.warn("Error disposing SIP client: {}", e.getMessage());
         }
@@ -466,15 +493,10 @@ public class SipClient implements SipListener {
         if (Request.REGISTER.equals(cseq.getMethod())) {
             handleRegisterResponse(response);
         } else if (Request.BYE.equals(cseq.getMethod()) && statusCode == Response.OK) {
+            clearAudioPath("local-bye-ok");
             synchronized (this) {
                 cancelAnsweringTimeout();
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
+                clearCallContextLocked(SipCallState.IDLE);
             }
             listener.onCallEnded();
         }
@@ -508,6 +530,15 @@ public class SipClient implements SipListener {
             currentInviteSdp = inviteSdpRaw != null && inviteSdpRaw.length > 0
                     ? new String(inviteSdpRaw, StandardCharsets.UTF_8)
                     : null;
+            SipAudioOffer parsedAudioOffer = sdpParser.parseAudioOffer(currentInviteSdp).orElse(null);
+            currentAudioOffer = parsedAudioOffer;
+            if (parsedAudioOffer != null) {
+                logger.info("SIP INVITE audio target: {}:{} codec={} PT={}", parsedAudioOffer.getRemoteHost(),
+                        parsedAudioOffer.getRemotePort(), parsedAudioOffer.getCodecName(),
+                        parsedAudioOffer.getPayloadType());
+            } else {
+                logger.warn("SIP INVITE: could not parse audio offer from SDP");
+            }
             activeDialog = serverTransaction.getDialog();
             callState = SipCallState.RINGING;
         }
@@ -548,15 +579,10 @@ public class SipClient implements SipListener {
         serverTransaction.sendResponse(ok);
 
         logger.info("Call cancelled by VTO");
+        clearAudioPath("cancel");
         synchronized (this) {
             cancelAnsweringTimeout();
-            callState = SipCallState.IDLE;
-            inviteRequest = null;
-            inviteServerTransaction = null;
-            currentInviteSdp = null;
-            activeDialog = null;
-            currentCallerId = null;
-            pendingHangupAfterAck = false;
+            clearCallContextLocked(SipCallState.IDLE);
         }
         listener.onCallCancelled();
     }
@@ -578,6 +604,15 @@ public class SipClient implements SipListener {
             shouldSendDeferredBye = pendingHangupAfterAck;
             pendingHangupAfterAck = false;
         }
+        SipAudioOffer offer;
+        synchronized (this) {
+            offer = currentAudioOffer;
+        }
+        if (offer != null) {
+            activateAudioPath(offer);
+        } else {
+            logger.warn("ACK received but no audio offer available - skipping backchannel startup");
+        }
         listener.onCallActive();
         if (shouldSendDeferredBye) {
             logger.debug("ACK received, executing deferred hangup");
@@ -597,15 +632,10 @@ public class SipClient implements SipListener {
         Response ok = msgFactory.createResponse(Response.OK, request);
         serverTransaction.sendResponse(ok);
 
+        clearAudioPath("remote-bye");
         synchronized (this) {
             cancelAnsweringTimeout();
-            callState = SipCallState.HUNGUP;
-            inviteRequest = null;
-            inviteServerTransaction = null;
-            currentInviteSdp = null;
-            activeDialog = null;
-            currentCallerId = null;
-            pendingHangupAfterAck = false;
+            clearCallContextLocked(SipCallState.HUNGUP);
         }
         listener.onCallEnded();
         logger.info("Call terminated by remote BYE");
@@ -673,10 +703,18 @@ public class SipClient implements SipListener {
             ContactHeader contactHeader = hdrFactory.createContactHeader(contactAddress);
             ok.addHeader(contactHeader);
 
-            byte[] inviteSdp = localInviteRequest.getRawContent();
-            if (inviteSdp != null && inviteSdp.length > 0) {
-                logger.debug(
-                        "Incoming INVITE contains SDP offer, but no local SDP answer is available yet; sending 200 OK without SDP body");
+            String inviteSdp = currentInviteSdp;
+            if (inviteSdp != null && !inviteSdp.isBlank()) {
+                int localAudioPort = localAudioRtpPort;
+                sdpParser.buildAnswerSdp(inviteSdp, localIp, localAudioPort).ifPresentOrElse(answerSdp -> {
+                    try {
+                        ContentTypeHeader contentTypeHeader = hdrFactory.createContentTypeHeader("application", "sdp");
+                        ok.setContent(answerSdp, contentTypeHeader);
+                        logger.debug("Attached SDP answer to 200 OK with local audio port {}", localAudioPort);
+                    } catch (ParseException e) {
+                        throw new IllegalStateException("Failed to create SDP content type header", e);
+                    }
+                }, () -> logger.warn("Incoming INVITE contains SDP offer, but SDP answer generation failed"));
             }
 
             localInviteServerTransaction.sendResponse(ok);
@@ -715,27 +753,17 @@ public class SipClient implements SipListener {
                 ServerTransaction localInviteServerTransaction = inviteServerTransaction;
                 if (msgFactory == null || localInviteRequest == null || localInviteServerTransaction == null) {
                     logger.debug("Ignoring hangup in RINGING state: invite transaction already unavailable");
-                    callState = SipCallState.IDLE;
-                    inviteRequest = null;
-                    inviteServerTransaction = null;
-                    currentInviteSdp = null;
-                    activeDialog = null;
-                    currentCallerId = null;
-                    pendingHangupAfterAck = false;
                     cancelAnsweringTimeout();
+                    clearAudioPath("ringing-hangup-no-transaction");
+                    clearCallContextLocked(SipCallState.IDLE);
                     listener.onCallEnded();
                     return true;
                 }
                 Response decline = msgFactory.createResponse(Response.BUSY_HERE, localInviteRequest);
                 localInviteServerTransaction.sendResponse(decline);
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
                 cancelAnsweringTimeout();
+                clearAudioPath("ringing-rejected");
+                clearCallContextLocked(SipCallState.IDLE);
                 logger.debug("Rejected incoming INVITE with 486 Busy Here");
                 listener.onCallEnded();
                 return true;
@@ -786,28 +814,18 @@ public class SipClient implements SipListener {
 
             if (dialog == null || provider == null) {
                 logger.debug("Cannot send BYE: no active SIP dialog");
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
                 cancelAnsweringTimeout();
+                clearAudioPath("bye-no-dialog");
+                clearCallContextLocked(SipCallState.IDLE);
                 listener.onCallEnded();
                 return true;
             }
 
             if (!DialogState.CONFIRMED.equals(dialog.getState())) {
                 logger.debug("Skipping BYE because SIP dialog is not CONFIRMED (state={})", dialog.getState());
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
                 cancelAnsweringTimeout();
+                clearAudioPath("bye-dialog-not-confirmed");
+                clearCallContextLocked(SipCallState.IDLE);
                 listener.onCallEnded();
                 return true;
             }
@@ -827,13 +845,8 @@ public class SipClient implements SipListener {
             if (message != null && message.contains("not yet established or terminated")) {
                 logger.debug("Ignoring BYE for non-established or terminated dialog");
                 cancelAnsweringTimeout();
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
+                clearAudioPath("bye-not-established");
+                clearCallContextLocked(SipCallState.IDLE);
                 listener.onCallEnded();
                 return true;
             }
@@ -872,13 +885,8 @@ public class SipClient implements SipListener {
                 return;
             }
             cancelAnsweringTimeout();
-            callState = SipCallState.IDLE;
-            inviteRequest = null;
-            inviteServerTransaction = null;
-            currentInviteSdp = null;
-            activeDialog = null;
-            currentCallerId = null;
-            pendingHangupAfterAck = false;
+            clearAudioPath("dialog-terminated");
+            clearCallContextLocked(SipCallState.IDLE);
         }
         listener.onCallEnded();
     }
@@ -906,13 +914,8 @@ public class SipClient implements SipListener {
                     return;
                 }
                 logger.warn("SIP call stuck in {} for {}s - forcing call end", timeoutState, timeoutSeconds);
-                callState = SipCallState.IDLE;
-                inviteRequest = null;
-                inviteServerTransaction = null;
-                currentInviteSdp = null;
-                activeDialog = null;
-                currentCallerId = null;
-                pendingHangupAfterAck = false;
+                clearAudioPath("state-timeout-" + timeoutState.name().toLowerCase());
+                clearCallContextLocked(SipCallState.IDLE);
                 answeringTimeoutFuture = null;
                 shouldNotifyEnded = true;
             }
@@ -920,5 +923,39 @@ public class SipClient implements SipListener {
                 listener.onCallEnded();
             }
         }, timeoutSeconds, TimeUnit.SECONDS);
+    }
+
+    private void activateAudioPath(SipAudioOffer offer) {
+        SipBackchannelRtpRelay relay = backchannelRelay;
+        if (relay != null) {
+            logger.debug("Activating SIP audio path via backchannel relay for {}:{} (pt={}, codec={} rate={}Hz)",
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), offer.getCodecName(),
+                    offer.getClockRate());
+            relay.setTarget(offer, "ack");
+        } else {
+            logger.warn(
+                    "No backchannel relay available - skipping SIP audio path activation for {}:{} (pt={}, codec={} rate={}Hz)",
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), offer.getCodecName(),
+                    offer.getClockRate());
+        }
+    }
+
+    private void clearAudioPath(String reason) {
+        logger.debug("Clearing SIP audio path (reason={})", reason);
+        SipBackchannelRtpRelay relay = backchannelRelay;
+        if (relay != null) {
+            relay.setTarget(null, reason);
+        }
+    }
+
+    private void clearCallContextLocked(SipCallState nextState) {
+        callState = nextState;
+        inviteRequest = null;
+        inviteServerTransaction = null;
+        currentInviteSdp = null;
+        currentAudioOffer = null;
+        activeDialog = null;
+        currentCallerId = null;
+        pendingHangupAfterAck = false;
     }
 }
