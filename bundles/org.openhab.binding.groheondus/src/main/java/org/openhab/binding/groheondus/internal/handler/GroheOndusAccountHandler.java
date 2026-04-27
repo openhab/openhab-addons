@@ -165,9 +165,9 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
             refreshTokenResponseField.setAccessible(true);
             Object refreshTokenResponse = refreshTokenResponseField.get(ondusService);
             if (refreshTokenResponse instanceof RefreshTokenResponse tokenResponse) {
-                String accessToken = tokenResponse.getAccessToken();
+                String accessToken = tokenResponse.getAccessToken().trim();
                 if (!accessToken.isBlank()) {
-                    return "Bearer" + accessToken;
+                    return "Bearer " + accessToken;
                 }
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {

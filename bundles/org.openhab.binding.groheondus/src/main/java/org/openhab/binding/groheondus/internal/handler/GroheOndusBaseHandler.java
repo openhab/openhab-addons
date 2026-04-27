@@ -61,7 +61,8 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     // Used to space scheduled updates apart by 1 second to avoid rate limiting from service
     private int thingCounter = 0;
 
-    private @Nullable Instant snoozeUntil;
+    private volatile @Nullable Instant snoozeUntil;
+    private volatile boolean pauseStateKnown = false;
 
     public GroheOndusBaseHandler(Thing thing, int applianceType, int thingCounter) {
         super(thing);
@@ -140,9 +141,12 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     protected abstract void updateChannel(ChannelUID channelUID, T appliance, M measurement);
 
     protected State getPauseState() {
+        if (!pauseStateKnown) {
+            return UnDefType.UNDEF;
+        }
         Instant snoozeUntil = this.snoozeUntil;
         if (snoozeUntil == null) {
-            return UnDefType.UNDEF;
+            return new QuantityType<>(0, Units.MINUTE);
         }
 
         long remainingSeconds = Duration.between(Instant.now(), snoozeUntil).getSeconds();
@@ -200,19 +204,24 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return true;
         }
 
-        try {
-            GroheOndusSnoozeHttpClient.setPauseDuration(GroheOndusAccountHandler.BASE_URL, authorizationHeader,
-                    appliance, durationMinutes);
-            this.snoozeUntil = durationMinutes == 0 ? null
-                    : Instant.now().plusSeconds(durationMinutes.longValue() * 60);
-            updateChannels();
-        } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Pause update for thing {} was interrupted", thing.getUID(), e);
-            return true;
-        } catch (IOException e) {
-            logger.debug("Could not update pause duration for thing {}", thing.getUID(), e);
-        }
+        final int finalDurationMinutes = durationMinutes;
+        final T finalAppliance = appliance;
+        final String finalAuthorizationHeader = authorizationHeader;
+        scheduler.execute(() -> {
+            try {
+                GroheOndusSnoozeHttpClient.setPauseDuration(GroheOndusAccountHandler.BASE_URL, finalAuthorizationHeader,
+                        finalAppliance, finalDurationMinutes);
+                this.snoozeUntil = finalDurationMinutes == 0 ? null
+                        : Instant.now().plusSeconds(finalDurationMinutes * 60L);
+                this.pauseStateKnown = true;
+                updateState(CHANNEL_PAUSE, new QuantityType<>(finalDurationMinutes, Units.MINUTE));
+            } catch (InterruptedIOException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Pause update for thing {} was interrupted", thing.getUID(), e);
+            } catch (IOException e) {
+                logger.debug("Could not update pause duration for thing {}", thing.getUID(), e);
+            }
+        });
         return true;
     }
 
