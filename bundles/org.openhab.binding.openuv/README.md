@@ -88,7 +88,7 @@ end
 ```js
 rules.JSRule({
   name: "Notify when UV max reached",
-  triggers: [triggers.ChannelEventTrigger("openuv:uvreport:local:city1:UVMaxEvent", "")],
+  triggers: [triggers.ChannelEventTrigger("openuv:uvreport:local:city1:UVMaxEvent")],
   execute: (event) => {
     console.log("UV max reached for city1")
   }
@@ -98,7 +98,7 @@ rules.JSRule({
 or with Rule Builder syntax:
 
 ```js
-rules.when().channel("openuv:uvreport:local:city1:UVMaxEvent").triggered("").then(event => {
+rules.when().channel("openuv:uvreport:local:city1:UVMaxEvent").triggered().then(event => {
   console.log("UV max reached for city1")
 }).build("Notify when UV max reached")
 ```
