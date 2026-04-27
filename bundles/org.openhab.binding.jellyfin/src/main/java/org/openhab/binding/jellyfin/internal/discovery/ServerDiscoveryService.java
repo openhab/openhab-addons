@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.BindingConfiguration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ServerDiscoveryInfo;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
 import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SystemApi;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -66,19 +67,29 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         ServerDiscovery discoverer = new ServerDiscovery(configuration.discoveryPort, configuration.discoveryTimeout,
                 configuration.discoveryMessage);
 
-        List<ServerDiscoveryResult> servers = discoverer.discoverServers();
+        List<ServerDiscoveryInfo> servers = discoverer.discoverServers();
 
         if (!servers.isEmpty()) {
-            for (ServerDiscoveryResult server : servers) {
-                logger.debug("Server {} @ {}", server.getName(), server.getAddress());
+            for (ServerDiscoveryInfo server : servers) {
+                String serverName = server.getName();
+                String serverAddress = server.getAddress();
+                String serverId = server.getId();
 
-                var uid = new ThingUID(Constants.THING_TYPE_SERVER, server.getId());
+                if (serverId == null || serverAddress == null) {
+                    logger.debug("Skipping discovered server with missing id or address");
+                    continue;
+                }
+
+                logger.debug("Server {} @ {}", serverName, serverAddress);
+
+                var uid = new ThingUID(Constants.THING_TYPE_SERVER, serverId);
                 try {
                     var properties = this.getProperties(server);
                     var version = properties.get(Thing.PROPERTY_FIRMWARE_VERSION).toString();
                     if (this.isVersionSupported(version)) {
                         var resultBuilder = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(server.getName())
+                                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                                .withLabel(serverName != null ? serverName : serverId)
                                 .withTTL(Constants.DISCOVERY_RESULT_TTL_SEC);
 
                         var result = resultBuilder.build();
@@ -86,12 +97,12 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
                         this.thingDiscovered(result);
                     } else {
                         logger.info("Discovered server {} @ {} will be ignored. Version {} is not supported.",
-                                server.getName(), server.getAddress(), version);
+                                serverName, serverAddress, version);
                     }
                 } catch (Exception e) {
                     logger.warn(
                             "Failed to retrieve system info from Jellyfin server at {}: {}, server will be ignored.",
-                            server.getAddress(), e.getMessage(), e);
+                            serverAddress, e.getMessage(), e);
                 }
             }
         }
@@ -104,7 +115,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
      * @return Map of server properties
      * @throws ApiException If the API call to get additional server information fails
      */
-    private Map<String, Object> getProperties(ServerDiscoveryResult server) throws ApiException {
+    private Map<String, Object> getProperties(ServerDiscoveryInfo server) throws ApiException {
         Map<String, Object> properties = new HashMap<>();
 
         var uri = server.getAddress();

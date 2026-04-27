@@ -25,9 +25,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ServerDiscoveryInfo;
 import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Patrik Gfeller - Initial Contribution
@@ -37,8 +41,9 @@ class ServerDiscovery {
     private final String discoveryMessage;
 
     private final Logger logger = LoggerFactory.getLogger(ServerDiscovery.class);
+    private final ObjectMapper objectMapper = ApiClientWrapper.createDefaultObjectMapper();
 
-    private final List<ServerDiscoveryResult> serverList = new CopyOnWriteArrayList<>();
+    private final List<ServerDiscoveryInfo> serverList = new CopyOnWriteArrayList<>();
 
     private final int port;
     private final int timeout;
@@ -49,7 +54,7 @@ class ServerDiscovery {
         this.discoveryMessage = discoveryMessage != null ? discoveryMessage : "who is JellyfinServer?";
     }
 
-    List<ServerDiscoveryResult> discoverServers() {
+    List<ServerDiscoveryInfo> discoverServers() {
         serverList.clear();
         List<String> broadcastAddresses = NetUtil.getAllBroadcastAddresses();
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -101,7 +106,7 @@ class ServerDiscovery {
 
                     logger.debug("Discovered Jellyfin Server: {}", response);
 
-                    serverList.add(ServerDiscoveryResult.fromJson(response));
+                    serverList.add(objectMapper.readValue(response, ServerDiscoveryInfo.class));
                 } catch (SocketTimeoutException e) {
                     // No more responses within the timeout
                     break;
