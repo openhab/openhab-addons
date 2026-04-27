@@ -378,8 +378,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
-        String channelID = channelUID.getIdWithoutGroup();
-        switch (channelID) {
+        switch (channelUID.getId()) {
             case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
                 RouterosInterfaceBase iface = this.iface;
                 if (!(iface instanceof RouterosEthernetInterface routerOsIface)) {
@@ -395,8 +394,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                 try {
                     routeros.setPOEOutState(routerOsIface, command.toString());
                 } catch (MikrotikApiException e) {
-                    logger.warn("RouterOS command execution failed in {} due to Mikrotik API error",
-                            getThing().getUID(), e);
+                    logger.warn("RouterOS command execution failed in {} due to Mikrotik API error:{}",
+                            getThing().getUID(), e.getMessage());
                 }
                 break;
             default:

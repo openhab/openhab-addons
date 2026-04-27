@@ -419,7 +419,7 @@ public class RouterosDevice {
         }
 
         if (!"auto-on".equals(state) && !"forced-on".equals(state) && !"off".equals(state)) {
-            logger.warn("Unsupported PoE state '{}'", state);
+            logger.warn("Unsupported PoE state '{}' on interface {}", state, ifaceModel.getName());
 
             return;
         }
