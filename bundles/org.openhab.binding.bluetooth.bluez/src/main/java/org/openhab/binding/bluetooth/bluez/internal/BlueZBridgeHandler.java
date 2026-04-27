@@ -111,13 +111,17 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         Future<?> job = discoveryJob;
         if (job != null) {
-            job.cancel(false);
+            job.cancel(true);
             discoveryJob = null;
         }
 
         BluetoothAdapter adapter = this.adapter;
         if (adapter != null) {
-            adapter.stopDiscovery();
+            try {
+                adapter.stopDiscovery();
+            } catch (DBusExecutionException e) {
+                logger.debug("Failed to stop discovery on adapter during disposal", e);
+            }
             this.adapter = null;
         }
 
