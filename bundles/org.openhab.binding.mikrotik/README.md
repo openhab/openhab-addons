@@ -247,7 +247,6 @@ String     Eth_2_POE_State             "PoE State"                  (gRB1Eth2)  
 String     Eth_2_POE_Status            "PoE Status"                 (gRB1Eth2)    ["Status"]                  {channel="mikrotik:interface:rb1:eth2:poeOutStatus"}
 Number:Power     Eth_2_POE_Power       "PoE Power"                  (gRB1Eth2)    ["Measurement", "Power"]    {channel="mikrotik:interface:rb1:eth2:poeOutPower"}
 
-
 Group gRB1Cap1 "CAPsMAN Interface 1"
 String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}
 String     Cap_1_Name                  "Name"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:name"}
