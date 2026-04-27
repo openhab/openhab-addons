@@ -276,7 +276,6 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
 
     @Override
     public void onUpdateAccepted(String deviceId, String msg) {
-
         logger.trace("onUpdateAccepted[{}]: {}", deviceId, msg);
 
         DeviceState partialState = DeviceState.parse(msg);
