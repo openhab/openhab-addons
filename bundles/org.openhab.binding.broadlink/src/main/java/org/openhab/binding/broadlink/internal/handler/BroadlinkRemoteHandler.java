@@ -293,6 +293,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                         break;
                     }
                 }
+                break;
             }
             default:
                 logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
@@ -371,7 +372,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         HexFormat hex = HexFormat.of();
 
         try {
-            while ((System.currentTimeMillis() < timeout) && (freqFound)) {
+            while ((System.currentTimeMillis() < timeout) && (!freqFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 logger.trace("Checking rf frequency");
                 byte[] resp = (sendCommand(COMMAND_BYTE_CHECK_RF_FREQ_LEARNING, "check rf frequency"));
@@ -389,7 +390,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             freqFound = false;
         }
 
-        if (freqFound) {
+        if (!freqFound) {
             sendCommand(COMMAND_BYTE_EXIT_RF_FREQ_LEARNING, "exit remote rf frequency learning mode");
             logger.info("No RF frequency found.");
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
