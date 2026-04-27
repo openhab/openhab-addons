@@ -94,11 +94,11 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private final Map<String, SipBackchannelSession> backchannelSessionsByHttpSession = new ConcurrentHashMap<>();
     private static final String[] AVAILABLE_CLIENT_IDS = { "client-1", "client-2", "client-3" };
     private static final int SIP_BACKCHANNEL_LISTEN_PORT_OFFSET = 20000;
-    private static final long DOORBELL_EVENT_DEDUP_MS = 1500;
+    private static final long SIP_INVITE_DEDUP_MS = 1500;
     private static final long SESSION_TTL_MS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSION_MAPPINGS = 256;
     private volatile boolean disposed;
-    private volatile long lastDoorbellEventTs = 0L;
+    private volatile long lastSipInviteTs = 0L;
 
     public DahuaDoorBaseHandler(Thing thing, PlayStreamServlet playStreamServlet) {
         super(thing);
@@ -747,32 +747,32 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected abstract void onButtonPressed(int lockNumber);
 
     /**
-     * Determines whether DHIP invite events should be processed.
+     * Routes a resolved doorbell event from DHIP to the concrete device handler.
      *
-     * When SIP is enabled, SIP is the single authoritative invite path and DHIP invite events are ignored.
-     * When SIP is disabled, DHIP invite remains active.
+     * DHIP remains lossless and authoritative for LockNum-based button mapping, so no time-based dedup
+     * or SIP gating is applied here.
      *
-     * @return true if DHIP invite handling is active, false otherwise
+     * @param source event source label for logging (for example "DHIP")
+     * @param lockNumber resolved doorbell/button number
      */
-    protected boolean isDhipInviteActive() {
-        DahuaDoorConfiguration localConfig = config;
-        return localConfig == null || !localConfig.enableSip;
+    protected void handleResolvedDoorbellEvent(String source, int lockNumber) {
+        onButtonPressed(lockNumber);
     }
 
     /**
-     * Deduplicates near-simultaneous doorbell events coming from DHIP and SIP.
+     * Deduplicates SIP INVITE callbacks so UDP retransmits do not spam state updates and logs.
      *
-     * @param source event source label for logging (e.g. "DHIP", "SIP")
+     * @param source event source label for logging (for example "SIP")
      * @return true when caller should continue processing, false when event should be ignored as duplicate
      */
-    protected boolean shouldProcessDoorbellEvent(String source) {
+    protected boolean shouldProcessSipInvite(String source) {
         long now = System.currentTimeMillis();
-        long previous = lastDoorbellEventTs;
-        if (previous > 0 && (now - previous) < DOORBELL_EVENT_DEDUP_MS) {
-            logger.debug("Ignoring duplicate {} doorbell event ({} ms after previous event)", source, now - previous);
+        long previous = lastSipInviteTs;
+        if (previous > 0 && (now - previous) < SIP_INVITE_DEDUP_MS) {
+            logger.debug("Ignoring duplicate {} INVITE ({} ms after previous event)", source, now - previous);
             return false;
         }
-        lastDoorbellEventTs = now;
+        lastSipInviteTs = now;
         return true;
     }
 
@@ -938,13 +938,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     @Override
     public void onInviteReceived(String callerId) {
         logger.info("SIP INVITE received from {}", callerId);
-        if (!shouldProcessDoorbellEvent("SIP")) {
+        if (!shouldProcessSipInvite("SIP")) {
             return;
         }
         updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.RINGING.name()));
-        // Phase 1: Just trigger the existing doorbell logic
-        // In the future, this could be enhanced to manage dialog state
-        onButtonPressed(1); // Default to button 1 for SIP calls
     }
 
     @Override
