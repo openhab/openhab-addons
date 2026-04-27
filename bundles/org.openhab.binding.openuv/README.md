@@ -62,13 +62,96 @@ This is quite useful with a free OpenUV account (50 req/day included): in this c
 
 Thing can be extended with as many SafeExposure channels as needed for each skin type.
 
+## Events
+
+- **UVMaxEvent**: Trigger channel fired when the current UV Index reaches the day's maximum (time reported in the `UVMaxTime` channel). The binding schedules this trigger when data is refreshed and will fire only if the computed `UVMaxTime` is in the future. The trigger sends no payload — use it as an event-only channel in rules.
+
+Example rule:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Notify when UV max reached"
+when
+  Channel "openuv:uvreport:local:city1:UVMaxEvent" triggered
+then
+  logInfo("openuv", "UV max reached for city1")
+end
+```
+
+:::
+
+::: tab JavaScript
+
+```js
+rules.JSRule({
+  name: "Notify when UV max reached",
+  triggers: [triggers.ChannelEventTrigger("openuv:uvreport:local:city1:UVMaxEvent")],
+  execute: (event) => {
+    console.log("UV max reached for city1")
+  }
+});
+```
+
+or with Rule Builder syntax:
+
+```js
+rules.when().channel("openuv:uvreport:local:city1:UVMaxEvent").triggered().then(event => {
+  console.log("UV max reached for city1")
+}).build("Notify when UV max reached")
+```
+
+:::
+
+::: tab Python
+
+```py
+from openhab import rule
+from openhab.triggers import ChannelEventTrigger
+
+@rule(
+    name = "Notify when UV max reached",
+    triggers = [ ChannelEventTrigger("openuv:uvreport:local:city1:UVMaxEvent") ]
+)
+class UVMaxEvent:
+  def execute(self, module, input):
+    self.logger.info("UV max reached for city1")
+```
+
+:::
+
+::: tab JRuby
+
+```rb
+rule "Notify when UV max reached" do
+  channel "openuv:uvreport:local:city1:UVMaxEvent"
+  run do
+    logger.info "UV max reached for city1"
+  end
+end
+```
+
+or with a terse syntax:
+
+```rb
+channel("openuv:uvreport:local:city1:UVMaxEvent", name: "Notify when UV max reached") do
+  logger.info "UV max reached for city1"
+end
+```
+
+:::
+
+::::
+
 ## Provided icon set
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name          | Dynamic | Illustration               |
-|--------------------|---------|----------------------------|
-| oh:openuv:ozone    | No      | ![Ozone icon](doc/icon/ozone.svg)    |
+| Icon Name          | Dynamic | Illustration                            |
+|--------------------|---------|-----------------------------------------|
+| oh:openuv:ozone    | No      | ![Ozone icon](doc/icon/ozone.svg)       |
 | oh:openuv:uv-alarm | Yes     | ![UV alarm icon](doc/icon/uv-alarm.svg) |
 | oh:openuv:uv-index | Yes     | ![UV index icon](doc/icon/uv-index.svg) |
 
@@ -76,7 +159,7 @@ This binding has its own IconProvider and makes available the following list of 
 
 demo.things:
 
-```xtend
+```java
 Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
     Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=20 ]{
         Channels:
@@ -93,21 +176,17 @@ Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
 
 demo.items:
 
-```xtend
-
+```java
 Number              UVIndex   "UV Index"  { channel = "openuv:uvreport:local:city1:UVIndex" }
 Number              UVMax     "UV Max"    { channel = "openuv:uvreport:local:city1:UVMax" }
 Number:ArealDensity Ozone     "Ozone"     { channel = "openuv:uvreport:local:city1:Ozone" }
 Number:Time         SafeExp3  "Parents"   { channel = "openuv:uvreport:local:city1:parents" }
 Number:Time         SafeExp2  "Children"  { channel = "openuv:uvreport:local:city1:childs" }
-
 ```
 
 astro.items:
 
-```xtend
-
+```java
 Number:Angle        Elevation "Elevation" {channel="astro:sun:home:position#elevation",
                                            channel="openuv:uvreport:local:city1:elevation" [profile="follow"] }
-
 ```
