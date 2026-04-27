@@ -48,7 +48,7 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
             logger.warn("LockNum not found in Invite event, defaulting to button 1");
         }
 
-        onButtonPressed(lockNumber);
+        handleResolvedDoorbellEvent("DHIP", lockNumber);
     }
 
     @Override

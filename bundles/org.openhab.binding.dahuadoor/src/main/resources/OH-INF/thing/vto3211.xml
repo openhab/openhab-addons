@@ -129,9 +129,9 @@
 			</parameter>
 			<parameter name="localSipPort" type="integer">
 				<label>Local SIP Port</label>
-				<description>Local UDP port for SIP client (default 5062). Must be unique per thing if multiple SIP clients are
+				<description>Local UDP port for SIP client (default 5060). Must be unique per thing if multiple SIP clients are
 					used.</description>
-				<default>5062</default>
+				<default>5060</default>
 			</parameter>
 			<parameter name="sipRealm" type="text">
 				<label>SIP Realm</label>

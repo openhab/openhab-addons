@@ -45,6 +45,6 @@ public class DahuaDoorConfiguration {
     public boolean enableSip = false;
     public String sipExtension = "";
     public String sipPassword = "";
-    public int localSipPort = 5062;
+    public int localSipPort = 5060;
     public String sipRealm = "VDP";
 }

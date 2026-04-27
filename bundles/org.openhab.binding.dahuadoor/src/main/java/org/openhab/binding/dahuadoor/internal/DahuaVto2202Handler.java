@@ -37,7 +37,7 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
     protected void handleInvite(JsonObject eventList, JsonObject eventData) {
         logger.debug("Event Invite from VTO2202 (single button)");
         // VTO2202 has only one button, always use lockNumber 1
-        onButtonPressed(1);
+        handleResolvedDoorbellEvent("DHIP", 1);
     }
 
     @Override
