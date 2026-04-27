@@ -19,7 +19,7 @@ See the table bellow:
 | fridge-101          | Refrigerator    | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 | heatpump-401HP      | Heat Pump       | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 
-## `bridge` Thing
+## `cloud-account` Bridge
 
 This binding has a Bridge responsible for discovering and registering LG Things.
 Thus, adding the Bridge (LGThinq GW Bridge) is the first step in configuring this Binding.
