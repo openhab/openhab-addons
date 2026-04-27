@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -42,6 +43,7 @@ import org.openhab.binding.senseenergy.internal.api.SenseEnergyDatagramListener;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyWebSocket;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyWebSocketListener;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDevice;
+import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDeviceTags;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitor;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitorInfo;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitorStatus;
@@ -117,7 +119,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
     // Map of all device types from the api
     private Map<String, SenseEnergyApiDevice> senseDevices = Collections.emptyMap();
-    private boolean senseDevicesDirty = false;
+    private final AtomicBoolean senseDevicesDirty = new AtomicBoolean(false);
     // DeviceTypes deduced from the senseDevices
     private Map<String, DeviceType> senseDevicesType = new HashMap<String, DeviceType>();
     // Keep track of which devices are on so we can send trigger when devices are turned on/off
@@ -188,6 +190,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
 
         reconcileDiscoveredDeviceChannels(thingBuilder);
+        senseDevicesDirty.set(false);
         updateThing(thingBuilder.build());
         updateProperties();
 
@@ -216,9 +219,8 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         logger.trace("SenseEnergyMonitorHandler: heartbeat");
         refreshDevices();
-        if (senseDevicesDirty) {
+        if (senseDevicesDirty.getAndSet(false)) {
             reconcileDiscoveredDeviceChannels(null);
-            senseDevicesDirty = false;
         }
 
         if (!webSocket.isRunning()) {
@@ -357,11 +359,17 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * @return The deduced DeviceType.
      */
     private DeviceType deduceDeviceType(SenseEnergyApiDevice apiDevice) {
-        if (!apiDevice.tags.ssiEnabled) {
+        SenseEnergyApiDeviceTags tags = apiDevice.tags;
+        if (tags == null || !tags.ssiEnabled) {
             return DeviceType.DISCOVERED_DEVICE;
         }
 
-        SenseEnergyProxyDeviceHandler proxyHandler = getProxyDeviceByMAC(apiDevice.tags.deviceID);
+        String deviceId = tags.deviceID;
+        if (deviceId == null) {
+            return DeviceType.SELF_REPORTING_DEVICE;
+        }
+
+        SenseEnergyProxyDeviceHandler proxyHandler = getProxyDeviceByMAC(deviceId);
         return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
     }
 
@@ -385,7 +393,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         if (!newSenseDevices.equals(senseDevices)) {
             senseDevices = newSenseDevices;
-            senseDevicesDirty = true;
+            senseDevicesDirty.set(true);
             logger.debug("Device list updated, device count: {}", senseDevices.size());
         } else {
             logger.trace("Device list refreshed but no change detected");
@@ -445,10 +453,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             }
         }
 
-        if (thingBuilder == null) {
+        if (thingBuilder == null && channelsUpdated) {
             updateThing(localBuilder.build());
         }
-        senseDevicesDirty = false;
 
         if (channelsUpdated) {
             triggerChannel(new ChannelUID(getThing().getUID(), CHANNEL_GROUP_GENERAL, CHANNEL_DEVICES_UPDATED_TRIGGER));
@@ -696,7 +703,8 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
             // check if device channels need to be updated because there is a new device
             if (!senseDevices.containsKey(device.id)) {
-                reconcileDiscoveredDeviceChannels(null);
+                // Defer reconciliation to heartbeat thread to avoid cross-thread channel mutation.
+                senseDevicesDirty.set(true);
             }
 
             DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);
