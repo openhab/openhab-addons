@@ -1,10 +1,10 @@
-# UniFi Binding
+# UniFi Network Binding
 
-This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/products/#unifi), allowing presence detection of network clients.
+This binding provides network management and client presence detection for [Ubiquiti UniFi Networks](https://www.ubnt.com/products/#unifi).
+It is part of the UniFi binding family and requires the `unifi:controller` bridge from the parent [UniFi binding](/addons/bindings/unifi/).
 
 ## Supported Things
 
-- `controller` - An instance of the UniFi controller software
 - `site` - A site with connection statistics
 - `wlan` - A wireless network. Control the Wi‑Fi network and provide easy access via QR code.
 - `wirelessClient` - Any wireless client connected to a UniFi wireless network
@@ -13,35 +13,18 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 - `accessPoint` - An access point managed by the UniFi controller software
 - `network` - A network managed by the UniFi controller software.
 
+> **Bridge hierarchy.** All Network things are children of the shared `unifi:controller` bridge from the parent [UniFi binding](/addons/bindings/unifi/).
+> The controller bridge holds the console host, username, and password — see the parent binding documentation for bridge setup.
+
 ## Discovery
 
-The binding supports discovery of Things connected to a UniFi controller (bridge).
-To discover Things, start the discovery process manually.
-
-## Binding Configuration
-
-The binding has no global configuration options; all configuration is done at the bridge and Thing levels.
-
-## Bridge Configuration
-
-You need at least one UniFi Controller (bridge) for this binding to work.
-It requires a network accessible instance of the [Ubiquiti Networks Controller Software](https://www.ubnt.com/download/unifi).
-
-The following table describes the Bridge configuration parameters:
-
-| Parameter      | Description                                                                  | Config   | Default |
-|----------------|------------------------------------------------------------------------------|--------- |---------|
-| host           | Hostname or IP address of the UniFi Controller                               | Required | unifi   |
-| port           | Port of the UniFi Controller. On UniFi OS, the default port is typically 443 | Optional | 8443    |
-| unifios        | Whether the UniFi Controller is running on UniFi OS                          | Required | false   |
-| username       | The username to access the UniFi Controller                                  | Required | -       |
-| password       | The password to access the UniFi Controller                                  | Required | -       |
-| refresh        | Refresh interval in seconds                                                  | Optional | 10      |
-| timeoutSeconds | Request timeout in seconds. Increase if you experience timeout exceptions    | Optional | 5       |
+The binding supports discovery of things connected to a `unifi:controller` bridge.
+To discover things, start the discovery process manually.
 
 ## Thing Configuration
 
-You must define a UniFi Controller (Bridge) before defining UniFi Things for this binding to work.
+All Network things require a `unifi:controller` bridge as their parent.
+See the [UniFi binding documentation](/addons/bindings/unifi/) for controller bridge configuration.
 
 ### `site`
 
@@ -343,18 +326,14 @@ The structure of the returned json is (depending on content, some fields may be 
 
 ### `things/unifi.things`
 
+Network things are nested inside the `unifi:controller` bridge from the parent UniFi binding:
+
 ```java
-Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifios=false, username="$username", password="$password", refresh=10 ] {
-    Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="$cid", site="default", considerHome=180 ]
-    Thing site mysite "My Site" [ sid="$sid" ]
+Bridge unifi:controller:home "UniFi Controller" [ host="192.168.1.1", username="openhab", password="secret" ] {
+    Thing wirelessClient matthewsPhone "Matthew's iPhone" [ cid="aa:bb:cc:dd:ee:ff", site="default", considerHome=180 ]
+    Thing site mysite "My Site" [ sid="default" ]
 }
 ```
-
-:::tip Note
-On UniFi OS, the default port is typically 443.
-:::
-
-Replace `$username`, `$password`, `$cid`, and `$sid` accordingly.
 
 ### `items/unifi.items`
 

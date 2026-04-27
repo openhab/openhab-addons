@@ -36,8 +36,8 @@ Host, username, and password come from the parent controller bridge — the Acce
 |-----------------|---------|--------------------------------------------------------|---------|----------|----------|
 | refreshInterval | integer | Polling interval in seconds for periodic state sync.   | 300     | no       | yes      |
 
-The binding connects to the UniFi console's internal `/proxy/access/api/v2` endpoints using the cookie/CSRF session published by the parent `unifi:controller` bridge.
-A local user account on the console is required (configured once on the parent controller bridge); cloud-only accounts are not supported.
+Authentication is handled by the parent `unifi:controller` bridge — configure the local console user once on the controller bridge.
+Cloud-only accounts are not supported; a local user account on the console is required.
 
 ### Door (`door`)
 

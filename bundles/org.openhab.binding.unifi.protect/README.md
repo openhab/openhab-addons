@@ -72,12 +72,10 @@ Host, port, username, and password come from the parent controller bridge — th
 
 **Authentication:**
 
-Cookie/CSRF session authentication for the private API is delegated to the parent `unifi:controller` bridge — you configure the local console user once, on the controller bridge, and every UniFi family binding (Network, Protect, Access) reuses the same authenticated session.
+The parent `unifi:controller` bridge handles console authentication — you configure the local user once on the controller bridge, and the Protect binding reuses that session.
 
 - **API Key (Token)**: If not provided, the binding automatically creates an API key named `openHAB-<thing-id>` for the Public API on first connection.
   The key is stored in the thing configuration and reused on restarts.
-- **Private API**: Uses the cookie-based session established by the parent `unifi:controller` bridge.
-  Session cookies are persisted and automatically refreshed when needed.
 
 **Manual API Key Creation** (optional):
 
