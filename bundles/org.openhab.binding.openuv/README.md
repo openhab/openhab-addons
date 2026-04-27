@@ -68,7 +68,7 @@ Thing can be extended with as many SafeExposure channels as needed for each skin
 
 Example rule:
 
-::: tabs
+:::: tabs
 
 ::: tab DSL
 
@@ -143,7 +143,7 @@ end
 
 :::
 
-:::
+::::
 
 ## Provided icon set
 
