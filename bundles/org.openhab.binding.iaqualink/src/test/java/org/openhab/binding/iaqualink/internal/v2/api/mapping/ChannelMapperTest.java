@@ -42,9 +42,9 @@ class ChannelMapperTest {
 
     @Test
     void testSimpleChannelUpdate() {
-        ChannelDef testChannel = new ChannelDef("test", "test", "Switch", "test", "$.state.val");
+        ChannelDef testChannel = new ChannelDef("test", "test", "Switch", "test", "equipment.swc_0.boost");
         String updateJson = testChannel.updateJson(2).jsonString();
-        assertEquals("{\"state\":{\"val\":2}}", updateJson);
+        assertEquals("{\"state\":{\"desired\":{\"equipment\":{\"swc_0\":{\"boost\":2}}}}}", updateJson);
     }
 
     String sampleJson = """
