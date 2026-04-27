@@ -1,21 +1,20 @@
 # UniFi Binding
 
-This binding provides a shared bridge to Ubiquiti UniFi consoles (UDM, UDR, UNVR, Cloud Key, and legacy Network controllers).
-And it has specialist extensions for the following product families:
+The UniFi Binding integrates Ubiquiti UniFi devices into openHAB, covering the UniFi Network, UniFi Protect, and UniFi Access product families:
 
 <!--list-subs-->
 
-A single `unifi:controller` bridge owns the authenticated session used by the UniFi Network, UniFi Protect, and UniFi Access child bindings.
-On a UniFi OS console where the same local user can see Network, Protect, and Access, configuring one controller bridge means one `POST /api/auth/login` per console — no matter how many child things you attach — so the console's local-user rate limits and lockout counters are not tripped.
-
-This binding authenticates via a local user account on the console and maintains the cookie/CSRF session used by every child binding that attaches to the bridge.
-The session is persisted under `$OPENHAB_USERDATA/cache/unifi/` so restarts do not re-login unless the cached session has expired.
+Installing this binding provides support for all three product families at once.
+Each family has its own documentation, thing types, and channels, but they share a single `unifi:controller` bridge that holds the credentials for your UniFi console.
+You configure the bridge once and attach Network, Protect, and Access things to it — one login per console, no matter how many devices you have.
 
 ## Supported Bridges
 
 - **Controller**: This bridge represents a connection to a UniFi console.
 
-One bridge per unique `(host, username)` is recommended — additional child bindings configured with the same host and username will automatically reuse the session.
+One bridge per console is recommended. Network, Protect, and Access things all attach to the same bridge and share its session.
+
+> **Multiple Consoles** If you have more then one UniFi console, like a dedicated UNVR, each console will require its own `unifi:controller` bridge along with a user that exists on that console as each handles its own login and session management.
 
 ## Bridge Configuration
 
@@ -36,9 +35,9 @@ Additional optional parameters:
 This binding does not expose device things on its own.
 Install one or more of the specialist child bindings listed above, then attach their things to a `unifi:controller` bridge:
 
-- **UniFi Network** — wireless / wired clients, WLANs, PoE ports, access points, sites, vouchers.
-- **UniFi Protect** — cameras, floodlights, environmental sensors, doorbells, doorlocks, chimes.
-- **UniFi Access** — doors, readers, door lock rules, emergency state, access events.
+- [**UniFi Network**](/addons/bindings/unifi.network/) — wireless / wired clients, WLANs, PoE ports, access points, sites, vouchers.
+- [**UniFi Protect**](/addons/bindings/unifi.protect/) — cameras, floodlights, environmental sensors, doorbells, doorlocks, chimes.
+- [**UniFi Access**](/addons/bindings/unifi.access/) — doors, readers, door lock rules, emergency state, access events.
 
 ## Full Example
 
@@ -77,7 +76,7 @@ New installations can skip to the next section.
 ### Step 1 — Create a `unifi:controller` bridge
 
 All three family bindings now require a shared `unifi:controller` bridge that holds the console credentials.
-If you already have one (from the Network binding), skip ahead to Step 2.
+**If you already have one (from the Network binding), skip ahead to Step 2.**
 
 1. In the openHAB UI, add a new thing from the **UniFi Binding** → **UniFi Controller**.
 1. Enter the **hostname**, **username**, and **password** of your UniFi console (the same credentials you previously had on your `unifiprotect:nvr` or `unifiaccess:bridge`).
@@ -85,37 +84,50 @@ If you already have one (from the Network binding), skip ahead to Step 2.
 
 For a **legacy stand-alone Network Controller**, set `port=8443` and `unifios=false`.
 
-### Step 2 — Reparent existing Protect and Access bridges
+> **Multiple Consoles** If you have more then one UniFi console, like a dedicated UNVR, each console will require its own `unifi:controller` bridge along with a user that exists on that console as each handles its own login and session management.
 
-`unifiprotect:nvr` and `unifiaccess:bridge` now inherit host/credentials from the parent `unifi:controller` bridge.
+### Step 2 — Reparent existing things under the controller bridge
+
+**Network binding users:** Your existing Network things (`unifi:wirelessClient`, `unifi:wlan`, `unifi:site`, etc.) already use `unifi:controller` as their bridge — no changes needed.
+The controller bridge now serves as the shared authentication bridge for all three families, but its thing type UID and configuration parameters are unchanged.
+
+**Protect and Access binding users:** `unifiprotect:nvr` and `unifiaccess:bridge` now inherit host/credentials from the parent `unifi:controller` bridge.
 After upgrade they go `OFFLINE` until you set their parent:
 
-1. In the openHAB UI, open your existing `unifiprotect:nvr` (or `unifiaccess:bridge`) thing, click **Edit**, and set its **Bridge** to the `unifi:controller` you just created. Save.
+1. In the openHAB UI, open your existing `unifiprotect:nvr` (or `unifiaccess:bridge`) thing, click **Edit**, and set its **Bridge** to the `unifi:controller` you created in Step 1. Save.
 1. The thing comes back online. All child things (cameras, lights, sensors, doors, readers) stay linked — no action needed on those.
 1. The old `hostname`/`username`/`password` fields stored on the Protect/Access bridge are silently ignored. You can remove them from your `.things` file or leave them.
 
-**Text-config `.things` users:** nest the Protect and Access bridges inside the controller bridge block:
+**Text-config `.things` users:** nest Network, Protect, and Access things inside the controller bridge block:
 
 ```java
 Bridge unifi:controller:home "UniFi Console" [ host="192.168.1.1", username="openhab", password="secret" ] {
-    Bridge unifiprotect:nvr nvr "Protect NVR" []
-    Bridge unifiaccess:bridge access "Access" [ refreshInterval=300 ]
+    // Network things attach directly:
+    Thing unifi:wirelessClient phone "My Phone" [ cid="aa:bb:cc:dd:ee:ff", site="default" ]
+
+    // Protect NVR sub-bridge:
+    Bridge unifiprotect:nvr nvr "Protect NVR" [] {
+        Thing unifiprotect:camera front "Front Camera" [ deviceId="..." ]
+    }
+
+    // Access sub-bridge:
+    Bridge unifiaccess:bridge access "Access" [ refreshInterval=300 ] {
+        Thing unifiaccess:door main "Main Door" [ deviceId="..." ]
+    }
 }
 ```
 
-### Step 3 — Install the new feature names (Karaf / manual installs only)
+### Step 3 — Install the UniFi binding (Karaf / manual installs only)
 
 If you install addons via the openHAB UI addon manager, skip this step — it handles names automatically.
 
-If you use `feature:install` or pin features in `runtime.cfg`, update to the new names:
+If you use `feature:install` or pin features in `runtime.cfg`, install `openhab-binding-unifi` — this single feature includes all three child bindings (Network, Protect, Access) automatically.
 
-| Old feature name               | New feature name                |
-|--------------------------------|---------------------------------|
-| `openhab-binding-unifi`        | `openhab-binding-unifi-network` |
-| `openhab-binding-unifiprotect` | `openhab-binding-unifi-protect` |
-| `openhab-binding-unifiaccess`  | `openhab-binding-unifi-access`  |
-
-Installing any child feature automatically pulls in the parent (`openhab-binding-unifi`).
+| Old feature name               | New feature name           |
+|--------------------------------|----------------------------|
+| `openhab-binding-unifi`        | `openhab-binding-unifi`    |
+| `openhab-binding-unifiprotect` | `openhab-binding-unifi`    |
+| `openhab-binding-unifiaccess`  | `openhab-binding-unifi`    |
 
 ### What stays the same
 
@@ -127,12 +139,10 @@ Installing any child feature automatically pulls in the parent (`openhab-binding
 
 - **`unifiprotect:nvr` or `unifiaccess:bridge` shows `CONFIGURATION_ERROR`:** the thing has no parent bridge. Complete Step 2 above.
 - **`unifi:controller` bridge fails to authenticate:** if you have a legacy stand-alone Network Controller (not UniFi OS), add `port=8443` and `unifios=false` to the bridge configuration.
-- **Things stuck in `UNINITIALIZED`:** the matching child feature is not installed. Install `openhab-binding-unifi-network`, `openhab-binding-unifi-protect`, or `openhab-binding-unifi-access` as needed.
+- **Things stuck in `UNINITIALIZED`:** the UniFi binding feature is not installed. Install `openhab-binding-unifi` which includes all child bindings.
 
 ## Session Sharing
 
-The `unifi:controller` bridge performs one `POST /api/auth/login` against the console when it comes online, captures the returned session cookie and CSRF token, and publishes them to every child thing attached to it.
-Protect and Access sub-bridges attached to the same controller bridge reuse that session directly — they never open their own login.
-CSRF tokens rotate automatically as the console issues new ones, 401 responses trigger a single re-authentication that all children pick up, and the cached session is written to `$OPENHAB_USERDATA/cache/unifi/` so an openHAB restart typically skips the login entirely as long as the cached session is still valid.
-
-On a UDM running all three family bindings, this means exactly one login per openHAB startup per console, no matter how many cameras, doors, wireless clients, or other things you have configured.
+The `unifi:controller` bridge authenticates once against the console when it comes online and shares that session with every child thing attached to it.
+Protect and Access sub-bridges attached to the same controller bridge reuse the session directly — they never open their own login.
+If the session expires the bridge re-authenticates automatically, and sessions are cached across openHAB restarts so a reboot typically does not require a fresh login.

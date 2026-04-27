@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>UniFi Binding</name>
-	<description>Provides a shared UniFi console bridge used by the Network, Protect, and Access child bindings</description>
+	<description>Integrates Ubiquiti UniFi Network, Protect, and Access products through a shared console bridge</description>
 	<connection>local</connection>
 </addon:addon>
