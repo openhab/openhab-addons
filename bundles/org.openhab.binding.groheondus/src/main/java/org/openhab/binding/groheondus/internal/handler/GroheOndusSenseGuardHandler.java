@@ -94,6 +94,9 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             case CHANNEL_TEMPERATURE_GUARD:
                 newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
                 break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
+                break;
             case CHANNEL_VALVE_OPEN:
                 OnOffType valveOpenType = getValveOpenType(appliance);
                 if (valveOpenType != null) {
@@ -231,6 +234,10 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
+        }
+
+        if (handlePauseCommand(channelUID, command)) {
             return;
         }
 
