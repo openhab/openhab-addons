@@ -194,8 +194,14 @@ public class ResourceProvider {
             String json = jsonMapper.writeValueAsString(payload);
             return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON, json)));
         } catch (Exception e) {
-            String errorJson = "{\"error\":\"Failed to serialize resource: " + e.getMessage() + "\"}";
-            return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON, errorJson)));
+            try {
+                String errorJson = jsonMapper.writeValueAsString(
+                        Map.of("error", "Failed to serialize resource: " + Objects.toString(e.getMessage(), "")));
+                return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON, errorJson)));
+            } catch (Exception ignored) {
+                return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON,
+                        "{\"error\":\"Failed to serialize resource\"}")));
+            }
         }
     }
 }

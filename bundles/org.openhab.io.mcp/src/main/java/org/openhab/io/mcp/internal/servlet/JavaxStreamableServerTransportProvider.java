@@ -176,10 +176,18 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
             task.cancel(false);
             keepAliveTask = null;
         }
+        List<String> sessionIds = new ArrayList<>(sessions.keySet());
         return Flux.fromIterable(sessions.values()).flatMap(McpStreamableServerSession::closeGracefully).then()
-                .doOnSuccess(v -> {
+                .doFinally(signal -> {
+                    SubscriptionManager mgr = subscriptionManager;
+                    if (mgr != null) {
+                        for (String sid : sessionIds) {
+                            mgr.onSessionClosed(sid);
+                        }
+                    }
                     sessions.clear();
                     sessionTransports.clear();
+                    sessionTokens.clear();
                 });
     }
 
