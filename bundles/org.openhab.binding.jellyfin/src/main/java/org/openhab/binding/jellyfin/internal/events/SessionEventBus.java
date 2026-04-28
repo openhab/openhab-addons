@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

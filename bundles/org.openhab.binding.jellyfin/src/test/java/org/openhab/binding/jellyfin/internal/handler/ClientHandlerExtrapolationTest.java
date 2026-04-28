@@ -25,9 +25,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
 
 /**

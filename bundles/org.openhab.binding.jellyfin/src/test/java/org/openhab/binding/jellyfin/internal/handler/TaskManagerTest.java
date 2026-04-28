@@ -35,14 +35,14 @@ import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.DiscoveryTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 
 /**

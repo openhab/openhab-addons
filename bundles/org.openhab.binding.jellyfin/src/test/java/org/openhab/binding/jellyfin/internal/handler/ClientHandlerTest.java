@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 
 /**
  * Unit tests for {@link ClientHandler} session timeout logic.

@@ -111,7 +111,7 @@ THIRD_PARTY_OUTPUT_DIR="src/3rdparty/java"
 INDEX=0
 for i in "${VERSIONS[@]}"; do
     ALIAS=${VERSION_ALIAS[INDEX++]}
-    PACKAGE_BASE=org.openhab.binding.jellyfin.internal.thirdparty.gen.${ALIAS}
+    PACKAGE_BASE=org.openhab.binding.jellyfin.internal.gen.${ALIAS}
     PACKAGE_API=${PACKAGE_BASE}
     PACKAGE_MODEL=${PACKAGE_BASE}.model
 
@@ -186,8 +186,8 @@ for i in "${VERSIONS[@]}"; do
     fi
 
     # Move generated sources from temp dir to src/3rdparty/java
-    GENERATED_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen/${ALIAS}"
-    TARGET_SRC="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen/${ALIAS}"
+    GENERATED_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/gen/${ALIAS}"
+    TARGET_SRC="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen/${ALIAS}"
     rm -rf "${TARGET_SRC}"
     mkdir -p "$(dirname ${TARGET_SRC})"
     mv "${GENERATED_SRC}" "${TARGET_SRC}"
@@ -195,8 +195,8 @@ done
 
 # Move shared infrastructure files from gen root (invoker package level)
 # These are produced once by the generator and shared across all API versions
-GEN_ROOT_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/thirdparty/gen"
-GEN_ROOT_TARGET="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen"
+GEN_ROOT_SRC="${OUTPUT}/src/main/java/org/openhab/binding/jellyfin/internal/gen"
+GEN_ROOT_TARGET="${ROOT}/${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen"
 find "${GEN_ROOT_SRC}" -maxdepth 1 -name "*.java" -type f | while read f; do
     mv "${f}" "${GEN_ROOT_TARGET}/"
 done
@@ -225,13 +225,13 @@ sed -i 's/response bod\b/response body/' "${GEN_ROOT_TARGET}/ApiResponse.java"
 echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
 # Replace @NonNull with @Nullable on field declarations in model classes
 # This fixes compilation errors where fields are marked @NonNull but not initialized in default constructor
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
 
 echo "🔧 remove @NonNullByDefault from generated classes (covered by package-info.java)"
 # Remove @NonNullByDefault annotation and import from all generated classes
 # Null-safety is intentionally disabled for generated thirdparty API code via package-info.java
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/thirdparty/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
 echo ""
 echo "🧹 apply formatting to generated code"

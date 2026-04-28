@@ -19,9 +19,9 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionMessageType;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionsMessage;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionMessageType;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionsMessage;
 import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

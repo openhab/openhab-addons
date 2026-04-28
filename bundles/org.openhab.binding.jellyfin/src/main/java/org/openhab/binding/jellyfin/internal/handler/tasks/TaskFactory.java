@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**

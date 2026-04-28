@@ -25,7 +25,7 @@ import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.config.ImageChannelConfig;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;

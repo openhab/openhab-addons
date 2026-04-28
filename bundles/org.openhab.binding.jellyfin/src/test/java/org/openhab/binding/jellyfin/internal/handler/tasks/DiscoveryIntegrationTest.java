@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
+import org.openhab.binding.jellyfin.internal.gen.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.handler.TaskManager;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SessionApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 
@@ -153,7 +153,7 @@ class DiscoveryIntegrationTest {
             verify(discoveryService, times(1)).discoverClients();
 
             // Assert - clients map now contains our session
-            java.util.Map<String, org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto> clients = handler
+            java.util.Map<String, org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto> clients = handler
                     .getClients();
             assertTrue(clients.containsKey("session-1"));
             assertEquals(session.getUserId(), clients.get("session-1").getUserId());

@@ -19,7 +19,7 @@ import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SystemInfo;
 
 /**
  * Unit tests for {@link ConfigurationManager}.

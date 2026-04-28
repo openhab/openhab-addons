@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.UserDto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

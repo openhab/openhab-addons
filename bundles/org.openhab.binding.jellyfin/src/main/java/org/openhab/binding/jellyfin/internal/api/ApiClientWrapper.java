@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.util.UuidDeserializer;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.gen.ApiClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

@@ -22,8 +22,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 
 /**
  * Unit tests for {@link SessionManager}.

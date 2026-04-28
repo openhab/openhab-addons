@@ -19,9 +19,9 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
 import org.openhab.core.library.types.StringType;
