@@ -103,7 +103,7 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      * Discovery is started with a query to the current connected devices.
      */
     public void startDiscovery() {
-        discovery(Objects.requireNonNullElseGet(getDeviceList(), JSONArray::new));
+        getDeviceList().ifPresent(list -> discovery(list));
     }
 
     /**
@@ -112,27 +112,56 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      *
      * @return JSONArray with device information, empty array in case of error or no devices
      */
-    public JSONArray getDeviceList() {
-        Request discovery = getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
+    public Optional<JSONArray> getDeviceList() {
+        return getDeviceList(true);
+    }
+
+    public Optional<JSONArray> getDeviceList(boolean retry) {
+        Optional<JSONObject> responseJsonOpt = requestDeviceList();
+        if (responseJsonOpt.isPresent()) {
+            JSONObject responseJson = responseJsonOpt.get();
+            int responseCode = responseJson.optInt("code", 0);
+            if (responseCode == 0) {
+                updateStatus(ThingStatus.ONLINE);
+                return extractList(responseJson);
+            } else {
+                String responseMessage = responseJson.optString("message", responseJson.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.mspa.pool.request-failed [\"" + responseMessage + "\"]");
+                if (responseCode == 10001 && retry) {
+                    // make one retry to get new token - success will switch thing back to ONLINE
+                    tokenRefresh();
+                    // check if token refresh was successful
+                    if (thing.getStatus() == ThingStatus.ONLINE) {
+                        // retry device list request
+                        return getDeviceList(false);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Helper method to request device list from MSpa cloud. Evaluates HTTP status code and set status accordingly.
+     *
+     * @return JSON response as JSONObject, empty in case of error
+     */
+    private Optional<JSONObject> requestDeviceList() {
+        Request deviceListRequest = getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
         try {
-            ContentResponse cr = discovery.timeout(10, TimeUnit.SECONDS).send();
+            ContentResponse cr = deviceListRequest.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
             String response = cr.getContentAsString();
             logger.trace("Device list {}", response);
             if (status == HttpStatus.OK_200) {
-                JSONObject responseJson = MSpaUtils.toJson(response);
-                int responseCode = responseJson.optInt("code", 0);
-                if (responseCode == 0) {
-                    updateStatus(ThingStatus.ONLINE);
-                    return extractList(responseJson);
-                } else {
-                    String responseMEssage = responseJson.optString("message", response);
+                Optional<JSONObject> responseJsonOpt = MSpaUtils.toJson(response);
+                if (responseJsonOpt.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/status.mspa.pool.request-failed [\"" + responseMEssage + "\"]");
-                    if (responseCode == 10001) {
-                        // make one retry to get new token
-                        tokenRefresh();
-                    }
+                            "@text/status.mspa.pool.request-failed [\"" + response + "\"]");
+                    return Optional.empty();
+                } else {
+                    return responseJsonOpt;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -140,10 +169,10 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.mspa.pool.request-failed [\"" + e.getMessage() + "\"]");
+                    "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
             handlePossibleInterrupt(e);
         }
-        return new JSONArray();
+        return Optional.empty();
     }
 
     /**
@@ -152,15 +181,15 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      * @param responseJson JSON response from device list request
      * @return JSON array with device information, empty array in case of error or no devices
      */
-    public JSONArray extractList(JSONObject responseJson) {
+    public Optional<JSONArray> extractList(JSONObject responseJson) {
         JSONObject dataJson = responseJson.optJSONObject("data");
         if (dataJson != null) {
             JSONArray list = dataJson.optJSONArray("list");
             if (list != null) {
-                return list;
+                return Optional.of(list);
             }
         }
-        return new JSONArray();
+        return Optional.empty();
     }
 
     /**
