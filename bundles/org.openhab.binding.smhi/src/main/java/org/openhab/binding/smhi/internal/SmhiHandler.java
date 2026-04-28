@@ -106,6 +106,7 @@ public class SmhiHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             updateParameters();
             if (parametersInitialized) {
+                recreateChannels();
                 updateNow();
             }
         });
@@ -272,7 +273,7 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private void waitForForecast() {
         if (!parametersInitialized) {
-            logger.info("Parameters not yet initialized");
+            logger.debug("Parameters not yet initialized, deferring update");
             return;
         }
         try {
@@ -299,7 +300,7 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private synchronized void updateNow() {
         if (!parametersInitialized) {
-            logger.info("Parameters not yet initialized");
+            logger.debug("Parameters not yet initialized, deferring update");
             return;
         }
         Future<?> localRef = instantUpdate;

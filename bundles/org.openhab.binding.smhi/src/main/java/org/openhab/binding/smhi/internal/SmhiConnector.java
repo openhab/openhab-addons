@@ -112,7 +112,10 @@ public class SmhiConnector {
         ContentResponse resp;
         try {
             resp = req.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new SmhiException(e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new SmhiException(e);
         }
         logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());

@@ -99,37 +99,27 @@ public class Util {
         Unit<?> unit = UNIT_MAP.get(metadata.unit());
         if (SEMANTIC_PROPERTIES.containsKey(unit)) {
             return SEMANTIC_PROPERTIES.get(unit);
-        } else {
-            return switch (metadata.name()) {
-                case RELATIVE_HUMIDITY -> DefaultSemanticTags.Property.HUMIDITY;
-                case PRECIPITATION_CATEGORY, PRECIPITATION_PROBABILITY, PERCENT_FROZEN, FROZEN_PROBABILITY ->
-                    DefaultSemanticTags.Property.PRECIPITATION;
-                default -> null;
-            };
         }
+        return null;
     }
 
     private static StateDescriptionFragment createStateDescription(ParameterMetadata metadata) {
         StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create();
-        Unit<?> unit = UNIT_MAP.get(metadata.unit());
-        if (unit != null) {
-            if (unit.equals(MetricPrefix.HECTO(SIUnits.PASCAL)) || unit.equals(SIUnits.CELSIUS)
-                    || unit.equals(Units.METRE_PER_SECOND) || unit.equals(Units.MILLIMETRE_PER_HOUR)
-                    || unit.equals(MetricPrefix.MILLI(SIUnits.METRE))) {
+        switch (metadata.unit()) {
+            case "Cel":
+            case "m/s":
+            case "m s**-1":
+            case "km":
+            case "octas":
+            case "kg/m2":
                 builder.withPattern("%.1f %unit%");
-            } else {
+            case "degree":
+            case "percent":
+            case "hPa":
+            case "fraction":
+            case "m":
+            case "%":
                 builder.withPattern("%d %unit%");
-            }
-        } else {
-            int nOptions = switch (metadata.name()) {
-                case PRECIPITATION_CATEGORY -> 12;
-                case WEATHER_SYMBOL -> 27;
-                default -> -1;
-            };
-            for (int i = -1; i <= nOptions; i++) {
-                builder.withOption(new StateOption(Integer.toString(i),
-                        "@text/channel-type.smhi.predominant_precipitation_type_at_surface.state.option." + i));
-            }
         }
         return builder.build();
     }
