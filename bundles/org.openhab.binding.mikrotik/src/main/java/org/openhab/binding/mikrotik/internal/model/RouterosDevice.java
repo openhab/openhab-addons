@@ -180,7 +180,9 @@ public class RouterosDevice {
         if (response != null) {
             response.forEach(pkgInfo -> {
                 String pkgName = pkgInfo.get("name");
-                if (pkgName != null) {
+                String version = pkgInfo.get("version");
+                if (pkgName != null && version != null && !version.isEmpty()) {
+                    logger.debug("RouterOS installed package {} and version {}", pkgName, version);
                     result.add(pkgName);
                 }
             });
