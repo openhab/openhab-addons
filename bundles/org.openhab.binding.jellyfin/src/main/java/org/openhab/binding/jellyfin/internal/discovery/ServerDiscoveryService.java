@@ -135,7 +135,9 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         }
         properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
 
-        properties.put(Constants.ServerProperties.SERVER_URI, uri);
+        if (uri != null) {
+            properties.put(Constants.ServerProperties.SERVER_URI, uri);
+        }
 
         return properties;
     }

@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
-import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ServerDiscoveryInfo;
+import org.openhab.binding.jellyfin.internal.gen.current.model.ServerDiscoveryInfo;
 import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
