@@ -57,7 +57,7 @@ public class SmhiTest {
     private @NonNullByDefault({}) JsonObject json;
 
     @BeforeEach
-    public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
+    public void setUp() {
         try (InputStream isTimeseries = SmhiTest.class.getResourceAsStream("snow1g1.json");
                 InputStream isParameters = SmhiTest.class.getResourceAsStream("parameters.json")) {
             assertNotNull(isTimeseries);
