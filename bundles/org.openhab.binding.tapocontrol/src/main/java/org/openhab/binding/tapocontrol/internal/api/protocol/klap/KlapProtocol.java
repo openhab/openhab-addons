@@ -15,20 +15,18 @@ package org.openhab.binding.tapocontrol.internal.api.protocol.klap;
 import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.ByteUtils.byteArrayToHex;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.isValidJson;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
@@ -53,6 +51,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
     protected final TapoConnectorInterface httpDelegator;
     private KlapSession session;
     private String uid;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /***********************
      * Init Class
@@ -74,6 +73,9 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
     @Override
     public void logout() {
         session.reset();
+        if (!executor.isShutdown()) {
+            executor.shutdownNow();
+        }
     }
 
     @Override
@@ -116,57 +118,132 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      */
     @Override
     public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
-        String url = getUrl();
-        String command = tapoRequest.method();
-        logger.trace("({}) sendAsync unencrypted request: '{}' to '{}' ", uid, tapoRequest, url);
-
-        /* encrypt request */
-        byte[] encodedBytes = session.encryptRequest(tapoRequest);
-        String encrypteString = byteArrayToHex(encodedBytes);
-        Integer ivSequence = session.getIvSequence();
-        logger.trace("({}) encrypted request is '{}' with sequence '{}'", uid, encrypteString, ivSequence);
-
-        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
-
-        /* set header and params */
-        httpRequest = setHeaders(httpRequest);
-        httpRequest.param("seq", ivSequence.toString());
-
-        /* add request body */
-        httpRequest.content(new BytesContentProvider(encodedBytes));
-
-        httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
-            @NonNullByDefault({})
-            @Override
-            public void onComplete(Result result) {
-                final HttpResponse response = (HttpResponse) result.getResponse();
-
-                if (result.getFailure() != null) {
-                    /* handle result errors */
-                    Throwable e = result.getFailure();
-                    String errorMessage = getValueOrDefault(e.getMessage(), "");
-                    /* throw errors to delegator */
-                    if (e instanceof TimeoutException) {
-                        logger.debug("({}) sendAsyncRequest timeout'{}'", uid, errorMessage);
-                        httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
-                    } else {
-                        logger.debug("({}) sendAsyncRequest failed'{}'", uid, errorMessage);
-                        httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
-                    }
-                } else if (response.getStatus() != 200) {
-                    logger.debug("({}) sendAsyncRequest response error'{}'", uid, response.getStatus());
-                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, getContentAsString()));
-                } else {
-                    /* request successful */
-                    byte[] responseBytes = getContent();
-                    try {
-                        encryptedResponseReceived(responseBytes, ivSequence, command);
-                    } catch (TapoErrorHandler tapoError) {
-                        httpDelegator.handleError(tapoError);
-                    }
-                }
+        if (executor.isShutdown()) {
+            executor = Executors.newSingleThreadExecutor();
+        }
+        executor.submit(() -> {
+            try {
+                sendRequestRetryable(tapoRequest);
+            } catch (TapoErrorHandler e) {
+                String errorMessage = e.getMessage();
+                logger.debug("({}) sendAsyncRequest failed'{}'", uid, errorMessage);
+                httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
             }
         });
+    }
+
+    /**
+     * handle synchron request-response
+     * pushes (decrypted) TapoResponse to [httpDelegator.handleResponse()]-function
+     * retries login+command if Http 403 response indicates klap protocol no longer valid
+     */
+    private void sendRequestRetryable(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
+        /*
+         * send request, and retry with re-login if protocol rejected
+         * (Protocol can be rejected due to polling from another device e.g. Tapo App, or Tapo H100 Hub)
+         * For asynchronous use, call on separate thread
+         */
+        final int MAX_ATTEMPTS = 3;
+        int attemptCount = 0;
+        String url = getUrl();
+        String command = tapoRequest.method();
+        logger.trace("({}) sendRequestRetryable unencrypted request: '{}' to '{}' ", uid, tapoRequest, url);
+
+        while (true) {
+            attemptCount++;
+            if (attemptCount > 1) {
+                try {
+                    /* re-login using existing credentials */
+                    session.reset();
+                    if (!session.login()) {
+                        logger.debug("({}) sendRequestRetryable login error", uid);
+                        httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN));
+                        return;
+                    }
+                    logger.trace("({}) sendRequestRetryable re-login successful attempt {}", uid, attemptCount);
+                } catch (TapoErrorHandler e) {
+                    logger.trace("({}) sendRequestRetryable error1 {}", uid, e.getMessage());
+                    if (attemptCount < MAX_ATTEMPTS) {
+                        continue;
+                    }
+                    httpDelegator.handleError(e);
+                    return;
+                } catch (Exception ex) {
+                    logger.trace("({}) sendRequestRetryable error2 {}", uid, ex.getMessage());
+                    if (attemptCount < MAX_ATTEMPTS) {
+                        continue;
+                    }
+                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN, ex.getMessage()));
+                    return;
+                }
+            }
+            try {
+                /* encrypt request */
+                byte[] encodedBytes = session.encryptRequest(tapoRequest);
+                Integer ivSequence = session.getIvSequence();
+                if (logger.isTraceEnabled()) {
+                    String encryptedString = byteArrayToHex(encodedBytes);
+                    logger.trace("({}) encrypted request is '{}' with sequence '{}'", uid, encryptedString, ivSequence);
+                }
+
+                Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
+
+                /* set header and params */
+                httpRequest = setHeaders(httpRequest);
+                httpRequest.param("seq", ivSequence.toString());
+
+                /* add request body */
+                httpRequest.content(new BytesContentProvider(encodedBytes));
+                ContentResponse response = httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+                switch (response.getStatus()) {
+                    case 200:
+                        /* request successful */
+                        byte[] responseBytes = response.getContent();
+                        try {
+                            encryptedResponseReceived(responseBytes, ivSequence, command);
+                        } catch (TapoErrorHandler tapoError) {
+                            httpDelegator.handleError(tapoError);
+                        }
+                        return;
+                    case 403:
+                        /*
+                         * Forbidden - likely cause Encryption no longer valid - retry with login unless we have already
+                         * retried...
+                         */
+                        if (attemptCount < MAX_ATTEMPTS) {
+                            continue;
+                        } else {
+                            logger.debug("({}) sendRequestRetryable response error'{}'", uid, response.getStatus());
+                            httpDelegator.handleError(
+                                    new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, response.getContentAsString()));
+                            return;
+                        }
+                    default:
+                        /* throw errors to delegator */
+                        logger.debug("({}) sendRequestRetryable response error'{}'", uid, response.getStatus());
+                        httpDelegator.handleError(
+                                new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, response.getContentAsString()));
+                        return;
+                }
+            } catch (TimeoutException e) {
+                String errorMessage = e.getMessage();
+                logger.debug("({}) sendRequestRetryable timeout'{}'", uid, errorMessage);
+                httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
+                return;
+            } catch (InterruptedException e) {
+                throw new TapoErrorHandler(e, "error sending content");
+            } catch (Exception e) {
+                String errorMessage = e.getMessage();
+                if (e instanceof TimeoutException) {
+                    logger.debug("({}) sendRequestRetryable timeout'{}'", uid, errorMessage);
+                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
+                } else {
+                    logger.debug("({}) sendRequestRetryable failed'{}'", uid, errorMessage);
+                    httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
+                }
+                return;
+            }
+        } /* end of loop */
     }
 
     /************************
@@ -201,7 +278,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
 
     /**
      * handle encrypted response. decrypt it and pass to asyncRequestReceived
-     * 
+     *
      * @param content bytearray with encrypted payload
      * @param ivSeq ivSequence-Number which is incremented each request
      * @param command command was sent to device
