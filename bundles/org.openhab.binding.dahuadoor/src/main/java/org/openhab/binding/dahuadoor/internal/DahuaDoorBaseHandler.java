@@ -756,6 +756,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
      * @param lockNumber resolved doorbell/button number
      */
     protected void handleResolvedDoorbellEvent(String source, int lockNumber) {
+        logger.debug("Resolved {} doorbell event for lock {}", source, lockNumber);
         onButtonPressed(lockNumber);
     }
 
