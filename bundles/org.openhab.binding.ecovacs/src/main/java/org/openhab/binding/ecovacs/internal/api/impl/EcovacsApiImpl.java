@@ -67,7 +67,6 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalI
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandXmlResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotProductResponse;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
-import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.binding.ecovacs.internal.api.util.HashUtil;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
@@ -306,7 +305,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         }
         try {
             return command.convertResponse(commandResponse, desc.protoVersion, gson);
-        } catch (DataParsingException e) {
+        } catch (Exception e) {
             logger.debug("Converting response for command {} failed", command, e);
             throw new EcovacsApiException(e);
         }
