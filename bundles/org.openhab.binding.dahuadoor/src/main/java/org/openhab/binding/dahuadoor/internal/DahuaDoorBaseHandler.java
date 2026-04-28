@@ -747,28 +747,30 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected abstract void onButtonPressed(int lockNumber);
 
     /**
-     * Processes a resolved doorbell event after the button mapping is known.
+     * Routes a resolved doorbell event from DHIP to the concrete device handler.
      *
-     * DHIP invite events provide the authoritative button mapping (`LockNum`). SIP INVITE only establishes
-     * the ringing state and must not guess the target button.
+     * DHIP remains lossless and authoritative for LockNum-based button mapping, so no time-based dedup
+     * or SIP gating is applied here.
      *
-     * @param source event source label for logging
-     * @param lockNumber resolved button/lock number
+     * @param source event source label for logging (for example "DHIP")
+     * @param lockNumber resolved doorbell/button number
      */
     protected void handleResolvedDoorbellEvent(String source, int lockNumber) {
+        logger.debug("Resolved {} doorbell event for lock {}", source, lockNumber);
         onButtonPressed(lockNumber);
     }
 
     /**
-     * Deduplicates SIP INVITE callbacks so retransmits do not spam state updates.
+     * Deduplicates SIP INVITE callbacks so UDP retransmits do not spam state updates and logs.
      *
+     * @param source event source label for logging (for example "SIP")
      * @return true when caller should continue processing, false when event should be ignored as duplicate
      */
-    protected boolean shouldProcessSipInvite() {
+    protected boolean shouldProcessSipInvite(String source) {
         long now = System.currentTimeMillis();
         long previous = lastSipInviteTs;
         if (previous > 0 && (now - previous) < SIP_INVITE_DEDUP_MS) {
-            logger.debug("Ignoring duplicate SIP INVITE ({} ms after previous event)", now - previous);
+            logger.debug("Ignoring duplicate {} INVITE ({} ms after previous event)", source, now - previous);
             return false;
         }
         lastSipInviteTs = now;
@@ -937,11 +939,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     @Override
     public void onInviteReceived(String callerId) {
         logger.info("SIP INVITE received from {}", callerId);
-        if (!shouldProcessSipInvite()) {
+        if (!shouldProcessSipInvite("SIP")) {
             return;
         }
         updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.RINGING.name()));
-        logger.debug("Waiting for DHIP invite event to resolve button mapping");
     }
 
     @Override
