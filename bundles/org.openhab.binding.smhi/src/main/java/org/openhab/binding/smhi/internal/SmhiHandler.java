@@ -71,7 +71,7 @@ public class SmhiHandler extends BaseThingHandler {
     private @Nullable Future<?> parameterUpdater;
     private @Nullable Future<?> forecastUpdater;
     private @Nullable Future<?> instantUpdate;
-    private boolean parametersInitialized = false;
+    private volatile boolean parametersInitialized = false;
 
     public SmhiHandler(Thing thing, HttpClient httpClient, SmhiChannelTypeProvider channelTypeProvider,
             ChannelTypeRegistry channelTypeRegistry) {

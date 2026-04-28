@@ -101,7 +101,7 @@ public class Parser {
     public static List<ParameterMetadata> parseParameterMetadata(String json) {
         JsonObject object = JsonParser.parseString(json).getAsJsonObject();
         JsonArray parameters = object.getAsJsonArray("parameter");
-        return StreamSupport.stream(parameters.spliterator(), true)
+        return StreamSupport.stream(parameters.spliterator(), false)
                 .map(jsonElement -> parseParameterMetadata(jsonElement.getAsJsonObject())).toList();
     }
 

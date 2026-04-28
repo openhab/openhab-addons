@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -80,7 +79,7 @@ public class Util {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, metadata.name());
         StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, metadata.description(), itemType)
                 .isAdvanced(!STANDARD_CHANNELS.contains(metadata.name())).withTags(DefaultSemanticTags.Point.FORECAST);
-        SemanticTag property = getSemanticProperty(metadata);
+        SemanticTag property = unit != null ? SEMANTIC_PROPERTIES.get(unit) : null;
         if (property != null) {
             builder.withTags(property);
         }
@@ -89,14 +88,6 @@ public class Util {
         }
         builder.withStateDescriptionFragment(createStateDescription(metadata));
         return builder.build();
-    }
-
-    private static @Nullable SemanticTag getSemanticProperty(ParameterMetadata metadata) {
-        Unit<?> unit = UNIT_MAP.get(metadata.unit());
-        if (SEMANTIC_PROPERTIES.containsKey(unit)) {
-            return SEMANTIC_PROPERTIES.get(unit);
-        }
-        return null;
     }
 
     private static StateDescriptionFragment createStateDescription(ParameterMetadata metadata) {
@@ -109,6 +100,7 @@ public class Util {
             case "octas":
             case "kg/m2":
                 builder.withPattern("%.1f %unit%");
+                break;
             case "degree":
             case "percent":
             case "hPa":

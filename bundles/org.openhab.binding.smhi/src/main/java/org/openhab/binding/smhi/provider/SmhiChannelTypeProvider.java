@@ -20,6 +20,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +62,7 @@ public class SmhiChannelTypeProvider extends AbstractStorageBasedTypeProvider {
         this.parameterMetadata = new LinkedHashMap<>();
     }
 
-    public void putParameterMetadata(ParameterMetadata metadata) {
+    public synchronized void putParameterMetadata(ParameterMetadata metadata) {
         logger.trace("Adding parameter metadata for {}", metadata.name());
         parameterMetadata.put(metadata.name(), metadata);
         ChannelType channelType = channelTypeRegistry.getChannelType(new ChannelTypeUID(BINDING_ID, metadata.name()),
@@ -73,15 +74,15 @@ public class SmhiChannelTypeProvider extends AbstractStorageBasedTypeProvider {
         }
     }
 
-    public Collection<ParameterMetadata> getAllParameterMetadata() {
-        return parameterMetadata.values();
+    public synchronized Collection<ParameterMetadata> getAllParameterMetadata() {
+        return List.copyOf(parameterMetadata.values());
     }
 
-    public @Nullable ParameterMetadata getParameterMetadata(String name) {
+    public synchronized @Nullable ParameterMetadata getParameterMetadata(String name) {
         return parameterMetadata.get(name);
     }
 
-    public boolean channelsUpdatedSince(Duration duration) {
+    public synchronized boolean channelsUpdatedSince(Duration duration) {
         return ZonedDateTime.now().minus(duration).isBefore(lastChannelUpdate);
     }
 }
