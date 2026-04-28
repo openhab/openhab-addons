@@ -258,7 +258,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             return;
         }
 
-        
         String label = capa.name;
 
         String channelTypeName = getChannelTypeName(capa, key, subKey);
