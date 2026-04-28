@@ -73,6 +73,8 @@ public class SmartThingsBindingConstants {
     public static final String DEVICE_NAME = "Device Name";
     public static final String DEVICE_LABEL = "Device Label";
 
+    public static final String SM_TYPE_INTEGER_PERCENT = "integer#%";
+
     public static final String SM_TYPE_INTEGER = "integer";
     public static final String SM_TYPE_NUMBER = "number";
     public static final String SM_TYPE_BOOLEAN = "boolean";

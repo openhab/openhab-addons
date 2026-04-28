@@ -123,32 +123,38 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         this.bridgeHandler = bridgeHandler;
     }
 
-    public String getChannelType(String smartThingsType, SmartThingsCapability capa,
-            @Nullable ChannelProperty channelProp) {
-        String channelType = SmartThingsBridgeChannelDefinitions.getChannelType(smartThingsType);
-        String unit = null;
-        String result = "";
+    public @Nullable ChannelProperty getChannelProperty(SmartThingsCapability capa, String key,
+            SmartThingsAttribute attr, SmartThingsProperty prop) {
+        String smartThingsType = prop.type;
 
+        ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + key);
         if (channelProp != null) {
-            unit = channelProp.getUoM();
+            return channelProp;
+        }
 
-            if (channelProp.getChannelType() != null) {
-                channelType = channelProp.getChannelType();
+        SmartThingsProperty smartThingsUnit = null;
+        String smartThingsUnitKey = null;
+        if (attr.schema.properties.containsKey("unit")) {
+            smartThingsUnit = attr.schema.properties.get("unit");
+            if (smartThingsUnit != null && smartThingsUnit.defaultObj != null) {
+                smartThingsUnitKey = smartThingsUnit.defaultObj.toString();
             }
         }
 
-        if (channelType == null) {
-            logger.debug("@todo: need review");
-            return result;
+        if (smartThingsUnitKey != null) {
+            channelProp = SmartThingsBridgeChannelDefinitions
+                    .getChannelProperty(smartThingsType + "#" + smartThingsUnitKey);
+            if (channelProp != null) {
+                return channelProp;
+            }
         }
 
-        result = channelType;
-
-        if (unit != null) {
-            result = result + ":" + unit;
+        channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(smartThingsType);
+        if (channelProp != null) {
+            return channelProp;
         }
 
-        return result;
+        return null;
     }
 
     public void createChannelTypes(SmartThingsCapability capa) {
@@ -244,21 +250,15 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     private void generateChannelTypeForProp(SmartThingsCapability capa, String key, String subKey,
             SmartThingsAttribute attr, SmartThingsProperty prop) {
         SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
-        String smartThingsType = prop.type;
-        String channelTypeId = "NA";
 
-        SmartThingsProperty unit = null;
-        if (attr.schema.properties.containsKey("unit")) {
-            unit = attr.schema.properties.get("unit");
+        ChannelProperty channelProp = getChannelProperty(capa, key, attr, prop);
+
+        if (channelProp == null) {
+            logger.error("Unable to get channelProp for : capa: {}, key: {}", capa.id, key);
+            return;
         }
 
-        ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + key);
-
-        channelTypeId = getChannelType(smartThingsType, capa, channelProp);
-
-        if ("".equals(channelTypeId)) {
-            logger.debug("@todo: need review");
-        }
+        
         String label = capa.name;
 
         String channelTypeName = getChannelTypeName(capa, key, subKey);
@@ -275,7 +275,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             }
         }
 
-        if ("".equals(channelTypeId)) {
+        if ("".equals(channelProp.getChannelType())) {
             return;
         }
 
@@ -286,22 +286,27 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if (lcChannelTypeProvider != null) {
             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
             if (channelType == null) {
-                channelType = createChannelType(capa, unit, channelTypeName, "", label, channelTypeId, channelTypeUID,
-                        options, channelProp);
+                channelType = createChannelType(capa, attr, channelTypeName, "", label, channelProp, channelTypeUID,
+                        options);
                 lcChannelTypeProvider.addChannelType(channelType);
             }
         }
     }
 
-    private ChannelType createChannelType(SmartThingsCapability capa, @Nullable SmartThingsProperty unit,
-            String channelName, String category, String description, String openhabChannelType,
-            ChannelTypeUID channelTypeUID, List<StateOption> options, @Nullable ChannelProperty channelProperty) {
+    private ChannelType createChannelType(SmartThingsCapability capa, @Nullable SmartThingsAttribute attr,
+            String channelName, String category, String description, ChannelProperty channelProp,
+            ChannelTypeUID channelTypeUID, List<StateOption> options) {
         ChannelType channelType;
 
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
 
         if (!options.isEmpty()) {
             stateFragment = stateFragment.withOptions(options);
+        }
+
+        SmartThingsProperty unit = null;
+        if (attr.schema.properties.containsKey("unit")) {
+            unit = attr.schema.properties.get("unit");
         }
 
         if (unit != null) {
@@ -319,7 +324,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
 
         StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
-                .state(channelTypeUID, channelName, openhabChannelType)
+                .state(channelTypeUID, channelName, channelProp.getChannelType())
                 .withStateDescriptionFragment(stateFragment.build());
 
         Boolean isAdvanced = false;
@@ -327,13 +332,14 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         channelTypeBuilder = channelTypeBuilder.withDescription(description);
         channelTypeBuilder = channelTypeBuilder.withCategory(category);
 
-        if (channelProperty != null) {
-            if (channelProperty.getSemanticPoint() != null) {
-                channelTypeBuilder.withTags(channelProperty.getSemanticPoint());
-            }
-            if (channelProperty.getSemanticProperty() != null) {
-                channelTypeBuilder.withTags(channelProperty.getSemanticProperty());
-            }
+        SemanticTag semanticTag = channelProp.getSemanticPoint();
+        if (semanticTag != null) {
+            channelTypeBuilder.withTags(semanticTag);
+        }
+
+        SemanticTag semanticProperty = channelProp.getSemanticProperty();
+        if (semanticProperty != null) {
+            channelTypeBuilder.withTags(semanticProperty);
         }
 
         channelType = channelTypeBuilder.build();
