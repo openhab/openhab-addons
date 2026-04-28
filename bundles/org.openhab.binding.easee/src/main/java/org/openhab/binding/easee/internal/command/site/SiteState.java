@@ -78,7 +78,7 @@ public class SiteState extends AbstractCommand {
      */
     @Override
     protected void onCompleteCodeOk(@Nullable String json) {
-        JsonObject jsonObject = transform(json);
+        JsonObject jsonObject = transform(json, JsonObject.class);
 
         if (jsonObject != null) {
             logger.debug("success");
