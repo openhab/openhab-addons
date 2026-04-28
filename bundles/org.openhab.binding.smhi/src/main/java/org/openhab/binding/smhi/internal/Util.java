@@ -16,7 +16,6 @@ import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
 
-import javax.measure.MetricPrefix;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,8 +24,6 @@ import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags;
 import org.openhab.core.thing.type.ChannelType;
@@ -36,7 +33,6 @@ import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.StateOption;
 import org.openhab.core.types.util.UnitUtils;
 
 /**
