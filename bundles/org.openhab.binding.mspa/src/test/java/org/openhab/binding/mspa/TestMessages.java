@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -103,8 +104,9 @@ class TestMessages {
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            JSONArray deviceList = account.extractList(new JSONObject(content));
-            account.discovery(deviceList);
+            Optional<JSONArray> deviceList = account.extractList(new JSONObject(content));
+            assertTrue(deviceList.isPresent(), "Device list present");
+            account.discovery(deviceList.get());
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);

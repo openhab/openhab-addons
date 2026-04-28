@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
@@ -222,12 +223,12 @@ public class MSpaUtils {
         return UNKNOWN;
     }
 
-    public static JSONObject toJson(String response) {
+    public static Optional<JSONObject> toJson(String response) {
         try {
-            return new JSONObject(response);
+            return Optional.of(new JSONObject(response));
         } catch (JSONException e) {
             LOGGER.warn("Failed to parse response to JSON: {}. Exception: {}", response, e.getMessage());
-            return new JSONObject();
+            return Optional.empty();
         }
     }
 }
