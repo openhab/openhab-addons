@@ -211,6 +211,16 @@ rm -f tools/generate-sources/scripts/templates/licenseInfo.mustache
 
 MVN_OPT="--quiet"
 
+echo "🔧 fix ServerVariable.enumValues initialization to avoid NullPointerException"
+# The upstream generator leaves enumValues uninitialized (null). ServerConfiguration.URL() calls
+# enumValues.size() which would throw NPE for non-enum variables. Initialize to empty HashSet
+# and add a null-guard in the constructor so re-generation does not reintroduce the bug.
+sed -i 's/public HashSet<String> enumValues = null;/public HashSet<String> enumValues = new HashSet<>();/' "${GEN_ROOT_TARGET}/ServerVariable.java"
+sed -i 's/this\.enumValues = enumValues;/this.enumValues = enumValues != null ? enumValues : new HashSet<>();/' "${GEN_ROOT_TARGET}/ServerVariable.java"
+
+echo "🔧 fix ApiResponse Javadoc typo: 'response bod' -> 'response body'"
+# The upstream generator template contains a truncated word in the @param data Javadoc line.
+sed -i 's/response bod\b/response body/' "${GEN_ROOT_TARGET}/ApiResponse.java"
 
 echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
 # Replace @NonNull with @Nullable on field declarations in model classes
