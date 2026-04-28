@@ -958,7 +958,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                             : statusInfo.getDescription();
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
-                case INSTALL_FAILED, READY_TO_INSTALL:
+                case READY_TO_INSTALL:
+                    triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
+                    // note: fall through to set Thing status, status detail, and status description
+                case INSTALL_FAILED:
                 default:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
                     break;

@@ -70,6 +70,7 @@
 
 		<channel-groups>
 			<channel-group id="automation" typeId="automation"/>
+			<channel-group id="software" typeId="software"/>
 		</channel-groups>
 
 		<representation-property>serialNumber</representation-property>
