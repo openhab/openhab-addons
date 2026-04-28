@@ -207,7 +207,7 @@ Example of how to configure a Thing.
 ### Example `demo.things`
 
 ```java
-Bridge lgthinq:cloud-account:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en", country="US", poolingIntervalSec=600] {
+Bridge lgthinq:cloud-account:MyLGThinqBridge [ username="user@registered.com", password="cleartext-password", language="en-US", country="US", pollingIntervalSec=600] {
    Thing air-conditioner-401 myAC [ modelUrlInfo="<ac-model-url>", deviceId="<device-id>", platformType="<platform-type>", modelId="<model-id>", deviceAlias="<MyAC>" ]
 }
 ```
