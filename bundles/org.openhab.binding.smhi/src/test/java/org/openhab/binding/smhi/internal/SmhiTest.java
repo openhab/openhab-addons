@@ -20,13 +20,19 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.StreamSupport;
 
 import javax.measure.MetricPrefix;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -44,34 +50,26 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class SmhiTest {
 
-    private static final ZonedDateTime BASE_TIME = ZonedDateTime.parse("2025-11-03T14:20:00Z");
-    private static final ZonedDateTime DAY_0_END = ZonedDateTime.parse("2025-11-04T00:00:00Z");
-    private static final ZonedDateTime DAY_8_END = DAY_0_END.plusDays(8);
-    private static final ZonedDateTime DAY_9_END = DAY_0_END.plusDays(9);
-    private @NonNullByDefault({}) SmhiTimeSeries timeSeries1;
-    private @NonNullByDefault({}) SmhiTimeSeries timeSeries2;
-    private @NonNullByDefault({}) SmhiTimeSeries timeSeries3;
-    private @NonNullByDefault({}) JsonObject json1;
-    private @NonNullByDefault({}) JsonObject json2;
-    private @NonNullByDefault({}) JsonObject json3;
+    private static final ZonedDateTime BASE_TIME = ZonedDateTime.parse("2026-04-22T07:15:00Z");
+    private static final ZonedDateTime DAY_0_END = ZonedDateTime.parse("2026-04-23T00:00:00Z");
+    private @NonNullByDefault({}) SmhiTimeSeries timeSeries;
+    private @NonNullByDefault({}) MockSmhiChannelTypeProvider channelTypeProvider;
+    private @NonNullByDefault({}) JsonObject json;
 
     @BeforeEach
-    public void setUp() {
-        try (InputStream is1 = SmhiTest.class.getResourceAsStream("snow1g1.json");
-                InputStream is2 = SmhiTest.class.getResourceAsStream("snow1g2.json");
-                InputStream is3 = SmhiTest.class.getResourceAsStream("snow1g3.json")) {
-            assertNotNull(is1);
-            assertNotNull(is2);
-            assertNotNull(is3);
-            String str1 = new String(is1.readAllBytes());
-            String str2 = new String(is2.readAllBytes());
-            String str3 = new String(is3.readAllBytes());
-            timeSeries1 = Parser.parseTimeSeries(str1);
-            timeSeries2 = Parser.parseTimeSeries(str2);
-            timeSeries3 = Parser.parseTimeSeries(str3);
-            json1 = JsonParser.parseString(str1).getAsJsonObject();
-            json2 = JsonParser.parseString(str2).getAsJsonObject();
-            json3 = JsonParser.parseString(str3).getAsJsonObject();
+    public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
+        try (InputStream isTimeseries = SmhiTest.class.getResourceAsStream("snow1g1.json");
+                InputStream isParameters = SmhiTest.class.getResourceAsStream("parameters.json")) {
+            assertNotNull(isTimeseries);
+            assertNotNull(isParameters);
+            String strTimeseries = new String(isTimeseries.readAllBytes());
+            String strParameters = new String(isParameters.readAllBytes());
+            timeSeries = Parser.parseTimeSeries(strTimeseries);
+            json = JsonParser.parseString(strTimeseries).getAsJsonObject();
+            List<ParameterMetadata> parameterMetadata = Parser.parseParameterMetadata(strParameters);
+            channelTypeProvider = new MockSmhiChannelTypeProvider();
+            parameterMetadata.forEach(channelTypeProvider::putParameterMetadata);
+            AGGREGATE_CHANNELS_METADATA.forEach(channelTypeProvider::putParameterMetadata);
         } catch (IOException e) {
             throw new AssertionError("Couldn't read forecast example");
         }
@@ -131,325 +129,236 @@ public class SmhiTest {
 
     @Test
     public void parameterTest() {
-        assertNotNull(timeSeries1);
-        Forecast forecast0 = timeSeries1.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
-        Forecast forecast1 = timeSeries1.getForecast(BASE_TIME, 1).orElseThrow(AssertionError::new);
+        assertNotNull(timeSeries);
+        Forecast forecast1 = timeSeries.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
+        Forecast forecast2 = timeSeries.getForecast(DAY_0_END.plusDays(2), 11).orElseThrow(AssertionError::new);
+        Forecast forecast3 = timeSeries.getForecast(DAY_0_END.plusDays(2), 18).orElseThrow(AssertionError::new);
 
-        State pres0 = forecast0.getParameterAsState(PRESSURE);
-        State t0 = forecast0.getParameterAsState(TEMPERATURE);
-        State vis0 = forecast0.getParameterAsState(VISIBILITY);
-        State wd0 = forecast0.getParameterAsState(WIND_DIRECTION);
-        State ws0 = forecast0.getParameterAsState(WIND_SPEED);
-        State r0 = forecast0.getParameterAsState(RELATIVE_HUMIDITY);
-        State tstm0 = forecast0.getParameterAsState(THUNDER_PROBABILITY);
-        State cdcb0 = forecast0.getParameterAsState(CLOUD_BASE_ALTITUDE);
-        State cdct0 = forecast0.getParameterAsState(CLOUD_TOP_ALTITUDE);
-        State tcc0 = forecast0.getParameterAsState(TOTAL_CLOUD_COVER);
-        State lcc0 = forecast0.getParameterAsState(LOW_CLOUD_COVER);
-        State mcc0 = forecast0.getParameterAsState(MEDIUM_CLOUD_COVER);
-        State hcc0 = forecast0.getParameterAsState(HIGH_CLOUD_COVER);
-        State gust0 = forecast0.getParameterAsState(GUST);
-        State pmin0 = forecast0.getParameterAsState(PRECIPITATION_MIN);
-        State pmax0 = forecast0.getParameterAsState(PRECIPITATION_MAX);
-        State pmean0 = forecast0.getParameterAsState(PRECIPITATION_MEAN);
-        State pmedian0 = forecast0.getParameterAsState(PRECIPITATION_MEDIAN);
-        State spp0 = forecast0.getParameterAsState(PERCENT_FROZEN);
-        State spp1 = forecast1.getParameterAsState(PERCENT_FROZEN);
-        State fzpr0 = forecast0.getParameterAsState(FROZEN_PROBABILITY);
-        State tp0 = forecast0.getParameterAsState(PRECIPITATION_PROBABILITY);
-        State pcat0 = forecast0.getParameterAsState(PRECIPITATION_CATEGORY);
-        State wsymb0 = forecast0.getParameterAsState(WEATHER_SYMBOL);
+        Map<String, State> expected1 = Map.ofEntries(Map.entry(TEMPERATURE, new QuantityType<>(7, SIUnits.CELSIUS)),
+                Map.entry(WIND_DIRECTION, new QuantityType<>(326, Units.DEGREE_ANGLE)),
+                Map.entry(WIND_SPEED, new QuantityType<>(5.8, Units.METRE_PER_SECOND)),
+                Map.entry(GUST, new QuantityType<>(14.8, Units.METRE_PER_SECOND)),
+                Map.entry(RELATIVE_HUMIDITY, new QuantityType<>(58, Units.PERCENT)),
+                Map.entry(PRESSURE, new QuantityType<>(1019.4, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(VISIBILITY, new QuantityType<>(36.3, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(THUNDER_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(FROZEN_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(TOTAL_CLOUD_COVER, new QuantityType<>(62.5, Units.PERCENT)),
+                Map.entry(LOW_CLOUD_COVER, new QuantityType<>(12.5, Units.PERCENT)),
+                Map.entry(MEDIUM_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(HIGH_CLOUD_COVER, new QuantityType<>(87.5, Units.PERCENT)),
+                Map.entry(CLOUD_BASE_ALTITUDE, new QuantityType<>(9071, SIUnits.METRE)),
+                Map.entry(CLOUD_TOP_ALTITUDE, new QuantityType<>(10759, SIUnits.METRE)),
+                Map.entry(PRECIPITATION_MEAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MIN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MAX, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MEDIAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PERCENT_FROZEN, new QuantityType<>(-1, Units.PERCENT)),
+                Map.entry(PRECIPITATION_CATEGORY, new DecimalType(0)), Map.entry(WEATHER_SYMBOL, new DecimalType(3)));
 
-        assertInstanceOf(QuantityType.class, pres0);
-        assertEquals(new QuantityType<>(1010.9, MetricPrefix.HECTO(SIUnits.PASCAL)), pres0);
-        assertInstanceOf(QuantityType.class, t0);
-        assertEquals(new QuantityType<>(7.5, SIUnits.CELSIUS), t0);
-        assertInstanceOf(QuantityType.class, vis0);
-        assertEquals(new QuantityType<>(13.3, MetricPrefix.KILO(SIUnits.METRE)), vis0);
-        assertInstanceOf(QuantityType.class, wd0);
-        assertEquals(new QuantityType<>(219, Units.DEGREE_ANGLE), wd0);
-        assertInstanceOf(QuantityType.class, ws0);
-        assertEquals(new QuantityType<>(1.5, Units.METRE_PER_SECOND), ws0);
-        assertInstanceOf(QuantityType.class, r0);
-        assertEquals(new QuantityType<>(86, Units.PERCENT), r0);
-        assertInstanceOf(QuantityType.class, tstm0);
-        assertEquals(new QuantityType<>(18, Units.PERCENT), tstm0);
-        assertInstanceOf(QuantityType.class, cdcb0);
-        assertEquals(new QuantityType<>(-1, SIUnits.METRE), cdcb0);
-        assertInstanceOf(QuantityType.class, cdct0);
-        assertEquals(new QuantityType<>(-1, SIUnits.METRE), cdct0);
-        assertInstanceOf(QuantityType.class, tcc0);
-        assertEquals(new QuantityType<>(50, Units.PERCENT), tcc0);
-        assertInstanceOf(QuantityType.class, lcc0);
-        assertEquals(new QuantityType<>(37.5, Units.PERCENT), lcc0);
-        assertInstanceOf(QuantityType.class, mcc0);
-        assertEquals(new QuantityType<>(12.5, Units.PERCENT), mcc0);
-        assertInstanceOf(QuantityType.class, hcc0);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), hcc0);
-        assertInstanceOf(QuantityType.class, gust0);
-        assertEquals(new QuantityType<>(4.8, Units.METRE_PER_SECOND), gust0);
-        assertInstanceOf(QuantityType.class, pmin0);
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmin0);
-        assertInstanceOf(QuantityType.class, pmax0);
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmax0);
-        assertInstanceOf(QuantityType.class, pmean0);
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmean0);
-        assertInstanceOf(QuantityType.class, pmedian0);
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmedian0);
-        assertInstanceOf(QuantityType.class, spp0);
-        assertEquals(new QuantityType<>(14, Units.PERCENT), spp0);
-        assertInstanceOf(QuantityType.class, spp1);
-        assertEquals(new QuantityType<>(-1, Units.PERCENT), spp1);
-        assertInstanceOf(QuantityType.class, fzpr0);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), fzpr0);
-        assertInstanceOf(QuantityType.class, tp0);
-        assertEquals(new QuantityType<>(0, Units.PERCENT), tp0);
-        assertInstanceOf(DecimalType.class, pcat0);
-        assertEquals(new DecimalType(0), pcat0);
-        assertInstanceOf(DecimalType.class, wsymb0);
-        assertEquals(new DecimalType(3), wsymb0);
+        Map<String, State> expected2 = Map.ofEntries(Map.entry(TEMPERATURE, new QuantityType<>(4.5, SIUnits.CELSIUS)),
+                Map.entry(WIND_DIRECTION, new QuantityType<>(347, Units.DEGREE_ANGLE)),
+                Map.entry(WIND_SPEED, new QuantityType<>(7.4, Units.METRE_PER_SECOND)),
+                Map.entry(GUST, new QuantityType<>(17.4, Units.METRE_PER_SECOND)),
+                Map.entry(RELATIVE_HUMIDITY, new QuantityType<>(45, Units.PERCENT)),
+                Map.entry(PRESSURE, new QuantityType<>(1003.4, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(VISIBILITY, new QuantityType<>(47, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(THUNDER_PROBABILITY, new QuantityType<>(1, Units.PERCENT)),
+                Map.entry(FROZEN_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(TOTAL_CLOUD_COVER, new QuantityType<>(50, Units.PERCENT)),
+                Map.entry(LOW_CLOUD_COVER, new QuantityType<>(25, Units.PERCENT)),
+                Map.entry(MEDIUM_CLOUD_COVER, new QuantityType<>(50, Units.PERCENT)),
+                Map.entry(HIGH_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(CLOUD_BASE_ALTITUDE, new QuantityType<>(-8, SIUnits.METRE)),
+                Map.entry(CLOUD_TOP_ALTITUDE, new QuantityType<>(-8, SIUnits.METRE)),
+                Map.entry(PRECIPITATION_MEAN, new QuantityType<>(0.5, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MIN, new QuantityType<>(0.4, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MAX, new QuantityType<>(1, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MEDIAN, new QuantityType<>(0.4, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_PROBABILITY, new QuantityType<>(63, Units.PERCENT)),
+                Map.entry(PERCENT_FROZEN, new QuantityType<>(100, Units.PERCENT)),
+                Map.entry(PRECIPITATION_CATEGORY, new DecimalType(5)), Map.entry(WEATHER_SYMBOL, new DecimalType(15)));
+
+        Map<String, State> expected3 = Map.ofEntries(Map.entry(TEMPERATURE, new QuantityType<>(-0.8, SIUnits.CELSIUS)),
+                Map.entry(WIND_DIRECTION, new QuantityType<>(333, Units.DEGREE_ANGLE)),
+                Map.entry(WIND_SPEED, new QuantityType<>(6.5, Units.METRE_PER_SECOND)),
+                Map.entry(GUST, new QuantityType<>(14.4, Units.METRE_PER_SECOND)),
+                Map.entry(RELATIVE_HUMIDITY, new QuantityType<>(68, Units.PERCENT)),
+                Map.entry(PRESSURE, new QuantityType<>(1013.6, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(VISIBILITY, new QuantityType<>(22.9, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(THUNDER_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(FROZEN_PROBABILITY, new QuantityType<>(1, Units.PERCENT)),
+                Map.entry(TOTAL_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(LOW_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(MEDIUM_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(HIGH_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(CLOUD_BASE_ALTITUDE, new QuantityType<>(-8, SIUnits.METRE)),
+                Map.entry(CLOUD_TOP_ALTITUDE, new QuantityType<>(-8, SIUnits.METRE)),
+                Map.entry(PRECIPITATION_MEAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MIN, new QuantityType<>(1.1, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MAX, new QuantityType<>(1.2, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_MEDIAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PRECIPITATION_PROBABILITY, new QuantityType<>(4, Units.PERCENT)),
+                Map.entry(PERCENT_FROZEN, new QuantityType<>(100, Units.PERCENT)),
+                Map.entry(PRECIPITATION_CATEGORY, new DecimalType(5)), Map.entry(WEATHER_SYMBOL, new DecimalType(1)));
+
+        Map.of(forecast1, expected1, forecast2, expected2, forecast3, expected3)
+                .forEach((forecast, expected) -> expected.forEach((s, v) -> {
+                    ParameterMetadata meta = channelTypeProvider.getParameterMetadata(s);
+                    assertNotNull(meta);
+                    State state = forecast.getParameterAsState(meta);
+                    assertEquals(v, state);
+                }));
     }
 
     @Test
     public void forecastAggregatorTest() {
-        assertNotNull(timeSeries1);
-        assertNotNull(timeSeries2);
-        State maxTempT1F0 = ForecastAggregator.max(timeSeries1, 0, TEMPERATURE);
-        State minTempT1F0 = ForecastAggregator.min(timeSeries1, 0, TEMPERATURE);
-        State maxWindT1F0 = ForecastAggregator.max(timeSeries1, 0, WIND_SPEED);
-        State minWindT1F0 = ForecastAggregator.min(timeSeries1, 0, WIND_SPEED);
-        State totalPrecipT1F0 = ForecastAggregator.total(timeSeries1, 0, PRECIPITATION_MEAN);
-        State noonPressureT1F0 = ForecastAggregator.noonOrFirst(timeSeries1, 0, PRESSURE);
+        assertNotNull(timeSeries);
 
-        assertInstanceOf(QuantityType.class, maxTempT1F0);
-        assertEquals(new QuantityType<>(maxBetween(json1, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                maxTempT1F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT1F0);
-        assertEquals(new QuantityType<>(minBetween(json1, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                minTempT1F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT1F0);
-        assertEquals(new QuantityType<>(maxBetween(json1, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                maxWindT1F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT1F0);
-        assertEquals(new QuantityType<>(minBetween(json1, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                minWindT1F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT1F0);
-        assertEquals(new QuantityType<>(sumBetween(json1, PRECIPITATION_MEAN, BASE_TIME, DAY_0_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT1F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT1F0);
-        assertEquals(new QuantityType<>(noonOrFirst(json1, PRESSURE, BASE_TIME), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT1F0.as(QuantityType.class));
+        for (int dayOffset = 0; dayOffset < 10; dayOffset++) {
+            State maxTemp = ForecastAggregator.max(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(TEMPERATURE));
+            State minTemp = ForecastAggregator.min(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(TEMPERATURE));
+            State maxWind = ForecastAggregator.max(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(WIND_SPEED));
+            State minWind = ForecastAggregator.min(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(WIND_SPEED));
+            State totalPrecip = ForecastAggregator.total(timeSeries, dayOffset,
+                    channelTypeProvider.getParameterMetadata(PRECIPITATION_MEAN),
+                    channelTypeProvider.getParameterMetadata(PRECIPITATION_TOTAL));
 
-        State maxTempT1F9 = ForecastAggregator.max(timeSeries1, 9, TEMPERATURE);
-        State minTempT1F9 = ForecastAggregator.min(timeSeries1, 9, TEMPERATURE);
-        State maxWindT1F9 = ForecastAggregator.max(timeSeries1, 9, WIND_SPEED);
-        State minWindT1F9 = ForecastAggregator.min(timeSeries1, 9, WIND_SPEED);
-        State totalPrecipT1F9 = ForecastAggregator.total(timeSeries1, 9, PRECIPITATION_MEAN);
-        State noonPressureT1F9 = ForecastAggregator.noonOrFirst(timeSeries1, 9, PRESSURE);
+            ZonedDateTime startTime = dayOffset == 0 ? BASE_TIME : DAY_0_END.plusDays(dayOffset - 1);
+            ZonedDateTime endTime = DAY_0_END.plusDays(dayOffset);
 
-        assertInstanceOf(QuantityType.class, maxTempT1F9);
-        assertEquals(new QuantityType<>(maxBetween(json1, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                maxTempT1F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT1F9);
-        assertEquals(new QuantityType<>(minBetween(json1, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                minTempT1F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT1F9);
-        assertEquals(new QuantityType<>(maxBetween(json1, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                maxWindT1F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT1F9);
-        assertEquals(new QuantityType<>(minBetween(json1, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                minWindT1F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT1F9);
-        assertEquals(new QuantityType<>(sumBetween(json1, PRECIPITATION_MEAN, DAY_8_END, DAY_9_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT1F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT1F9);
-        assertEquals(new QuantityType<>(noonOrFirst(json1, PRESSURE, DAY_8_END), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT1F9.as(QuantityType.class));
+            assertInstanceOf(QuantityType.class, maxTemp);
+            assertEquals(new QuantityType<>(maxBetween(json, TEMPERATURE, startTime, endTime), SIUnits.CELSIUS),
+                    maxTemp.as(QuantityType.class));
+            assertInstanceOf(QuantityType.class, minTemp);
+            assertEquals(new QuantityType<>(minBetween(json, TEMPERATURE, startTime, endTime), SIUnits.CELSIUS),
+                    minTemp.as(QuantityType.class));
+            assertInstanceOf(QuantityType.class, maxWind);
+            assertEquals(new QuantityType<>(maxBetween(json, WIND_SPEED, startTime, endTime), Units.METRE_PER_SECOND),
+                    maxWind.as(QuantityType.class));
+            assertInstanceOf(QuantityType.class, minWind);
+            assertEquals(new QuantityType<>(minBetween(json, WIND_SPEED, startTime, endTime), Units.METRE_PER_SECOND),
+                    minWind.as(QuantityType.class));
+            assertInstanceOf(QuantityType.class, totalPrecip);
+            assertEquals(new QuantityType<>(sumBetween(json, PRECIPITATION_MEAN, startTime, endTime),
+                    MetricPrefix.MILLI(SIUnits.METRE)), totalPrecip.as(QuantityType.class));
 
-        State maxTempT2F0 = ForecastAggregator.max(timeSeries2, 0, TEMPERATURE);
-        State minTempT2F0 = ForecastAggregator.min(timeSeries2, 0, TEMPERATURE);
-        State maxWindT2F0 = ForecastAggregator.max(timeSeries2, 0, WIND_SPEED);
-        State minWindT2F0 = ForecastAggregator.min(timeSeries2, 0, WIND_SPEED);
-        State totalPrecipT2F0 = ForecastAggregator.total(timeSeries2, 0, PRECIPITATION_MEAN);
-        State noonPressureT2F0 = ForecastAggregator.noonOrFirst(timeSeries2, 0, PRESSURE);
+            for (ParameterMetadata metadata : channelTypeProvider.getAllParameterMetadata()) {
+                if (AGGREGATE_CHANNELS.contains(metadata.name())) {
+                    continue;
+                }
+                Unit<?> expectedUnit = UNIT_MAP.get(metadata.unit());
+                BigDecimal expectedValue = noonOrFirst(json, metadata.name(), startTime);
+                if (expectedValue.equals(metadata.missingValue())
+                        || (metadata.name().equals(PERCENT_FROZEN) && expectedValue.equals(BigDecimal.valueOf(-9)))) {
+                    expectedValue = BigDecimal.valueOf(-1);
+                } else if (metadata.unit().equals("octas")) {
+                    expectedValue = OCTAS_TO_PERCENT.multiply(expectedValue);
+                } else if (metadata.unit().equals("fraction")) {
+                    expectedValue = FRACTION_TO_PERCENT.multiply(expectedValue);
+                }
+                State expectedState;
+                if (expectedUnit != null) {
+                    expectedState = new QuantityType<>(expectedValue, expectedUnit);
+                } else {
+                    expectedState = new DecimalType(expectedValue);
+                }
 
-        assertInstanceOf(QuantityType.class, maxTempT2F0);
-        assertEquals(new QuantityType<>(maxBetween(json2, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                maxTempT2F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT2F0);
-        assertEquals(new QuantityType<>(minBetween(json2, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                minTempT2F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT2F0);
-        assertEquals(new QuantityType<>(maxBetween(json2, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                maxWindT2F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT2F0);
-        assertEquals(new QuantityType<>(minBetween(json2, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                minWindT2F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT2F0);
-        assertEquals(new QuantityType<>(sumBetween(json2, PRECIPITATION_MEAN, BASE_TIME, DAY_0_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT2F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT2F0);
-        assertEquals(new QuantityType<>(noonOrFirst(json2, PRESSURE, BASE_TIME), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT2F0.as(QuantityType.class));
+                State actualState = ForecastAggregator.noonOrFirst(timeSeries, dayOffset, metadata);
 
-        State maxTempT2F9 = ForecastAggregator.max(timeSeries2, 9, TEMPERATURE);
-        State minTempT2F9 = ForecastAggregator.min(timeSeries2, 9, TEMPERATURE);
-        State maxWindT2F9 = ForecastAggregator.max(timeSeries2, 9, WIND_SPEED);
-        State minWindT2F9 = ForecastAggregator.min(timeSeries2, 9, WIND_SPEED);
-        State totalPrecipT2F9 = ForecastAggregator.total(timeSeries2, 9, PRECIPITATION_MEAN);
-        State noonPressureT2F9 = ForecastAggregator.noonOrFirst(timeSeries2, 9, PRESSURE);
-
-        assertInstanceOf(QuantityType.class, maxTempT2F9);
-        assertEquals(new QuantityType<>(maxBetween(json2, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                maxTempT2F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT2F9);
-        assertEquals(new QuantityType<>(minBetween(json2, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                minTempT2F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT2F9);
-        assertEquals(new QuantityType<>(maxBetween(json2, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                maxWindT2F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT2F9);
-        assertEquals(new QuantityType<>(minBetween(json2, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                minWindT2F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT2F9);
-        assertEquals(new QuantityType<>(sumBetween(json2, PRECIPITATION_MEAN, DAY_8_END, DAY_9_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT2F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT2F9);
-        assertEquals(new QuantityType<>(noonOrFirst(json2, PRESSURE, DAY_8_END), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT2F9.as(QuantityType.class));
-
-        State maxTempT3F0 = ForecastAggregator.max(timeSeries3, 0, TEMPERATURE);
-        State minTempT3F0 = ForecastAggregator.min(timeSeries3, 0, TEMPERATURE);
-        State maxWindT3F0 = ForecastAggregator.max(timeSeries3, 0, WIND_SPEED);
-        State minWindT3F0 = ForecastAggregator.min(timeSeries3, 0, WIND_SPEED);
-        State totalPrecipT3F0 = ForecastAggregator.total(timeSeries3, 0, PRECIPITATION_MEAN);
-        State noonPressureT3F0 = ForecastAggregator.noonOrFirst(timeSeries3, 0, PRESSURE);
-
-        assertInstanceOf(QuantityType.class, maxTempT3F0);
-        assertEquals(new QuantityType<>(maxBetween(json3, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                maxTempT3F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT3F0);
-        assertEquals(new QuantityType<>(minBetween(json3, TEMPERATURE, BASE_TIME, DAY_0_END), SIUnits.CELSIUS),
-                minTempT3F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT3F0);
-        assertEquals(new QuantityType<>(maxBetween(json3, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                maxWindT3F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT3F0);
-        assertEquals(new QuantityType<>(minBetween(json3, WIND_SPEED, BASE_TIME, DAY_0_END), Units.METRE_PER_SECOND),
-                minWindT3F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT3F0);
-        assertEquals(new QuantityType<>(sumBetween(json3, PRECIPITATION_MEAN, BASE_TIME, DAY_0_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT3F0.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT3F0);
-        assertEquals(new QuantityType<>(noonOrFirst(json3, PRESSURE, BASE_TIME), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT3F0.as(QuantityType.class));
-
-        State maxTempT3F9 = ForecastAggregator.max(timeSeries3, 9, TEMPERATURE);
-        State minTempT3F9 = ForecastAggregator.min(timeSeries3, 9, TEMPERATURE);
-        State maxWindT3F9 = ForecastAggregator.max(timeSeries3, 9, WIND_SPEED);
-        State minWindT3F9 = ForecastAggregator.min(timeSeries3, 9, WIND_SPEED);
-        State totalPrecipT3F9 = ForecastAggregator.total(timeSeries3, 9, PRECIPITATION_MEAN);
-        State noonPressureT3F9 = ForecastAggregator.noonOrFirst(timeSeries3, 9, PRESSURE);
-
-        assertInstanceOf(QuantityType.class, maxTempT3F9);
-        assertEquals(new QuantityType<>(maxBetween(json3, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                maxTempT3F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minTempT3F9);
-        assertEquals(new QuantityType<>(minBetween(json3, TEMPERATURE, DAY_8_END, DAY_9_END), SIUnits.CELSIUS),
-                minTempT3F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, maxWindT3F9);
-        assertEquals(new QuantityType<>(maxBetween(json3, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                maxWindT3F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, minWindT3F9);
-        assertEquals(new QuantityType<>(minBetween(json3, WIND_SPEED, DAY_8_END, DAY_9_END), Units.METRE_PER_SECOND),
-                minWindT3F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, totalPrecipT3F9);
-        assertEquals(new QuantityType<>(sumBetween(json3, PRECIPITATION_MEAN, DAY_8_END, DAY_9_END),
-                MetricPrefix.MILLI(SIUnits.METRE)), totalPrecipT3F9.as(QuantityType.class));
-        assertInstanceOf(QuantityType.class, noonPressureT3F9);
-        assertEquals(new QuantityType<>(noonOrFirst(json3, PRESSURE, DAY_8_END), MetricPrefix.HECTO(SIUnits.PASCAL)),
-                noonPressureT3F9.as(QuantityType.class));
+                assertInstanceOf(expectedState.getClass(), actualState);
+                assertEquals(expectedState, actualState);
+            }
+        }
     }
 
     @Test
     public void backwardsCompParameterTest() {
-        assertNotNull(timeSeries1);
-        Forecast forecast0 = timeSeries1.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
-        Forecast forecast1 = timeSeries1.getForecast(BASE_TIME, 1).orElseThrow(AssertionError::new);
+        assertNotNull(timeSeries);
+        Forecast forecast1 = timeSeries.getForecast(BASE_TIME, 0).orElseThrow(AssertionError::new);
+        Forecast forecast2 = timeSeries.getForecast(DAY_0_END.plusDays(2), 11).orElseThrow(AssertionError::new);
+        Forecast forecast3 = timeSeries.getForecast(DAY_0_END.plusDays(2), 18).orElseThrow(AssertionError::new);
 
-        State msl0 = forecast0.getParameterAsState(PMP3G_PRESSURE);
-        State t0 = forecast0.getParameterAsState(PMP3G_TEMPERATURE);
-        State vis0 = forecast0.getParameterAsState(PMP3G_VISIBILITY);
-        State wd0 = forecast0.getParameterAsState(PMP3G_WIND_DIRECTION);
-        State ws0 = forecast0.getParameterAsState(PMP3G_WIND_SPEED);
-        State r0 = forecast0.getParameterAsState(PMP3G_RELATIVE_HUMIDITY);
-        State tstm0 = forecast0.getParameterAsState(PMP3G_THUNDER_PROBABILITY);
-        State tcc0 = forecast0.getParameterAsState(PMP3G_TOTAL_CLOUD_COVER);
-        State lcc0 = forecast0.getParameterAsState(PMP3G_LOW_CLOUD_COVER);
-        State mcc0 = forecast0.getParameterAsState(PMP3G_MEDIUM_CLOUD_COVER);
-        State hcc0 = forecast0.getParameterAsState(PMP3G_HIGH_CLOUD_COVER);
-        State gust0 = forecast0.getParameterAsState(PMP3G_GUST);
-        State pmin0 = forecast0.getParameterAsState(PMP3G_PRECIPITATION_MIN);
-        State pmax0 = forecast0.getParameterAsState(PMP3G_PRECIPITATION_MAX);
-        State spp0 = forecast0.getParameterAsState(PMP3G_PERCENT_FROZEN);
-        State pcat0 = forecast0.getParameterAsState(PMP3G_PRECIPITATION_CATEGORY);
-        State pmean0 = forecast0.getParameterAsState(PMP3G_PRECIPITATION_MEAN);
-        State pmedian0 = forecast0.getParameterAsState(PMP3G_PRECIPITATION_MEDIAN);
-        State wsymb0 = forecast0.getParameterAsState(PMP3G_WEATHER_SYMBOL);
+        Map<String, State> expected1 = Map.ofEntries(
+                Map.entry(PMP3G_TEMPERATURE, new QuantityType<>(7, SIUnits.CELSIUS)),
+                Map.entry(PMP3G_WIND_DIRECTION, new QuantityType<>(326, Units.DEGREE_ANGLE)),
+                Map.entry(PMP3G_WIND_SPEED, new QuantityType<>(5.8, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_GUST, new QuantityType<>(14.8, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_RELATIVE_HUMIDITY, new QuantityType<>(58, Units.PERCENT)),
+                Map.entry(PMP3G_PRESSURE, new QuantityType<>(1019.4, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(PMP3G_VISIBILITY, new QuantityType<>(36.3, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(PMP3G_THUNDER_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_TOTAL_CLOUD_COVER, new QuantityType<>(62.5, Units.PERCENT)),
+                Map.entry(PMP3G_LOW_CLOUD_COVER, new QuantityType<>(12.5, Units.PERCENT)),
+                Map.entry(PMP3G_MEDIUM_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_HIGH_CLOUD_COVER, new QuantityType<>(87.5, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_MEAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MIN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MAX, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MEDIAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PERCENT_FROZEN, new QuantityType<>(-1, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_CATEGORY, new DecimalType(0)),
+                Map.entry(PMP3G_WEATHER_SYMBOL, new DecimalType(3)));
 
-        assertInstanceOf(QuantityType.class, msl0);
-        assertEquals(MetricPrefix.HECTO(SIUnits.PASCAL), ((QuantityType<?>) msl0).getUnit());
-        assertEquals(new QuantityType<>(1010.9, MetricPrefix.HECTO(SIUnits.PASCAL)), msl0);
-        assertInstanceOf(QuantityType.class, t0);
-        assertEquals(SIUnits.CELSIUS, ((QuantityType<?>) t0).getUnit());
-        assertEquals(new QuantityType<>(7.5, SIUnits.CELSIUS), t0);
-        assertInstanceOf(QuantityType.class, vis0);
-        assertEquals(MetricPrefix.KILO(SIUnits.METRE), ((QuantityType<?>) vis0).getUnit());
-        assertEquals(new QuantityType<>(13.3, MetricPrefix.KILO(SIUnits.METRE)), vis0);
-        assertInstanceOf(QuantityType.class, wd0);
-        assertEquals(Units.DEGREE_ANGLE, ((QuantityType<?>) wd0).getUnit());
-        assertEquals(new QuantityType<>(219, Units.DEGREE_ANGLE), wd0);
-        assertInstanceOf(QuantityType.class, ws0);
-        assertEquals(Units.METRE_PER_SECOND, ((QuantityType<?>) ws0).getUnit());
-        assertEquals(new QuantityType<>(1.5, Units.METRE_PER_SECOND), ws0);
-        assertInstanceOf(QuantityType.class, r0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) r0).getUnit());
-        assertEquals(new QuantityType<>(86, Units.PERCENT), r0);
-        assertInstanceOf(QuantityType.class, tstm0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) tstm0).getUnit());
-        assertEquals(new QuantityType<>(18, Units.PERCENT), tstm0);
-        assertInstanceOf(QuantityType.class, tcc0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) tcc0).getUnit());
-        assertEquals(new QuantityType<>(50, Units.PERCENT), tcc0);
-        assertInstanceOf(QuantityType.class, lcc0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) lcc0).getUnit());
-        assertEquals(new QuantityType<>(37.5, Units.PERCENT), lcc0);
-        assertInstanceOf(QuantityType.class, mcc0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) mcc0).getUnit());
-        assertEquals(new QuantityType<>(12.5, Units.PERCENT), mcc0);
-        assertInstanceOf(QuantityType.class, hcc0);
-        assertEquals(Units.PERCENT, ((QuantityType<?>) hcc0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.PERCENT), hcc0);
-        assertInstanceOf(QuantityType.class, gust0);
-        assertEquals(Units.METRE_PER_SECOND, ((QuantityType<?>) gust0).getUnit());
-        assertEquals(new QuantityType<>(4.8, Units.METRE_PER_SECOND), gust0);
-        assertInstanceOf(QuantityType.class, pmin0);
-        assertEquals(Units.MILLIMETRE_PER_HOUR, ((QuantityType<?>) pmin0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmin0);
-        assertInstanceOf(QuantityType.class, pmax0);
-        assertEquals(Units.MILLIMETRE_PER_HOUR, ((QuantityType<?>) pmax0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmax0);
-        assertInstanceOf(QuantityType.class, pmean0);
-        assertEquals(Units.MILLIMETRE_PER_HOUR, ((QuantityType<?>) pmean0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmean0);
-        assertInstanceOf(QuantityType.class, pmedian0);
-        assertEquals(Units.MILLIMETRE_PER_HOUR, ((QuantityType<?>) pmedian0).getUnit());
-        assertEquals(new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR), pmedian0);
-        assertInstanceOf(QuantityType.class, spp0);
-        assertEquals(new QuantityType<>(14, Units.PERCENT), spp0);
-        assertInstanceOf(DecimalType.class, pcat0);
-        assertEquals(new DecimalType(0), pcat0);
-        assertInstanceOf(DecimalType.class, wsymb0);
-        assertEquals(new DecimalType(3), wsymb0);
+        Map<String, State> expected2 = Map.ofEntries(
+                Map.entry(PMP3G_TEMPERATURE, new QuantityType<>(4.5, SIUnits.CELSIUS)),
+                Map.entry(PMP3G_WIND_DIRECTION, new QuantityType<>(347, Units.DEGREE_ANGLE)),
+                Map.entry(PMP3G_WIND_SPEED, new QuantityType<>(7.4, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_GUST, new QuantityType<>(17.4, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_RELATIVE_HUMIDITY, new QuantityType<>(45, Units.PERCENT)),
+                Map.entry(PMP3G_PRESSURE, new QuantityType<>(1003.4, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(PMP3G_VISIBILITY, new QuantityType<>(47, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(PMP3G_THUNDER_PROBABILITY, new QuantityType<>(1, Units.PERCENT)),
+                Map.entry(PMP3G_TOTAL_CLOUD_COVER, new QuantityType<>(50, Units.PERCENT)),
+                Map.entry(PMP3G_LOW_CLOUD_COVER, new QuantityType<>(25, Units.PERCENT)),
+                Map.entry(PMP3G_MEDIUM_CLOUD_COVER, new QuantityType<>(50, Units.PERCENT)),
+                Map.entry(PMP3G_HIGH_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_MEAN, new QuantityType<>(0.5, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MIN, new QuantityType<>(0.4, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MAX, new QuantityType<>(1, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MEDIAN, new QuantityType<>(0.4, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PERCENT_FROZEN, new QuantityType<>(100, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_CATEGORY, new DecimalType(1)),
+                Map.entry(PMP3G_WEATHER_SYMBOL, new DecimalType(15)));
+
+        Map<String, State> expected3 = Map.ofEntries(
+                Map.entry(PMP3G_TEMPERATURE, new QuantityType<>(-0.8, SIUnits.CELSIUS)),
+                Map.entry(PMP3G_WIND_DIRECTION, new QuantityType<>(333, Units.DEGREE_ANGLE)),
+                Map.entry(PMP3G_WIND_SPEED, new QuantityType<>(6.5, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_GUST, new QuantityType<>(14.4, Units.METRE_PER_SECOND)),
+                Map.entry(PMP3G_RELATIVE_HUMIDITY, new QuantityType<>(68, Units.PERCENT)),
+                Map.entry(PMP3G_PRESSURE, new QuantityType<>(1013.6, MetricPrefix.HECTO(SIUnits.PASCAL))),
+                Map.entry(PMP3G_VISIBILITY, new QuantityType<>(22.9, MetricPrefix.KILO(SIUnits.METRE))),
+                Map.entry(PMP3G_THUNDER_PROBABILITY, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_TOTAL_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_LOW_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_MEDIUM_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_HIGH_CLOUD_COVER, new QuantityType<>(0, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_MEAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MIN, new QuantityType<>(1.1, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MAX, new QuantityType<>(1.2, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PRECIPITATION_MEDIAN, new QuantityType<>(0, Units.MILLIMETRE_PER_HOUR)),
+                Map.entry(PMP3G_PERCENT_FROZEN, new QuantityType<>(100, Units.PERCENT)),
+                Map.entry(PMP3G_PRECIPITATION_CATEGORY, new DecimalType(1)),
+                Map.entry(PMP3G_WEATHER_SYMBOL, new DecimalType(1)));
+
+        Map.of(forecast1, expected1, forecast2, expected2, forecast3, expected3)
+                .forEach((forecast, expected) -> expected.forEach((s, v) -> {
+                    String parameter = PMP3G_BACKWARD_COMP.get(s);
+                    assertNotNull(parameter);
+                    ParameterMetadata meta = channelTypeProvider.getParameterMetadata(parameter);
+                    assertNotNull(meta);
+                    State state = forecast.getParameterAsState(meta);
+                    if (s.equals(PMP3G_PRECIPITATION_CATEGORY)) {
+                        state = new DecimalType(PMP3G_PCAT_BACKWARD_COMP.getOrDefault(((DecimalType) state).intValue(),
+                                ((DecimalType) state).intValue()));
+                    }
+                    assertEquals(v, state);
+                }));
     }
 }

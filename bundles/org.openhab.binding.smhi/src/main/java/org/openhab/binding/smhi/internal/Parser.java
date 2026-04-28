@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -95,5 +96,23 @@ public class Parser {
         });
 
         return new Forecast(time, intervalStartTime, parameters);
+    }
+
+    public static List<ParameterMetadata> parseParameterMetadata(String json) {
+        JsonObject object = JsonParser.parseString(json).getAsJsonObject();
+        JsonArray parameters = object.getAsJsonArray("parameter");
+        return StreamSupport.stream(parameters.spliterator(), true)
+                .map(jsonElement -> parseParameterMetadata(jsonElement.getAsJsonObject())).toList();
+    }
+
+    private static ParameterMetadata parseParameterMetadata(JsonObject jsonObject) {
+        String name = jsonObject.get("name").getAsString();
+        String shortName = jsonObject.get("shortName").getAsString();
+        String description = jsonObject.get("description").getAsString();
+        String levelType = jsonObject.get("levelType").getAsString();
+        BigDecimal level = jsonObject.get("level").getAsBigDecimal();
+        String unit = jsonObject.get("unit").getAsString();
+        BigDecimal missingValue = jsonObject.get("missingValue").getAsBigDecimal();
+        return new ParameterMetadata(name, shortName, description, levelType, level, unit, missingValue);
     }
 }

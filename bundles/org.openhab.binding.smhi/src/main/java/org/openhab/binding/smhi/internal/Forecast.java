@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
 import org.openhab.core.types.State;
 
 /**
@@ -51,14 +52,14 @@ public class Forecast implements Comparable<Forecast> {
     }
 
     public BigDecimal getParameter(String parameter) {
-        // TODO: Remove after 6.0 release
+        // TODO: Remove after last 2026 release
         parameter = PMP3G_BACKWARD_COMP.getOrDefault(parameter, parameter);
 
         return parameters.getOrDefault(parameter, DEFAULT_MISSING_VALUE);
     }
 
-    public State getParameterAsState(String parameter) {
-        return Util.getParameterAsState(parameter, getParameter(parameter));
+    public State getParameterAsState(ParameterMetadata metadata) {
+        return Util.getParameterAsState(metadata, getParameter(metadata.name()));
     }
 
     @Override
