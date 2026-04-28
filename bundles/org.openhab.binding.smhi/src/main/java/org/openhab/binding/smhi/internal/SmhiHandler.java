@@ -156,6 +156,7 @@ public class SmhiHandler extends BaseThingHandler {
                 parametersInitialized = true;
             } catch (SmhiException e) {
                 logger.warn("Unable to get parameters from API");
+                logger.debug("Reason", e);
                 return;
             }
         }
