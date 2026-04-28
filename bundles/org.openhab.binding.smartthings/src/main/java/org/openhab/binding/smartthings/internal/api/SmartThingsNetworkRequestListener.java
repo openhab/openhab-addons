@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.api;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
@@ -110,11 +107,7 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
                     try {
                         Gson gson = networkConnector.getGson();
 
-                        Type type = callback.getClass().getGenericInterfaces()[0];
-                        if (type instanceof ParameterizedType) {
-                            Type actualType = ((ParameterizedType) type).getActualTypeArguments()[0];
-                            resultObj = gson.fromJson(content, actualType);
-                        }
+                        resultObj = gson.fromJson(content, resultClass);
                     } catch (Exception ex) {
                         logger.debug("error: {}", ex.toString());
                     }

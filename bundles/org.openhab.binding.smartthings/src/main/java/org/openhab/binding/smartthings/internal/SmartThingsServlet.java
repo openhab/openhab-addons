@@ -58,6 +58,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -498,7 +499,9 @@ public class SmartThingsServlet extends HttpServlet
         while (m.find()) {
             try {
                 final String key = m.group(1);
-                m.appendReplacement(sb, Matcher.quoteReplacement(map.getOrDefault(key, "${" + key + '}')));
+                String value = map.getOrDefault(key, "${" + key + '}');
+                value = Encode.forHtml(value);
+                m.appendReplacement(sb, Matcher.quoteReplacement(value));
             } catch (RuntimeException e) {
                 logger.debug("Error occurred during template filling, cause ", e);
             }

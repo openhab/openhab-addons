@@ -28,6 +28,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
+import org.openhab.binding.smartthings.internal.type.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -122,12 +123,13 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             }
         }
 
-        if (deviceCategory == null) {
+        if (deviceCategory == null || deviceCategory.isEmpty()) {
             logger.debug("unknow device, bypass");
             return;
         }
 
         deviceCategory = deviceCategory.toLowerCase(Locale.ROOT);
+        deviceCategory = UidUtils.sanitizeId(deviceCategory);
 
         SmartThingsTypeRegistry registry = this.typeRegistry;
         if (registry != null) {

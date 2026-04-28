@@ -48,15 +48,18 @@ public class SmartThingsException extends Exception {
         ErrorObject errL = err;
         if (errL != null) {
             msg += "\r\n";
-            msg += "code      : " + errL.error.code + "\r\n";
             msg += "requestId : " + errL.requestId + "\r\n";
-            msg += "message   : " + errL.error.message + "\r\n";
 
-            if (errL.error.details != null) {
-                for (ErrorObject.Error.Detail detail : errL.error.details) {
-                    msg += "code      : " + detail.code() + "\r\n";
-                    msg += "target      : " + detail.target() + "\r\n";
-                    msg += "message      : " + detail.message() + "\r\n";
+            if (errL.error != null) {
+                msg += "code      : " + errL.error.code + "\r\n";
+                msg += "message   : " + errL.error.message + "\r\n";
+
+                if (errL.error.details != null) {
+                    for (ErrorObject.Error.Detail detail : errL.error.details) {
+                        msg += "code      : " + detail.code() + "\r\n";
+                        msg += "target      : " + detail.target() + "\r\n";
+                        msg += "message      : " + detail.message() + "\r\n";
+                    }
                 }
             }
         }

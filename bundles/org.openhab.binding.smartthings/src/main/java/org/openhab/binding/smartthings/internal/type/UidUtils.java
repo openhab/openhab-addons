@@ -14,10 +14,7 @@ package org.openhab.binding.smartthings.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -102,10 +99,6 @@ public class UidUtils {
      * Generates the ThingTypeUID for the given device. If it's a Homegear device, add a prefix because a Homegear
      * device has more datapoints.
      */
-    public static ThingTypeUID generateThingTypeUID(Object device) {
-        // String type = sanetizeId(device.getType());
-        return new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, "type");
-    }
 
     public static ThingTypeUID generateThingTypeUID(String name) {
         return new ThingTypeUID(SmartThingsBindingConstants.BINDING_ID, name);
@@ -116,22 +109,6 @@ public class UidUtils {
      */
     public static ChannelTypeUID generateChannelTypeUID(String id) {
         return new ChannelTypeUID(SmartThingsBindingConstants.BINDING_ID, id);
-    }
-
-    /**
-     * Generates the ThingUID for the given device in the given bridge.
-     */
-    public static ThingUID generateThingUID(Bridge bridge) {
-        ThingTypeUID thingTypeUID = generateThingTypeUID("");
-        return new ThingUID(thingTypeUID, bridge.getUID(), "");
-    }
-
-    /**
-     * Generates the ChannelUID for the given datapoint with channelNumber and datapointName.
-     */
-    public static ChannelUID generateChannelUID(ThingUID thingUID) {
-        return new ChannelUID(thingUID, "");
-        // String.valueOf(dp.getChannel().getNumber()), dp.getName());
     }
 
     /**

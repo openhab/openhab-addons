@@ -131,8 +131,6 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
 
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
-        Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId());
-
         Channel channel = thing.getChannel(channelUid);
         if (channel == null) {
             logger.error("Channel not found: {}", channelUid);
@@ -162,6 +160,8 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         Object[] arguments = null;
 
         if (attr != null) {
+            Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId());
+
             if (SmartThingsBindingConstants.CHANNEL_NAME_COLOR.equals(attrKey)) {
                 attr.setter = SmartThingsBindingConstants.CMD_SET_COLOR;
             }

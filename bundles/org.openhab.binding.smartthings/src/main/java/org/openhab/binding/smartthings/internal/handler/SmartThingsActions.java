@@ -42,7 +42,9 @@ public class SmartThingsActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (SmartThingsThingHandler) handler;
+        if (handler instanceof SmartThingsThingHandler) {
+            this.handler = (SmartThingsThingHandler) handler;
+        }
     }
 
     @Override
@@ -80,9 +82,8 @@ public class SmartThingsActions implements ThingActions {
         try {
             return api.sendCommand(deviceId, jsonCmd);
         } catch (SmartThingsException e) {
-
+            return "Error during command execution:" + SmartThingsException.getRootCauseMessage(e);
         }
-        return "No Result";
     }
 
     public static String sendCommand(@Nullable ThingActions actions, @Nullable String jsonCmd)

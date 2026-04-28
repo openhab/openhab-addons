@@ -22,7 +22,7 @@ public class LifeCycle {
     public String messageType;
     public String lifecycle;
 
-    public String excutionId;
+    public String executionId;
     public String appId;
     public String locale;
     public String version;
