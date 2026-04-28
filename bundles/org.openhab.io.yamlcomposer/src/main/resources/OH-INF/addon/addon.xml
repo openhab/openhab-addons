@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="yamlcomposer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>misc</type>
+	<name>YAML Composer</name>
+	<description>This addon processes YAML with extended syntax (includes, packages, variables) and outputs fully resolved
+		plain YAML for openHAB YAML Configuration.</description>
+	<connection>local</connection>
+
+	<service-id>org.openhab.io.yamlcomposer</service-id>
+</addon:addon>
