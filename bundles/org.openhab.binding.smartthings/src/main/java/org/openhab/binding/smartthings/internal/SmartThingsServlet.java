@@ -282,7 +282,8 @@ public class SmartThingsServlet extends HttpServlet
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
                 String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
 
-                replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, smartthingsError, reqError));
+                replaceMap.put(KEY_ERROR,
+                        String.format(HTML_ERROR, Encode.forHtml(smartthingsError), Encode.forHtml(reqError)));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
@@ -300,8 +301,8 @@ public class SmartThingsServlet extends HttpServlet
                                 String authorizationUriJs = authorizationUri.replace("\\", "\\\\").replace("\"",
                                         "\\\"");
 
-                                replaceMap.put(KEY_AUTHORIZATION_URI, authorizationUri);
-                                replaceMap.put(KEY_AUTHORIZATION_URI_JS, authorizationUriJs);
+                                replaceMap.put(KEY_AUTHORIZATION_URI, Encode.forHtml(authorizationUri));
+                                replaceMap.put(KEY_AUTHORIZATION_URI_JS, Encode.forHtml(authorizationUriJs));
 
                             } else if ("step2".equals(reqState)) {
                                 template = confirmTemplate;
@@ -319,7 +320,8 @@ public class SmartThingsServlet extends HttpServlet
                                     SmartThingsDevice[] devices = api.getAllDevices();
                                     SmartThingsLocation[] locations = api.getAllLocations();
 
-                                    replaceMap.put(KEY_LOCATION, locations[0].name + " / " + locations[0].locationId);
+                                    replaceMap.put(KEY_LOCATION,
+                                            Encode.forHtml(locations[0].name + " / " + locations[0].locationId));
                                     replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
                                 }
                             }
@@ -331,7 +333,8 @@ public class SmartThingsServlet extends HttpServlet
                         String missingReqCodeError = translationProvider.getText(bundle, "missing-req-code", null,
                                 locale);
 
-                        replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, missingReqCodeError, reqError));
+                        replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, Encode.forHtml(missingReqCodeError),
+                                Encode.forHtml(reqError)));
                     }
                 } catch (SmartThingsException e) {
                     template = errorTemplate;
@@ -341,8 +344,8 @@ public class SmartThingsServlet extends HttpServlet
                     String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null,
                             locale);
 
-                    replaceMap.put(KEY_ERROR,
-                            String.format(HTML_ERROR, smartthingsError, SmartThingsException.getRootCauseMessage(e)));
+                    replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, Encode.forHtml(smartthingsError),
+                            Encode.forHtml(SmartThingsException.getRootCauseMessage(e))));
                 }
             } else {
                 bridgeHandler.registerOAuth(true);
@@ -355,13 +358,13 @@ public class SmartThingsServlet extends HttpServlet
 
             // Display it in page rendering for user confirmation
 
-            replaceMap.put(KEY_CALLBACK_URI, callBackURL);
+            replaceMap.put(KEY_CALLBACK_URI, Encode.forHtml(callBackURL));
 
             if (!callBackURL.startsWith("https://")) {
                 Locale locale = Locale.getDefault();
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
                 String redirectUriError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
-                replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, redirectUriError));
+                replaceMap.put(KEY_ERROR, Encode.forHtml(String.format(HTML_WARNING, redirectUriError)));
             }
 
             try {
@@ -369,7 +372,7 @@ public class SmartThingsServlet extends HttpServlet
                         .formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI, "step1", true);
 
                 // handle first redirection to Smartthings when user click button
-                replaceMap.put(KEY_BRIDGE_URI, authorizationUri);
+                replaceMap.put(KEY_BRIDGE_URI, Encode.forHtml(authorizationUri));
             } catch (SmartThingsException ex) {
                 replaceMap.put(KEY_BRIDGE_URI, "Error during oauth");
             }
@@ -499,9 +502,7 @@ public class SmartThingsServlet extends HttpServlet
         while (m.find()) {
             try {
                 final String key = m.group(1);
-                String value = map.getOrDefault(key, "${" + key + '}');
-                value = Encode.forHtml(value);
-                m.appendReplacement(sb, Matcher.quoteReplacement(value));
+                m.appendReplacement(sb, Matcher.quoteReplacement(map.getOrDefault(key, "${" + key + '}')));
             } catch (RuntimeException e) {
                 logger.debug("Error occurred during template filling, cause ", e);
             }
