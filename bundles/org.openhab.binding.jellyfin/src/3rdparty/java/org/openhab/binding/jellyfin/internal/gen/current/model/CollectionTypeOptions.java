@@ -78,6 +78,5 @@ public enum CollectionTypeOptions {
 
     return String.format(java.util.Locale.ROOT, "%s=%s", prefix, this.toString());
   }
-
 }
 
