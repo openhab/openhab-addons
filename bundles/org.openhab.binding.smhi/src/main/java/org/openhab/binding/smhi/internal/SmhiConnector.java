@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smhi.internal;
 
+import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.time.ZonedDateTime;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,7 +60,7 @@ public class SmhiConnector {
         logger.debug("Fetching reference time");
         ContentResponse resp = makeRequest(CREATED_TIME_URL);
 
-        if (resp.getStatus() == 200) {
+        if (resp.getStatus() == OK_200) {
             return Parser.parseCreatedTime(resp.getContentAsString());
         } else {
             throw new SmhiException(resp.getReason());
@@ -78,14 +80,14 @@ public class SmhiConnector {
         ContentResponse resp = makeRequest(url);
 
         switch (resp.getStatus()) {
-            case 200:
+            case OK_200:
                 try {
                     return Parser.parseTimeSeries(resp.getContentAsString());
                 } catch (JsonParseException | DateTimeParseException e) {
                     throw new SmhiException(e);
                 }
-            case 400:
-            case 404:
+            case BAD_REQUEST_400:
+            case NOT_FOUND_404:
                 throw new PointOutOfBoundsException();
             default:
                 throw new SmhiException(resp.getReason());
@@ -96,7 +98,7 @@ public class SmhiConnector {
         logger.debug("Fetching parameter metadata");
         ContentResponse resp = makeRequest(PARAMETER_METADATA_URL);
 
-        if (resp.getStatus() == 200) {
+        if (resp.getStatus() == OK_200) {
             try {
                 return Parser.parseParameterMetadata(resp.getContentAsString());
             } catch (JsonParseException | DateTimeParseException e) {
@@ -108,6 +110,7 @@ public class SmhiConnector {
 
     private ContentResponse makeRequest(String url) throws SmhiException {
         Request req = httpClient.newRequest(url);
+        req.timeout(5, TimeUnit.SECONDS);
         req.accept(ACCEPT);
         ContentResponse resp;
         try {

@@ -38,8 +38,9 @@ public class ForecastAggregator {
      * @return
      */
     public static State max(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
-        if (metadata == null)
+        if (metadata == null) {
             return UnDefType.UNDEF;
+        }
 
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
@@ -57,8 +58,9 @@ public class ForecastAggregator {
      * @return
      */
     public static State min(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
-        if (metadata == null)
+        if (metadata == null) {
             return UnDefType.UNDEF;
+        }
 
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
@@ -79,8 +81,9 @@ public class ForecastAggregator {
      */
     public static State total(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata baseMetadata,
             @Nullable ParameterMetadata totalMetadata) {
-        if (baseMetadata == null || totalMetadata == null)
+        if (baseMetadata == null || totalMetadata == null) {
             return UnDefType.UNDEF;
+        }
 
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, true);
         if (dayForecasts.size() == 1) {
@@ -105,8 +108,9 @@ public class ForecastAggregator {
      * @return
      */
     public static State noonOrFirst(SmhiTimeSeries timeSeries, int dayOffset, @Nullable ParameterMetadata metadata) {
-        if (metadata == null)
+        if (metadata == null) {
             return UnDefType.UNDEF;
+        }
 
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().filter(forecast -> forecast.getTime().getHour() >= 12).findFirst()

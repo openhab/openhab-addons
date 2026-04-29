@@ -230,8 +230,9 @@ public class SmhiHandler extends BaseThingHandler {
                 id = PMP3G_BACKWARD_COMP.getOrDefault(id, id);
                 // TODO: end
                 ParameterMetadata metadata = channelTypeProvider.getParameterMetadata(id);
-                if (metadata == null)
+                if (metadata == null) {
                     return;
+                }
 
                 updateState(c.getUID(), f.getParameterAsState(metadata));
             }));
@@ -399,8 +400,9 @@ public class SmhiHandler extends BaseThingHandler {
         channelTypeProvider.getAllParameterMetadata().forEach(metadata -> {
             ChannelType channelType = channelTypeRegistry
                     .getChannelType(new ChannelTypeUID(BINDING_ID, metadata.name()));
-            if (channelType == null)
+            if (channelType == null) {
                 return;
+            }
 
             if (!AGGREGATE_CHANNELS.contains(metadata.name())) {
                 channels.add(createChannel(tsGroup, channelType));
