@@ -152,7 +152,7 @@ public class CcuGateway extends AbstractHomematicGateway {
 
             TclScriptDataList resultList = sendScriptByName("getParamsetDescription", TclScriptDataList.class,
                     new String[] { "device_address", "channel_number" },
-                    new String[] { channel.getDevice().getAddress(), channel.getNumber().toString() });
+                    new String[] { channel.getDevice().getAddress(), String.valueOf(channel.getNumber()) });
             new CcuParamsetDescriptionParser(channel, paramsetType).parse(resultList);
         }
     }
@@ -210,15 +210,14 @@ public class CcuGateway extends AbstractHomematicGateway {
      */
     @SuppressWarnings("unchecked")
     private synchronized <T> T sendScript(@Nullable String script, Class<T> clazz) throws IOException {
+        script = script == null ? null : script.trim();
+        if (script == null || script.isEmpty()) {
+            throw new IOException("Homematic TclRegaScript is empty!");
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("TclRegaScript: {}", script);
+        }
         try {
-            script = script == null ? null : script.trim();
-            if (script == null || script.isEmpty()) {
-                throw new RuntimeException("Homematic TclRegaScript is empty!");
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("TclRegaScript: {}", script);
-            }
-
             StringContentProvider content = new StringContentProvider(script, config.getEncoding());
             ContentResponse response = authenticationHandler.updateAuthenticationInformation(httpClient
                     .POST(config.getTclRegaUrl()).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)

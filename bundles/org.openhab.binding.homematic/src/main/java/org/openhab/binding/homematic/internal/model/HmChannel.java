@@ -37,19 +37,19 @@ public class HmChannel {
     public static final Integer CHANNEL_NUMBER_VARIABLE = 1;
     public static final Integer CHANNEL_NUMBER_SCRIPT = 2;
 
-    private final @Nullable Integer number;
+    private final int number;
     private final @Nullable String type;
     private @Nullable HmDevice device;
     private boolean initialized;
     private @Nullable Integer lastFunction;
     private Map<HmDatapointInfo, HmDatapoint> datapoints = new HashMap<>();
 
-    public HmChannel(@Nullable String type, @Nullable Integer number) {
+    public HmChannel(@Nullable String type, int number) {
         this.type = type;
         this.number = number;
     }
 
-    public HmChannel(@Nullable String type, @Nullable Integer number, HmDevice device) {
+    public HmChannel(@Nullable String type, int number, HmDevice device) {
         this.type = type;
         this.number = number;
         this.device = device;
@@ -58,7 +58,7 @@ public class HmChannel {
     /**
      * Returns the channel number.
      */
-    public @Nullable Integer getNumber() {
+    public int getNumber() {
         return number;
     }
 

@@ -276,11 +276,13 @@ public abstract class RpcClient<T> {
     public HmGatewayInfo getGatewayInfo(String id) throws IOException {
         boolean isHomegear = false;
         GetDeviceDescriptionParser ddParser;
+        String ddType = null;
         ListBidcosInterfacesParser biParser;
 
         try {
             ddParser = getDeviceDescription(HmInterface.RF);
-            isHomegear = "Homegear".equalsIgnoreCase(ddParser.getType());
+            ddType = ddParser.getType();
+            isHomegear = "Homegear".equalsIgnoreCase(ddType);
         } catch (IOException ex) {
             // can't load gateway infos via RF interface
             ddParser = new GetDeviceDescriptionParser();
@@ -292,26 +294,21 @@ public abstract class RpcClient<T> {
             biParser = listBidcosInterfaces(HmInterface.HMIP);
         }
 
-        HmGatewayInfo gatewayInfo = new HmGatewayInfo();
-        gatewayInfo.setAddress(biParser.getGatewayAddress());
         String gwType = biParser.getType();
-        if (isHomegear) {
-            gatewayInfo.setId(HmGatewayInfo.ID_HOMEGEAR);
-            gatewayInfo.setType(ddParser.getType());
-            gatewayInfo.setFirmware(ddParser.getFirmware());
+        HmGatewayInfo gatewayInfo;
+        if (ddType != null && isHomegear) {
+            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_HOMEGEAR, ddType, ddParser.getFirmware(),
+                    biParser.getGatewayAddress());
         } else if ((MiscUtils.strStartsWithIgnoreCase(gwType, "CCU")
                 || MiscUtils.strStartsWithIgnoreCase(gwType, "HMIP_CCU")
-                || MiscUtils.strStartsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
+                || MiscUtils.strStartsWithIgnoreCase(ddType, "HM-RCV-50") || config.isCCUType())
                 && !config.isNoCCUType()) {
-            gatewayInfo.setId(HmGatewayInfo.ID_CCU);
-            String type = gwType.isBlank() ? "CCU" : gwType;
-            gatewayInfo.setType(type);
-            gatewayInfo
-                    .setFirmware(!ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware());
+            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_CCU, gwType.isBlank() ? "CCU" : gwType,
+                    !ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware(),
+                    biParser.getGatewayAddress());
         } else {
-            gatewayInfo.setId(HmGatewayInfo.ID_DEFAULT);
-            gatewayInfo.setType(gwType);
-            gatewayInfo.setFirmware(biParser.getFirmware());
+            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_DEFAULT, gwType, biParser.getFirmware(),
+                    biParser.getGatewayAddress());
         }
 
         if (gatewayInfo.isCCU() || config.hasRfPort()) {

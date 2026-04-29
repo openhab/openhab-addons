@@ -46,8 +46,8 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], @Nul
     @Override
     @SuppressWarnings("unchecked")
     public @Nullable Void parse(Object @Nullable [] message) throws IOException {
-        if (!(message == null || message.length == 0 || !(message[0] instanceof Map))) {
-            logger.debug("Unexpected datatype '{}',  ignoring message", message[0].getClass());
+        if (message == null || message.length == 0 || !(message[0] instanceof Map)) {
+            logger.debug("Unexpected message datatype, ignoring message");
             return null;
         }
         Map<String, Map<String, Object>> dpNames = (Map<String, Map<String, Object>>) message[0];

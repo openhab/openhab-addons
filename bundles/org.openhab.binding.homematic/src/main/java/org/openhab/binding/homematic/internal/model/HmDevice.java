@@ -133,15 +133,34 @@ public class HmDevice {
     }
 
     /**
-     * Returns the channel with the given channelNumber.
+     * Returns the channel with the given channel number.
+     *
+     * @param channelNumber the channel number to look up
+     * @return the matching channel, or {@code null} if no channel exists for the given number
      */
-    public @Nullable HmChannel getChannel(int channelNumber) {
+    public @Nullable HmChannel getChannelUnchecked(int channelNumber) {
         for (HmChannel hmChannel : channels) {
             if (hmChannel.getNumber() == channelNumber) {
                 return hmChannel;
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the channel with the given channel number.
+     *
+     * @param channelNumber the channel number to look up
+     * @return the matching channel
+     * @throws IllegalStateException if no channel exists for the given number
+     */
+    public HmChannel getChannel(int channelNumber) {
+        for (HmChannel hmChannel : channels) {
+            if (hmChannel.getNumber() == channelNumber) {
+                return hmChannel;
+            }
+        }
+        throw new IllegalStateException("Channel " + channelNumber + " not found in device " + address);
     }
 
     /**
@@ -198,7 +217,7 @@ public class HmDevice {
     }
 
     private boolean isStatusDatapointEnabled(String datapointName) {
-        HmChannel channel = getChannel(0);
+        HmChannel channel = getChannelUnchecked(0);
         if (channel != null && channel.isInitialized()) {
             HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, datapointName);
             HmDatapoint dp = channel.getDatapoint(dpInfo);

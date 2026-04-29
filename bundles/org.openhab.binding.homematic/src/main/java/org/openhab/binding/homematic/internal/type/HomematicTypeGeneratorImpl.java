@@ -224,8 +224,12 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         } else {
             String itemType = MetadataUtils.getItemType(dp);
             StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create()
-                    .withPattern(Objects.requireNonNull(MetadataUtils.getStatePattern(dp)))
                     .withReadOnly(dp.isReadOnly());
+            String pattern = MetadataUtils.getStatePattern(dp);
+
+            if (pattern != null) {
+                stateFragment.withPattern(pattern);
+            }
 
             if (dp.isNumberType()) {
                 final BigDecimal min, max;
@@ -252,7 +256,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             }
 
             String label = MetadataUtils.getLabel(dp);
-            final ChannelTypeBuilder channelTypeBuilder;
+            final ChannelTypeBuilder<?> channelTypeBuilder;
             if (dp.isTrigger()) {
                 EventDescription eventDescription = new EventDescription(
                         MetadataUtils.generateOptions(dp, (value, description) -> new EventOption(value, description)));
@@ -262,10 +266,17 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                         .withStateDescriptionFragment(stateFragment.build());
             }
-            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp))
-                    .withDescription(MetadataUtils.getDatapointDescription(dp))
-                    .withCategory(MetadataUtils.getCategory(dp, itemType))
-                    .withConfigDescriptionURI(Objects.requireNonNull(configDescriptionUriChannel)).build();
+            channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp))
+                    .withConfigDescriptionURI(Objects.requireNonNull(configDescriptionUriChannel));
+            String category = MetadataUtils.getCategory(dp, itemType);
+            if (category != null) {
+                channelTypeBuilder.withCategory(category);
+            }
+            String description = MetadataUtils.getDatapointDescription(dp);
+            if (description != null) {
+                channelTypeBuilder.withDescription(description);
+            }
+            channelType = channelTypeBuilder.build();
         }
         return channelType;
     }

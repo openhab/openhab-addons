@@ -13,7 +13,6 @@
 package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,8 +64,7 @@ public abstract class AbstractVirtualDatapointHandler implements VirtualDatapoin
      */
     protected HmDatapoint addDatapoint(HmDevice device, Integer channelNumber, String datapointName,
             HmValueType valueType, @Nullable Object value, boolean readOnly) {
-        HmChannel channel = Objects.requireNonNull(device.getChannel(channelNumber),
-                "Channel " + channelNumber + " not found in device " + device.getAddress());
+        HmChannel channel = device.getChannel(channelNumber);
         HmDatapoint dp = new HmDatapoint(datapointName, datapointName, valueType, value, readOnly,
                 HmParamsetType.VALUES);
         return addDatapoint(channel, dp);

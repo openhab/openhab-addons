@@ -31,9 +31,8 @@ public class DeleteDevicesParser extends CommonRpcParser<Object[], List<String>>
     @Override
     public List<String> parse(Object @Nullable [] message) throws IOException {
         List<String> adresses = new ArrayList<>();
-        if (message != null && message.length > 1) {
-            Object[] data = (Object[]) message[1];
-            for (int i = 0; i < message.length; i++) {
+        if (message != null && message.length > 1 && message[1] instanceof Object[] data) {
+            for (int i = 0; i < data.length; i++) {
                 String address = getSanitizedAddress(data[i]);
                 if (address != null && MiscUtils.isDevice(address)) {
                     adresses.add(address);

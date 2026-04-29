@@ -241,7 +241,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
         if (isDisplay(device)) {
             for (HmChannel channel : device.getChannels()) {
                 if (channel.hasDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channel, DATAPOINT_NAME_SUBMIT))) {
-                    int channelNumber = Objects.requireNonNull(channel.getNumber());
+                    int channelNumber = channel.getNumber();
                     for (int i = 1; i <= getLineCount(device); i++) {
                         addDatapoint(device, channelNumber, DATAPOINT_NAME_DISPLAY_LINE + i, HmValueType.STRING, null,
                                 false);
