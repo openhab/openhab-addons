@@ -57,6 +57,54 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Battery Thing Type (maps to Storage Controller fields) -->
+	<thing-type id="battery">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Fronius Battery</label>
+		<description>Fronius Battery Device</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+
+		<channels>
+			<channel id="maximumCapacity" typeId="batteryMaximumCapacity">
+				<label>Maximum Capacity</label>
+			</channel>
+			<channel id="designedCapacity" typeId="batteryDesignedCapacity">
+				<label>Designed Capacity</label>
+			</channel>
+			<channel id="currentDc" typeId="idc">
+				<label>DC Current</label>
+			</channel>
+			<channel id="voltageDc" typeId="udc">
+				<label>DC Voltage</label>
+			</channel>
+			<channel id="soc" typeId="batterySoc">
+				<label>State of Charge</label>
+			</channel>
+			<channel id="status" typeId="batteryStatus">
+				<label>Battery Cell Status</label>
+			</channel>
+			<channel id="enable" typeId="batteryEnable">
+				<label>Enable</label>
+			</channel>
+			<channel id="temperature" typeId="batteryTemperature">
+				<label>Cell Temperature</label>
+			</channel>
+			<channel id="timestamp" typeId="batteryTimestamp">
+				<label>Timestamp</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Meter Thing Type -->
 	<thing-type id="meter">
 		<supported-bridge-type-refs>
@@ -415,6 +463,55 @@
 		<label>Inverter 1 State of Charge (DEPRECATED)</label>
 		<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+
+	<!-- Battery specific channel-types (map to Storage Controller fields) -->
+	<channel-type id="batteryMaximumCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Current Maximum Battery Capacity</label>
+		<description>Current maximum battery capacity in Wh</description>
+		<state pattern="%.0f Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryDesignedCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Designed Battery Capacity</label>
+		<description>Designed battery capacity in Wh</description>
+		<state pattern="%.0f Wh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batterySoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State of Charge</label>
+		<description>Current state of charge of the battery in percent</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Cell Temperature</label>
+		<description>Temperature of the battery cell</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Battery Timestamp</label>
+		<description>Timestamp of the last measurement</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryStatus">
+		<item-type>Number</item-type>
+		<label>Battery Status</label>
+		<description>Status code coming from Status_BatteryCell</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryEnable">
+		<item-type>Number</item-type>
+		<label>Battery Enabled</label>
+		<description>Enable flag for the battery controller</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 
