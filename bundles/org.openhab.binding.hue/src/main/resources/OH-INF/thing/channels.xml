@@ -404,11 +404,11 @@
 	<channel-group-type id="software">
 		<label>Software</label>
 		<channels>
-			<channel typeId="updateReady" id="updateReady"/>
+			<channel typeId="update-ready" id="update-ready"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="updateReady">
+	<channel-type id="update-ready">
 		<kind>trigger</kind>
 		<label>Update Ready</label>
 		<description>A software update is ready to install.</description>

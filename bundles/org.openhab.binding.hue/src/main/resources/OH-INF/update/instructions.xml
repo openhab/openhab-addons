@@ -95,8 +95,8 @@
 
 	<thing-type uid="hue:bridge-api2">
 		<instruction-set targetVersion="1">
-			<add-channel id="updateReady">
-				<type>hue:updateReady</type>
+			<add-channel id="update-ready">
+				<type>hue:update-ready</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
