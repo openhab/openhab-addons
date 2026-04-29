@@ -330,7 +330,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
 
         if (DATAPOINT_NAME_DISPLAY_SUBMIT.equals(dp.getName()) && MiscUtils.isTrueValue(dp.getValue())) {
             HmChannel channel = dp.getChannel();
-            HmDevice device = Objects.requireNonNull(channel.getDevice());
+            HmDevice device = channel.getDevice();
             boolean isEp = isEpDisplay(device);
 
             List<String> message = new ArrayList<>();

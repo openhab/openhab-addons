@@ -18,7 +18,6 @@ import static org.openhab.core.thing.Thing.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -298,8 +297,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void onStateUpdated(HmDatapoint dp) {
-        Thing hmThing = getThing()
-                .getThing(UidUtils.generateThingUID(Objects.requireNonNull(dp.getChannel().getDevice()), getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
         if (hmThing != null) {
             final ThingStatus status = hmThing.getStatus();
             if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
@@ -313,8 +311,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
-        Thing hmThing = getThing()
-                .getThing(UidUtils.generateThingUID(Objects.requireNonNull(dp.getChannel().getDevice()), getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
         if (hmThing != null) {
             HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             if (thingHandler != null) {

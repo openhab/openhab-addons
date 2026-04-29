@@ -44,17 +44,11 @@ public class DimmerHelper {
     }
 
     public static HmChannel createDimmerHmChannel() {
-        HmChannel hmChannel = new HmChannel("HM-LC-Dim1-Pl3", 1);
-        hmChannel.setDevice(createDimmerHmDevice());
-
-        return hmChannel;
+        return new HmChannel("HM-LC-Dim1-Pl3", 1, createDimmerHmDevice());
     }
 
     public static HmChannel createDimmerDummyChannel() {
-        HmChannel hmChannel = new HmChannel("HM-LC-Dim1-Pl3", -1);
-        hmChannel.setDevice(createDimmerHmDevice());
-
-        return hmChannel;
+        return new HmChannel("HM-LC-Dim1-Pl3", -1, createDimmerHmDevice());
     }
 
     public static HmDatapoint createDimmerHmDatapoint() {

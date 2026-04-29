@@ -137,8 +137,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Adjust uninitialized rssi values to zero.
      */
     protected void adjustRssiValue(HmDatapoint dp) {
-        if (dp.getValue() != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
-            int rssiValue = ((Number) dp.getValue()).intValue();
+        Object dpValue = dp.getValue();
+        if (dpValue != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
+            int rssiValue = ((Number) dpValue).intValue();
             dp.setValue(getAdjustedRssiValue(rssiValue));
         }
     }

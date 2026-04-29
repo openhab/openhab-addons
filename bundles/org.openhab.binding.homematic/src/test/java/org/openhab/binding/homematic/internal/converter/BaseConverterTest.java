@@ -38,8 +38,8 @@ public class BaseConverterTest {
 
     @BeforeEach
     public void setup() {
-        HmChannel stubChannel = new HmChannel("stubChannel", 0);
-        stubChannel.setDevice(new HmDevice("LEQ123456", HmInterface.RF, "HM-STUB-DEVICE", "", "", ""));
+        HmChannel stubChannel = new HmChannel("stubChannel", 0,
+                new HmDevice("LEQ123456", HmInterface.RF, "HM-STUB-DEVICE", "", "", ""));
         floatDp.setChannel(stubChannel);
         integerDp.setChannel(stubChannel);
     }

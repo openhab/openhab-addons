@@ -403,7 +403,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     protected void updateDatapointState(HmDatapoint dp) {
         try {
-            updateStatus(Objects.requireNonNull(dp.getChannel().getDevice()));
+            updateStatus(dp.getChannel().getDevice());
 
             if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
@@ -422,7 +422,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             }
         } catch (GatewayNotAvailableException ex) {
             // ignore
-        } catch (Exception ex) {
+        } catch (IOException | ConverterException ex) {
             logger.error("{}", ex.getMessage(), ex);
         }
     }
@@ -487,8 +487,6 @@ public class HomematicThingHandler extends BaseThingHandler {
             State state = converter.convertFromBinding(dp);
             if (state != null) {
                 updateState(channel.getUID(), state);
-            } else {
-                logger.debug("Failed to get converted state from datapoint '{}'", dp.getName());
             }
         }
     }
@@ -558,7 +556,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     /**
      * Returns true, if the channel is linked at least to one item.
      */
-    private boolean isLinked(Channel channel) {
+    private boolean isLinked(@Nullable Channel channel) {
         return channel != null && super.isLinked(channel.getUID().getId());
     }
 
