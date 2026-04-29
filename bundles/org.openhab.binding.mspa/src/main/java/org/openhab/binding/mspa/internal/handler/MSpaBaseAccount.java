@@ -110,20 +110,22 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      * Get all devices connected to the account. Status of bridge changes according to this query. It's used for
      * discovery but also to check if connected devices to this bridge are ONLINE.
      *
-     * @return JSONArray with device information, empty array in case of error or no devices
+     * @return an {@link Optional} containing the device list when the request succeeds; the contained {@link JSONArray}
+     *         may be empty if the account has no devices. Returns {@link Optional#empty()} if the device list could not
+     *         be retrieved due to an error.
      */
     public Optional<JSONArray> getDeviceList() {
         return getDeviceList(true);
     }
 
-    public Optional<JSONArray> getDeviceList(boolean retry) {
+    private Optional<JSONArray> getDeviceList(boolean retry) {
         Optional<JSONObject> responseJsonOpt = requestDeviceList();
         if (responseJsonOpt.isPresent()) {
             JSONObject responseJson = responseJsonOpt.get();
             int responseCode = responseJson.optInt("code", 0);
             if (responseCode == 0) {
                 updateStatus(ThingStatus.ONLINE);
-                return extractList(responseJson);
+                return MSpaUtils.extractList(responseJson);
             } else {
                 String responseMessage = responseJson.optString("message", responseJson.toString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -171,23 +173,6 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
             handlePossibleInterrupt(e);
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Helper method to extract device list from device list response.
-     *
-     * @param responseJson JSON response from device list request
-     * @return JSON array with device information, empty array in case of error or no devices
-     */
-    public Optional<JSONArray> extractList(JSONObject responseJson) {
-        JSONObject dataJson = responseJson.optJSONObject("data");
-        if (dataJson != null) {
-            JSONArray list = dataJson.optJSONArray("list");
-            if (list != null) {
-                return Optional.of(list);
-            }
         }
         return Optional.empty();
     }

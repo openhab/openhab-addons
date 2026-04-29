@@ -104,7 +104,7 @@ class TestMessages {
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            Optional<JSONArray> deviceList = account.extractList(new JSONObject(content));
+            Optional<JSONArray> deviceList = MSpaUtils.extractList(new JSONObject(content));
             assertTrue(deviceList.isPresent(), "Device list present");
             account.discovery(deviceList.get());
             List<DiscoveryResult> results = discoveryListener.getResults();
