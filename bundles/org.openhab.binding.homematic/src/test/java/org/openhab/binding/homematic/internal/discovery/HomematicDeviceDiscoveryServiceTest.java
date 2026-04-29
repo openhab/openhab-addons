@@ -21,6 +21,7 @@ import static org.openhab.binding.homematic.test.util.DimmerHelper.createDimmerH
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
@@ -42,10 +43,11 @@ import org.openhab.core.util.SameThreadExecutorService;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
 
-    private HomematicDeviceDiscoveryService homematicDeviceDiscoveryService;
-    private HomematicBridgeHandler homematicBridgeHandler;
+    private @NonNullByDefault({}) HomematicDeviceDiscoveryService homematicDeviceDiscoveryService;
+    private @NonNullByDefault({}) HomematicBridgeHandler homematicBridgeHandler;
 
     @BeforeEach
     public void setup() throws IOException {

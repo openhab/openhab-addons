@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -57,6 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class RpcClient<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 3;
@@ -66,7 +69,7 @@ public abstract class RpcClient<T> {
 
     protected HomematicConfig config;
     private String thisUID = UUID.randomUUID().toString();
-    private ScheduledFuture<?> future = null;
+    private @Nullable ScheduledFuture<?> future = null;
     private int attempt;
 
     public RpcClient(HomematicConfig config) {
@@ -96,7 +99,8 @@ public abstract class RpcClient<T> {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(thisUID);
-        if (config.getGatewayInfo().isHomegear()) {
+        HmGatewayInfo gatewayInfo = config.getGatewayInfo();
+        if (gatewayInfo != null && gatewayInfo.isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }
         logger.debug("Register callback for interface {}", hmInterface.getName());
@@ -356,7 +360,7 @@ public abstract class RpcClient<T> {
      *            {@link HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for wakeup mode, or null for the default
      *            mode)
      */
-    public void setDatapointValue(HmDatapoint dp, Object value, String rxMode) throws IOException {
+    public void setDatapointValue(HmDatapoint dp, Object value, @Nullable String rxMode) throws IOException {
         if (dp.isIntegerType() && value instanceof Double) {
             value = ((Number) value).intValue();
         }
@@ -380,7 +384,7 @@ public abstract class RpcClient<T> {
         sendMessage(config.getRpcPort(dp.getChannel()), request);
     }
 
-    protected void configureRxMode(RpcRequest<T> request, String rxMode) {
+    protected void configureRxMode(RpcRequest<T> request, @Nullable String rxMode) {
         if (rxMode != null) {
             if (RX_BURST_MODE.equals(rxMode) || RX_WAKEUP_MODE.equals(rxMode)) {
                 request.addArg(rxMode);

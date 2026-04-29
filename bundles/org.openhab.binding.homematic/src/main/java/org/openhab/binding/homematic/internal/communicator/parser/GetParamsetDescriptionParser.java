@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -28,7 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], @Nullable Void> {
     private final Logger logger = LoggerFactory.getLogger(GetParamsetDescriptionParser.class);
     private HmParamsetType paramsetType;
     private HmChannel channel;
@@ -42,8 +45,8 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void parse(Object[] message) throws IOException {
-        if (!(message[0] instanceof Map)) {
+    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
+        if (!(message == null || message.length == 0 || !(message[0] instanceof Map))) {
             logger.debug("Unexpected datatype '{}',  ignoring message", message[0].getClass());
             return null;
         }
@@ -62,7 +65,7 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], Void
         return null;
     }
 
-    private Map<String, Number> toSpecialValues(Object specialValues) {
+    private @Nullable Map<String, Number> toSpecialValues(@Nullable Object specialValues) {
         if (specialValues != null && specialValues instanceof Object[] array) {
             Map<String, Number> result = new HashMap<>();
             for (int i = 0; i < array.length; i++) {

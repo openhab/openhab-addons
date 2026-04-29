@@ -14,9 +14,12 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
@@ -37,11 +40,12 @@ import org.openhab.core.thing.CommonTriggerEvents;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ButtonDatapointTest extends JavaTest {
 
     private static final int DISABLE_DATAPOINT_DELAY = 50;
 
-    private MockEventReceiver mockEventReceiver;
+    private @NonNullByDefault({}) MockEventReceiver mockEventReceiver;
     private final ButtonVirtualDatapointHandler bvdpHandler = new ButtonVirtualDatapointHandler();
 
     @BeforeEach
@@ -157,7 +161,7 @@ public class ButtonDatapointTest extends JavaTest {
         return pressDp;
     }
 
-    private HmDatapoint getButtonVirtualDatapoint(HmDatapoint originalDatapoint) {
+    private @Nullable HmDatapoint getButtonVirtualDatapoint(HmDatapoint originalDatapoint) {
         return originalDatapoint.getChannel().getDatapoints().stream()
                 .filter(dp -> HomematicConstants.VIRTUAL_DATAPOINT_NAME_BUTTON.equals(dp.getName())).findFirst()
                 .orElse(null);
@@ -170,7 +174,8 @@ public class ButtonDatapointTest extends JavaTest {
 
         public void eventReceived(HmDatapoint dp) throws IOException, HomematicClientException {
             if (bvdpHandler.canHandleEvent(dp)) {
-                bvdpHandler.handleEvent(null, dp);
+                VirtualGateway gateway = mock(VirtualGateway.class);
+                bvdpHandler.handleEvent(gateway, dp);
             }
             if (dp.isPressDatapoint() && MiscUtils.isTrueValue(dp.getValue())) {
                 disableDatapoint(dp);

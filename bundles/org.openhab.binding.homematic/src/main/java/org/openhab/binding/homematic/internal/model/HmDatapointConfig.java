@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration object for sending a datapoint.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointConfig {
-    private Double delay;
-    private Double receiveDelay;
+    private @Nullable Double delay;
+    private @Nullable Double receiveDelay;
 
     /**
      * Returns the delay in seconds for sending the datapoint.

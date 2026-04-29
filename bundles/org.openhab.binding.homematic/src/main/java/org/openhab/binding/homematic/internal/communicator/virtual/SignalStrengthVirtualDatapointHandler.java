@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -26,6 +27,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointHandler {
     private static final int RSSI_START = 40;
     private static final int RSSI_STEP = 25;

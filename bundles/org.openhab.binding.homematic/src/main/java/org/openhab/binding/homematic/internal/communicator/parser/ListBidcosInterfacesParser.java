@@ -14,33 +14,36 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Parses a listBidcosInterfaces message and extracts the type and gateway address.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBidcosInterfacesParser> {
-    private String type;
-    private String gatewayAddress;
-    private String firmware;
-    private Integer dutyCycleRatio;
+@NonNullByDefault
+public class ListBidcosInterfacesParser extends CommonRpcParser<Object @Nullable [], ListBidcosInterfacesParser> {
+    private @Nullable String type;
+    private @NonNullByDefault({}) String gatewayAddress;
+    private @Nullable String firmware;
+    private @Nullable Integer dutyCycleRatio;
 
     @SuppressWarnings("unchecked")
     @Override
-    public ListBidcosInterfacesParser parse(Object[] message) throws IOException {
-        if (message != null && message.length > 0) {
-            message = (Object[]) message[0];
-            for (int i = 0; i < message.length; i++) {
-                Map<String, ?> mapMessage = (Map<String, ?>) message[i];
-                boolean isDefault = toBoolean(mapMessage.get("DEFAULT"));
+    public ListBidcosInterfacesParser parse(Object @Nullable [] message) throws IOException {
+        message = unWrapArray(message);
+        for (int i = 0; i < message.length; i++) {
+            Map<String, ?> mapMessage = (Map<String, ?>) message[i];
+            boolean isDefault = toBoolean(mapMessage.get("DEFAULT"));
 
-                if (isDefault) {
-                    type = toString(mapMessage.get("TYPE"));
-                    firmware = toString(mapMessage.get("FIRMWARE_VERSION"));
-                    gatewayAddress = getSanitizedAddress(mapMessage.get("ADDRESS"));
-                    dutyCycleRatio = toInteger(mapMessage.get("DUTY_CYCLE"));
-                }
+            if (isDefault) {
+                type = toString(mapMessage.get("TYPE"));
+                firmware = toString(mapMessage.get("FIRMWARE_VERSION"));
+                gatewayAddress = getSanitizedAddress(mapMessage.get("ADDRESS"));
+                dutyCycleRatio = toInteger(mapMessage.get("DUTY_CYCLE"));
             }
         }
         return this;
@@ -50,13 +53,13 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the parsed type.
      */
     public String getType() {
-        return type == null ? "" : type;
+        return Objects.requireNonNullElse(type, "");
     }
 
     /**
      * Returns the parsed gateway address.
      */
-    public String getGatewayAddress() {
+    public @Nullable String getGatewayAddress() {
         return gatewayAddress;
     }
 
@@ -64,13 +67,13 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the firmware version.
      */
     public String getFirmware() {
-        return firmware == null ? "" : firmware;
+        return Objects.requireNonNullElse(firmware, "");
     }
 
     /**
      * Returns the duty cycle.
      */
-    public Integer getDutyCycleRatio() {
+    public @Nullable Integer getDutyCycleRatio() {
         return dutyCycleRatio;
     }
 }

@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -30,6 +32,7 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDevice>> {
     private HmInterface hmInterface;
     private HomematicConfig config;
@@ -40,21 +43,24 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     public Collection<HmDevice> parse(Object[] message) throws IOException {
-        message = (Object[]) message[0];
+        message = unWrapArray(message);
         Map<String, HmDevice> devices = new HashMap<>();
 
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> data = (Map<String, ?>) message[i];
             if (MiscUtils.isDevice(toString(data.get("ADDRESS")), true)) {
-                String address = getSanitizedAddress(data.get("ADDRESS"));
+                String address = Objects.requireNonNull(getSanitizedAddress(data.get("ADDRESS")),
+                        "Unable to get a sanitized address from the device message");
                 String type = MiscUtils.validateCharacters(toString(data.get("TYPE")), "Device type", "-");
-                String id = toString(data.get("ID"));
-                String firmware = toString(data.get("FIRMWARE"));
+                String id = Objects.requireNonNull(toString(data.get("ID")),
+                        "Unable to get ID from the device message");
+                String firmware = Objects.requireNonNull(toString(data.get("FIRMWARE")),
+                        "Unable to get firmware from the device message");
 
-                HmDevice device = new HmDevice(address, hmInterface, type, config.getGatewayInfo().getId(), id,
-                        firmware);
+                HmDevice device = new HmDevice(address, hmInterface, type,
+                        Objects.requireNonNull(config.getGatewayInfo()).getId(), id, firmware);
                 device.addChannel(new HmChannel(type, CONFIGURATION_CHANNEL_NUMBER));
                 devices.put(address, device);
             } else {

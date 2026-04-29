@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The CcuMetadataExtractor loads some JavaScript files from the CCU and generates the device and datapoint
  * descriptions into the file generated-descriptions.properties.
@@ -33,6 +36,7 @@ import java.util.TreeMap;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuMetadataExtractor {
     private static final String CCU_URL = "http://ccu";
 
@@ -174,7 +178,7 @@ public class CcuMetadataExtractor {
     /**
      * Splits a JSON JavaScript entry.
      */
-    private String[] handleStringTable(String line) {
+    private String @Nullable [] handleStringTable(String line) {
         line = line.replace("    \"", "");
         line = line.replace("\",", "");
         line = line.replace("\"", "");
@@ -213,7 +217,7 @@ public class CcuMetadataExtractor {
             this(url, null, null);
         }
 
-        public UrlLoader(String url, String startLine, String endLine) throws IOException {
+        public UrlLoader(String url, @Nullable String startLine, @Nullable String endLine) throws IOException {
             System.out.println("Loading file " + url);
             Boolean includeLine = null;
             BufferedReader br = new BufferedReader(

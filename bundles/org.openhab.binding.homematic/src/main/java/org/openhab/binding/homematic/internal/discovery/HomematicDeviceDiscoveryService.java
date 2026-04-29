@@ -19,7 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
@@ -43,12 +44,12 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = HomematicDeviceDiscoveryService.class)
-public class HomematicDeviceDiscoveryService
-        extends AbstractThingHandlerDiscoveryService<@NonNull HomematicBridgeHandler> {
+@NonNullByDefault
+public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<HomematicBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
     private static final int MINIMAL_SCAN_TIMEOUT_SECONDS = 120;
-    private volatile Future<?> loadDevicesFuture;
+    private volatile @Nullable Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
 

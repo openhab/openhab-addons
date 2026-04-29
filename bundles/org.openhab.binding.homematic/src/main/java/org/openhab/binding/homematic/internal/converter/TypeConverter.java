@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -21,6 +22,7 @@ import org.openhab.core.types.Type;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface TypeConverter<T extends State> {
 
     /**

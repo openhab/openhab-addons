@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,9 +28,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Florian Stolte - Initial Contribution
  */
+@NonNullByDefault
 public class SimplePortPoolTest {
 
-    private SimplePortPool simplePortPool;
+    private @NonNullByDefault({}) SimplePortPool simplePortPool;
 
     @BeforeEach
     public void setup() {

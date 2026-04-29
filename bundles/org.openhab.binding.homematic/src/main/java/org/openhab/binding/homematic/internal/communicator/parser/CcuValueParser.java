@@ -14,11 +14,13 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
-import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +29,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuValueParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuValueParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private final Logger logger = LoggerFactory.getLogger(CcuValueParser.class);
 
     private HmChannel channel;
@@ -37,7 +40,7 @@ public class CcuValueParser extends CommonRpcParser<TclScriptDataList, Void> {
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             for (TclScriptDataEntry entry : resultList.getEntries()) {
                 HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, entry.name);

@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.DeleteDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.EventParser;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public abstract class RpcResponseHandler<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcResponseHandler.class);
 
@@ -46,7 +49,7 @@ public abstract class RpcResponseHandler<T> {
     /**
      * Returns a valid result of the method called by the Homematic gateway.
      */
-    public T handleMethodCall(String methodName, Object[] responseData) throws IOException {
+    public T handleMethodCall(@Nullable String methodName, Object @Nullable [] responseData) throws IOException {
         if (RPC_METHODNAME_EVENT.equals(methodName)) {
             return handleEvent(responseData);
         } else if (RPC_METHODNAME_LIST_DEVICES.equals(methodName) || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
@@ -92,7 +95,7 @@ public abstract class RpcResponseHandler<T> {
     /**
      * Populates the extracted event to the listener.
      */
-    private T handleEvent(Object[] message) throws IOException {
+    private T handleEvent(Object @Nullable [] message) throws IOException {
         EventParser eventParser = new EventParser();
         HmDatapointInfo dpInfo = eventParser.parse(message);
         listener.eventReceived(dpInfo, eventParser.getValue());
@@ -102,7 +105,7 @@ public abstract class RpcResponseHandler<T> {
     /**
      * Calls the listener when a devices has been detected.
      */
-    private T handleNewDevice(Object[] message) throws IOException {
+    private T handleNewDevice(Object @Nullable [] message) throws IOException {
         NewDevicesParser ndParser = new NewDevicesParser();
         List<String> adresses = ndParser.parse(message);
         listener.newDevices(adresses);
@@ -112,7 +115,7 @@ public abstract class RpcResponseHandler<T> {
     /**
      * Calls the listener when devices has been deleted.
      */
-    private T handleDeleteDevice(Object[] message) throws IOException {
+    private T handleDeleteDevice(Object @Nullable [] message) throws IOException {
         DeleteDevicesParser ddParser = new DeleteDevicesParser();
         List<String> adresses = ddParser.parse(message);
         listener.deleteDevices(adresses);

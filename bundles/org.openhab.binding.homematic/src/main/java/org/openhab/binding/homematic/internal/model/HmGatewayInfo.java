@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Info object which holds gateway specific informations.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmGatewayInfo {
     public static final String ID_HOMEGEAR = "HOMEGEAR";
     public static final String ID_CCU = "CCU";
     public static final String ID_DEFAULT = "DEFAULT";
 
-    private String id;
-    private String type;
-    private String firmware;
-    private String address;
+    private @NonNullByDefault({}) String id;
+    private @NonNullByDefault({}) String type;
+    private @NonNullByDefault({}) String firmware;
+    private @NonNullByDefault({}) String address;
     private boolean rfInterface;
     private boolean wiredInterface;
     private boolean cuxdInterface;
@@ -56,7 +60,7 @@ public class HmGatewayInfo {
     /**
      * Sets the type of the server.
      */
-    public void setType(String type) {
+    public void setType(@Nullable String type) {
         this.type = type;
     }
 
@@ -84,7 +88,7 @@ public class HmGatewayInfo {
     /**
      * Sets the address of the Homematic gateway.
      */
-    public void setAddress(String address) {
+    public void setAddress(@Nullable String address) {
         this.address = address;
     }
 

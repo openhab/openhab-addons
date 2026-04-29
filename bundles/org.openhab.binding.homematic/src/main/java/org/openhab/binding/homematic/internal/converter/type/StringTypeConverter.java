@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -23,6 +24,7 @@ import org.openhab.core.types.Type;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class StringTypeConverter extends AbstractTypeConverter<StringType> {
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {

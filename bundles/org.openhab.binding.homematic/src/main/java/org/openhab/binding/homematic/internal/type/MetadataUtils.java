@@ -27,9 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -46,9 +49,10 @@ import org.slf4j.LoggerFactory;
  * @author Michael Reitler - QuantityType support
  */
 
+@NonNullByDefault
 public class MetadataUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
-    private static ResourceBundle descriptionsBundle;
+    private static @Nullable ResourceBundle descriptionsBundle;
     private static Map<String, String> descriptions = new HashMap<>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
 
@@ -89,12 +93,12 @@ public class MetadataUtils {
                     }
 
                     Set<String> channelDatapoints = standardDatapoints.get(channelType);
-                    if (channelDatapoints == null) {
+                    if (channelType != null && channelDatapoints == null) {
                         channelDatapoints = new HashSet<>();
                         standardDatapoints.put(channelType, channelDatapoints);
                     }
 
-                    channelDatapoints.add(datapointName);
+                    channelDatapoints.add(Objects.requireNonNull(datapointName));
                 }
             }
         } catch (IllegalStateException | IOException e) {
@@ -109,7 +113,7 @@ public class MetadataUtils {
     /**
      * Creates channel and config description metadata options for the given Datapoint.
      */
-    public static <T> List<T> generateOptions(HmDatapoint dp, OptionsBuilder<T> optionsBuilder) {
+    public static <T> @Nullable List<T> generateOptions(HmDatapoint dp, OptionsBuilder<T> optionsBuilder) {
         List<T> options = null;
         if (dp.getOptions() == null) {
             LOGGER.warn("No options for ENUM datapoint {}", dp);
@@ -147,7 +151,7 @@ public class MetadataUtils {
     /**
      * Returns the unit metadata string for the given Datapoint.
      */
-    public static String getUnit(HmDatapoint dp) {
+    public static @Nullable String getUnit(HmDatapoint dp) {
         if (dp.getUnit() != null) {
             return dp.getUnit().replace("100%", "%").replace("%", "%%");
         }
@@ -157,7 +161,7 @@ public class MetadataUtils {
     /**
      * Returns the pattern metadata string for the given Datapoint.
      */
-    public static String getPattern(HmDatapoint dp) {
+    public static @Nullable String getPattern(HmDatapoint dp) {
         if (dp.isFloatType()) {
             return "%.2f";
         } else if (dp.isNumberType()) {
@@ -170,7 +174,7 @@ public class MetadataUtils {
     /**
      * Returns the state pattern metadata string with unit for the given Datapoint.
      */
-    public static String getStatePattern(HmDatapoint dp) {
+    public static @Nullable String getStatePattern(HmDatapoint dp) {
         String unit = getUnit(dp);
         if ("%%".equals(unit)) {
             return "%d %%";
@@ -188,7 +192,7 @@ public class MetadataUtils {
      * Returns the label string for the given Datapoint.
      */
     public static String getLabel(HmDatapoint dp) {
-        return MiscUtils.capitalize(dp.getName().replace("_", " "));
+        return Objects.requireNonNull(MiscUtils.capitalize(dp.getName().replace("_", " ")));
     }
 
     /**
@@ -217,7 +221,7 @@ public class MetadataUtils {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Description not found for: {}", sb.toString().substring(0, sb.length() - 2));
         }
-        return null;
+        return "";
     }
 
     /**
@@ -225,7 +229,7 @@ public class MetadataUtils {
      */
     public static String getDeviceName(HmDevice device) {
         if (device.isGatewayExtras()) {
-            return getDescription(HmDevice.TYPE_GATEWAY_EXTRAS);
+            return Objects.requireNonNull(getDescription(HmDevice.TYPE_GATEWAY_EXTRAS));
         }
 
         String deviceDescription = null;
@@ -244,7 +248,7 @@ public class MetadataUtils {
      */
     public static String getDatapointDescription(HmDatapoint dp) {
         if (dp.isVariable() || dp.isScript()) {
-            return null;
+            return "";
         }
         return getDescription(dp.getChannel().getType(), dp.getName());
     }
@@ -264,7 +268,7 @@ public class MetadataUtils {
     /**
      * Helper method for creating a BigDecimal.
      */
-    public static BigDecimal createBigDecimal(Number number) {
+    public static @Nullable BigDecimal createBigDecimal(@Nullable Number number) {
         if (number == null) {
             return null;
         }
@@ -411,7 +415,7 @@ public class MetadataUtils {
         } else if (itemType.equals(ITEM_TYPE_SWITCH)) {
             return CATEGORY_SWITCH;
         } else {
-            return null;
+            return "";
         }
     }
 }

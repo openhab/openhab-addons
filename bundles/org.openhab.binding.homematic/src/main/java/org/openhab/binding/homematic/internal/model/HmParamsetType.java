@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Definition of the Homematic paramset types.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmParamsetType {
     VALUES,
     MASTER;

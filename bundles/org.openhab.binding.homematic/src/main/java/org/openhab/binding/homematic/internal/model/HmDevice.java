@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDevice {
     private final Logger logger = LoggerFactory.getLogger(HmDevice.class);
 
@@ -36,7 +39,7 @@ public class HmDevice {
     private final HmInterface hmInterface;
     private final String address;
     private final String type;
-    private String name;
+    private @Nullable String name;
     private final String firmware;
     private final String gatewayId;
     private final String homegearId;
@@ -75,14 +78,14 @@ public class HmDevice {
     /**
      * Returns the name of the device.
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
     /**
      * Sets the name of the device.
      */
-    public void setName(String name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
@@ -132,7 +135,7 @@ public class HmDevice {
     /**
      * Returns the channel with the given channelNumber.
      */
-    public HmChannel getChannel(int channelNumber) {
+    public @Nullable HmChannel getChannel(int channelNumber) {
         for (HmChannel hmChannel : channels) {
             if (hmChannel.getNumber() == channelNumber) {
                 return hmChannel;
@@ -212,7 +215,7 @@ public class HmDevice {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof HmDevice)) {
             return false;
         }

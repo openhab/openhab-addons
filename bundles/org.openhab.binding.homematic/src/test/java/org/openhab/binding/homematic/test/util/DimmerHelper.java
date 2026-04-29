@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.homematic.test.util;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -28,6 +30,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  * @author Florian Stolte - Initial Contribution
  * 
  */
+@NonNullByDefault
 public class DimmerHelper {
 
     public static HmDevice createDimmerHmDevice() {
@@ -35,7 +38,7 @@ public class DimmerHelper {
     }
 
     public static HmDevice createDimmerHmDevice(String gatewayType) {
-        HmDevice hmDevice = new HmDevice("ABC12345678", null, "HM-LC-Dim1-Pl3", gatewayType, "", "1");
+        HmDevice hmDevice = new HmDevice("ABC12345678", HmInterface.WIRED, "HM-LC-Dim1-Pl3", gatewayType, "", "1");
         hmDevice.setName("Homematic Dimmer");
         return hmDevice;
     }

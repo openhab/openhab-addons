@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.misc;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +22,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class MiscUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MiscUtils.class);
 
     /**
      * Replaces invalid characters of the text to fit into an openHAB UID.
      */
-    public static String validateCharacters(String text, String textType, String replaceChar) {
+    public static String validateCharacters(@Nullable String text, String textType, String replaceChar) {
         if (text == null) {
             return "EMPTY";
         }
@@ -40,21 +43,21 @@ public class MiscUtils {
     /**
      * Returns true, if the value is not null and true.
      */
-    public static boolean isTrueValue(Object value) {
+    public static boolean isTrueValue(@Nullable Object value) {
         return Boolean.TRUE.equals(value);
     }
 
     /**
      * Returns true, if the value is not null and false.
      */
-    public static boolean isFalseValue(Object value) {
+    public static boolean isFalseValue(@Nullable Object value) {
         return Boolean.FALSE.equals(value);
     }
 
     /**
      * Returns true, if str starts with search. Check is done case-insensitive.
      */
-    public static boolean strStartsWithIgnoreCase(String str, String search) {
+    public static boolean strStartsWithIgnoreCase(@Nullable String str, @Nullable String search) {
         if (str == null || search == null || search.length() > str.length()) {
             return false;
         }
@@ -64,7 +67,7 @@ public class MiscUtils {
     /**
      * Returns true if address is a device
      */
-    public static boolean isDevice(String address) {
+    public static boolean isDevice(@Nullable String address) {
         return isDevice(address, false);
     }
 
@@ -72,7 +75,7 @@ public class MiscUtils {
      * Returns true if address is a device. If allowBidCos ist true then addresses starting with "BidCos" classified as
      * devices, too.
      */
-    public static boolean isDevice(String address, boolean allowBidCos) {
+    public static boolean isDevice(@Nullable String address, boolean allowBidCos) {
         if (address == null) {
             return false;
         }
@@ -88,7 +91,7 @@ public class MiscUtils {
     /**
      * Changes all characters after whitespace to upper-case and all other character to lower case.
      */
-    public static String capitalize(String value) {
+    public static @Nullable String capitalize(@Nullable String value) {
         if (value == null) {
             return null;
         }

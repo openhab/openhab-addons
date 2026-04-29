@@ -16,6 +16,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(OnTimeAutomaticVirtualDatapointHandler.class);
 
@@ -61,7 +64,7 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
     }
 
     @Override
-    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
         boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null
                 && value instanceof Number numberCommand && numberCommand.doubleValue() > 0.0;
         boolean isState = DATAPOINT_NAME_STATE.equals(dp.getName()) && MiscUtils.isTrueValue(value);

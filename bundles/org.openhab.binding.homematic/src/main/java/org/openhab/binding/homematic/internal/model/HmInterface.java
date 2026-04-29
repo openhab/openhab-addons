@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Definition of the Homematic interfaces.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmInterface {
     RF,
     WIRED,
@@ -27,7 +31,7 @@ public enum HmInterface {
     /**
      * Returns the full name of the interface.
      */
-    public String getName() {
+    public @Nullable String getName() {
         switch (this) {
             case RF:
                 return "BidCos-RF";

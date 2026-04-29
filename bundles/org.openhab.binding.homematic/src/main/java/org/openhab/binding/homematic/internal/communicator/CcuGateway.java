@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -40,9 +41,9 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmResult;
-import org.openhab.binding.homematic.internal.model.TclScript;
-import org.openhab.binding.homematic.internal.model.TclScriptDataList;
-import org.openhab.binding.homematic.internal.model.TclScriptList;
+import org.openhab.binding.homematic.internal.model.dto.TclScript;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptList;
 import org.openhab.core.i18n.ConfigurationException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -57,13 +58,14 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuGateway extends AbstractHomematicGateway {
     private final Logger logger = LoggerFactory.getLogger(CcuGateway.class);
 
-    private Map<String, String> tclregaScripts;
+    private @Nullable Map<String, @Nullable String> tclregaScripts;
     private XStream xStream = new XStream(new StaxDriver());
 
-    private @NonNull AuthenticationHandler authenticationHandler;
+    private AuthenticationHandler authenticationHandler;
 
     protected CcuGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,
             HttpClient httpClient) throws IOException, ConfigurationException {
@@ -192,8 +194,8 @@ public class CcuGateway extends AbstractHomematicGateway {
     /**
      * Sends a TclRega script with the specified variables to the CCU.
      */
-    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames, String[] values)
-            throws IOException {
+    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames,
+            String @Nullable [] values) throws IOException {
         String script = tclregaScripts.get(scriptName);
         if (script != null) {
             for (int i = 0; i < variableNames.length; i++) {
@@ -207,7 +209,7 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Main method for sending a TclRega script and parsing the XML result.
      */
     @SuppressWarnings("unchecked")
-    private synchronized <T> T sendScript(String script, Class<T> clazz) throws IOException {
+    private synchronized <T> T sendScript(@Nullable String script, Class<T> clazz) throws IOException {
         try {
             script = script == null ? null : script.trim();
             if (script == null || script.isEmpty()) {
@@ -240,11 +242,11 @@ public class CcuGateway extends AbstractHomematicGateway {
     /**
      * Load predefined scripts from an XML file.
      */
-    private Map<String, String> loadTclRegaScripts() throws IOException {
+    private Map<String, @Nullable String> loadTclRegaScripts() throws IOException {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         try (InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream()) {
             TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
-            Map<String, String> result = new HashMap<>();
+            Map<String, @Nullable String> result = new HashMap<>();
             if (scriptList.getScripts() != null) {
                 for (TclScript script : scriptList.getScripts()) {
                     String value = script.data.trim();

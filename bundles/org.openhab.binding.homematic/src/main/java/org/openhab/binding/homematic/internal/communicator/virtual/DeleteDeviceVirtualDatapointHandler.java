@@ -17,6 +17,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.communicator.AbstractHomematicGateway;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(DeleteDeviceVirtualDatapointHandler.class);
 
@@ -50,7 +53,7 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
     }
 
     @Override
-    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
         return getName().equals(dp.getName());
     }
 
