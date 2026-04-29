@@ -30,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlayQueueUpdateReason.
  */
 public enum PlayQueueUpdateReason {
-  NEW_PLAYLIST("NewPlaylist"),
-  SET_CURRENT_ITEM("SetCurrentItem"),
-  REMOVE_ITEMS("RemoveItems"),
   MOVE_ITEM("MoveItem"),
-  QUEUE("Queue"),
-  QUEUE_NEXT("QueueNext"),
+  NEW_PLAYLIST("NewPlaylist"),
   NEXT_ITEM("NextItem"),
   PREVIOUS_ITEM("PreviousItem"),
+  QUEUE("Queue"),
+  QUEUE_NEXT("QueueNext"),
+  REMOVE_ITEMS("RemoveItems"),
   REPEAT_MODE("RepeatMode"),
+  SET_CURRENT_ITEM("SetCurrentItem"),
   SHUFFLE_MODE("ShuffleMode");
 
   private String value;

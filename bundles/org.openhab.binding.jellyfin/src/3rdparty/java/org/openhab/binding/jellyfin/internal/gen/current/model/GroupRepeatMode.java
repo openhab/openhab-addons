@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupRepeatMode.
  */
 public enum GroupRepeatMode {
-  REPEAT_ONE("RepeatOne"),
   REPEAT_ALL("RepeatAll"),
-  REPEAT_NONE("RepeatNone");
+  REPEAT_NONE("RepeatNone"),
+  REPEAT_ONE("RepeatOne");
 
   private String value;
 

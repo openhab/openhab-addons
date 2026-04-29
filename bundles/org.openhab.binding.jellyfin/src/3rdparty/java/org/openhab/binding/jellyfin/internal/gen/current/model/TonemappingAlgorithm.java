@@ -30,14 +30,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing tonemapping algorithms.
  */
 public enum TonemappingAlgorithm {
-  NONE("none"),
+  BT2390("bt2390"),
   CLIP("clip"),
-  LINEAR("linear"),
   GAMMA("gamma"),
-  REINHARD("reinhard"),
   HABLE("hable"),
+  LINEAR("linear"),
   MOBIUS("mobius"),
-  BT2390("bt2390");
+  NONE("none"),
+  REINHARD("reinhard");
 
   private String value;
 

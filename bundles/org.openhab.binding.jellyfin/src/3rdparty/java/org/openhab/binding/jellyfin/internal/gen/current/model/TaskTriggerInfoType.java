@@ -31,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TaskTriggerInfoType {
   DAILY_TRIGGER("DailyTrigger"),
-  WEEKLY_TRIGGER("WeeklyTrigger"),
   INTERVAL_TRIGGER("IntervalTrigger"),
-  STARTUP_TRIGGER("StartupTrigger");
+  STARTUP_TRIGGER("StartupTrigger"),
+  WEEKLY_TRIGGER("WeeklyTrigger");
 
   private String value;
 

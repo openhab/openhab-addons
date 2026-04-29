@@ -31,9 +31,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum EmbeddedSubtitleOptions {
   ALLOW_ALL("AllowAll"),
-  ALLOW_TEXT("AllowText"),
   ALLOW_IMAGE("AllowImage"),
-  ALLOW_NONE("AllowNone");
+  ALLOW_NONE("AllowNone"),
+  ALLOW_TEXT("AllowText");
 
   private String value;
 

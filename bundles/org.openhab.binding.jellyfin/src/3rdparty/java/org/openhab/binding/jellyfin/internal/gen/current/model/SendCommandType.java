@@ -30,10 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum SendCommandType.
  */
 public enum SendCommandType {
-  UNPAUSE("Unpause"),
   PAUSE("Pause"),
+  SEEK("Seek"),
   STOP("Stop"),
-  SEEK("Seek");
+  UNPAUSE("Unpause");
 
   private String value;
 

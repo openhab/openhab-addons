@@ -31,11 +31,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum MediaStreamType {
   AUDIO("Audio"),
-  VIDEO("Video"),
-  SUBTITLE("Subtitle"),
-  EMBEDDED_IMAGE("EmbeddedImage"),
   DATA("Data"),
-  LYRIC("Lyric");
+  EMBEDDED_IMAGE("EmbeddedImage"),
+  LYRIC("Lyric"),
+  SUBTITLE("Subtitle"),
+  VIDEO("Video");
 
   private String value;
 

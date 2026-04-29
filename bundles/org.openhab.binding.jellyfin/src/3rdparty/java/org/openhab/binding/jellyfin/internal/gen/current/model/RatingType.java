@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RatingType
  */
 public enum RatingType {
-  SCORE("Score"),
-  LIKES("Likes");
+  LIKES("Likes"),
+  SCORE("Score");
 
   private String value;
 

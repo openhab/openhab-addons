@@ -30,10 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum TaskCompletionStatus.
  */
 public enum TaskCompletionStatus {
-  COMPLETED("Completed"),
-  FAILED("Failed"),
+  ABORTED("Aborted"),
   CANCELLED("Cancelled"),
-  ABORTED("Aborted");
+  COMPLETED("Completed"),
+  FAILED("Failed");
 
   private String value;
 

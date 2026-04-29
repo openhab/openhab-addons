@@ -31,10 +31,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TonemappingMode {
   AUTO("auto"),
-  MAX("max"),
-  RGB("rgb"),
+  ITP("itp"),
   LUM("lum"),
-  ITP("itp");
+  MAX("max"),
+  RGB("rgb");
 
   private String value;
 

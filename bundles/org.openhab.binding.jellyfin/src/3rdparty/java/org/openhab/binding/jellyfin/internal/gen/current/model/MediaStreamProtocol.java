@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Media streaming protocol.  Lowercase for backwards compatibility.
  */
 public enum MediaStreamProtocol {
-  HTTP("http"),
-  HLS("hls");
+  HLS("hls"),
+  HTTP("http");
 
   private String value;
 

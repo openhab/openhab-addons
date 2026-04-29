@@ -30,12 +30,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProgramAudio
  */
 public enum ProgramAudio {
-  MONO("Mono"),
-  STEREO("Stereo"),
+  ATMOS("Atmos"),
   DOLBY("Dolby"),
   DOLBY_DIGITAL("DolbyDigital"),
-  THX("Thx"),
-  ATMOS("Atmos");
+  MONO("Mono"),
+  STEREO("Stereo"),
+  THX("Thx");
 
   private String value;
 

@@ -31,8 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ForgotPasswordAction {
   CONTACT_ADMIN("ContactAdmin"),
-  PIN_CODE("PinCode"),
-  IN_NETWORK_REQUIRED("InNetworkRequired");
+  IN_NETWORK_REQUIRED("InNetworkRequired"),
+  PIN_CODE("PinCode");
 
   private String value;
 

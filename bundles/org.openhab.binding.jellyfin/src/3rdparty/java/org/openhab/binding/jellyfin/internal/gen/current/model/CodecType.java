@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets CodecType
  */
 public enum CodecType {
+  AUDIO("Audio"),
   VIDEO("Video"),
-  VIDEO_AUDIO("VideoAudio"),
-  AUDIO("Audio");
+  VIDEO_AUDIO("VideoAudio");
 
   private String value;
 

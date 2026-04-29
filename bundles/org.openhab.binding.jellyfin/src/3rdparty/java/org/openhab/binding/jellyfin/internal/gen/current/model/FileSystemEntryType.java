@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum FileSystemEntryType.
  */
 public enum FileSystemEntryType {
-  FILE("File"),
   DIRECTORY("Directory"),
+  FILE("File"),
   NETWORK_COMPUTER("NetworkComputer"),
   NETWORK_SHARE("NetworkShare");
 

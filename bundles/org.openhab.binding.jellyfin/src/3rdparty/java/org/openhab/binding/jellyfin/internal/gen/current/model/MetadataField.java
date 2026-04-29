@@ -32,13 +32,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum MetadataField {
   CAST("Cast"),
   GENRES("Genres"),
-  PRODUCTION_LOCATIONS("ProductionLocations"),
-  STUDIOS("Studios"),
-  TAGS("Tags"),
   NAME("Name"),
+  OFFICIAL_RATING("OfficialRating"),
   OVERVIEW("Overview"),
+  PRODUCTION_LOCATIONS("ProductionLocations"),
   RUNTIME("Runtime"),
-  OFFICIAL_RATING("OfficialRating");
+  STUDIOS("Studios"),
+  TAGS("Tags");
 
   private String value;
 

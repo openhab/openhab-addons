@@ -30,19 +30,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing types of video ranges.
  */
 public enum VideoRangeType {
-  UNKNOWN("Unknown"),
-  SDR("SDR"),
-  HDR10("HDR10"),
-  HLG("HLG"),
   DOVI("DOVI"),
+  DOVI_INVALID("DOVIInvalid"),
+  DOVI_WITH_EL("DOVIWithEL"),
+  DOVI_WITH_ELHDR10_PLUS("DOVIWithELHDR10Plus"),
   DOVI_WITH_HDR10("DOVIWithHDR10"),
+  DOVI_WITH_HDR10_PLUS("DOVIWithHDR10Plus"),
   DOVI_WITH_HLG("DOVIWithHLG"),
   DOVI_WITH_SDR("DOVIWithSDR"),
-  DOVI_WITH_EL("DOVIWithEL"),
-  DOVI_WITH_HDR10_PLUS("DOVIWithHDR10Plus"),
-  DOVI_WITH_ELHDR10_PLUS("DOVIWithELHDR10Plus"),
-  DOVI_INVALID("DOVIInvalid"),
-  HDR10_PLUS("HDR10Plus");
+  HDR10("HDR10"),
+  HDR10_PLUS("HDR10Plus"),
+  HLG("HLG"),
+  SDR("SDR"),
+  UNKNOWN("Unknown");
 
   private String value;
 

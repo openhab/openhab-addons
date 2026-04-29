@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets EncodingContext
  */
 public enum EncodingContext {
-  STREAMING("Streaming"),
-  STATIC("Static");
+  STATIC("Static"),
+  STREAMING("Streaming");
 
   private String value;
 

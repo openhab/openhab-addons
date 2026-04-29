@@ -31,8 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum DatabaseLockingBehaviorTypes {
   NO_LOCK("NoLock"),
-  PESSIMISTIC("Pessimistic"),
-  OPTIMISTIC("Optimistic");
+  OPTIMISTIC("Optimistic"),
+  PESSIMISTIC("Pessimistic");
 
   private String value;
 

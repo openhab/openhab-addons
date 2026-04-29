@@ -31,16 +31,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum EncoderPreset {
   AUTO("auto"),
-  PLACEBO("placebo"),
-  VERYSLOW("veryslow"),
-  SLOWER("slower"),
-  SLOW("slow"),
-  MEDIUM("medium"),
   FAST("fast"),
   FASTER("faster"),
-  VERYFAST("veryfast"),
+  MEDIUM("medium"),
+  PLACEBO("placebo"),
+  SLOW("slow"),
+  SLOWER("slower"),
   SUPERFAST("superfast"),
-  ULTRAFAST("ultrafast");
+  ULTRAFAST("ultrafast"),
+  VERYFAST("veryfast"),
+  VERYSLOW("veryslow");
 
   private String value;
 

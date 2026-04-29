@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlaybackErrorCode
  */
 public enum PlaybackErrorCode {
-  NOT_ALLOWED("NotAllowed"),
   NO_COMPATIBLE_STREAM("NoCompatibleStream"),
+  NOT_ALLOWED("NotAllowed"),
   RATE_LIMIT_EXCEEDED("RateLimitExceeded");
 
   private String value;

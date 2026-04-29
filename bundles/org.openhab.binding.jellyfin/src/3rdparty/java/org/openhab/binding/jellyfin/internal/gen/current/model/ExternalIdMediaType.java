@@ -33,17 +33,17 @@ public enum ExternalIdMediaType {
   ALBUM("Album"),
   ALBUM_ARTIST("AlbumArtist"),
   ARTIST("Artist"),
+  BOOK("Book"),
   BOX_SET("BoxSet"),
   EPISODE("Episode"),
   MOVIE("Movie"),
   OTHER_ARTIST("OtherArtist"),
   PERSON("Person"),
+  RECORDING("Recording"),
   RELEASE_GROUP("ReleaseGroup"),
   SEASON("Season"),
   SERIES("Series"),
-  TRACK("Track"),
-  BOOK("Book"),
-  RECORDING("Recording");
+  TRACK("Track");
 
   private String value;
 

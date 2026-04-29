@@ -30,19 +30,19 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Collection type.
  */
 public enum CollectionType {
-  UNKNOWN("unknown"),
+  BOOKS("books"),
+  BOXSETS("boxsets"),
+  FOLDERS("folders"),
+  HOMEVIDEOS("homevideos"),
+  LIVETV("livetv"),
   MOVIES("movies"),
-  TVSHOWS("tvshows"),
   MUSIC("music"),
   MUSICVIDEOS("musicvideos"),
-  TRAILERS("trailers"),
-  HOMEVIDEOS("homevideos"),
-  BOXSETS("boxsets"),
-  BOOKS("books"),
   PHOTOS("photos"),
-  LIVETV("livetv"),
   PLAYLISTS("playlists"),
-  FOLDERS("folders");
+  TRAILERS("trailers"),
+  TVSHOWS("tvshows"),
+  UNKNOWN("unknown");
 
   private String value;
 

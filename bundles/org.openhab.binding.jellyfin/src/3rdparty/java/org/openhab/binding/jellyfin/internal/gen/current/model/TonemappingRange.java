@@ -31,8 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TonemappingRange {
   AUTO("auto"),
-  TV("tv"),
-  PC("pc");
+  PC("pc"),
+  TV("tv");
 
   private String value;
 

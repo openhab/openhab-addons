@@ -30,31 +30,31 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProfileConditionValue
  */
 public enum ProfileConditionValue {
-  AUDIO_CHANNELS("AudioChannels"),
+  AUDIO_BIT_DEPTH("AudioBitDepth"),
   AUDIO_BITRATE("AudioBitrate"),
+  AUDIO_CHANNELS("AudioChannels"),
   AUDIO_PROFILE("AudioProfile"),
-  WIDTH("Width"),
-  HEIGHT("Height"),
+  AUDIO_SAMPLE_RATE("AudioSampleRate"),
   HAS64_BIT_OFFSETS("Has64BitOffsets"),
+  HEIGHT("Height"),
+  IS_ANAMORPHIC("IsAnamorphic"),
+  IS_AVC("IsAvc"),
+  IS_INTERLACED("IsInterlaced"),
+  IS_SECONDARY_AUDIO("IsSecondaryAudio"),
+  NUM_AUDIO_STREAMS("NumAudioStreams"),
+  NUM_STREAMS("NumStreams"),
+  NUM_VIDEO_STREAMS("NumVideoStreams"),
   PACKET_LENGTH("PacketLength"),
+  REF_FRAMES("RefFrames"),
   VIDEO_BIT_DEPTH("VideoBitDepth"),
   VIDEO_BITRATE("VideoBitrate"),
+  VIDEO_CODEC_TAG("VideoCodecTag"),
   VIDEO_FRAMERATE("VideoFramerate"),
   VIDEO_LEVEL("VideoLevel"),
   VIDEO_PROFILE("VideoProfile"),
-  VIDEO_TIMESTAMP("VideoTimestamp"),
-  IS_ANAMORPHIC("IsAnamorphic"),
-  REF_FRAMES("RefFrames"),
-  NUM_AUDIO_STREAMS("NumAudioStreams"),
-  NUM_VIDEO_STREAMS("NumVideoStreams"),
-  IS_SECONDARY_AUDIO("IsSecondaryAudio"),
-  VIDEO_CODEC_TAG("VideoCodecTag"),
-  IS_AVC("IsAvc"),
-  IS_INTERLACED("IsInterlaced"),
-  AUDIO_SAMPLE_RATE("AudioSampleRate"),
-  AUDIO_BIT_DEPTH("AudioBitDepth"),
   VIDEO_RANGE_TYPE("VideoRangeType"),
-  NUM_STREAMS("NumStreams");
+  VIDEO_TIMESTAMP("VideoTimestamp"),
+  WIDTH("Width");
 
   private String value;
 

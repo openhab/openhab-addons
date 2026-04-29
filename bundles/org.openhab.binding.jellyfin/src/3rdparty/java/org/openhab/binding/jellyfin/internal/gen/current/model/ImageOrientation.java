@@ -30,14 +30,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ImageOrientation
  */
 public enum ImageOrientation {
-  TOP_LEFT("TopLeft"),
-  TOP_RIGHT("TopRight"),
-  BOTTOM_RIGHT("BottomRight"),
   BOTTOM_LEFT("BottomLeft"),
+  BOTTOM_RIGHT("BottomRight"),
+  LEFT_BOTTOM("LeftBottom"),
   LEFT_TOP("LeftTop"),
-  RIGHT_TOP("RightTop"),
   RIGHT_BOTTOM("RightBottom"),
-  LEFT_BOTTOM("LeftBottom");
+  RIGHT_TOP("RightTop"),
+  TOP_LEFT("TopLeft"),
+  TOP_RIGHT("TopRight");
 
   private String value;
 

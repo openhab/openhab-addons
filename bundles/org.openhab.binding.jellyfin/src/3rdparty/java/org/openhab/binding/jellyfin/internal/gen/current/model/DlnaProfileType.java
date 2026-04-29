@@ -31,10 +31,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum DlnaProfileType {
   AUDIO("Audio"),
-  VIDEO("Video"),
+  LYRIC("Lyric"),
   PHOTO("Photo"),
   SUBTITLE("Subtitle"),
-  LYRIC("Lyric");
+  VIDEO("Video");
 
   private String value;
 

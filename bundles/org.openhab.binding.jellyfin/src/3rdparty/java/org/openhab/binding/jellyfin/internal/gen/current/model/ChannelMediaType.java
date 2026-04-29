@@ -31,8 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ChannelMediaType {
   AUDIO("Audio"),
-  VIDEO("Video"),
-  PHOTO("Photo");
+  PHOTO("Photo"),
+  VIDEO("Video");
 
   private String value;
 

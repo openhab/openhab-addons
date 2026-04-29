@@ -30,15 +30,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ItemFilter.
  */
 public enum ItemFilter {
+  DISLIKES("Dislikes"),
+  IS_FAVORITE("IsFavorite"),
+  IS_FAVORITE_OR_LIKES("IsFavoriteOrLikes"),
   IS_FOLDER("IsFolder"),
   IS_NOT_FOLDER("IsNotFolder"),
-  IS_UNPLAYED("IsUnplayed"),
   IS_PLAYED("IsPlayed"),
-  IS_FAVORITE("IsFavorite"),
   IS_RESUMABLE("IsResumable"),
-  LIKES("Likes"),
-  DISLIKES("Dislikes"),
-  IS_FAVORITE_OR_LIKES("IsFavoriteOrLikes");
+  IS_UNPLAYED("IsUnplayed"),
+  LIKES("Likes");
 
   private String value;
 

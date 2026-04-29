@@ -30,8 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum TaskState.
  */
 public enum TaskState {
-  IDLE("Idle"),
   CANCELLING("Cancelling"),
+  IDLE("Idle"),
   RUNNING("Running");
 
   private String value;

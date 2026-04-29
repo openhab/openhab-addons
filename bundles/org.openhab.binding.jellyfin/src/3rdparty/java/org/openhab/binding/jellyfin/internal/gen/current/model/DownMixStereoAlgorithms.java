@@ -30,11 +30,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing an algorithm to downmix surround sound to stereo.
  */
 public enum DownMixStereoAlgorithms {
-  NONE("None"),
+  AC4("Ac4"),
   DAVE750("Dave750"),
   NIGHTMODE_DIALOGUE("NightmodeDialogue"),
-  RFC7845("Rfc7845"),
-  AC4("Ac4");
+  NONE("None"),
+  RFC7845("Rfc7845");
 
   private String value;
 

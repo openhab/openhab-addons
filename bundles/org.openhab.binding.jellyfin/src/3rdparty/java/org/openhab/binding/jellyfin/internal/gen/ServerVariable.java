@@ -23,7 +23,7 @@ import java.util.HashSet;
 public class ServerVariable {
     public String description;
     public String defaultValue;
-    public HashSet<String> enumValues = null;
+    public HashSet<String> enumValues = new HashSet<>();
 
     /**
      * @param description A description for the server variable.
@@ -33,6 +33,6 @@ public class ServerVariable {
     public ServerVariable(String description, String defaultValue, HashSet<String> enumValues) {
         this.description = description;
         this.defaultValue = defaultValue;
-        this.enumValues = enumValues;
+        this.enumValues = enumValues != null ? enumValues : new HashSet<>();
     }
 }

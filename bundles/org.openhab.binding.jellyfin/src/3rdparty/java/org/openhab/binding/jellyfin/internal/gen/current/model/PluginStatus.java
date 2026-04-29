@@ -31,13 +31,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum PluginStatus {
   ACTIVE("Active"),
-  RESTART("Restart"),
   DELETED("Deleted"),
-  SUPERSEDED("Superseded"),
-  SUPERCEDED("Superceded"),
+  DISABLED("Disabled"),
   MALFUNCTIONED("Malfunctioned"),
   NOT_SUPPORTED("NotSupported"),
-  DISABLED("Disabled");
+  RESTART("Restart"),
+  SUPERCEDED("Superceded"),
+  SUPERSEDED("Superseded");
 
   private String value;
 

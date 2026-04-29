@@ -30,10 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlayCommand.
  */
 public enum PlayCommand {
-  PLAY_NOW("PlayNow"),
-  PLAY_NEXT("PlayNext"),
-  PLAY_LAST("PlayLast"),
   PLAY_INSTANT_MIX("PlayInstantMix"),
+  PLAY_LAST("PlayLast"),
+  PLAY_NEXT("PlayNext"),
+  PLAY_NOW("PlayNow"),
   PLAY_SHUFFLE("PlayShuffle");
 
   private String value;

@@ -30,10 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum VideoType.
  */
 public enum VideoType {
-  VIDEO_FILE("VideoFile"),
-  ISO("Iso"),
+  BLU_RAY("BluRay"),
   DVD("Dvd"),
-  BLU_RAY("BluRay");
+  ISO("Iso"),
+  VIDEO_FILE("VideoFile");
 
   private String value;
 

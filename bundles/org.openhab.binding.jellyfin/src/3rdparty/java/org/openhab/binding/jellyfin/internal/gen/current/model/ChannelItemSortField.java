@@ -30,13 +30,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ChannelItemSortField
  */
 public enum ChannelItemSortField {
-  NAME("Name"),
+  COMMUNITY_PLAY_COUNT("CommunityPlayCount"),
   COMMUNITY_RATING("CommunityRating"),
-  PREMIERE_DATE("PremiereDate"),
   DATE_CREATED("DateCreated"),
-  RUNTIME("Runtime"),
+  NAME("Name"),
   PLAY_COUNT("PlayCount"),
-  COMMUNITY_PLAY_COUNT("CommunityPlayCount");
+  PREMIERE_DATE("PremiereDate"),
+  RUNTIME("Runtime");
 
   private String value;
 

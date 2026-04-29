@@ -34,8 +34,8 @@ public enum ImageFormat {
   GIF("Gif"),
   JPG("Jpg"),
   PNG("Png"),
-  WEBP("Webp"),
-  SVG("Svg");
+  SVG("Svg"),
+  WEBP("Webp");
 
   private String value;
 

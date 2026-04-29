@@ -31,8 +31,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TransportStreamTimestamp {
   NONE("None"),
-  ZERO("Zero"),
-  VALID("Valid");
+  VALID("Valid"),
+  ZERO("Zero");
 
   private String value;
 

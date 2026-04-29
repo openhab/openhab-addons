@@ -30,9 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlayMethod
  */
 public enum PlayMethod {
-  TRANSCODE("Transcode"),
+  DIRECT_PLAY("DirectPlay"),
   DIRECT_STREAM("DirectStream"),
-  DIRECT_PLAY("DirectPlay");
+  TRANSCODE("Transcode");
 
   private String value;
 
