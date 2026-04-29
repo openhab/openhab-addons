@@ -295,7 +295,7 @@ public class ApiTools {
                     .header("Authorization", "Bearer " + token).header("Accept", "application/json");
             Object body = args.get("body");
             if (body != null && httpMethod != HttpMethod.GET && httpMethod != HttpMethod.DELETE) {
-                String bodyJson = jackson.writeValueAsString(body);
+                String bodyJson = body instanceof String s ? s : jackson.writeValueAsString(body);
                 req.content(new StringContentProvider(bodyJson, StandardCharsets.UTF_8), "application/json");
             }
             ContentResponse resp = req.send();
