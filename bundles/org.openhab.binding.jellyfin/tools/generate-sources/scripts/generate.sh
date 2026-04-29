@@ -169,7 +169,7 @@ for i in "${VERSIONS[@]}"; do
     # Preprocess: sort all enum arrays in the OpenAPI YAML input
     # This keeps existing TranscodeReasons fix behavior (we sort the selected input)
     # Exception list: schema symbols that MUST keep original enum order (do not sort)
-    ENUM_SORT_EXCEPTIONS="#sym:DayOfWeek"
+    ENUM_SORT_EXCEPTIONS="#sym:DayOfWeek,#sym:DynamicDayOfWeek"
     FILENAME_YAML_SORTED="${FILENAME_YAML}.sorted"
     echo "🔧 sort all enum arrays in OpenAPI YAML input"
     # Always use dedicated Python helper to sort enums, passing exception args
