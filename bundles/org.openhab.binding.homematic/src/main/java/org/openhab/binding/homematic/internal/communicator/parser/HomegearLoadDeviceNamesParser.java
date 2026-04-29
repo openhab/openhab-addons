@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 
 /**
@@ -24,7 +26,8 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], @Nullable Void> {
     private Collection<HmDevice> devices;
 
     public HomegearLoadDeviceNamesParser(Collection<HmDevice> devices) {
@@ -32,14 +35,13 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Void parse(Object[] message) throws IOException {
+    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
         Map<String, HmDevice> devicesById = new HashMap<>();
         for (HmDevice device : devices) {
             devicesById.put(device.getHomegearId(), device);
         }
 
-        message = (Object[]) message[0];
+        message = unWrapArray(message);
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> data = (Map<String, ?>) message[i];
             String id = toString(data.get("ID"));

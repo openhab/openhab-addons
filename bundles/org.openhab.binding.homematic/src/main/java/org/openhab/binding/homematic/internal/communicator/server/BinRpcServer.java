@@ -14,6 +14,8 @@ package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.slf4j.Logger;
@@ -24,11 +26,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcServer implements RpcServer {
     private final Logger logger = LoggerFactory.getLogger(BinRpcServer.class);
 
-    private Thread networkServiceThread;
-    private BinRpcNetworkService networkService;
+    private @Nullable Thread networkServiceThread;
+    private @Nullable BinRpcNetworkService networkService;
     private final HomematicConfig config;
     private final RpcEventListener listener;
     private final String id;

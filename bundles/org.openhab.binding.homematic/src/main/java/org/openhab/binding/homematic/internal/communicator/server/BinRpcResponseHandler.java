@@ -16,6 +16,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.BinRpcMessage;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcResponseHandler implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(BinRpcResponseHandler.class);
 

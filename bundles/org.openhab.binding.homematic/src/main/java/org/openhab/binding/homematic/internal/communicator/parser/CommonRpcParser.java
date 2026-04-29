@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -30,14 +31,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
 
     private final Logger logger = LoggerFactory.getLogger(CommonRpcParser.class);
 
+    protected Object[] unWrapArray(Object @Nullable [] message) {
+        if (message != null && message.length > 0 && message[0] instanceof Object[] innerMessage) {
+            return innerMessage;
+        }
+        return new Object[0];
+    }
+
     /**
      * Converts the object to a string.
      */
-    protected String toString(Object object) {
+    protected @Nullable String toString(@Nullable Object object) {
         String value = Objects.toString(object, "").trim();
         return value.isEmpty() ? null : value;
     }
@@ -45,7 +54,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the object to an integer.
      */
-    protected Integer toInteger(Object object) {
+    protected @Nullable Integer toInteger(@Nullable Object object) {
         if (object == null || object instanceof Integer) {
             return (Integer) object;
         }
@@ -60,7 +69,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the object to a double.
      */
-    protected Double toDouble(Object object) {
+    protected @Nullable Double toDouble(@Nullable Object object) {
         if (object == null || object instanceof Double) {
             return (Double) object;
         }
@@ -75,7 +84,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the object to a number.
      */
-    protected Number toNumber(Object object) {
+    protected @Nullable Number toNumber(@Nullable Object object) {
         if (object == null || object instanceof Number) {
             return (Number) object;
         }
@@ -95,7 +104,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the object to a boolean.
      */
-    protected Boolean toBoolean(Object object) {
+    protected @Nullable Boolean toBoolean(@Nullable Object object) {
         if (object == null || object instanceof Boolean) {
             return (Boolean) object;
         }
@@ -105,7 +114,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the object to a string array.
      */
-    protected String[] toOptionList(Object optionList) {
+    protected String @Nullable [] toOptionList(@Nullable Object optionList) {
         if (optionList != null && optionList instanceof Object[] vl) {
             String[] stringArray = new String[vl.length];
             for (int i = 0; i < vl.length; i++) {
@@ -119,8 +128,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    @NonNull
-    protected String getSanitizedAddress(Object object) {
+    protected @Nullable String getSanitizedAddress(@Nullable Object object) {
         String address = Objects.toString(object, "").trim().replaceFirst("\\*", "T-");
         return MiscUtils.validateCharacters(address.isEmpty() ? null : address, "Address", "_");
     }
@@ -138,7 +146,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Adjust a rssi value if it is out of range.
      */
-    protected Integer getAdjustedRssiValue(Integer rssiValue) {
+    protected Integer getAdjustedRssiValue(@Nullable Integer rssiValue) {
         if (rssiValue == null || rssiValue >= 255 || rssiValue <= -255) {
             return 0;
         }
@@ -148,7 +156,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts the value to the correct type if necessary.
      */
-    protected Object convertToType(HmDatapoint dp, Object value) {
+    protected @Nullable Object convertToType(HmDatapoint dp, @Nullable Object value) {
         if (value == null) {
             return null;
         } else if (dp.isBooleanType()) {
@@ -167,9 +175,10 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Assembles a datapoint with the given parameters.
      */
-    protected HmDatapoint assembleDatapoint(String name, String unit, String type, String[] options, Object min,
-            Object max, Integer operations, Object defaultValue, Map<String, Number> specialValues,
-            HmParamsetType paramsetType, boolean isHmIpDevice) throws IOException {
+    protected HmDatapoint assembleDatapoint(String name, @Nullable String unit, @Nullable String type,
+            String @Nullable [] options, @Nullable Object min, @Nullable Object max, @Nullable Integer operations,
+            @Nullable Object defaultValue, @Nullable Map<String, Number> specialValues, HmParamsetType paramsetType,
+            boolean isHmIpDevice) throws IOException {
         HmDatapoint dp = new HmDatapoint();
         dp.setName(name);
         dp.setDescription(name);
@@ -231,7 +240,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Converts a string value to the type.
      */
-    protected Object convertToType(String value) {
+    protected @Nullable Object convertToType(@Nullable String value) {
         if (value == null || value.isBlank()) {
             return null;
         }

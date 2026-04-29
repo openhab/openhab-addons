@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
@@ -71,10 +72,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
     private final HomematicTypeProvider typeProvider;
-    private Future<?> initFuture;
+    private @Nullable Future<?> initFuture;
     private final Object initLock = new Object();
     private volatile boolean deviceDeletionPending = false;
 
@@ -111,7 +113,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void doInitializeInBackground() throws GatewayNotAvailableException, HomematicClientException, IOException {
         HomematicGateway gateway = getHomematicGateway();
         HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
-        HmChannel channelZero = device.getChannel(0);
+        HmChannel channelZero = Objects.requireNonNull(device.getChannel(0));
         loadHomematicChannelValues(channelZero);
         updateStatus(device);
         logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
@@ -213,9 +215,8 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (!channel.isReconfigurable()) {
                 continue;
             }
-            final String expectedFunction = channel
-                    .getDatapoint(HmParamsetType.MASTER, HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION)
-                    .getOptionValue();
+            final String expectedFunction = HmDatapoint.getOptionValue(
+                    channel.getDatapoint(HmParamsetType.MASTER, HomematicConstants.DATAPOINT_NAME_CHANNEL_FUNCTION));
             final String propertyName = String.format(PROPERTY_DYNAMIC_FUNCTION_FORMAT, channel.getNumber());
 
             // remove thing channels that were configured for a different function
@@ -239,7 +240,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                     continue;
                 }
 
-                Map<String, String> channelProps = new HashMap<>();
+                Map<String, @Nullable String> channelProps = new HashMap<>();
                 channelProps.put(propertyName, expectedFunction);
 
                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
@@ -283,7 +284,8 @@ public class HomematicThingHandler extends BaseThingHandler {
         HmDatapoint dp = channelZero
                 .getDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channelZero, datapointName));
         if (dp != null) {
-            properties.put(propertyName, Objects.toString(dp.getValue(), ""));
+            Object dpValue = dp.getValue();
+            properties.put(propertyName, dpValue != null ? dpValue.toString() : "");
         }
     }
 
@@ -307,6 +309,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("null")
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelUID);
         HmDatapoint dp = null;
@@ -377,7 +380,8 @@ public class HomematicThingHandler extends BaseThingHandler {
      *         {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for
      *         wakeup mode, or null for the default mode)
      */
-    protected String getRxModeForDatapointTransmission(String datapointName, Object currentValue, Object newValue) {
+    protected @Nullable String getRxModeForDatapointTransmission(String datapointName, @Nullable Object currentValue,
+            @Nullable Object newValue) {
         return null;
     }
 
@@ -390,7 +394,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(channelUID);
         HmDatapoint dp = gateway.getDatapoint(dpInfo);
         Channel channel = getThing().getChannel(channelUID.getId());
-        updateChannelState(dp, channel);
+        updateChannelState(dp, Objects.requireNonNull(channel));
     }
 
     /**
@@ -398,7 +402,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     protected void updateDatapointState(HmDatapoint dp) {
         try {
-            updateStatus(dp.getChannel().getDevice());
+            updateStatus(Objects.requireNonNull(dp.getChannel().getDevice()));
 
             if (dp.getParamsetType() == HmParamsetType.MASTER) {
                 // update configuration
@@ -514,7 +518,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Updates the thing status based on device status.
      */
     private void updateStatus(HmDevice device) throws GatewayNotAvailableException, IOException {
-        loadHomematicChannelValues(device.getChannel(0));
+        loadHomematicChannelValues(Objects.requireNonNull(device.getChannel(0)));
 
         ThingStatus oldStatus = thing.getStatus();
         if (oldStatus == ThingStatus.UNINITIALIZED) {
@@ -571,11 +575,9 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the Homematic gateway if the bridge is available.
      */
     private HomematicGateway getHomematicGateway() throws GatewayNotAvailableException {
-        final Bridge bridge = getBridge();
-        if (bridge != null) {
-            HomematicBridgeHandler bridgeHandler = (HomematicBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null && bridgeHandler.getGateway() != null) {
-                return bridgeHandler.getGateway();
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomematicBridgeHandler handler) {
+            if (handler != null && handler.getGateway() instanceof HomematicGateway gateway) {
+                return gateway;
             }
         }
 

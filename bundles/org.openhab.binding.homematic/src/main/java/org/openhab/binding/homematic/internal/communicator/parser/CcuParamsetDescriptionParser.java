@@ -14,19 +14,22 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
 
 /**
  * Parses parameter descriptions from a CCU script and extracts datapoint metadata.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private HmParamsetType paramsetType;
     private HmChannel channel;
     private boolean isHmIpDevice;
@@ -38,7 +41,7 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
+    public @Nullable Void parse(@Nullable TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             for (TclScriptDataEntry entry : resultList.getEntries()) {
                 HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
@@ -50,7 +53,7 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
         return null;
     }
 
-    private String[] toOptionList(String options) {
+    private String @Nullable [] toOptionList(@Nullable String options) {
         String[] result = options == null ? null : options.split(";");
         return result == null || result.length == 0 ? null : result;
     }

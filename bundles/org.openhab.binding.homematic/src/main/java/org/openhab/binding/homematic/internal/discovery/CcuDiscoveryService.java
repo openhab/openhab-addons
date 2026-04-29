@@ -22,6 +22,8 @@ import java.net.SocketTimeoutException;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.discovery.eq3udp.Eq3UdpRequest;
 import org.openhab.binding.homematic.internal.discovery.eq3udp.Eq3UdpResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -40,14 +42,15 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.homematic")
+@NonNullByDefault
 public class CcuDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(CcuDiscoveryService.class);
 
     private static final int RECEIVE_TIMEOUT_MSECS = 3000;
-    private InetAddress broadcastAddress;
-    private MulticastSocket socket;
-    private Future<?> scanFuture;
-    private NetworkAddressService networkAddressService;
+    private @Nullable InetAddress broadcastAddress;
+    private @Nullable MulticastSocket socket;
+    private @Nullable Future<?> scanFuture;
+    private @Nullable NetworkAddressService networkAddressService;
 
     public CcuDiscoveryService() {
         super(Set.of(THING_TYPE_BRIDGE), 5, true);

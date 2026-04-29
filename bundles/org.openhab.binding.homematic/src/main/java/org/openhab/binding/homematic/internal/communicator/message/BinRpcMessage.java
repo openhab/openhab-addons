@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     private final Logger logger = LoggerFactory.getLogger(BinRpcMessage.class);
 
@@ -46,12 +49,12 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         RESPONSE
     }
 
-    private Object[] messageData;
-    private byte[] binRpcData;
+    private Object @Nullable [] messageData;
+    private @NonNullByDefault({}) byte[] binRpcData;
     private int offset;
 
-    private String methodName;
-    private TYPE type;
+    private @Nullable String methodName;
+    private @NonNullByDefault({}) TYPE type;
     private int args;
     private Charset encoding;
 
@@ -62,7 +65,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     /**
      * Creates a new request with the specified methodName.
      */
-    public BinRpcMessage(String methodName, TYPE type, Charset encoding) {
+    public BinRpcMessage(@Nullable String methodName, TYPE type, Charset encoding) {
         this.methodName = methodName;
         this.type = type;
         this.encoding = encoding;
@@ -152,6 +155,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         addString("Bin ");
         setType(type);
         addInt(0); // placeholder content length
+        String methodName = this.methodName;
         if (methodName != null) {
             addInt(methodName.length());
             addString(methodName);
@@ -178,7 +182,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     @Override
-    public String getMethodName() {
+    public @Nullable String getMethodName() {
         return methodName;
     }
 
@@ -195,7 +199,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     @Override
-    public Object[] getResponseData() {
+    public Object @Nullable [] getResponseData() {
         return messageData;
     }
 
@@ -323,7 +327,10 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         }
     }
 
-    private void addObject(Object object) {
+    private void addObject(@Nullable Object object) {
+        if (object == null) {
+            return;
+        }
         if (object.getClass() == String.class) {
             addInt(3);
             String string = (String) object;

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
     private final Logger logger = LoggerFactory.getLogger(PercentTypeConverter.class);
 

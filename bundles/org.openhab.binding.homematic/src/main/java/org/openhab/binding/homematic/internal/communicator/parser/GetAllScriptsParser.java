@@ -13,8 +13,9 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
-import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -25,7 +26,8 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetAllScriptsParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetAllScriptsParser extends CommonRpcParser<Object[], @Nullable Void> {
     private HmChannel channel;
 
     public GetAllScriptsParser(HmChannel channel) {
@@ -33,10 +35,10 @@ public class GetAllScriptsParser extends CommonRpcParser<Object[], Void> {
     }
 
     @Override
-    public Void parse(Object[] message) throws IOException {
-        message = (Object[]) message[0];
+    public @Nullable Void parse(Object[] message) throws IOException {
+        message = unWrapArray(message);
         for (int i = 0; i < message.length; i++) {
-            String scriptName = Objects.toString(message[i], "");
+            String scriptName = String.valueOf(message[i]);
             HmDatapoint dpScript = new HmDatapoint(scriptName, scriptName, HmValueType.BOOL, Boolean.FALSE, false,
                     HmParamsetType.VALUES);
             dpScript.setInfo(scriptName);

@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -28,7 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetParamsetParser extends CommonRpcParser<Object[], @Nullable Void> {
     private final Logger logger = LoggerFactory.getLogger(GetParamsetParser.class);
 
     private HmChannel channel;
@@ -41,7 +44,7 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Void parse(Object[] message) throws IOException {
+    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
         if (message == null || message.length == 0 || !(message[0] instanceof Map)) {
             return null;
         }

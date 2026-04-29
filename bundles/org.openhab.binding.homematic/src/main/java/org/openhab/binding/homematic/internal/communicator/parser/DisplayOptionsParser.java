@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -32,12 +34,13 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
+@NonNullByDefault
+public class DisplayOptionsParser extends CommonRpcParser<Object, @Nullable Void> {
     private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] ON_OFF = new String[] { "ON", "OFF" };
     private static final int IDX_NOT_FOUND = -1;
     private HmChannel channel;
-    private String text;
+    private @Nullable String text;
     private int beep = 0;
     private int backlight = 0;
     private int unit = 0;
@@ -48,7 +51,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     }
 
     @Override
-    public Void parse(Object value) throws IOException {
+    public @Nullable Void parse(Object value) throws IOException {
         String valueString = toString(value);
         String optionsString = valueString == null ? null : valueString.replace(" ", "");
         if (optionsString != null) {
@@ -170,7 +173,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     /**
      * Returns the parsed text.
      */
-    public String getText() {
+    public @Nullable String getText() {
         return text;
     }
 

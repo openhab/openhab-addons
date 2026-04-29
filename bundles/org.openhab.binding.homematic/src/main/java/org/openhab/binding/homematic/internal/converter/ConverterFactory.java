@@ -17,6 +17,8 @@ import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.converter.type.DecimalTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.OnOffTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.OpenClosedTypeConverter;
@@ -30,13 +32,14 @@ import org.openhab.binding.homematic.internal.converter.type.StringTypeConverter
  * @author Gerhard Riegler - Initial contribution
  * @author Michael Reitler - QuantityType support
  */
+@NonNullByDefault
 public class ConverterFactory {
     private static Map<String, TypeConverter<?>> converterCache = new HashMap<>();
 
     /**
      * Returns the converter for an itemType.
      */
-    public static TypeConverter<?> createConverter(String itemType) throws ConverterException {
+    public static TypeConverter<?> createConverter(@Nullable String itemType) throws ConverterException {
         Class<? extends TypeConverter<?>> converterClass = null;
 
         if (itemType.startsWith(ITEM_TYPE_NUMBER + ":")) {

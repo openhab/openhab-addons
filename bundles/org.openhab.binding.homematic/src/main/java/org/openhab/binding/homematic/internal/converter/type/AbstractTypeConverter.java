@@ -19,6 +19,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.converter.ConverterTypeException;
 import org.openhab.binding.homematic.internal.converter.StateInvertInfo;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractTypeConverter<T extends State> implements TypeConverter<T> {
     private final Logger logger = LoggerFactory.getLogger(AbstractTypeConverter.class);
 
@@ -89,7 +92,8 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         }
 
         if (type == UnDefType.NULL) {
-            return null;
+            throw new ConverterTypeException("Can't convert UnDefType.NULL to a Homematic datapoint value for "
+                    + this.getClass().getSimpleName() + " with " + new HmDatapointInfo(dp));
         } else if (type.getClass().isEnum() && !(this instanceof OnOffTypeConverter)
                 && !(this instanceof OpenClosedTypeConverter)) {
             return commandToBinding((Command) type, dp);
@@ -143,7 +147,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         return true;
     }
 
-    private void logAtDefaultLevel(String format, Object... arguments) {
+    private void logAtDefaultLevel(String format, Object @Nullable... arguments) {
         switch (getDefaultLogLevelForTypeConverter()) {
             case TRACE:
                 logger.trace(format, arguments);

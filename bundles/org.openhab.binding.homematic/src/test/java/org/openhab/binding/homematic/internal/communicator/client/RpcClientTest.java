@@ -20,6 +20,7 @@ import static org.openhab.binding.homematic.test.util.RpcClientMockImpl.*;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -32,9 +33,10 @@ import org.openhab.core.test.java.JavaTest;
 /**
  * @author Florian Stolte - Initial contribution
  */
+@NonNullByDefault
 public class RpcClientTest extends JavaTest {
 
-    private RpcClientMockImpl rpcClient;
+    private @NonNullByDefault({}) RpcClientMockImpl rpcClient;
 
     @BeforeEach
     public void setup() throws IOException {

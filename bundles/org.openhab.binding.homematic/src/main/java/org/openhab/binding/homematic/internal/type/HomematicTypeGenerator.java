@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 
 /**
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface HomematicTypeGenerator {
 
     /**

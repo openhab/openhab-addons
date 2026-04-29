@@ -17,16 +17,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
 
 /**
  * Parses a TclRega script result containing names for devices.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private Collection<HmDevice> devices;
 
     public CcuLoadDeviceNamesParser(Collection<HmDevice> devices) {
@@ -34,7 +37,7 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             Map<String, HmDevice> devicesByAddress = new HashMap<>();
             for (HmDevice device : devices) {

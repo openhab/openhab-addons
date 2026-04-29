@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
 /**
@@ -22,7 +24,8 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class GetValueParser extends CommonRpcParser<Object[], Void> {
+@NonNullByDefault
+public class GetValueParser extends CommonRpcParser<Object @Nullable [], @Nullable Void> {
     private HmDatapoint dp;
 
     public GetValueParser(HmDatapoint dp) {
@@ -30,7 +33,7 @@ public class GetValueParser extends CommonRpcParser<Object[], Void> {
     }
 
     @Override
-    public Void parse(Object[] message) throws IOException {
+    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
         if (message != null && message.length > 0 && !(message[0] instanceof Map)) {
             dp.setValue(convertToType(dp, message[0]));
             adjustRssiValue(dp);

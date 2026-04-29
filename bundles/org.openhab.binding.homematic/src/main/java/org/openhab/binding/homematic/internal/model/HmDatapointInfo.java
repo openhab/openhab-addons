@@ -14,15 +14,19 @@ package org.openhab.binding.homematic.internal.model;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Simple representation of a datapoint.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapointInfo {
     private String address;
-    private Integer channel;
-    private String name;
+    private @Nullable Integer channel;
+    private @Nullable String name;
     private HmParamsetType paramsetType;
 
     public HmDatapointInfo(HmDatapoint dp) {
@@ -33,7 +37,8 @@ public class HmDatapointInfo {
         this(channel.getDevice().getAddress(), paramsetType, channel.getNumber(), name);
     }
 
-    public HmDatapointInfo(String address, HmParamsetType paramsetType, Integer channel, String name) {
+    public HmDatapointInfo(String address, HmParamsetType paramsetType, @Nullable Integer channel,
+            @Nullable String name) {
         this.address = address;
         this.channel = channel;
         this.paramsetType = paramsetType;
@@ -57,21 +62,21 @@ public class HmDatapointInfo {
     /**
      * Returns the channel number.
      */
-    public Integer getChannel() {
+    public @Nullable Integer getChannel() {
         return channel;
     }
 
     /**
      * Returns the name of the datapoint.
      */
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
     /**
      * Sets the name of the datapoint.
      */
-    public void setName(String name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
@@ -95,7 +100,7 @@ public class HmDatapointInfo {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (!(obj instanceof HmDatapointInfo)) {
             return false;
         }

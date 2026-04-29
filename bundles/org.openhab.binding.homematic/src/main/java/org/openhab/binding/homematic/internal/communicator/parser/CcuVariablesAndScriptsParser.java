@@ -14,19 +14,22 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
-import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
 
 /**
  * Parses a TclRega script result containing variables and scripts.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataList, Void> {
+@NonNullByDefault
+public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataList, @Nullable Void> {
     private HmChannel channel;
 
     public CcuVariablesAndScriptsParser(HmChannel channel) {
@@ -34,7 +37,7 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
     }
 
     @Override
-    public Void parse(TclScriptDataList resultList) throws IOException {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
         if (resultList.getEntries() != null) {
             for (TclScriptDataEntry entry : resultList.getEntries()) {
                 HmDatapoint dp = channel.getDatapoint(HmParamsetType.VALUES, entry.name);

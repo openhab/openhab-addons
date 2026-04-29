@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.StringUtils;
 
 /**
@@ -30,6 +32,7 @@ import org.openhab.core.util.StringUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class XmlRpcRequest implements RpcRequest<String> {
 
     public enum TYPE {
@@ -37,17 +40,17 @@ public class XmlRpcRequest implements RpcRequest<String> {
         RESPONSE
     }
 
-    private String methodName;
+    private @Nullable String methodName;
     private List<Object> parms;
-    private StringBuilder sb;
+    private StringBuilder sb = new StringBuilder();
     private TYPE type;
     public static final SimpleDateFormat XML_RPC_DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
-    public XmlRpcRequest(String methodName) {
+    public XmlRpcRequest(@Nullable String methodName) {
         this(methodName, TYPE.REQUEST);
     }
 
-    public XmlRpcRequest(String methodName, TYPE type) {
+    public XmlRpcRequest(@Nullable String methodName, TYPE type) {
         this.methodName = methodName;
         this.type = type;
         parms = new ArrayList<>();
@@ -64,7 +67,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     }
 
     @Override
-    public String getMethodName() {
+    public @Nullable String getMethodName() {
         return methodName;
     }
 
@@ -111,14 +114,14 @@ public class XmlRpcRequest implements RpcRequest<String> {
     /**
      * Generates a XML tag.
      */
-    private void tag(String name, String value) {
+    private void tag(String name, @Nullable String value) {
         sb.append("<").append(name).append(">").append(value).append("</").append(name).append(">");
     }
 
     /**
      * Generates a value tag based on the type of the value.
      */
-    private void generateValue(Object value) {
+    private void generateValue(@Nullable Object value) {
         if (value == null) {
             tag("string", "void");
         } else {

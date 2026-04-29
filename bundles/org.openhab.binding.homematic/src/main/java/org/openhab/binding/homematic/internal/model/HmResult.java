@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -20,6 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author Gerhard Riegler - Initial contribution
  */
 @XStreamAlias("result")
+@NonNullByDefault
 public class HmResult {
 
     private boolean valid;

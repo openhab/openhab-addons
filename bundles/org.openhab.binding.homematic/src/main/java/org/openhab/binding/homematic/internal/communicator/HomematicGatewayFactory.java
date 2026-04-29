@@ -14,10 +14,12 @@ package org.openhab.binding.homematic.internal.communicator;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.XmlRpcClient;
+import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.core.i18n.ConfigurationException;
 
 /**
@@ -25,6 +27,7 @@ import org.openhab.core.i18n.ConfigurationException;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicGatewayFactory {
 
     /**
@@ -33,9 +36,10 @@ public class HomematicGatewayFactory {
     public static HomematicGateway createGateway(String id, HomematicConfig config,
             HomematicGatewayAdapter gatewayAdapter, HttpClient httpClient) throws IOException, ConfigurationException {
         loadGatewayInfo(config, id, httpClient);
-        if (config.getGatewayInfo().isCCU()) {
+        HmGatewayInfo gwInfo = config.getGatewayInfo();
+        if (gwInfo != null && gwInfo.isCCU()) {
             return new CcuGateway(id, config, gatewayAdapter, httpClient);
-        } else if (config.getGatewayInfo().isHomegear()) {
+        } else if (gwInfo != null && gwInfo.isHomegear()) {
             return new HomegearGateway(id, config, gatewayAdapter, httpClient);
         } else {
             return new DefaultGateway(id, config, gatewayAdapter, httpClient);

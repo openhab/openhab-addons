@@ -15,6 +15,7 @@ package org.openhab.binding.homematic.internal.converter;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
@@ -33,6 +34,7 @@ import org.openhab.core.types.UnDefType;
  * @author Michael Reitler - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ConvertFromBindingTest extends BaseConverterTest {
 
     @Test

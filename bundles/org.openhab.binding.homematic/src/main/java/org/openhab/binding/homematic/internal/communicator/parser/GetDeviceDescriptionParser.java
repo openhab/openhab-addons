@@ -14,22 +14,25 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Parses a getDeviceDescription message and extracts the type and firmware version.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDeviceDescriptionParser> {
-    private String type;
-    private String firmware;
-    private String deviceInterface;
+    private @Nullable String type;
+    private @Nullable String firmware;
+    private @Nullable String deviceInterface;
 
-    @SuppressWarnings("unchecked")
     @Override
-    public GetDeviceDescriptionParser parse(Object[] message) throws IOException {
-        if (message != null && message.length > 0 && message[0] instanceof Map) {
-            Map<String, ?> mapMessage = (Map<String, ?>) message[0];
+    public GetDeviceDescriptionParser parse(Object @Nullable [] message) throws IOException {
+        if (message != null && message.length > 0 && message[0] instanceof Map mapMessage) {
             type = toString(mapMessage.get("TYPE"));
             firmware = toString(mapMessage.get("FIRMWARE"));
             deviceInterface = toString(mapMessage.get("INTERFACE"));
@@ -40,7 +43,7 @@ public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDev
     /**
      * Returns the parsed type.
      */
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 
@@ -48,13 +51,13 @@ public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDev
      * Returns the parsed firmware version.
      */
     public String getFirmware() {
-        return firmware == null ? "" : firmware;
+        return Objects.requireNonNullElse(firmware, "");
     }
 
     /**
      * Returns the interface of the device.
      */
-    public String getDeviceInterface() {
+    public @Nullable String getDeviceInterface() {
         return deviceInterface;
     }
 }
