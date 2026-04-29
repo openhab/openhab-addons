@@ -98,12 +98,12 @@ public class Util {
             case "m s**-1":
             case "km":
             case "octas":
+            case "hPa":
             case "kg/m2":
                 builder.withPattern("%.1f %unit%");
                 break;
             case "degree":
             case "percent":
-            case "hPa":
             case "fraction":
             case "m":
             case "%":

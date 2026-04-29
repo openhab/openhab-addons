@@ -15,7 +15,6 @@ package org.openhab.binding.smhi.internal;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class ForecastAggregator {
         if (metadata == null)
             return UnDefType.UNDEF;
 
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
                 .filter(p -> !metadata.missingValue().equals(p)).max(BigDecimal::compareTo)
                 .map(value -> Util.getParameterAsState(metadata, value))
@@ -61,7 +60,7 @@ public class ForecastAggregator {
         if (metadata == null)
             return UnDefType.UNDEF;
 
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().map(forecast -> forecast.getParameter(metadata.name()))
                 .filter(p -> !metadata.missingValue().equals(p)).min(BigDecimal::compareTo)
                 .map(value -> Util.getParameterAsState(metadata, value))
@@ -83,10 +82,7 @@ public class ForecastAggregator {
         if (baseMetadata == null || totalMetadata == null)
             return UnDefType.UNDEF;
 
-        ZonedDateTime start = timeSeries.getReferenceTime().plusDays(dayOffset).withHour(0);
-        ZonedDateTime end = start.plusDays(1);
-        List<Forecast> dayForecasts = timeSeries
-                .filter(forecast -> forecast.getTime().isAfter(start) && !forecast.getTime().isAfter(end));
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, true);
         if (dayForecasts.size() == 1) {
             return dayForecasts.getFirst().getParameterAsState(baseMetadata);
         }
@@ -112,7 +108,7 @@ public class ForecastAggregator {
         if (metadata == null)
             return UnDefType.UNDEF;
 
-        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        List<Forecast> dayForecasts = timeSeries.getDay(dayOffset, false);
         return dayForecasts.stream().filter(forecast -> forecast.getTime().getHour() >= 12).findFirst()
                 .map(f -> f.getParameterAsState(metadata))
                 .orElseGet(() -> Util.getParameterAsState(metadata, metadata.missingValue()));

@@ -89,8 +89,12 @@ public class SmhiTimeSeries implements Iterable<Forecast> {
      * @param dayOffset
      * @return
      */
-    public List<Forecast> getDay(int dayOffset) {
+    public List<Forecast> getDay(int dayOffset, boolean useIntervalStartTime) {
         ZonedDateTime day = referenceTime.plusDays(dayOffset).truncatedTo(ChronoUnit.DAYS);
+        if (useIntervalStartTime) {
+            return filter(forecast -> !forecast.getIntervalStartTime().isBefore(day)
+                    && forecast.getIntervalStartTime().isBefore(day.plusDays(1)));
+        }
         return filter(forecast -> !forecast.getTime().isBefore(day) && forecast.getTime().isBefore(day.plusDays(1)));
     }
 
