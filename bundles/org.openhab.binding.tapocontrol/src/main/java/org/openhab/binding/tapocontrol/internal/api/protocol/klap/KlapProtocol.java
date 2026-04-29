@@ -143,7 +143,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
          * (Protocol can be rejected due to polling from another device e.g. Tapo App, or Tapo H100 Hub)
          * For asynchronous use, call on separate thread
          */
-        final int MAX_ATTEMPTS = 3;
+        final int maxAttempts = 3;
         int attemptCount = 0;
         String url = getUrl();
         String command = tapoRequest.method();
@@ -163,14 +163,14 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                     logger.trace("({}) sendRequestRetryable re-login successful attempt {}", uid, attemptCount);
                 } catch (TapoErrorHandler e) {
                     logger.trace("({}) sendRequestRetryable error1 {}", uid, e.getMessage());
-                    if (attemptCount < MAX_ATTEMPTS) {
+                    if (attemptCount < maxAttempts) {
                         continue;
                     }
                     httpDelegator.handleError(e);
                     return;
                 } catch (Exception ex) {
                     logger.trace("({}) sendRequestRetryable error2 {}", uid, ex.getMessage());
-                    if (attemptCount < MAX_ATTEMPTS) {
+                    if (attemptCount < maxAttempts) {
                         continue;
                     }
                     httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_LOGIN, ex.getMessage()));
@@ -210,7 +210,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                          * Forbidden - likely cause Encryption no longer valid - retry with login unless we have already
                          * retried...
                          */
-                        if (attemptCount < MAX_ATTEMPTS) {
+                        if (attemptCount < maxAttempts) {
                             continue;
                         } else {
                             logger.debug("({}) sendRequestRetryable response error'{}'", uid, response.getStatus());
@@ -234,13 +234,8 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 throw new TapoErrorHandler(e, "error sending content");
             } catch (Exception e) {
                 String errorMessage = e.getMessage();
-                if (e instanceof TimeoutException) {
-                    logger.debug("({}) sendRequestRetryable timeout'{}'", uid, errorMessage);
-                    httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
-                } else {
-                    logger.debug("({}) sendRequestRetryable failed'{}'", uid, errorMessage);
-                    httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
-                }
+                logger.debug("({}) sendRequestRetryable failed'{}'", uid, errorMessage);
+                httpDelegator.handleError(new TapoErrorHandler(new Exception(e), errorMessage));
                 return;
             }
         } /* end of loop */
