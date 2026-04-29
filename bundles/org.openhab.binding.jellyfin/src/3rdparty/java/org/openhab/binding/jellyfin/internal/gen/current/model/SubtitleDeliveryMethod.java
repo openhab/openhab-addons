@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Delivery method to use during playback of a specific subtitle format.
  */
 public enum SubtitleDeliveryMethod {
-  
   ENCODE("Encode"),
-  
   EMBED("Embed"),
-  
   EXTERNAL("External"),
-  
   HLS("Hls"),
-  
   DROP("Drop");
 
   private String value;

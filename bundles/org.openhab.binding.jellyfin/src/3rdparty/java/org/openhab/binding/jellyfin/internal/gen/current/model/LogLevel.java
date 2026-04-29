@@ -30,19 +30,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets LogLevel
  */
 public enum LogLevel {
-  
   TRACE("Trace"),
-  
   DEBUG("Debug"),
-  
   INFORMATION("Information"),
-  
   WARNING("Warning"),
-  
   ERROR("Error"),
-  
   CRITICAL("Critical"),
-  
   NONE("None");
 
   private String value;

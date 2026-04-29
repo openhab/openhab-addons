@@ -30,55 +30,30 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The person kind.
  */
 public enum PersonKind {
-  
   UNKNOWN("Unknown"),
-  
   ACTOR("Actor"),
-  
   DIRECTOR("Director"),
-  
   COMPOSER("Composer"),
-  
   WRITER("Writer"),
-  
   GUEST_STAR("GuestStar"),
-  
   PRODUCER("Producer"),
-  
   CONDUCTOR("Conductor"),
-  
   LYRICIST("Lyricist"),
-  
   ARRANGER("Arranger"),
-  
   ENGINEER("Engineer"),
-  
   MIXER("Mixer"),
-  
   REMIXER("Remixer"),
-  
   CREATOR("Creator"),
-  
   ARTIST("Artist"),
-  
   ALBUM_ARTIST("AlbumArtist"),
-  
   AUTHOR("Author"),
-  
   ILLUSTRATOR("Illustrator"),
-  
   PENCILLER("Penciller"),
-  
   INKER("Inker"),
-  
   COLORIST("Colorist"),
-  
   LETTERER("Letterer"),
-  
   COVER_ARTIST("CoverArtist"),
-  
   EDITOR("Editor"),
-  
   TRANSLATOR("Translator");
 
   private String value;

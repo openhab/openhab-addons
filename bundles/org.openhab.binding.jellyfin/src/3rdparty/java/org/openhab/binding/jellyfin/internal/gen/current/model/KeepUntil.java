@@ -30,13 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets KeepUntil
  */
 public enum KeepUntil {
-  
   UNTIL_DELETED("UntilDeleted"),
-  
   UNTIL_SPACE_NEEDED("UntilSpaceNeeded"),
-  
   UNTIL_WATCHED("UntilWatched"),
-  
   UNTIL_DATE("UntilDate");
 
   private String value;

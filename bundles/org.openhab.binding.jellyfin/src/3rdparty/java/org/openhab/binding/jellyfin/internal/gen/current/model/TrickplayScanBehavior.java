@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum TrickplayScanBehavior.
  */
 public enum TrickplayScanBehavior {
-  
   BLOCKING("Blocking"),
-  
   NON_BLOCKING("NonBlocking");
 
   private String value;

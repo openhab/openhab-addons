@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing deinterlace methods.
  */
 public enum DeinterlaceMethod {
-  
   YADIF("yadif"),
-  
   BWDIF("bwdif");
 
   private String value;

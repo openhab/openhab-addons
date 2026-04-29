@@ -30,23 +30,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupUpdateType.
  */
 public enum GroupUpdateType {
-  
   USER_JOINED("UserJoined"),
-  
   USER_LEFT("UserLeft"),
-  
   GROUP_JOINED("GroupJoined"),
-  
   GROUP_LEFT("GroupLeft"),
-  
   STATE_UPDATE("StateUpdate"),
-  
   PLAY_QUEUE("PlayQueue"),
-  
   NOT_IN_GROUP("NotInGroup"),
-  
   GROUP_DOES_NOT_EXIST("GroupDoesNotExist"),
-  
   LIBRARY_ACCESS_DENIED("LibraryAccessDenied");
 
   private String value;

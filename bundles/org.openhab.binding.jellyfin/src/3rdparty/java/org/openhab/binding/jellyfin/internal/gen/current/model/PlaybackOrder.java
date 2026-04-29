@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlaybackOrder.
  */
 public enum PlaybackOrder {
-  
   DEFAULT("Default"),
-  
   SHUFFLE("Shuffle");
 
   private String value;

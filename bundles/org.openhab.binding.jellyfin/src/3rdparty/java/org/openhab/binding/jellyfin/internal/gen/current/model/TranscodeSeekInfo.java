@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets TranscodeSeekInfo
  */
 public enum TranscodeSeekInfo {
-  
   AUTO("Auto"),
-  
   BYTES("Bytes");
 
   private String value;

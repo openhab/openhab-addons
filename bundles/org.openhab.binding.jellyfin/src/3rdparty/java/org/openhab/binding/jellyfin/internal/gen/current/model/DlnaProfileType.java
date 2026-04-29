@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets DlnaProfileType
  */
 public enum DlnaProfileType {
-  
   AUDIO("Audio"),
-  
   VIDEO("Video"),
-  
   PHOTO("Photo"),
-  
   SUBTITLE("Subtitle"),
-  
   LYRIC("Lyric");
 
   private String value;

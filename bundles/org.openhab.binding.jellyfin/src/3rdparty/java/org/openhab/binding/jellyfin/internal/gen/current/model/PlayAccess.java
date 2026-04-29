@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets PlayAccess
  */
 public enum PlayAccess {
-  
   FULL("Full"),
-  
   NONE("None");
 
   private String value;

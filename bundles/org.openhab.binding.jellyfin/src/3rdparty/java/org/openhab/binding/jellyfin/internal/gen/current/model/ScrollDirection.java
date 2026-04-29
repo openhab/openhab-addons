@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing the axis that should be scrolled.
  */
 public enum ScrollDirection {
-  
   HORIZONTAL("Horizontal"),
-  
   VERTICAL("Vertical");
 
   private String value;

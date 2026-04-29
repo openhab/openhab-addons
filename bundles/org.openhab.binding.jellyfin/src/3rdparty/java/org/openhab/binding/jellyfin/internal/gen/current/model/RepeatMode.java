@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RepeatMode
  */
 public enum RepeatMode {
-  
   REPEAT_NONE("RepeatNone"),
-  
   REPEAT_ALL("RepeatAll"),
-  
   REPEAT_ONE("RepeatOne");
 
   private String value;

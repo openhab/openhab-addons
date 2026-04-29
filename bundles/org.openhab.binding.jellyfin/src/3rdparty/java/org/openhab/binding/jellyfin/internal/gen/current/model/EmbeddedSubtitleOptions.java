@@ -30,13 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing the options to disable embedded subs.
  */
 public enum EmbeddedSubtitleOptions {
-  
   ALLOW_ALL("AllowAll"),
-  
   ALLOW_TEXT("AllowText"),
-  
   ALLOW_IMAGE("AllowImage"),
-  
   ALLOW_NONE("AllowNone");
 
   private String value;

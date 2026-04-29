@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProfileConditionType
  */
 public enum ProfileConditionType {
-  
   EQUALS("Equals"),
-  
   NOT_EQUALS("NotEquals"),
-  
   LESS_THAN_EQUAL("LessThanEqual"),
-  
   GREATER_THAN_EQUAL("GreaterThanEqual"),
-  
   EQUALS_ANY("EqualsAny");
 
   private String value;

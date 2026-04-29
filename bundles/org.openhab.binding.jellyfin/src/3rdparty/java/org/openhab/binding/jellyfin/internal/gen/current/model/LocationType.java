@@ -30,13 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum LocationType.
  */
 public enum LocationType {
-  
   FILE_SYSTEM("FileSystem"),
-  
   REMOTE("Remote"),
-  
   VIRTUAL("Virtual"),
-  
   OFFLINE("Offline");
 
   private String value;

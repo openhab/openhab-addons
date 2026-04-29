@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ImageSavingConvention
  */
 public enum ImageSavingConvention {
-  
   LEGACY("Legacy"),
-  
   COMPATIBLE("Compatible");
 
   private String value;

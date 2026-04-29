@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing formats of spatial audio.
  */
 public enum AudioSpatialFormat {
-  
   NONE("None"),
-  
   DOLBY_ATMOS("DolbyAtmos"),
-  
   DTSX("DTSX");
 
   private String value;

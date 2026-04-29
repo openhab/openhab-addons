@@ -30,17 +30,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Defines the types of content an individual Jellyfin.Database.Implementations.Entities.MediaSegment represents.
  */
 public enum MediaSegmentType {
-  
   UNKNOWN("Unknown"),
-  
   COMMERCIAL("Commercial"),
-  
   PREVIEW("Preview"),
-  
   RECAP("Recap"),
-  
   OUTRO("Outro"),
-  
   INTRO("Intro");
 
   private String value;

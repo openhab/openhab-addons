@@ -30,19 +30,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets RecordingStatus
  */
 public enum RecordingStatus {
-  
   NEW("New"),
-  
   IN_PROGRESS("InProgress"),
-  
   COMPLETED("Completed"),
-  
   CANCELLED("Cancelled"),
-  
   CONFLICTED_OK("ConflictedOk"),
-  
   CONFLICTED_NOT_OK("ConflictedNotOk"),
-  
   ERROR("Error");
 
   private String value;

@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum IsoType.
  */
 public enum IsoType {
-  
   DVD("Dvd"),
-  
   BLU_RAY("BluRay");
 
   private String value;

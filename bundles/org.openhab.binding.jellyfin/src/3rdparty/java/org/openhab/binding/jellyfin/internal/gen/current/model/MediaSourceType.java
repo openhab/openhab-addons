@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MediaSourceType
  */
 public enum MediaSourceType {
-  
   DEFAULT("Default"),
-  
   GROUPING("Grouping"),
-  
   PLACEHOLDER("Placeholder");
 
   private String value;

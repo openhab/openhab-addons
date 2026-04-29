@@ -30,17 +30,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ImageOutputFormat.
  */
 public enum ImageFormat {
-  
   BMP("Bmp"),
-  
   GIF("Gif"),
-  
   JPG("Jpg"),
-  
   PNG("Png"),
-  
   WEBP("Webp"),
-  
   SVG("Svg");
 
   private String value;

@@ -30,23 +30,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing an unrated item.
  */
 public enum UnratedItem {
-  
   MOVIE("Movie"),
-  
   TRAILER("Trailer"),
-  
   SERIES("Series"),
-  
   MUSIC("Music"),
-  
   BOOK("Book"),
-  
   LIVE_TV_CHANNEL("LiveTvChannel"),
-  
   LIVE_TV_PROGRAM("LiveTvProgram"),
-  
   CHANNEL_CONTENT("ChannelContent"),
-  
   OTHER("Other");
 
   private String value;

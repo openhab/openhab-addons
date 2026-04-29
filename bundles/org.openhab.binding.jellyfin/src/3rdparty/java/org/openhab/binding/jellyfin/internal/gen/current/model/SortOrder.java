@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing the sorting order.
  */
 public enum SortOrder {
-  
   ASCENDING("Ascending"),
-  
   DESCENDING("Descending");
 
   private String value;

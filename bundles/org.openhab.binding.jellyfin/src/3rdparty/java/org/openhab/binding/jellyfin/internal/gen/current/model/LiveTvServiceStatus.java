@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets LiveTvServiceStatus
  */
 public enum LiveTvServiceStatus {
-  
   OK("Ok"),
-  
   UNAVAILABLE("Unavailable");
 
   private String value;

@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupShuffleMode.
  */
 public enum GroupShuffleMode {
-  
   SORTED("Sorted"),
-  
   SHUFFLE("Shuffle");
 
   private String value;

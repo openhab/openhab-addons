@@ -30,21 +30,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ChannelMediaContentType
  */
 public enum ChannelMediaContentType {
-  
   CLIP("Clip"),
-  
   PODCAST("Podcast"),
-  
   TRAILER("Trailer"),
-  
   MOVIE("Movie"),
-  
   EPISODE("Episode"),
-  
   SONG("Song"),
-  
   MOVIE_EXTRA("MovieExtra"),
-  
   TV_EXTRA("TvExtra");
 
   private String value;

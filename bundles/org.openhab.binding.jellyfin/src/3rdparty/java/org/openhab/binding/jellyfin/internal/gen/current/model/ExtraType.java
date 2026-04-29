@@ -30,29 +30,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ExtraType
  */
 public enum ExtraType {
-  
   UNKNOWN("Unknown"),
-  
   CLIP("Clip"),
-  
   TRAILER("Trailer"),
-  
   BEHIND_THE_SCENES("BehindTheScenes"),
-  
   DELETED_SCENE("DeletedScene"),
-  
   INTERVIEW("Interview"),
-  
   SCENE("Scene"),
-  
   SAMPLE("Sample"),
-  
   THEME_SONG("ThemeSong"),
-  
   THEME_VIDEO("ThemeVideo"),
-  
   FEATURETTE("Featurette"),
-  
   SHORT("Short");
 
   private String value;

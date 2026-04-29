@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Defines all possible methods for locking database access for concurrent queries.
  */
 public enum DatabaseLockingBehaviorTypes {
-  
   NO_LOCK("NoLock"),
-  
   PESSIMISTIC("Pessimistic"),
-  
   OPTIMISTIC("Optimistic");
 
   private String value;

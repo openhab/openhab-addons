@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum SyncPlayUserAccessType.
  */
 public enum SyncPlayUserAccessType {
-  
   CREATE_AND_JOIN_GROUPS("CreateAndJoinGroups"),
-  
   JOIN_GROUPS("JoinGroups"),
-  
   NONE("None");
 
   private String value;

@@ -30,21 +30,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The collection type options.
  */
 public enum CollectionTypeOptions {
-  
   MOVIES("movies"),
-  
   TVSHOWS("tvshows"),
-  
   MUSIC("music"),
-  
   MUSICVIDEOS("musicvideos"),
-  
   HOMEVIDEOS("homevideos"),
-  
   BOXSETS("boxsets"),
-  
   BOOKS("books"),
-  
   MIXED("mixed");
 
   private String value;

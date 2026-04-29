@@ -30,17 +30,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets ProcessPriorityClass
  */
 public enum ProcessPriorityClass {
-  
   NORMAL("Normal"),
-  
   IDLE("Idle"),
-  
   HIGH("High"),
-  
   REAL_TIME("RealTime"),
-  
   BELOW_NORMAL("BelowNormal"),
-  
   ABOVE_NORMAL("AboveNormal");
 
   private String value;

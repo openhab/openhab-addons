@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum ChannelType.
  */
 public enum ChannelType {
-  
   TV("TV"),
-  
   RADIO("Radio");
 
   private String value;

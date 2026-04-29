@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing a subtitle playback mode.
  */
 public enum SubtitlePlaybackMode {
-  
   DEFAULT("Default"),
-  
   ALWAYS("Always"),
-  
   ONLY_FORCED("OnlyForced"),
-  
   NONE("None"),
-  
   SMART("Smart");
 
   private String value;

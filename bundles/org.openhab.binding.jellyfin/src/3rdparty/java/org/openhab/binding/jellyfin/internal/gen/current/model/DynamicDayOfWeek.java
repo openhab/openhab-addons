@@ -30,25 +30,15 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum that represents a day of the week, weekdays, weekends, or all days.
  */
 public enum DynamicDayOfWeek {
-  
   SUNDAY("Sunday"),
-  
   MONDAY("Monday"),
-  
   TUESDAY("Tuesday"),
-  
   WEDNESDAY("Wednesday"),
-  
   THURSDAY("Thursday"),
-  
   FRIDAY("Friday"),
-  
   SATURDAY("Saturday"),
-  
   EVERYDAY("Everyday"),
-  
   WEEKDAY("Weekday"),
-  
   WEEKEND("Weekend");
 
   private String value;

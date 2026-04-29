@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Media types.
  */
 public enum MediaType {
-  
   UNKNOWN("Unknown"),
-  
   VIDEO("Video"),
-  
   AUDIO("Audio"),
-  
   PHOTO("Photo"),
-  
   BOOK("Book");
 
   private String value;

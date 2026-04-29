@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * The status of a series.
  */
 public enum SeriesStatus {
-  
   CONTINUING("Continuing"),
-  
   ENDED("Ended"),
-  
   UNRELEASED("Unreleased");
 
   private String value;

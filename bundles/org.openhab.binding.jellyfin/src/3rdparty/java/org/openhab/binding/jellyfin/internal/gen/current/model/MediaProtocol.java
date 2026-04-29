@@ -30,19 +30,12 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MediaProtocol
  */
 public enum MediaProtocol {
-  
   FILE("File"),
-  
   HTTP("Http"),
-  
   RTMP("Rtmp"),
-  
   RTSP("Rtsp"),
-  
   UDP("Udp"),
-  
   RTP("Rtp"),
-  
   FTP("Ftp");
 
   private String value;

@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing tonemapping ranges.
  */
 public enum TonemappingRange {
-  
   AUTO("auto"),
-  
   TV("tv"),
-  
   PC("pc");
 
   private String value;

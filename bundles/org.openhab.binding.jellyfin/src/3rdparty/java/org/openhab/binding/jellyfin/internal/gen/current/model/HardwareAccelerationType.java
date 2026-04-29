@@ -30,21 +30,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum containing hardware acceleration types.
  */
 public enum HardwareAccelerationType {
-  
   NONE("none"),
-  
   AMF("amf"),
-  
   QSV("qsv"),
-  
   NVENC("nvenc"),
-  
   V4L2M2M("v4l2m2m"),
-  
   VAAPI("vaapi"),
-  
   VIDEOTOOLBOX("videotoolbox"),
-  
   RKMPP("rkmpp");
 
   private String value;

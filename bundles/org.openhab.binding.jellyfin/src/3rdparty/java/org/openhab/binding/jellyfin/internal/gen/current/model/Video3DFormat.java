@@ -30,15 +30,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets Video3DFormat
  */
 public enum Video3DFormat {
-  
   HALF_SIDE_BY_SIDE("HalfSideBySide"),
-  
   FULL_SIDE_BY_SIDE("FullSideBySide"),
-  
   FULL_TOP_AND_BOTTOM("FullTopAndBottom"),
-  
   HALF_TOP_AND_BOTTOM("HalfTopAndBottom"),
-  
   MVC("MVC");
 
   private String value;

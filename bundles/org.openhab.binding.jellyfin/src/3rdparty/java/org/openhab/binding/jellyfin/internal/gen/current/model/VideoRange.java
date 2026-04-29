@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * An enum representing video ranges.
  */
 public enum VideoRange {
-  
   UNKNOWN("Unknown"),
-  
   SDR("SDR"),
-  
   HDR("HDR");
 
   private String value;

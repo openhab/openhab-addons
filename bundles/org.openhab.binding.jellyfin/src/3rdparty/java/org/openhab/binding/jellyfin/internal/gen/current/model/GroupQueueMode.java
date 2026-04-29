@@ -30,9 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupQueueMode.
  */
 public enum GroupQueueMode {
-  
   QUEUE("Queue"),
-  
   QUEUE_NEXT("QueueNext");
 
   private String value;

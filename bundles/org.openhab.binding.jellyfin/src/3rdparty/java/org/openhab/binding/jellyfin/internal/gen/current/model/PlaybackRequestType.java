@@ -30,39 +30,22 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum PlaybackRequestType.
  */
 public enum PlaybackRequestType {
-  
   PLAY("Play"),
-  
   SET_PLAYLIST_ITEM("SetPlaylistItem"),
-  
   REMOVE_FROM_PLAYLIST("RemoveFromPlaylist"),
-  
   MOVE_PLAYLIST_ITEM("MovePlaylistItem"),
-  
   QUEUE("Queue"),
-  
   UNPAUSE("Unpause"),
-  
   PAUSE("Pause"),
-  
   STOP("Stop"),
-  
   SEEK("Seek"),
-  
   BUFFER("Buffer"),
-  
   READY("Ready"),
-  
   NEXT_ITEM("NextItem"),
-  
   PREVIOUS_ITEM("PreviousItem"),
-  
   SET_REPEAT_MODE("SetRepeatMode"),
-  
   SET_SHUFFLE_MODE("SetShuffleMode"),
-  
   PING("Ping"),
-  
   IGNORE_WAIT("IgnoreWait");
 
   private String value;

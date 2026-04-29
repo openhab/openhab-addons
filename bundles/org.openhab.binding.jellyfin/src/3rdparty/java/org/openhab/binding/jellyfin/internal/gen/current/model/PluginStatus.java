@@ -30,21 +30,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Plugin load status.
  */
 public enum PluginStatus {
-  
   ACTIVE("Active"),
-  
   RESTART("Restart"),
-  
   DELETED("Deleted"),
-  
   SUPERSEDED("Superseded"),
-  
   SUPERCEDED("Superceded"),
-  
   MALFUNCTIONED("Malfunctioned"),
-  
   NOT_SUPPORTED("NotSupported"),
-  
   DISABLED("Disabled");
 
   private String value;

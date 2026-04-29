@@ -30,11 +30,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets DayPattern
  */
 public enum DayPattern {
-  
   DAILY("Daily"),
-  
   WEEKDAYS("Weekdays"),
-  
   WEEKENDS("Weekends");
 
   private String value;

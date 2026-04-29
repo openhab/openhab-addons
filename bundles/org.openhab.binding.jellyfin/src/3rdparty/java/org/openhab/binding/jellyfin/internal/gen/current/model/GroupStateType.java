@@ -30,13 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Enum GroupState.
  */
 public enum GroupStateType {
-  
   IDLE("Idle"),
-  
   WAITING("Waiting"),
-  
   PAUSED("Paused"),
-  
   PLAYING("Playing");
 
   private String value;

@@ -30,13 +30,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Gets or Sets MetadataRefreshMode
  */
 public enum MetadataRefreshMode {
-  
   NONE("None"),
-  
   VALIDATION_ONLY("ValidationOnly"),
-  
   DEFAULT("Default"),
-  
   FULL_REFRESH("FullRefresh");
 
   private String value;
