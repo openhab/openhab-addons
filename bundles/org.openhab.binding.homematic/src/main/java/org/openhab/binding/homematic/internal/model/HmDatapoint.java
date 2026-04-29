@@ -159,7 +159,7 @@ public class HmDatapoint implements Cloneable {
     public @Nullable String getOptionValue() {
         Integer idx = getIntegerValue();
         String[] options = this.options;
-        if (options != null && idx != null && idx < options.length) {
+        if (options != null && idx != null && idx >= 0 && idx < options.length) {
             return options[idx];
         }
         return null;
@@ -174,7 +174,7 @@ public class HmDatapoint implements Cloneable {
         }
         Integer idx = dp.getIntegerValue();
         String[] options = dp.getOptions();
-        if (options != null && idx != null && idx < options.length) {
+        if (options != null && idx != null && idx >= 0 && idx < options.length) {
             return options[idx];
         }
         return null;

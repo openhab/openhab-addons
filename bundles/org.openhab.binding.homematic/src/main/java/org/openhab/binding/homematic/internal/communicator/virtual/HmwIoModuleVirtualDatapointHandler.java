@@ -14,8 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -42,7 +40,7 @@ public class HmwIoModuleVirtualDatapointHandler extends AbstractVirtualDatapoint
     public void initialize(HmDevice device) {
         if (device.getType().startsWith(DEVICE_TYPE_WIRED_IO_MODULE)) {
             for (HmChannel channel : device.getChannels()) {
-                int channelNumber = Objects.requireNonNull(channel.getNumber());
+                int channelNumber = channel.getNumber();
                 if (channelNumber >= 7) {
                     HmDatapointInfo dpInfoState = HmDatapointInfo.createValuesInfo(channel, DATAPOINT_NAME_STATE);
                     HmDatapointInfo dpInfoValue = HmDatapointInfo.createValuesInfo(channel, DATAPOINT_NAME_VALUE);

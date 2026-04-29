@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ListBidcosInterfacesParser extends CommonRpcParser<Object @Nullable [], ListBidcosInterfacesParser> {
     private @Nullable String type;
-    private @NonNullByDefault({}) String gatewayAddress;
+    private @Nullable String gatewayAddress;
     private @Nullable String firmware;
     private @Nullable Integer dutyCycleRatio;
 
@@ -37,7 +37,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object @Nullable
         message = unWrapArray(message);
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> mapMessage = (Map<String, ?>) message[i];
-            boolean isDefault = toBoolean(mapMessage.get("DEFAULT"));
+            boolean isDefault = Boolean.TRUE.equals(toBoolean(mapMessage.get("DEFAULT")));
 
             if (isDefault) {
                 type = toString(mapMessage.get("TYPE"));

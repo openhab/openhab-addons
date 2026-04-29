@@ -99,7 +99,7 @@ public class XmlRpcResponse implements RpcResponse {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
-            String tag = qName.toLowerCase();
+            String tag = qName == null ? null : qName.toLowerCase();
             if ("array".equals(tag) || "struct".equals(tag)) {
                 currentDataObject.addLast(new ArrayList<>());
             }
@@ -110,7 +110,7 @@ public class XmlRpcResponse implements RpcResponse {
         @Override
         public void endElement(@Nullable String uri, @Nullable String localName, @Nullable String qName)
                 throws SAXException {
-            String currentTag = qName.toLowerCase();
+            String currentTag = qName == null ? "" : qName.toLowerCase();
             String currentValue = tagValue.toString();
             List<Object> data = currentDataObject.peekLast();
 

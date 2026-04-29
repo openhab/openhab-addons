@@ -78,7 +78,9 @@ public class MetadataUtils {
         try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;
+            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
+                lineNumber++;
                 if (!line.trim().isEmpty() && !line.startsWith("#")) {
                     String[] parts = line.split("\\|");
                     String channelType = null;
@@ -90,17 +92,23 @@ public class MetadataUtils {
                         }
                     }
 
+                    if (channelType == null || channelType.isEmpty() || datapointName == null
+                            || datapointName.isEmpty()) {
+                        throw new IllegalStateException(
+                                String.format("Malformed standard datapoint entry at line %d: %s", lineNumber, line));
+                    }
+
                     Set<String> channelDatapoints = standardDatapoints.get(channelType);
-                    if (channelType != null && channelDatapoints == null) {
+                    if (channelDatapoints == null) {
                         channelDatapoints = new HashSet<>();
                         standardDatapoints.put(channelType, channelDatapoints);
                     }
 
-                    channelDatapoints.add(Objects.requireNonNull(datapointName));
+                    channelDatapoints.add(datapointName);
                 }
             }
-        } catch (IllegalStateException | IOException e) {
-            LOGGER.warn("Can't load standard-datapoints.properties file!", e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't load standard-datapoints.properties file!", e);
         }
     }
 
@@ -203,7 +211,7 @@ public class MetadataUtils {
     /**
      * Returns the description for the given keys.
      */
-    public static String getDescription(String... keys) {
+    public static @Nullable String getDescription(String... keys) {
         StringBuilder sb = new StringBuilder();
         for (int startIdx = 0; startIdx < keys.length; startIdx++) {
             String key = String.join("|", Arrays.copyOfRange(keys, startIdx, keys.length));
@@ -219,7 +227,7 @@ public class MetadataUtils {
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Description not found for: {}", sb.toString().substring(0, sb.length() - 2));
         }
-        return "";
+        return null;
     }
 
     /**
@@ -244,9 +252,9 @@ public class MetadataUtils {
     /**
      * Returns the description for the given datapoint.
      */
-    public static String getDatapointDescription(HmDatapoint dp) {
+    public static @Nullable String getDatapointDescription(HmDatapoint dp) {
         if (dp.isVariable() || dp.isScript()) {
-            return "";
+            return null;
         }
         return getDescription(dp.getChannel().getType(), dp.getName());
     }
@@ -372,7 +380,7 @@ public class MetadataUtils {
     /**
      * Determines the category for the given Datapoint.
      */
-    public static String getCategory(HmDatapoint dp, String itemType) {
+    public static @Nullable String getCategory(HmDatapoint dp, String itemType) {
         String dpName = dp.getName();
         String channelType = dp.getChannel().getType();
         if (channelType == null) {
@@ -409,11 +417,11 @@ public class MetadataUtils {
         } else if (itemType.equals(ITEM_TYPE_CONTACT)) {
             return CATEGORY_CONTACT;
         } else if (itemType.equals(ITEM_TYPE_DIMMER)) {
-            return "";
+            return null;
         } else if (itemType.equals(ITEM_TYPE_SWITCH)) {
             return CATEGORY_SWITCH;
         } else {
-            return "";
+            return null;
         }
     }
 }

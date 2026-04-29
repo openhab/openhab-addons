@@ -347,10 +347,17 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
     @Override
     public HmDatapoint getDatapoint(HmDatapointInfo dpInfo) throws HomematicClientException {
         HmDevice device = getDevice(dpInfo.getAddress());
-        HmChannel channel = device.getChannel(dpInfo.getChannel());
+        Integer channelNumber = dpInfo.getChannel();
+        if (channelNumber == null) {
+            throw new HomematicClientException(
+                    String.format("Channel number missing for datapoint '%s' in device '%s' on gateway '%s'",
+                            dpInfo.getName(), dpInfo.getAddress(), id));
+        }
+
+        HmChannel channel = device.getChannelUnchecked(channelNumber);
         if (channel == null) {
             throw new HomematicClientException(String.format("Channel %s in device '%s' not found on gateway '%s'",
-                    dpInfo.getChannel(), dpInfo.getAddress(), id));
+                    channelNumber, dpInfo.getAddress(), id));
         }
         HmDatapoint dp = channel.getDatapoint(dpInfo);
         if (dp == null) {
@@ -389,16 +396,15 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
                     logger.trace("Loading metadata for device '{}' of type '{}'", device.getAddress(),
                             device.getType());
                     if (device.isGatewayExtras()) {
-                        loadChannelValues(Objects.requireNonNull(device.getChannel(HmChannel.CHANNEL_NUMBER_VARIABLE)));
-                        loadChannelValues(Objects.requireNonNull(device.getChannel(HmChannel.CHANNEL_NUMBER_SCRIPT)));
+                        loadChannelValues(device.getChannel(HmChannel.CHANNEL_NUMBER_VARIABLE));
+                        loadChannelValues(device.getChannel(HmChannel.CHANNEL_NUMBER_SCRIPT));
                     } else {
                         for (HmChannel channel : device.getChannels()) {
                             logger.trace("  Loading channel {}", channel);
                             // speed up metadata generation a little bit for equal channels in the gateway devices
                             if ((DEVICE_TYPE_VIRTUAL.equals(device.getType())
                                     || DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) && channel.getNumber() > 1) {
-                                HmChannel previousChannel = Objects
-                                        .requireNonNull(device.getChannel(channel.getNumber() - 1));
+                                HmChannel previousChannel = device.getChannel(channel.getNumber() - 1);
                                 cloneAllDatapointsIntoChannel(channel, previousChannel.getDatapoints());
                             } else {
                                 String channelId = String.format("%s:%s:%s", channel.getDevice().getType(),
@@ -560,7 +566,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
             HmDatapoint installModeDurationDataPoint = null;
 
             // collect virtual datapoints to be accessed
-            HmChannel hmChannel = Objects.requireNonNull(gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS));
+            HmChannel hmChannel = gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS);
             HmDatapointInfo installModeDurationDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
                     HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION);
             if (enable) {
@@ -624,7 +630,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
         HmDatapointInfo dpInfo = new HmDatapointInfo(address, HmParamsetType.VALUES, 0, datapointName);
         HmChannel channel;
         try {
-            channel = getDevice(dpInfo.getAddress()).getChannel(0);
+            channel = getDevice(dpInfo.getAddress()).getChannelUnchecked(0);
             if (channel != null) {
                 eventReceived(dpInfo, value);
             }

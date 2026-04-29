@@ -37,7 +37,7 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     @Override
     public void initialize(HmDevice device) {
         if (isApplicable(device)) {
-            HmChannel channelOne = device.getChannel(1);
+            HmChannel channelOne = device.getChannelUnchecked(1);
             if (channelOne != null) {
                 HmDatapointInfo dpStateInfo = HmDatapointInfo.createValuesInfo(channelOne, DATAPOINT_NAME_STATE);
                 HmDatapoint dpState = channelOne.getDatapoint(dpStateInfo);

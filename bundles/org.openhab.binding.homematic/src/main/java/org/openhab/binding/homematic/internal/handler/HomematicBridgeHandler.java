@@ -421,7 +421,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void reloadAllDeviceValues() {
         HomematicGateway gateway = this.gateway;
         if (gateway == null) {
-            logger.debug("Homematic Gateway is null, unable to release device values");
+            logger.debug("Homematic Gateway is null, unable to reload device values");
             return;
         }
         for (Thing hmThing : getThing().getThings()) {

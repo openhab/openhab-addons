@@ -113,7 +113,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void doInitializeInBackground() throws GatewayNotAvailableException, HomematicClientException, IOException {
         HomematicGateway gateway = getHomematicGateway();
         HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
-        HmChannel channelZero = Objects.requireNonNull(device.getChannel(0));
+        HmChannel channelZero = device.getChannel(0);
         loadHomematicChannelValues(channelZero);
         updateStatus(device);
         logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
@@ -174,11 +174,13 @@ public class HomematicThingHandler extends BaseThingHandler {
                         typeProvider.putChannelType(channelType);
                     }
 
-                    Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
-                            .withLabel(MetadataUtils.getLabel(dp))
-                            .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
-                            .build();
-                    thingChannels.add(thingChannel);
+                    ChannelBuilder builder = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
+                            .withLabel(MetadataUtils.getLabel(dp)).withType(channelType.getUID());
+                    String description = MetadataUtils.getDatapointDescription(dp);
+                    if (description != null) {
+                        builder.withDescription(description);
+                    }
+                    thingChannels.add(builder.build());
 
                     logger.debug(
                             "Updated value datapoints for channel {} of device '{}' (function {}), now has {} datapoints",
@@ -250,11 +252,14 @@ public class HomematicThingHandler extends BaseThingHandler {
                     typeProvider.putChannelType(channelType);
                 }
 
-                Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
+                ChannelBuilder builder = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
                         .withProperties(channelProps).withLabel(MetadataUtils.getLabel(dp))
-                        .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
-                        .build();
-                thingChannels.add(thingChannel);
+                        .withType(channelType.getUID());
+                String description = MetadataUtils.getDatapointDescription(dp);
+                if (description != null) {
+                    builder.withDescription(description);
+                }
+                thingChannels.add(builder.build());
                 changed = true;
             }
         }
@@ -394,7 +399,13 @@ public class HomematicThingHandler extends BaseThingHandler {
         HmDatapointInfo dpInfo = UidUtils.createHmDatapointInfo(channelUID);
         HmDatapoint dp = gateway.getDatapoint(dpInfo);
         Channel channel = getThing().getChannel(channelUID.getId());
-        updateChannelState(dp, Objects.requireNonNull(channel));
+        if (channel == null) {
+            logger.warn("Channel '{}' not found in thing '{}' on gateway '{}'", channelUID, getThing().getUID(),
+                    gateway.getId());
+            return;
+        }
+
+        updateChannelState(dp, channel);
     }
 
     /**
@@ -516,7 +527,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Updates the thing status based on device status.
      */
     private void updateStatus(HmDevice device) throws GatewayNotAvailableException, IOException {
-        loadHomematicChannelValues(Objects.requireNonNull(device.getChannel(0)));
+        loadHomematicChannelValues(device.getChannel(0));
 
         ThingStatus oldStatus = thing.getStatus();
         if (oldStatus == ThingStatus.UNINITIALIZED) {
