@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
@@ -224,12 +223,6 @@ public class MSpaUtils {
         return UNKNOWN;
     }
 
-    /**
-     * Safe conversion from String to JSON object. Logs a warning and returns empty optional in case of failure.
-     *
-     * @param response String to be converted
-     * @return Optional with JSON object if successful, empty optional otherwise
-     */
     public static Optional<JSONObject> toJson(String response) {
         try {
             return Optional.of(new JSONObject(response));
@@ -237,22 +230,5 @@ public class MSpaUtils {
             LOGGER.warn("Failed to parse response to JSON: {}. Exception: {}", response, e.getMessage());
             return Optional.empty();
         }
-    }
-
-    /**
-     * Helper method to extract device list from device list response.
-     *
-     * @param responseJson JSON response from device list request
-     * @return JSON array with device information, empty array in case of error or no devices
-     */
-    public static Optional<JSONArray> extractList(JSONObject responseJson) {
-        JSONObject dataJson = responseJson.optJSONObject("data");
-        if (dataJson != null) {
-            JSONArray list = dataJson.optJSONArray("list");
-            if (list != null) {
-                return Optional.of(list);
-            }
-        }
-        return Optional.empty();
     }
 }
