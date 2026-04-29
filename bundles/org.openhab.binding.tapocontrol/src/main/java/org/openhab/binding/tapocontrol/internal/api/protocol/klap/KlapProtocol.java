@@ -119,7 +119,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
     @Override
     public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
         if (executor.isShutdown()) {
-            executor = Executors.newSingleThreadExecutor();
+            executor = Executors.newVirtualThreadPerTaskExecutor();
         }
         executor.submit(() -> {
             try {
