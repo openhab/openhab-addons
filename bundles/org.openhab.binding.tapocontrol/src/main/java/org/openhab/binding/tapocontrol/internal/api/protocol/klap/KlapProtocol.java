@@ -51,7 +51,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
     protected final TapoConnectorInterface httpDelegator;
     private KlapSession session;
     private String uid;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     /***********************
      * Init Class
@@ -137,7 +137,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      * pushes (decrypted) TapoResponse to [httpDelegator.handleResponse()]-function
      * retries login+command if Http 403 response indicates klap protocol no longer valid
      */
-    private void sendRequestRetryable(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
+    private synchronized void sendRequestRetryable(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
         /*
          * send request, and retry with re-login if protocol rejected
          * (Protocol can be rejected due to polling from another device e.g. Tapo App, or Tapo H100 Hub)
@@ -231,6 +231,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, errorMessage));
                 return;
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new TapoErrorHandler(e, "error sending content");
             } catch (Exception e) {
                 String errorMessage = e.getMessage();

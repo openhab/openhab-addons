@@ -102,7 +102,7 @@ public class KlapCipher {
             Cipher encodeCipher = getCipher(Cipher.ENCRYPT_MODE, ivSeq);
             byte[] msg = str.getBytes(CIPHER_CHARSET);
             byte[] cipherText = encodeCipher.doFinal(msg);
-            byte[] signature = sha256Encode(concatBytes(sig, BigInteger.valueOf(ivSeq).toByteArray(), cipherText));
+            byte[] signature = sha256Encode(concatBytes(sig, getIv(ivSeq), cipherText));
             return concatBytes(signature, cipherText);
         } catch (Exception e) {
             throw new TapoErrorHandler(ERR_DATA_ENCRYPTING, e.getMessage());
@@ -129,13 +129,13 @@ public class KlapCipher {
      * @param ivSeq ivSequence-Number
      */
     private byte[] getIv(int ivSeq) throws TapoErrorHandler {
-        /* seq must be 4 bytes long */
+        /* return Iv, must be 4 bytes long */
         byte[] seq = new byte[4];
         seq[0] = (byte) (ivSeq >>> 24);
         seq[1] = (byte) (ivSeq >>> 16);
         seq[2] = (byte) (ivSeq >>> 8);
         seq[3] = (byte) ivSeq;
-        return concatBytes(iv, seq);
+        return seq;
     }
 
     /************************
@@ -202,4 +202,5 @@ public class KlapCipher {
             throw new TapoErrorHandler(e);
         }
     }
+
 }
