@@ -35,7 +35,7 @@ if ! type wget &>/dev/null; then
     alias wget=wget2
 fi
 
-REQUIRED=("wget" "yq" "docker" "curl" "jq" "awk" "sed" "grep" "sort" "tail" "mvn" "docker" "npm")
+REQUIRED=("wget" "yq" "docker" "curl" "jq" "awk" "sed" "grep" "sort" "tail" "mvn" "docker" "npm" "python3")
 
 function checkEnvironment() {
     for i in "${REQUIRED[@]}"; do
@@ -166,6 +166,26 @@ for i in "${VERSIONS[@]}"; do
         FILENAME_YAML_INPUT="${FILENAME_YAML_FIXED}"
     fi
 
+    # Preprocess: sort all enum arrays in the OpenAPI YAML input
+    # This keeps existing TranscodeReasons fix behavior (we sort the selected input)
+    # Exception list: schema symbols that MUST keep original enum order (do not sort)
+    ENUM_SORT_EXCEPTIONS="#sym:DayOfWeek"
+    FILENAME_YAML_SORTED="${FILENAME_YAML}.sorted"
+    echo "🔧 sort all enum arrays in OpenAPI YAML input"
+    # Always use dedicated Python helper to sort enums, passing exception args
+    PY_SCRIPT="tools/generate-sources/scripts/sort_openapi_enums.py"
+    # Split comma-separated ENUM_SORT_EXCEPTIONS into multiple --exception args
+    PY_ARGS=("${FILENAME_YAML_INPUT}" "${FILENAME_YAML_SORTED}")
+    IFS=',' read -ra EXARR <<< "${ENUM_SORT_EXCEPTIONS}"
+    for ex in "${EXARR[@]}"; do
+        ex_trimmed=$(echo "${ex}" | awk '{gsub(/^ +| +$/,"",$0); print $0}')
+        if [ -n "${ex_trimmed}" ]; then
+            PY_ARGS+=("--exception" "${ex_trimmed}")
+        fi
+    done
+    python3 "${PY_SCRIPT}" "${PY_ARGS[@]}"
+    FILENAME_YAML_INPUT="${FILENAME_YAML_SORTED}"
+
     docker run --rm --interactive \
         --user $(id -u):$(id -g) \
         --volume ${ROOT}:${DOCKER_VOLUME_WORK} \
@@ -183,6 +203,10 @@ for i in "${VERSIONS[@]}"; do
     # Clean up the temporary fixed file if it was created
     if [ -f "${FILENAME_YAML_FIXED}" ]; then
         rm ${FILENAME_YAML_FIXED}
+    fi
+    # Clean up the temporary sorted file if it was created
+    if [ -f "${FILENAME_YAML_SORTED}" ]; then
+        rm ${FILENAME_YAML_SORTED}
     fi
 
     # Move generated sources from temp dir to src/3rdparty/java
@@ -233,6 +257,26 @@ echo "🔧 remove @NonNullByDefault from generated classes (covered by package-i
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
+echo "🔧 guard url.replace calls in ServerConfiguration to avoid nullness mismatch"
+# Ensure generated ServerConfiguration calls to url.replace are null-guarded to satisfy static null analysis
+if [ -f "${GEN_ROOT_TARGET}/ServerConfiguration.java" ]; then
+    # Replace return url.replace(...) with a null-guarded ternary and balance parentheses
+    sed -i 's/return[[:space:]]\+url\.replace/return (url == null ? null : url.replace/g' "${GEN_ROOT_TARGET}/ServerConfiguration.java"
+    # For lines we modified above, the closing ');' must become '));' to close the ternary
+    sed -i '/url\.replace/ s/);/));/' "${GEN_ROOT_TARGET}/ServerConfiguration.java"
+fi
+
+# Ensure any non-return assignments using the pattern are also balanced, e.g.:
+# url = (url == null ? null : url.replace(...);
+# -> url = (url == null ? null : url.replace(...));
+if [ -f "${GEN_ROOT_TARGET}/ServerConfiguration.java" ]; then
+    sed -i '/(url == null ? null : url.replace/ s/;$/);/' "${GEN_ROOT_TARGET}/ServerConfiguration.java"
+fi
+
+# Normalize any remaining url.replace lines to a canonical null-guarded form
+if [ -f "${GEN_ROOT_TARGET}/ServerConfiguration.java" ]; then
+    sed -i '/url\.replace/ c\            url = (url == null ? null : url.replace("{" + name + "}", value != null ? value : ""));' "${GEN_ROOT_TARGET}/ServerConfiguration.java"
+fi
 echo ""
 echo "🧹 apply formatting to generated code"
 mvn spotless:apply $MVN_OPT
