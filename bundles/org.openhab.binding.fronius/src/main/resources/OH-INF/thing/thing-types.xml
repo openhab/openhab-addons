@@ -57,7 +57,7 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Battery Thing Type (maps to Storage Controller fields) -->
+	<!-- Battery Thing Type -->
 	<thing-type id="battery">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -465,11 +465,15 @@
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 
-	<!-- Battery specific channel-types (map to Storage Controller fields) -->
+	<!-- Battery specific channel-types -->
 	<channel-type id="batteryMaximumCapacity">
 		<item-type>Number:Energy</item-type>
 		<label>Current Maximum Battery Capacity</label>
 		<description>Current maximum battery capacity in Wh</description>
+    <tags>
+      <tag>Measurement</tag>
+      <tag>Energy</tag>
+    </tags>
 		<state pattern="%.0f Wh" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryDesignedCapacity">
@@ -484,7 +488,7 @@
 		<description>Current state of charge of the battery in percent</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Power</tag>
+			<tag>StateOfCharge</tag>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
@@ -492,6 +496,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Cell Temperature</label>
 		<description>Temperature of the battery cell</description>
+    <tags>
+      <tag>Measurement</tag>
+      <tag>Temperature</tag>
+    </tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryTimestamp">
@@ -506,7 +514,6 @@
 		<description>Status code coming from Status_BatteryCell</description>
 		<state pattern="%d" readOnly="true"></state>
 	</channel-type>
-
 	<channel-type id="batteryEnable">
 		<item-type>Number</item-type>
 		<label>Battery Enabled</label>

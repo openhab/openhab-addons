@@ -202,7 +202,7 @@ var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinver
 
 ::: tab JRuby
 
-In JRuby, the action methods are attached to the the Thing object.
+In JRuby, the action methods are attached to the Thing object.
 
 ```rb
 my_inverter = things["fronius:powerinverter:mybridge:myinverter"]
@@ -278,7 +278,7 @@ froniusInverterActions.setBackupReservedBatteryCapacity(50);
 
 :::
 
-::: JRuby
+::: tab JRuby
 
 ```rb
 inverter = things["fronius:powerinverter:mybridge:myinverter"]

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.storage;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -37,7 +39,7 @@ public class StorageController {
     private int enable;
 
     @SerializedName("StateOfCharge_Relative")
-    private int stateOfChargeRelative;
+    private double stateOfChargeRelative;
 
     @SerializedName("Status_BatteryCell")
     private int statusBatteryCell;
@@ -63,10 +65,7 @@ public class StorageController {
         return designedCapacity;
     }
 
-    public StorageDetails getDetails() {
-        if (details == null) {
-            details = new StorageDetails();
-        }
+    public @Nullable StorageDetails getDetails() {
         return details;
     }
 
@@ -74,7 +73,7 @@ public class StorageController {
         return enable;
     }
 
-    public int getStateOfChargeRelative() {
+    public double getStateOfChargeRelative() {
         return stateOfChargeRelative;
     }
 

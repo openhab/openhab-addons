@@ -98,7 +98,7 @@ public class FroniusBindingConstants {
     public static final String OHMPILOT_ERROR_CODE = "errorcode";
     public static final String OHMPILOT_STATE_CODE = "statecode";
 
-    // Battery channels (map to Storage Controller fields)
+    // Battery channels
     public static final String BATTERY_CAPACITY_MAXIMUM = "maximumCapacity";
     public static final String BATTERY_DESIGNED_CAPACITY = "designedCapacity";
     public static final String BATTERY_CURRENT_DC = "currentDc";
