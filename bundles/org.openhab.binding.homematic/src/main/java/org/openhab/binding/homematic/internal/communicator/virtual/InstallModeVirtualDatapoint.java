@@ -71,7 +71,8 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
     private Integer getDuration(HmChannel channel) {
         HmDatapoint dpDuration = channel
                 .getDatapoint(HmDatapointInfo.createValuesInfo(channel, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION));
-        return dpDuration == null || dpDuration.getValue() == null || dpDuration.getType() != HmValueType.INTEGER ? 60
-                : ((Number) dpDuration.getValue()).intValue();
+        Object dpValue = dpDuration == null ? null : dpDuration.getValue();
+        return dpDuration == null || dpValue == null || dpDuration.getType() != HmValueType.INTEGER ? 60
+                : ((Number) dpValue).intValue();
     }
 }

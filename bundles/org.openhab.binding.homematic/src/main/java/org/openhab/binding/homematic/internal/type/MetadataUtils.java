@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MetadataUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
-    private static @Nullable ResourceBundle descriptionsBundle;
     private static Map<String, String> descriptions = new HashMap<>();
     private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
 
@@ -64,12 +63,11 @@ public class MetadataUtils {
     }
 
     private static void loadBundle(String filename) {
-        descriptionsBundle = ResourceBundle.getBundle(filename, Locale.getDefault());
+        ResourceBundle descriptionsBundle = ResourceBundle.getBundle(filename, Locale.getDefault());
         for (String key : descriptionsBundle.keySet()) {
             descriptions.put(key.toUpperCase(), descriptionsBundle.getString(key));
         }
         ResourceBundle.clearCache();
-        descriptionsBundle = null;
     }
 
     /**

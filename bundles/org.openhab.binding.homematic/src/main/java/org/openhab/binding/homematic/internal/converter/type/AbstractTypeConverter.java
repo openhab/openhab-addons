@@ -74,7 +74,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Rounds a double value.
      */
-    protected BigDecimal round(Double number) {
+    protected BigDecimal round(@Nullable Double number) {
         BigDecimal bd = new BigDecimal(number == null ? "0" : number.toString());
         String stringBd = bd.toPlainString();
         int scale = stringBd.length() - (stringBd.lastIndexOf('.') + 1);

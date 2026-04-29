@@ -854,11 +854,12 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
 
                 @Override
                 public void execute() throws IOException {
-                    if (MiscUtils.isTrueValue(dp.getValue())) {
+                    Object dpValue = dp.getValue();
+                    if (MiscUtils.isTrueValue(dpValue)) {
                         dp.setValue(Boolean.FALSE);
                         gatewayAdapter.onStateUpdated(dp);
                         handleVirtualDatapointEvent(dp, true);
-                    } else if (dp.getType() == HmValueType.ENUM && dp.getValue() != null && !dp.getValue().equals(0)) {
+                    } else if (dp.getType() == HmValueType.ENUM && dpValue != null && !dpValue.equals(0)) {
                         dp.setValue(dp.getMinValue());
                         gatewayAdapter.onStateUpdated(dp);
                         handleVirtualDatapointEvent(dp, true);

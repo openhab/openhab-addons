@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.converter.type;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -98,7 +100,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
 
     @Override
     protected PercentType fromBinding(HmDatapoint dp) throws ConverterException {
-        Double number = ((Number) dp.getValue()).doubleValue();
+        Double number = Objects.requireNonNull(((Number) dp.getValue())).doubleValue();
         int percent = (int) (100 / getCorrectedMaxValue(dp) * number);
         if (percent > 100) {
             logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);

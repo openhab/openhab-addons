@@ -15,7 +15,6 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,7 +54,7 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
         dp.setValue(value);
         if (MiscUtils.isTrueValue(dp.getValue())) {
             try {
-                gateway.triggerDeviceValuesReload(Objects.requireNonNull(dp.getChannel().getDevice()));
+                gateway.triggerDeviceValuesReload(dp.getChannel().getDevice());
             } finally {
                 gateway.disableDatapoint(dp, AbstractHomematicGateway.DEFAULT_DISABLE_DELAY);
             }

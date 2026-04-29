@@ -49,6 +49,12 @@ public class HmChannel {
         this.number = number;
     }
 
+    public HmChannel(@Nullable String type, @Nullable Integer number, HmDevice device) {
+        this.type = type;
+        this.number = number;
+        this.device = device;
+    }
+
     /**
      * Returns the channel number.
      */
@@ -59,14 +65,18 @@ public class HmChannel {
     /**
      * Returns the device of the channel.
      */
-    public @Nullable HmDevice getDevice() {
-        return device;
+    public HmDevice getDevice() {
+        HmDevice d = device;
+        if (d == null) {
+            throw new IllegalStateException("Channel has no device - was it added via HmDevice.addChannel()?");
+        }
+        return d;
     }
 
     /**
      * Sets the device of the channel.
      */
-    public void setDevice(HmDevice device) {
+    void setDevice(HmDevice device) {
         this.device = device;
     }
 
@@ -97,6 +107,7 @@ public class HmChannel {
      * Returns true, if the channel contains gateway scripts.
      */
     public boolean isGatewayScript() {
+        HmDevice device = this.device;
         if (device == null) {
             return false;
         }
@@ -107,6 +118,7 @@ public class HmChannel {
      * Returns true, if the channel contains gateway variables.
      */
     public boolean isGatewayVariable() {
+        HmDevice device = this.device;
         if (device == null) {
             return false;
         }

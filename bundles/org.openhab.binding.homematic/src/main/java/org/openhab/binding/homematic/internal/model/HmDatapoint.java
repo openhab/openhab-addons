@@ -141,6 +141,7 @@ public class HmDatapoint implements Cloneable {
      * Returns the index of the value in an option list.
      */
     public int getOptionIndex(@Nullable String option) {
+        String[] options = this.options;
         if (options != null && option != null) {
             for (int i = 0; i < options.length; i++) {
                 String value = options[i];

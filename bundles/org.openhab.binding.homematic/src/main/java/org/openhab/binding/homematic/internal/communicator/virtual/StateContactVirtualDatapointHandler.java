@@ -60,10 +60,7 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
         vdp.setValue(value);
     }
 
-    private boolean isApplicable(@Nullable HmDevice device) {
-        if (device == null) {
-            return false;
-        }
+    private boolean isApplicable(HmDevice device) {
         return device.getType().toUpperCase().startsWith("HMIP-SWD");
     }
 

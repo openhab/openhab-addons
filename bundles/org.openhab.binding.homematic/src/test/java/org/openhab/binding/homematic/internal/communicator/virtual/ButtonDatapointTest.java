@@ -141,9 +141,9 @@ public class ButtonDatapointTest extends JavaTest {
 
     private HmDatapoint createPressDatapoint(String channelName, Object value) {
         HmDatapoint pressDp = new HmDatapoint(channelName, "", HmValueType.ACTION, value, true, HmParamsetType.VALUES);
-        HmChannel hmChannel = new HmChannel(channelName, 1);
         HmDevice device = new HmDevice("ABC12345", HmInterface.RF, "HM-MOCK", "mockid", "mockid", "mockfw");
-        hmChannel.setDevice(device);
+        HmChannel hmChannel = new HmChannel(channelName, 1, device);
+
         device.addChannel(hmChannel);
         hmChannel.addDatapoint(pressDp);
         pressDp.setChannel(hmChannel);

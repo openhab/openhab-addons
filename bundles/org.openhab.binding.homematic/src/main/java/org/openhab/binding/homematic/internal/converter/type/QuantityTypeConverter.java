@@ -100,15 +100,15 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
 
     @Override
     protected QuantityType<? extends Quantity<?>> fromBinding(HmDatapoint dp) throws ConverterException {
-        Number number = null;
+        Number number = Objects.requireNonNull(((Number) dp.getValue()));
         if (dp.isIntegerType()) {
-            number = new BigDecimal(((Number) dp.getValue()).intValue());
+            number = new BigDecimal(number.intValue());
         } else {
-            number = round(((Number) dp.getValue()).doubleValue());
+            number = round(number.doubleValue());
         }
 
         // create a QuantityType from the datapoint's value based on the datapoint's unit
-        String unit = dp.getUnit() != null ? dp.getUnit() : "";
+        String unit = Objects.requireNonNullElse(dp.getUnit(), "");
         switch (unit) {
             case UNCORRECT_ENCODED_CELSIUS:
             case "°C":
