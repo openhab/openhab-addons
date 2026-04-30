@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.senseenergy.internal.api.dto;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -35,4 +39,22 @@ public class SenseEnergyApiDeviceTags {
     public String deviceID;
     @SerializedName("SSIEnabled")
     public boolean ssiEnabled;
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SenseEnergyApiDeviceTags that = (SenseEnergyApiDeviceTags) o;
+        return userDeleted == that.userDeleted && alwaysOn == that.alwaysOn && ssiEnabled == that.ssiEnabled
+                && Objects.equals(stage, that.stage) && Objects.equals(deviceID, that.deviceID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stage, userDeleted, alwaysOn, deviceID, ssiEnabled);
+    }
 }

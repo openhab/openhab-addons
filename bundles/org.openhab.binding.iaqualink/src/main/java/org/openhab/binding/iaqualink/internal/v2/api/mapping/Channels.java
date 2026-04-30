@@ -48,8 +48,7 @@ public class Channels {
 
     public static Collection<ChannelDef> sensorById(int swcId, int id) {
         ChannelDefBuilder builder = new ChannelDefBuilder("SWC%d_".formatted(swcId),
-                "Salt Water Chlorinator %d ".formatted(swcId),
-                "$.state.reported.equipment.swc_%d.sns_%d".formatted(swcId, id));
+                "Salt Water Chlorinator %d ".formatted(swcId), "equipment.swc_%d.sns_%d".formatted(swcId, id));
 
         return List.of(
                 builder.build("TempSensor" + id, "Temperature Sensor " + id, "Number:Temperature", "temperature",
@@ -60,21 +59,21 @@ public class Channels {
 
     public static Collection<ChannelDef> swcById(int id) {
         ChannelDefBuilder builder = new ChannelDefBuilder("SWC%d_".formatted(id),
-                "Salt Water Chlorinator %d ".formatted(id), "$.state.reported.equipment.swc_%d.".formatted(id));
+                "Salt Water Chlorinator %d ".formatted(id), "equipment.swc_%d.".formatted(id));
 
         return Stream.concat(
                 Stream.of(builder.build("Boost", "Boost", "Switch", "equipment-switch", "boost"),
                         builder.build("Boost_Time", "Boost Time", "Number:Time", "duration", "boost_time"),
                         builder.build("Low", "Low", "Switch", "equipment-switch", "low"),
-                        builder.build("Production", "Production", "Switch", "readonly-switch", "production"),
-                        builder.build("Filter_Pump", "Filter Pump", "Switch", "equipment-switch", "filter_pump.state"),
+                        builder.build("Production", "Production", "Switch", "equipment-switch", "production"),
+                        builder.build("Filter_Pump", "Filter Pump", "Switch", "readonly-switch", "filter_pump.state"),
                         builder.build("SaltLevel", "Salt Level", "Number", "chemical", "swc")),
                 sensorsForSwc(id).stream()).toList();
     }
 
     public static Collection<ChannelDef> scheduleById(int id) {
         ChannelDefBuilder builder = new ChannelDefBuilder("Schedule%d_".formatted(id),
-                "Salt Water Chlorinator Schedule %d ".formatted(id), "$.state.reported.schedules.sch%d.".formatted(id));
+                "Salt Water Chlorinator Schedule %d ".formatted(id), "schedules.sch%d.".formatted(id));
 
         return List.of(builder.build("Active", "Active", "Switch", "readonly-switch", "active"),
                 builder.build("Enabled", "Enabled", "Switch", "equipment-switch", "enabled"),

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.calc.moon.LunationArguments;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -30,7 +31,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Gaël L'hopital - Extracted from MoonCalc
  */
 @NonNullByDefault
-public abstract class EclipseCalc extends AstroCalc {
+public abstract class EclipseCalc {
     public record Eclipse(EclipseKind kind, double when) {
         public LocalizedEclipse withPosition(Position position) {
             return new LocalizedEclipse(this, position.getElevationAsDouble());
@@ -59,9 +60,9 @@ public abstract class EclipseCalc extends AstroCalc {
         double tz = 0;
         double eclipseJd = 0;
         do {
-            double k = varK(midnightJd, tz);
+            double k = LunationArguments.varK(midnightJd, tz);
             tz += 1;
-            eclipseJd = getEclipse(Math.floor(k) + getJDAjust(), eclipse);
+            eclipseJd = getEclipse(k, getJDAjust(), eclipse);
         } while (eclipseJd <= midnightJd);
         return eclipseJd;
     }
@@ -75,32 +76,30 @@ public abstract class EclipseCalc extends AstroCalc {
     /**
      * Calculates the eclipse.
      */
-    protected double getEclipse(double kMod, EclipseKind eclipse) {
-        double t = kMod / 1236.85;
-        double f = varF(kMod, t);
+    protected double getEclipse(double k, double adjust, EclipseKind eclipse) {
+        LunationArguments la = new LunationArguments(k, adjust);
 
-        if (sinDeg(Math.abs(f)) > .36) {
+        if (sinDeg(Math.abs(la.f)) > .36) {
             return 0;
         }
 
-        double o = varO(kMod, t);
-        double f1 = f - .02665 * sinDeg(o);
-        double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
-        double e = varE(t);
-        double m = varM(kMod, t);
-        double m1 = varM1(kMod, t);
-        double p = .207 * e * sinDeg(m) + .0024 * e * sinDeg(2 * m) - .0392 * sinDeg(m1) + .0116 * sinDeg(2 * m1)
-                - .0073 * e * sinDeg(m1 + m) + .0067 * e * sinDeg(m1 - m) + .0118 * sinDeg(2 * f1);
-        double q = 5.2207 - .0048 * e * cosDeg(m) + .002 * e * cosDeg(2 * m) - .3299 * cosDeg(m1)
-                - .006 * e * cosDeg(m1 + m) + .0041 * e * cosDeg(m1 - m);
+        double f1 = la.f - .02665 * sinDeg(la.o);
+        double a1 = 299.77 + .107408 * la.kMod - .009173 * la.t2;
+        double p = .207 * la.e * sinDeg(la.m) + .0024 * la.e * sinDeg(2 * la.m) - .0392 * sinDeg(la.m1)
+                + .0116 * sinDeg(2 * la.m1) - .0073 * la.e * sinDeg(la.m1 + la.m) + .0067 * la.e * sinDeg(la.m1 - la.m)
+                + .0118 * sinDeg(2 * f1);
+        double q = 5.2207 - .0048 * la.e * cosDeg(la.m) + .002 * la.e * cosDeg(2 * la.m) - .3299 * cosDeg(la.m1)
+                - .006 * la.e * cosDeg(la.m1 + la.m) + .0041 * la.e * cosDeg(la.m1 - la.m);
         double g = (p * cosDeg(f1) + q * sinDeg(f1)) * (1 - .0048 * cosDeg(Math.abs(f1)));
-        double u = .0059 + .0046 * e * cosDeg(m) - .0182 * cosDeg(m1) + .0004 * cosDeg(2 * m1) - .0005 * cosDeg(m + m1);
-        double jd = varJde(kMod, t);
-        jd += .0161 * sinDeg(2 * m1) - .0097 * sinDeg(2 * f1) + .0073 * e * sinDeg(m1 - m) - .005 * e * sinDeg(m1 + m)
-                - .0023 * sinDeg(m1 - 2 * f1) + .0021 * e * sinDeg(2 * m);
-        jd += .0012 * sinDeg(m1 + 2 * f1) + .0006 * e * sinDeg(2 * m1 + m) - .0004 * sinDeg(3 * m1)
-                - .0003 * e * sinDeg(m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * e * sinDeg(m - 2 * f1)
-                - .0002 * e * sinDeg(2 * m1 - m) - .0002 * sinDeg(o);
-        return astroAdjust(eclipse, e, m, m1, g, u, jd);
+        double u = .0059 + .0046 * la.e * cosDeg(la.m) - .0182 * cosDeg(la.m1) + .0004 * cosDeg(2 * la.m1)
+                - .0005 * cosDeg(la.m + la.m1);
+
+        double jd = la.jde;
+        jd += .0161 * sinDeg(2 * la.m1) - .0097 * sinDeg(2 * f1) + .0073 * la.e * sinDeg(la.m1 - la.m)
+                - .005 * la.e * sinDeg(la.m1 + la.m) - .0023 * sinDeg(la.m1 - 2 * f1) + .0021 * la.e * sinDeg(2 * la.m);
+        jd += .0012 * sinDeg(la.m1 + 2 * f1) + .0006 * la.e * sinDeg(2 * la.m1 + la.m) - .0004 * sinDeg(3 * la.m1)
+                - .0003 * la.e * sinDeg(la.m + 2 * f1) + .0003 * sinDeg(a1) - .0002 * la.e * sinDeg(la.m - 2 * f1)
+                - .0002 * la.e * sinDeg(2 * la.m1 - la.m) - .0002 * sinDeg(la.o);
+        return astroAdjust(eclipse, la.e, la.m, la.m1, g, u, jd);
     }
 }

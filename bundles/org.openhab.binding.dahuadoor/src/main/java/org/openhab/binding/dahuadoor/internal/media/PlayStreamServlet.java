@@ -210,6 +210,10 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
 
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("WebRTC offer for stream '{}' audio={}", streamName, summarizeAudioSdpDirection(sdpOffer));
+        }
+
         // Forward to go2rtc API
         String go2rtcUrl = "http://127.0.0.1:" + apiPort + "/api/webrtc?src="
                 + URLEncoder.encode(streamName, StandardCharsets.UTF_8);
@@ -253,6 +257,11 @@ public class PlayStreamServlet extends HttpServlet {
             byte[] sdpAnswer;
             try (InputStream in = conn.getInputStream()) {
                 sdpAnswer = in.readAllBytes();
+            }
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("WebRTC answer for stream '{}' audio={}", streamName,
+                        summarizeAudioSdpDirection(new String(sdpAnswer, StandardCharsets.UTF_8)));
             }
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
@@ -317,6 +326,55 @@ public class PlayStreamServlet extends HttpServlet {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.getOutputStream().write(encoded);
+    }
+
+    private static String summarizeAudioSdpDirection(String sdp) {
+        boolean hasAudioMedia = false;
+        boolean inAudioSection = false;
+        String mediaDirection = "unspecified";
+        String sessionDirection = "unspecified";
+        boolean audioHasMsid = false;
+        boolean audioHasSsrc = false;
+        String audioCodecs = "";
+
+        String[] lines = sdp.split("\\r?\\n");
+        for (String line : lines) {
+            if (line.startsWith("m=")) {
+                inAudioSection = line.startsWith("m=audio ");
+                if (inAudioSection) {
+                    hasAudioMedia = true;
+                    mediaDirection = "unspecified";
+                    audioCodecs = "";
+                }
+                continue;
+            }
+
+            if ("a=sendrecv".equals(line) || "a=sendonly".equals(line) || "a=recvonly".equals(line)
+                    || "a=inactive".equals(line)) {
+                String direction = line.substring(2);
+                if (inAudioSection) {
+                    mediaDirection = direction;
+                } else {
+                    sessionDirection = direction;
+                }
+            } else if (inAudioSection && line.startsWith("a=msid:")) {
+                audioHasMsid = true;
+            } else if (inAudioSection && line.startsWith("a=ssrc:")) {
+                audioHasSsrc = true;
+            } else if (inAudioSection && line.startsWith("a=rtpmap:")) {
+                if (!audioCodecs.isEmpty()) {
+                    audioCodecs += ",";
+                }
+                int space = line.indexOf(' ');
+                audioCodecs += (space > 0) ? line.substring(space + 1) : line.substring("a=rtpmap:".length());
+            }
+        }
+
+        String effective = !"unspecified".equals(mediaDirection) ? mediaDirection : sessionDirection;
+        return hasAudioMedia
+                ? ("media=" + mediaDirection + ", session=" + sessionDirection + ", effective=" + effective + ", msid="
+                        + audioHasMsid + ", ssrc=" + audioHasSsrc + ", codecs=[" + audioCodecs + "]")
+                : "no-audio-media";
     }
 
     private static byte[] readLimitedBytes(InputStream in, int maxBytes) throws IOException, RequestTooLargeException {

@@ -15,6 +15,7 @@ package org.openhab.binding.groheondus.internal.handler;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_BATTERY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_HUMIDITY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.io.IOException;
@@ -95,6 +96,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
                     newState = new DecimalType(batteryStatus);
                 }
                 break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
+                break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
@@ -172,6 +176,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
         }
+
+        handlePauseCommand(channelUID, command);
     }
 }
