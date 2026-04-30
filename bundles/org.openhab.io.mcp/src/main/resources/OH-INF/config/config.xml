@@ -20,10 +20,8 @@
 		</parameter>
 		<parameter name="webhookUrl" type="text" required="false" readOnly="true">
 			<label>Cloud Webhook URL</label>
-			<description>Public URL assigned by openHAB Cloud once the webhook is registered. Copy this into your
-				remote MCP
-				client (Claude Desktop, ChatGPT, etc.) as the MCP server address. Empty when the Cloud
-				webhook is disabled or the
+			<description>Public URL assigned by openHAB Cloud once the webhook is registered. Copy this into your remote MCP
+				client (Claude Desktop, ChatGPT, etc.) as the MCP server address. Empty when the Cloud webhook is disabled or the
 				Cloud service isn't connected.</description>
 		</parameter>
 		<parameter name="enableFullApiAccess" type="boolean" required="false">

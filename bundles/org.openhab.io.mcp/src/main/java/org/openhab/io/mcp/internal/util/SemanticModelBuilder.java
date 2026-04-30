@@ -53,6 +53,20 @@ public class SemanticModelBuilder {
     private static final String SEMANTICS_NAMESPACE = "semantics";
     private static final String HAS_LOCATION = "hasLocation";
 
+    private static final String KEY_NAME = "name";
+    private static final String KEY_LABEL = "label";
+    private static final String KEY_TYPE = "type";
+    private static final String KEY_ITEM_NAME = "itemName";
+    private static final String KEY_ITEM_TYPE = "itemType";
+    private static final String KEY_STATE = "state";
+    private static final String KEY_PROPERTY = "property";
+    private static final String KEY_POINTS = "points";
+    private static final String KEY_EQUIPMENT = "equipment";
+    private static final String KEY_LOCATIONS = "locations";
+    private static final String KEY_SUB_LOCATIONS = "subLocations";
+    private static final String KEY_UNASSIGNED_ITEMS = "unassignedItems";
+    private static final String KEY_TAGS = "tags";
+
     private final ItemRegistry itemRegistry;
     private final @Nullable MetadataRegistry metadataRegistry;
 
@@ -91,7 +105,7 @@ public class SemanticModelBuilder {
             locations.add(locationMap);
         }
 
-        model.put("locations", locations);
+        model.put(KEY_LOCATIONS, locations);
 
         if (includeUntagged) {
             List<Map<String, Object>> unassigned = new ArrayList<>();
@@ -104,7 +118,7 @@ public class SemanticModelBuilder {
                 }
             }
             if (!unassigned.isEmpty()) {
-                model.put("unassignedItems", unassigned);
+                model.put(KEY_UNASSIGNED_ITEMS, unassigned);
             }
         }
 
@@ -114,9 +128,9 @@ public class SemanticModelBuilder {
     private Map<String, Object> buildLocation(GroupItem location, Map<String, List<Item>> hasLocationItems,
             Set<String> assignedItems) {
         Map<String, Object> locationMap = new LinkedHashMap<>();
-        locationMap.put("name", location.getName());
-        locationMap.put("label", Objects.requireNonNullElse(location.getLabel(), location.getName()));
-        locationMap.put("type", getSemanticTypeName(location));
+        locationMap.put(KEY_NAME, location.getName());
+        locationMap.put(KEY_LABEL, Objects.requireNonNullElse(location.getLabel(), location.getName()));
+        locationMap.put(KEY_TYPE, getSemanticTypeName(location));
         assignedItems.add(location.getName());
 
         List<Map<String, Object>> equipment = new ArrayList<>();
@@ -160,10 +174,10 @@ public class SemanticModelBuilder {
         }
 
         if (!equipment.isEmpty()) {
-            locationMap.put("equipment", equipment);
+            locationMap.put(KEY_EQUIPMENT, equipment);
         }
         if (!subLocations.isEmpty()) {
-            locationMap.put("subLocations", subLocations);
+            locationMap.put(KEY_SUB_LOCATIONS, subLocations);
         }
 
         return locationMap;
@@ -171,9 +185,9 @@ public class SemanticModelBuilder {
 
     private Map<String, Object> buildEquipment(GroupItem equipmentGroup, Set<String> assignedItems) {
         Map<String, Object> equipmentMap = new LinkedHashMap<>();
-        equipmentMap.put("name", equipmentGroup.getName());
-        equipmentMap.put("label", Objects.requireNonNullElse(equipmentGroup.getLabel(), equipmentGroup.getName()));
-        equipmentMap.put("type", getSemanticTypeName(equipmentGroup));
+        equipmentMap.put(KEY_NAME, equipmentGroup.getName());
+        equipmentMap.put(KEY_LABEL, Objects.requireNonNullElse(equipmentGroup.getLabel(), equipmentGroup.getName()));
+        equipmentMap.put(KEY_TYPE, getSemanticTypeName(equipmentGroup));
 
         List<Map<String, Object>> points = new ArrayList<>();
         for (Item member : equipmentGroup.getMembers()) {
@@ -184,7 +198,7 @@ public class SemanticModelBuilder {
         }
 
         if (!points.isEmpty()) {
-            equipmentMap.put("points", points);
+            equipmentMap.put(KEY_POINTS, points);
         }
 
         return equipmentMap;
@@ -198,35 +212,35 @@ public class SemanticModelBuilder {
      */
     private Map<String, Object> buildEquipmentFromSinglePoint(Item item) {
         Map<String, Object> equipmentMap = new LinkedHashMap<>();
-        equipmentMap.put("name", item.getName());
-        equipmentMap.put("label", Objects.requireNonNullElse(item.getLabel(), item.getName()));
-        equipmentMap.put("type", getSemanticTypeName(item));
-        equipmentMap.put("itemType", item.getType());
-        equipmentMap.put("state", ItemStateFormatter.formatState(item.getState()));
+        equipmentMap.put(KEY_NAME, item.getName());
+        equipmentMap.put(KEY_LABEL, Objects.requireNonNullElse(item.getLabel(), item.getName()));
+        equipmentMap.put(KEY_TYPE, getSemanticTypeName(item));
+        equipmentMap.put(KEY_ITEM_TYPE, item.getType());
+        equipmentMap.put(KEY_STATE, ItemStateFormatter.formatState(item.getState()));
         String property = getSemanticPropertyName(item);
         if (!property.isEmpty()) {
-            equipmentMap.put("property", property);
+            equipmentMap.put(KEY_PROPERTY, property);
         }
         // Also include a single synthetic point so traversal code that expects "points"
         // under every equipment still works.
         Map<String, Object> point = buildPoint(item);
-        equipmentMap.put("points", List.of(point));
+        equipmentMap.put(KEY_POINTS, List.of(point));
         return equipmentMap;
     }
 
     private Map<String, Object> buildPoint(Item item) {
         Map<String, Object> pointMap = new LinkedHashMap<>();
-        pointMap.put("itemName", item.getName());
-        pointMap.put("label", Objects.requireNonNullElse(item.getLabel(), item.getName()));
-        pointMap.put("itemType", item.getType());
-        pointMap.put("state", ItemStateFormatter.formatState(item.getState()));
+        pointMap.put(KEY_ITEM_NAME, item.getName());
+        pointMap.put(KEY_LABEL, Objects.requireNonNullElse(item.getLabel(), item.getName()));
+        pointMap.put(KEY_ITEM_TYPE, item.getType());
+        pointMap.put(KEY_STATE, ItemStateFormatter.formatState(item.getState()));
 
         String pointType = getSemanticTypeName(item);
-        pointMap.put("type", pointType);
+        pointMap.put(KEY_TYPE, pointType);
 
         String property = getSemanticPropertyName(item);
         if (!property.isEmpty()) {
-            pointMap.put("property", property);
+            pointMap.put(KEY_PROPERTY, property);
         }
 
         return pointMap;
@@ -234,12 +248,12 @@ public class SemanticModelBuilder {
 
     private Map<String, Object> buildItemInfo(Item item) {
         Map<String, Object> info = new LinkedHashMap<>();
-        info.put("itemName", item.getName());
-        info.put("label", Objects.requireNonNullElse(item.getLabel(), item.getName()));
-        info.put("itemType", item.getType());
-        info.put("state", ItemStateFormatter.formatState(item.getState()));
+        info.put(KEY_ITEM_NAME, item.getName());
+        info.put(KEY_LABEL, Objects.requireNonNullElse(item.getLabel(), item.getName()));
+        info.put(KEY_ITEM_TYPE, item.getType());
+        info.put(KEY_STATE, ItemStateFormatter.formatState(item.getState()));
         if (!item.getTags().isEmpty()) {
-            info.put("tags", item.getTags());
+            info.put(KEY_TAGS, item.getTags());
         }
         return info;
     }

@@ -12,7 +12,9 @@
  */
 package org.openhab.io.mcp.internal.auth;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.auth.AuthenticationException;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
@@ -107,13 +110,17 @@ public class McpAuthenticator {
         try {
             ContentResponse resp = httpClient.newRequest(coreBaseUrl + PROBE_PATH).method(HttpMethod.GET)
                     .header(AUTH_HEADER, BEARER_PREFIX + token).timeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
-            boolean ok = resp.getStatus() == 200;
+            boolean ok = resp.getStatus() == HttpStatus.OK_200;
             if (!ok) {
                 logger.debug("REST probe to {}{} returned {} {} (body prefix: {})", coreBaseUrl, PROBE_PATH,
                         resp.getStatus(), resp.getReason(), truncate(resp.getContentAsString(), 200));
             }
             return ok;
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("REST probe interrupted for JWT validation");
+            return false;
+        } catch (TimeoutException | ExecutionException | RuntimeException e) {
             logger.debug("REST probe failed for JWT validation: {}", e.getMessage(), e);
             return false;
         }

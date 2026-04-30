@@ -86,7 +86,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
     private final Logger logger = LoggerFactory.getLogger(JavaxStreamableServerTransportProvider.class);
 
     private static final String MESSAGE_EVENT_TYPE = "message";
-    private static final String UTF_8 = "UTF-8";
     private static final String APPLICATION_JSON = "application/json";
     private static final String TEXT_EVENT_STREAM = "text/event-stream";
     private static final String ACCEPT = "Accept";
@@ -236,7 +235,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
 
         logger.debug("Streamable GET (listening stream) session={}", sessionId);
         response.setContentType(TEXT_EVENT_STREAM);
-        response.setCharacterEncoding(UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Connection", "keep-alive");
 
@@ -348,7 +347,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
 
                 McpSchema.InitializeResult initResult = init.initResult().block();
                 response.setContentType(APPLICATION_JSON);
-                response.setCharacterEncoding(UTF_8);
+                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader(HttpHeaders.MCP_SESSION_ID, init.session().getId());
                 response.setStatus(HttpServletResponse.SC_OK);
                 String jsonResponse = jsonMapper.writeValueAsString(new McpSchema.JSONRPCResponse(
@@ -392,7 +391,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
                 response.setStatus(HttpServletResponse.SC_ACCEPTED);
             } else if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest) {
                 response.setContentType(TEXT_EVENT_STREAM);
-                response.setCharacterEncoding(UTF_8);
+                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.setHeader("Cache-Control", "no-cache");
                 response.setHeader("Connection", "keep-alive");
 
@@ -469,7 +468,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
     private void responseError(HttpServletResponse response, int status, String message) throws IOException {
         McpError err = McpError.builder(McpSchema.ErrorCodes.INTERNAL_ERROR).message(message).build();
         response.setContentType(APPLICATION_JSON);
-        response.setCharacterEncoding(UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setStatus(status);
         String body = jsonMapper.writeValueAsString(err);
         PrintWriter writer = response.getWriter();
@@ -493,7 +492,7 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setHeader("WWW-Authenticate", challenge);
         response.setContentType("text/plain");
-        response.setCharacterEncoding(UTF_8);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write("Authentication required");
         response.getWriter().flush();
         traceResponse("401 unauth [WWW-Authenticate: " + challenge + "]", HttpServletResponse.SC_UNAUTHORIZED,

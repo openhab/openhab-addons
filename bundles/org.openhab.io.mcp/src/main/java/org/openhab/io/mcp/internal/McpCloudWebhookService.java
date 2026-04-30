@@ -12,12 +12,16 @@
  */
 package org.openhab.io.mcp.internal;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +32,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +204,11 @@ public class McpCloudWebhookService {
             JsonNode body = jackson.readTree(resp.getContentAsString());
             JsonNode browserUrl = body.get("browserUrl");
             return browserUrl != null && browserUrl.isTextual() ? browserUrl.asText() : null;
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while fetching browser URL from cloud {}", PROXY_URL_PATH);
+            return null;
+        } catch (TimeoutException | ExecutionException | IOException e) {
             logger.debug("Failed to fetch browser URL from cloud {}: {}", PROXY_URL_PATH, e.getMessage());
             return null;
         }
@@ -225,7 +234,7 @@ public class McpCloudWebhookService {
             } finally {
                 bundleContext.ungetService(ref);
             }
-        } catch (Exception e) {
+        } catch (InvalidSyntaxException e) {
             logger.debug("Could not look up openHAB Cloud WebhookService: {}", e.getMessage());
             return null;
         }
@@ -255,7 +264,7 @@ public class McpCloudWebhookService {
         try {
             Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
             method.invoke(webhookService, localPath);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
         }
     }

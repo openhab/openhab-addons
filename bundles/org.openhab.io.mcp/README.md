@@ -247,7 +247,7 @@ Items can also be associated with a Location via the `hasLocation` metadata, not
 
 ## Full REST API access (opt-in)
 
-> ⚠️ With this flag on, the assistant can call **any** openHAB REST endpoint, including destructive ones (delete items, modify Things, change service configs). It uses your bearer token, so it can only do things your user could do from the UI. Only turn this on if you trust the assistant with that scope.
+**Note:** With this flag on, the assistant can call **any** openHAB REST endpoint, including destructive ones (delete items, modify Things, change service configs). It uses your bearer token, so it can only do things your user could do from the UI. Only turn this on if you trust the assistant with that scope.
 
 Setting `enableFullApiAccess=true` exposes three extra tools:
 

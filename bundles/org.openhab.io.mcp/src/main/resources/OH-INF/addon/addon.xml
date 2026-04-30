@@ -7,7 +7,7 @@
 	<name>Model Context Protocol (MCP) Server</name>
 	<description>Exposes openHAB to AI assistants via the Model Context Protocol, enabling semantic understanding and
 		control of the smart home.</description>
-	<connection>local</connection>
+	<connection>cloud</connection>
 
 	<service-id>org.openhab.mcp</service-id>
 

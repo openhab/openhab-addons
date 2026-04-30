@@ -14,6 +14,7 @@ package org.openhab.io.mcp.internal.tools;
 
 import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +80,7 @@ public class SemanticTools {
             Map<String, Object> model = builder.buildModel(exposeUntaggedItems);
             String json = jsonMapper.writeValueAsString(model);
             return CallToolResult.builder().content(List.of(new McpSchema.TextContent(json))).build();
-        } catch (Exception e) {
+        } catch (IOException e) {
             return errorResult("Error building semantic model: " + e.getMessage());
         }
     }
