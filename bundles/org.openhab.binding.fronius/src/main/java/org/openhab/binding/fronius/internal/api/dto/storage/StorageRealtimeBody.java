@@ -14,7 +14,7 @@ package org.openhab.binding.fronius.internal.api.dto.storage;
 
 import com.google.gson.annotations.SerializedName;
 
-/****
+/**
  * The {@link StorageRealtimeBody} is responsible for storing
  * the "Body" node of the {@link StorageRealtimeResponse}.
  *

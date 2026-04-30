@@ -151,10 +151,11 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### `battery` Thing Properties
 
-| Property       | Description                       |
-|----------------|-----------------------------------|
-| `modelId`      | The model name of the battery     |
-| `serialNumber` | The serial number of the battery  |
+| Property       | Description                      |
+|----------------|----------------------------------|
+| `vendor`       | The manufacturer of the battery  |
+| `modelId`      | The model name of the battery    |
+| `serialNumber` | The serial number of the battery |
 
 ### `meter` Thing Properties
 
