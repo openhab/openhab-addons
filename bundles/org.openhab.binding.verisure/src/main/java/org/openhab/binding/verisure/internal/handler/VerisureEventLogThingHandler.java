@@ -128,6 +128,7 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
                 if (lastEventTime != 0) {
                     triggerEventChannels(eventLog);
                 }
+                return UnDefType.UNDEF;
             case CHANNEL_LAST_EVENT_DEVICE_TYPE:
                 Gui gui = device != null ? device.getGui() : null;
                 String label = gui != null ? gui.getLabel() : null;
