@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,7 +46,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the object to a string.
      */
     protected @Nullable String toString(@Nullable Object object) {
-        String value = Objects.toString(object, "").trim();
+        String value = MiscUtils.toStringOrEmptyIfNull(object).trim();
         return value.isEmpty() ? null : value;
     }
 
@@ -128,8 +127,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    protected @Nullable String getSanitizedAddress(@Nullable Object object) {
-        String address = Objects.toString(object, "").trim().replaceFirst("\\*", "T-");
+    protected String getSanitizedAddress(@Nullable Object object) {
+        String address = MiscUtils.toStringOrEmptyIfNull(object).trim().replaceFirst("\\*", "T-");
         return MiscUtils.validateCharacters(address.isEmpty() ? null : address, "Address", "_");
     }
 

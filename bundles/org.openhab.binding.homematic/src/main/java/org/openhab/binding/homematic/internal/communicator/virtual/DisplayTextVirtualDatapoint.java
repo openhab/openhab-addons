@@ -340,9 +340,8 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             }
 
             for (int i = 1; i <= getLineCount(device); i++) {
-                var dpDisplayLine = Objects
-                        .requireNonNull(channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LINE + i));
-                String line = Objects.toString(dpDisplayLine.getValue(), "");
+                HmDatapoint dpLine = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_DISPLAY_LINE + i);
+                String line = MiscUtils.toStringOrEmptyIfNull(dpLine != null ? dpLine.getValue() : null);
                 if (line.isEmpty()) {
                     line = " ";
                 }

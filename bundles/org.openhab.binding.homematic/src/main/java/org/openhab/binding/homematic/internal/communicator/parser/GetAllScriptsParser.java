@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -37,8 +38,8 @@ public class GetAllScriptsParser extends CommonRpcParser<Object[], @Nullable Voi
     @Override
     public @Nullable Void parse(Object[] message) throws IOException {
         message = unWrapArray(message);
-        for (int i = 0; i < message.length; i++) {
-            String scriptName = String.valueOf(message[i]);
+        for (Object obj : message) {
+            String scriptName = MiscUtils.toStringOrEmptyIfNull(obj);
             HmDatapoint dpScript = new HmDatapoint(scriptName, scriptName, HmValueType.BOOL, Boolean.FALSE, false,
                     HmParamsetType.VALUES);
             dpScript.setInfo(scriptName);

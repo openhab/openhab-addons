@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homematic.internal.misc;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -38,6 +40,10 @@ public class MiscUtils {
             LOGGER.debug("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
         }
         return cleanedText;
+    }
+
+    public static String toStringOrEmptyIfNull(@Nullable Object object) {
+        return Objects.requireNonNull(Objects.toString(object, ""));
     }
 
     /**

@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
 @NonNullByDefault
 public class UnknownRpcFailureException extends IOException {
     private static final long serialVersionUID = -5695414238422364040L;

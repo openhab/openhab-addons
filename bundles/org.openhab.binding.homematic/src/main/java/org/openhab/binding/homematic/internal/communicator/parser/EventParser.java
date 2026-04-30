@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -50,7 +51,7 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             }
         }
 
-        String name = toString(message[2]);
+        String name = MiscUtils.toStringOrEmptyIfNull(message[2]);
         value = message[3];
 
         return new HmDatapointInfo(address, HmParamsetType.VALUES, channel, name);

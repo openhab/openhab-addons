@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +35,7 @@ import org.openhab.binding.homematic.internal.communicator.parser.CcuLoadDeviceN
 import org.openhab.binding.homematic.internal.communicator.parser.CcuParamsetDescriptionParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuValueParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuVariablesAndScriptsParser;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -163,7 +163,7 @@ public class CcuGateway extends AbstractHomematicGateway {
         if (value instanceof Double) {
             strValue = new BigDecimal((Double) value).stripTrailingZeros().toPlainString();
         } else {
-            strValue = Objects.toString(value, "").replace("\"", "\\\"");
+            strValue = MiscUtils.toStringOrEmptyIfNull(value).replace("\"", "\\\"");
         }
         if (dp.isStringType()) {
             strValue = "\"" + strValue + "\"";

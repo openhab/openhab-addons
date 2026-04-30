@@ -135,9 +135,11 @@ public abstract class RpcClient<T> {
      * Disposes the client.
      */
     public void dispose() {
+        ScheduledFuture<?> future = this.future;
         if (future != null) {
             future.cancel(true);
         }
+        this.future = null;
     }
 
     /**
@@ -408,19 +410,25 @@ public abstract class RpcClient<T> {
      * Sets the value of a system variable on a Homegear gateway.
      */
     public void setSystemVariable(HmDatapoint dp, Object value) throws IOException {
-        RpcRequest<T> request = createRpcRequest("setSystemVariable");
-        request.addArg(dp.getInfo());
-        request.addArg(value);
-        sendMessage(config.getRpcPort(dp.getChannel()), request);
+        String info = dp.getInfo();
+        if (info != null) {
+            RpcRequest<T> request = createRpcRequest("setSystemVariable");
+            request.addArg(info);
+            request.addArg(value);
+            sendMessage(config.getRpcPort(dp.getChannel()), request);
+        }
     }
 
     /**
      * Executes a script on the Homegear gateway.
      */
     public void executeScript(HmDatapoint dp) throws IOException {
-        RpcRequest<T> request = createRpcRequest("runScript");
-        request.addArg(dp.getInfo());
-        sendMessage(config.getRpcPort(dp.getChannel()), request);
+        String info = dp.getInfo();
+        if (info != null) {
+            RpcRequest<T> request = createRpcRequest("runScript");
+            request.addArg(info);
+            sendMessage(config.getRpcPort(dp.getChannel()), request);
+        }
     }
 
     /**
@@ -481,7 +489,7 @@ public abstract class RpcClient<T> {
      */
     private String getRpcAddress(String address) {
         if (address != null && address.startsWith("T-")) {
-            address = "*" + address.substring(2);
+            return "*" + address.substring(2);
         }
         return address;
     }

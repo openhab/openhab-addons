@@ -64,8 +64,8 @@ public class HomematicConfig {
     private int callbackRegTimeout;
 
     private boolean useAuthentication;
-    private @Nullable String userName;
-    private @Nullable String password;
+    private String userName = "";
+    private String password = "";
 
     /**
      * Returns the Homematic gateway address.
@@ -296,7 +296,7 @@ public class HomematicConfig {
     /**
      * Returns the user name for authorize against the gateway
      */
-    public @Nullable String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -310,7 +310,7 @@ public class HomematicConfig {
     /**
      * Returns the password for authorize against the gateway
      */
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return password;
     }
 

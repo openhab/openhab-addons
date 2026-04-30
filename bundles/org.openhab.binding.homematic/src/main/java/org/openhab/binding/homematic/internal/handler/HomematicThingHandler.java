@@ -36,6 +36,7 @@ import org.openhab.binding.homematic.internal.converter.ConverterTypeException;
 import org.openhab.binding.homematic.internal.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
@@ -176,7 +177,7 @@ public class HomematicThingHandler extends BaseThingHandler {
 
                     ChannelBuilder builder = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
                             .withLabel(MetadataUtils.getLabel(dp)).withType(channelType.getUID());
-                    String description = MetadataUtils.getDatapointDescription(dp);
+                    final String description = MetadataUtils.getDatapointDescription(dp);
                     if (description != null) {
                         builder.withDescription(description);
                     }
@@ -255,7 +256,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 ChannelBuilder builder = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
                         .withProperties(channelProps).withLabel(MetadataUtils.getLabel(dp))
                         .withType(channelType.getUID());
-                String description = MetadataUtils.getDatapointDescription(dp);
+                final String description = MetadataUtils.getDatapointDescription(dp);
                 if (description != null) {
                     builder.withDescription(description);
                 }
@@ -289,8 +290,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         HmDatapoint dp = channelZero
                 .getDatapoint(new HmDatapointInfo(HmParamsetType.VALUES, channelZero, datapointName));
         if (dp != null) {
-            Object dpValue = dp.getValue();
-            properties.put(propertyName, dpValue != null ? dpValue.toString() : "");
+            properties.put(propertyName, MiscUtils.toStringOrEmptyIfNull(dp.getValue()));
         }
     }
 

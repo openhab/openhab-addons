@@ -272,7 +272,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             if (category != null) {
                 channelTypeBuilder.withCategory(category);
             }
-            String description = MetadataUtils.getDatapointDescription(dp);
+            final String description = MetadataUtils.getDatapointDescription(dp);
             if (description != null) {
                 channelTypeBuilder.withDescription(description);
             }
