@@ -187,9 +187,36 @@ public class KlapSession {
         try {
             authHash = generateAuthHash(credentials);
             if (createHandshake1()) {
-                logger.trace("({}) handshake1 successfull", uid);
+                logger.trace("({}) handshake1 successful", uid);
                 if (createHandshake2()) {
-                    logger.trace("({}) handshake2 successfull", uid);
+                    logger.trace("({}) handshake2 successful", uid);
+                    completeHandshake();
+                    return isHandshakeComplete();
+                }
+            } else {
+                throw new TapoErrorHandler(NO_ERROR, BINDING_ID);
+            }
+        } catch (TapoErrorHandler e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TapoErrorHandler(ERR_API_HAND_SHAKE_FAILED);
+        }
+        return false;
+    }
+
+    /**
+     * Recreate Handshake using existing credentials
+     */
+    public boolean login() throws TapoErrorHandler {
+        try {
+            /* check credentials exist */
+            if (authHash.length <= 1) {
+                return false;
+            }
+            if (createHandshake1()) {
+                logger.trace("({}) handshake1 successful", uid);
+                if (createHandshake2()) {
+                    logger.trace("({}) handshake2 successful", uid);
                     completeHandshake();
                     return isHandshakeComplete();
                 }
@@ -235,7 +262,7 @@ public class KlapSession {
         if (response.getStatus() == 200) {
             return true;
         } else {
-            logger.debug("({}) invalid handshake1 response {}", uid, response.getStatus());
+            logger.debug("({}) invalid handshake2 response {}", uid, response.getStatus());
             throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, response.getReason());
         }
     }
