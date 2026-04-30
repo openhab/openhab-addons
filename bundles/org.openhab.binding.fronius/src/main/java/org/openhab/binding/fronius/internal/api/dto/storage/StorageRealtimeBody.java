@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.storage;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,11 +23,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class StorageRealtimeBody {
     @SerializedName("Data")
-    private StorageRealtimeBodyData data;
+    private @Nullable StorageRealtimeBodyData data;
 
-    public StorageRealtimeBodyData getData() {
+    public @Nullable StorageRealtimeBodyData getData() {
         return data;
     }
 }

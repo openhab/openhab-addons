@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.storage;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,11 +24,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class StorageRealtimeResponse extends BaseFroniusResponse {
     @SerializedName("Body")
-    private StorageRealtimeBody body;
+    private @Nullable StorageRealtimeBody body;
 
-    public StorageRealtimeBody getBody() {
+    public @Nullable StorageRealtimeBody getBody() {
         return body;
     }
 }

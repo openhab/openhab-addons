@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.storage;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,23 +23,24 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class StorageDetails {
     @SerializedName("Manufacturer")
-    private String manufacturer;
+    private @Nullable String manufacturer;
     @SerializedName("Model")
-    private String model;
+    private @Nullable String model;
     @SerializedName("Serial")
-    private String serial;
+    private @Nullable String serial;
 
-    public String getManufacturer() {
+    public @Nullable String getManufacturer() {
         return manufacturer;
     }
 
-    public String getModel() {
+    public @Nullable String getModel() {
         return model;
     }
 
-    public String getSerial() {
+    public @Nullable String getSerial() {
         return serial;
     }
 }

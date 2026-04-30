@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.storage;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class StorageController {
     @SerializedName("Capacity_Maximum")
     private double capacityMaximum;
@@ -33,7 +35,7 @@ public class StorageController {
     private double designedCapacity;
 
     @SerializedName("Details")
-    private StorageDetails details;
+    private @Nullable StorageDetails details;
 
     @SerializedName("Enable")
     private int enable;
@@ -42,7 +44,7 @@ public class StorageController {
     private double stateOfChargeRelative;
 
     @SerializedName("Status_BatteryCell")
-    private String statusBatteryCell;
+    private @Nullable String statusBatteryCell;
 
     @SerializedName("Temperature_Cell")
     private double temperatureCell;

@@ -134,9 +134,17 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
         }
 
         var properties = editProperties();
-        properties.put(Thing.PROPERTY_VENDOR, details.getManufacturer());
-        properties.put(Thing.PROPERTY_MODEL_ID, details.getModel());
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, details.getSerial());
-        updateProperties(properties);
+        if (details.getManufacturer() instanceof String manufacturer && !manufacturer.isBlank()) {
+            properties.put(Thing.PROPERTY_VENDOR, manufacturer);
+        }
+        if (details.getModel() instanceof String model && !model.isBlank()) {
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
+        }
+        if (details.getSerial() instanceof String serial && !serial.isBlank()) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
+        }
+        if (!properties.isEmpty()) {
+            updateProperties(properties);
+        }
     }
 }
