@@ -29,6 +29,7 @@ import org.openhab.binding.fronius.internal.api.dto.storage.StorageRealtimeRespo
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
@@ -100,7 +101,7 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.BATTERY_STATE_OF_CHARGE ->
                 new QuantityType<>(local.getStateOfChargeRelative(), Units.PERCENT);
             case FroniusBindingConstants.BATTERY_ENABLE -> new DecimalType(local.getEnable());
-            case FroniusBindingConstants.BATTERY_STATUS_BATTERY_CELL -> new DecimalType(local.getStatusBatteryCell());
+            case FroniusBindingConstants.BATTERY_STATUS_BATTERY_CELL -> new StringType(local.getStatusBatteryCell());
             case FroniusBindingConstants.BATTERY_TEMPERATURE_CELL ->
                 new QuantityType<>(local.getTemperatureCell(), SIUnits.CELSIUS);
             case FroniusBindingConstants.BATTERY_TIMESTAMP ->

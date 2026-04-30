@@ -42,7 +42,7 @@ public class StorageController {
     private double stateOfChargeRelative;
 
     @SerializedName("Status_BatteryCell")
-    private int statusBatteryCell;
+    private String statusBatteryCell;
 
     @SerializedName("Temperature_Cell")
     private double temperatureCell;
@@ -77,7 +77,7 @@ public class StorageController {
         return stateOfChargeRelative;
     }
 
-    public int getStatusBatteryCell() {
+    public @Nullable String getStatusBatteryCell() {
         return statusBatteryCell;
     }
 

@@ -509,10 +509,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryStatus">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Battery Status</label>
 		<description>Status code coming from Status_BatteryCell</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batteryEnable">
 		<item-type>Number</item-type>

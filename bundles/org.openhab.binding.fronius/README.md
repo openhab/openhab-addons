@@ -110,7 +110,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `currentDc`        | Number:ElectricCurrent   | DC current                             |
 | `voltageDc`        | Number:ElectricPotential | DC voltage                             |
 | `soc`              | Number:Dimensionless     | State of charge in percent             |
-| `status`           | Number                   | Battery cell status code               |
+| `status`           | String                   | Battery cell status code               |
 | `enable`           | Number                   | Enable flag for the battery controller |
 | `temperature`      | Number:Temperature       | Cell temperature                       |
 | `timestamp`        | DateTime                 | Timestamp of the last measurement      |
