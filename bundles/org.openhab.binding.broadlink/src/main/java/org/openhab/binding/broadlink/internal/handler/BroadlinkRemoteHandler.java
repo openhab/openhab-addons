@@ -288,8 +288,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                         break;
                     }
                     default: {
-                        logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(),
-                                channelTypeUID.getId());
+                        logger.debug("Thing {} has unknown RF learning command '{}'", getThing().getLabel(), command);
                         break;
                     }
                 }
@@ -385,8 +384,12 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                     }
                 }
             }
-        } catch (IOException | InterruptedException e) {
-            logger.warn("RF learning unexpected interrupted:{}", e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("RF learning interrupted: {}", e.getMessage());
+            freqFound = false;
+        } catch (IOException e) {
+            logger.warn("RF learning unexpected interrupted: {}", e.getMessage());
             freqFound = false;
         }
 
