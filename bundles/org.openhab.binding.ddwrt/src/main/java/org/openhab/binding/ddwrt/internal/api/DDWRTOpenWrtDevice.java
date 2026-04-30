@@ -75,6 +75,53 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
+    protected String getNeighborCommand() {
+        // Use `ip neigh` (iproute2) for richer state information than legacy `arp`.
+        // Filter out FAILED/INCOMPLETE entries at the source — only return entries
+        // that have a valid MAC address and a usable NUD state.
+        return "ip -4 neigh show nud reachable nud stale nud delay nud probe nud permanent nud noarp";
+    }
+
+    @Override
+    protected java.util.List<DDWRTNetworkCache.ArpEntry> parseNeighborOutput(String output, String source,
+            java.time.Instant seenAt) {
+        java.util.List<DDWRTNetworkCache.ArpEntry> entries = new java.util.ArrayList<>();
+        // `ip neigh` output format:
+        // 192.168.0.74 dev br-lan lladdr d8:49:2f:d9:a4:8a REACHABLE
+        // 192.168.0.99 dev br-lan lladdr aa:bb:cc:dd:ee:ff STALE
+        // 192.168.0.50 dev br-lan FAILED (no lladdr — already filtered by command)
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            String[] parts = trimmed.split("\\s+");
+            if (parts.length < 5) {
+                continue;
+            }
+            String ip = parts[0];
+            String mac = "";
+            for (int i = 1; i < parts.length - 1; i++) {
+                if ("lladdr".equals(parts[i])) {
+                    mac = parts[i + 1].toLowerCase(java.util.Locale.ROOT);
+                    break;
+                }
+            }
+            if (!mac.isEmpty() && isValidUnicastMac(mac)) {
+                String nudState = parts[parts.length - 1].toUpperCase(java.util.Locale.ROOT);
+                DDWRTNetworkCache.ArpState state = switch (nudState) {
+                    case "REACHABLE" -> DDWRTNetworkCache.ArpState.ACTIVE;
+                    case "STALE", "DELAY", "PROBE" -> DDWRTNetworkCache.ArpState.STALE;
+                    case "PERMANENT", "NOARP" -> DDWRTNetworkCache.ArpState.ACTIVE;
+                    default -> DDWRTNetworkCache.ArpState.ACTIVE;
+                };
+                entries.add(new DDWRTNetworkCache.ArpEntry(mac, ip, seenAt, state, source));
+            }
+        }
+        return entries;
+    }
+
+    @Override
     protected String refreshWanIp(SshRunner runner) {
         // OpenWrt: no nvram; use ip command to get WAN address
         String rawWanIp = safeTrim(runner.execStdout(

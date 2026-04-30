@@ -18,6 +18,8 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYP
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -33,8 +35,10 @@ import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,9 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
     private @Nullable ScheduledFuture<?> refreshTriggeredScan;
+
+    @Reference
+    private @Nullable Inbox inbox;
 
     public DDWRTDiscoveryService() {
         super(DDWRTNetworkBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
@@ -201,17 +208,98 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final Map<String, Object> props = new java.util.HashMap<>();
             props.put("hostname", client.getHostname());
+            props.put("mac", client.getMac());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(client.getHostname()).withProperties(props).withRepresentationProperty("hostname")
-                    .build();
+                    .withLabel(client.getHostname()).withProperties(props)
+                    // Keep hostname as the representation property. Some wireless clients use
+                    // MAC randomization, so the MAC is not stable enough to be the primary
+                    // representation key in the inbox/UI.
+                    .withRepresentationProperty("hostname").build();
 
             logger.debug(
                     "Submitting discovery result for wireless client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
                     thingUID, client.getHostname(), client.getApMac(), client.getSsid(), client.getChannel(),
                     client.getSignalDbm(), client.getSnr());
+
+            // If this wireless client is already sitting in the discovery inbox under an
+            // older placeholder hostname (for example an OUI-generated TPLink-e916b1) or an
+            // earlier MAC, replace the pending inbox entry before submitting the new result.
+            // Matching is intentionally by hostname OR MAC. Hostname remains the preferred
+            // representation property because MAC randomization can cause the MAC to change
+            // for some wireless devices.
+            replacePendingWirelessClientInboxDuplicates(thingUID, client.getHostname(), client.getMac());
+
             thingDiscovered(result);
         });
+    }
+
+    private void replacePendingWirelessClientInboxDuplicates(ThingUID newThingUID, String hostname, String mac) {
+        String normalizedHostname = normalizeHostname(hostname);
+        String normalizedMac = normalizeMac(mac);
+
+        if (normalizedHostname.isEmpty() && normalizedMac.isEmpty()) {
+            return;
+        }
+
+        Collection<DiscoveryResult> entries = inbox.getAll();
+        if (entries.isEmpty()) {
+            return;
+        }
+
+        for (DiscoveryResult entry : new ArrayList<>(entries)) {
+            ThingUID existingUID = entry.getThingUID();
+            if (existingUID == null || existingUID.equals(newThingUID)) {
+                continue;
+            }
+
+            // Only operate on pending wireless-client inbox entries
+            if (!existingUID.getId().startsWith("wireless-client")) {
+                continue;
+            }
+
+            // Only operate on entries that belong to the same bridge
+            ThingUID existingBridgeUID = entry.getBridgeUID();
+            ThingUID newBridgeUID = thingHandler.getThing().getUID();
+            if (existingBridgeUID == null || newBridgeUID == null || !existingBridgeUID.equals(newBridgeUID)) {
+                continue;
+            }
+
+            String existingHostname = normalizeHostname(String.valueOf(entry.getProperties().get("hostname")));
+            String existingMac = normalizeMac(String.valueOf(entry.getProperties().get("mac")));
+
+            boolean sameHostname = !normalizedHostname.isEmpty() && normalizedHostname.equals(existingHostname);
+            boolean sameMac = !normalizedMac.isEmpty() && normalizedMac.equals(existingMac);
+
+            if (sameHostname || sameMac) {
+                logger.debug(
+                        "Removing stale wireless client inbox entry {} before adding replacement {} (hostname match={}, mac match={})",
+                        existingUID, newThingUID, sameHostname, sameMac);
+                inbox.remove(existingUID);
+            }
+        }
+    }
+
+    private static String normalizeHostname(String hostname) {
+        if (hostname == null) {
+            return "";
+        }
+        String trimmed = hostname.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
+            return "";
+        }
+        return trimmed.toLowerCase(Locale.ROOT);
+    }
+
+    private static String normalizeMac(String mac) {
+        if (mac == null) {
+            return "";
+        }
+        String trimmed = mac.trim();
+        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
+            return "";
+        }
+        return trimmed.toLowerCase(Locale.ROOT);
     }
 
     private void discoverFirewallRules(DDWRTNetwork net) {

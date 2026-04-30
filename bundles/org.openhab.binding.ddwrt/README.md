@@ -7,7 +7,7 @@ Features include:
 
 - **Device telemetry** — CPU load, CPU temperature, uptime, WAN IP, interface traffic counters
 - **Wireless radio monitoring** — SSID, channel, mode, associated client list
-- **Wireless client tracking** — online/offline state, signal strength, roaming between APs, MAC randomization support
+- **Wireless client tracking** — associated/present state, signal strength, roaming between APs, MAC randomization support
 - **Syslog monitoring** — real-time DHCP, wireless association, warning, and error events via `logread -f` or `tail -F`
 - **Firewall rule control** — enable/disable DD-WRT GUI-configured filter rules via nvram
 - **Device reboot** — remote reboot via SSH
@@ -311,7 +311,7 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 
 ## Full Example
 
-### Thing Configuration
+### Example Thing Configuration
 
 ```java
 Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-ap", user="root", refreshInterval=3 ] {
@@ -332,7 +332,7 @@ Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-a
 }
 ```
 
-### Item Configuration
+### Example Item Configuration
 
 ```java
 // Device telemetry
@@ -364,7 +364,7 @@ Switch             Bedtime10      "Bedtime 10-12 [%s]"            { channel="ddw
 Switch             Bedtime12      "Bedtime 12-6 [%s]"             { channel="ddwrt:firewall-rule:home:bedtime12:enabled" }
 ```
 
-### Sitemap Configuration
+### Example Sitemap Configuration
 
 ```perl
 sitemap home label="Home Network" {
@@ -404,10 +404,21 @@ The syslog command is auto-detected:
 - **Tomato** — `tail -F /var/log/messages`
 - **Generic Linux** — `journalctl -f --no-pager -p <priority>`
 
-DHCP and wireless events are parsed inline from the syslog stream and immediately update the cache, so client online/offline state changes are reflected within seconds.
+DHCP and wireless events are parsed inline from the syslog stream and immediately update the cache, so client association and presence changes are reflected within seconds.
 
 The `syslogPriority` device configuration parameter controls the minimum severity for warning/error event channels.
 DHCP and wireless events are always captured regardless of this setting.
+
+## Presence and ARP/Neighbor Resolution
+
+Current client presence uses the following precedence:
+
+- **Wireless clients** are considered present while they are associated with an AP, even if they are not currently generating IP traffic.
+- **Wired clients** are inferred from the authoritative ARP/neighbor table when they have a recent entry and are not present in any wireless association list.
+- **Gateway ARP/neighbor data** is preferred when a managed gateway is present. The local openHAB host ARP cache is only used as a fallback when no gateway is available.
+- **Static hostname mapping files** and inline `hostnameMappings` are treated as static hints only; dynamic neighbor data is authoritative for current IP presence.
+
+Dynamic neighbor entries are classified as **active** for 60 seconds, **stale** after 60 seconds, and **expired** after 120 seconds. Static entries remain static until updated. Dump APs are not queried for ARP because they are Layer-2 bridges and do not have authoritative client IP visibility.
 
 ## MAC Randomization
 

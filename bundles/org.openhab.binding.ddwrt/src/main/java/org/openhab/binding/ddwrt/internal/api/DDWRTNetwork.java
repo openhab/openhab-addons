@@ -13,9 +13,13 @@
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.openhab.binding.ddwrt.internal.DDWRTNetworkConfiguration;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +44,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DDWRTNetwork {
+
+    private static final Path HOSTS_DIR = Path.of(OpenHAB.getUserDataFolder(), "ddwrt", "hosts");
 
     private volatile @Nullable DDWRTNetworkConfiguration config;
     private volatile @Nullable ThingUID bridgeUID;
@@ -67,6 +74,14 @@ public class DDWRTNetwork {
 
     private final Logger logger = LoggerFactory.getLogger(DDWRTNetwork.class);
 
+    // Hostname mapping support
+    private final HostsFileLoader hostsLoader = new HostsFileLoader();
+    private volatile Map<String, String> macToHostname = Map.of();
+    private volatile Map<String, String> ipToHostname = Map.of();
+
+    // Local ARP cache reader (used when useLocalArpCache config is true)
+    private final LocalArpReader localArpReader = new LocalArpReader();
+
     // Refresh listeners (e.g., discovery service)
     private final List<RefreshListener> refreshListeners = new CopyOnWriteArrayList<>();
 
@@ -77,6 +92,7 @@ public class DDWRTNetwork {
         if (!Objects.equals(this.config, netCfg)) {
             logger.debug("Config changed.");
             this.config = netCfg;
+            reloadHostnameMappings();
 
             // Clear failure tracking for retry logic
             failedDeviceConfigs.clear();
@@ -267,6 +283,17 @@ public class DDWRTNetwork {
     public void refresh() {
         logger.debug("Network refresh: {} devices active, {} failed configs pending", cache.getTotalDevices(),
                 failedDeviceConfigs.size());
+        // Reload hostname mappings on every refresh so file changes are picked up
+        reloadHostnameMappings();
+
+        // ARP/neighbor information comes from the gateway by default.
+        // Fall back to the local openHAB host only when no gateway is present.
+        boolean hasGateway = cache.getDevices().stream().anyMatch(d -> d.isGateway() && d.isOnline());
+        if (config != null && config.useLocalArpCache && !hasGateway) {
+            refreshLocalArpCache();
+        } else {
+            cache.clearArpEntries("local-host");
+        }
 
         // Retry failed device configurations with backoff
         if (!failedDeviceConfigs.isEmpty()) {
@@ -409,6 +436,67 @@ public class DDWRTNetwork {
         hostNetFailureCount.clear();
         hostNetFailureTimes.clear();
         hostLocks.clear();
+    }
+
+    /**
+     * Reload all hostname mappings: every file in $OPENHAB_USERDATA/ddwrt/hosts/ + inline config.
+     * Inline config takes precedence over files.
+     */
+    private void reloadHostnameMappings() {
+        Map<String, String> macMap = new HashMap<>();
+        Map<String, String> ipMap = new HashMap<>();
+
+        // 1. Files first (lowest priority)
+        for (HostsFileLoader.HostEntry e : hostsLoader.loadDirectory(HOSTS_DIR)) {
+            if (!e.mac.isEmpty()) {
+                macMap.put(e.mac, e.hostname);
+            }
+            if (!e.ip.isEmpty()) {
+                ipMap.put(e.ip, e.hostname);
+            }
+        }
+
+        // 2. Inline config (highest priority — overrides files)
+        DDWRTNetworkConfiguration cfg = config;
+        if (cfg != null) {
+            for (HostsFileLoader.HostEntry e : hostsLoader.parseInlineMappings(cfg.hostnameMappings)) {
+                if (!e.mac.isEmpty()) {
+                    macMap.put(e.mac, e.hostname);
+                }
+                if (!e.ip.isEmpty()) {
+                    ipMap.put(e.ip, e.hostname);
+                }
+            }
+        }
+
+        macToHostname = Map.copyOf(macMap);
+        ipToHostname = Map.copyOf(ipMap);
+        logger.debug("Loaded {} MAC and {} IP hostname mappings (files + inline config)", macMap.size(), ipMap.size());
+    }
+
+    /** Public lookup API used by DDWRTBaseDevice fallback chain. */
+    public @Nullable String resolveHostname(String mac, String ip) {
+        String h = macToHostname.get(mac.toLowerCase(Locale.ROOT));
+        if (h != null) {
+            return h;
+        }
+        return !ip.isEmpty() ? ipToHostname.get(ip) : null;
+    }
+
+    /**
+     * Read the local kernel ARP/neighbor cache from the openHAB host.
+     * This data is only used when no gateway device is present.
+     */
+    private void refreshLocalArpCache() {
+        List<LocalArpReader.ArpEntry> entries = localArpReader.readLocalArp();
+        List<DDWRTNetworkCache.ArpEntry> arpEntries = new java.util.ArrayList<>();
+        Instant now = Instant.now();
+        for (LocalArpReader.ArpEntry e : entries) {
+            arpEntries.add(
+                    new DDWRTNetworkCache.ArpEntry(e.mac, e.ip, now, DDWRTNetworkCache.ArpState.ACTIVE, "local-host"));
+        }
+        cache.replaceArpEntries("local-host", arpEntries);
+        logger.debug("Local ARP cache: read {} entries", entries.size());
     }
 
     /**
