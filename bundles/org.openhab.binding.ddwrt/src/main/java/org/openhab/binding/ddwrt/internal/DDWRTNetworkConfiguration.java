@@ -54,4 +54,21 @@ public class DDWRTNetworkConfiguration {
      * Refresh interval, in seconds, for polling the DD-WRT device.
      */
     public int refreshInterval = 3;
+
+    /**
+     * Comma-separated list of static hostname mappings in the format:
+     * MAC hostname [IP], MAC hostname [IP], ...
+     * Where IP is optional. Example:
+     * "aa:bb:cc:dd:ee:ff nas 192.168.1.50, 11:22:33:44:55:66 printer"
+     * Files dropped in $OPENHAB_USERDATA/ddwrt/hosts/ are also auto-loaded
+     * (etc-hosts, etherhosts, or dnsmasq.leases format auto-detected per line).
+     */
+    public String hostnameMappings = "";
+
+    /**
+     * When true, also read the ARP/neighbor cache from the local machine where openHAB is running
+     * (in addition to each managed device). Useful when openHAB runs on the same LAN and can see
+     * clients that the routers/APs cannot, or for cross-validation of presence detection.
+     */
+    public boolean useLocalArpCache = false;
 }

@@ -55,6 +55,23 @@
 				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="hostnameMappings" type="text" required="false">
+				<label>Hostname Mappings</label>
+				<description><![CDATA[Comma-separated list of static hostname mappings in the format:<br/>
+					<code>MAC hostname [IP], MAC hostname [IP], ...</code><br/>
+					Where IP is optional. Example:<br/>
+					<code>aa:bb:cc:dd:ee:ff nas 192.168.1.50, 11:22:33:44:55:66 printer</code><br/>
+					Files dropped in <code>$USER_DATA/ddwrt/hosts/</code> are also auto-loaded (etc-hosts, etherhosts, or dnsmasq.leases format auto-detected per line).]]></description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useLocalArpCache" type="boolean">
+				<label>Use Local ARP Cache</label>
+				<description>Also read the ARP/neighbor cache from the machine where openHAB is running. Useful when openHAB shares
+					the LAN with managed devices and can see clients the routers/APs cannot. Reads /proc/net/arp on Linux or runs 'arp
+					-an' as a fallback.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</bridge-type>

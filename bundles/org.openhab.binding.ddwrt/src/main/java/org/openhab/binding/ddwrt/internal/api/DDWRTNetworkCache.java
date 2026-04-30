@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -48,6 +50,58 @@ public class DDWRTNetworkCache {
     private final Map<String, DDWRTFirewallRule> firewallRulesByRuleId = new ConcurrentHashMap<>();
     private final Map<String, DDWRTDhcpLease> dhcpLeasesByMac = new ConcurrentHashMap<>();
     private final Map<String, String> dhcpHostnameToMac = new ConcurrentHashMap<>();
+    public static final long ARP_STALE_AFTER_SECONDS = 60;
+    public static final long ARP_EXPIRE_AFTER_SECONDS = 120;
+
+    public enum ArpState {
+        ACTIVE,
+        STALE,
+        EXPIRED,
+        STATIC
+    }
+
+    public static final class ArpEntry {
+        private final String mac;
+        private final String ip;
+        private final Instant lastSeen;
+        private final ArpState state;
+        private final String source;
+
+        public ArpEntry(String mac, String ip, Instant lastSeen, ArpState state, String source) {
+            this.mac = normalizeMac(mac);
+            this.ip = ip;
+            this.lastSeen = lastSeen;
+            this.state = state;
+            this.source = source;
+        }
+
+        public String getMac() {
+            return mac;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public Instant getLastSeen() {
+            return lastSeen;
+        }
+
+        public ArpState getState() {
+            return state;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public boolean isStatic() {
+            return state == ArpState.STATIC;
+        }
+    }
+
+    // Source-scoped ARP/neighbor information. Sources are device MACs or "local-host".
+    private final Map<String, Map<String, ArpEntry>> arpEntriesBySource = new ConcurrentHashMap<>();
 
     // MACs that have been merged away by MAC randomization detection.
     // These should not be re-created as wireless clients by refreshDhcpLeases.
@@ -361,6 +415,132 @@ public class DDWRTNetworkCache {
         dhcpHostnameToMac.clear();
     }
 
+    // ---- ARP Entries ----
+
+    public @Nullable String getArpIp(String mac) {
+        ArpEntry entry = getBestArpEntryByMac(mac);
+        return entry != null ? entry.getIp() : null;
+    }
+
+    public @Nullable String getArpMac(String ip) {
+        for (ArpEntry entry : getMergedArpEntries().values()) {
+            if (entry.getIp().equals(ip)) {
+                return entry.getMac();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Legacy helper: store a dynamic ARP entry in the legacy source bucket.
+     */
+    public void putArpEntry(String mac, String ip) {
+        putArpEntry("legacy", mac, ip, Instant.now(), false);
+    }
+
+    public void putArpEntry(String source, String mac, String ip, Instant lastSeen, boolean isStatic) {
+        String normalizedMac = normalizeMac(mac);
+        ArpState state = isStatic ? ArpState.STATIC : classifyDynamicArp(lastSeen);
+        arpEntriesBySource.computeIfAbsent(source, k -> new ConcurrentHashMap<>()).put(normalizedMac,
+                new ArpEntry(normalizedMac, ip, lastSeen, state, source));
+    }
+
+    public void replaceArpEntries(String source, List<ArpEntry> entries) {
+        Map<String, ArpEntry> map = new ConcurrentHashMap<>();
+        for (ArpEntry entry : entries) {
+            map.put(entry.getMac(), entry);
+        }
+        arpEntriesBySource.put(source, map);
+    }
+
+    public void clearArpEntries() {
+        arpEntriesBySource.clear();
+    }
+
+    public void clearArpEntries(String source) {
+        arpEntriesBySource.remove(source);
+    }
+
+    public int getArpEntryCount() {
+        return getMergedArpEntries().size();
+    }
+
+    public java.util.Set<String> getArpMacs() {
+        return getMergedArpEntries().keySet();
+    }
+
+    public @Nullable Instant getArpLastSeen(String mac) {
+        ArpEntry entry = getBestArpEntryByMac(mac);
+        return entry != null ? entry.getLastSeen() : null;
+    }
+
+    public @Nullable ArpState getArpState(String mac) {
+        ArpEntry entry = getBestArpEntryByMac(mac);
+        return entry != null ? entry.getState() : null;
+    }
+
+    public boolean isArpActive(String mac) {
+        ArpState state = getArpState(mac);
+        return state == ArpState.ACTIVE || state == ArpState.STATIC;
+    }
+
+    public List<ArpEntry> getAllArpEntries() {
+        List<ArpEntry> result = new ArrayList<>();
+        for (Map<String, ArpEntry> sourceEntries : arpEntriesBySource.values()) {
+            result.addAll(sourceEntries.values());
+        }
+        return result;
+    }
+
+    private @Nullable ArpEntry getBestArpEntryByMac(String mac) {
+        return getMergedArpEntries().get(normalizeMac(mac));
+    }
+
+    private Map<String, ArpEntry> getMergedArpEntries() {
+        Map<String, ArpEntry> merged = new ConcurrentHashMap<>();
+        for (Map<String, ArpEntry> sourceEntries : arpEntriesBySource.values()) {
+            for (ArpEntry candidate : sourceEntries.values()) {
+                if (candidate.getState() == ArpState.EXPIRED) {
+                    continue;
+                }
+                merged.merge(candidate.getMac(), candidate, this::preferArpEntry);
+            }
+        }
+        return merged;
+    }
+
+    private ArpEntry preferArpEntry(ArpEntry left, ArpEntry right) {
+        if (left.isStatic() != right.isStatic()) {
+            return left.isStatic() ? right : left;
+        }
+        int leftRank = arpStateRank(left.getState());
+        int rightRank = arpStateRank(right.getState());
+        if (leftRank != rightRank) {
+            return leftRank > rightRank ? left : right;
+        }
+        return left.getLastSeen().isAfter(right.getLastSeen()) ? left : right;
+    }
+
+    private int arpStateRank(ArpState state) {
+        return switch (state) {
+            case ACTIVE -> 3;
+            case STALE -> 2;
+            case STATIC -> 1;
+            case EXPIRED -> 0;
+        };
+    }
+
+    private static ArpState classifyDynamicArp(Instant lastSeen) {
+        long ageSeconds = Duration.between(lastSeen, Instant.now()).getSeconds();
+        if (ageSeconds <= ARP_STALE_AFTER_SECONDS) {
+            return ArpState.ACTIVE;
+        } else if (ageSeconds <= ARP_EXPIRE_AFTER_SECONDS) {
+            return ArpState.STALE;
+        } else {
+            return ArpState.EXPIRED;
+        }
+    }
+
     // ---- Aggregate counts ----
 
     public int getTotalWirelessClients() {
@@ -382,6 +562,7 @@ public class DDWRTNetworkCache {
         firewallRulesByRuleId.clear();
         dhcpLeasesByMac.clear();
         dhcpHostnameToMac.clear();
+        arpEntriesBySource.clear();
         listenersByKey.clear();
     }
 

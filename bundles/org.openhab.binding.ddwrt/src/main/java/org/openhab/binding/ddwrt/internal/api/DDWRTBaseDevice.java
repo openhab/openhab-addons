@@ -13,6 +13,8 @@
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -102,6 +104,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     // DHCPACK events: "DHCPACK(br0) 192.168.0.83 9a:2a:33:74:e4:11 Lee-Pixel-8a"
     private static final Pattern DHCPACK_EVENT = Objects.requireNonNull(Pattern
             .compile("DHCPACK\\(\\S+\\)\\s+(\\S+)\\s+([0-9a-fA-F:]{17})(?:\\s+(\\S+))?", Pattern.CASE_INSENSITIVE));
+
+    // Reusable MAC validation pattern for ARP/neighbor parsing
+    protected static final Pattern MAC_PATTERN = Objects
+            .requireNonNull(Pattern.compile("^[0-9a-f]{2}(:[0-9a-f]{2}){5}$"));
 
     // Identity
     protected String mac = "";
@@ -308,16 +314,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             return device;
         } catch (IOException e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
-            if (ssh != null) {
-                try {
-                    ssh.close();
-                } catch (Exception ignore) {
-                    // no-op
-                }
-            }
             throw e;
         } catch (Exception e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
+            throw new IOException(e.getMessage(), e);
+        } finally {
             if (ssh != null) {
                 try {
                     ssh.close();
@@ -325,7 +326,6 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     // no-op
                 }
             }
-            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -1100,14 +1100,23 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         if (isGateway()) {
             refreshDhcpLeases(runner);
             refreshHostsCache(runner);
+            // ARP scan on gateway to collect static IPs (wired clients)
+            refreshArp(runner);
         }
 
         refreshRadios(runner);
         refreshWirelessClients(runner);
+        performReverseDnsLookups();
         // Firewall rules only apply to gateway devices; APs have firewall disabled
         if (isGateway()) {
             refreshFirewallRules(runner);
         }
+
+        // Note: ARP/neighbor table refresh is NOT performed on non-gateway dump APs.
+        // A dump AP forwards client traffic at Layer 2 only — the kernel ARP table on
+        // the AP itself only contains entries for IPs the AP communicates with directly
+        // (gateway, NTP server, SSH client), not the wireless clients flowing through it.
+        // Use 'useLocalArpCache' on the network bridge or hostnameMappings instead.
         online = true;
 
         long elapsedMs = (System.nanoTime() - startNanos) / 1_000_000;
@@ -1403,6 +1412,132 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
+     * Refresh ARP/neighbor table entries for gateway devices only.
+     * Dump APs are Layer-2 bridges and do not have authoritative IP neighbor information.
+     */
+    protected void refreshArp(SshRunner runner) {
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null || !isGateway()) {
+            return;
+        }
+
+        String output = safeTrim(runner.execStdout(getNeighborCommand()));
+        if (output.isEmpty()) {
+            cache.replaceArpEntries(getMac(), java.util.Collections.emptyList());
+            return;
+        }
+
+        java.util.List<DDWRTNetworkCache.ArpEntry> entries = parseNeighborOutput(output, getMac(), Instant.now());
+        cache.replaceArpEntries(getMac(), entries);
+        logger.debug("Refreshed ARP entries from {}: {} entries", getMac(), entries.size());
+        identifyWiredClients(cache);
+    }
+
+    /**
+     * Returns the command used to dump the neighbor/ARP table.
+     * Default is {@code arp -n} (DD-WRT, Tomato, generic Linux with net-tools).
+     * Subclasses override to use firmware-specific tools (e.g. {@code ip neigh} on OpenWrt).
+     */
+    protected String getNeighborCommand() {
+        return "arp -n";
+    }
+
+    /**
+     * Parse neighbor table output into a source-scoped ARP snapshot.
+     */
+    protected java.util.List<DDWRTNetworkCache.ArpEntry> parseNeighborOutput(String output, String source,
+            Instant seenAt) {
+        java.util.List<DDWRTNetworkCache.ArpEntry> entries = new ArrayList<>();
+        Pattern ipPattern = Pattern.compile("\\b(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\b");
+        Pattern macExtractPattern = Pattern.compile("\\b([0-9a-fA-F]{2}(?::[0-9a-fA-F]{2}){5})\\b");
+
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("IP address") || trimmed.startsWith("Address")) {
+                continue;
+            }
+            Matcher ipMatcher = ipPattern.matcher(trimmed);
+            Matcher macMatcher = macExtractPattern.matcher(trimmed);
+            if (ipMatcher.find() && macMatcher.find()) {
+                String ip = Objects.requireNonNull(ipMatcher.group(1));
+                String mac = Objects.requireNonNull(macMatcher.group(1)).toLowerCase(Locale.ROOT);
+                if (isValidUnicastMac(mac)) {
+                    entries.add(
+                            new DDWRTNetworkCache.ArpEntry(mac, ip, seenAt, DDWRTNetworkCache.ArpState.ACTIVE, source));
+                }
+            }
+        }
+        return entries;
+    }
+
+    /**
+     * Validate a MAC address: must match standard format and not be the all-zeros MAC
+     * (which indicates an INCOMPLETE/FAILED neighbor entry on Linux).
+     */
+    protected static boolean isValidUnicastMac(String mac) {
+        return MAC_PATTERN.matcher(mac).matches() && !"00:00:00:00:00:00".equals(mac);
+    }
+
+    /**
+     * Identify active wired clients by comparing recent ARP entries with wireless client MACs.
+     * Wired clients are present in the authoritative ARP table, are not associated with any AP,
+     * and have a neighbor age of 60 seconds or less.
+     */
+    private void identifyWiredClients(DDWRTNetworkCache cache) {
+        java.util.Set<String> wirelessMacs = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
+        for (DDWRTWirelessClient client : cache.getWirelessClients()) {
+            wirelessMacs.add(client.getMac().toLowerCase(Locale.ROOT));
+        }
+
+        java.util.List<String> wiredMacs = new ArrayList<>();
+        for (String mac : cache.getArpMacs()) {
+            if (!wirelessMacs.contains(mac) && cache.isArpActive(mac)) {
+                String ip = cache.getArpIp(mac);
+                wiredMacs.add(String.format("%s -> %s", mac, ip));
+            }
+        }
+
+        if (!wiredMacs.isEmpty()) {
+            logger.debug("Identified {} wired clients: {}", wiredMacs.size(), String.join(", ", wiredMacs));
+        }
+    }
+
+    /**
+     * Perform reverse DNS lookups for IPs in ARP table that don't have hostnames.
+     * This is used on dump APs where DHCP leases are not available.
+     * The lookup is performed from the openHAB system (where this binding runs).
+     */
+    protected void performReverseDnsLookups() {
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+
+        // For each wireless client that has an IP but no hostname, try reverse DNS
+        for (DDWRTWirelessClient client : cache.getWirelessClients()) {
+            if (!client.getIpAddress().isEmpty() && client.getHostname().isEmpty()) {
+                String ip = client.getIpAddress();
+                try {
+                    InetAddress addr = InetAddress.getByName(ip);
+                    String fqdn = addr.getHostName();
+                    // Use short hostname only (strip domain suffix)
+                    String hostname = fqdn.contains(".") ? fqdn.substring(0, fqdn.indexOf('.')) : fqdn;
+                    // Only set if the reverse lookup returned something different from the IP
+                    if (!hostname.isEmpty() && !hostname.equals(ip)) {
+                        logger.debug("Reverse DNS lookup for {}: {}", ip, hostname);
+                        client.setHostname(hostname);
+                        // Cache hostname index is maintained by putWirelessClient
+                        cache.putWirelessClient(client.getMac(), client);
+                    }
+                } catch (UnknownHostException e) {
+                    // No reverse DNS entry for this IP, ignore
+                    logger.trace("No reverse DNS entry for {}", ip);
+                }
+            }
+        }
+    }
+
+    /**
      * Refresh wireless client list using radio assoclists and DHCP leases.
      * Creates lightweight client entries without per-client SSH queries for RSSI/rates.
      */
@@ -1458,6 +1593,27 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                                 client.setHostname(hostsEntry);
                                 logger.debug("Resolved hostname for {} from cached /etc/hosts: {}", clientMac,
                                         hostsEntry);
+                            }
+                        }
+                    }
+
+                    // If still no IP, try ARP cache — enables reverse DNS lookup below
+                    if (client.getIpAddress().isEmpty()) {
+                        String arpIp = cache.getArpIp(clientMac);
+                        if (arpIp != null && !arpIp.isEmpty()) {
+                            client.setIpAddress(arpIp);
+                            logger.debug("Resolved IP for {} from ARP cache: {}", clientMac, arpIp);
+                        }
+                    }
+
+                    // Try user-supplied hostname mappings (files + inline config)
+                    if (client.getHostname().isEmpty()) {
+                        DDWRTNetwork net = network;
+                        if (net != null) {
+                            String resolved = net.resolveHostname(clientMac, client.getIpAddress());
+                            if (resolved != null && !resolved.isEmpty()) {
+                                client.setHostname(resolved);
+                                logger.debug("Resolved hostname for {} from user mappings: {}", clientMac, resolved);
                             }
                         }
                     }
