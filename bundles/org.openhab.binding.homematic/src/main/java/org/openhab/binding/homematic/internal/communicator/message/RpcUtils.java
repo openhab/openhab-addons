@@ -34,11 +34,13 @@ public class RpcUtils {
             sb.append(methodName);
             sb.append("()\n");
         }
-        dumpCollection(responseData, sb, 0);
+        if (responseData != null) {
+            dumpCollection(responseData, sb, 0);
+        }
         return sb.toString();
     }
 
-    private static void dumpCollection(Object @Nullable [] c, StringBuilder sb, int indent) {
+    private static void dumpCollection(Object[] c, StringBuilder sb, int indent) {
         if (indent > 0) {
             for (int in = 0; in < indent - 1; in++) {
                 sb.append('\t');

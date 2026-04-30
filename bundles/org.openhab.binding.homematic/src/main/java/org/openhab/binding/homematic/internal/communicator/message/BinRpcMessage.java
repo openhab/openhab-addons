@@ -141,6 +141,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private void generateResponseData() throws IOException {
+        String methodName = this.methodName;
         offset = 8 + (methodName != null ? methodName.length() + 8 : 0);
         List<Object> values = new ArrayList<>();
         while (offset < binRpcData.length) {
@@ -155,7 +156,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         addString("Bin ");
         setType(type);
         addInt(0); // placeholder content length
-        String methodName = this.methodName;
+        final String methodName = this.methodName;
         if (methodName != null) {
             addInt(methodName.length());
             addString(methodName);
@@ -172,6 +173,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         addObject(argument);
         setInt(4, offset - 8);
 
+        String methodName = this.methodName;
         if (methodName != null) {
             setInt(12 + methodName.length(), ++args);
         }
@@ -323,14 +325,13 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
 
     private void addList(Collection<?> collection) {
         for (Object object : collection) {
-            addObject(object);
+            if (object != null) {
+                addObject(object);
+            }
         }
     }
 
-    private void addObject(@Nullable Object object) {
-        if (object == null) {
-            return;
-        }
+    private void addObject(Object object) {
         if (object.getClass() == String.class) {
             addInt(3);
             String string = (String) object;
@@ -387,7 +388,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
             generateResponseData();
             return RpcUtils.dumpRpcMessage(methodName, messageData);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            return super.toString();
         }
     }
 }

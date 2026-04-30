@@ -42,7 +42,6 @@ public class XmlRpcRequest implements RpcRequest<String> {
 
     private @Nullable String methodName;
     private List<Object> parms;
-    private StringBuilder sb = new StringBuilder();
     private TYPE type;
     public static final SimpleDateFormat XML_RPC_DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
@@ -73,16 +72,16 @@ public class XmlRpcRequest implements RpcRequest<String> {
 
     @Override
     public String toString() {
-        sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("<?xml");
-        attr("version", "1.0");
-        attr("encoding", "ISO-8859-1");
+        attr(sb, "version", "1.0");
+        attr(sb, "encoding", "ISO-8859-1");
         sb.append("?>\n");
 
         if (type == TYPE.REQUEST) {
             sb.append("<methodCall>");
-            tag("methodName", methodName);
+            tag(sb, "methodName", methodName);
         } else {
             sb.append("<methodResponse>");
         }
@@ -91,7 +90,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
         sb.append("<params>");
         for (Object parameter : parms) {
             sb.append("<param><value>");
-            generateValue(parameter);
+            generateValue(sb, parameter);
             sb.append("</value></param>");
         }
         sb.append("</params>");
@@ -107,46 +106,46 @@ public class XmlRpcRequest implements RpcRequest<String> {
     /**
      * Generates a XML attribute.
      */
-    private void attr(String name, String value) {
+    private void attr(StringBuilder sb, String name, String value) {
         sb.append(" ").append(name).append("=\"").append(value).append("\"");
     }
 
     /**
      * Generates a XML tag.
      */
-    private void tag(String name, @Nullable String value) {
+    private void tag(StringBuilder sb, String name, @Nullable String value) {
         sb.append("<").append(name).append(">").append(value).append("</").append(name).append(">");
     }
 
     /**
      * Generates a value tag based on the type of the value.
      */
-    private void generateValue(@Nullable Object value) {
+    private void generateValue(StringBuilder sb, @Nullable Object value) {
         if (value == null) {
-            tag("string", "void");
+            tag(sb, "string", "void");
         } else {
             Class<?> clazz = value.getClass();
             if (clazz == String.class || clazz == Character.class) {
                 sb.append(StringUtils.escapeXml(value.toString()));
             } else if (clazz == Long.class || clazz == Integer.class || clazz == Short.class || clazz == Byte.class) {
-                tag("int", value.toString());
+                tag(sb, "int", value.toString());
             } else if (clazz == Double.class) {
-                tag("double", String.valueOf(((Double) value).doubleValue()));
+                tag(sb, "double", String.valueOf(((Double) value).doubleValue()));
             } else if (clazz == Float.class) {
                 BigDecimal bd = new BigDecimal((Float) value);
-                generateValue(bd.setScale(6, RoundingMode.HALF_DOWN).doubleValue());
+                generateValue(sb, bd.setScale(6, RoundingMode.HALF_DOWN).doubleValue());
             } else if (clazz == BigDecimal.class) {
-                generateValue(((BigDecimal) value).setScale(6, RoundingMode.HALF_DOWN).doubleValue());
+                generateValue(sb, ((BigDecimal) value).setScale(6, RoundingMode.HALF_DOWN).doubleValue());
             } else if (clazz == Boolean.class) {
-                tag("boolean", ((Boolean) value).booleanValue() ? "1" : "0");
+                tag(sb, "boolean", ((Boolean) value).booleanValue() ? "1" : "0");
             } else if (clazz == Date.class) {
                 synchronized (XML_RPC_DATEFORMAT) {
-                    tag("dateTime.iso8601", XML_RPC_DATEFORMAT.format(((Date) value)));
+                    tag(sb, "dateTime.iso8601", XML_RPC_DATEFORMAT.format(((Date) value)));
                 }
             } else if (value instanceof Calendar calendar) {
-                generateValue(calendar.getTime());
+                generateValue(sb, calendar.getTime());
             } else if (value instanceof byte[] bytes) {
-                tag("base64", Base64.getEncoder().encodeToString(bytes));
+                tag(sb, "base64", Base64.getEncoder().encodeToString(bytes));
             } else if (clazz.isArray() || value instanceof List) {
                 sb.append("<array><data>");
 
@@ -158,7 +157,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
                 }
                 for (Object arrayObject : array) {
                     sb.append("<value>");
-                    generateValue(arrayObject);
+                    generateValue(sb, arrayObject);
                     sb.append("</value>");
                 }
 
@@ -170,14 +169,14 @@ public class XmlRpcRequest implements RpcRequest<String> {
                     sb.append("<member>");
                     sb.append("<name>").append(entry.getKey()).append("</name>");
                     sb.append("<value>");
-                    generateValue(entry.getValue());
+                    generateValue(sb, entry.getValue());
                     sb.append("</value>");
                     sb.append("</member>");
                 }
 
                 sb.append("</struct>");
             } else {
-                throw new RuntimeException("Unsupported XML-RPC Type: " + value.getClass());
+                throw new IllegalArgumentException("Unsupported XML-RPC Type: " + value.getClass());
             }
         }
     }

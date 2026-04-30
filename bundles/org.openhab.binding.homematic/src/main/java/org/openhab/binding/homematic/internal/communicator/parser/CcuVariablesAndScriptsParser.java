@@ -44,12 +44,10 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                 if (dp != null) {
                     dp.setValue(convertToType(entry.value));
                 } else {
-                    dp = new HmDatapoint();
-                    dp.setName(entry.name);
+                    dp = new HmDatapoint(entry.name, entry.description, HmValueType.parse(entry.valueType),
+                            convertToType(entry.value), entry.readOnly, HmParamsetType.VALUES);
                     dp.setInfo(entry.name);
-                    dp.setDescription(entry.description);
-                    dp.setType(HmValueType.parse(entry.valueType));
-                    dp.setValue(convertToType(entry.value));
+
                     if (dp.isIntegerType()) {
                         dp.setMinValue(toInteger(entry.minValue));
                         dp.setMaxValue(toInteger(entry.maxValue));
@@ -57,14 +55,14 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                         dp.setMinValue(toDouble(entry.minValue));
                         dp.setMaxValue(toDouble(entry.maxValue));
                     }
-                    dp.setReadOnly(entry.readOnly);
                     dp.setUnit(entry.unit);
-                    String[] result = entry.options == null ? null : entry.options.split(";");
-                    dp.setOptions(result == null || result.length == 0 ? null : result);
+                    String[] result = entry.options == null || entry.options.isEmpty() ? null
+                            : entry.options.split(";");
+                    dp.setOptions(result);
 
-                    if (dp.getOptions() != null) {
+                    if (result != null) {
                         dp.setMinValue(0);
-                        dp.setMaxValue(dp.getOptions().length - 1);
+                        dp.setMaxValue(result.length - 1);
                     }
 
                     dp.setParamsetType(HmParamsetType.VALUES);

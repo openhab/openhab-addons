@@ -32,7 +32,7 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
     private @Nullable Object value;
 
     @Override
-    public HmDatapointInfo parse(Object @Nullable [] message) throws IOException {
+    public HmDatapointInfo parse(Object[] message) throws IOException {
         String address;
         Integer channel = 0;
         String addressWithChannel = toString(message[1]);
@@ -43,11 +43,8 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             String addrChannel = addressWithChannel == null ? "" : addressWithChannel.trim();
             String[] configParts = addrChannel.split(":");
             address = getSanitizedAddress(configParts[0]);
-            if (address == null) {
-                throw new IOException("Missing address in event message");
-            }
             if (configParts.length > 1) {
-                channel = configParts[1] == null ? null : Integer.valueOf(configParts[1]);
+                channel = Integer.valueOf(configParts[1]);
             }
         }
 

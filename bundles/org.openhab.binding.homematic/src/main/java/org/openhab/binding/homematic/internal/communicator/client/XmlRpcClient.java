@@ -112,8 +112,9 @@ public class XmlRpcClient extends RpcClient<String> {
             if (port == config.getGroupPort()) {
                 url += "/groups";
             }
+            AuthenticationHandler authenticationHandler = this.authenticationHandler;
             if (authenticationHandler == null) {
-                authenticationHandler = new AuthenticationHandler(config);
+                this.authenticationHandler = authenticationHandler = new AuthenticationHandler(config);
             }
 
             Request req = authenticationHandler.updateAuthenticationInformation(

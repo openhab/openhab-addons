@@ -673,6 +673,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
         if (newValue == null) {
             throw new HomematicClientException("Cannot send null value to datapoint: " + dp.getInfo());
         }
+
         final HmDatapointInfo dpInfo = new HmDatapointInfo(dp);
         if (dp.isPressDatapoint() || (config.getGatewayInfo().isHomegear() && dp.isVariable())) {
             echoEvents.add(dpInfo);
@@ -745,8 +746,8 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
     }
 
     @Override
-    public void eventReceived(HmDatapointInfo dpInfo, @Nullable Object newValue) {
-        String className = newValue == null ? "Unknown" : newValue.getClass().getSimpleName();
+    public void eventReceived(HmDatapointInfo dpInfo, Object newValue) {
+        String className = newValue.getClass().getSimpleName();
         logger.debug("Received new ({}) value '{}' for '{}' from gateway with id '{}'", className, newValue, dpInfo,
                 id);
 
