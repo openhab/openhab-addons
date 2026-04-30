@@ -13,7 +13,6 @@
 package org.openhab.binding.homematic.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Object that holds the rssi infos for a RF device.
@@ -36,9 +35,8 @@ public class HmRssiInfo {
     /**
      * Converts the rssi value to null if necessary.
      */
-    private Integer convert(@Nullable Integer intValue) {
-        if (intValue == null || intValue == 65536) {
-            return 0;
+    private int convert(Integer intValue) {
+        if (intValue == 65536) {
         }
         return intValue;
     }
@@ -53,14 +51,14 @@ public class HmRssiInfo {
     /**
      * Returns the device rssi.
      */
-    public Integer getDevice() {
+    public int getDevice() {
         return device;
     }
 
     /**
      * Returns the peer rssi.
      */
-    public Integer getPeer() {
+    public int getPeer() {
         return peer;
     }
 

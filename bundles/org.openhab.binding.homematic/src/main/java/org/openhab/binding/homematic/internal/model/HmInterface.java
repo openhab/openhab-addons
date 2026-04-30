@@ -13,7 +13,6 @@
 package org.openhab.binding.homematic.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Definition of the Homematic interfaces.
@@ -31,7 +30,7 @@ public enum HmInterface {
     /**
      * Returns the full name of the interface.
      */
-    public @Nullable String getName() {
+    public String getName() {
         switch (this) {
             case RF:
                 return "BidCos-RF";
@@ -44,6 +43,6 @@ public enum HmInterface {
             case GROUP:
                 return "Group";
         }
-        return null;
+        return this.name();
     }
 }

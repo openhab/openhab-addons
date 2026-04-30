@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -31,7 +32,7 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
     private @Nullable Object value;
 
     @Override
-    public HmDatapointInfo parse(Object @Nullable [] message) throws IOException {
+    public HmDatapointInfo parse(Object[] message) throws IOException {
         String address;
         Integer channel = 0;
         String addressWithChannel = toString(message[1]);
@@ -42,15 +43,12 @@ public class EventParser extends CommonRpcParser<Object[], HmDatapointInfo> {
             String addrChannel = addressWithChannel == null ? "" : addressWithChannel.trim();
             String[] configParts = addrChannel.split(":");
             address = getSanitizedAddress(configParts[0]);
-            if (address == null) {
-                throw new IOException("Missing address in event message");
-            }
             if (configParts.length > 1) {
-                channel = configParts[1] == null ? null : Integer.valueOf(configParts[1]);
+                channel = Integer.valueOf(configParts[1]);
             }
         }
 
-        String name = toString(message[2]);
+        String name = MiscUtils.toStringOrEmptyIfNull(message[2]);
         value = message[3];
 
         return new HmDatapointInfo(address, HmParamsetType.VALUES, channel, name);

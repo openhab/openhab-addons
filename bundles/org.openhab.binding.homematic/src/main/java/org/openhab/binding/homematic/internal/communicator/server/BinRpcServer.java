@@ -46,26 +46,31 @@ public class BinRpcServer implements RpcServer {
     public void start() throws IOException {
         logger.debug("Initializing BIN-RPC server at port {}", config.getBinCallbackPort());
 
-        networkService = new BinRpcNetworkService(listener, config);
-        networkServiceThread = new Thread(networkService);
-        networkServiceThread
-                .setName("OH-binding-" + HomematicBindingConstants.THING_TYPE_BRIDGE + ":" + id + "-rpcServer");
+        BinRpcNetworkService service = new BinRpcNetworkService(listener, config);
+        this.networkService = service;
+
+        Thread networkServiceThread = new Thread(service,
+                "OH-binding-" + HomematicBindingConstants.THING_TYPE_BRIDGE + ":" + id + "-rpcServer");
         networkServiceThread.start();
+        this.networkServiceThread = networkServiceThread;
     }
 
     @Override
     public void shutdown() {
+        Thread networkServiceThread = this.networkServiceThread;
+        try {
+            if (networkServiceThread != null) {
+                networkServiceThread.interrupt();
+            }
+        } catch (Exception e) {
+            logger.error("{}", e.getMessage(), e);
+        }
+
+        BinRpcNetworkService networkService = this.networkService;
         if (networkService != null) {
             logger.debug("Stopping BIN-RPC server");
-            try {
-                if (networkServiceThread != null) {
-                    networkServiceThread.interrupt();
-                }
-            } catch (Exception e) {
-                logger.error("{}", e.getMessage(), e);
-            }
             networkService.shutdown();
-            networkService = null;
+            this.networkService = null;
         }
     }
 }

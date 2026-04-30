@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,14 +39,14 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (message != null && message.length > 0 && message[0] instanceof Object[] innerMessage) {
             return innerMessage;
         }
-        return new Object[0];
+        return message != null ? message : new Object[0];
     }
 
     /**
      * Converts the object to a string.
      */
     protected @Nullable String toString(@Nullable Object object) {
-        String value = Objects.toString(object, "").trim();
+        String value = MiscUtils.toStringOrEmptyIfNull(object).trim();
         return value.isEmpty() ? null : value;
     }
 
@@ -128,8 +127,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Returns the address of a device, replacing group address identifier and illegal characters.
      */
-    protected @Nullable String getSanitizedAddress(@Nullable Object object) {
-        String address = Objects.toString(object, "").trim().replaceFirst("\\*", "T-");
+    protected String getSanitizedAddress(@Nullable Object object) {
+        String address = MiscUtils.toStringOrEmptyIfNull(object).trim().replaceFirst("\\*", "T-");
         return MiscUtils.validateCharacters(address.isEmpty() ? null : address, "Address", "_");
     }
 
@@ -137,21 +136,20 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Adjust uninitialized rssi values to zero.
      */
     protected void adjustRssiValue(HmDatapoint dp) {
-        Object dpValue = dp.getValue();
-        if (dpValue != null && dp.getName().startsWith("RSSI_") && dp.isIntegerType()) {
-            int rssiValue = ((Number) dpValue).intValue();
-            dp.setValue(getAdjustedRssiValue(rssiValue));
+        Number value = dp.getNumericValue();
+        if (value != null && dp.getName().startsWith("RSSI_")) {
+            dp.setValue(getAdjustedRssiValue(value.intValue()));
         }
     }
 
     /**
      * Adjust a rssi value if it is out of range.
      */
-    protected Integer getAdjustedRssiValue(@Nullable Integer rssiValue) {
-        if (rssiValue == null || rssiValue >= 255 || rssiValue <= -255) {
+    protected int getAdjustedRssiValue(Integer rssiValue) {
+        if (rssiValue >= 255 || rssiValue <= -255) {
             return 0;
         }
-        return rssiValue;
+        return rssiValue.intValue();
     }
 
     /**
@@ -180,16 +178,22 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             String @Nullable [] options, @Nullable Object min, @Nullable Object max, @Nullable Integer operations,
             @Nullable Object defaultValue, @Nullable Map<String, Number> specialValues, HmParamsetType paramsetType,
             boolean isHmIpDevice) throws IOException {
-        HmDatapoint dp = new HmDatapoint();
-        dp.setName(name);
-        dp.setDescription(name);
+        HmValueType valueType = HmValueType.parse(type);
+        if (valueType == HmValueType.UNKNOWN) {
+            throw new IOException("Unknown datapoint type: " + type);
+        }
+
+        boolean readable = operations != null && (operations & 1) == 1;
+        boolean writeable = operations != null && (operations & 2) == 2;
+        HmDatapoint dp = new HmDatapoint(name, name, valueType, defaultValue, !writeable, paramsetType);
+
         if (unit != null) {
             unit = unit.trim().replace("\ufffd", "°");
         }
         dp.setUnit(unit == null || unit.isEmpty() ? null : unit);
 
         // Bypass: For several devices the CCU does not send a unit together with the value in the data point definition
-        if (dp.getUnit() == null && dp.getName() != null) {
+        if (dp.getUnit() == null) {
             if (dp.getName().startsWith("RSSI_")) {
                 dp.setUnit("dBm");
             } else if (dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE)) {
@@ -201,17 +205,14 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             }
         }
 
-        HmValueType valueType = HmValueType.parse(type);
-        if (valueType == null || valueType == HmValueType.UNKNOWN) {
-            throw new IOException("Unknown datapoint type: " + type);
-        } else if (valueType == HmValueType.FLOAT && dp.getUnit() == null
+        if (valueType == HmValueType.FLOAT && dp.getUnit() == null
                 && dp.getName().matches("\\w*_TEMPERATURE(_\\w.*|$)")) {
             logger.debug("No unit information found for temperature datapoint {}, assuming Number:Temperature",
                     dp.getName());
             dp.setUnit("°C"); // Bypass for a problem with HMIP devices where unit of temperature channels is sometimes
                               // empty
         }
-        dp.setType(valueType);
+        dp.setReadable(readable);
 
         dp.setOptions(options);
         if (dp.isNumberType() || dp.isEnumType()) {
@@ -223,9 +224,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
                 dp.setMaxValue(toNumber(max));
             }
         }
-        dp.setReadOnly((operations & 2) != 2);
-        dp.setReadable((operations & 1) == 1);
-        dp.setParamsetType(paramsetType);
+
         if (isHmIpDevice && dp.isEnumType()) {
             dp.setDefaultValue(dp.getOptionIndex(toString(defaultValue)));
         } else {

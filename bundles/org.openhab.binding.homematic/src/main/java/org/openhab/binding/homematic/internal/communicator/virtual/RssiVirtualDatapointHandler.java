@@ -37,11 +37,13 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
-            HmDatapoint dp = addDatapoint(device, 0, getName(), HmValueType.INTEGER, getRssiValue(device.getChannel(0)),
-                    true);
-            dp.setUnit("dBm");
-            dp.setMinValue(Integer.MIN_VALUE);
-            dp.setMaxValue(Integer.MAX_VALUE);
+            HmChannel channel = device.getChannel(0);
+            if (channel != null) {
+                HmDatapoint dp = addDatapoint(channel, getName(), HmValueType.INTEGER, getRssiValue(channel), true);
+                dp.setUnit("dBm");
+                dp.setMinValue(Integer.MIN_VALUE);
+                dp.setMaxValue(Integer.MAX_VALUE);
+            }
         }
     }
 
@@ -56,7 +58,9 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         HmChannel channel = dp.getChannel();
         Object value = getRssiValue(channel);
         HmDatapoint vdpRssi = getVirtualDatapoint(channel);
-        vdpRssi.setValue(value);
+        if (vdpRssi != null) {
+            vdpRssi.setValue(value);
+        }
     }
 
     /**
@@ -64,33 +68,33 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
      */
     protected @Nullable Integer getRssiValue(HmChannel channel) {
         HmDatapoint dpRssiDevice = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE);
+        if (dpRssiDevice != null) {
+            Integer deviceValue = getDatapointValue(dpRssiDevice);
+            if (deviceValue != null) {
+                return deviceValue;
+            }
+        }
+
         HmDatapoint dpRssiPeer = channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_PEER);
-
-        Integer deviceValue = getDatapointValue(dpRssiDevice);
-        Integer peerValue = getDatapointValue(dpRssiPeer);
-
-        if ((deviceValue == null || deviceValue == 0) && peerValue != null) {
-            return peerValue;
+        if (dpRssiPeer != null) {
+            Integer peerValue = getDatapointValue(dpRssiPeer);
+            if (peerValue != null) {
+                return peerValue;
+            }
         }
-        return deviceValue;
+        return null;
     }
 
-    private @Nullable Integer getDatapointValue(@Nullable HmDatapoint dp) {
-        if (dp == null || dp.getValue() == null || (Integer) dp.getValue() == 0) {
-            return null;
+    private @Nullable Integer getDatapointValue(HmDatapoint dp) {
+        if (dp.getValue() instanceof Integer value && value != 0) {
+            return value;
         }
 
-        return (Integer) dp.getValue();
+        return null;
     }
 
-    protected boolean isWirelessDevice(@Nullable HmDevice device) {
-        if (device == null) {
-            return false;
-        }
-        HmChannel channel = device.getChannelUnchecked(0);
-        if (channel == null) {
-            return false;
-        }
-        return channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE) != null;
+    protected boolean isWirelessDevice(HmDevice device) {
+        HmChannel channel = device.getChannel(0);
+        return channel != null && channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE) != null;
     }
 }

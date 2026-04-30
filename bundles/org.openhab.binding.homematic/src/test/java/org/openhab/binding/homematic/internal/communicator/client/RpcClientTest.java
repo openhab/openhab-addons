@@ -36,7 +36,10 @@ import org.openhab.core.test.java.JavaTest;
 @NonNullByDefault
 public class RpcClientTest extends JavaTest {
 
-    private @NonNullByDefault({}) RpcClientMockImpl rpcClient;
+    private RpcClientMockImpl rpcClient = new RpcClientMockImpl();
+
+    public RpcClientTest() throws IOException {
+    }
 
     @BeforeEach
     public void setup() throws IOException {

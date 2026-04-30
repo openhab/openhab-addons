@@ -18,7 +18,6 @@ import java.util.Objects;
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.QuantityType;
@@ -56,8 +55,8 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
     }
 
     private QuantityType<? extends Quantity<?>> toUnitFromDatapoint(QuantityType<? extends Quantity<?>> type,
-            @Nullable HmDatapoint dp) {
-        if (dp == null || !(dp.getUnit() instanceof String unit) || unit.isEmpty()) {
+            HmDatapoint dp) {
+        if (!(dp.getUnit() instanceof String unit) || unit.isEmpty()) {
             // datapoint is dimensionless, nothing to convert
             return type;
         }
@@ -95,16 +94,17 @@ public class QuantityTypeConverter extends AbstractTypeConverter<QuantityType<? 
 
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
-        return dp.isNumberType() && dp.getValue() instanceof Number;
+        return dp.getNumericValue() != null;
     }
 
     @Override
     protected QuantityType<? extends Quantity<?>> fromBinding(HmDatapoint dp) throws ConverterException {
-        Number number = Objects.requireNonNull(((Number) dp.getValue()));
+        final Number dpValue = Objects.requireNonNull(dp.getNumericValue()); // ensured by fromBindingValidation
+        final Number number;
         if (dp.isIntegerType()) {
-            number = new BigDecimal(number.intValue());
+            number = new BigDecimal(dpValue.intValue());
         } else {
-            number = round(number.doubleValue());
+            number = round(dpValue.doubleValue());
         }
 
         // create a QuantityType from the datapoint's value based on the datapoint's unit

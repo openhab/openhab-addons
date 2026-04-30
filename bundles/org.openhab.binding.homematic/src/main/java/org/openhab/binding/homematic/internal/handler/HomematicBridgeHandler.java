@@ -18,6 +18,7 @@ import static org.openhab.core.thing.Thing.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -115,18 +116,21 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 this.checkForConfigurationErrors();
 
                 String id = getThing().getUID().getId();
-                gateway = HomematicGatewayFactory.createGateway(id, config, this, httpClient);
+                HomematicGateway gateway = this.gateway = HomematicGatewayFactory.createGateway(id, config, this,
+                        httpClient);
                 configureThingProperties();
                 gateway.initialize();
 
                 // scan for already known devices (new devices will not be discovered,
                 // since installMode==true is only achieved if the bridge is online
-                discoveryService.startScan(null);
-                discoveryService.waitForScanFinishing(gateway);
+                HomematicDeviceDiscoveryService discoveryService = this.discoveryService;
+                if (discoveryService != null) {
+                    discoveryService.startScan(null);
+                    discoveryService.waitForScanFinishing(gateway);
+                }
 
                 updateStatus(ThingStatus.ONLINE);
-                HmGatewayInfo gatewayInfo = config.getGatewayInfo();
-                if (gatewayInfo != null && !gatewayInfo.isHomegear()) {
+                if (!config.getGatewayInfo().isHomegear()) {
                     try {
                         gateway.loadRssiValues();
                     } catch (IOException ex) {
@@ -153,12 +157,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Validates, if the configuration contains errors.
      */
     private void checkForConfigurationErrors() {
-        if (this.config.getCallbackHost().contains(" ")) {
+        final HomematicConfig config = Objects.requireNonNull(this.config);
+        final String callbackHost = config.getCallbackHost();
+        if (callbackHost != null && callbackHost.contains(" ")) {
             throw new ConfigurationException("The callback host mut not contain white spaces.");
         }
     }
 
     private void configureThingProperties() {
+        final HomematicConfig config = Objects.requireNonNull(this.config);
         final HmGatewayInfo info = config.getGatewayInfo();
         final Map<String, String> properties = getThing().getProperties();
 
@@ -199,12 +206,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     private void disposeInternal() {
         logger.debug("Disposing bridge '{}'", getThing().getUID().getId());
+        final HomematicDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.stopScan();
         }
+        final HomematicGateway gateway = this.gateway;
         if (gateway != null) {
             gateway.dispose();
         }
+        final HomematicConfig config = this.config;
         if (config != null) {
             PORT_POOL.release(config.getXmlCallbackPort());
             PORT_POOL.release(config.getBinCallbackPort());
@@ -274,8 +284,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      *
      * @return The gateway or null if gateway has not yet been initialized.
      */
-    @Nullable
-    public HomematicGateway getGateway() {
+    public @Nullable HomematicGateway getGateway() {
         return gateway;
     }
 
@@ -353,6 +362,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     @Override
     public void onDeviceLoaded(HmDevice device) {
         typeGenerator.generate(device);
+        final HomematicDeviceDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.deviceDiscovered(device);
         }
@@ -419,7 +429,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void reloadAllDeviceValues() {
-        HomematicGateway gateway = this.gateway;
+        final HomematicGateway gateway = this.gateway;
         if (gateway == null) {
             logger.debug("Homematic Gateway is null, unable to reload device values");
             return;
@@ -448,7 +458,10 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * @throws IOException If there is a problem while communicating to the gateway
      */
     public void updateDatapoint(HmDatapoint dp) throws IOException {
-        getGateway().loadDatapointValue(dp);
+        final HomematicGateway gateway = this.gateway;
+        if (gateway != null) {
+            gateway.loadDatapointValue(dp);
+        }
     }
 
     /**
@@ -460,9 +473,13 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * @param defer <i>true</i> will delete the device once it becomes available.
      */
     public void deleteFromGateway(String address, boolean reset, boolean force, boolean defer) {
+
         executorService.submit(() -> {
-            logger.debug("Deleting the device '{}' from gateway '{}'", address, getBridge());
-            getGateway().deleteDevice(address, reset, force, defer);
+            final HomematicGateway gateway = this.gateway;
+            if (gateway != null) {
+                logger.debug("Deleting the device '{}' from gateway '{}'", address, getBridge());
+                gateway.deleteDevice(address, reset, force, defer);
+            }
         });
     }
 }

@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.converter;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -48,22 +50,26 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatDp.setValue(99.9);
         convertedState = decimalConverter.convertFromBinding(floatDp);
         assertThat(convertedState, instanceOf(DecimalType.class));
-        assertThat(((DecimalType) convertedState).doubleValue(), is(99.9));
+        DecimalType decimalState = (DecimalType) Objects.requireNonNull(convertedState);
+        assertThat(decimalState.doubleValue(), is(99.9));
 
         floatDp.setValue(77.77777778);
         convertedState = decimalConverter.convertFromBinding(floatDp);
         assertThat(convertedState, instanceOf(DecimalType.class));
-        assertThat(((DecimalType) convertedState).doubleValue(), is(77.777778));
+        decimalState = (DecimalType) Objects.requireNonNull(convertedState);
+        assertThat(decimalState.doubleValue(), is(77.777778));
 
         integerDp.setValue(99.0);
         convertedState = decimalConverter.convertFromBinding(integerDp);
         assertThat(convertedState, instanceOf(DecimalType.class));
-        assertThat(((DecimalType) convertedState).doubleValue(), is(99.0));
+        decimalState = (DecimalType) Objects.requireNonNull(convertedState);
+        assertThat(decimalState.doubleValue(), is(99.0));
 
         integerDp.setValue(99.9);
         convertedState = decimalConverter.convertFromBinding(integerDp);
         assertThat(convertedState, instanceOf(DecimalType.class));
-        assertThat(((DecimalType) convertedState).doubleValue(), is(99.0));
+        decimalState = (DecimalType) Objects.requireNonNull(convertedState);
+        assertThat(decimalState.doubleValue(), is(99.0));
     }
 
     @SuppressWarnings("null")

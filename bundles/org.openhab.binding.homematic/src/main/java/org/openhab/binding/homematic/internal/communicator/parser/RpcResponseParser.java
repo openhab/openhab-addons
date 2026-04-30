@@ -45,9 +45,10 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
                     Number faultCode = toNumber(map.get("faultCode"));
                     String faultString = toString(map.get("faultString"));
                     String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, request);
-                    if (faultCode.intValue() == -1 && "Failure".equals(faultString)) {
+                    if (faultCode != null && faultCode.intValue() == -1 && "Failure".equals(faultString)) {
                         throw new UnknownRpcFailureException(faultMessage);
-                    } else if (faultCode.intValue() == -3 && "Unknown paramset".equals(faultString)) {
+                    } else if (faultCode != null && faultCode.intValue() == -3
+                            && "Unknown paramset".equals(faultString)) {
                         throw new UnknownParameterSetException(faultMessage);
                     }
                     throw new IOException(faultMessage);

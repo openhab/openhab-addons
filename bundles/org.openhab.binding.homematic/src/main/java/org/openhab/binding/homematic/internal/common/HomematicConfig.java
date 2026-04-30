@@ -32,6 +32,8 @@ public class HomematicConfig {
     private static final String GATEWAY_TYPE_CCU = "CCU";
     private static final String GATEWAY_TYPE_NOCCU = "NOCCU";
 
+    private static final HmGatewayInfo FALLBACK_GATEWAY_INFO = new HmGatewayInfo("", HmGatewayInfo.ID_DEFAULT, "", "");
+
     private static final int DEFAULT_PORT_RF = 2001;
     private static final int DEFAULT_PORT_WIRED = 2000;
     private static final int DEFAULT_PORT_HMIP = 2010;
@@ -64,8 +66,8 @@ public class HomematicConfig {
     private int callbackRegTimeout;
 
     private boolean useAuthentication;
-    private @Nullable String userName;
-    private @Nullable String password;
+    private String userName = "";
+    private String password = "";
 
     /**
      * Returns the Homematic gateway address.
@@ -140,8 +142,9 @@ public class HomematicConfig {
     /**
      * Returns the HmGatewayInfo.
      */
-    public @Nullable HmGatewayInfo getGatewayInfo() {
-        return gatewayInfo;
+    public HmGatewayInfo getGatewayInfo() {
+        HmGatewayInfo info = this.gatewayInfo;
+        return info != null ? info : FALLBACK_GATEWAY_INFO;
     }
 
     /**
@@ -296,7 +299,7 @@ public class HomematicConfig {
     /**
      * Returns the user name for authorize against the gateway
      */
-    public @Nullable String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -310,7 +313,7 @@ public class HomematicConfig {
     /**
      * Returns the password for authorize against the gateway
      */
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -412,7 +415,7 @@ public class HomematicConfig {
      * Returns the encoding that is suitable on requests to and responds from the Homematic gateway.
      */
     public Charset getEncoding() {
-        if (gatewayInfo != null && gatewayInfo.isHomegear()) {
+        if (getGatewayInfo().isHomegear()) {
             return StandardCharsets.UTF_8;
         } else {
             return StandardCharsets.ISO_8859_1;

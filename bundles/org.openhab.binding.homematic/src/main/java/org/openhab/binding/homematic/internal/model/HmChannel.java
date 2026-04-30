@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,18 +39,18 @@ public class HmChannel {
     public static final Integer CHANNEL_NUMBER_SCRIPT = 2;
 
     private final int number;
-    private final @Nullable String type;
+    private final String type;
     private @Nullable HmDevice device;
     private boolean initialized;
     private @Nullable Integer lastFunction;
     private Map<HmDatapointInfo, HmDatapoint> datapoints = new HashMap<>();
 
-    public HmChannel(@Nullable String type, int number) {
+    public HmChannel(String type, int number) {
         this.type = type;
         this.number = number;
     }
 
-    public HmChannel(@Nullable String type, int number, HmDevice device) {
+    public HmChannel(String type, int number, HmDevice device) {
         this.type = type;
         this.number = number;
         this.device = device;
@@ -66,11 +67,7 @@ public class HmChannel {
      * Returns the device of the channel.
      */
     public HmDevice getDevice() {
-        HmDevice d = device;
-        if (d == null) {
-            throw new IllegalStateException("Channel has no device - was it added via HmDevice.addChannel()?");
-        }
-        return d;
+        return Objects.requireNonNull(device);
     }
 
     /**
@@ -83,7 +80,7 @@ public class HmChannel {
     /**
      * Sets the type of the channel.
      */
-    public @Nullable String getType() {
+    public String getType() {
         return type;
     }
 
@@ -107,22 +104,14 @@ public class HmChannel {
      * Returns true, if the channel contains gateway scripts.
      */
     public boolean isGatewayScript() {
-        HmDevice device = this.device;
-        if (device == null) {
-            return false;
-        }
-        return device.isGatewayExtras() && TYPE_GATEWAY_SCRIPT.equals(type);
+        return getDevice().isGatewayExtras() && TYPE_GATEWAY_SCRIPT.equals(type);
     }
 
     /**
      * Returns true, if the channel contains gateway variables.
      */
     public boolean isGatewayVariable() {
-        HmDevice device = this.device;
-        if (device == null) {
-            return false;
-        }
-        return device.isGatewayExtras() && TYPE_GATEWAY_VARIABLE.equals(type);
+        return getDevice().isGatewayExtras() && TYPE_GATEWAY_VARIABLE.equals(type);
     }
 
     /**
@@ -208,16 +197,17 @@ public class HmChannel {
         if (currentFunction == null) {
             return false;
         }
+        Integer lastFunction = this.lastFunction;
         if (lastFunction == null) {
             // We were called from initialization, which was preceded by initial metadata fetch, so everything
             // should be fine by now
-            lastFunction = currentFunction;
+            this.lastFunction = currentFunction;
             return false;
         }
         if (lastFunction.equals(currentFunction)) {
             return false;
         }
-        lastFunction = currentFunction;
+        this.lastFunction = currentFunction;
         return true;
     }
 

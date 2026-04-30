@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = HomematicDeviceDiscoveryService.class)
 @NonNullByDefault
+@Component(scope = ServiceScope.PROTOTYPE, service = HomematicDeviceDiscoveryService.class)
 public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<HomematicBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
@@ -193,7 +193,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
                 try {
                     gateway.loadAllDeviceMetadata();
                     thingHandler.getTypeGenerator().validateFirmwares();
-                } catch (Throwable ex) {
+                } catch (Exception ex) {
                     logger.error("{}", ex.getMessage(), ex);
                 } finally {
                     loadDevicesFuture = null;
@@ -221,7 +221,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
-        String label = device.getName() != null ? device.getName() : device.getAddress();
+        String label = device.getName().isEmpty() ? device.getAddress() : device.getName();
         long timeToLive = thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)

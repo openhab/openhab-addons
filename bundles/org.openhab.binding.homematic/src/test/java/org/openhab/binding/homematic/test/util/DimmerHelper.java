@@ -17,6 +17,8 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmInterface;
+import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -38,7 +40,7 @@ public class DimmerHelper {
     }
 
     public static HmDevice createDimmerHmDevice(String gatewayType) {
-        HmDevice hmDevice = new HmDevice("ABC12345678", HmInterface.WIRED, "HM-LC-Dim1-Pl3", gatewayType, "", "1");
+        HmDevice hmDevice = new HmDevice("ABC12345678", HmInterface.RF, "HM-LC-Dim1-Pl3", gatewayType, "", "1");
         hmDevice.setName("Homematic Dimmer");
         return hmDevice;
     }
@@ -52,8 +54,7 @@ public class DimmerHelper {
     }
 
     public static HmDatapoint createDimmerHmDatapoint() {
-        HmDatapoint hmDatapoint = new HmDatapoint();
-        hmDatapoint.setName("DIMMER");
+        HmDatapoint hmDatapoint = new HmDatapoint("DIMMER", "", HmValueType.FLOAT, null, false, HmParamsetType.VALUES);
         hmDatapoint.setChannel(createDimmerHmChannel());
 
         return hmDatapoint;

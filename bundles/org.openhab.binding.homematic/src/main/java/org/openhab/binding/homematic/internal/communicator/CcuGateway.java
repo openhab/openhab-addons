@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,14 +35,15 @@ import org.openhab.binding.homematic.internal.communicator.parser.CcuLoadDeviceN
 import org.openhab.binding.homematic.internal.communicator.parser.CcuParamsetDescriptionParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuValueParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuVariablesAndScriptsParser;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmResult;
-import org.openhab.binding.homematic.internal.model.dto.TclScript;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptList;
+import org.openhab.binding.homematic.internal.model.TclScript;
+import org.openhab.binding.homematic.internal.model.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.TclScriptList;
 import org.openhab.core.i18n.ConfigurationException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -163,7 +163,7 @@ public class CcuGateway extends AbstractHomematicGateway {
         if (value instanceof Double) {
             strValue = new BigDecimal((Double) value).stripTrailingZeros().toPlainString();
         } else {
-            strValue = Objects.toString(value, "").replace("\"", "\\\"");
+            strValue = MiscUtils.toStringOrEmptyIfNull(value).replace("\"", "\\\"");
         }
         if (dp.isStringType()) {
             strValue = "\"" + strValue + "\"";
@@ -188,15 +188,16 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Sends a TclRega script to the CCU.
      */
     private <T> T sendScriptByName(String scriptName, Class<T> clazz) throws IOException {
-        return sendScriptByName(scriptName, clazz, new String[] {}, null);
+        return sendScriptByName(scriptName, clazz, new String[] {}, new String[] {});
     }
 
     /**
      * Sends a TclRega script with the specified variables to the CCU.
      */
-    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames,
-            String @Nullable [] values) throws IOException {
-        String script = tclregaScripts.get(scriptName);
+    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames, String[] values)
+            throws IOException {
+        Map<String, @Nullable String> scripts = this.tclregaScripts;
+        String script = scripts != null ? scripts.get(scriptName) : null;
         if (script != null) {
             for (int i = 0; i < variableNames.length; i++) {
                 script = script.replace("{" + variableNames[i] + "}", values[i]);

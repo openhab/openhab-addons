@@ -21,8 +21,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@XStreamAlias("result")
 @NonNullByDefault
+@XStreamAlias("result")
 public class HmResult {
 
     private boolean valid;

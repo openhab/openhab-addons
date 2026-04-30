@@ -175,8 +175,11 @@ public class XmlRpcResponse implements RpcResponse {
         }
 
         @Override
-        public void characters(@NonNullByDefault({}) char[] ch, int start, int length) throws SAXException {
-            tagValue.append(new String(ch, start, length));
+        public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
+            StringBuilder sb = tagValue;
+            if (sb != null && ch != null) {
+                sb.append(ch, start, length);
+            }
         }
     }
 }

@@ -37,9 +37,9 @@ public class HomematicGatewayFactory {
             HomematicGatewayAdapter gatewayAdapter, HttpClient httpClient) throws IOException, ConfigurationException {
         loadGatewayInfo(config, id, httpClient);
         HmGatewayInfo gwInfo = config.getGatewayInfo();
-        if (gwInfo != null && gwInfo.isCCU()) {
+        if (gwInfo.isCCU()) {
             return new CcuGateway(id, config, gatewayAdapter, httpClient);
-        } else if (gwInfo != null && gwInfo.isHomegear()) {
+        } else if (gwInfo.isHomegear()) {
             return new HomegearGateway(id, config, gatewayAdapter, httpClient);
         } else {
             return new DefaultGateway(id, config, gatewayAdapter, httpClient);

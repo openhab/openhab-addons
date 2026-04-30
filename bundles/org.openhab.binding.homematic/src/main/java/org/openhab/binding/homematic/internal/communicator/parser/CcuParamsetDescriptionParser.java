@@ -13,6 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,8 +21,8 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
 /**
  * Parses parameter descriptions from a CCU script and extracts datapoint metadata.
@@ -41,9 +42,10 @@ public class CcuParamsetDescriptionParser extends CommonRpcParser<TclScriptDataL
     }
 
     @Override
-    public @Nullable Void parse(@Nullable TclScriptDataList resultList) throws IOException {
-        if (resultList.getEntries() != null) {
-            for (TclScriptDataEntry entry : resultList.getEntries()) {
+    public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
+        List<TclScriptDataEntry> entries = resultList.getEntries();
+        if (entries != null) {
+            for (TclScriptDataEntry entry : entries) {
                 HmDatapoint dp = assembleDatapoint(entry.name, entry.unit, entry.valueType,
                         this.toOptionList(entry.options), convertToType(entry.minValue), convertToType(entry.maxValue),
                         toInteger(entry.operations), convertToType(entry.value), null, paramsetType, isHmIpDevice);

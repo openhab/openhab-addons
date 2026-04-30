@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 public class SimplePortPoolTest {
 
-    private @NonNullByDefault({}) SimplePortPool simplePortPool;
+    private SimplePortPool simplePortPool = new SimplePortPool();
 
     @BeforeEach
     public void setup() {

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +32,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";
     public static final String GET_PARAMSET_NAME = "getParamset";
 
-    public Map<String, Integer> numberOfCalls = new HashMap<>();
+    public Map<@Nullable String, Integer> numberOfCalls = new HashMap<>();
 
     public RpcClientMockImpl() throws IOException {
         this(new HomematicConfig());
@@ -47,14 +46,14 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     @Override
     protected Object[] sendMessage(int port, RpcRequest<String> request) throws IOException {
-        String methodName = Objects.requireNonNull(request.getMethodName());
+        String methodName = request.getMethodName();
 
         increaseNumberOfCalls(methodName);
 
         return mockResponse();
     }
 
-    private void increaseNumberOfCalls(String methodName) {
+    private void increaseNumberOfCalls(@Nullable String methodName) {
         Integer currentNumber = numberOfCalls.get(methodName);
         if (currentNumber == null) {
             numberOfCalls.put(methodName, 1);

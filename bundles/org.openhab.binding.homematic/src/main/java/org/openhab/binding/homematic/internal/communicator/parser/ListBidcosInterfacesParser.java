@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class ListBidcosInterfacesParser extends CommonRpcParser<Object @Nullable [], ListBidcosInterfacesParser> {
+public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBidcosInterfacesParser> {
     private @Nullable String type;
     private @Nullable String gatewayAddress;
     private @Nullable String firmware;
@@ -33,13 +33,13 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object @Nullable
 
     @SuppressWarnings("unchecked")
     @Override
-    public ListBidcosInterfacesParser parse(Object @Nullable [] message) throws IOException {
+    public ListBidcosInterfacesParser parse(Object[] message) throws IOException {
         message = unWrapArray(message);
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> mapMessage = (Map<String, ?>) message[i];
-            boolean isDefault = Boolean.TRUE.equals(toBoolean(mapMessage.get("DEFAULT")));
+            Boolean isDefault = toBoolean(mapMessage.get("DEFAULT"));
 
-            if (isDefault) {
+            if (isDefault != null && isDefault) {
                 type = toString(mapMessage.get("TYPE"));
                 firmware = toString(mapMessage.get("FIRMWARE_VERSION"));
                 gatewayAddress = getSanitizedAddress(mapMessage.get("ADDRESS"));

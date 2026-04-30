@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.internal.model.dto;
+package org.openhab.binding.homematic.internal.model;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -20,9 +22,22 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 @XStreamAlias("entry")
 public class TclScriptDataEntry {
+    public TclScriptDataEntry(String name, String description, String value, String valueType, boolean readOnly,
+            String options, String minValue, String maxValue, String unit, String operations) {
+        this.name = name;
+        this.description = description;
+        this.value = value;
+        this.valueType = valueType;
+        this.readOnly = readOnly;
+        this.options = options;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        this.unit = unit;
+        this.operations = operations;
+    }
 
     @XStreamAsAttribute
     public String name;

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
 /**
@@ -30,19 +29,16 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
 public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     @SuppressWarnings("unchecked")
-    public List<String> parse(Object @Nullable [] message) throws IOException {
+    public List<String> parse(Object[] message) throws IOException {
         List<String> adresses = new ArrayList<>();
-        if (message != null && message.length > 1) {
+        if (message.length > 1) {
             message = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
                 Map<String, ?> data = (Map<String, ?>) message[i];
 
                 String address = toString(data.get("ADDRESS"));
                 if (MiscUtils.isDevice(address)) {
-                    address = getSanitizedAddress(address);
-                    if (address != null) {
-                        adresses.add(address);
-                    }
+                    adresses.add(getSanitizedAddress(address));
                 }
             }
         }

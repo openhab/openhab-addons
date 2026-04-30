@@ -55,9 +55,7 @@ public class BinRpcResponseHandler implements Runnable {
                 logger.trace("Event BinRpcMessage: {}", message);
                 byte[] returnValue = rpcResponseHandler.handleMethodCall(message.getMethodName(),
                         message.getResponseData());
-                if (returnValue != null) {
-                    socket.getOutputStream().write(returnValue);
-                }
+                socket.getOutputStream().write(returnValue);
                 isMaxAliveReached = System.currentTimeMillis() - created > (config.getSocketMaxAlive() * 1000);
             } while (!isMaxAliveReached);
 

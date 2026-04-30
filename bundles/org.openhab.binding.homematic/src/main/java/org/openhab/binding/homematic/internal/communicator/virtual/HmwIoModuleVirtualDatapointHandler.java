@@ -48,14 +48,12 @@ public class HmwIoModuleVirtualDatapointHandler extends AbstractVirtualDatapoint
                     boolean hasValueDatapoint = channel.hasDatapoint(dpInfoValue);
 
                     if (hasStateDatapoint && !hasValueDatapoint) {
-                        HmDatapoint dp = addDatapoint(device, channelNumber, DATAPOINT_NAME_VALUE, HmValueType.FLOAT,
-                                0.0, false);
+                        HmDatapoint dp = addDatapoint(channel, DATAPOINT_NAME_VALUE, HmValueType.FLOAT, 0.0, false);
                         dp.setMinValue(0.0);
                         dp.setMaxValue(1000.0);
                         dp.setVirtual(false);
                     } else if (hasValueDatapoint && !hasStateDatapoint) {
-                        HmDatapoint dp = addDatapoint(device, channelNumber, DATAPOINT_NAME_STATE, HmValueType.BOOL,
-                                false, false);
+                        HmDatapoint dp = addDatapoint(channel, DATAPOINT_NAME_STATE, HmValueType.BOOL, false, false);
                         dp.setVirtual(false);
                     }
                 }

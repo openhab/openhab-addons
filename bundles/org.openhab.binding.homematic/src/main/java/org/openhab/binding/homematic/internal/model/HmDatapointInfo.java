@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class HmDatapointInfo {
     private String address;
-    private @Nullable Integer channel;
-    private @Nullable String name;
+    private Integer channel;
+    private String name;
     private HmParamsetType paramsetType;
 
     public HmDatapointInfo(HmDatapoint dp) {
@@ -37,8 +37,7 @@ public class HmDatapointInfo {
         this(channel.getDevice().getAddress(), paramsetType, channel.getNumber(), name);
     }
 
-    public HmDatapointInfo(String address, HmParamsetType paramsetType, @Nullable Integer channel,
-            @Nullable String name) {
+    public HmDatapointInfo(String address, HmParamsetType paramsetType, Integer channel, String name) {
         this.address = address;
         this.channel = channel;
         this.paramsetType = paramsetType;
@@ -62,21 +61,21 @@ public class HmDatapointInfo {
     /**
      * Returns the channel number.
      */
-    public @Nullable Integer getChannel() {
+    public Integer getChannel() {
         return channel;
     }
 
     /**
      * Returns the name of the datapoint.
      */
-    public @Nullable String getName() {
+    public String getName() {
         return name;
     }
 
     /**
      * Sets the name of the datapoint.
      */
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -101,12 +100,11 @@ public class HmDatapointInfo {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof HmDatapointInfo)) {
-            return false;
+        if (obj instanceof HmDatapointInfo other) {
+            return Objects.equals(address, other.getAddress()) && Objects.equals(paramsetType, other.getParamsetType())
+                    && Objects.equals(channel, other.getChannel()) && Objects.equals(name, other.getName());
         }
-        HmDatapointInfo comp = (HmDatapointInfo) obj;
-        return Objects.equals(address, comp.getAddress()) && Objects.equals(paramsetType, comp.getParamsetType())
-                && Objects.equals(channel, comp.getChannel()) && Objects.equals(name, comp.getName());
+        return false;
     }
 
     @Override

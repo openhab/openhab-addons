@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -99,8 +100,7 @@ public abstract class RpcClient<T> {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(thisUID);
-        HmGatewayInfo gatewayInfo = config.getGatewayInfo();
-        if (gatewayInfo != null && gatewayInfo.isHomegear()) {
+        if (config.getGatewayInfo().isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }
         logger.debug("Register callback for interface {}", hmInterface.getName());
@@ -108,15 +108,10 @@ public abstract class RpcClient<T> {
             attempt = 1;
             sendMessage(config.getRpcPort(hmInterface), request); // first attempt without delay
         } catch (IOException e) {
-            future = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
-                try {
-                    sendMessage(config.getRpcPort(hmInterface), request);
-                    future.cancel(true);
-                } catch (IOException ex) {
-                    // Ignore, retry
-                }
-            }, INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY, TimeUnit.SECONDS);
+            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(
+                    () -> tryRegisterCallback(hmInterface, request), INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY,
+                    TimeUnit.SECONDS);
+            this.future = future;
             try {
                 future.get(config.getCallbackRegTimeout(), TimeUnit.SECONDS);
             } catch (CancellationException e1) {
@@ -127,7 +122,20 @@ public abstract class RpcClient<T> {
                 logger.error("Callback registration for interface {} timed out", hmInterface.getName());
                 throw new IOException("Unable to reconnect in time");
             }
-            future = null;
+            this.future = null;
+        }
+    }
+
+    private void tryRegisterCallback(HmInterface hmInterface, RpcRequest<T> request) {
+        logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
+        try {
+            sendMessage(config.getRpcPort(hmInterface), request);
+            ScheduledFuture<?> future = this.future;
+            if (future != null) {
+                future.cancel(true);
+            }
+        } catch (IOException ex) {
+            // Ignore, retry
         }
     }
 
@@ -135,9 +143,11 @@ public abstract class RpcClient<T> {
      * Disposes the client.
      */
     public void dispose() {
+        Future<?> future = this.future;
         if (future != null) {
             future.cancel(true);
         }
+        this.future = null;
     }
 
     /**
@@ -276,13 +286,11 @@ public abstract class RpcClient<T> {
     public HmGatewayInfo getGatewayInfo(String id) throws IOException {
         boolean isHomegear = false;
         GetDeviceDescriptionParser ddParser;
-        String ddType = null;
         ListBidcosInterfacesParser biParser;
 
         try {
             ddParser = getDeviceDescription(HmInterface.RF);
-            ddType = ddParser.getType();
-            isHomegear = "Homegear".equalsIgnoreCase(ddType);
+            isHomegear = "Homegear".equalsIgnoreCase(ddParser.getType());
         } catch (IOException ex) {
             // can't load gateway infos via RF interface
             ddParser = new GetDeviceDescriptionParser();
@@ -295,21 +303,27 @@ public abstract class RpcClient<T> {
         }
 
         String gwType = biParser.getType();
-        HmGatewayInfo gatewayInfo;
-        if (ddType != null && isHomegear) {
-            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_HOMEGEAR, ddType, ddParser.getFirmware(),
-                    biParser.getGatewayAddress());
+        final String gwAddress = biParser.getGatewayAddress();
+        if (gwAddress == null) {
+            throw new IOException("Unable to determine gateway address for gateway with id '" + id + "'");
+        }
+
+        final String gwId, gwFirmware;
+        if (isHomegear) {
+            gwId = HmGatewayInfo.ID_HOMEGEAR;
+            gwFirmware = ddParser.getFirmware();
         } else if ((MiscUtils.strStartsWithIgnoreCase(gwType, "CCU")
                 || MiscUtils.strStartsWithIgnoreCase(gwType, "HMIP_CCU")
-                || MiscUtils.strStartsWithIgnoreCase(ddType, "HM-RCV-50") || config.isCCUType())
+                || MiscUtils.strStartsWithIgnoreCase(ddParser.getType(), "HM-RCV-50") || config.isCCUType())
                 && !config.isNoCCUType()) {
-            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_CCU, gwType.isBlank() ? "CCU" : gwType,
-                    !ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware(),
-                    biParser.getGatewayAddress());
+            gwId = HmGatewayInfo.ID_CCU;
+            gwType = gwType.isBlank() ? "CCU" : gwType;
+            gwFirmware = !ddParser.getFirmware().isEmpty() ? ddParser.getFirmware() : biParser.getFirmware();
         } else {
-            gatewayInfo = new HmGatewayInfo(HmGatewayInfo.ID_DEFAULT, gwType, biParser.getFirmware(),
-                    biParser.getGatewayAddress());
+            gwId = HmGatewayInfo.ID_DEFAULT;
+            gwFirmware = biParser.getFirmware();
         }
+        HmGatewayInfo gatewayInfo = new HmGatewayInfo(gwAddress, gwId, gwType, gwFirmware);
 
         if (gatewayInfo.isCCU() || config.hasRfPort()) {
             gatewayInfo.setRfInterface(hasInterface(HmInterface.RF, id));
@@ -373,7 +387,7 @@ public abstract class RpcClient<T> {
             request = createRpcRequest("putParamset");
             request.addArg(getRpcAddress(dp.getChannel().getDevice().getAddress()) + getChannelSuffix(dp.getChannel()));
             request.addArg(HmParamsetType.MASTER.toString());
-            Map<String, Object> paramSet = new HashMap<>();
+            Map<String, @Nullable Object> paramSet = new HashMap<>();
             paramSet.put(dp.getName(), value);
             request.addArg(paramSet);
             configureRxMode(request, rxMode);
@@ -408,19 +422,25 @@ public abstract class RpcClient<T> {
      * Sets the value of a system variable on a Homegear gateway.
      */
     public void setSystemVariable(HmDatapoint dp, Object value) throws IOException {
-        RpcRequest<T> request = createRpcRequest("setSystemVariable");
-        request.addArg(dp.getInfo());
-        request.addArg(value);
-        sendMessage(config.getRpcPort(dp.getChannel()), request);
+        String info = dp.getInfo();
+        if (info != null) {
+            RpcRequest<T> request = createRpcRequest("setSystemVariable");
+            request.addArg(info);
+            request.addArg(value);
+            sendMessage(config.getRpcPort(dp.getChannel()), request);
+        }
     }
 
     /**
      * Executes a script on the Homegear gateway.
      */
     public void executeScript(HmDatapoint dp) throws IOException {
-        RpcRequest<T> request = createRpcRequest("runScript");
-        request.addArg(dp.getInfo());
-        sendMessage(config.getRpcPort(dp.getChannel()), request);
+        String info = dp.getInfo();
+        if (info != null) {
+            RpcRequest<T> request = createRpcRequest("runScript");
+            request.addArg(info);
+            sendMessage(config.getRpcPort(dp.getChannel()), request);
+        }
     }
 
     /**
@@ -480,8 +500,8 @@ public abstract class RpcClient<T> {
      * Returns the rpc address from a device address, correctly handling groups.
      */
     private String getRpcAddress(String address) {
-        if (address != null && address.startsWith("T-")) {
-            address = "*" + address.substring(2);
+        if (address.startsWith("T-")) {
+            return "*" + address.substring(2);
         }
         return address;
     }

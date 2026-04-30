@@ -15,7 +15,6 @@ package org.openhab.binding.homematic.internal.communicator.server;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 
 /**
@@ -29,7 +28,7 @@ public interface RpcEventListener {
     /**
      * Called when a new event is received from a Homeamtic gateway.
      */
-    void eventReceived(HmDatapointInfo dpInfo, @Nullable Object newValue);
+    void eventReceived(HmDatapointInfo dpInfo, Object newValue);
 
     /**
      * Called when new devices has been detected on the Homeamtic gateway.

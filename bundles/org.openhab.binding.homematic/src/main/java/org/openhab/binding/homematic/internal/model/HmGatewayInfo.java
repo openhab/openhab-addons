@@ -13,7 +13,6 @@
 package org.openhab.binding.homematic.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Info object which holds gateway specific informations.
@@ -29,14 +28,14 @@ public class HmGatewayInfo {
     private final String id;
     private final String type;
     private final String firmware;
-    private final @Nullable String address;
+    private final String address;
     private boolean rfInterface;
     private boolean wiredInterface;
     private boolean cuxdInterface;
     private boolean hmipInterface;
     private boolean groupInterface;
 
-    public HmGatewayInfo(String id, String type, String firmware, @Nullable String address) {
+    public HmGatewayInfo(String id, String type, String firmware, String address) {
         this.id = id;
         this.type = type;
         this.firmware = firmware;
@@ -53,7 +52,7 @@ public class HmGatewayInfo {
     /**
      * Returns the type of the gateway.
      */
-    public @Nullable String getType() {
+    public String getType() {
         return type;
     }
 
@@ -67,7 +66,7 @@ public class HmGatewayInfo {
     /**
      * Returns the address of the Homematic gateway.
      */
-    public @Nullable String getAddress() {
+    public String getAddress() {
         return address;
     }
 

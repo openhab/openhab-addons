@@ -35,10 +35,14 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], @Nu
     }
 
     @Override
-    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
+    @SuppressWarnings("unchecked")
+    public @Nullable Void parse(Object[] message) throws IOException {
         Map<String, HmDevice> devicesById = new HashMap<>();
         for (HmDevice device : devices) {
-            devicesById.put(device.getHomegearId(), device);
+            String id = device.getHomegearId();
+            if (id != null) {
+                devicesById.put(id, device);
+            }
         }
 
         message = unWrapArray(message);
@@ -48,7 +52,7 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], @Nu
             String name = toString(data.get("NAME"));
 
             HmDevice device = devicesById.get(getSanitizedAddress(id));
-            if (device != null) {
+            if (device != null && name != null) {
                 device.setName(name);
             }
 
