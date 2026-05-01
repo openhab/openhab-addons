@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.ColorObject;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
@@ -48,14 +51,14 @@ public class SmartThingsColorConverter extends SmartThingsConverter {
     }
 
     @Override
-    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
+    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+            SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
+            String targetType) throws SmartThingsException {
         if (command instanceof HSBType hsbCommand) {
             double hue = hsbCommand.getHue().doubleValue() / 3.60;
             double sat = hsbCommand.getSaturation().doubleValue();
             int level = hsbCommand.getBrightness().intValue();
 
-            String componentKey = SmartThingsBindingConstants.GROUPD_ID_MAIN;
-            String capaKey = SmartThingsBindingConstants.CAPA_COLOR_CONTROL;
             String cmdName = SmartThingsBindingConstants.CMD_SET_COLOR;
             Object[] arguments = new Object[1];
             ColorObject colorObj = new ColorObject();

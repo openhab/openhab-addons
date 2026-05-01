@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -46,12 +49,12 @@ public class SmartThingsHue100Converter extends SmartThingsConverter {
     }
 
     @Override
-    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
+    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+            SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
+            String targetType) throws SmartThingsException {
         if (command instanceof HSBType hsbCommand) {
             double hue = hsbCommand.getHue().doubleValue() / conversionFactor;
 
-            String componentKey = SmartThingsBindingConstants.GROUPD_ID_MAIN;
-            String capaKey = SmartThingsBindingConstants.CAPA_COLOR_CONTROL;
             String cmdName = SmartThingsBindingConstants.CMD_SET_HUE;
             Object[] arguments = new Object[1];
             arguments[0] = hue;
@@ -60,8 +63,6 @@ public class SmartThingsHue100Converter extends SmartThingsConverter {
         } else if (command instanceof DecimalType dec) {
             double hue = dec.doubleValue() / conversionFactor;
 
-            String componentKey = SmartThingsBindingConstants.GROUPD_ID_MAIN;
-            String capaKey = SmartThingsBindingConstants.CAPA_COLOR_CONTROL;
             String cmdName = SmartThingsBindingConstants.CMD_SET_HUE;
             Object[] arguments = new Object[1];
             arguments[0] = hue;

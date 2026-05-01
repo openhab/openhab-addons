@@ -21,6 +21,9 @@ import java.util.Queue;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -63,7 +66,52 @@ public abstract class SmartThingsConverter {
 
     public String convertToSmartThings(Thing thing, ChannelUID channelUid, Command command)
             throws SmartThingsException {
-        convertToSmartThingsInternal(thing, channelUid, command);
+
+        Channel channel = thing.getChannel(channelUid);
+        if (channel == null) {
+            logger.error("Channel not found: {}", channelUid);
+            return "";
+        }
+
+        Map<String, String> properties = channel.getProperties();
+        String componentKey = properties.get(SmartThingsBindingConstants.COMPONENT);
+        String capaKey = properties.get(SmartThingsBindingConstants.CAPABILITY);
+        String attrKey = properties.get(SmartThingsBindingConstants.ATTRIBUTE);
+        String targetType = "";
+
+        if (componentKey == null) {
+            throw new SmartThingsException("componentKey is null on : " + channelUid);
+        }
+
+        if (capaKey == null) {
+            throw new SmartThingsException("capaKey is null on : " + channelUid);
+        }
+
+        SmartThingsCapability capa = typeRegistry.getCapability(capaKey);
+
+        if (capa == null) {
+            throw new SmartThingsException("capa not found for capaKey : " + capaKey);
+        }
+
+        if (attrKey == null) {
+            throw new SmartThingsException("attrKey is null on : " + channelUid);
+        }
+
+        SmartThingsAttribute attr = capa.attributes.get(attrKey);
+
+        if (attr == null) {
+            throw new SmartThingsException("attr not found for capaKey : " + capaKey);
+        }
+
+        if (attr.schema.properties.containsKey("value")) {
+            SmartThingsProperty prop = attr.schema.properties.get("value");
+            if (prop != null) {
+                targetType = prop.type;
+            }
+        }
+
+        convertToSmartThingsInternal(thing, channelUid, command, capa, attr, componentKey, capaKey, attrKey,
+                targetType);
         String jsonMsg = getJSonCommands();
         return jsonMsg;
     }
@@ -74,8 +122,9 @@ public abstract class SmartThingsConverter {
         return result;
     }
 
-    public abstract void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command)
-            throws SmartThingsException;
+    public abstract void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+            SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
+            String targetType) throws SmartThingsException;
 
     public abstract State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartThings)
             throws SmartThingsException;

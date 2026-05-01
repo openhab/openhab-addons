@@ -292,9 +292,9 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
     }
 
-    private ChannelType createChannelType(SmartThingsCapability capa, @Nullable SmartThingsAttribute attr,
-            String channelName, String category, String description, ChannelProperty channelProp,
-            ChannelTypeUID channelTypeUID, List<StateOption> options) {
+    private ChannelType createChannelType(SmartThingsCapability capa, SmartThingsAttribute attr, String channelName,
+            String category, String description, ChannelProperty channelProp, ChannelTypeUID channelTypeUID,
+            List<StateOption> options) {
         ChannelType channelType;
 
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
@@ -304,7 +304,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
 
         SmartThingsProperty unit = null;
-        if (attr.schema.properties.containsKey("unit")) {
+        if (attr.schema.properties != null && attr.schema.properties.containsKey("unit")) {
             unit = attr.schema.properties.get("unit");
         }
 

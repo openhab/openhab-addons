@@ -15,6 +15,8 @@ package org.openhab.binding.smartthings.internal.converter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.ColorObject;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
 import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
@@ -44,14 +46,13 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
     }
 
     @Override
-    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command)
-            throws SmartThingsException {
+    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+            SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
+            String targetType) throws SmartThingsException {
         if (command instanceof HSBType hsbCommand) {
             double hue = hsbCommand.getHue().doubleValue() / conversionFactor;
             double sat = hsbCommand.getSaturation().doubleValue();
 
-            String componentKey = SmartThingsBindingConstants.GROUPD_ID_MAIN;
-            String capaKey = SmartThingsBindingConstants.CAPA_COLOR_CONTROL;
             String cmdName = SmartThingsBindingConstants.CMD_SET_COLOR;
             Object[] arguments = new Object[1];
             ColorObject colorObj = new ColorObject();
@@ -75,8 +76,6 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
                 }
             }
 
-            String componentKey = SmartThingsBindingConstants.GROUPD_ID_MAIN;
-            String capaKey = SmartThingsBindingConstants.CAPA_COLOR_CONTROL;
             String cmdName = SmartThingsBindingConstants.CMD_SET_COLOR;
             Object[] arguments = new Object[1];
             ColorObject colorObj = new ColorObject();

@@ -13,7 +13,6 @@
 package org.openhab.binding.smartthings.internal.converter;
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -23,6 +22,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCommand;
+import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -39,7 +39,6 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -72,7 +71,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         super(typeRegistry);
     }
 
-    private Object getValue(Command command, ThingTypeUID thingUid, String channelId) {
+    private Object getValue(Command command, ThingTypeUID thingUid, String channelId, String targetType) {
         Object value = null;
 
         String commandSt = command.toString().toLowerCase(Locale.ROOT);
@@ -84,7 +83,11 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                     hsbCommand.getSaturation().intValue(), hsbCommand.getBrightness().intValue());
         } else if (command instanceof DecimalType) {
             DecimalType dc = (DecimalType) command;
-            value = dc.intValue();
+            if (SmartThingsBindingConstants.SM_TYPE_INTEGER.equals(targetType)) {
+                value = dc.intValue();
+            } else if (SmartThingsBindingConstants.SM_TYPE_NUMBER.equals(targetType)) {
+                value = dc.doubleValue();
+            }
         } else if (command instanceof IncreaseDecreaseType) {
             value = commandSt;
         } else if (command instanceof NextPreviousType) {
@@ -130,60 +133,35 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
     }
 
     @Override
-    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
-        Channel channel = thing.getChannel(channelUid);
-        if (channel == null) {
-            logger.error("Channel not found: {}", channelUid);
-            return;
-        }
-
-        Map<String, String> properties = channel.getProperties();
-        String componentKey = properties.get(SmartThingsBindingConstants.COMPONENT);
-        String capaKey = properties.get(SmartThingsBindingConstants.CAPABILITY);
-        String attrKey = properties.get(SmartThingsBindingConstants.ATTRIBUTE);
-
-        SmartThingsCapability capa = null;
-        SmartThingsAttribute attr = null;
-        if (capaKey != null) {
-            capa = typeRegistry.getCapability(capaKey);
-        }
-
-        if (capa == null) {
-            logger.info("capa not found: {}", capaKey);
-            return;
-        }
-        if (attrKey != null) {
-            attr = capa.attributes.get(attrKey);
-        }
-
+    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+            SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
+            String targetType) throws SmartThingsException {
         String cmdName = "";
         Object[] arguments = null;
 
-        if (attr != null) {
-            Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId());
+        Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId(), targetType);
 
-            if (SmartThingsBindingConstants.CHANNEL_NAME_COLOR.equals(attrKey)) {
-                attr.setter = SmartThingsBindingConstants.CMD_SET_COLOR;
-            }
+        if (SmartThingsBindingConstants.CHANNEL_NAME_COLOR.equals(attrKey)) {
+            attr.setter = SmartThingsBindingConstants.CMD_SET_COLOR;
+        }
 
-            if (attr.setter != null) {
-                SmartThingsCommand cmd = capa.commands.get(attr.setter);
-                if (cmd != null) {
-                    cmdName = cmd.name;
+        if (attr.setter != null) {
+            SmartThingsCommand cmd = capa.commands.get(attr.setter);
+            if (cmd != null) {
+                cmdName = cmd.name;
 
-                    Stack<Object> stack = new Stack<Object>();
-                    for (SmartThingsArgument arg : cmd.arguments) {
-                        if (Boolean.TRUE.equals(arg.optional)) {
-                            continue;
-                        }
-
-                        stack.push(value);
+                Stack<Object> stack = new Stack<Object>();
+                for (SmartThingsArgument arg : cmd.arguments) {
+                    if (Boolean.TRUE.equals(arg.optional)) {
+                        continue;
                     }
-                    arguments = stack.toArray();
+
+                    stack.push(value);
                 }
-            } else {
-                cmdName = value.toString();
+                arguments = stack.toArray();
             }
+        } else {
+            cmdName = value.toString();
         }
 
         pushCommand(componentKey, capaKey, cmdName, arguments);
