@@ -51,13 +51,10 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> data = (Map<String, ?>) message[i];
             if (MiscUtils.isDevice(toString(data.get("ADDRESS")), true)) {
-                String address = Objects.requireNonNull(getSanitizedAddress(data.get("ADDRESS")),
-                        "Unable to get a sanitized address from the device message");
+                String address = getSanitizedAddress(data.get("ADDRESS"));
                 String type = MiscUtils.validateCharacters(toString(data.get("TYPE")), "Device type", "-");
-                String id = Objects.requireNonNull(toString(data.get("ID")),
-                        "Unable to get ID from the device message");
-                String firmware = Objects.requireNonNull(toString(data.get("FIRMWARE")),
-                        "Unable to get firmware from the device message");
+                String id = toString(data.get("ID"));
+                String firmware = toString(data.get("FIRMWARE"));
 
                 HmDevice device = new HmDevice(address, hmInterface, type,
                         Objects.requireNonNull(config.getGatewayInfo()).getId(), id, firmware);
@@ -66,12 +63,15 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
             } else {
                 // channel
                 String deviceAddress = getSanitizedAddress(data.get("PARENT"));
-                HmDevice device = devices.get(deviceAddress);
+                // Assumes central sends devices first and channels afterwards
+                HmDevice device = Objects.requireNonNull(devices.get(deviceAddress));
 
                 String type = toString(data.get("TYPE"));
                 Integer number = toInteger(data.get("INDEX"));
 
-                device.addChannel(new HmChannel(type, number));
+                if (type != null && number != null) {
+                    device.addChannel(new HmChannel(type, number));
+                }
             }
         }
         return devices.values();

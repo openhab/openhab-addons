@@ -827,7 +827,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
     private HmDevice createGatewayDevice() {
         String type = String.format("%s-%s", HmDevice.TYPE_GATEWAY_EXTRAS, id.toUpperCase());
         HmDevice device = new HmDevice(HmDevice.ADDRESS_GATEWAY_EXTRAS, getDefaultInterface(), type,
-                config.getGatewayInfo().getId(), "", "1");
+                config.getGatewayInfo().getId(), null, null);
         device.setName(HmDevice.TYPE_GATEWAY_EXTRAS);
 
         device.addChannel(new HmChannel(HmChannel.TYPE_GATEWAY_EXTRAS, HmChannel.CHANNEL_NUMBER_EXTRAS));

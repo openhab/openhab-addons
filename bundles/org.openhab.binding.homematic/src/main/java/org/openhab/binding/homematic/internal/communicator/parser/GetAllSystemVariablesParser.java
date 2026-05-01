@@ -37,7 +37,7 @@ public class GetAllSystemVariablesParser extends CommonRpcParser<Object[], @Null
 
     @Override
     @SuppressWarnings("unchecked")
-    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
+    public @Nullable Void parse(Object[] message) throws IOException {
         Map<String, ?> mapMessage = (Map<String, ?>) message[0];
         for (String variableName : mapMessage.keySet()) {
             Object value = mapMessage.get(variableName);

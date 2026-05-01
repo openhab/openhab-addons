@@ -68,14 +68,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-@Component
 @NonNullByDefault
+@Component
 public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private final Logger logger = LoggerFactory.getLogger(HomematicTypeGeneratorImpl.class);
-    private static @Nullable URI configDescriptionUriChannel;
+    private @Nullable URI configDescriptionUriChannel;
 
     private HomematicTypeProvider typeProvider;
-    private final Map<String, Set<String>> firmwaresByType = new HashMap<>();
+    private final Map<String, Set<@Nullable String>> firmwaresByType = new HashMap<>();
 
     private static final String[] IGNORE_DATAPOINT_NAMES = new String[] { DATAPOINT_NAME_AES_KEY,
             VIRTUAL_DATAPOINT_NAME_RELOAD_FROM_GATEWAY };
@@ -140,7 +140,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     typeProvider.putChannelGroupType(groupType);
                     groupTypes.add(groupType);
                 }
-
             }
             tt = createThingType(device, groupTypes);
             typeProvider.putThingType(tt);
@@ -151,8 +150,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     @Override
     public void validateFirmwares() {
         for (String deviceType : firmwaresByType.keySet()) {
-            Set<String> firmwares = firmwaresByType.get(deviceType);
-            if (firmwares.size() > 1) {
+            Set<@Nullable String> firmwares = firmwaresByType.get(deviceType);
+            if (firmwares != null && firmwares.size() > 1) {
                 logger.info("""
                         Multiple firmware versions for device type '{}' found ({}). \
                         Make sure, all devices of the same type have the same firmware version, \
@@ -168,7 +167,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     private void addFirmware(HmDevice device) {
         if (!"?".equals(device.getFirmware()) && !DEVICE_TYPE_VIRTUAL.equals(device.getType())
                 && !DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) {
-            Set<String> firmwares = firmwaresByType.get(device.getType());
+            Set<@Nullable String> firmwares = firmwaresByType.get(device.getType());
             if (firmwares == null) {
                 firmwares = new HashSet<>();
                 firmwaresByType.put(device.getType(), firmwares);
@@ -192,8 +191,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         properties.put(Thing.PROPERTY_VENDOR, PROPERTY_VENDOR_NAME);
         properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
 
-        URI configDescriptionURI = Objects.requireNonNull(getConfigDescriptionURI(device));
-        if (typeProvider.getConfigDescription(configDescriptionURI, null) == null) {
+        URI configDescriptionURI = getConfigDescriptionURI(device);
+        if (configDescriptionURI != null && typeProvider.getConfigDescription(configDescriptionURI, null) == null) {
             generateConfigDescription(device, configDescriptionURI);
         }
 
@@ -204,16 +203,18 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
-        return ThingTypeBuilder.instance(thingTypeUID, label).withSupportedBridgeTypeUIDs(supportedBridgeTypeUids)
-                .withDescription(description).withChannelGroupDefinitions(groupDefinitions).withProperties(properties)
-                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withConfigDescriptionURI(configDescriptionURI)
-                .build();
+        ThingTypeBuilder builder = ThingTypeBuilder.instance(thingTypeUID, label)
+                .withSupportedBridgeTypeUIDs(supportedBridgeTypeUids).withDescription(description)
+                .withChannelGroupDefinitions(groupDefinitions).withProperties(properties)
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
+        if (configDescriptionURI != null) {
+            builder.withConfigDescriptionURI(configDescriptionURI);
+        }
+        return builder.build();
     }
 
-    /**
-     * Creates the ChannelType for the given datapoint.
-     */
-    public static ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
+    @Override
+    public ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT) || dp.getName().equals(DATAPOINT_NAME_LOWBAT_IP)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
@@ -232,7 +233,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
             }
 
             if (dp.isNumberType()) {
-                final BigDecimal min, max;
+                final @Nullable BigDecimal min, max;
                 if (ITEM_TYPE_DIMMER.equals(itemType) || ITEM_TYPE_ROLLERSHUTTER.equals(itemType)) {
                     // those types use PercentTypeConverter, so set up min and max as percent values
                     min = MetadataUtils.createBigDecimal(0);
@@ -266,17 +267,19 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                 channelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                         .withStateDescriptionFragment(stateFragment.build());
             }
-            channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp))
-                    .withConfigDescriptionURI(Objects.requireNonNull(configDescriptionUriChannel));
-            String category = MetadataUtils.getCategory(dp, itemType);
-            if (category != null) {
-                channelTypeBuilder.withCategory(category);
-            }
             final String description = MetadataUtils.getDatapointDescription(dp);
             if (description != null) {
                 channelTypeBuilder.withDescription(description);
             }
-            channelType = channelTypeBuilder.build();
+            String category = MetadataUtils.getCategory(dp, itemType);
+            if (category != null) {
+                channelTypeBuilder.withCategory(category);
+            }
+            final URI uri = configDescriptionUriChannel;
+            if (uri != null) {
+                channelTypeBuilder.withConfigDescriptionURI(uri);
+            }
+            channelType = channelTypeBuilder.isAdvanced(!MetadataUtils.isStandard(dp)).build();
         }
         return channelType;
     }
@@ -305,23 +308,24 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                                 (value, description) -> new ParameterOption(value, description));
                         if (options != null) {
                             builder.withOptions(options);
-                        }
-                        if (dp.isEnumType()) {
-                            logger.trace("Checking if default option {} is valid",
-                                    Objects.toString(dp.getDefaultValue(), ""));
-                            boolean needsChange = options.stream()
-                                    .noneMatch(opt -> opt.getValue().equals(defaultValueString));
-                            if (needsChange) {
-                                String defStr = Objects.toString(dp.getDefaultValue(), "0");
-                                int offset = defStr != null ? Integer.valueOf(defStr) : 0;
-                                if (offset >= 0 && offset < options.size()) {
-                                    ParameterOption defaultOption = options.get(offset);
-                                    logger.trace("Changing default option to {} (offset {})", defaultOption, offset);
-                                    builder.withDefault(defaultOption.getValue());
-                                } else if (!options.isEmpty()) {
-                                    ParameterOption defaultOption = options.get(0);
-                                    logger.trace("Changing default option to {} (first value)", defaultOption);
-                                    builder.withDefault(defaultOption.getValue());
+                            if (dp.isEnumType()) {
+                                logger.trace("Checking if default option {} is valid",
+                                        Objects.toString(dp.getDefaultValue(), ""));
+                                boolean needsChange = options.stream()
+                                        .noneMatch(opt -> opt.getValue().equals(defaultValueString));
+                                if (needsChange) {
+                                    String defStr = Objects.toString(dp.getDefaultValue(), "0");
+                                    int offset = defStr != null ? Integer.valueOf(defStr) : 0;
+                                    if (offset >= 0 && offset < options.size()) {
+                                        ParameterOption defaultOption = options.get(offset);
+                                        logger.trace("Changing default option to {} (offset {})", defaultOption,
+                                                offset);
+                                        builder.withDefault(defaultOption.getValue());
+                                    } else if (!options.isEmpty()) {
+                                        ParameterOption defaultOption = options.get(0);
+                                        logger.trace("Changing default option to {} (first value)", defaultOption);
+                                        builder.withDefault(defaultOption.getValue());
+                                    }
                                 }
                             }
                         }
@@ -365,10 +369,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
         }
     }
 
-    /**
-     * Returns true, if the given datapoint can be ignored for metadata generation.
-     */
-    public static boolean isIgnoredDatapoint(HmDatapoint dp) {
+    @Override
+    public boolean isIgnoredDatapoint(HmDatapoint dp) {
         for (String testValue : IGNORE_DATAPOINT_NAMES) {
             if (dp.getName().contains(testValue)) {
                 return true;

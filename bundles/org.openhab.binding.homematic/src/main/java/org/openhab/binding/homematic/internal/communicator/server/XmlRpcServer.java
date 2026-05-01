@@ -83,8 +83,10 @@ public class XmlRpcServer implements RpcServer {
         logger.debug("Initializing XML-RPC server at port {}", config.getXmlCallbackPort());
 
         InetSocketAddress callbackAddress = new InetSocketAddress(config.getXmlCallbackPort());
-        xmlRpcHTTPD = new Server(callbackAddress);
+        Server xmlRpcHTTPD = new Server(callbackAddress);
         xmlRpcHTTPD.setHandler(jettyResponseHandler);
+
+        this.xmlRpcHTTPD = xmlRpcHTTPD;
 
         try {
             xmlRpcHTTPD.start();
@@ -98,6 +100,7 @@ public class XmlRpcServer implements RpcServer {
 
     @Override
     public void shutdown() {
+        Server xmlRpcHTTPD = this.xmlRpcHTTPD;
         if (xmlRpcHTTPD != null) {
             logger.debug("Stopping XML-RPC server");
             try {

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class MetadataUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
     private static Map<String, String> descriptions = new HashMap<>();
-    private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
+    private static Map<String, Set<@Nullable String>> standardDatapoints = new HashMap<>();
 
     protected static void initialize() {
         // loads all Homematic device names
@@ -63,7 +63,7 @@ public class MetadataUtils {
     }
 
     private static void loadBundle(String filename) {
-        ResourceBundle descriptionsBundle = ResourceBundle.getBundle(filename, Locale.getDefault());
+        final ResourceBundle descriptionsBundle = ResourceBundle.getBundle(filename, Locale.getDefault());
         for (String key : descriptionsBundle.keySet()) {
             descriptions.put(key.toUpperCase(), descriptionsBundle.getString(key));
         }
@@ -98,7 +98,7 @@ public class MetadataUtils {
                                 String.format("Malformed standard datapoint entry at line %d: %s", lineNumber, line));
                     }
 
-                    Set<String> channelDatapoints = standardDatapoints.get(channelType);
+                    Set<@Nullable String> channelDatapoints = standardDatapoints.get(channelType);
                     if (channelDatapoints == null) {
                         channelDatapoints = new HashSet<>();
                         standardDatapoints.put(channelType, channelDatapoints);
@@ -120,22 +120,19 @@ public class MetadataUtils {
      * Creates channel and config description metadata options for the given Datapoint.
      */
     public static <T> @Nullable List<T> generateOptions(HmDatapoint dp, OptionsBuilder<T> optionsBuilder) {
-        List<T> options = null;
-        if (dp.getOptions() == null) {
+        String[] dpOptions = dp.getOptions();
+        if (dpOptions == null) {
             LOGGER.warn("No options for ENUM datapoint {}", dp);
-        } else {
-            options = new ArrayList<>();
-            for (int i = 0; i < dp.getOptions().length; i++) {
-                String description = null;
-                if (!dp.isVariable() && !dp.isScript()) {
-                    description = getDescription(dp.getChannel().getType(), dp.getName(), dp.getOptions()[i]);
-                }
-                if (description == null) {
-                    description = dp.getOptions()[i];
-                }
-                options.add(optionsBuilder.createOption(dp.getOptions()[i], description));
-            }
+            return null;
         }
+        List<T> options = new ArrayList<>();
+        for (String option : dpOptions) {
+            String description = !dp.isVariable() && !dp.isScript()
+                    ? getDescription(dp.getChannel().getType(), dp.getName(), option)
+                    : null;
+            options.add(optionsBuilder.createOption(option, description != null ? description : option));
+        }
+
         return options;
     }
 
@@ -158,8 +155,9 @@ public class MetadataUtils {
      * Returns the unit metadata string for the given Datapoint.
      */
     public static @Nullable String getUnit(HmDatapoint dp) {
-        if (dp.getUnit() != null) {
-            return dp.getUnit().replace("100%", "%").replace("%", "%%");
+        String dpUnit = dp.getUnit();
+        if (dpUnit != null) {
+            return dpUnit.replace("100%", "%").replace("%", "%%");
         }
         return null;
     }
@@ -198,7 +196,7 @@ public class MetadataUtils {
      * Returns the label string for the given Datapoint.
      */
     public static String getLabel(HmDatapoint dp) {
-        return Objects.requireNonNull(MiscUtils.capitalize(dp.getName().replace("_", " ")));
+        return MiscUtils.capitalize(dp.getName().replace("_", " "));
     }
 
     /**
@@ -263,7 +261,7 @@ public class MetadataUtils {
      * Returns true, if the given datapoint is a standard datapoint.
      */
     public static boolean isStandard(HmDatapoint dp) {
-        Set<String> channelDatapoints = standardDatapoints.get(dp.getChannel().getType());
+        Set<@Nullable String> channelDatapoints = standardDatapoints.get(dp.getChannel().getType());
         if (channelDatapoints == null) {
             return true;
         }
@@ -313,7 +311,7 @@ public class MetadataUtils {
                 return ITEM_TYPE_DIMMER;
             } else {
                 // determine QuantityType
-                String unit = dp.getUnit() != null ? dp.getUnit() : "";
+                String unit = Objects.requireNonNullElse(dp.getUnit(), "");
                 switch (unit) {
                     case "Â°C":
                     case "°C":

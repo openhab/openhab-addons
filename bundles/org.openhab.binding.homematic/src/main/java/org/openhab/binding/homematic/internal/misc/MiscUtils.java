@@ -63,8 +63,8 @@ public class MiscUtils {
     /**
      * Returns true, if str starts with search. Check is done case-insensitive.
      */
-    public static boolean strStartsWithIgnoreCase(@Nullable String str, @Nullable String search) {
-        if (str == null || search == null || search.length() > str.length()) {
+    public static boolean strStartsWithIgnoreCase(@Nullable String str, String search) {
+        if (str == null || search.length() > str.length()) {
             return false;
         }
         return str.substring(0, search.length()).equalsIgnoreCase(search);
@@ -97,10 +97,7 @@ public class MiscUtils {
     /**
      * Changes all characters after whitespace to upper-case and all other character to lower case.
      */
-    public static @Nullable String capitalize(@Nullable String value) {
-        if (value == null) {
-            return null;
-        }
+    public static String capitalize(String value) {
         char[] chars = value.toCharArray();
         boolean capitalizeNextChar = true;
         for (int i = 0; i < chars.length; i++) {

@@ -43,7 +43,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.type.HomematicTypeGeneratorImpl;
+import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.internal.type.HomematicTypeProvider;
 import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.openhab.binding.homematic.internal.type.UidUtils;
@@ -77,13 +77,16 @@ import org.slf4j.LoggerFactory;
 public class HomematicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
     private final HomematicTypeProvider typeProvider;
+    private final HomematicTypeGenerator typeGenerator;
     private @Nullable Future<?> initFuture;
     private final Object initLock = new Object();
     private volatile boolean deviceDeletionPending = false;
 
-    public HomematicThingHandler(Thing thing, HomematicTypeProvider typeProvider) {
+    public HomematicThingHandler(Thing thing, HomematicTypeProvider typeProvider,
+            HomematicTypeGenerator typeGenerator) {
         super(thing);
         this.typeProvider = typeProvider;
+        this.typeGenerator = typeGenerator;
     }
 
     @Override
@@ -158,8 +161,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         if (thingChannels.isEmpty()) {
             for (HmChannel channel : device.getChannels()) {
                 for (HmDatapoint dp : channel.getDatapoints()) {
-                    if (HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)
-                            || dp.getParamsetType() != HmParamsetType.VALUES) {
+                    if (typeGenerator.isIgnoredDatapoint(dp) || dp.getParamsetType() != HmParamsetType.VALUES) {
                         continue;
                     }
                     ChannelUID channelUID = UidUtils.generateChannelUID(dp, getThing().getUID());
@@ -171,7 +173,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                     ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
                     ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                     if (channelType == null) {
-                        channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
+                        channelType = typeGenerator.createChannelType(dp, channelTypeUID);
                         typeProvider.putChannelType(channelType);
                     }
 
@@ -233,8 +235,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 }
             }
             for (HmDatapoint dp : channel.getDatapoints()) {
-                if (HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)
-                        || dp.getParamsetType() != HmParamsetType.VALUES) {
+                if (typeGenerator.isIgnoredDatapoint(dp) || dp.getParamsetType() != HmParamsetType.VALUES) {
                     continue;
                 }
                 ChannelUID channelUID = UidUtils.generateChannelUID(dp, getThing().getUID());
@@ -249,7 +250,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
                 ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                 if (channelType == null) {
-                    channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
+                    channelType = typeGenerator.createChannelType(dp, channelTypeUID);
                     typeProvider.putChannelType(channelType);
                 }
 
@@ -420,7 +421,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 Configuration config = editConfiguration();
                 config.put(MetadataUtils.getParameterName(dp), getValueForConfiguration(dp));
                 updateConfiguration(config);
-            } else if (!HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)) {
+            } else if (!typeGenerator.isIgnoredDatapoint(dp)) {
                 // update channel
                 ChannelUID channelUID = UidUtils.generateChannelUID(dp, thing.getUID());
                 Channel channel = thing.getChannel(channelUID.getId());

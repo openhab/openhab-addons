@@ -45,7 +45,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     private TYPE type;
     public static final SimpleDateFormat XML_RPC_DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
-    public XmlRpcRequest(@Nullable String methodName) {
+    public XmlRpcRequest(String methodName) {
         this(methodName, TYPE.REQUEST);
     }
 
@@ -120,7 +120,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     /**
      * Generates a value tag based on the type of the value.
      */
-    private void generateValue(StringBuilder sb, @Nullable Object value) {
+    private void generateValue(StringBuilder sb, @Nullable Object value) throws IllegalArgumentException {
         if (value == null) {
             tag(sb, "string", "void");
         } else {

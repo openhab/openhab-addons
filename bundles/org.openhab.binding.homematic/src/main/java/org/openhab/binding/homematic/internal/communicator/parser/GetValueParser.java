@@ -25,7 +25,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class GetValueParser extends CommonRpcParser<Object @Nullable [], @Nullable Void> {
+public class GetValueParser extends CommonRpcParser<Object[], @Nullable Void> {
     private HmDatapoint dp;
 
     public GetValueParser(HmDatapoint dp) {
@@ -33,7 +33,7 @@ public class GetValueParser extends CommonRpcParser<Object @Nullable [], @Nullab
     }
 
     @Override
-    public @Nullable Void parse(Object @Nullable [] message) throws IOException {
+    public @Nullable Void parse(Object[] message) throws IOException {
         if (message != null && message.length > 0 && !(message[0] instanceof Map)) {
             dp.setValue(convertToType(dp, message[0]));
             adjustRssiValue(dp);
