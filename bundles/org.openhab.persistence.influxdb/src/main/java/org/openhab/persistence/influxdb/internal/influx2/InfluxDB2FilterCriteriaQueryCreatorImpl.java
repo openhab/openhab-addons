@@ -69,9 +69,11 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         String name = influxDBMetadataService.getMeasurementNameOrDefault(localAlias);
         String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
         flux = flux.filter(measurement().equal(measurementName));
-        boolean needsItemTag = !measurementName.equals(itemName);
+        // Data is stored with TAG_ITEM_NAME set to the alias (see InfluxDBPersistenceService.convert()),
+        // so filter and condition must use localAlias, not itemName.
+        boolean needsItemTag = !measurementName.equals(localAlias);
         if (needsItemTag) {
-            flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
+            flux = flux.filter(tag(TAG_ITEM_NAME).equal(localAlias));
         }
 
         State filterState = criteria.getState();

@@ -186,6 +186,25 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 \t|> keep(columns:["_measurement", "_time", "_value"])"""));
     }
 
+    @Test
+    public void testAliasUsedForItemTagFilter() {
+        // Data is stored with TAG_ITEM_NAME = alias, so the tag filter must use the alias,
+        // not the item name, otherwise queries return no results when alias != itemName.
+        FilterCriteria criteria = createBaseCriteria();
+        String alias = "aliasName";
+        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, alias);
+        when(metadataRegistry.get(metadataKey)).thenReturn(new Metadata(metadataKey, "measurementName", Map.of()));
+
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY, alias);
+        assertThat(queryV2, equalTo("""
+                from(bucket:"origin")
+                \t|> range(start:-100y, stop:100y)
+                \t|> filter(fn: (r) => r["_measurement"] == "measurementName")
+                \t|> filter(fn: (r) => r["item"] == "aliasName")
+                \t|> sort(desc:true, columns:["_time"])
+                \t|> keep(columns:["_measurement", "_time", "_value", "item"])"""));
+    }
+
     private FilterCriteria createBaseCriteria() {
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName(ITEM_NAME);
