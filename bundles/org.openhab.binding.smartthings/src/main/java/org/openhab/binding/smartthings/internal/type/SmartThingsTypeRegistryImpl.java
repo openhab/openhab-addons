@@ -628,24 +628,23 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     /**
      * Creates the ThingType for the given device.
      */
-    private ThingType createThingType(String device, String label, List<ChannelGroupType> groupTypes) {
+    private ThingType createThingType(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes) {
         SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
-        String name = device;
 
-        logger.trace("createThingType: device:{} {}", device, label);
+        logger.trace("createThingType: device:{} {}", deviceCategory, deviceType);
 
         List<String> supportedBridgeTypeUids = new ArrayList<>();
         supportedBridgeTypeUids.add(SmartThingsBindingConstants.THING_TYPE_ACCOUNT.toString());
 
-        logger.trace("GenerateThingTypeUID: device:{}", device);
-        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
+        logger.trace("GenerateThingTypeUID: device:{}", deviceType);
+        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
 
         Map<String, String> properties = new HashMap<>();
 
-        URI configDescriptionURI = getConfigDescriptionURI(device);
+        URI configDescriptionURI = getConfigDescriptionURI(deviceType);
         if (lcConfigDescriptionProvider != null
                 && lcConfigDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
-            generateConfigDescription(device, groupTypes, configDescriptionURI);
+            generateConfigDescription(deviceType, groupTypes, configDescriptionURI);
         }
 
         List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
@@ -654,17 +653,17 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
         }
 
-        ThingTypeBuilder builder = ThingTypeBuilder.instance(thingTypeUID, name);
+        ThingTypeBuilder builder = ThingTypeBuilder.instance(thingTypeUID, deviceType);
 
         builder = builder.withSupportedBridgeTypeUIDs(supportedBridgeTypeUids);
-        builder = builder.withLabel(label);
+        builder = builder.withLabel(deviceType);
         builder = builder.withRepresentationProperty(Thing.PROPERTY_MODEL_ID);
         builder = builder.withConfigDescriptionURI(configDescriptionURI);
         builder = builder.withCategory(SmartThingsBindingConstants.CATEGORY_THING_SMARTTHINGS);
         builder = builder.withChannelGroupDefinitions(groupDefinitions);
         builder = builder.withProperties(properties);
 
-        SemanticTag semanticTag = getThingSemanticType(device);
+        SemanticTag semanticTag = getThingSemanticType(deviceType);
         if (semanticTag != null) {
             builder = builder.withSemanticEquipmentTag(semanticTag);
         }
