@@ -50,11 +50,11 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private Object @Nullable [] messageData;
-    private @NonNullByDefault({}) byte[] binRpcData;
+    private byte[] binRpcData;
     private int offset;
 
     private @Nullable String methodName;
-    private @NonNullByDefault({}) TYPE type;
+    private TYPE type;
     private int args;
     private Charset encoding;
 
@@ -69,6 +69,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         this.methodName = methodName;
         this.type = type;
         this.encoding = encoding;
+        this.binRpcData = new byte[256];
         createHeader();
     }
 
@@ -77,6 +78,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
      */
     public BinRpcMessage(InputStream is, boolean methodHeader, Charset encoding) throws IOException {
         this.encoding = encoding;
+        this.type = TYPE.RESPONSE;
         byte[] sig = new byte[8];
         int length = is.read(sig, 0, 4);
         if (length != 4) {
@@ -103,7 +105,8 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         System.arraycopy(sig, 0, message, 0, sig.length);
         System.arraycopy(payload, 0, message, sig.length, payload.length);
 
-        decodeMessage(message, methodHeader);
+        this.binRpcData = message;
+        decodeMessage(methodHeader);
     }
 
     private void validateBinXSignature(byte[] sig) throws UnsupportedEncodingException {
@@ -117,16 +120,16 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
      */
     public BinRpcMessage(byte[] message, boolean methodHeader, Charset encoding) throws IOException, ParseException {
         this.encoding = encoding;
+        this.type = TYPE.RESPONSE;
         if (message.length < 8) {
             throw new EOFException("Only " + message.length + " bytes received");
         }
         validateBinXSignature(message);
-        decodeMessage(message, methodHeader);
+        this.binRpcData = message;
+        decodeMessage(methodHeader);;
     }
 
-    private void decodeMessage(byte[] message, boolean methodHeader) throws IOException {
-        binRpcData = message;
-
+    private void decodeMessage(boolean methodHeader) throws IOException {
         offset = 8;
 
         if (methodHeader) {
@@ -152,7 +155,6 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private void createHeader() {
-        binRpcData = new byte[256];
         addString("Bin ");
         setType(type);
         addInt(0); // placeholder content length

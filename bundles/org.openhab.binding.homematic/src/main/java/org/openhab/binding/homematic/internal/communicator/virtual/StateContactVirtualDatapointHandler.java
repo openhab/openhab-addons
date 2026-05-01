@@ -37,7 +37,7 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     @Override
     public void initialize(HmDevice device) {
         if (isApplicable(device)) {
-            HmChannel channelOne = device.getChannelUnchecked(1);
+            HmChannel channelOne = device.getChannel(1);
             if (channelOne != null) {
                 HmDatapointInfo dpStateInfo = HmDatapointInfo.createValuesInfo(channelOne, DATAPOINT_NAME_STATE);
                 HmDatapoint dpState = channelOne.getDatapoint(dpStateInfo);
@@ -57,7 +57,9 @@ public class StateContactVirtualDatapointHandler extends AbstractVirtualDatapoin
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         Object value = convertState(dp.getValue());
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
-        vdp.setValue(value);
+        if (vdp != null) {
+            vdp.setValue(value);
+        }
     }
 
     private boolean isApplicable(HmDevice device) {

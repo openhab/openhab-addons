@@ -34,6 +34,7 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], @Nu
         this.devices = devices;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public @Nullable Void parse(Object[] message) throws IOException {
         Map<String, HmDevice> devicesById = new HashMap<>();

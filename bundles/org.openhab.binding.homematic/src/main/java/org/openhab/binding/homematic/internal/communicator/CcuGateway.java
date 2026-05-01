@@ -188,15 +188,16 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Sends a TclRega script to the CCU.
      */
     private <T> T sendScriptByName(String scriptName, Class<T> clazz) throws IOException {
-        return sendScriptByName(scriptName, clazz, new String[] {}, null);
+        return sendScriptByName(scriptName, clazz, new String[] {}, new String[] {});
     }
 
     /**
      * Sends a TclRega script with the specified variables to the CCU.
      */
-    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames,
-            String @Nullable [] values) throws IOException {
-        String script = tclregaScripts.get(scriptName);
+    private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames, String[] values)
+            throws IOException {
+        Map<String, @Nullable String> scripts = this.tclregaScripts;
+        String script = scripts != null ? scripts.get(scriptName) : null;
         if (script != null) {
             for (int i = 0; i < variableNames.length; i++) {
                 script = script.replace("{" + variableNames[i] + "}", values[i]);

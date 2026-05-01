@@ -37,11 +37,13 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
-            HmDatapoint dp = addDatapoint(device, 0, getName(), HmValueType.INTEGER, getRssiValue(device.getChannel(0)),
-                    true);
-            dp.setUnit("dBm");
-            dp.setMinValue(Integer.MIN_VALUE);
-            dp.setMaxValue(Integer.MAX_VALUE);
+            HmChannel channel = device.getChannel(0);
+            if (channel != null) {
+                HmDatapoint dp = addDatapoint(channel, getName(), HmValueType.INTEGER, getRssiValue(channel), true);
+                dp.setUnit("dBm");
+                dp.setMinValue(Integer.MIN_VALUE);
+                dp.setMaxValue(Integer.MAX_VALUE);
+            }
         }
     }
 
@@ -87,7 +89,7 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         if (device == null) {
             return false;
         }
-        HmChannel channel = device.getChannelUnchecked(0);
+        HmChannel channel = device.getChannel(0);
         if (channel == null) {
             return false;
         }

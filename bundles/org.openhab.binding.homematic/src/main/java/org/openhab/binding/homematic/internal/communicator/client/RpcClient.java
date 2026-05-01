@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -108,15 +109,10 @@ public abstract class RpcClient<T> {
             attempt = 1;
             sendMessage(config.getRpcPort(hmInterface), request); // first attempt without delay
         } catch (IOException e) {
-            future = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
-                try {
-                    sendMessage(config.getRpcPort(hmInterface), request);
-                    future.cancel(true);
-                } catch (IOException ex) {
-                    // Ignore, retry
-                }
-            }, INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY, TimeUnit.SECONDS);
+            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(
+                    () -> tryRegisterCallback(hmInterface, request), INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY,
+                    TimeUnit.SECONDS);
+            this.future = future;
             try {
                 future.get(config.getCallbackRegTimeout(), TimeUnit.SECONDS);
             } catch (CancellationException e1) {
@@ -127,7 +123,20 @@ public abstract class RpcClient<T> {
                 logger.error("Callback registration for interface {} timed out", hmInterface.getName());
                 throw new IOException("Unable to reconnect in time");
             }
-            future = null;
+            this.future = null;
+        }
+    }
+
+    private void tryRegisterCallback(HmInterface hmInterface, RpcRequest<T> request) {
+        logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
+        try {
+            sendMessage(config.getRpcPort(hmInterface), request);
+            ScheduledFuture<?> future = this.future;
+            if (future != null) {
+                future.cancel(true);
+            }
+        } catch (IOException ex) {
+            // Ignore, retry
         }
     }
 
@@ -135,7 +144,7 @@ public abstract class RpcClient<T> {
      * Disposes the client.
      */
     public void dispose() {
-        ScheduledFuture<?> future = this.future;
+        Future<?> future = this.future;
         if (future != null) {
             future.cancel(true);
         }
@@ -375,7 +384,7 @@ public abstract class RpcClient<T> {
             request = createRpcRequest("putParamset");
             request.addArg(getRpcAddress(dp.getChannel().getDevice().getAddress()) + getChannelSuffix(dp.getChannel()));
             request.addArg(HmParamsetType.MASTER.toString());
-            Map<String, Object> paramSet = new HashMap<>();
+            Map<String, @Nullable Object> paramSet = new HashMap<>();
             paramSet.put(dp.getName(), value);
             request.addArg(paramSet);
             configureRxMode(request, rxMode);

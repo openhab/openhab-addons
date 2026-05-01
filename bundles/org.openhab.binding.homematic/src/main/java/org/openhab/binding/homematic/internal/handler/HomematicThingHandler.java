@@ -118,6 +118,9 @@ public class HomematicThingHandler extends BaseThingHandler {
         HomematicGateway gateway = getHomematicGateway();
         HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
         HmChannel channelZero = device.getChannel(0);
+        if (channelZero == null) {
+            throw new HomematicClientException("Channel 0 not found for device " + device.getAddress());
+        }
         loadHomematicChannelValues(channelZero);
         updateStatus(device);
         logger.debug("Initializing thing '{}' from gateway '{}'", getThing().getUID(), gateway.getId());
@@ -528,7 +531,11 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Updates the thing status based on device status.
      */
     private void updateStatus(HmDevice device) throws GatewayNotAvailableException, IOException {
-        loadHomematicChannelValues(device.getChannel(0));
+        HmChannel channelZero = device.getChannel(0);
+        if (channelZero == null) {
+            throw new IOException("Channel 0 not found for device " + device.getAddress());
+        }
+        loadHomematicChannelValues(channelZero);
 
         ThingStatus oldStatus = thing.getStatus();
         if (oldStatus == ThingStatus.UNINITIALIZED) {
@@ -537,7 +544,8 @@ public class HomematicThingHandler extends BaseThingHandler {
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
-        if ((getBridge() != null) && (getBridge().getStatus() == ThingStatus.OFFLINE)) {
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.OFFLINE) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.BRIDGE_OFFLINE;
         } else if (device.isFirmwareUpdating()) {
@@ -561,8 +569,8 @@ public class HomematicThingHandler extends BaseThingHandler {
     /**
      * Returns true, if the channel is linked at least to one item.
      */
-    private boolean isLinked(@Nullable Channel channel) {
-        return channel != null && super.isLinked(channel.getUID().getId());
+    private boolean isLinked(Channel channel) {
+        return super.isLinked(channel.getUID().getId());
     }
 
     /**
@@ -615,23 +623,22 @@ public class HomematicThingHandler extends BaseThingHandler {
 
                     HmDatapointInfo dpInfo = new HmDatapointInfo(device.getAddress(), HmParamsetType.MASTER,
                             channelNumber, dpName);
-                    HmDatapoint dp = device.getChannel(channelNumber).getDatapoint(dpInfo);
+                    HmChannel channel = device.getChannel(channelNumber);
+                    HmDatapoint dp = channel != null ? channel.getDatapoint(dpInfo) : null;
 
                     if (dp != null) {
                         try {
-                            if (newValue != null) {
-                                if (newValue instanceof BigDecimal decimal) {
-                                    if (dp.isIntegerType()) {
-                                        newValue = decimal.intValue();
-                                    } else if (dp.isFloatType()) {
-                                        newValue = decimal.doubleValue();
-                                    }
-                                } else if (newValue instanceof String string && dp.isEnumType()) {
-                                    newValue = dp.getOptionIndex(string);
+                            if (newValue instanceof BigDecimal decimal) {
+                                if (dp.isIntegerType()) {
+                                    newValue = decimal.intValue();
+                                } else if (dp.isFloatType()) {
+                                    newValue = decimal.doubleValue();
                                 }
-                                if (!Objects.equals(dp.getValue(), newValue)) {
-                                    sendDatapoint(dp, new HmDatapointConfig(), newValue);
-                                }
+                            } else if (newValue instanceof String string && dp.isEnumType()) {
+                                newValue = dp.getOptionIndex(string);
+                            }
+                            if (!Objects.equals(dp.getValue(), newValue)) {
+                                sendDatapoint(dp, new HmDatapointConfig(), newValue);
                             }
                         } catch (IOException ex) {
                             logger.error("Error setting thing property {}: {}", dpInfo, ex.getMessage());

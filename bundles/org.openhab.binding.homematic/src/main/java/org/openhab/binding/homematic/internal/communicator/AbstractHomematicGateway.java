@@ -350,17 +350,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
     @Override
     public HmDatapoint getDatapoint(HmDatapointInfo dpInfo) throws HomematicClientException {
         HmDevice device = getDevice(dpInfo.getAddress());
-        Integer channelNumber = dpInfo.getChannel();
-        if (channelNumber == null) {
-            throw new HomematicClientException(
-                    String.format("Channel number missing for datapoint '%s' in device '%s' on gateway '%s'",
-                            dpInfo.getName(), dpInfo.getAddress(), id));
-        }
-
-        HmChannel channel = device.getChannelUnchecked(channelNumber);
+        HmChannel channel = device.getChannel(dpInfo.getChannel());
         if (channel == null) {
             throw new HomematicClientException(String.format("Channel %s in device '%s' not found on gateway '%s'",
-                    channelNumber, dpInfo.getAddress(), id));
+                    dpInfo.getChannel(), dpInfo.getAddress(), id));
         }
         HmDatapoint dp = channel.getDatapoint(dpInfo);
         if (dp == null) {
@@ -399,8 +392,14 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
                     logger.trace("Loading metadata for device '{}' of type '{}'", device.getAddress(),
                             device.getType());
                     if (device.isGatewayExtras()) {
-                        loadChannelValues(device.getChannel(HmChannel.CHANNEL_NUMBER_VARIABLE));
-                        loadChannelValues(device.getChannel(HmChannel.CHANNEL_NUMBER_SCRIPT));
+                        HmChannel varChannel = device.getChannel(HmChannel.CHANNEL_NUMBER_VARIABLE);
+                        if (varChannel != null) {
+                            loadChannelValues(varChannel);
+                        }
+                        HmChannel scriptChannel = device.getChannel(HmChannel.CHANNEL_NUMBER_SCRIPT);
+                        if (scriptChannel != null) {
+                            loadChannelValues(scriptChannel);
+                        }
                     } else {
                         for (HmChannel channel : device.getChannels()) {
                             logger.trace("  Loading channel {}", channel);
@@ -408,7 +407,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
                             if ((DEVICE_TYPE_VIRTUAL.equals(device.getType())
                                     || DEVICE_TYPE_VIRTUAL_WIRED.equals(device.getType())) && channel.getNumber() > 1) {
                                 HmChannel previousChannel = device.getChannel(channel.getNumber() - 1);
-                                cloneAllDatapointsIntoChannel(channel, previousChannel.getDatapoints());
+                                if (previousChannel != null) {
+                                    cloneAllDatapointsIntoChannel(channel, previousChannel.getDatapoints());
+                                }
                             } else {
                                 String channelId = String.format("%s:%s:%s", channel.getDevice().getType(),
                                         channel.getDevice().getFirmware(), channel.getNumber());
@@ -570,6 +571,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
 
             // collect virtual datapoints to be accessed
             HmChannel hmChannel = gwExtrasHm.getChannel(HmChannel.CHANNEL_NUMBER_EXTRAS);
+            if (hmChannel == null) {
+                logger.warn("Gateway extras channel not found on gateway with id '{}'", gwExtrasHm.getGatewayId());
+                return;
+            }
             HmDatapointInfo installModeDurationDataPointInfo = new HmDatapointInfo(HmParamsetType.VALUES, hmChannel,
                     HomematicConstants.VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION);
             if (enable) {
@@ -585,6 +590,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
             if (installModeDurationDataPoint != null) {
                 try {
                     VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDurationDataPoint, null);
+                    if (handler == null) {
+                        logger.warn("No virtual datapoint handler found for {}", installModeDurationDataPoint);
+                        return;
+                    }
                     handler.handleCommand(this, installModeDurationDataPoint, new HmDatapointConfig(), seconds);
 
                     // notify thing if exists
@@ -598,6 +607,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
             if (installModeDataPoint != null) {
                 try {
                     VirtualDatapointHandler handler = getVirtualDatapointHandler(installModeDataPoint, null);
+                    if (handler == null) {
+                        logger.warn("No virtual datapoint handler found for {}", installModeDurationDataPoint);
+                        return;
+                    }
                     handler.handleCommand(this, installModeDataPoint, new HmDatapointConfig(), enable);
 
                     // notify thing if exists
@@ -633,7 +646,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
         HmDatapointInfo dpInfo = new HmDatapointInfo(address, HmParamsetType.VALUES, 0, datapointName);
         HmChannel channel;
         try {
-            channel = getDevice(dpInfo.getAddress()).getChannelUnchecked(0);
+            channel = getDevice(dpInfo.getAddress()).getChannel(0);
             if (channel != null) {
                 eventReceived(dpInfo, value);
             }
@@ -652,14 +665,14 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Virt
     }
 
     @Override
-    public void sendDatapointIgnoreVirtual(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue)
+    public void sendDatapointIgnoreVirtual(HmDatapoint dp, HmDatapointConfig dpConfig, @Nullable Object newValue)
             throws IOException, HomematicClientException {
         sendDatapoint(dp, dpConfig, newValue, null, true);
     }
 
     @Override
-    public void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue, @Nullable String rxMode)
-            throws IOException, HomematicClientException {
+    public void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, @Nullable Object newValue,
+            @Nullable String rxMode) throws IOException, HomematicClientException {
         sendDatapoint(dp, dpConfig, newValue, rxMode, false);
     }
 

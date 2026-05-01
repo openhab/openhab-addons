@@ -62,9 +62,20 @@ public abstract class AbstractVirtualDatapointHandler implements VirtualDatapoin
     /**
      * Creates a new datapoint with the given parameters and adds it to the channel.
      */
-    protected HmDatapoint addDatapoint(HmDevice device, Integer channelNumber, String datapointName,
+    protected @Nullable HmDatapoint addDatapoint(HmDevice device, Integer channelNumber, String datapointName,
             HmValueType valueType, @Nullable Object value, boolean readOnly) {
         HmChannel channel = device.getChannel(channelNumber);
+        if (channel == null) {
+            return null;
+        }
+        return addDatapoint(channel, datapointName, valueType, value, readOnly);
+    }
+
+    /**
+     * Creates a new datapoint with the given parameters and adds it to the channel.
+     */
+    protected HmDatapoint addDatapoint(HmChannel channel, String datapointName, HmValueType valueType,
+            @Nullable Object value, boolean readOnly) {
         HmDatapoint dp = new HmDatapoint(datapointName, datapointName, valueType, value, readOnly,
                 HmParamsetType.VALUES);
         return addDatapoint(channel, dp);
