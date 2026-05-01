@@ -91,7 +91,7 @@ class StorageRealtimeResponseTest {
         assertEquals("12345678", controller.getDetails().getSerial());
         assertEquals(1, controller.getEnable());
         assertEquals(95.0, controller.getStateOfChargeRelative(), 1e-6);
-        assertNotNull(controller.getStatusBatteryCell(), "Status_BatteryCell should be present");
+        assertEquals("3.0", controller.getStatusBatteryCell());
         assertEquals(19.25, controller.getTemperatureCell(), 1e-6);
         assertEquals(1777554799, controller.getTimeStamp());
         assertEquals(213.6, controller.getVoltageDC(), 1e-6);
