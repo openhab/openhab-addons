@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fronius.internal.handler.FroniusBatteryHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusMeterHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusOhmpilotHandler;
@@ -39,7 +40,9 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Jimmy Tanagra - Added meter
  * @author Hannes Spenger - Added ohmpilot
+ * @author Jimmy Tanagra - Added battery
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.fronius")
 @NonNullByDefault
@@ -54,6 +57,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
             add(THING_TYPE_BRIDGE);
             add(THING_TYPE_METER);
             add(THING_TYPE_OHMPILOT);
+            add(THING_TYPE_BATTERY);
         }
     };
 
@@ -81,6 +85,8 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
             return new FroniusMeterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OHMPILOT)) {
             return new FroniusOhmpilotHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_BATTERY)) {
+            return new FroniusBatteryHandler(thing);
         }
         return null;
     }
