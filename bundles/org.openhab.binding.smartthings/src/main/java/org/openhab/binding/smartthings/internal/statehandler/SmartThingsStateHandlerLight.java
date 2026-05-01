@@ -19,7 +19,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Base converter class.
@@ -35,22 +37,25 @@ public class SmartThingsStateHandlerLight extends SmartThingsStateHandler {
     }
 
     @Override
-    public void handleStateChange(ChannelUID channelUID, String deviceType, String componentId, State state,
-            SmartThingsThingHandler thingHandler) {
-        super.handleStateChange(channelUID, deviceType, componentId, state, thingHandler);
-        State oldHueState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_HUE);
-        State oldSaturationState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_SATURATION);
-        State oldLevelState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_LEVEL);
+    public void handleStateChange(ThingUID thingUID, ChannelUID channelUID, String deviceType, String componentId,
+            State state, SmartThingsThingHandler thingHandler) {
+        String channelName = getChannelName(channelUID);
 
-        if (oldHueState == null) {
+        super.putState(thingUID, channelName, state);
+
+        State oldHueState = getState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_HUE);
+        State oldSaturationState = getState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_SATURATION);
+        State oldLevelState = getState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_LEVEL);
+
+        if (oldHueState == UnDefType.UNDEF) {
             oldHueState = new DecimalType(0);
         }
 
-        if (oldSaturationState == null) {
+        if (oldSaturationState == UnDefType.UNDEF) {
             oldSaturationState = new PercentType(0);
         }
 
-        if (oldLevelState == null) {
+        if (oldLevelState == UnDefType.UNDEF) {
             oldLevelState = new PercentType(0);
         }
 
@@ -59,26 +64,31 @@ public class SmartThingsStateHandlerLight extends SmartThingsStateHandler {
         ChannelUID channelUIDColor = new ChannelUID(thingHandler.getThing().getUID(), groupId,
                 SmartThingsBindingConstants.CHANNEL_NAME_COLOR);
 
-        if (SmartThingsBindingConstants.CHANNEL_NAME_HUE.equals(channelUID.getIdWithoutGroup())) {
-            stateCache.put(SmartThingsBindingConstants.CHANNEL_NAME_HUE, state);
+        if (SmartThingsBindingConstants.CHANNEL_NAME_HUE.equals(channelName)) {
+            putState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_HUE, state);
             HSBType newColorState = new HSBType((DecimalType) state, (PercentType) oldSaturationState,
                     (PercentType) oldLevelState);
 
             thingHandler.sendUpdateState(channelUIDColor, newColorState);
         }
-        if (SmartThingsBindingConstants.CHANNEL_NAME_SATURATION.equals(channelUID.getIdWithoutGroup())) {
+        if (SmartThingsBindingConstants.CHANNEL_NAME_SATURATION.equals(channelName)) {
             PercentType pcState = convToPercentTypeIfNeed(state);
-            stateCache.put(SmartThingsBindingConstants.CHANNEL_NAME_SATURATION, pcState);
+            putState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_SATURATION, pcState);
             HSBType newColorState = new HSBType((DecimalType) oldHueState, pcState, (PercentType) oldLevelState);
 
             thingHandler.sendUpdateState(channelUIDColor, newColorState);
         }
-        if (SmartThingsBindingConstants.CHANNEL_NAME_LEVEL.equals(channelUID.getIdWithoutGroup())) {
+        if (SmartThingsBindingConstants.CHANNEL_NAME_LEVEL.equals(channelName)) {
             PercentType pcState = convToPercentTypeIfNeed(state);
-            stateCache.put(SmartThingsBindingConstants.CHANNEL_NAME_LEVEL, pcState);
+            putState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_LEVEL, pcState);
             HSBType newColorState = new HSBType((DecimalType) oldHueState, (PercentType) oldSaturationState, pcState);
 
             thingHandler.sendUpdateState(channelUIDColor, newColorState);
         }
+    }
+
+    private String getChannelName(ChannelUID channelUID) {
+        String result = channelUID.getIdWithoutGroup();
+        return result;
     }
 }

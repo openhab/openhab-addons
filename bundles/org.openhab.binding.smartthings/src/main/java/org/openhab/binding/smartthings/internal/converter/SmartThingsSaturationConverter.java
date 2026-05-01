@@ -46,7 +46,7 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
     }
 
     @Override
-    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command,
+    public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUID, Command command,
             SmartThingsCapability capa, SmartThingsAttribute attr, String componentKey, String capaKey, String attrKey,
             String targetType) throws SmartThingsException {
         if (command instanceof HSBType hsbCommand) {
@@ -68,7 +68,7 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
             SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory
                     .getStateHandler(SmartThingsBindingConstants.THING_LIGHT);
             if (stateHandler != null) {
-                State stateHue = stateHandler.getState(SmartThingsBindingConstants.CHANNEL_NAME_HUE);
+                State stateHue = stateHandler.getState(thing.getUID(), SmartThingsBindingConstants.CHANNEL_NAME_HUE);
 
                 if (stateHue instanceof DecimalType decHue) {
                     hue = decHue.doubleValue();

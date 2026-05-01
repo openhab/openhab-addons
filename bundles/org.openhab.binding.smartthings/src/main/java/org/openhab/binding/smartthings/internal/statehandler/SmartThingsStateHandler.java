@@ -21,6 +21,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -33,14 +34,17 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public abstract class SmartThingsStateHandler {
-    protected Map<String, State> stateCache = new Hashtable<String, State>();
+    private Map<String, State> stateMap = new Hashtable<String, State>();
 
     SmartThingsStateHandler() {
     }
 
-    public void handleStateChange(ChannelUID channelUID, String deviceType, String componentId, State state,
-            SmartThingsThingHandler thingHandler) {
-        stateCache.put(channelUID.getId(), state);
+    public abstract void handleStateChange(ThingUID thingUID, ChannelUID channelUID, String deviceType,
+            String componentId, State state, SmartThingsThingHandler thingHandler);
+
+    public void putState(ThingUID thingUID, String channelName, State state) {
+        String key = thingUID.getId() + "#" + channelName;
+        stateMap.put(key, state);
     }
 
     protected PercentType convToPercentTypeIfNeed(State state) {
@@ -53,9 +57,10 @@ public abstract class SmartThingsStateHandler {
         }
     }
 
-    public State getState(String key) {
-        if (stateCache.containsKey(key)) {
-            State result = stateCache.get(key);
+    public State getState(ThingUID thingUID, String channelName) {
+        String key = thingUID.getId() + "#" + channelName;
+        if (stateMap.containsKey(key)) {
+            State result = stateMap.get(key);
             if (result != null) {
                 return result;
             }

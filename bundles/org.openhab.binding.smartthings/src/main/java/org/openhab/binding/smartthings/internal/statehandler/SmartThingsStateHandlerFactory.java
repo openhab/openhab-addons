@@ -27,21 +27,21 @@ import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 
 @NonNullByDefault
 public class SmartThingsStateHandlerFactory {
-    private static Map<String, SmartThingsStateHandler> stateHandlerCache = new HashMap<>();
+    private static Map<String, SmartThingsStateHandler> stateHandlerMap = new HashMap<>();
 
     public static void registerStateHandler() {
         registerStateHandler(SmartThingsBindingConstants.THING_LIGHT, new SmartThingsStateHandlerLight());
     }
 
     private static void registerStateHandler(String key, SmartThingsStateHandler tp) {
-        stateHandlerCache.put(key, tp);
+        stateHandlerMap.put(key, tp);
     }
 
     /**
      * Returns the converter for an itemType.
      */
     public static @Nullable SmartThingsStateHandler getStateHandler(String deviceType) {
-        SmartThingsStateHandler stateHandler = stateHandlerCache.get(deviceType);
+        SmartThingsStateHandler stateHandler = stateHandlerMap.get(deviceType);
         return stateHandler;
     }
 }

@@ -99,7 +99,7 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
 
             sucess = api.registerSSESubscription();
             if (!sucess) {
-                // sucess = api.registerCallbackSubscription();
+                sucess = api.registerCallbackSubscription();
             }
 
             if (!sucess) {

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,6 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
 import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
 import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
-import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -58,11 +58,16 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
     private String smartThingsName;
 
+    private String deviceId;
+    private String deviceCategory;
+
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private long lastRefresh = System.nanoTime();
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
+        deviceCategory = "";
+        deviceId = "";
         smartThingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
     }
 
@@ -134,7 +139,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         // channelUID
         SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
-        SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory.getStateHandler(deviceType);
+        SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory.getStateHandler(deviceCategory);
 
         if (converter != null) {
             State state = converter.convertToOpenHab(thing, channelUID, value);
@@ -142,7 +147,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
             if (stateHandler != null) {
                 logger.trace("refreshDevice called: stateHandler:{}", stateHandler);
-                stateHandler.handleStateChange(channelUID, deviceType, componentId, state, this);
+                stateHandler.handleStateChange(this.getThing().getUID(), channelUID, deviceType, componentId, state,
+                        this);
             }
         }
     }
@@ -203,43 +209,37 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        Map<String, String> properties = getThing().getProperties();
-
-        String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
-
         logger.trace("refrehDevice for deviceId: {}", deviceId);
 
-        if (deviceId != null) {
-            try {
-                SmartThingsStatus status = api.getStatus(deviceId);
+        try {
+            SmartThingsStatus status = api.getStatus(deviceId);
 
-                logger.trace("refrehDevice for deviceId: status : {}", status);
+            logger.trace("refrehDevice for deviceId: status : {}", status);
 
-                if (status != null) {
-                    for (String componentKey : status.components.keySet()) {
-                        SmartThingsStatusComponent component = status.components.get(componentKey);
+            if (status != null) {
+                for (String componentKey : status.components.keySet()) {
+                    SmartThingsStatusComponent component = status.components.get(componentKey);
 
-                        if (component != null) {
-                            for (String capaKey : component.keySet()) {
-                                SmartThingsStatusCapabilities capa = component.get(capaKey);
+                    if (component != null) {
+                        for (String capaKey : component.keySet()) {
+                            SmartThingsStatusCapabilities capa = component.get(capaKey);
 
-                                if (capa == null) {
-                                    continue;
-                                }
+                            if (capa == null) {
+                                continue;
+                            }
 
-                                if (SmartThingsPropMappings.isProperties(capaKey)) {
-                                    refreshDeviceProps(capa, componentKey, capaKey);
-                                } else {
-                                    refreshDeviceFromCapa(capa, componentKey, capaKey);
-                                }
+                            if (SmartThingsPropMappings.isProperties(capaKey)) {
+                                refreshDeviceProps(capa, componentKey, capaKey);
+                            } else {
+                                refreshDeviceFromCapa(capa, componentKey, capaKey);
                             }
                         }
                     }
                 }
-            } catch (SmartThingsException ex) {
-                logger.error("Unable to update device : {}", deviceId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
+        } catch (SmartThingsException ex) {
+            logger.error("Unable to update device : {}", deviceId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
@@ -305,10 +305,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        SmartThingsTypeRegistry typeRegistry = accountHandler.getSmartThingsTypeRegistry();
-
-        SmartThingsConverterFactory.registerConverters(typeRegistry);
         SmartThingsStateHandlerFactory.registerStateHandler();
+
+        Map<String, String> properties = getThing().getProperties();
+
+        deviceId = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_ID));
+        deviceCategory = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY));
 
         refreshDevice();
 

@@ -34,6 +34,7 @@ import org.openhab.binding.smartthings.internal.SmartThingsServlet;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnectorImpl;
+import org.openhab.binding.smartthings.internal.converter.SmartThingsConverterFactory;
 import org.openhab.binding.smartthings.internal.discovery.SmartThingsDiscoveryService;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
@@ -196,6 +197,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             tracker.open();
 
             registerCloudWebhook();
+
+            SmartThingsConverterFactory.registerConverters(typeRegistry);
+
         } catch (NoClassDefFoundError e) {
             logger.info("No webhook service available - switching off push events from SmartThings cloud.");
         }
