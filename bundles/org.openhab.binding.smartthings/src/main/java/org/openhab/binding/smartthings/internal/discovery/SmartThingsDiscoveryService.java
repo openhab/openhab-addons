@@ -117,7 +117,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        String deviceCategory = null;
+        String deviceCategory = "";
         for (SmartThingsComponent component : device.components) {
             String compId = component.id;
 
@@ -141,9 +141,6 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         deviceCategory = UidUtils.sanitizeId(deviceCategory);
 
         String deviceType = device.deviceTypeName;
-        if (deviceType == null) {
-            deviceType = device.name;
-        }
 
         deviceType = UidUtils.sanitizeId(deviceType);
         SmartThingsTypeRegistry registry = this.typeRegistry;
