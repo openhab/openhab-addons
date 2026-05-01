@@ -39,7 +39,7 @@ public interface SmartThingsNetworkConnector {
 
     public void onComplete(Request request);
 
-    public <T> void onError(Class<T> resultClass, Request request, SmartThingsNetworkCallback<T> cb) throws Exception;
+    public <T> void onError(Class<T> resultClass, Request request, SmartThingsNetworkCallback<T> cb);
 
     public Gson getGson();
 }

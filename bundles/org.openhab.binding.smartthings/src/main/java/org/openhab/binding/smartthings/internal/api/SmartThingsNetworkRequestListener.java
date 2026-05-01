@@ -83,56 +83,75 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
 
     @Override
     public void onComplete(@Nullable Result result) {
-        if (result == null) {
+        if (result == null || result.getResponse() == null) {
+            logger.warn("Request completed with null result/response");
             return;
         }
 
-        try {
-            String content = getContentAsString();
-            logger.trace("response complete: {}", content);
+        Request request = result.getRequest();
+        Response response = result.getResponse();
+        int status = response.getStatus();
 
-            if (result.getResponse().getStatus() != 200) {
-                logger.debug("bad gateway !!!");
-                networkConnector.onError(resultClass, result.getRequest(), callback);
+        String content = getContentAsString();
+        logger.trace("response complete: {}", content);
+
+        try {
+            if (status < 200 || status >= 300) {
+                logger.debug("HTTP error {} for {}", status, request.getURI());
+                networkConnector.onError(resultClass, request, callback);
                 return;
             }
 
-            if (content != null) {
-                if (content.indexOf("<!DOCTYPE html>") >= 0) {
-                    networkConnector.onComplete(result.getRequest());
-                    T typedResult = resultClass.cast(content);
-                    callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), typedResult);
+            if (content == null || content.isEmpty()) {
+                logger.debug("Empty response body for {}", request.getURI());
+                networkConnector.onComplete(request);
+                callback.execute(request.getURI(), status, null);
+                return;
+            }
+
+            T typedResult;
+
+            // ✅ HTML handling ONLY if String expected
+            if (isHtml(content)) {
+                if (resultClass == String.class) {
+                    typedResult = resultClass.cast(content);
                 } else {
-                    Object resultObj = null;
-                    try {
-                        Gson gson = networkConnector.getGson();
+                    logger.warn("Received HTML but expected {}", resultClass.getSimpleName());
+                    networkConnector.onError(resultClass, request, callback);
+                    return;
+                }
 
-                        resultObj = gson.fromJson(content, resultClass);
-                    } catch (Exception ex) {
-                        logger.debug("error: {}", ex.toString());
-                    }
+            } else {
+                // ✅ JSON parsing
+                try {
+                    Gson gson = networkConnector.getGson();
+                    Object resultObj = gson.fromJson(content, resultClass);
 
-                    if (resultObj != null) {
-                        networkConnector.onComplete(result.getRequest());
-                        T typedResult = resultClass.cast(resultObj);
-                        callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), typedResult);
+                    if (resultObj == null) {
+                        logger.warn("JSON parsed to null for {}", request.getURI());
+                        networkConnector.onError(resultClass, request, callback);
                         return;
-                    } else {
-                        logger.debug("error");
-                        networkConnector.onError(resultClass, result.getRequest(), callback);
                     }
 
+                    typedResult = resultClass.cast(resultObj);
+
+                } catch (Exception ex) {
+                    logger.warn("JSON parsing error for {}: {}", request.getURI(), ex.getMessage(), ex);
+                    networkConnector.onError(resultClass, request, callback);
                     return;
                 }
             }
 
-            T typedResult = resultClass.cast(content);
-            callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), typedResult);
-            networkConnector.onComplete(result.getRequest());
-        } catch (
+            networkConnector.onComplete(request);
+            callback.execute(request.getURI(), status, typedResult);
 
-        Exception ex) {
-            logger.debug("error");
+        } catch (Exception ex) {
+            logger.error("Unexpected error handling response for {}", request.getURI(), ex);
+            networkConnector.onError(resultClass, request, callback);
         }
+    }
+
+    private boolean isHtml(String content) {
+        return content.startsWith("<!DOCTYPE html") || content.startsWith("<html");
     }
 }
