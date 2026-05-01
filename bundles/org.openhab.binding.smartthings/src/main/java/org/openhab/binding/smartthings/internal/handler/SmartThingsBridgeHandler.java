@@ -26,10 +26,10 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.SmartThingsAuthService;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartThingsHandlerFactory;
+import org.openhab.binding.smartthings.internal.SmartThingsOAuthHandler;
 import org.openhab.binding.smartthings.internal.SmartThingsServlet;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnector;
@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
-        implements SmartThingsAccountHandler, AccessTokenRefreshListener {
+        implements SmartThingsOAuthHandler, AccessTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(SmartThingsBridgeHandler.class);
 
     protected SmartThingsBridgeConfig config;

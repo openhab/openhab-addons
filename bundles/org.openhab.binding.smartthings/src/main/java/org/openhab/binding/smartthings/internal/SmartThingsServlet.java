@@ -47,6 +47,7 @@ import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsLocation;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
@@ -251,7 +252,7 @@ public class SmartThingsServlet extends HttpServlet
     }
 
     private String handleTemplate(String requestUrl, @Nullable String queryString) {
-        SmartThingsAccountHandler accountHandler = smartThingsAuthService.getSmartThingsAccountHandler();
+        SmartThingsOAuthHandler accountHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
 
         if (accountHandler == null) {
             logger.error("accountHandler==nul in SmartThingsServlet::handleTemplate");
@@ -368,8 +369,17 @@ public class SmartThingsServlet extends HttpServlet
             }
 
             try {
-                String authorizationUri = accountHandler
-                        .formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI, "step1", true);
+                String authorizationUri = "";
+
+                SmartThingsAccountHandler bridgeAccountHandler = (SmartThingsAccountHandler) bridgeHandler;
+                // if app already create, go directly to step2 to reauthenticate a location
+                if (bridgeAccountHandler.appCreated()) {
+                    authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
+                            "step2", false);
+                } else {
+                    authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
+                            "step1", true);
+                }
 
                 // handle first redirection to Smartthings when user click button
                 replaceMap.put(KEY_BRIDGE_URI, Encode.forHtml(authorizationUri));

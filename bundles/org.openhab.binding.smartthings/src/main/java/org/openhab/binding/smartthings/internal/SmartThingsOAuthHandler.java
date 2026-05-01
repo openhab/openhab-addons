@@ -22,7 +22,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public interface SmartThingsAccountHandler extends ThingHandler {
+public interface SmartThingsOAuthHandler extends ThingHandler {
 
     /**
      * @return Returns true if the SmartThings Bridge is authorized.

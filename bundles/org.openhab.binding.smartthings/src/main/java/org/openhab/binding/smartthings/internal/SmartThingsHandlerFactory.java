@@ -110,8 +110,8 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
                     bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder,
                     eventSourceFactory);
 
-            SmartThingsBridgeHandler accountHandler = bridgeHandler;
-            authService.setSmartThingsAccountHandler(accountHandler);
+            SmartThingsOAuthHandler oAuthHandler = bridgeHandler;
+            authService.setSmartThingsOAuthHandler(oAuthHandler);
 
             bridgeUID = thing.getUID();
             logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",

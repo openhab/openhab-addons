@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class SmartThingsAuthService {
     private final Logger logger = LoggerFactory.getLogger(SmartThingsAuthService.class);
 
-    private @Nullable SmartThingsAccountHandler accountHandler;
+    private @Nullable SmartThingsOAuthHandler oAuthHandler;
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
@@ -53,35 +53,35 @@ public class SmartThingsAuthService {
      * @return returns the name of the SmartThings user that is authorized
      */
     public String authorize(String redirectUri, String state, String code) throws SmartThingsException {
-        SmartThingsAccountHandler accountHandler = getSmartThingsAccountHandler();
-        if (accountHandler == null) {
+        SmartThingsOAuthHandler oAuthHandler = getSmartThingsOAuthHandler();
+        if (oAuthHandler == null) {
             logger.debug(
                     "SmartThings redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
                     state);
             throw new SmartThingsException("@text/error-unknow-bridge");
         } else {
-            return accountHandler.authorize(redirectUri, code);
+            return oAuthHandler.authorize(redirectUri, code);
         }
     }
 
     /**
      * @param listener Adds the given handler
      */
-    public void setSmartThingsAccountHandler(@Nullable SmartThingsAccountHandler accountHandler) {
-        this.accountHandler = accountHandler;
+    public void setSmartThingsOAuthHandler(@Nullable SmartThingsOAuthHandler oAuthHandler) {
+        this.oAuthHandler = oAuthHandler;
     }
 
     /**
      * @param handler Removes the given handler
      */
-    public void unsetSmartThingsAccountHandler(@NotNull SmartThingsAccountHandler accountHandler) {
-        this.accountHandler = null;
+    public void unsetSmartThingsOAuthHandler(@NotNull SmartThingsOAuthHandler oAuthHandler) {
+        this.oAuthHandler = null;
     }
 
     /**
      * @param listener Adds the given handler
      */
-    public @Nullable SmartThingsAccountHandler getSmartThingsAccountHandler() {
-        return this.accountHandler;
+    public @Nullable SmartThingsOAuthHandler getSmartThingsOAuthHandler() {
+        return this.oAuthHandler;
     }
 }
