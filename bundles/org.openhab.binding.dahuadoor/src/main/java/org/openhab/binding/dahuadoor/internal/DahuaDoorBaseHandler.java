@@ -884,8 +884,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             outgoingReRegisterJobs.put(extension, job);
         } catch (IOException | PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
                 | ObjectInUseException | TooManyListenersException | RuntimeException e) {
-            logger.warn("Failed to start outgoing SIP client {} on SIP {} / RTP {}: {}", extension, sipPort,
-                    backchannelPort, e.getMessage(), e);
+            logger.warn("Failed to start outgoing SIP client {} on SIP {} / RTP {} ({}): {}", extension, sipPort,
+                    backchannelPort, e.getClass().getSimpleName(), e.getMessage(), e);
             registrationState.put(extension, false);
             outgoingSipClients.remove(extension);
             ScheduledFuture<?> job = outgoingReRegisterJobs.remove(extension);

@@ -199,31 +199,86 @@ public class SipClient implements SipListener {
 
     public void initializeSipStack() throws PeerUnavailableException, TransportNotSupportedException,
             InvalidArgumentException, ObjectInUseException, TooManyListenersException {
-        SipFactory sipFactory = SipFactory.getInstance();
-        sipFactory.setPathName("gov.nist");
+        SipStack localSipStack = null;
+        ListeningPoint localListeningPoint = null;
+        SipProvider localSipProvider = null;
+        String initStep = "create SIP stack";
+        try {
+            SipFactory sipFactory = SipFactory.getInstance();
+            sipFactory.setPathName("gov.nist");
 
-        Properties properties = new Properties();
-        properties.setProperty("javax.sip.STACK_NAME", buildSipStackName());
-        properties.setProperty("javax.sip.IP_ADDRESS", localIp);
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0"); // No JAIN-SIP logging
+            Properties properties = new Properties();
+            String stackName = buildSipStackName();
+            properties.setProperty("javax.sip.STACK_NAME", stackName);
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0"); // No JAIN-SIP logging
+            // Do not set javax.sip.IP_ADDRESS here. JAIN-SIP reuses stacks by IP address, which
+            // prevents multiple SipClient instances on the same host from attaching their own listeners.
 
-        SipStack localSipStack = sipFactory.createSipStack(properties);
-        HeaderFactory localHeaderFactory = sipFactory.createHeaderFactory();
-        AddressFactory localAddressFactory = sipFactory.createAddressFactory();
-        MessageFactory localMessageFactory = sipFactory.createMessageFactory();
+            localSipStack = sipFactory.createSipStack(properties);
+            initStep = "create SIP factories";
+            HeaderFactory localHeaderFactory = sipFactory.createHeaderFactory();
+            AddressFactory localAddressFactory = sipFactory.createAddressFactory();
+            MessageFactory localMessageFactory = sipFactory.createMessageFactory();
 
-        ListeningPoint localListeningPoint = localSipStack.createListeningPoint(localIp, localSipPort, "udp");
-        SipProvider localSipProvider = localSipStack.createSipProvider(localListeningPoint);
-        localSipProvider.addSipListener(this);
+            initStep = "create listening point";
+            localListeningPoint = localSipStack.createListeningPoint(localIp, localSipPort, "udp");
 
-        sipStack = localSipStack;
-        headerFactory = localHeaderFactory;
-        addressFactory = localAddressFactory;
-        messageFactory = localMessageFactory;
-        listeningPoint = localListeningPoint;
-        sipProvider = localSipProvider;
+            initStep = "create SIP provider";
+            localSipProvider = localSipStack.createSipProvider(localListeningPoint);
 
-        logger.info("SIP stack initialized on {}:{}", localIp, localSipPort);
+            initStep = "attach SIP listener";
+            localSipProvider.addSipListener(this);
+
+            sipStack = localSipStack;
+            headerFactory = localHeaderFactory;
+            addressFactory = localAddressFactory;
+            messageFactory = localMessageFactory;
+            listeningPoint = localListeningPoint;
+            sipProvider = localSipProvider;
+
+            logger.info("SIP stack initialized for {} on {}:{}", sipExtension, localIp, localSipPort);
+        } catch (PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
+                | ObjectInUseException | TooManyListenersException | RuntimeException e) {
+            cleanupFailedInitialization(localSipStack, localSipProvider, localListeningPoint);
+            logger.warn("Failed to initialize SIP stack for {} on {}:{} during {} ({}): {}", sipExtension, localIp,
+                    localSipPort, initStep, e.getClass().getSimpleName(), e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private void cleanupFailedInitialization(@Nullable SipStack stack, @Nullable SipProvider provider,
+            @Nullable ListeningPoint lp) {
+        try {
+            if (provider != null) {
+                provider.removeSipListener(this);
+                if (lp != null) {
+                    provider.removeListeningPoint(lp);
+                }
+            }
+        } catch (ObjectInUseException | RuntimeException e) {
+            logger.debug("Ignoring SIP provider cleanup error for {}: {}", sipExtension, e.getMessage(), e);
+        }
+        try {
+            if (stack != null && provider != null) {
+                stack.deleteSipProvider(provider);
+            }
+        } catch (ObjectInUseException | RuntimeException e) {
+            logger.debug("Ignoring SIP provider deletion error for {}: {}", sipExtension, e.getMessage(), e);
+        }
+        try {
+            if (stack != null && lp != null) {
+                stack.deleteListeningPoint(lp);
+            }
+        } catch (ObjectInUseException | RuntimeException e) {
+            logger.debug("Ignoring SIP listening point cleanup error for {}: {}", sipExtension, e.getMessage(), e);
+        }
+        try {
+            if (stack != null) {
+                stack.stop();
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Ignoring SIP stack stop error for {}: {}", sipExtension, e.getMessage(), e);
+        }
     }
 
     private String buildSipStackName() {
@@ -277,7 +332,7 @@ public class SipClient implements SipListener {
             SipProvider provider = sipProvider;
 
             if (addrFactory == null || hdrFactory == null || msgFactory == null || provider == null) {
-                logger.error("SIP stack not initialized");
+                logger.error("SIP stack not initialized for extension {}", sipExtension);
                 return;
             }
 
@@ -331,8 +386,6 @@ public class SipClient implements SipListener {
             // Send
             ClientTransaction localRegisterTransaction = provider.getNewClientTransaction(request);
             localRegisterTransaction.sendRequest();
-
-            logger.debug("Sent REGISTER (unauthenticated)");
 
         } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
             logger.warn("Failed to send REGISTER: {}", e.getMessage(), e);
@@ -403,8 +456,6 @@ public class SipClient implements SipListener {
             // Send
             ClientTransaction localRegisterTransaction = provider.getNewClientTransaction(request);
             localRegisterTransaction.sendRequest();
-
-            logger.debug("Sent REGISTER (with Digest auth)");
 
         } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
             logger.warn("Failed to send authenticated REGISTER: {}", e.getMessage(), e);
@@ -504,9 +555,6 @@ public class SipClient implements SipListener {
             logger.debug("Received response without CSeq header: {}", statusCode);
             return;
         }
-
-        logger.debug("Received SIP response: {} {} (CSeq: {} {})", statusCode, response.getReasonPhrase(),
-                cseq.getSeqNumber(), cseq.getMethod());
 
         if (Request.REGISTER.equals(cseq.getMethod())) {
             handleRegisterResponse(response);
@@ -666,16 +714,12 @@ public class SipClient implements SipListener {
         int statusCode = response.getStatusCode();
 
         if (statusCode == Response.UNAUTHORIZED) {
-            logger.debug("Received 401 Unauthorized - extracting nonce");
-
             WWWAuthenticateHeader authHeader = (WWWAuthenticateHeader) response.getHeader(WWWAuthenticateHeader.NAME);
             if (authHeader != null) {
                 String nonce = authHeader.getNonce();
-                logger.debug("Nonce: {}", nonce);
                 sendAuthenticatedRegister(nonce);
             }
         } else if (statusCode == Response.OK) {
-            logger.debug("SIP registration successful");
             listener.onRegistrationSuccess();
         } else {
             String reasonPhrase = response.getReasonPhrase();
