@@ -175,12 +175,12 @@ public class Go2RtcManager {
                     new InputStreamReader(startedProcess.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    LOGGER.debug("go2rtc [{}]: {}", getStreamName(), line);
+                    LOGGER.debug("go2rtc [{}]: {}", getLogContext(line), line);
                 }
             } catch (IOException e) {
-                LOGGER.trace("go2rtc [{}] output reader closed: {}", getStreamName(), e.getMessage());
+                LOGGER.trace("go2rtc [{}] output reader closed: {}", getDefaultLogContext(), e.getMessage());
             }
-        }, "go2rtc-log-" + getStreamName());
+        }, "go2rtc-log-" + getLogThreadNameSuffix());
         logTh.setDaemon(true);
         logTh.start();
         logThread = logTh;
@@ -277,6 +277,29 @@ public class Go2RtcManager {
         return "exec:ffmpeg -f alaw -ar 8000 -ac 1 -i - -c:a pcm_s16le -ar 16000 -ac 1 "
                 + "-payload_type 97 -ssrc 12345 -f rtp rtp://127.0.0.1:" + backchannelRtpPort
                 + "#backchannel=1#audio=pcma/8000";
+    }
+
+    private String getLogContext(String line) {
+        String inferredStreamName = inferStreamNameFromLogLine(line);
+        return inferredStreamName.isEmpty() ? getDefaultLogContext() : inferredStreamName;
+    }
+
+    private String getDefaultLogContext() {
+        return streams.size() == 1 ? getStreamName() : "shared:" + String.join(",", getStreamNames());
+    }
+
+    private String getLogThreadNameSuffix() {
+        return streams.size() == 1 ? getStreamName() : "multi";
+    }
+
+    private String inferStreamNameFromLogLine(String line) {
+        for (StreamEntry entry : streams) {
+            String rtpMarker = "rtp://127.0.0.1:" + entry.backchannelRtpPort();
+            if (line.contains(rtpMarker)) {
+                return entry.streamName();
+            }
+        }
+        return "";
     }
 
     /**

@@ -284,11 +284,7 @@ public class PlayStreamServlet extends HttpServlet {
             }
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setContentType("text/plain");
-            resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            resp.getOutputStream().write(encoded);
+            sendEncodedAnswer(resp, encoded);
         } catch (IOException e) {
             sendBase64Message(resp, HttpServletResponse.SC_BAD_GATEWAY,
                     "Failed to reach go2rtc API: " + e.getMessage());
@@ -339,6 +335,13 @@ public class PlayStreamServlet extends HttpServlet {
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
     }
 
+    private static void sendEncodedAnswer(HttpServletResponse resp, byte[] encodedAnswer) throws IOException {
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType("text/plain");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        resp.getOutputStream().write(encodedAnswer);
+    }
+
     private @Nullable String resolveSessionStreamName(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         String thingUid = getQueryParameter(req, "thing");
@@ -363,11 +366,18 @@ public class PlayStreamServlet extends HttpServlet {
         }
 
         @Nullable
-        String streamName = handler.getWebRtcStreamNameForClientId(clientId);
+        String streamName = handler.getOrAllocateWebRtcStreamNameForSession(sessionId, clientId);
         if (streamName == null || streamName.isBlank()) {
             sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
                     "No WebRTC stream available for SIP client: " + clientId);
             return null;
+        }
+
+        int relayListenPort = handler.getRelayListenPortForClientId(clientId);
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Allocated WebRTC stream '{}' for session '{}' clientId='{}' relayListenPort={}", streamName,
+                    sessionId, clientId, relayListenPort);
         }
         return streamName;
     }

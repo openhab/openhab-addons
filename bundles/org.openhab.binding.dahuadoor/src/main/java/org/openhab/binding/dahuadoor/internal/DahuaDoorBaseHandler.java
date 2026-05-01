@@ -203,7 +203,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     listenPort, cfg.go2rtcApiPort, SIP_BACKCHANNEL_LISTEN_PORT_OFFSET);
             return;
         }
-        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(listenPort, 0);
+        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(getThing().getUID() + "/default", listenPort, 0);
         try {
             relay.start();
             int sourcePort = relay.getSourcePort();
@@ -246,8 +246,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         } else {
             for (int i = 0; i < extensions.size(); i++) {
                 String extension = extensions.get(i);
-                String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe + "_sip" + i;
                 int backchannelPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET + i;
+                String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe + "_sip" + i;
                 streamEntries.add(new Go2RtcManager.StreamEntry(streamName, backchannelPort));
                 outgoingStreamNames.put(extension, streamName);
             }
@@ -864,7 +864,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             String localIp) {
         SipBackchannelRtpRelay relay = null;
         try {
-            relay = new SipBackchannelRtpRelay(backchannelPort, 0);
+            relay = new SipBackchannelRtpRelay(getThing().getUID() + "/" + extension, backchannelPort, 0);
             relay.start();
 
             String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
@@ -1243,6 +1243,19 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return null;
         }
         return localManager.getStreamName();
+    }
+
+    public synchronized @Nullable String allocateWebRtcStreamNameForClientId(String clientId) {
+        return getWebRtcStreamNameForClientId(clientId);
+    }
+
+    public synchronized @Nullable String getOrAllocateWebRtcStreamNameForSession(String sessionId, String clientId) {
+        return allocateWebRtcStreamNameForClientId(clientId);
+    }
+
+    public synchronized int getRelayListenPortForClientId(String clientId) {
+        SipBackchannelRtpRelay relay = outgoingRelays.get(clientId);
+        return relay != null ? relay.getListenPort() : -1;
     }
 
     public synchronized @Nullable SipBackchannelSession getSipBackchannelSessionForSession(String sessionId) {

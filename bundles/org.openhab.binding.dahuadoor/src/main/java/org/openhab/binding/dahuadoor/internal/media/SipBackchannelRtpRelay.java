@@ -70,6 +70,7 @@ public class SipBackchannelRtpRelay {
         }
     }
 
+    private final String label;
     private final int listenPort;
     private final int sourcePort;
     private final Object lifecycleLock = new Object();
@@ -90,7 +91,8 @@ public class SipBackchannelRtpRelay {
     private volatile long targetSetAtMillis;
     private volatile long lastNoInputWarningAtMillis;
 
-    public SipBackchannelRtpRelay(int listenPort, int sourcePort) {
+    public SipBackchannelRtpRelay(String label, int listenPort, int sourcePort) {
+        this.label = label;
         this.listenPort = listenPort;
         this.sourcePort = sourcePort;
         this.resolvedSourcePort = sourcePort;
@@ -135,7 +137,7 @@ public class SipBackchannelRtpRelay {
             worker.start();
             workerThread = worker;
 
-            LOGGER.info("SIP backchannel RTP relay started on 127.0.0.1:{} with source port {}", listenPort,
+            LOGGER.info("SIP backchannel RTP relay '{}' started on 127.0.0.1:{} with source port {}", label, listenPort,
                     resolvedSourcePort);
         }
     }
@@ -180,8 +182,8 @@ public class SipBackchannelRtpRelay {
         }
 
         LOGGER.info(
-                "SIP backchannel RTP relay stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
-                listenPort, getSourcePort(), receivedPackets, forwardedPackets, droppedNoTargetPackets,
+                "SIP backchannel RTP relay '{}' stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
+                label, listenPort, getSourcePort(), receivedPackets, forwardedPackets, droppedNoTargetPackets,
                 droppedInvalidPackets);
     }
 
@@ -190,7 +192,7 @@ public class SipBackchannelRtpRelay {
             relayTarget = null;
             targetSetAtMillis = 0;
             lastNoInputWarningAtMillis = 0;
-            LOGGER.info("SIP backchannel relay target cleared (reason={})", reason);
+            LOGGER.info("SIP backchannel relay '{}' target cleared (reason={})", label, reason);
             return;
         }
 
@@ -200,8 +202,8 @@ public class SipBackchannelRtpRelay {
             if (!isSupportedTarget(codecName, clockRate)) {
                 relayTarget = null;
                 LOGGER.warn(
-                        "SIP backchannel relay target rejected (expected PCM/16000 or PCMA/PCMU 8000, got codec={} rate={}Hz, reason={})",
-                        codecName, clockRate, reason);
+                        "SIP backchannel relay '{}' target rejected (expected PCM/16000 or PCMA/PCMU 8000, got codec={} rate={}Hz, reason={})",
+                        label, codecName, clockRate, reason);
                 return;
             }
 
@@ -209,11 +211,11 @@ public class SipBackchannelRtpRelay {
             relayTarget = new RelayTarget(address, offer.getRemotePort(), offer.getPayloadType(), codecName, clockRate);
             targetSetAtMillis = System.currentTimeMillis();
             lastNoInputWarningAtMillis = 0;
-            LOGGER.info("SIP backchannel relay target set to {}:{} (pt={}, codec={}, reason={})", offer.getRemoteHost(),
-                    offer.getRemotePort(), offer.getPayloadType(), codecName, reason);
+            LOGGER.info("SIP backchannel relay '{}' target set to {}:{} (pt={}, codec={}, rate={}Hz, reason={})", label,
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), codecName, clockRate, reason);
         } catch (IOException e) {
             relayTarget = null;
-            LOGGER.warn("Failed to resolve SIP backchannel relay target '{}': {}", offer.getRemoteHost(),
+            LOGGER.warn("Failed to resolve SIP backchannel relay '{}' target '{}': {}", label, offer.getRemoteHost(),
                     e.getMessage());
         }
     }
@@ -238,8 +240,8 @@ public class SipBackchannelRtpRelay {
                     if (now - targetSetAtMillis >= 2000 && now - lastIncomingPacketAtMillis >= 2000
                             && now - lastNoInputWarningAtMillis >= 2000) {
                         LOGGER.debug(
-                                "SIP backchannel relay has active target {}:{} but no incoming RTP on 127.0.0.1:{} for {} ms",
-                                target.remoteAddress.getHostAddress(), target.remotePort, listenPort,
+                                "SIP backchannel relay '{}' has active target {}:{} but no incoming RTP on 127.0.0.1:{} for {} ms",
+                                label, target.remoteAddress.getHostAddress(), target.remotePort, listenPort,
                                 now - lastIncomingPacketAtMillis);
                         lastNoInputWarningAtMillis = now;
                     }
@@ -247,12 +249,12 @@ public class SipBackchannelRtpRelay {
                 continue;
             } catch (SocketException e) {
                 if (running) {
-                    LOGGER.debug("SIP backchannel relay receive socket closed: {}", e.getMessage());
+                    LOGGER.debug("SIP backchannel relay '{}' receive socket closed: {}", label, e.getMessage());
                 }
                 continue;
             } catch (IOException e) {
                 if (running) {
-                    LOGGER.debug("SIP backchannel relay receive failed: {}", e.getMessage());
+                    LOGGER.debug("SIP backchannel relay '{}' receive failed: {}", label, e.getMessage());
                 }
                 continue;
             }
@@ -263,8 +265,9 @@ public class SipBackchannelRtpRelay {
             if (target == null) {
                 droppedNoTargetPackets++;
                 if (droppedNoTargetPackets == 1 || droppedNoTargetPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay dropping RTP packet without target (count={}, listenPort={})",
-                            droppedNoTargetPackets, listenPort);
+                    LOGGER.debug(
+                            "SIP backchannel relay '{}' dropping RTP packet without target (count={}, listenPort={})",
+                            label, droppedNoTargetPackets, listenPort);
                 }
                 continue;
             }
@@ -273,7 +276,7 @@ public class SipBackchannelRtpRelay {
             if (forwardedPacket == null) {
                 droppedInvalidPackets++;
                 if (droppedInvalidPackets == 1 || droppedInvalidPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay dropped invalid RTP packet (count={}, length={})",
+                    LOGGER.debug("SIP backchannel relay '{}' dropped invalid RTP packet (count={}, length={})", label,
                             droppedInvalidPackets, incoming.getLength());
                 }
                 continue;
@@ -285,12 +288,14 @@ public class SipBackchannelRtpRelay {
                 localSendSocket.send(forwarded);
                 forwardedPackets++;
                 if (forwardedPackets == 1 || forwardedPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay forwarded RTP packet (count={}, bytes={}, target={}:{}, pt={})",
-                            forwardedPackets, forwardedPacket.length, target.remoteAddress.getHostAddress(),
-                            target.remotePort, target.payloadType);
+                    LOGGER.debug(
+                            "SIP backchannel relay '{}' forwarded RTP packet (count={}, bytes={}, listenPort={}, sourcePort={}, target={}:{}, pt={}, codec={}, rate={}Hz)",
+                            label, forwardedPackets, forwardedPacket.length, listenPort, getSourcePort(),
+                            target.remoteAddress.getHostAddress(), target.remotePort, target.payloadType,
+                            target.codecName, target.clockRate);
                 }
             } catch (IOException e) {
-                LOGGER.debug("SIP backchannel relay forward failed to {}:{}: {}", target.remoteAddress,
+                LOGGER.debug("SIP backchannel relay '{}' forward failed to {}:{}: {}", label, target.remoteAddress,
                         target.remotePort, e.getMessage());
             }
         }
