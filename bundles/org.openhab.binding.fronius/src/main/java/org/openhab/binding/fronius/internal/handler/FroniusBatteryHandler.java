@@ -34,6 +34,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,14 @@ public class FroniusBatteryHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.BATTERY_STATE_OF_CHARGE ->
                 new QuantityType<>(local.getStateOfChargeRelative(), Units.PERCENT);
             case FroniusBindingConstants.BATTERY_ENABLE -> new DecimalType(local.getEnable());
-            case FroniusBindingConstants.BATTERY_STATUS_BATTERY_CELL -> new StringType(local.getStatusBatteryCell());
+            case FroniusBindingConstants.BATTERY_STATUS_BATTERY_CELL -> {
+                String status = local.getStatusBatteryCell();
+                if (status == null || status.isBlank()) {
+                    yield UnDefType.UNDEF;
+                } else {
+                    yield new StringType(status);
+                }
+            }
             case FroniusBindingConstants.BATTERY_TEMPERATURE_CELL ->
                 new QuantityType<>(local.getTemperatureCell(), SIUnits.CELSIUS);
             case FroniusBindingConstants.BATTERY_TIMESTAMP ->
