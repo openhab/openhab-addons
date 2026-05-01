@@ -69,12 +69,9 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         String name = influxDBMetadataService.getMeasurementNameOrDefault(localAlias);
         String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
         flux = flux.filter(measurement().equal(measurementName));
-        if (!measurementName.equals(itemName)) {
+        boolean needsItemTag = !measurementName.equals(itemName);
+        if (needsItemTag) {
             flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
-            flux = flux.keep(
-                    new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2, TAG_ITEM_NAME });
-        } else {
-            flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
         }
 
         State filterState = criteria.getState();
@@ -84,7 +81,17 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
             flux = flux.filter(restrictions);
         }
 
+        // Apply ordering/pagination before keep() so that last()/sort()/limit() can benefit
+        // from InfluxDB's pushdown optimisations. Applying keep() first drops _field, which
+        // both prevents state-value filtering from working correctly and blocks last() pushdown.
         flux = applyOrderingAndPageSize(criteria, flux);
+
+        if (needsItemTag) {
+            flux = flux.keep(
+                    new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2, TAG_ITEM_NAME });
+        } else {
+            flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
+        }
 
         return flux.toString();
     }
