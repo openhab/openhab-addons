@@ -13,6 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,8 +42,9 @@ public class CcuValueParser extends CommonRpcParser<TclScriptDataList, @Nullable
 
     @Override
     public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
-        if (resultList.getEntries() != null) {
-            for (TclScriptDataEntry entry : resultList.getEntries()) {
+        List<TclScriptDataEntry> entries = resultList.getEntries();
+        if (entries != null) {
+            for (TclScriptDataEntry entry : entries) {
                 HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, entry.name);
                 HmDatapoint dp = channel.getDatapoint(dpInfo);
                 if (dp != null) {

@@ -47,13 +47,18 @@ public class GetParamsetDescriptionParser extends CommonRpcParser<Object[], @Nul
     @SuppressWarnings("unchecked")
     public @Nullable Void parse(Object[] message) throws IOException {
         if (message.length == 0 || !(message[0] instanceof Map)) {
-            logger.debug("Unexpected message datatype, ignoring message");
+            String datatype = message.length == 0 ? "<empty>" : message[0].getClass().getName();
+            logger.debug("Unexpected datatype '{}', ignoring message", datatype);
             return null;
         }
         Map<String, Map<String, Object>> dpNames = (Map<String, Map<String, Object>>) message[0];
 
         for (String datapointName : dpNames.keySet()) {
             Map<String, Object> dpMeta = dpNames.get(datapointName);
+            if (dpMeta == null) {
+                logger.debug("No metadata found for datapoint '{}', skipping", datapointName);
+                continue;
+            }
 
             HmDatapoint dp = assembleDatapoint(datapointName, toString(dpMeta.get("UNIT")),
                     toString(dpMeta.get("TYPE")), toOptionList(dpMeta.get("VALUE_LIST")), dpMeta.get("MIN"),

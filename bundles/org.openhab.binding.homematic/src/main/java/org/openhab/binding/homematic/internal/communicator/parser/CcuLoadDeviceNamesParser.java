@@ -15,6 +15,7 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,13 +39,14 @@ public class CcuLoadDeviceNamesParser extends CommonRpcParser<TclScriptDataList,
 
     @Override
     public @Nullable Void parse(TclScriptDataList resultList) throws IOException {
-        if (resultList.getEntries() != null) {
+        List<TclScriptDataEntry> entries = resultList.getEntries();
+        if (entries != null) {
             Map<String, HmDevice> devicesByAddress = new HashMap<>();
             for (HmDevice device : devices) {
                 devicesByAddress.put(device.getAddress(), device);
             }
 
-            for (TclScriptDataEntry entry : resultList.getEntries()) {
+            for (TclScriptDataEntry entry : entries) {
                 HmDevice device = devicesByAddress.get(getSanitizedAddress(entry.name));
                 if (device != null) {
                     device.setName(entry.value);

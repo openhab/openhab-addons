@@ -39,7 +39,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (message != null && message.length > 0 && message[0] instanceof Object[] innerMessage) {
             return innerMessage;
         }
-        return new Object[0];
+        return message != null ? message : new Object[0];
     }
 
     /**
