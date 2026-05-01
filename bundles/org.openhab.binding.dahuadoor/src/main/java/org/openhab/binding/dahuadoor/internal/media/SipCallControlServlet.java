@@ -88,15 +88,31 @@ public class SipCallControlServlet extends HttpServlet {
         String sessionId = req.getSession().getId();
 
         if ("assign-client".equals(action)) {
+            @Nullable
             String clientId = handler.assignClientForSession(sessionId);
+            if (clientId == null) {
+                resp.sendError(HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+                return;
+            }
             String callState = handler.getSipCallStateForSession(sessionId);
+            @Nullable
+            String webRtcUrl = handler.getWebRtcUrlForClientId(clientId);
             writeJson(resp, HttpServletResponse.SC_OK,
-                    "{\"clientId\":\"" + escapeJson(clientId) + "\",\"callState\":\"" + escapeJson(callState) + "\"}");
+                    "{\"clientId\":\"" + escapeJson(clientId) + "\",\"callState\":\"" + escapeJson(callState)
+                            + "\",\"webrtcUrl\":\"" + escapeJson(webRtcUrl != null ? webRtcUrl : "") + "\"}");
             return;
         }
 
         if ("state".equals(action)) {
-            String clientId = handler.assignClientForSession(sessionId);
+            @Nullable
+            String clientId = handler.getAssignedClientForSession(sessionId);
+            if (clientId == null) {
+                clientId = handler.assignClientForSession(sessionId);
+            }
+            if (clientId == null) {
+                resp.sendError(HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+                return;
+            }
             String callState = handler.getSipCallStateForSession(sessionId);
             @Nullable
             String caller = handler.getSipCallerForSession(sessionId);
@@ -142,9 +158,14 @@ public class SipCallControlServlet extends HttpServlet {
         }
 
         String sessionId = req.getSession().getId();
-        String clientId = handler.assignClientForSession(sessionId);
 
         if ("answer".equals(action)) {
+            @Nullable
+            String clientId = handler.assignClientForSession(sessionId);
+            if (clientId == null) {
+                resp.sendError(HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+                return;
+            }
             boolean success = handler.answerSipCallForSession(sessionId);
             String callState = handler.getSipCallStateForSession(sessionId);
             writeJson(resp, success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_CONFLICT,
@@ -154,11 +175,42 @@ public class SipCallControlServlet extends HttpServlet {
         }
 
         if ("hangup".equals(action)) {
+            @Nullable
+            String clientId = handler.assignClientForSession(sessionId);
+            if (clientId == null) {
+                resp.sendError(HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+                return;
+            }
             boolean success = handler.hangupSipCallForSession(sessionId);
             String callState = handler.getSipCallStateForSession(sessionId);
             writeJson(resp, success ? HttpServletResponse.SC_OK : HttpServletResponse.SC_CONFLICT,
                     "{\"success\":" + success + ",\"clientId\":\"" + escapeJson(clientId) + "\",\"callState\":\""
                             + escapeJson(callState) + "\"}");
+            return;
+        }
+
+        if ("call".equals(action)) {
+            String target = req.getParameter("target");
+            if (target == null || target.isBlank()) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter: target");
+                return;
+            }
+            if (!target.matches("^[a-zA-Z0-9.#%_\\-]{1,64}$")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Invalid target format (allowed: [a-zA-Z0-9.#%_-]{1,64})");
+                return;
+            }
+
+            DahuaDoorBaseHandler.OutgoingCallResult result = handler.startOutgoingCallForSession(sessionId, target);
+            @Nullable
+            String resultClientId = result.clientId();
+            if (resultClientId == null) {
+                resp.sendError(HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+                return;
+            }
+            writeJson(resp, result.success() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_CONFLICT,
+                    "{\"success\":" + result.success() + ",\"clientId\":\"" + escapeJson(resultClientId)
+                            + "\",\"callState\":\"" + escapeJson(result.callState()) + "\"}");
             return;
         }
 

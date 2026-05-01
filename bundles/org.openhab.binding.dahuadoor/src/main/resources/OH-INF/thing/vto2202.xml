@@ -103,7 +103,10 @@
 			</parameter>
 			<parameter name="sipExtension" type="text">
 				<label>SIP Extension</label>
-				<description>SIP extension to register as (e.g., 9901#2). Also used as SIP username for authentication. Only used
+				<description>Comma-separated list of SIP extensions to register as, e.g. "9901#2,9901#3". Each
+					extension is used as
+					its own SIP username and may handle one browser/SIP session in parallel.
+					A single value is also allowed. Only used
 					when Enable SIP Client is on.</description>
 				<default></default>
 			</parameter>

@@ -35,6 +35,8 @@ public class SipSdpParser {
     private static final int DEFAULT_PTIME_MS = 20;
 
     private static final String CODEC_PCM = "PCM";
+    private static final String CODEC_PCMA = "PCMA";
+    private static final String CODEC_PCMU = "PCMU";
     private static final int DEFAULT_VIDEO_PAYLOAD_TYPE = 96;
     private static final int DEFAULT_VIDEO_PORT = 30000;
     private static final String DEFAULT_VIDEO_FRAMERATE = "25.000000";
@@ -223,16 +225,27 @@ public class SipSdpParser {
         if (mapped != null) {
             return mapped;
         }
-        return "";
+        return switch (payloadType) {
+            case 0 -> CODEC_PCMU;
+            case 8 -> CODEC_PCMA;
+            default -> "";
+        };
     }
 
     private static boolean isSupportedCodec(String codecName, int clockRate) {
-        return CODEC_PCM.equals(codecName) && clockRate == 16000;
+        return CODEC_PCM.equals(codecName) && clockRate == 16000
+                || (CODEC_PCMA.equals(codecName) || CODEC_PCMU.equals(codecName)) && clockRate == DEFAULT_CLOCK_RATE;
     }
 
     private static int codecPreference(String codecName, int clockRate) {
         if (CODEC_PCM.equals(codecName) && clockRate == 16000) {
             return 0;
+        }
+        if (CODEC_PCMA.equals(codecName) && clockRate == DEFAULT_CLOCK_RATE) {
+            return 1;
+        }
+        if (CODEC_PCMU.equals(codecName) && clockRate == DEFAULT_CLOCK_RATE) {
+            return 2;
         }
         return Integer.MAX_VALUE;
     }
