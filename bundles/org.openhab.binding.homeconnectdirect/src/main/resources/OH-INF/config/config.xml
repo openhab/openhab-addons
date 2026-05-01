@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:homeconnectdirect:appliance">
+		<parameter name="haId" type="text" required="true">
+			<label>Home Appliance ID</label>
+			<description>Unique identifier representing a specific home appliance.</description>
+		</parameter>
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>Address of home appliance (hostname or IP)</description>
+		</parameter>
+		<parameter name="connectionRetryDelay" type="integer" min="1" max="60" required="false" unit="m">
+			<context>time</context>
+			<default>1</default>
+			<label>Reconnect Delay</label>
+			<description>Specifies the amount of time (in minutes) to wait before attempting to reconnect after a disconnection
+				occurs, whether due to an offline device or a connection error.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:homeconnectdirect:dynamic-value-channel-generic">
+		<parameter name="valueKey" type="text" required="true">
+			<label>Value Key</label>
+			<description>Key to filter value messages (e.g. "BSH.Common.Setting.AllowBackendConnection")</description>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:homeconnectdirect:dynamic-description-channel-generic">
+		<parameter name="descriptionKey" type="text" required="true">
+			<label>Description Key</label>
+			<description>Key to identify the device description (e.g. "BSH.Common.Option.ProgramProgress")</description>
+		</parameter>
+		<parameter name="attribute" type="text" required="true">
+			<label>Attribute</label>
+			<description>The attribute of the description to map</description>
+			<options>
+				<option value="available">Available</option>
+				<option value="access">Access</option>
+				<option value="min">Min</option>
+				<option value="max">Max</option>
+				<option value="stepSize">Step Size</option>
+				<option value="enumerationType">Enumeration Type (UID)</option>
+				<option value="enumerationTypeKey">Enumeration Type Key</option>
+			</options>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:homeconnectdirect:dynamic-value-channel-enum-switch">
+		<parameter name="valueKey" type="text" required="true">
+			<label>Value Key</label>
+			<description>Key to filter value messages (e.g. "BSH.Common.Status.DoorState")</description>
+		</parameter>
+		<parameter name="onValue" type="text" required="true">
+			<label>ON Values</label>
+			<description>Comma-separated list of enumeration value keys that map to the ON state (e.g. "Open" or
+				"On,Present").
+				Any other value is mapped to OFF. This channel is read-only.</description>
+		</parameter>
+	</config-description>
+	<config-description uri="thing-type:homeconnectdirect:dynamic-value-channel-number">
+		<parameter name="valueKey" type="text" required="true">
+			<label>Value Key</label>
+			<description>Key to filter value messages (e.g. "BSH.Common.Setting.AllowBackendConnection")</description>
+		</parameter>
+		<parameter name="unit" type="text" required="false">
+			<label>Unit Of Measurement</label>
+			<description>Unit of measurement (optional). The unit is used for representing the value in the GUI as well as for
+				converting incoming values (like from '°F' to '°C'). Examples: "°C", "°F", "%%" (escaped percent)</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

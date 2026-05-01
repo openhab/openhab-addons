@@ -203,6 +203,7 @@
     <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeassistant</module>
     <module>org.openhab.binding.homeconnect</module>
+    <module>org.openhab.binding.homeconnectdirect</module>
     <module>org.openhab.binding.homekit</module>
     <module>org.openhab.binding.homie</module>
     <module>org.openhab.binding.homematic</module>

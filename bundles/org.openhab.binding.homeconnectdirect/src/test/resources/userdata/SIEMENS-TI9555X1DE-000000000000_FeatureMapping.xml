@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="utf-8"?>
+<featureMappingFile 
+xsi:schemaLocation="http://www.home-connect.com/schemas/FeatureMapping/20140417 HC_INT_BSH_FeatureMapping.xsd" xmlns="http://www.home-connect.com/schemas/FeatureMapping/20140417" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <xi:include href="HC_INT_PCP_TI9555X1DE_89-1_DeviceDescription.xml" parse="xml">
+    <xi:fallback>
+      <error>xinclude error: file &quot;HC_INT_PCP_TI9555X1DE_89-1_DeviceDescription.xml&quot; not found</error>
+    </xi:fallback>
+  </xi:include>
+  <featureDescription>
+    <feature refUID="0200">BSH.Common.Command.AbortProgram</feature>
+    <feature refUID="0006">BSH.Common.Command.AcknowledgeEvent</feature>
+    <feature refUID="0240">BSH.Common.Command.AllowCustomerServiceConnectionLocalWiFi</feature>
+    <feature refUID="0229">BSH.Common.Command.ApplyFactoryReset</feature>
+    <feature refUID="022A">BSH.Common.Command.ApplyNetworkReset</feature>
+    <feature refUID="022B">BSH.Common.Command.DeactivateRemoteControlStart</feature>
+    <feature refUID="0001">BSH.Common.Command.DeactivateWiFi</feature>
+    <feature refUID="0230">BSH.Common.Command.DisallowCustomerServiceConnection</feature>
+    <feature refUID="0219">BSH.Common.Command.PauseProgram</feature>
+    <feature refUID="0010">BSH.Common.Command.RejectEvent</feature>
+    <feature refUID="0222">BSH.Common.Command.ResumeProgram</feature>
+    <feature refUID="022C">BSH.Common.Command.SetWaterHardness</feature>
+    <feature refUID="022F">BSH.Common.Event.CustomerServiceRequest</feature>
+    <feature refUID="021C">BSH.Common.Event.ProgramFinished</feature>
+    <feature refUID="0015">BSH.Common.Event.SoftwareUpdateAvailable</feature>
+    <feature refUID="0253">BSH.Common.Event.SoftwareUpdateSuccessful</feature>
+    <feature refUID="0016">BSH.Common.Option.CurrentStepRemainingTime</feature>
+    <feature refUID="021E">BSH.Common.Option.ProgramProgress</feature>
+    <feature refUID="0100">BSH.Common.Root.ActiveProgram</feature>
+    <feature refUID="0105">BSH.Common.Root.CommandList</feature>
+    <feature refUID="0104">BSH.Common.Root.EventList</feature>
+    <feature refUID="0106">BSH.Common.Root.OptionList</feature>
+    <feature refUID="0107">BSH.Common.Root.ProgramGroup</feature>
+    <feature refUID="0101">BSH.Common.Root.SelectedProgram</feature>
+    <feature refUID="0103">BSH.Common.Root.SettingList</feature>
+    <feature refUID="0102">BSH.Common.Root.StatusList</feature>
+    <feature refUID="0003">BSH.Common.Setting.AllowBackendConnection</feature>
+    <feature refUID="0202">BSH.Common.Setting.AllowConsumerInsights</feature>
+    <feature refUID="020C">BSH.Common.Setting.ChildLock</feature>
+    <feature refUID="0215">BSH.Common.Setting.Language</feature>
+    <feature refUID="021B">BSH.Common.Setting.PowerState</feature>
+    <feature refUID="0005">BSH.Common.Status.BackendConnected</feature>
+    <feature refUID="022D">BSH.Common.Status.CustomerServiceConnectionAllowed</feature>
+    <feature refUID="020F">BSH.Common.Status.DoorState</feature>
+    <feature refUID="0214">BSH.Common.Status.InteriorIlluminationActive</feature>
+    <feature refUID="0217">BSH.Common.Status.LocalControlActive</feature>
+    <feature refUID="0228">BSH.Common.Status.OperationState</feature>
+    <feature refUID="0205">BSH.Common.Status.RemoteControlStartAllowed</feature>
+    <feature refUID="001B">BSH.Common.Status.WiFiSignalStrength</feature>
+    <feature refUID="1302">ConsumerProducts.CoffeeMaker.Command.BeverageInfo</feature>
+    <feature refUID="1303">ConsumerProducts.CoffeeMaker.Command.DeleteAllProfiles</feature>
+    <feature refUID="1235">ConsumerProducts.CoffeeMaker.Event.AdjustGrindSetting</feature>
+    <feature refUID="1214">ConsumerProducts.CoffeeMaker.Event.BeanContainerEmpty</feature>
+    <feature refUID="1209">ConsumerProducts.CoffeeMaker.Event.BrewingUnitIsMissing</feature>
+    <feature refUID="1200">ConsumerProducts.CoffeeMaker.Event.CallHotline</feature>
+    <feature refUID="120A">ConsumerProducts.CoffeeMaker.Event.CleanBrewingUnit</feature>
+    <feature refUID="1238">ConsumerProducts.CoffeeMaker.Event.CleanFillWaterTank</feature>
+    <feature refUID="124C">ConsumerProducts.CoffeeMaker.Event.CleanMilkTank</feature>
+    <feature refUID="1248">ConsumerProducts.CoffeeMaker.Event.CloseDoor</feature>
+    <feature refUID="1219">ConsumerProducts.CoffeeMaker.Event.CoffeeOutletMissing</feature>
+    <feature refUID="121B">ConsumerProducts.CoffeeMaker.Event.DeactivatePlaylist</feature>
+    <feature refUID="1269">ConsumerProducts.CoffeeMaker.Event.DeviceDescalingBlockage</feature>
+    <feature refUID="1267">ConsumerProducts.CoffeeMaker.Event.DeviceDescalingOverdue</feature>
+    <feature refUID="120E">ConsumerProducts.CoffeeMaker.Event.DeviceIsToCold4C</feature>
+    <feature refUID="1212">ConsumerProducts.CoffeeMaker.Event.DeviceShouldBeCalcNCleaned</feature>
+    <feature refUID="1211">ConsumerProducts.CoffeeMaker.Event.DeviceShouldBeCleaned</feature>
+    <feature refUID="1210">ConsumerProducts.CoffeeMaker.Event.DeviceShouldBeDescaled</feature>
+    <feature refUID="1207">ConsumerProducts.CoffeeMaker.Event.DripTrayFull</feature>
+    <feature refUID="1208">ConsumerProducts.CoffeeMaker.Event.DripTrayNotInserted</feature>
+    <feature refUID="1232">ConsumerProducts.CoffeeMaker.Event.EmptyDripTray</feature>
+    <feature refUID="1231">ConsumerProducts.CoffeeMaker.Event.EmptyDripTrayRemoveContainer</feature>
+    <feature refUID="1258">ConsumerProducts.CoffeeMaker.Event.EmptyMilkTank</feature>
+    <feature refUID="1249">ConsumerProducts.CoffeeMaker.Event.EmptyWaterTank</feature>
+    <feature refUID="1224">ConsumerProducts.CoffeeMaker.Event.Enjoy</feature>
+    <feature refUID="1237">ConsumerProducts.CoffeeMaker.Event.FillDescaler</feature>
+    <feature refUID="1236">ConsumerProducts.CoffeeMaker.Event.InsertWaterFilter</feature>
+    <feature refUID="124F">ConsumerProducts.CoffeeMaker.Event.MilkContainerConnected</feature>
+    <feature refUID="124E">ConsumerProducts.CoffeeMaker.Event.MilkContainerRemoved</feature>
+    <feature refUID="121A">ConsumerProducts.CoffeeMaker.Event.MilkReminder</feature>
+    <feature refUID="1218">ConsumerProducts.CoffeeMaker.Event.MilkStillOK</feature>
+    <feature refUID="1251">ConsumerProducts.CoffeeMaker.Event.MilkTubeRemoved</feature>
+    <feature refUID="1222">ConsumerProducts.CoffeeMaker.Event.NotEnoughPomaceCapacityForThisKindOfBeverage</feature>
+    <feature refUID="1202">ConsumerProducts.CoffeeMaker.Event.NotEnoughWaterForThisKindOfBeverage</feature>
+    <feature refUID="1239">ConsumerProducts.CoffeeMaker.Event.PlaceContainerUnderOutlet</feature>
+    <feature refUID="1253">ConsumerProducts.CoffeeMaker.Event.PlaceEmptyGlassUnderOutlet</feature>
+    <feature refUID="120D">ConsumerProducts.CoffeeMaker.Event.PowerSupplyError</feature>
+    <feature refUID="123B">ConsumerProducts.CoffeeMaker.Event.PressOnOff</feature>
+    <feature refUID="121D">ConsumerProducts.CoffeeMaker.Event.RefillEmptyBeanContainer</feature>
+    <feature refUID="121C">ConsumerProducts.CoffeeMaker.Event.RefillEmptyWaterTank</feature>
+    <feature refUID="121E">ConsumerProducts.CoffeeMaker.Event.RefillRemovedMilkContainer</feature>
+    <feature refUID="124A">ConsumerProducts.CoffeeMaker.Event.RemoveContainerUnderOutlet</feature>
+    <feature refUID="1246">ConsumerProducts.CoffeeMaker.Event.RemoveMilkContainer</feature>
+    <feature refUID="1256">ConsumerProducts.CoffeeMaker.Event.RemoveWaterFilter</feature>
+    <feature refUID="123C">ConsumerProducts.CoffeeMaker.Event.RestartAppliance</feature>
+    <feature refUID="1260">ConsumerProducts.CoffeeMaker.Event.ServiceProgramFinished</feature>
+    <feature refUID="1259">ConsumerProducts.CoffeeMaker.Event.SpecialRinsing</feature>
+    <feature refUID="123D">ConsumerProducts.CoffeeMaker.Event.SwitchOffPower30sekBackOn</feature>
+    <feature refUID="120F">ConsumerProducts.CoffeeMaker.Event.SystemHasRunDry</feature>
+    <feature refUID="1241">ConsumerProducts.CoffeeMaker.Event.ThrowCleaningDiscInTheDrawer</feature>
+    <feature refUID="1220">ConsumerProducts.CoffeeMaker.Event.UnderOverVoltage</feature>
+    <feature refUID="1205">ConsumerProducts.CoffeeMaker.Event.WaterFilterShouldBeChanged</feature>
+    <feature refUID="1203">ConsumerProducts.CoffeeMaker.Event.WaterTankEmpty</feature>
+    <feature refUID="1201">ConsumerProducts.CoffeeMaker.Event.WaterTankNearlyEmpty</feature>
+    <feature refUID="1204">ConsumerProducts.CoffeeMaker.Event.WaterTankNotInserted</feature>
+    <feature refUID="1401">ConsumerProducts.CoffeeMaker.Option.BeanAmount</feature>
+    <feature refUID="140A">ConsumerProducts.CoffeeMaker.Option.BeveragesRemaining</feature>
+    <feature refUID="1403">ConsumerProducts.CoffeeMaker.Option.CoffeeMilkRatio</feature>
+    <feature refUID="1400">ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature</feature>
+    <feature refUID="140D">ConsumerProducts.CoffeeMaker.Option.Cups</feature>
+    <feature refUID="140B">ConsumerProducts.CoffeeMaker.Option.DisplayName</feature>
+    <feature refUID="1402">ConsumerProducts.CoffeeMaker.Option.FillQuantity</feature>
+    <feature refUID="140C">ConsumerProducts.CoffeeMaker.Option.FlowRate</feature>
+    <feature refUID="1406">ConsumerProducts.CoffeeMaker.Option.HotWaterTemperature</feature>
+    <feature refUID="1405">ConsumerProducts.CoffeeMaker.Option.MultipleBeverages</feature>
+    <feature refUID="2016">ConsumerProducts.CoffeeMaker.Program.Beverage.CaffeLatte</feature>
+    <feature refUID="2014">ConsumerProducts.CoffeeMaker.Program.Beverage.Cappuccino</feature>
+    <feature refUID="2013">ConsumerProducts.CoffeeMaker.Program.Beverage.Coffee</feature>
+    <feature refUID="2011">ConsumerProducts.CoffeeMaker.Program.Beverage.Espresso</feature>
+    <feature refUID="201B">ConsumerProducts.CoffeeMaker.Program.Beverage.EspressoDoppio</feature>
+    <feature refUID="2012">ConsumerProducts.CoffeeMaker.Program.Beverage.EspressoMacchiato</feature>
+    <feature refUID="2019">ConsumerProducts.CoffeeMaker.Program.Beverage.HotWater</feature>
+    <feature refUID="2015">ConsumerProducts.CoffeeMaker.Program.Beverage.LatteMacchiato</feature>
+    <feature refUID="2017">ConsumerProducts.CoffeeMaker.Program.Beverage.MilkFroth</feature>
+    <feature refUID="2010">ConsumerProducts.CoffeeMaker.Program.Beverage.Ristretto</feature>
+    <feature refUID="2018">ConsumerProducts.CoffeeMaker.Program.Beverage.WarmMilk</feature>
+    <feature refUID="2020">ConsumerProducts.CoffeeMaker.Program.Beverage.XLCoffee</feature>
+    <feature refUID="4016">ConsumerProducts.CoffeeMaker.Program.CleaningModes.ApplianceOffRinsing</feature>
+    <feature refUID="4019">ConsumerProducts.CoffeeMaker.Program.CleaningModes.ApplianceOnRinsing</feature>
+    <feature refUID="4012">ConsumerProducts.CoffeeMaker.Program.CleaningModes.CalcNClean</feature>
+    <feature refUID="4010">ConsumerProducts.CoffeeMaker.Program.CleaningModes.Clean</feature>
+    <feature refUID="4011">ConsumerProducts.CoffeeMaker.Program.CleaningModes.Descale</feature>
+    <feature refUID="4013">ConsumerProducts.CoffeeMaker.Program.CleaningModes.RinseMilkSystem</feature>
+    <feature refUID="4014">ConsumerProducts.CoffeeMaker.Program.CleaningModes.RinseWaterFilter</feature>
+    <feature refUID="4018">ConsumerProducts.CoffeeMaker.Program.CleaningModes.SpecialRinsing</feature>
+    <feature refUID="501F">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Americano</feature>
+    <feature refUID="5021">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.BlackEye</feature>
+    <feature refUID="5019">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.CafeAuLait</feature>
+    <feature refUID="5018">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.CafeConLeche</feature>
+    <feature refUID="5017">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.CafeCortado</feature>
+    <feature refUID="5016">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Cortado</feature>
+    <feature refUID="5022">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.DeadEye</feature>
+    <feature refUID="5015">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.FlatWhite</feature>
+    <feature refUID="501D">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Galao</feature>
+    <feature refUID="501E">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Garoto</feature>
+    <feature refUID="5011">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.GrosserBrauner</feature>
+    <feature refUID="501B">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Kaapi</feature>
+    <feature refUID="5010">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.KleinerBrauner</feature>
+    <feature refUID="501C">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.KoffieVerkeerd</feature>
+    <feature refUID="5020">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.RedEye</feature>
+    <feature refUID="5012">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Verlaengerter</feature>
+    <feature refUID="5013">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.VerlaengerterBraun</feature>
+    <feature refUID="5014">ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.WienerMelange</feature>
+    <feature refUID="2000">ConsumerProducts.CoffeeMaker.ProgramGroup.Beverages</feature>
+    <feature refUID="4000">ConsumerProducts.CoffeeMaker.ProgramGroup.CleaningModes</feature>
+    <feature refUID="5000">ConsumerProducts.CoffeeMaker.ProgramGroup.CoffeeWorld</feature>
+    <feature refUID="110D">ConsumerProducts.CoffeeMaker.Setting.CoffeeMilkOrder</feature>
+    <feature refUID="1111">ConsumerProducts.CoffeeMaker.Setting.CoffeeMilkOrderMac</feature>
+    <feature refUID="110B">ConsumerProducts.CoffeeMaker.Setting.CupWarmer</feature>
+    <feature refUID="110F">ConsumerProducts.CoffeeMaker.Setting.LeaveProfilesAutomatically</feature>
+    <feature refUID="110E">ConsumerProducts.CoffeeMaker.Setting.MacchiatoPause</feature>
+    <feature refUID="1108">ConsumerProducts.CoffeeMaker.Setting.PlaylistMode</feature>
+    <feature refUID="1109">ConsumerProducts.CoffeeMaker.Setting.PlaylistRunning</feature>
+    <feature refUID="1110">ConsumerProducts.CoffeeMaker.Setting.RemindForMilkAfter</feature>
+    <feature refUID="1102">ConsumerProducts.CoffeeMaker.Setting.SwitchOffAfter</feature>
+    <feature refUID="110C">ConsumerProducts.CoffeeMaker.Setting.UserMode</feature>
+    <feature refUID="1107">ConsumerProducts.CoffeeMaker.Setting.WaterFilter</feature>
+    <feature refUID="1101">ConsumerProducts.CoffeeMaker.Setting.WaterHardness</feature>
+    <feature refUID="1012">ConsumerProducts.CoffeeMaker.Status.BeverageCountdownCalcNClean</feature>
+    <feature refUID="1011">ConsumerProducts.CoffeeMaker.Status.BeverageCountdownCleaning</feature>
+    <feature refUID="1010">ConsumerProducts.CoffeeMaker.Status.BeverageCountdownDescaling</feature>
+    <feature refUID="1013">ConsumerProducts.CoffeeMaker.Status.BeverageCountdownWaterfilter</feature>
+    <feature refUID="1003">ConsumerProducts.CoffeeMaker.Status.BeverageCounterCoffee</feature>
+    <feature refUID="1004">ConsumerProducts.CoffeeMaker.Status.BeverageCounterCoffeeAndMilk</feature>
+    <feature refUID="1005">ConsumerProducts.CoffeeMaker.Status.BeverageCounterFrothyMilk</feature>
+    <feature refUID="1006">ConsumerProducts.CoffeeMaker.Status.BeverageCounterHotMilk</feature>
+    <feature refUID="1007">ConsumerProducts.CoffeeMaker.Status.BeverageCounterHotWater</feature>
+    <feature refUID="1008">ConsumerProducts.CoffeeMaker.Status.BeverageCounterPowderCoffee</feature>
+    <feature refUID="1002">ConsumerProducts.CoffeeMaker.Status.BeverageCounterRistrettoEspresso</feature>
+    <feature refUID="1030">ConsumerProducts.CoffeeMaker.Status.DemoModeActive</feature>
+    <feature refUID="1020">ConsumerProducts.CoffeeMaker.Status.LastSelectedBeverage</feature>
+    <feature refUID="1022">ConsumerProducts.CoffeeMaker.Status.LastSelectedCoffeeWorldBeverage</feature>
+    <feature refUID="1000">ConsumerProducts.CoffeeMaker.Status.ProcessPhase</feature>
+  </featureDescription>
+  <errorDescription>
+    <error refEID="00C8">BSH.Common.Error.200.OK</error>
+    <error refEID="00CA">BSH.Common.Error.202.Accepted</error>
+    <error refEID="0190">BSH.Common.Error.400.BadRequest</error>
+    <error refEID="0193">BSH.Common.Error.403.Forbidden</error>
+    <error refEID="0194">BSH.Common.Error.404.NotFound</error>
+    <error refEID="0195">BSH.Common.Error.405.MethodNotAllowed</error>
+    <error refEID="019D">BSH.Common.Error.413.RequestEntityTooLong</error>
+    <error refEID="019C">BSH.Common.Error.414.RequestUriTooLong</error>
+    <error refEID="01AD">BSH.Common.Error.429.TooManyRequests</error>
+    <error refEID="01F4">BSH.Common.Error.500.InternalServerError</error>
+    <error refEID="01F5">BSH.Common.Error.501.NotImplemented</error>
+    <error refEID="01F6">BSH.Common.Error.502.BadGateway</error>
+    <error refEID="01F7">BSH.Common.Error.503.ServiceUnavailable</error>
+    <error refEID="01F8">BSH.Common.Error.504.GatewayTimeout</error>
+    <error refEID="01FB">BSH.Common.Error.507.InsufficientMemory</error>
+    <error refEID="021E">BSH.Common.Error.BackendNotConnected</error>
+    <error refEID="0203">BSH.Common.Error.Busy</error>
+    <error refEID="0217">BSH.Common.Error.CmdViolation</error>
+    <error refEID="021C">BSH.Common.Error.DeviceStateNotCompliant</error>
+    <error refEID="021F">BSH.Common.Error.EnergyManagementNotConnected</error>
+    <error refEID="0215">BSH.Common.Error.Incomplete</error>
+    <error refEID="0216">BSH.Common.Error.Inconsistent</error>
+    <error refEID="0218">BSH.Common.Error.InvalidFormat</error>
+    <error refEID="0214">BSH.Common.Error.InvalidUIDValue</error>
+    <error refEID="021B">BSH.Common.Error.LockedByLocalControl</error>
+    <error refEID="0206">BSH.Common.Error.NoAccess</error>
+    <error refEID="0209">BSH.Common.Error.NoAccessByList</error>
+    <error refEID="0212">BSH.Common.Error.NoExecution</error>
+    <error refEID="020C">BSH.Common.Error.NotAvailable</error>
+    <error refEID="020F">BSH.Common.Error.NotAvailableByList</error>
+    <error refEID="0220">BSH.Common.Error.NotInLocalWiFi</error>
+    <error refEID="021D">BSH.Common.Error.ProcessStateNotCompliant</error>
+    <error refEID="0205">BSH.Common.Error.ReadRequest.Busy</error>
+    <error refEID="0208">BSH.Common.Error.ReadRequest.NoAccess</error>
+    <error refEID="020B">BSH.Common.Error.ReadRequest.NoAccessByList</error>
+    <error refEID="020E">BSH.Common.Error.ReadRequest.NotAvailable</error>
+    <error refEID="0211">BSH.Common.Error.ReadRequest.NotAvailableByList</error>
+    <error refEID="0202">BSH.Common.Error.ReadRequest.UnknownUID</error>
+    <error refEID="0219">BSH.Common.Error.RemoteControlNotActive</error>
+    <error refEID="021A">BSH.Common.Error.RemoteStartNotActive</error>
+    <error refEID="0200">BSH.Common.Error.UnknownUID</error>
+    <error refEID="0213">BSH.Common.Error.ValueOutOfRange</error>
+    <error refEID="0204">BSH.Common.Error.WriteRequest.Busy</error>
+    <error refEID="0207">BSH.Common.Error.WriteRequest.NoAccess</error>
+    <error refEID="020A">BSH.Common.Error.WriteRequest.NoAccessByList</error>
+    <error refEID="020D">BSH.Common.Error.WriteRequest.NotAvailable</error>
+    <error refEID="0210">BSH.Common.Error.WriteRequest.NotAvailableByList</error>
+    <error refEID="0201">BSH.Common.Error.WriteRequest.UnknownUID</error>
+  </errorDescription>
+  <enumDescriptionList>
+    <enumDescription refENID="0201" enumKey="BSH.Common.EnumType.DoorState">
+      <enumMember refValue="0">Open</enumMember>
+      <enumMember refValue="1">Closed</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0001" enumKey="BSH.Common.EnumType.EventPresentState">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">Present</enumMember>
+      <enumMember refValue="2">Confirmed</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0202" enumKey="BSH.Common.EnumType.Language">
+      <enumMember refValue="7">De</enumMember>
+      <enumMember refValue="9">En</enumMember>
+      <enumMember refValue="15">Fr</enumMember>
+      <enumMember refValue="23">It</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0203" enumKey="BSH.Common.EnumType.OperationState">
+      <enumMember refValue="0">Inactive</enumMember>
+      <enumMember refValue="1">Ready</enumMember>
+      <enumMember refValue="3">Run</enumMember>
+      <enumMember refValue="4">Pause</enumMember>
+      <enumMember refValue="5">ActionRequired</enumMember>
+      <enumMember refValue="6">Finished</enumMember>
+      <enumMember refValue="7">Error</enumMember>
+      <enumMember refValue="8">Aborting</enumMember>
+    </enumDescription>
+    <enumDescription refENID="0204" enumKey="BSH.Common.EnumType.PowerState">
+      <enumMember refValue="2">On</enumMember>
+      <enumMember refValue="3">Standby</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1006" enumKey="ConsumerProducts.CoffeeMaker.EnumType.BeanAmount">
+      <enumMember refValue="10">VeryMild</enumMember>
+      <enumMember refValue="20">Mild</enumMember>
+      <enumMember refValue="30">MildPlus</enumMember>
+      <enumMember refValue="40">Normal</enumMember>
+      <enumMember refValue="50">NormalPlus</enumMember>
+      <enumMember refValue="60">Strong</enumMember>
+      <enumMember refValue="70">StrongPlus</enumMember>
+      <enumMember refValue="80">VeryStrong</enumMember>
+      <enumMember refValue="90">VeryStrongPlus</enumMember>
+      <enumMember refValue="100">ExtraStrong</enumMember>
+      <enumMember refValue="110">DoubleShot</enumMember>
+      <enumMember refValue="120">DoubleShotPlus</enumMember>
+      <enumMember refValue="130">DoubleShotPlusPlus</enumMember>
+      <enumMember refValue="140">TripleShot</enumMember>
+      <enumMember refValue="150">TripleShotPlus</enumMember>
+      <enumMember refValue="200">CoffeeGround</enumMember>
+    </enumDescription>
+    <enumDescription refENID="100E" enumKey="ConsumerProducts.CoffeeMaker.EnumType.CoffeeMilkOrder">
+      <enumMember refValue="0">FirstMilk</enumMember>
+      <enumMember refValue="1">FirstCoffee</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1018" enumKey="ConsumerProducts.CoffeeMaker.EnumType.CoffeeMilkOrderMac">
+      <enumMember refValue="0">FirstMilk</enumMember>
+      <enumMember refValue="1">FirstCoffee</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1007" enumKey="ConsumerProducts.CoffeeMaker.EnumType.CoffeeMilkRatio">
+      <enumMember refValue="10">10Percent</enumMember>
+      <enumMember refValue="20">20Percent</enumMember>
+      <enumMember refValue="25">25Percent</enumMember>
+      <enumMember refValue="30">30Percent</enumMember>
+      <enumMember refValue="40">40Percent</enumMember>
+      <enumMember refValue="50">50Percent</enumMember>
+      <enumMember refValue="60">60Percent</enumMember>
+      <enumMember refValue="67">67Percent</enumMember>
+      <enumMember refValue="70">70Percent</enumMember>
+      <enumMember refValue="80">80Percent</enumMember>
+      <enumMember refValue="90">90Percent</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1005" enumKey="ConsumerProducts.CoffeeMaker.EnumType.CoffeeTemperature">
+      <enumMember refValue="88">88C</enumMember>
+      <enumMember refValue="90">90C</enumMember>
+      <enumMember refValue="92">92C</enumMember>
+      <enumMember refValue="94">94C</enumMember>
+      <enumMember refValue="95">95C</enumMember>
+      <enumMember refValue="96">96C</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1016" enumKey="ConsumerProducts.CoffeeMaker.EnumType.Cups">
+      <enumMember refValue="2">Two</enumMember>
+      <enumMember refValue="4">Four</enumMember>
+      <enumMember refValue="6">Six</enumMember>
+    </enumDescription>
+    <enumDescription refENID="100C" enumKey="ConsumerProducts.CoffeeMaker.EnumType.FlowRate">
+      <enumMember refValue="0">Normal</enumMember>
+      <enumMember refValue="1">Intense</enumMember>
+      <enumMember refValue="2">IntensePlus</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1008" enumKey="ConsumerProducts.CoffeeMaker.EnumType.HotWaterTemperature">
+      <enumMember refValue="60">60C</enumMember>
+      <enumMember refValue="70">70C</enumMember>
+      <enumMember refValue="80">80C</enumMember>
+      <enumMember refValue="85">85C</enumMember>
+      <enumMember refValue="90">90C</enumMember>
+      <enumMember refValue="97">97C</enumMember>
+    </enumDescription>
+    <enumDescription refENID="100F" enumKey="ConsumerProducts.CoffeeMaker.EnumType.MacchiatoPause">
+      <enumMember refValue="0">Min</enumMember>
+      <enumMember refValue="5">5Sec</enumMember>
+      <enumMember refValue="10">10Sec</enumMember>
+    </enumDescription>
+    <enumDescription refENID="100A" enumKey="ConsumerProducts.CoffeeMaker.EnumType.ProcessPhase">
+      <enumMember refValue="0">None</enumMember>
+      <enumMember refValue="1">BeverageAborting</enumMember>
+      <enumMember refValue="2">Grinding</enumMember>
+      <enumMember refValue="3">BrewingUnitMovesUp</enumMember>
+      <enumMember refValue="4">CoffeeBrewing</enumMember>
+      <enumMember refValue="5">BrewingUnitMovesDown</enumMember>
+      <enumMember refValue="6">MilkFroth</enumMember>
+      <enumMember refValue="7">CleaningMilkSystem</enumMember>
+      <enumMember refValue="8">HotWaterDispensing</enumMember>
+      <enumMember refValue="9">CleaningMode</enumMember>
+      <enumMember refValue="10">DescalePhase</enumMember>
+      <enumMember refValue="11">RinsePhase</enumMember>
+      <enumMember refValue="12">CleanPhase</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1020" enumKey="ConsumerProducts.CoffeeMaker.EnumType.RemindForMilkAfter">
+      <enumMember refValue="0">Off</enumMember>
+      <enumMember refValue="1">00Hours05Minutes</enumMember>
+      <enumMember refValue="2">00Hours10Minutes</enumMember>
+      <enumMember refValue="3">00Hours15Minutes</enumMember>
+      <enumMember refValue="4">00Hours20Minutes</enumMember>
+      <enumMember refValue="5">00Hours25Minutes</enumMember>
+      <enumMember refValue="6">00Hours30Minutes</enumMember>
+      <enumMember refValue="7">00Hours35Minutes</enumMember>
+      <enumMember refValue="8">00Hours40Minutes</enumMember>
+      <enumMember refValue="9">00Hours45Minutes</enumMember>
+      <enumMember refValue="10">00Hours50Minutes</enumMember>
+      <enumMember refValue="11">00Hours55Minutes</enumMember>
+      <enumMember refValue="12">01Hours00Minutes</enumMember>
+      <enumMember refValue="13">01Hours15Minutes</enumMember>
+      <enumMember refValue="14">01Hours30Minutes</enumMember>
+      <enumMember refValue="15">01Hours45Minutes</enumMember>
+      <enumMember refValue="16">02Hours00Minutes</enumMember>
+      <enumMember refValue="17">02Hours15Minutes</enumMember>
+      <enumMember refValue="18">02Hours30Minutes</enumMember>
+      <enumMember refValue="19">02Hours45Minutes</enumMember>
+      <enumMember refValue="20">03Hours00Minutes</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1002" enumKey="ConsumerProducts.CoffeeMaker.EnumType.SwitchOffAfter">
+      <enumMember refValue="0">00Hours05Minutes</enumMember>
+      <enumMember refValue="1">00Hours10Minutes</enumMember>
+      <enumMember refValue="2">00Hours15Minutes</enumMember>
+      <enumMember refValue="3">00Hours20Minutes</enumMember>
+      <enumMember refValue="4">00Hours25Minutes</enumMember>
+      <enumMember refValue="5">00Hours30Minutes</enumMember>
+      <enumMember refValue="6">00Hours35Minutes</enumMember>
+      <enumMember refValue="7">00Hours40Minutes</enumMember>
+      <enumMember refValue="8">00Hours45Minutes</enumMember>
+      <enumMember refValue="9">00Hours50Minutes</enumMember>
+      <enumMember refValue="10">00Hours55Minutes</enumMember>
+      <enumMember refValue="11">01Hours00Minutes</enumMember>
+      <enumMember refValue="12">01Hours15Minutes</enumMember>
+      <enumMember refValue="13">01Hours30Minutes</enumMember>
+      <enumMember refValue="14">01Hours45Minutes</enumMember>
+      <enumMember refValue="15">02Hours00Minutes</enumMember>
+      <enumMember refValue="16">02Hours15Minutes</enumMember>
+      <enumMember refValue="17">02Hours30Minutes</enumMember>
+      <enumMember refValue="18">02Hours45Minutes</enumMember>
+      <enumMember refValue="19">03Hours00Minutes</enumMember>
+    </enumDescription>
+    <enumDescription refENID="100D" enumKey="ConsumerProducts.CoffeeMaker.EnumType.UserMode">
+      <enumMember refValue="0">Standard</enumMember>
+      <enumMember refValue="1">Barista</enumMember>
+    </enumDescription>
+    <enumDescription refENID="1001" enumKey="ConsumerProducts.CoffeeMaker.EnumType.WaterHardness">
+      <enumMember refValue="0">Soft</enumMember>
+      <enumMember refValue="1">Medium</enumMember>
+      <enumMember refValue="2">Hard</enumMember>
+      <enumMember refValue="3">VeryHard</enumMember>
+      <enumMember refValue="4">SofteningDevice</enumMember>
+    </enumDescription>
+  </enumDescriptionList>
+</featureMappingFile>
