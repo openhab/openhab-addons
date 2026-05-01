@@ -27,6 +27,7 @@ import org.openhab.core.automation.RuleStatus;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
@@ -60,6 +61,23 @@ import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 public class ResourceProvider {
 
     private static final String APPLICATION_JSON = "application/json";
+
+    private static final String KEY_UID = "uid";
+    private static final String KEY_LABEL = "label";
+    private static final String KEY_BINDING_ID = "bindingId";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_STATUS_DETAIL = "statusDetail";
+    private static final String KEY_STATUS_DESCRIPTION = "statusDescription";
+    private static final String KEY_CHANNELS = "channels";
+    private static final String KEY_CHILD_THINGS = "childThings";
+    private static final String KEY_ACCEPTED_ITEM_TYPE = "acceptedItemType";
+    private static final String KEY_LINKED_ITEMS = "linkedItems";
+    private static final String KEY_ERROR = "error";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_DESCRIPTION = "description";
+    private static final String KEY_TAGS = "tags";
+    private static final String KEY_ENABLED = "enabled";
+    private static final String KEY_TRIGGER_TYPES = "triggerTypes";
 
     private final ItemRegistry itemRegistry;
     private final @Nullable MetadataRegistry metadataRegistry;
@@ -144,24 +162,43 @@ public class ResourceProvider {
         String uidStr = uri.substring("openhab://thing/".length());
         Thing thing = thingRegistry.get(new ThingUID(uidStr));
         if (thing == null) {
-            return toResult(uri, Map.of("error", "Thing not found: " + uidStr));
+            return toResult(uri, Map.of(KEY_ERROR, "Thing not found: " + uidStr));
         }
         Map<String, Object> details = new LinkedHashMap<>();
-        details.put("uid", thing.getUID().toString());
-        details.put("label", Objects.requireNonNullElse(thing.getLabel(), thing.getUID().toString()));
-        details.put("bindingId", thing.getThingTypeUID().getBindingId());
-        details.put("status", thing.getStatus().name());
-        details.put("statusDetail", thing.getStatusInfo().getStatusDetail().name());
-        details.put("statusDescription", Objects.requireNonNullElse(thing.getStatusInfo().getDescription(), ""));
+        details.put(KEY_UID, thing.getUID().toString());
+        details.put(KEY_LABEL, Objects.requireNonNullElse(thing.getLabel(), thing.getUID().toString()));
+        details.put(KEY_BINDING_ID, thing.getThingTypeUID().getBindingId());
+        details.put(KEY_STATUS, thing.getStatus().name());
+        details.put(KEY_STATUS_DETAIL, thing.getStatusInfo().getStatusDetail().name());
+        details.put(KEY_STATUS_DESCRIPTION, Objects.requireNonNullElse(thing.getStatusInfo().getDescription(), ""));
         List<Map<String, Object>> channels = new ArrayList<>();
         thing.getChannels().forEach(ch -> {
             Map<String, Object> c = new LinkedHashMap<>();
-            c.put("uid", ch.getUID().toString());
-            c.put("acceptedItemType", Objects.requireNonNullElse(ch.getAcceptedItemType(), ""));
-            c.put("linkedItems", linkRegistry.getLinkedItemNames(ch.getUID()).stream().sorted().toList());
+            c.put(KEY_UID, ch.getUID().toString());
+            c.put(KEY_ACCEPTED_ITEM_TYPE, Objects.requireNonNullElse(ch.getAcceptedItemType(), ""));
+            c.put(KEY_LINKED_ITEMS, linkRegistry.getLinkedItemNames(ch.getUID()).stream().sorted().toList());
             channels.add(c);
         });
-        details.put("channels", channels);
+        details.put(KEY_CHANNELS, channels);
+        if (thing instanceof Bridge bridge) {
+            List<Map<String, Object>> childThings = new ArrayList<>();
+            for (Thing child : bridge.getThings()) {
+                Thing registryChild = thingRegistry.get(child.getUID());
+                if (registryChild == null) {
+                    continue;
+                }
+                Map<String, Object> childMap = new LinkedHashMap<>();
+                childMap.put(KEY_UID, registryChild.getUID().toString());
+                childMap.put(KEY_LABEL,
+                        Objects.requireNonNullElse(registryChild.getLabel(), registryChild.getUID().toString()));
+                childMap.put(KEY_BINDING_ID, registryChild.getThingTypeUID().getBindingId());
+                childMap.put(KEY_STATUS, registryChild.getStatus().name());
+                childThings.add(childMap);
+            }
+            if (!childThings.isEmpty()) {
+                details.put(KEY_CHILD_THINGS, childThings);
+            }
+        }
         return toResult(uri, details);
     }
 
@@ -169,17 +206,17 @@ public class ResourceProvider {
         String ruleUID = uri.substring("openhab://rule/".length());
         Rule rule = ruleRegistry.get(ruleUID);
         if (rule == null) {
-            return toResult(uri, Map.of("error", "Rule not found: " + ruleUID));
+            return toResult(uri, Map.of(KEY_ERROR, "Rule not found: " + ruleUID));
         }
         Map<String, Object> details = new LinkedHashMap<>();
-        details.put("uid", rule.getUID());
-        details.put("name", Objects.requireNonNullElse(rule.getName(), ""));
-        details.put("description", Objects.requireNonNullElse(rule.getDescription(), ""));
-        details.put("tags", rule.getTags());
+        details.put(KEY_UID, rule.getUID());
+        details.put(KEY_NAME, Objects.requireNonNullElse(rule.getName(), ""));
+        details.put(KEY_DESCRIPTION, Objects.requireNonNullElse(rule.getDescription(), ""));
+        details.put(KEY_TAGS, rule.getTags());
         RuleStatus status = ruleManager.getStatus(ruleUID);
-        details.put("status", status != null ? status.name() : "UNKNOWN");
-        details.put("enabled", Boolean.TRUE.equals(ruleManager.isEnabled(ruleUID)));
-        details.put("triggerTypes", rule.getTriggers().stream().map(t -> t.getTypeUID()).toList());
+        details.put(KEY_STATUS, status != null ? status.name() : "UNKNOWN");
+        details.put(KEY_ENABLED, Boolean.TRUE.equals(ruleManager.isEnabled(ruleUID)));
+        details.put(KEY_TRIGGER_TYPES, rule.getTriggers().stream().map(t -> t.getTypeUID()).toList());
         return toResult(uri, details);
     }
 
@@ -196,7 +233,7 @@ public class ResourceProvider {
         } catch (Exception e) {
             try {
                 String errorJson = jsonMapper.writeValueAsString(
-                        Map.of("error", "Failed to serialize resource: " + Objects.toString(e.getMessage(), "")));
+                        Map.of(KEY_ERROR, "Failed to serialize resource: " + Objects.toString(e.getMessage(), "")));
                 return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON, errorJson)));
             } catch (Exception ignored) {
                 return new ReadResourceResult(List.of(new TextResourceContents(uri, APPLICATION_JSON,

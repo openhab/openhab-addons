@@ -16,6 +16,7 @@ import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -78,7 +80,7 @@ public class ThingTools {
         properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
 
         return McpSchema.Tool.builder().name("get_things").description(
-                "List things (device connections) with their online/offline status. Filter by status or binding type.")
+                "List things (device connections) with their online/offline status. Filter by status or binding type. When filtering by binding, bridge things include nested child things from any binding.")
                 .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
     }
 
@@ -96,8 +98,12 @@ public class ThingTools {
         int limit = getIntArg(args, "limit", 50);
         int offset = getIntArg(args, "offset", 0);
 
+        Set<ThingUID> listed = new HashSet<>();
         List<Map<String, Object>> things = new ArrayList<>();
         for (Thing thing : thingRegistry.getAll()) {
+            if (listed.contains(thing.getUID())) {
+                continue;
+            }
             ThingStatusInfo statusInfo = thing.getStatusInfo();
             if (statusFilter != null && !statusInfo.getStatus().name().equalsIgnoreCase(statusFilter)) {
                 continue;
@@ -105,7 +111,12 @@ public class ThingTools {
             if (bindingFilter != null && !thing.getThingTypeUID().getBindingId().equalsIgnoreCase(bindingFilter)) {
                 continue;
             }
-            things.add(buildThingSummary(thing));
+            Map<String, Object> summary = buildThingSummary(thing);
+            listed.add(thing.getUID());
+            if (bindingFilter != null && thing instanceof Bridge bridge) {
+                addChildThings(bridge, summary, listed);
+            }
+            things.add(summary);
         }
 
         int total = things.size();
@@ -128,7 +139,7 @@ public class ThingTools {
      */
     public McpSchema.Tool getThingDetailsTool() {
         return McpSchema.Tool.builder().name("get_thing_details").description(
-                "Get detailed information about a specific thing including its channels, linked items, configuration, and properties.")
+                "Get detailed information about a specific thing including its channels, linked items, configuration, and properties. For bridge things, also includes child thing summaries.")
                 .inputSchema(new McpSchema.JsonSchema("object",
                         Map.of("thingUID",
                                 Map.of("type", "string", "description",
@@ -181,7 +192,47 @@ public class ThingTools {
         }
         details.put("channels", channels);
 
+        if (thing instanceof Bridge bridge) {
+            List<Thing> children = bridge.getThings();
+            if (!children.isEmpty()) {
+                List<Map<String, Object>> childSummaries = new ArrayList<>();
+                for (Thing child : children) {
+                    Thing registryChild = thingRegistry.get(child.getUID());
+                    if (registryChild != null) {
+                        childSummaries.add(buildThingSummary(registryChild));
+                    }
+                }
+                details.put("childThings", childSummaries);
+            }
+        }
+
         return textResult(jsonMapper, details);
+    }
+
+    private void addChildThings(Bridge bridge, Map<String, Object> summary, Set<ThingUID> listed) {
+        List<Thing> children = bridge.getThings();
+        if (children.isEmpty()) {
+            return;
+        }
+        List<Map<String, Object>> childSummaries = new ArrayList<>();
+        for (Thing child : children) {
+            if (listed.contains(child.getUID())) {
+                continue;
+            }
+            Thing registryChild = thingRegistry.get(child.getUID());
+            if (registryChild == null) {
+                continue;
+            }
+            listed.add(registryChild.getUID());
+            Map<String, Object> childSummary = buildThingSummary(registryChild);
+            if (registryChild instanceof Bridge childBridge) {
+                addChildThings(childBridge, childSummary, listed);
+            }
+            childSummaries.add(childSummary);
+        }
+        if (!childSummaries.isEmpty()) {
+            summary.put("childThings", childSummaries);
+        }
     }
 
     private Map<String, Object> buildThingSummary(Thing thing) {
@@ -204,6 +255,9 @@ public class ThingTools {
         ThingUID bridgeUID = thing.getBridgeUID();
         if (bridgeUID != null) {
             summary.put("bridgeUID", bridgeUID.toString());
+        }
+        if (thing instanceof Bridge) {
+            summary.put("isBridge", true);
         }
         return summary;
     }

@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -95,6 +96,27 @@ class ThingToolsTest {
         lenient().when(thing.getConfiguration()).thenReturn(new Configuration());
         lenient().when(thing.getProperties()).thenReturn(Map.of());
         return thing;
+    }
+
+    private Thing setChildBridgeUID(Thing child, String bridgeUid) {
+        lenient().when(child.getBridgeUID()).thenReturn(new ThingUID(bridgeUid));
+        return child;
+    }
+
+    private Bridge mockBridge(String uid, String label, ThingStatus status, String bindingId, List<Thing> children) {
+        Bridge bridge = mock(Bridge.class);
+        ThingUID thingUID = new ThingUID(bindingId + ":type:" + uid);
+        ThingTypeUID thingTypeUID = new ThingTypeUID(bindingId, "type");
+        lenient().when(bridge.getUID()).thenReturn(thingUID);
+        lenient().when(bridge.getLabel()).thenReturn(label);
+        lenient().when(bridge.getThingTypeUID()).thenReturn(thingTypeUID);
+        lenient().when(bridge.getStatus()).thenReturn(status);
+        lenient().when(bridge.getStatusInfo()).thenReturn(new ThingStatusInfo(status, ThingStatusDetail.NONE, null));
+        lenient().when(bridge.getChannels()).thenReturn(List.of());
+        lenient().when(bridge.getConfiguration()).thenReturn(new Configuration());
+        lenient().when(bridge.getProperties()).thenReturn(Map.of());
+        lenient().when(bridge.getThings()).thenReturn(children);
+        return bridge;
     }
 
     private Item mockItem(String name, String label, String type, State state) {
@@ -258,5 +280,144 @@ class ThingToolsTest {
     void getThingDetailsMissingParameter() throws Exception {
         CallToolResult result = tools().handleGetThingDetails(createRequest(Map.of()));
         assertErrorContains(result, "thingUID");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getThingDetailsForBridgeIncludesChildren() throws Exception {
+        Thing child1 = mockThing("sensor1", "Temperature Sensor", ThingStatus.ONLINE, "modbus");
+        Thing child2 = mockThing("sensor2", "Humidity Sensor", ThingStatus.OFFLINE, "modbus");
+        Bridge bridge = mockBridge("bridge1", "Modbus TCP Bridge", ThingStatus.ONLINE, "modbus",
+                List.of(child1, child2));
+
+        ThingRegistry reg = Objects.requireNonNull(thingRegistry);
+        when(reg.get(bridge.getUID())).thenReturn(bridge);
+        when(reg.get(child1.getUID())).thenReturn(child1);
+        when(reg.get(child2.getUID())).thenReturn(child2);
+
+        CallToolResult result = tools()
+                .handleGetThingDetails(createRequest(Map.of("thingUID", bridge.getUID().toString())));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(true, parsed.get("isBridge"));
+
+        List<Map<String, Object>> children = (List<Map<String, Object>>) parsed.get("childThings");
+        assertNotNull(children);
+        assertEquals(2, children.size());
+        assertEquals("modbus:type:sensor1", children.get(0).get("uid"));
+        assertEquals("modbus:type:sensor2", children.get(1).get("uid"));
+    }
+
+    @Test
+    void getThingDetailsForNonBridgeHasNoChildThings() throws Exception {
+        Thing thing = mockThing("device1", "Simple Device", ThingStatus.ONLINE, "hue");
+        when(Objects.requireNonNull(thingRegistry).get(thing.getUID())).thenReturn(thing);
+
+        CallToolResult result = tools()
+                .handleGetThingDetails(createRequest(Map.of("thingUID", thing.getUID().toString())));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        assertNull(parsed.get("isBridge"));
+        assertNull(parsed.get("childThings"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getThingsListIndicatesBridge() throws Exception {
+        Bridge bridge = mockBridge("bridge1", "My Bridge", ThingStatus.ONLINE, "mqtt", List.of());
+        Thing device = mockThing("device1", "My Device", ThingStatus.ONLINE, "mqtt");
+        when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of(bridge, device));
+
+        CallToolResult result = tools().handleGetThings(createRequest(Map.of()));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        List<Map<String, Object>> things = (List<Map<String, Object>>) parsed.get("things");
+        assertNotNull(things);
+        assertEquals(2, things.size());
+        assertEquals(true, things.get(0).get("isBridge"));
+        assertNull(things.get(1).get("isBridge"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getThingsWithBindingFilterIncludesChildThings() throws Exception {
+        Thing child1 = mockThing("sensor1", "Sensor 1", ThingStatus.ONLINE, "modbus");
+        child1 = setChildBridgeUID(child1, "modbus:type:bridge1");
+        Thing child2 = mockThing("sensor2", "Sensor 2", ThingStatus.OFFLINE, "modbus");
+        child2 = setChildBridgeUID(child2, "modbus:type:bridge1");
+        Bridge bridge = mockBridge("bridge1", "Modbus Bridge", ThingStatus.ONLINE, "modbus", List.of(child1, child2));
+        ThingRegistry reg = Objects.requireNonNull(thingRegistry);
+        when(reg.getAll()).thenReturn(List.of(bridge, child1, child2));
+        when(reg.get(child1.getUID())).thenReturn(child1);
+        when(reg.get(child2.getUID())).thenReturn(child2);
+
+        CallToolResult result = tools().handleGetThings(createRequest(Map.of("bindingId", "modbus")));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        List<Map<String, Object>> things = (List<Map<String, Object>>) parsed.get("things");
+        assertNotNull(things);
+        assertEquals(1, things.size());
+        assertEquals(true, things.get(0).get("isBridge"));
+        List<Map<String, Object>> children = (List<Map<String, Object>>) things.get(0).get("childThings");
+        assertNotNull(children);
+        assertEquals(2, children.size());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getThingsWithBindingFilterIncludesCrossBindingChildren() throws Exception {
+        Thing crossChild = mockThing("nvr1", "NVR", ThingStatus.ONLINE, "unifiprotect");
+        crossChild = setChildBridgeUID(crossChild, "unifi:type:controller1");
+        Bridge controller = mockBridge("controller1", "Controller", ThingStatus.ONLINE, "unifi", List.of(crossChild));
+        ThingRegistry reg = Objects.requireNonNull(thingRegistry);
+        when(reg.getAll()).thenReturn(List.of(controller, crossChild));
+        when(reg.get(crossChild.getUID())).thenReturn(crossChild);
+
+        CallToolResult result = tools().handleGetThings(createRequest(Map.of("bindingId", "unifi")));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        List<Map<String, Object>> things = (List<Map<String, Object>>) parsed.get("things");
+        assertNotNull(things);
+        assertEquals(1, things.size());
+        List<Map<String, Object>> children = (List<Map<String, Object>>) things.get(0).get("childThings");
+        assertNotNull(children);
+        assertEquals(1, children.size());
+        assertEquals("unifiprotect", children.get(0).get("binding"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getThingsWithoutBindingFilterDoesNotNestChildren() throws Exception {
+        Thing child = mockThing("sensor1", "Sensor 1", ThingStatus.ONLINE, "modbus");
+        Bridge bridge = mockBridge("bridge1", "Modbus Bridge", ThingStatus.ONLINE, "modbus", List.of(child));
+        when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of(bridge, child));
+
+        CallToolResult result = tools().handleGetThings(createRequest(Map.of()));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        List<Map<String, Object>> things = (List<Map<String, Object>>) parsed.get("things");
+        assertNotNull(things);
+        assertEquals(2, things.size());
+        assertNull(things.get(0).get("childThings"));
+    }
+
+    @Test
+    void getThingDetailsForBridgeWithNoChildrenOmitsChildThings() throws Exception {
+        Bridge bridge = mockBridge("bridge1", "Empty Bridge", ThingStatus.ONLINE, "hue", List.of());
+        when(Objects.requireNonNull(thingRegistry).get(bridge.getUID())).thenReturn(bridge);
+
+        CallToolResult result = tools()
+                .handleGetThingDetails(createRequest(Map.of("thingUID", bridge.getUID().toString())));
+        assertSuccess(result);
+
+        Map<String, Object> parsed = parseResult(result);
+        assertEquals(true, parsed.get("isBridge"));
+        assertNull(parsed.get("childThings"));
     }
 }

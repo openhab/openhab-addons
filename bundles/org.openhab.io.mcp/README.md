@@ -247,7 +247,9 @@ Items can also be associated with a Location via the `hasLocation` metadata, not
 
 ## Full REST API access (opt-in)
 
-**Note:** With this flag on, the assistant can call **any** openHAB REST endpoint, including destructive ones (delete items, modify Things, change service configs). It uses your bearer token, so it can only do things your user could do from the UI. Only turn this on if you trust the assistant with that scope.
+> **Note:** With this flag on, the assistant can call **any** openHAB REST endpoint, including destructive ones (delete items, modify Things, change service configs).
+> It uses your bearer token, so it can only do things your user could do from the UI.
+> Only turn this on if you trust the assistant with that scope.
 
 Setting `enableFullApiAccess=true` exposes three extra tools:
 
@@ -265,7 +267,8 @@ Useful when the built-in tools don't cover the task, for example:
 
 ## Real-time subscriptions (advanced)
 
-> Most clients (including Claude Desktop) don't expose this to the LLM yet. Use `watch_items` / `get_events` instead for now — they work with every client.
+> Most clients (including Claude Desktop) don't expose this to the LLM yet.
+> Use `watch_items` / `get_events` instead for now — they work with every client.
 
 MCP clients that honour `notifications/resources/updated` can subscribe to these URIs and receive push notifications:
 
