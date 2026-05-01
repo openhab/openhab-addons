@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -257,7 +259,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 cfg.hostname, cfg.username, cfg.password, cfg.rtspChannel, cfg.rtspSubtype, streamEntries);
         go2rtcManager = manager;
 
-        String proxyPath = WEBRTC_SERVLET_PATH + "/" + mainStreamName;
+        String proxyPath = extensions.isEmpty() ? WEBRTC_SERVLET_PATH + "/" + mainStreamName
+                : WEBRTC_SERVLET_PATH + "/session?thing="
+                        + URLEncoder.encode(getThing().getUID().toString(), StandardCharsets.UTF_8);
         updateState(CHANNEL_WEBRTC_URL, new StringType(proxyPath));
 
         webRtcStartupJob = scheduler.submit(() -> {
@@ -1221,15 +1225,24 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     public synchronized @Nullable String getWebRtcUrlForClientId(String clientId) {
-        String streamName = outgoingStreamNames.get(clientId);
+        String streamName = getWebRtcStreamNameForClientId(clientId);
         if (streamName == null) {
-            Go2RtcManager localManager = go2rtcManager;
-            if (localManager == null) {
-                return null;
-            }
-            streamName = localManager.getStreamName();
+            return null;
         }
         return WEBRTC_SERVLET_PATH + "/" + streamName;
+    }
+
+    public synchronized @Nullable String getWebRtcStreamNameForClientId(String clientId) {
+        String streamName = outgoingStreamNames.get(clientId);
+        if (streamName != null) {
+            return streamName;
+        }
+
+        Go2RtcManager localManager = go2rtcManager;
+        if (localManager == null) {
+            return null;
+        }
+        return localManager.getStreamName();
     }
 
     public synchronized @Nullable SipBackchannelSession getSipBackchannelSessionForSession(String sessionId) {

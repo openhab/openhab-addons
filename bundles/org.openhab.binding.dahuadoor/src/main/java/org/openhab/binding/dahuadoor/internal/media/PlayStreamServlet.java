@@ -33,7 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants;
+import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -77,8 +80,10 @@ public class PlayStreamServlet extends HttpServlet {
     private static final int GO2RTC_API_TIMEOUT_MS = 10_000;
     /** Maximum accepted size for incoming request body. */
     private static final int MAX_REQUEST_BODY_BYTES = 64 * 1024;
+    private static final String SESSION_STREAM_PATH = "session";
 
     private final HttpService httpService;
+    private final DahuaDoorHandlerFactory handlerFactory;
 
     /**
      * Map from go2rtc stream name (e.g. {@code dahua_vto2202_living}) to API port.
@@ -89,8 +94,9 @@ public class PlayStreamServlet extends HttpServlet {
     /** Number of currently registered streams; used to decide when to unregister the servlet. */
     private volatile int registrationCount = 0;
 
-    public PlayStreamServlet(HttpService httpService) {
+    public PlayStreamServlet(HttpService httpService, DahuaDoorHandlerFactory handlerFactory) {
         this.httpService = httpService;
+        this.handlerFactory = handlerFactory;
     }
 
     // -------------------------------------------------------------------------
@@ -156,6 +162,14 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
         String streamName = pathInfo.substring(1); // strip leading /
+        if (SESSION_STREAM_PATH.equals(streamName)) {
+            @Nullable
+            String resolvedStreamName = resolveSessionStreamName(req, resp);
+            if (resolvedStreamName == null) {
+                return;
+            }
+            streamName = resolvedStreamName;
+        }
 
         Integer apiPort = streamApiPorts.get(streamName);
         if (apiPort == null) {
@@ -323,6 +337,59 @@ public class PlayStreamServlet extends HttpServlet {
     private static void addCorsHeaders(HttpServletResponse resp) {
         resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    }
+
+    private @Nullable String resolveSessionStreamName(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        String thingUid = getQueryParameter(req, "thing");
+        if (thingUid == null || thingUid.isBlank()) {
+            sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing thing parameter");
+            return null;
+        }
+
+        DahuaDoorBaseHandler handler = handlerFactory.getDahuaHandler(thingUid);
+        if (handler == null) {
+            sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
+                    "Thing not found or not initialized: " + thingUid);
+            return null;
+        }
+
+        String sessionId = req.getSession().getId();
+        @Nullable
+        String clientId = handler.assignClientForSession(sessionId);
+        if (clientId == null) {
+            sendBase64Message(resp, HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
+            return null;
+        }
+
+        @Nullable
+        String streamName = handler.getWebRtcStreamNameForClientId(clientId);
+        if (streamName == null || streamName.isBlank()) {
+            sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
+                    "No WebRTC stream available for SIP client: " + clientId);
+            return null;
+        }
+        return streamName;
+    }
+
+    private static @Nullable String getQueryParameter(HttpServletRequest req, String name) {
+        String query = req.getQueryString();
+        if (query == null || query.isBlank()) {
+            return null;
+        }
+
+        for (String segment : query.split("&")) {
+            int separator = segment.indexOf('=');
+            String key = separator >= 0 ? segment.substring(0, separator) : segment;
+            if (!name.equals(URLDecoder.decode(key, StandardCharsets.UTF_8))) {
+                continue;
+            }
+
+            String value = separator >= 0 ? segment.substring(separator + 1) : "";
+            return URLDecoder.decode(value, StandardCharsets.UTF_8);
+        }
+
+        return null;
     }
 
     private static void sendBase64Message(HttpServletResponse resp, int statusCode, String message) throws IOException {

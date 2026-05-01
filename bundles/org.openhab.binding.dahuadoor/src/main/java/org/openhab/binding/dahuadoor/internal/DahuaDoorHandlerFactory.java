@@ -51,7 +51,7 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public DahuaDoorHandlerFactory(@Reference HttpService httpService) {
-        this.playStreamServlet = new PlayStreamServlet(httpService);
+        this.playStreamServlet = new PlayStreamServlet(httpService, this);
         this.sipCallControlServlet = new SipCallControlServlet(httpService, this);
         this.sipCallControlServlet.activate();
     }
