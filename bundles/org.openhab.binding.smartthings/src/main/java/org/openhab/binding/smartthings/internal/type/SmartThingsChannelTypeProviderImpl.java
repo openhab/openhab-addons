@@ -14,9 +14,8 @@ package org.openhab.binding.smartthings.internal.type;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = { SmartThingsChannelTypeProvider.class, ChannelTypeProvider.class })
 public class SmartThingsChannelTypeProviderImpl implements SmartThingsChannelTypeProvider {
-    private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
+    private final ConcurrentHashMap<ChannelTypeUID, ChannelType> channelTypesByUID = new ConcurrentHashMap<>();
 
     public SmartThingsChannelTypeProviderImpl() {
     }
@@ -67,6 +66,9 @@ public class SmartThingsChannelTypeProviderImpl implements SmartThingsChannelTyp
 
     @Override
     public @Nullable ChannelType getInternalChannelType(@Nullable ChannelTypeUID channelTypeUID) {
-        return channelTypesByUID.get(channelTypeUID);
+        if (channelTypeUID != null) {
+            return channelTypesByUID.get(channelTypeUID);
+        }
+        return null;
     }
 }

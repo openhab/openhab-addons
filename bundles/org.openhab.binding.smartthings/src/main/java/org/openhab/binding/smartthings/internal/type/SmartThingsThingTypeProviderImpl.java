@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { SmartThingsThingTypeProvider.class, ThingTypeProvider.class }, immediate = true)
 public class SmartThingsThingTypeProviderImpl implements SmartThingsThingTypeProvider {
 
-    private Map<ThingTypeUID, ThingType> thingTypesByUID = new HashMap<>();
+    private ConcurrentHashMap<ThingTypeUID, ThingType> thingTypesByUID = new ConcurrentHashMap<>();
 
     public SmartThingsThingTypeProviderImpl() {
     }

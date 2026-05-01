@@ -86,12 +86,12 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     }
 
     public void initRegistry() throws SmartThingsException {
-        initCapabilites();
-        registerSubcriptions();
+        initCapabilities();
+        registerSubscriptions();
         discoService.doScan(false);
     }
 
-    public void registerSubcriptions() {
+    public void registerSubscriptions() {
         SmartThingsApi api = this.getSmartThingsApi();
 
         if (api != null) {
@@ -104,12 +104,12 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
 
             if (!sucess) {
                 logger.warn(
-                        "RegisterSubscriptions failed, please consider use pooling instead to get device feedbacks information");
+                        "RegisterSubscriptions failed, please consider use polling instead to get device feedbacks information");
             }
         }
     }
 
-    public void initCapabilites() throws SmartThingsException {
+    public void initCapabilities() throws SmartThingsException {
         SmartThingsApi api = this.getSmartThingsApi();
         typeRegistry.setCloudBridgeHandler(this);
 

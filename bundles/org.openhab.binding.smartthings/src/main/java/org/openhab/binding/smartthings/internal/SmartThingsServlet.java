@@ -303,7 +303,7 @@ public class SmartThingsServlet extends HttpServlet
                                         "\\\"");
 
                                 replaceMap.put(KEY_AUTHORIZATION_URI, Encode.forHtml(authorizationUri));
-                                replaceMap.put(KEY_AUTHORIZATION_URI_JS, Encode.forHtml(authorizationUriJs));
+                                replaceMap.put(KEY_AUTHORIZATION_URI_JS, Encode.forJavaScript(authorizationUriJs));
 
                             } else if ("step2".equals(reqState)) {
                                 template = confirmTemplate;

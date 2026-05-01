@@ -71,7 +71,8 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
         super(typeRegistry);
     }
 
-    private Object getValue(Command command, ThingTypeUID thingUid, String channelId, String targetType) {
+    private Object getValue(Command command, ThingTypeUID thingUid, String channelId, String targetType)
+            throws SmartThingsException {
         Object value = null;
 
         String commandSt = command.toString().toLowerCase(Locale.ROOT);
@@ -87,6 +88,8 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                 value = dc.intValue();
             } else if (SmartThingsBindingConstants.SM_TYPE_NUMBER.equals(targetType)) {
                 value = dc.doubleValue();
+            } else {
+                throw new SmartThingsException("Unknow conversion type:" + targetType);
             }
         } else if (command instanceof IncreaseDecreaseType) {
             value = commandSt;
