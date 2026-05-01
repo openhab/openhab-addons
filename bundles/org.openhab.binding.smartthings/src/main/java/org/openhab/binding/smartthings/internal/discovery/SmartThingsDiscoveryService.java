@@ -152,12 +152,18 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         deviceCategory = deviceCategory.toLowerCase(Locale.ROOT);
         deviceCategory = UidUtils.sanitizeId(deviceCategory);
 
+        String deviceType = device.deviceTypeName;
+        if (deviceType == null) {
+            deviceType = device.name;
+        }
+
+        deviceType = UidUtils.sanitizeId(deviceType);
         SmartThingsTypeRegistry registry = this.typeRegistry;
         if (registry != null) {
-            registry.register(deviceCategory, device);
+            registry.register(deviceCategory, deviceType, device);
         }
         if (addDevice) {
-            createDevice(deviceCategory, Objects.requireNonNull(device));
+            createDevice(deviceCategory, deviceType, Objects.requireNonNull(device));
         }
     }
 
@@ -166,7 +172,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
      *
      * @param deviceData Device data from the account
      */
-    private void createDevice(String deviceCategory, SmartThingsDevice device) {
+    private void createDevice(String deviceCategory, String deviceType, SmartThingsDevice device) {
         logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceCategory, device.name);
 
         // Build the UID as a string "smartthings:{ThingType}:{BridgeName}:{DeviceName}"
@@ -182,7 +188,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         if (bridgeHandler != null) {
             ThingUID bridgeUid = bridgeHandler.getThing().getUID();
             String bridgeId = bridgeUid.getId();
-            String uidStr = String.format("smartthings:%s:%s:%s", deviceCategory, bridgeId, smartthingsDeviceName);
+            String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(SmartThingsBindingConstants.DEVICE_ID, device.deviceId);

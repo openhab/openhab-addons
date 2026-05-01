@@ -388,24 +388,24 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     @Override
-    public void register(String deviceCategory, SmartThingsDevice device) {
+    public void register(String deviceCategory, String deviceType, SmartThingsDevice device) {
         try {
             logger.trace("registerDeviceType: {} {}", deviceCategory, gson.toJson(device));
-            generateThingsType(device.deviceId, device.label, deviceCategory, device);
+            generateThingsType(device.deviceId, device.label, deviceCategory, deviceType, device);
         } catch (Exception ex) {
             logger.error("wrong: {}", ex.toString(), ex);
         }
     }
 
-    private void generateThingsType(String deviceId, String deviceLabel, String deviceCategory,
+    private void generateThingsType(String deviceId, String deviceLabel, String deviceCategory, String deviceType,
             SmartThingsDevice device) {
         SmartThingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
 
         logger.trace("generateThingsType: {} {}", deviceCategory, deviceId);
 
         if (lcThingTypeProvider != null) {
-            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceCategory);
             ThingType tt = null;
+            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
 
             tt = lcThingTypeProvider.getInternalThingType(thingTypeUID);
 
@@ -458,15 +458,11 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
                         logger.trace("capa: {}", cap.id);
                         if (capa != null) {
-                            addChannels(deviceCategory, groupTypes, component, capa);
+                            addChannels(deviceCategory, deviceType, groupTypes, component, capa);
                         }
                     }
                 }
 
-                String deviceType = device.deviceTypeName;
-                if (deviceType == null) {
-                    deviceType = device.name;
-                }
                 tt = createThingType(deviceCategory, deviceType, groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
@@ -477,8 +473,8 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         return (String.join("-", StringUtils.splitByCharacterType(propKey))).toLowerCase(Locale.ROOT);
     }
 
-    private void addChannels(String deviceCategory, List<ChannelGroupType> groupTypes, SmartThingsComponent component,
-            SmartThingsCapability capa) {
+    private void addChannels(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes,
+            SmartThingsComponent component, SmartThingsCapability capa) {
         List<ChannelDefinition> channelDefinitions = new ArrayList<>();
         SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartThingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
@@ -598,7 +594,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
 
         // generate group
-        String groupId = deviceCategory + "_" + componentId + "_";
+        String groupId = deviceType + "_" + componentId + "_";
 
         if (!"".equals(namespace)) {
             groupId = groupId + namespace + "_";
