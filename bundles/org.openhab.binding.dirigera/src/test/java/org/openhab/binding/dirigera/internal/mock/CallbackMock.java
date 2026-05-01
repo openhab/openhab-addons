@@ -49,9 +49,9 @@ import org.openhab.core.types.TimeSeries;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
-    private final int STATUS_DURATION_TIMEOUT_SEC = 10;
-    private ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED).build();
+    private static final int STATUS_DURATION_TIMEOUT_SEC = 5;
     private @Nullable Bridge bridge;
+    private ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED).build();
     public Map<String, State> stateMap = new HashMap<>();
     public Map<String, String> triggerMap = new HashMap<>();
 
@@ -67,15 +67,13 @@ public class CallbackMock implements ThingHandlerCallback {
     public void waitForStatus(ThingStatus expectedStatus) {
         synchronized (this) {
             Instant start = Instant.now();
-            Instant check = Instant.now();
             while (!expectedStatus.equals(statusInfo.getStatus())
-                    && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
+                    && Duration.between(start, Instant.now()).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
                 try {
                     this.wait(100);
                 } catch (InterruptedException e) {
                     fail(e.getMessage());
                 }
-                check = Instant.now();
             }
         }
         // if method is exited without reaching ONLINE e.g. through timeout fail
@@ -93,24 +91,25 @@ public class CallbackMock implements ThingHandlerCallback {
     }
 
     public void clear() {
-        stateMap.clear();
+        synchronized (stateMap) {
+            stateMap.clear();
+        }
     }
 
     public @Nullable State getState(String channel) {
         synchronized (stateMap) {
             Instant start = Instant.now();
-            Instant check = Instant.now();
-            while (stateMap.get(channel) == null
-                    && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
+            State state = stateMap.get(channel);
+            while (state == null && Duration.between(start, Instant.now()).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
                 try {
                     stateMap.wait(100);
+                    state = stateMap.get(channel);
                 } catch (InterruptedException e) {
                     fail("Interruppted waiting for ONLINE");
                 }
-                check = Instant.now();
             }
+            return state;
         }
-        return stateMap.get(channel);
     }
 
     @Override

@@ -15,6 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +32,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FroniusHttpUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FroniusHttpUtil.class);
+    private final ReentrantLock requestLock = new ReentrantLock();
+
+    private enum RequestMode {
+        CONTROL,
+        POLLING
+    }
+
+    @FunctionalInterface
+    interface RequestExecutor {
+        @Nullable
+        String execute(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+                @Nullable InputStream content, @Nullable String contentType, int timeout) throws IOException;
+    }
 
     /**
      * Issue a HTTP request and retry on failure.
@@ -41,8 +55,7 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public static synchronized String executeUrl(HttpMethod httpMethod, String url, int timeout)
-            throws FroniusCommunicationException {
+    public String executeUrl(HttpMethod httpMethod, String url, int timeout) throws FroniusCommunicationException {
         return executeUrl(httpMethod, url, null, null, null, timeout);
     }
 
@@ -59,17 +72,71 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public static synchronized String executeUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+    public String executeUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
             @Nullable InputStream content, @Nullable String contentType, int timeout)
             throws FroniusCommunicationException {
+        return executeUrl(httpMethod, url, httpHeaders, content, contentType, timeout, this::executeRequest);
+    }
+
+    /**
+     * Issue a polling HTTP request and skip it when another request for the same bridge is already running.
+     *
+     * @param httpMethod the HTTP method to use
+     * @param url the url to execute
+     * @param timeout the socket timeout in milliseconds to wait for data
+     * @return the response body
+     * @throws FroniusCommunicationException when the request execution failed or interrupted
+     */
+    public String executePollingUrl(HttpMethod httpMethod, String url, int timeout)
+            throws FroniusCommunicationException {
+        return executePollingUrl(httpMethod, url, null, null, null, timeout);
+    }
+
+    /**
+     * Issue a polling HTTP request and skip it when another request for the same bridge is already running.
+     *
+     * @param httpMethod the HTTP method to use
+     * @param url the url to execute
+     * @param httpHeaders optional http request headers which has to be sent within request
+     * @param content the content to be sent to the given <code>url</code> or <code>null</code> if no content should be
+     *            sent.
+     * @param contentType the content type of the given <code>content</code>
+     * @param timeout the socket timeout in milliseconds to wait for data
+     * @return the response body
+     * @throws FroniusCommunicationException when the request execution failed or interrupted
+     */
+    public String executePollingUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+            @Nullable InputStream content, @Nullable String contentType, int timeout)
+            throws FroniusCommunicationException {
+        return executePollingUrl(httpMethod, url, httpHeaders, content, contentType, timeout, this::executeRequest);
+    }
+
+    String executeUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+            @Nullable InputStream content, @Nullable String contentType, int timeout, RequestExecutor requestExecutor)
+            throws FroniusCommunicationException {
+        return executeUrl(httpMethod, url, httpHeaders, content, contentType, timeout, RequestMode.CONTROL,
+                requestExecutor);
+    }
+
+    String executePollingUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+            @Nullable InputStream content, @Nullable String contentType, int timeout, RequestExecutor requestExecutor)
+            throws FroniusCommunicationException {
+        return executeUrl(httpMethod, url, httpHeaders, content, contentType, timeout, RequestMode.POLLING,
+                requestExecutor);
+    }
+
+    private String executeUrl(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+            @Nullable InputStream content, @Nullable String contentType, int timeout, RequestMode requestMode,
+            RequestExecutor requestExecutor) throws FroniusCommunicationException {
+        acquireLock(requestLock, requestMode, url);
+        LOGGER.debug("Executing {} request against {}", requestMode, url);
         int attemptCount = 1;
         try {
             while (true) {
                 Throwable lastException = null;
                 String result = null;
                 try {
-                    result = HttpUtil.executeUrl(httpMethod.asString(), url, httpHeaders, content, contentType,
-                            timeout);
+                    result = requestExecutor.execute(httpMethod, url, httpHeaders, content, contentType, timeout);
                 } catch (IOException e) {
                     // HttpUtil::executeUrl wraps InterruptedException into IOException.
                     // Unwrap and rethrow it so that we don't retry on InterruptedException
@@ -99,6 +166,30 @@ public class FroniusHttpUtil {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new FroniusCommunicationException("Interrupted", e);
+        } finally {
+            requestLock.unlock();
         }
+    }
+
+    private static void acquireLock(ReentrantLock requestLock, RequestMode requestMode, String url)
+            throws FroniusCommunicationException {
+        try {
+            if (requestMode == RequestMode.POLLING) {
+                if (!requestLock.tryLock()) {
+                    throw new FroniusPollingSkipException("Skipping polling request to '" + url
+                            + "' because another request for this Fronius bridge is still running");
+                }
+            } else {
+                requestLock.lockInterruptibly();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new FroniusCommunicationException("Interrupted", e);
+        }
+    }
+
+    private @Nullable String executeRequest(HttpMethod httpMethod, String url, @Nullable Properties httpHeaders,
+            @Nullable InputStream content, @Nullable String contentType, int timeout) throws IOException {
+        return HttpUtil.executeUrl(httpMethod.asString(), url, httpHeaders, content, contentType, timeout);
     }
 }

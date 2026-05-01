@@ -18,6 +18,7 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BR
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -30,12 +31,14 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
+import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
+import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
+import org.openhab.binding.vesync.internal.dto.responses.login.UserSession;
+import org.openhab.binding.vesync.internal.dto.responses.management.DeviceInfo;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.core.i18n.LocaleProvider;
@@ -178,14 +181,14 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         this.updateThings();
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirPurifiersMetadata() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getAirPurifiersMetadata() {
         return api.getMacLookupMap().values().stream().filter(x -> !VeSyncBaseDeviceHandler
                 .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceAirPurifierHandler.DEV_TYPE_FAMILY_AIR_PURIFIER,
                         VeSyncDeviceAirPurifierHandler.SUPPORTED_MODEL_FAMILIES)
                 .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getAirHumidifiersMetadata() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getAirHumidifiersMetadata() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> !VeSyncBaseDeviceHandler
                         .getDeviceFamilyMetadata(x.getDeviceType(),
@@ -194,7 +197,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
                         .equals(VeSyncBaseDeviceHandler.UNKNOWN));
     }
 
-    public java.util.stream.Stream<@NotNull VeSyncManagedDeviceBase> getOutletMetaData() {
+    public java.util.stream.Stream<@NotNull DeviceInfo> getOutletMetaData() {
         return api.getMacLookupMap().values().stream()
                 .filter(x -> !VeSyncBaseDeviceHandler
                         .getDeviceFamilyMetadata(x.getDeviceType(), VeSyncDeviceOutletHandler.DEV_TYPE_FAMILY_OUTLET,
@@ -232,7 +235,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
             final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
 
             try {
-                api.login(config.username, passwordMd5, "Europe/London");
+                api.login(config.username, passwordMd5, "America/New_York");
                 api.updateBridgeData(this);
                 runDeviceScanSequence();
                 updateStatus(ThingStatus.ONLINE);
@@ -257,7 +260,7 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
         logger.warn("{}", getLocalizedText("warning.bridge.unexpected-command-call"));
     }
 
-    public void handleNewUserSession(final @Nullable VeSyncUserSession userSessionData) {
+    public void handleNewUserSession(final @Nullable UserSession userSessionData) {
         final Map<String, String> newProps = new HashMap<>();
         if (userSessionData != null) {
             newProps.put(DEVICE_PROP_BRIDGE_REG_TS, userSessionData.registerTime);
@@ -268,8 +271,27 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     }
 
     @Override
-    public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(final String url, final String macId, final AuthenticatedReq requestData)
             throws AuthenticationException, DeviceUnknownException {
-        return api.reqV2Authorized(url, macId, requestData);
+        // This is common to all calls: check the response code for token expiry. If the token has expired
+        // then perform a new login before a final attempt. All errors such as invalid token or expired token all have
+        // token
+        // in the message.
+        String result = api.reqV2Authorized(url, macId, requestData);
+
+        TransactionResp responseFrame = VeSyncConstants.GSON.fromJson(result, TransactionResp.class);
+
+        if (responseFrame != null && responseFrame.code != null && responseFrame.msg != null) {
+            final String message = responseFrame.msg;
+            if (!"0".equals(responseFrame.code) && message.toLowerCase(Locale.ENGLISH).contains("token")) {
+                logger.trace("Refreshing API token due to error response regarding the token");
+                final VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
+                final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
+                api.login(config.username, passwordMd5, "America/New_York");
+                return api.reqV2Authorized(url, macId, requestData);
+            }
+        }
+
+        return result;
     }
 }

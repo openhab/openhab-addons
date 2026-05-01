@@ -9,7 +9,7 @@ This bundle provides a list of useful profiles:
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skips a number of state changes                                                    |
 | [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands or state updates                                            |
 | [Invert / Negate Profile](#invert-negate-profile)               | Inverts or negates a command or state                                                         |
-| [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                          |
+| [Round Profile](#round-profile)                                 | Rounds numeric and DateTime input data                                                        |
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                     |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType`  |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                     |
@@ -121,22 +121,41 @@ Switch invertedSwitch { channel="xxx" [profile="basic-profiles:invert"] }
 
 ## Round Profile
 
-The Round Profile scales the state to a specific number of decimal places based on the power of ten.
-Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/RoundingMode.html) can be set.
-Source channels should accept Item type `Number`.
+The Round Profile rounds numeric values and `DateTime` values.
+
+For `numeric` values, it scales the State to a specific number of decimal places based on the power of ten.
+It can also limit the precision of the State to a specific number of [significant digits](https://en.wikipedia.org/wiki/Significant_figures).
+When scaling, a specific [Rounding mode](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/RoundingMode.html) may be applied.
+
+For `DateTime` values, rounding is applied to the UTC timestamp using the following scale mapping:
+
+- `0` = days
+- `1` = hours
+- `2` = minutes
+- `3` = seconds (default)
+- `4` = milliseconds
+
+A missing `scale` defaults to `3`(seconds) for a `DateTime` value. `precision` is ignored for a `DateTime` value.
+
+Source Channels should accept Item Type `Number` or `DateTime`.
 
 ### Round Profile Configuration
 
-| Configuration Parameter | Type    | Description                                                                                                     |
-|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------|
-| `scale`                 | integer | Scale to indicate the resulting number of decimal places (min: -16, max: 16, STEP: 1) **mandatory**.            |
-| `mode`                  | text    | Rounding mode to be used (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN" (default: "HALF_UP"). |
+| Configuration Parameter | Type    | Description                                                                                                                                                                                                                      |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `precision`             | integer | Limits the number of significant digits in the output for numeric values (ignored for `DateTime` values.) |
+| `scale`                 | integer | For numeric values, indicates the resulting number of decimal places (min: -16, max: 16, STEP: 1). For `DateTime` values, `0` rounds to days, `1` to hours, `2` to minutes, `3` to seconds (default), and `4` to milliseconds. |
+| `mode`                  | text    | Rounding mode to be used (e.g. `UP`, `DOWN`, `CEILING`, `FLOOR`, `HALF_UP`, or `HALF_DOWN`; default: `HALF_UP`).                                                                                                                 |
+
+For numeric values, either `precision` or `scale` must be given. When both are given, `precision` is applied first, then `scale`.
 
 ### Round Profile Example
 
 ```java
 Number roundedNumber { channel="xxx" [profile="basic-profiles:round", scale=0] }
 Number:Temperature roundedTemperature { channel="xxx" [profile="basic-profiles:round", scale=1] }
+DateTime roundedTimestamp { channel="xxx" [profile="basic-profiles:round", scale=3] }
+DateTime roundedTimestampDefault { channel="xxx" [profile="basic-profiles:round"] }
 ```
 
 ## Threshold Profile

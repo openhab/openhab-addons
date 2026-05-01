@@ -22,5 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UnifiProtectNVRConfiguration {
     public String hostname = "";
+
+    // Private API credentials (required)
+    public String username = "";
+    public String password = "";
+    public int port = 443;
+
+    // Public API token (optional - will be auto-created if not provided)
     public String token = "";
 }

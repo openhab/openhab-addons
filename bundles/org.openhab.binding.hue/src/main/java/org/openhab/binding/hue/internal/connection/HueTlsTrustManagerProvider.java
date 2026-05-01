@@ -15,34 +15,38 @@ package org.openhab.binding.hue.internal.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.util.Collection;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.http.PEMTrustManager;
-import org.openhab.core.io.net.http.PEMTrustManager.CertificateInstantiationException;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides a {@link PEMTrustManager} to allow secure connections to any Hue Bridge.
+ * Provides a {@link X509ExtendedTrustManager} to allow secure connections to any Hue Bridge.
  *
  * @author Christoph Weitkamp - Initial Contribution
+ * @author Andrew Fiddian-Green - Add support for intermediate certificates on V3 bridges
  */
 @NonNullByDefault
 public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
-    private static final String PEM_CACERT_V1_FILENAME = "huebridge_cacert.pem";
-    private static final String PEM_CACERT_V2_FILENAME = "huebridge_cacert_v2.pem";
+    private static final String PEM_CACERT_FILENAME = "/huebridge_cacert.pem";
     private final String hostname;
     private final boolean useSelfSignedCertificate;
-    private final boolean isBridgeV3orHigher;
 
     private final Logger logger = LoggerFactory.getLogger(HueTlsTrustManagerProvider.class);
 
@@ -51,21 +55,18 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
     /**
      * Creates a new instance of {@link HueTlsTrustManagerProvider}.
      *
-     * See the documentation for more details about 'Signify private CA Certificates V1 and V2 for Hue Bridges'.
+     * See the documentation for more details about 'Signify private CA Certificates for Hue Bridges'.
      *
      * @see <a href=
      *      "https://developers.meethue.com/develop/application-design-guidance/using-https/">https://developers.meethue.com/develop/application-design-guidance/using-https/</a>
      *
-     * @param hostname the hostname of the Hue Bridge
+     * @param hostname the host name of the Hue Bridge
      * @param useSelfSignedCertificate true, to use the self-signed certificate downloaded from the Hue Bridge;
-     *            false, to use the Signify private CA Certificate V1 or V2 for Hue Bridges from resources
-     * @param isBridgeV3orHigher true, to use the 'Signify private CA Certificate V2 for Hue Bridges';
-     *            false, to use the 'Signify private CA Certificate V1 for Hue Bridges'
+     *            false, to use the Signify private CA Certificate(s) for Hue Bridges from resources
      */
-    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate, boolean isBridgeV3orHigher) {
+    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate) {
         this.hostname = hostname;
         this.useSelfSignedCertificate = useSelfSignedCertificate;
-        this.isBridgeV3orHigher = isBridgeV3orHigher;
     }
 
     @Override
@@ -87,57 +88,72 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
         if (localTrustManager != null) {
             return localTrustManager;
         }
-
-        // TODO V3 bridges currently don't provide the full certificate chain (missing intermediate certificate)
-        if (isBridgeV3orHigher) {
-            logger.error("Hue V3 Bridge has incomplete PEM certificate chains - defaulting to a TrustAllTrustManager");
-            return TrustAllTrustManager.getInstance();
-        }
-
         try {
             if (useSelfSignedCertificate) {
                 logger.trace("Use self-signed certificate downloaded from Hue Bridge.");
                 // use self-signed certificate downloaded from Hue Bridge
                 localTrustManager = PEMTrustManager.getInstanceFromServer("https://" + getHostName());
             } else {
-                logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
-                // use Signify private CA Certificate V1 or V2 for Hue Bridges from resources
-                localTrustManager = getInstanceFromResource(
-                        isBridgeV3orHigher ? PEM_CACERT_V2_FILENAME : PEM_CACERT_V1_FILENAME);
+                logger.trace("Use Signify private CA Certificate(s) for Hue Bridges from resources.");
+                // use Signify private CA Certificate(s) for Hue Bridges from resources
+                localTrustManager = getInstanceFromResource(PEM_CACERT_FILENAME);
             }
             this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {
-            logger.debug("An unexpected exception occurred: {}", e.getMessage(), e);
+            logger.warn("An unexpected exception occurred: {}", e.getMessage(), e);
         }
         return localTrustManager;
     }
 
     /**
-     * Creates a {@link PEMTrustManager} instance by reading the PEM certificate from the given file.
-     * This is useful if you have a private CA Certificate stored in a file.
+     * Creates a {@link X509ExtendedTrustManager} instance by reading one or more PEM certificates from the given
+     * resource. The returned trust manager will trust all certificates that are signed by any of the certificates in
+     * the PEM file, including certificates with intermediates. This is useful if you have private CA Certificate(s)
+     * stored in a file.
      *
-     * @param fileName name to the PEM file located in the resources folder
-     * @return a {@link PEMTrustManager} instance
-     * @throws CertificateInstantiationException
+     * @param resourceName name of the PEM resource located in the resources folder
+     * @return a {@link X509ExtendedTrustManager} instance
+     * @throws CertificateException
      */
-    private PEMTrustManager getInstanceFromResource(String fileName) throws CertificateException {
-        String pemCert = readPEMCertificateStringFromResource(fileName);
-        if (pemCert != null) {
-            return new PEMTrustManager(pemCert);
-        }
-        throw new CertificateInstantiationException(
-                String.format("Certificate resource '%s' not found or not accessible.", fileName));
-    }
+    private X509ExtendedTrustManager getInstanceFromResource(String resourceName) throws CertificateException {
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
-    private @Nullable String readPEMCertificateStringFromResource(String fileName) {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(fileName);
-        if (resource != null) {
-            try (InputStream certInputStream = resource.openStream()) {
-                return new String(certInputStream.readAllBytes(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                logger.error("An unexpected exception occurred: ", e);
+        // load all certificates from the PEM file
+        Collection<? extends Certificate> certificates;
+
+        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(resourceName)) {
+            if (inputStream == null) {
+                throw new CertificateException("Certificate resource not found: " + resourceName);
             }
+            certificates = certificateFactory.generateCertificates(inputStream);
+        } catch (IOException e) {
+            throw new CertificateException("Certificate resource cannot be read: " + resourceName, e);
         }
-        return null;
+
+        if (certificates.isEmpty()) {
+            throw new CertificateException("No certificates found in " + resourceName);
+        }
+
+        try {
+            // build a key store containing all the certificates
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            int index = 0;
+            for (Certificate cert : certificates) {
+                keyStore.setCertificateEntry("cert-" + index++, cert);
+            }
+            // build a trust manager from this key store
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+            for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
+                if (trustManager instanceof X509ExtendedTrustManager x509) {
+                    return x509;
+                }
+            }
+            throw new CertificateException("No X509ExtendedTrustManager available.");
+        } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
+            throw new CertificateException("Failed to load certificates: " + e.getMessage(), e);
+        }
     }
 }

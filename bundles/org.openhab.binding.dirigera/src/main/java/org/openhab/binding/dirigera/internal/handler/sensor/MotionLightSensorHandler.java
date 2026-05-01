@@ -21,6 +21,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.model.ConversionModel;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -79,8 +80,8 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
@@ -88,7 +89,9 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
                 if (targetChannel != null) {
                     if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getInt(key), Units.LUX));
+                                QuantityType.valueOf(
+                                        ConversionModel.convert(targetChannel, attributes.getInt(key)).doubleValue(),
+                                        Units.LUX));
                     }
                 }
             }

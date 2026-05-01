@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,6 +34,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
@@ -121,6 +123,10 @@ public class Shelly2EventServlet extends WebSocketServlet {
         private final ShellyThingTable thingTable;
         private final WebSocketClient webSocketClient;
 
+        // A dedicated thread pool isn't needed - but passing the one from the ThingHander here is complicated,
+        // which is why we simply acquire the same thread pool from the source.
+        private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
+
         public Shelly2WebSocketCreator(ShellyThingTable thingTable, WebSocketClient webSocketClient) {
             this.thingTable = thingTable;
             this.webSocketClient = webSocketClient;
@@ -128,8 +134,10 @@ public class Shelly2EventServlet extends WebSocketServlet {
 
         @Override
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
-            logger.debug("WebSocket: Create socket from servlet");
-            return new Shelly2RpcSocket(thingTable, true, webSocketClient);
+            if (logger.isDebugEnabled()) {
+                logger.debug("WebSocket: Inbound servlet request from {}", req != null ? req.getRemoteHostName() : "");
+            }
+            return new Shelly2RpcSocket(thingTable, true, webSocketClient, scheduler);
         }
     }
 }

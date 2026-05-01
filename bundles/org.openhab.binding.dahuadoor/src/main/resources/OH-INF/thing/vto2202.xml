@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dahuadoor"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vto2202">
+		<label>Dahua VTO2202 Door Station</label>
+		<description>Dahua VTO2202 outdoor station with single button</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
+
+		<channels>
+			<channel id="bell-button" typeId="bell-button"/>
+			<channel id="door-image" typeId="door-image"/>
+			<channel id="open-door-1" typeId="open-door">
+				<label>Open Door 1</label>
+				<description>Controls door relay 1</description>
+			</channel>
+			<channel id="open-door-2" typeId="open-door">
+				<label>Open Door 2</label>
+				<description>Controls door relay 2</description>
+			</channel>
+			<channel id="webrtc-url" typeId="webrtc-url"/>
+			<channel id="sip-registered" typeId="sip-registered"/>
+			<channel id="sip-call-state" typeId="sip-call-state"/>
+		</channels>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<context>username</context>
+				<label>Username</label>
+				<description>Username to access the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="snapshotPath" type="text" required="true">
+				<label>Snapshot Path</label>
+				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
+			</parameter>
+			<parameter name="useHttps" type="boolean">
+				<label>Use HTTPS</label>
+				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.
+					Disable for plain HTTP (port 80).</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="enableWebRTC" type="boolean">
+				<label>Enable WebRTC</label>
+				<description>Start a local go2rtc instance to bridge the RTSP stream to WebRTC. Requires go2rtcPath to be set.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="go2rtcPath" type="text">
+				<label>go2rtc Binary Path</label>
+				<description>Absolute path to the go2rtc binary (e.g. /opt/go2rtc). Required when Enable WebRTC is on.</description>
+				<default></default>
+			</parameter>
+			<parameter name="go2rtcApiPort" type="integer">
+				<advanced>true</advanced>
+				<label>go2rtc API Port</label>
+				<description>HTTP API port for the go2rtc instance (default 1984). Must be unique per thing if multiple things run
+					WebRTC.</description>
+				<default>1984</default>
+			</parameter>
+			<parameter name="webRtcPort" type="integer">
+				<advanced>true</advanced>
+				<label>WebRTC Port</label>
+				<description>UDP/TCP port for WebRTC data (default 8555). Must be unique per thing if multiple things run WebRTC.</description>
+				<default>8555</default>
+			</parameter>
+			<parameter name="stunServer" type="text">
+				<advanced>true</advanced>
+				<label>STUN Server</label>
+				<description>STUN server for WebRTC NAT traversal in host:port format (default stun.l.google.com:19302).</description>
+				<default>stun.l.google.com:19302</default>
+			</parameter>
+			<parameter name="rtspChannel" type="integer">
+				<advanced>true</advanced>
+				<label>RTSP Channel</label>
+				<description>RTSP channel index on the device (default 1).</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="rtspSubtype" type="integer">
+				<advanced>true</advanced>
+				<label>RTSP Sub-type</label>
+				<description>RTSP sub-type index: 0 = main stream, 1 = sub stream (default 0).</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="enableSip" type="boolean">
+				<label>Enable SIP Client</label>
+				<description>Register as SIP client with VTO to receive incoming call notifications (doorbell events).</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="sipExtension" type="text">
+				<label>SIP Extension</label>
+				<description>SIP extension to register as (e.g., 9901#2). Also used as SIP username for authentication. Only used
+					when Enable SIP Client is on.</description>
+				<default></default>
+			</parameter>
+			<parameter name="sipPassword" type="text">
+				<context>password</context>
+				<label>SIP Password</label>
+				<description>Password for SIP authentication (may differ from API password). Only used when Enable SIP Client is on.</description>
+				<default></default>
+			</parameter>
+			<parameter name="localSipPort" type="integer">
+				<label>Local SIP Port</label>
+				<description>Local UDP port for SIP client (default 5060). Must be unique per thing if multiple SIP clients are
+					used.</description>
+				<default>5060</default>
+			</parameter>
+			<parameter name="sipRealm" type="text">
+				<label>SIP Realm</label>
+				<description>SIP authentication realm (default VDP for Dahua VTO devices).</description>
+				<default>VDP</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

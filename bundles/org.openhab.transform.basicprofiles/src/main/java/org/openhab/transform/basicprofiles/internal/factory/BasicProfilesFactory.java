@@ -98,8 +98,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
                     CoreItemFactory.PLAYER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH) //
             .build();
     private static final ProfileType PROFILE_TYPE_ROUND = ProfileTypeBuilder.newState(ROUND_UID, "Round")
-            .withSupportedItemTypes(CoreItemFactory.NUMBER) //
-            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER) //
+            .withSupportedItemTypes(CoreItemFactory.NUMBER, CoreItemFactory.DATETIME) //
+            .withSupportedItemTypesOfChannel(CoreItemFactory.NUMBER, CoreItemFactory.DATETIME) //
             .build();
     private static final ProfileType PROFILE_TYPE_THRESHOLD = ProfileTypeBuilder.newState(THRESHOLD_UID, "Threshold") //
             .withSupportedItemTypesOfChannel(CoreItemFactory.DIMMER, CoreItemFactory.NUMBER) //

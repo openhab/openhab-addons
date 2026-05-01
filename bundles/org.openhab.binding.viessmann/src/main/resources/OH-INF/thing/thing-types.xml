@@ -453,6 +453,17 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="seconds">
+		<item-type>Number:Time</item-type>
+		<label>Seconds</label>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="percent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage</label>

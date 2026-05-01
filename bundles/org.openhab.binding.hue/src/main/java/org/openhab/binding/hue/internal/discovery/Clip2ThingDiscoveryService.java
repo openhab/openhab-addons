@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
@@ -58,26 +58,31 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
     /**
-     * Two maps of resource types and respective thing types to be discovered for non- motion aware (v2) and motion
-     * aware (v3+) bridges respectively.
+     * Resource types and respective thing types to be discovered for v2 bridges.
      */
-    public static final Map<Boolean, Map<ResourceType, ThingTypeUID>> DISCOVERY_TYPES = Map.of( //
-            false, Map.of( // non- motion aware v2 bridge
-                    ResourceType.DEVICE, THING_TYPE_DEVICE, //
-                    ResourceType.ROOM, THING_TYPE_ROOM, //
-                    ResourceType.ZONE, THING_TYPE_ZONE, //
-                    ResourceType.BRIDGE_HOME, THING_TYPE_ZONE),
-            true, Map.of( // motion aware v3+ bridge
-                    ResourceType.DEVICE, THING_TYPE_DEVICE, //
-                    ResourceType.ROOM, THING_TYPE_ROOM, //
-                    ResourceType.ZONE, THING_TYPE_ZONE, //
-                    ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
-                    ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA));
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V2 = Map.of( //
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
+
+    /**
+     * Resource types and respective thing types to be discovered for v3+ bridges.
+     */
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V3 = Map.of( //
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.SERVICE_GROUP, THING_TYPE_SERVICE_GROUP, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
+            ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA);
 
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA),
+        super(Clip2BridgeHandler.class,
+                Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP),
                 DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
@@ -102,14 +107,16 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = thingHandler.getThing().getUID();
-                for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.get(thingHandler.motionAware())
-                        .entrySet()) {
+                for (Entry<ResourceType, ThingTypeUID> entry : (thingHandler.getBridgeGeneration() >= 3
+                        ? DISCOVERY_TYPES_V3
+                        : DISCOVERY_TYPES_V2).entrySet()) {
                     for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
-                        MetaData metaData = resource.getMetaData();
-                        if (Objects.nonNull(metaData) && Archetype.IGNORED_DEVICES.contains(metaData.getArchetype())) {
-                            // bridge devices handled by bridge thing handler; other unknown devices ignored
+                        ProductData productData = resource.getProductData();
+                        if (Objects.nonNull(productData)
+                                && Archetype.BRIDGES.contains(productData.getProductArchetype())) {
+                            // bridges are discovered elsewhere and handled by bridge thing handlers
                             continue;
                         }
 

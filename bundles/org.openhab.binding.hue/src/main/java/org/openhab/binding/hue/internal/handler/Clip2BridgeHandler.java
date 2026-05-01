@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.HueBridgeModel;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -45,7 +46,6 @@ import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
 import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
-import org.openhab.binding.hue.internal.discovery.HueBridgeMDNSDiscoveryParticipant;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
@@ -105,19 +105,24 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
     private static final ResourceReference AREA = new ResourceReference()
             .setType(ResourceType.MOTION_AREA_CONFIGURATION);
+    private static final ResourceReference SERVICE_GROUP = new ResourceReference().setType(ResourceType.SERVICE_GROUP);
 
     private static final String AUTOMATION_CHANNEL_LABEL_KEY = "dynamic-channel.automation-enable.label";
     private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
 
     /**
-     * Two lists of resource references that need to be mass down loaded for non- motion aware (v2) and motion
-     * aware (v3+) bridges respectively.
-     * NOTE: the SCENE resources must be mass down loaded first!
+     * Resource references that need to be mass downloaded for v2 bridges.
+     * NOTE: the SCENE resources must be mass downloaded first!
      */
-    public static final Map<Boolean, List<ResourceReference>> MASS_DOWNLOAD_RESOURCE_REFERENCES = Map.of( //
-            false, List.of(SCENE, DEVICE, ROOM, ZONE), // non- motion aware v2 bridge
-            true, List.of(SCENE, DEVICE, ROOM, ZONE, AREA) // motion aware v3+ bridge
-    );
+    public static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES_V2 = List.of(SCENE, DEVICE, ROOM,
+            ZONE, SERVICE_GROUP);
+
+    /**
+     * Resource references that need to be mass downloaded for v3+ bridges.
+     * NOTE: the SCENE resources must be mass downloaded first!
+     */
+    public static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES_V3 = List.of(SCENE, DEVICE, ROOM,
+            ZONE, SERVICE_GROUP, AREA);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -143,7 +148,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
-    private boolean motionAware; // true if the bridge is a v3+ model that supports the motion aware feature
+
+    /**
+     * The generation of the bridge model, as returned by the DEVICE resource, used to determine if certain features are
+     * supported.
+     * For example, the motion aware feature is only supported on v3+ models.
+     */
+    private int bridgeGeneration;
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider translationProvider) {
@@ -196,7 +207,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             getClip2Bridge().testConnectionState();
             updateSelf(); // go online
         } catch (HttpUnauthorizedException unauthorizedException) {
-            logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
+            if (config.applicationKey.isBlank()) {
+                logger.debug("checkConnection() no application key configured");
+            } else {
+                logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            }
             if (applKeyRetriesRemaining > 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.press-pairing-button");
@@ -481,6 +497,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void initializeAssets() {
         logger.debug("initializeAssets() {}", this);
         synchronized (this) {
+            ServiceRegistration<?> temp = trustManagerRegistration;
+            if (temp != null) {
+                temp.unregister();
+                trustManagerRegistration = null;
+            }
+
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
 
             String ipAddress = config.ipAddress;
@@ -502,10 +524,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            boolean useSignifyCaCertificateVersion2 = HueBridgeMDNSDiscoveryParticipant
-                    .modelIsOrAboveBSB003(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate, useSignifyCaCertificateVersion2);
+                    config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -520,7 +540,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "";
 
             try {
-                clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+                clip2Bridge = new Clip2Bridge(httpClientFactory, this, trustManagerProvider, ipAddress, applicationKey);
             } catch (ApiException e) {
                 logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
                 setStatusOfflineWithCommunicationError(e);
@@ -706,7 +726,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
                     properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
-                    motionAware = !"BSB002".equals(productData.getModelId());
+                    bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
                 }
                 break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
@@ -741,7 +761,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateThingFromLegacy() {
         if (isInitialized()) {
-            logger.warn("Cannot update bridge thing '{}' from legacy since handler already initialized.",
+            logger.debug("Cannot update bridge thing '{}' from legacy since handler already initialized.",
                     thing.getUID());
             return;
         }
@@ -779,7 +799,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("updateThingsNow()");
         try {
             Clip2Bridge bridge = getClip2Bridge();
-            for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES.get(motionAware)) {
+            for (ResourceReference reference : bridgeGeneration >= 3 ? MASS_DOWNLOAD_RESOURCE_REFERENCES_V3
+                    : MASS_DOWNLOAD_RESOURCE_REFERENCES_V2) {
                 ResourceType resourceType = reference.getType();
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
                 switch (resourceType) {
@@ -947,11 +968,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Getter for whether the bridge is motion aware
-     * 
-     * @return
+     * Getter for the bridge generation, as determined from the model id.
+     *
+     * @return the bridge generation, or 0 if the generation is unknown.
      */
-    public boolean motionAware() {
-        return motionAware;
+    public int getBridgeGeneration() {
+        return bridgeGeneration;
     }
 }

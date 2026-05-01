@@ -5,9 +5,16 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:basic-profiles:round">
-		<parameter name="scale" type="integer" min="-16" max="16" step="1" required="true">
+		<parameter name="precision" type="integer" min="1" step="1" required="false">
+			<label>Precision</label>
+			<description>Optional. Number of significant digits to round to before applying scale for numeric values. Ignored for
+				DateTime values.</description>
+		</parameter>
+		<parameter name="scale" type="integer" min="-16" max="16" step="1" required="false">
 			<label>Scale</label>
-			<description>Scale to indicate the resulting number of decimal places.</description>
+			<description>For numeric values, scale indicates the resulting number of decimal places. For DateTime values, the UTC
+				timestamp is rounded with scale 0 for days, 1 for hours, 2 for minutes, 3 for seconds, and 4 for milliseconds. If
+				omitted for DateTime values, scale 3 is used.</description>
 		</parameter>
 		<parameter name="mode" type="text">
 			<label>Rounding Mode</label>

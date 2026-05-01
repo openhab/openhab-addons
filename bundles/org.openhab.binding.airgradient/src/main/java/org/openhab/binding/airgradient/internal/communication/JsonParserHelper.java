@@ -14,7 +14,6 @@ package org.openhab.binding.airgradient.internal.communication;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,6 +52,6 @@ public class JsonParserHelper {
             return measures.stream().filter(Objects::nonNull).toList();
         }
 
-        return Collections.emptyList();
+        return List.of();
     }
 }

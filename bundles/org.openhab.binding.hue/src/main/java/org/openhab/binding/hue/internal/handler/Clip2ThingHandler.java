@@ -113,7 +113,7 @@ import org.slf4j.LoggerFactory;
 public class Clip2ThingHandler extends BaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM,
-            THING_TYPE_ZONE, THING_TYPE_AREA);
+            THING_TYPE_ZONE, THING_TYPE_AREA, THING_TYPE_SERVICE_GROUP);
 
     private static final Set<ResourceType> SUPPORTED_SCENE_TYPES = Set.of(ResourceType.SCENE, ResourceType.SMART_SCENE);
 
@@ -231,6 +231,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
             thisResource = new Resource(ResourceType.ROOM);
         } else if (THING_TYPE_ZONE.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.ZONE);
+        } else if (THING_TYPE_SERVICE_GROUP.equals(thingTypeUID)) {
+            thisResource = new Resource(ResourceType.SERVICE_GROUP);
         } else if (THING_TYPE_AREA.equals(thingTypeUID)) {
             thisResource = new Resource(ResourceType.MOTION_AREA_CONFIGURATION);
         } else {
@@ -463,11 +465,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_MOTION_ENABLED:
-                putResource = new Resource(getExtendedResourceType(ResourceType.MOTION)).setEnabled(command);
+                ResourceType motionType = thisResource.getType() == ResourceType.DEVICE //
+                        ? getExtendedResourceType(ResourceType.MOTION)
+                        : ResourceType.GROUPED_MOTION;
+                putResource = new Resource(motionType).setEnabled(command);
                 break;
 
             case CHANNEL_2_LIGHT_LEVEL_ENABLED:
-                putResource = new Resource(ResourceType.LIGHT_LEVEL).setEnabled(command);
+                ResourceType lightLevelType = thisResource.getType() == ResourceType.DEVICE //
+                        ? ResourceType.LIGHT_LEVEL
+                        : ResourceType.GROUPED_LIGHT_LEVEL;
+                putResource = new Resource(lightLevelType).setEnabled(command);
                 break;
 
             case CHANNEL_2_SECURITY_CONTACT_ENABLED:
@@ -1080,6 +1088,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_ALERT, resource.getAlertState(), fullUpdate);
                 break;
 
+            case GROUPED_LIGHT_LEVEL:
             case LIGHT_LEVEL:
                 updateState(CHANNEL_2_LIGHT_LEVEL, resource.getLightLevelState(), fullUpdate);
                 updateState(CHANNEL_2_LIGHT_LEVEL_LAST_UPDATED, resource.getLightLevelLastUpdatedState(), fullUpdate);
@@ -1107,6 +1116,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_MOTION_AREA_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
+            case GROUPED_MOTION:
             case MOTION:
                 updateState(CHANNEL_2_MOTION, resource.getMotionState(), fullUpdate);
                 updateState(CHANNEL_2_MOTION_LAST_UPDATED, resource.getMotionLastUpdatedState(), fullUpdate);
@@ -1134,6 +1144,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
+            case ZGP_CONNECTIVITY:
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
                 break;

@@ -26,13 +26,13 @@ public interface Shelly2RpctInterface {
 
     void onConnect(String deviceIp, boolean connected);
 
-    void onMessage(String decodedmessage);
-
     void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException;
 
     void onNotifyEvent(String json) throws ShellyApiException;
 
-    void onClose(int statusCode, String reason);
+    void onPong();
+
+    void onClose(boolean inbound, int statusCode, String reason);
 
     void onError(Throwable cause);
 }

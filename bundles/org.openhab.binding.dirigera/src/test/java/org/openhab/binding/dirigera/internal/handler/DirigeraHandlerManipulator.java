@@ -18,8 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -37,7 +39,8 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryService discoveryService) {
         super(bridge, insecureClient, bindingStorage, discoveryService, mock(LocationProvider.class),
-                mock(DirigeraCommandProvider.class), mock(BundleContext.class));
+                mock(DirigeraCommandProvider.class), mock(DirigeraStateDescriptionProvider.class),
+                mock(BundleContext.class), HandlerFactoryMock.timeZoneProvider);
     }
 
     /**

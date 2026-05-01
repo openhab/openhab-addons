@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_CONFIG_TIMEFRAME;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PRESSURE;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE_GUARD;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_VALVE_OPEN;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -99,6 +93,9 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 break;
             case CHANNEL_TEMPERATURE_GUARD:
                 newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
+                break;
+            case CHANNEL_PAUSE:
+                newState = getPauseState();
                 break;
             case CHANNEL_VALVE_OPEN:
                 OnOffType valveOpenType = getValveOpenType(appliance);
@@ -237,6 +234,10 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
+            return;
+        }
+
+        if (handlePauseCommand(channelUID, command)) {
             return;
         }
 

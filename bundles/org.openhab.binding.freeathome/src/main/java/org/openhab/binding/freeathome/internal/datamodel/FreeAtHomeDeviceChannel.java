@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.freeathome.internal.datamodel;
 
-import static org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.*;
 import static org.openhab.binding.freeathome.internal.util.FidTranslationUtils.*;
 
 import java.util.ArrayList;

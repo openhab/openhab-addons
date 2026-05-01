@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atmofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>Atmo Data API Portal</label>
+		<description>
+			Bridge to the Atmo Data API Portal. In order to receive the data, you must register an account at
+			https://admindata.atmo-france.org/inscription-api and receive your account credentials.
+		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username from Atmo Data API Account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password from Atmo Data API Account</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

@@ -13,14 +13,15 @@
 package org.openhab.binding.vesync.internal.handlers;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
+import static org.openhab.binding.vesync.internal.dto.requests.ProtocolConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,10 +29,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassHumidifierStatus;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2Ver2BypassHumidifierStatus;
+import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetNightLightBrightness;
+import org.openhab.binding.vesync.internal.dto.requests.v2_1.SetTargetHumidity;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.Enabled;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetLevel;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetMode;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetState;
+import org.openhab.binding.vesync.internal.dto.requests.v2_2.SetSwitch;
+import org.openhab.binding.vesync.internal.dto.responses.TransactionResp;
+import org.openhab.binding.vesync.internal.dto.responses.devices.v2_2.airhumidifier.StatusResp;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -59,7 +66,6 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
@@ -220,17 +226,14 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             if (command instanceof OnOffType) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_ENABLED:
-                        sendV2BypassControlCommand(DEVICE_SET_SWITCH,
-                                new VeSyncRequestManagedDeviceBypassV2.SetSwitchPayload(command.equals(OnOffType.ON),
-                                        0));
+                        sendV2BypassControlCommand(DEVICE_SET_SWITCH, new SetSwitch(command.equals(OnOffType.ON), 0));
                         break;
                     case DEVICE_CHANNEL_DISPLAY_ENABLED:
-                        sendV2BypassControlCommand(DEVICE_SET_DISPLAY,
-                                new VeSyncRequestManagedDeviceBypassV2.SetState(command.equals(OnOffType.ON)));
+                        sendV2BypassControlCommand(DEVICE_SET_DISPLAY, new SetState(command.equals(OnOffType.ON)));
                         break;
                     case DEVICE_CHANNEL_STOP_AT_TARGET:
                         sendV2BypassControlCommand(DEVICE_SET_AUTOMATIC_STOP,
-                                new VeSyncRequestManagedDeviceBypassV2.EnabledPayload(command.equals(OnOffType.ON)));
+                                new Enabled(command.equals(OnOffType.ON)));
                         break;
                     case DEVICE_CHANNEL_WARM_ENABLED:
                         logger.warn("{}", getLocalizedText("warning.device.warm-mode-unsupported"));
@@ -249,12 +252,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetMode(
-                                        devContraints.getProtocolMode(MODE_AUTO)),
-                                false);
+                                new SetMode(devContraints.getProtocolMode(MODE_AUTO)), false);
 
                         sendV2BypassControlCommand(DEVICE_SET_TARGET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetTargetHumidity(targetHumidity));
+                                new SetTargetHumidity(targetHumidity));
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
                         int targetMistLevel = quantityCommand.intValue();
@@ -285,12 +286,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                             }
                         }
 
-                        sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetMode(MODE_MANUAL), false);
+                        sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE, new SetMode(MODE_MANUAL), false);
 
                         sendV2BypassControlCommand(DEVICE_SET_VIRTUAL_LEVEL,
-                                new VeSyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_MIST,
-                                        targetMistLevel));
+                                new SetLevel(0, DEVICE_LEVEL_TYPE_MIST, targetMistLevel));
                         break;
                     case DEVICE_CHANNEL_WARM_LEVEL:
                         int targetWarmMistLevel = quantityCommand.intValue();
@@ -305,12 +304,11 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         }
 
                         sendV2BypassControlCommand(DEVICE_SET_LEVEL,
-                                new VeSyncRequestManagedDeviceBypassV2.SetLevelPayload(0, DEVICE_LEVEL_TYPE_WARM_MIST,
-                                        targetWarmMistLevel));
+                                new SetLevel(0, DEVICE_LEVEL_TYPE_WARM_MIST, targetWarmMistLevel));
                         break;
                 }
             } else if (command instanceof StringType) {
-                final String targetMode = command.toString().toLowerCase();
+                final String targetMode = command.toString().toLowerCase(Locale.ENGLISH);
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_HUMIDIFIER_MODE:
                         if (!devContraints.fanModes.contains(targetMode)) {
@@ -319,8 +317,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                             return;
                         }
                         sendV2BypassControlCommand(DEVICE_SET_HUMIDITY_MODE,
-                                new VeSyncRequestManagedDeviceBypassV2.SetMode(
-                                        devContraints.getProtocolMode(targetMode)));
+                                new SetMode(devContraints.getProtocolMode(targetMode)));
                         break;
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
                         if (!devContraints.nightLightModes.contains(targetMode)) {
@@ -344,7 +341,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 return; // should never hit
                         }
                         sendV2BypassControlCommand(DEVICE_SET_NIGHT_LIGHT_BRIGHTNESS,
-                                new VeSyncRequestManagedDeviceBypassV2.SetNightLightBrightness(targetValue));
+                                new SetNightLightBrightness(targetValue));
                 }
             } else if (command instanceof RefreshType) {
                 pollForUpdate();
@@ -357,7 +354,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
     @Override
     protected void pollForDeviceData(final ExpiringCache<String> cachedResponse) {
         String response;
-        VeSyncResponse humidifierStatus;
+        TransactionResp humidifierStatus;
 
         final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
 
@@ -372,8 +369,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             boolean cachedDataUsed = response != null;
             if (response == null) {
                 logger.trace("Requesting fresh response");
-                response = sendV2BypassCommand(DEVICE_GET_HUMIDIFIER_STATUS,
-                        new VeSyncRequestManagedDeviceBypassV2.EmptyPayload());
+                response = sendV2BypassCommand(DEVICE_GET_HUMIDIFIER_STATUS, new EmptyPayload());
             } else {
                 logger.trace("Using cached response {}", response);
             }
@@ -383,9 +379,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
             }
 
             if (devContraints.protocolV2Version == 2) {
-                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2Ver2BypassHumidifierStatus.class);
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response, StatusResp.class);
             } else {
-                humidifierStatus = VeSyncConstants.GSON.fromJson(response, VeSyncV2BypassHumidifierStatus.class);
+                humidifierStatus = VeSyncConstants.GSON.fromJson(response,
+                        org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp.class);
             }
 
             if (humidifierStatus == null) {
@@ -407,13 +404,16 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (devContraints.protocolV2Version != 2) {
-            parseV2Ver1Poll((VeSyncV2BypassHumidifierStatus) humidifierStatus, deviceFamily);
+            parseV2Ver1Poll(
+                    (org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp) humidifierStatus,
+                    deviceFamily);
         } else {
-            parseV2Ver2Poll((VeSyncV2Ver2BypassHumidifierStatus) humidifierStatus);
+            parseV2Ver2Poll((StatusResp) humidifierStatus);
         }
     }
 
-    private void parseV2Ver1Poll(final VeSyncV2BypassHumidifierStatus humidifierStatus,
+    private void parseV2Ver1Poll(
+            final org.openhab.binding.vesync.internal.dto.responses.devices.v2_1.airhumidifier.StatusResp humidifierStatus,
             final @Nullable String deviceFamily) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));
@@ -455,7 +455,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                 new QuantityType<>(humidifierStatus.result.result.configuration.autoTargetHumidity, Units.PERCENT));
     }
 
-    private void parseV2Ver2Poll(final VeSyncV2Ver2BypassHumidifierStatus humidifierStatus) {
+    private void parseV2Ver2Poll(final StatusResp humidifierStatus) {
         if (!"0".equals(humidifierStatus.result.getCode())) {
             logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-humidifier"));
             return;
@@ -479,8 +479,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_ERROR_CODE, new DecimalType(humidifierStatus.result.result.errorCode));
         updateState(DEVICE_CHANNEL_AF_SCHEDULES_COUNT, new DecimalType(humidifierStatus.result.result.scheduleCount));
         if (humidifierStatus.result.result.timerRemain > 0) {
-            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(LocalDateTime.now()
-                    .plus(humidifierStatus.result.result.timerRemain, ChronoUnit.MINUTES).toString()));
+            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(
+                    Instant.now().plus(humidifierStatus.result.result.timerRemain, ChronoUnit.MINUTES)));
         } else {
             updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeItem("nullEnforcements").getState());
         }

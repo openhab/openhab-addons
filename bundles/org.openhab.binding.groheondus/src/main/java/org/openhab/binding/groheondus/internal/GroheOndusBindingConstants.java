@@ -30,6 +30,7 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_TEMPERATURE_GUARD = "temperature_guard";
+    public static final String CHANNEL_PAUSE = "pause";
     public static final String CHANNEL_VALVE_OPEN = "valve_open";
     public static final String CHANNEL_WATERCONSUMPTION = "waterconsumption";
     public static final String CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT = "waterconsumption_since_midnight";
@@ -38,4 +39,6 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_BATTERY = "battery";
 
     public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
+
+    public static final int DEFAULT_POLLING_INTERVAL = 900;
 }

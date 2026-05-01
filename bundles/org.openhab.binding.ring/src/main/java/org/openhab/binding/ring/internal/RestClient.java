@@ -391,13 +391,21 @@ public class RestClient {
     }
 
     public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
+        sendCommand(endpoint, HttpMethod.PUT, null, tokens);
+    }
+
+    public void sendCommand(String endpoint, HttpMethod httpMethod, @Nullable String payload, Tokens tokens)
+            throws AuthenticationException {
         try {
             Request request = httpClient.newRequest(endpoint);
-            request.method(HttpMethod.PUT);
+            request.method(httpMethod);
             request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
             request.agent(ApiConstants.API_USER_AGENT);
             request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
 
+            if (payload != null) {
+                request.content(new StringContentProvider(payload), "application/json");
+            }
             ContentResponse response = request.send();
             int responseCode = response.getStatus();
             switch (responseCode) {

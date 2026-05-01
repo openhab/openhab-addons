@@ -16,6 +16,7 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.device.RingDevice;
 
 /**
@@ -56,4 +57,13 @@ public interface RingAccount {
      * @param url to be sent to the Ring API
      */
     void sendCommand(String url);
+
+    /**
+     * Send a command with a payload to the Ring API
+     *
+     * @param url to be sent to the Ring API
+     * @param HTTP method (ie patch, get, put) to be sent to the Ring API
+     * @param payload to be sent to the Ring API
+     */
+    void sendCommand(String url, HttpMethod httpMethod, String payload);
 }

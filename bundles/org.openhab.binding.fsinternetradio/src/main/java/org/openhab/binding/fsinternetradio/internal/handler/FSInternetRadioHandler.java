@@ -160,7 +160,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
             @Override
             public void run() {
                 try {
-                    if (radio.login()) {
+                    FrontierSiliconRadio radio = FSInternetRadioHandler.this.radio;
+                    if (radio != null && radio.login()) {
                         // Thing initialized. If done set status to ONLINE to indicate proper working.
                         updateStatus(ThingStatus.ONLINE);
 
@@ -187,7 +188,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         FrontierSiliconRadio radio = this.radio;
-        if (!radio.isLoggedIn()) {
+        if (radio == null || !radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {

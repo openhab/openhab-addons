@@ -21,7 +21,6 @@ import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,21 +93,6 @@ class Clip2DtoTest {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
     private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
-
-    // Resource types which do not yet have a test JSON payload available
-    public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
-    //@formatter:off
-            ResourceType.CLIP,
-            ResourceType.DEVICE_SOFTWARE_UPDATE,
-            ResourceType.GROUPED_LIGHT_LEVEL,
-            ResourceType.MATTER,
-            ResourceType.MATTER_FABRIC,
-            ResourceType.MOTION_AREA_CANDIDATE,
-            ResourceType.SERVICE_GROUP,
-            ResourceType.WIFI_CONNECTIVITY,
-            ResourceType.ZIGBEE_DEVICE_DISCOVERY
-    //@formatter:on
-    );
 
     /**
      * Load the test JSON payload string from a file
@@ -687,9 +671,6 @@ class Clip2DtoTest {
     void testValidJson() {
         for (ResourceType res : ResourceType.values()) {
             if (!ResourceType.SSE_TYPES.contains(res)) {
-                if (RESOURCES_WITH_NO_JSON_TEST_CASE_YET.contains(res)) {
-                    continue;
-                }
                 try {
                     String file = res.name().toLowerCase();
                     String json = load(file);
@@ -1041,5 +1022,24 @@ class Clip2DtoTest {
         List<SoundValue> soundValues = sound.getSoundValues();
         assertNotNull(soundValues);
         assertEquals(12, soundValues.size());
+    }
+
+    @Test
+    void testServiceGroup() {
+        String json = load(ResourceType.SERVICE_GROUP.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.SERVICE_GROUP, item.getType());
+        assertEquals("Sensor group", item.getName());
+        List<ResourceReference> services = item.getServiceReferences();
+        assertNotNull(services);
+        assertEquals(2, services.size());
+        List<ResourceReference> children = item.getChildren();
+        assertNotNull(children);
+        assertEquals(4, children.size());
     }
 }

@@ -465,6 +465,15 @@ States and controls are depending on your vehicle capabilities.
 - 5 : Slow Charging
 - 6 : Fast Charging
 - 7 : Discharging
+- 8 : Not charging
+- 9 : Slow Charging after reaching trip target
+- 10 : Charging after reaching trip target
+- 11 : Fast Charging after reaching trip target
+- 12 : Connected
+- 13 : AC Charging
+- 14 : DC Charging
+- 15 : Battery calibration active
+- 16 : Unknown
 
 #### Charge Error Mapping
 

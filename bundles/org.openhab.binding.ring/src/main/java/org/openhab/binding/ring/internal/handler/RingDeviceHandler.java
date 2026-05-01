@@ -16,6 +16,7 @@ import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.config.RingThingConfig;
@@ -108,6 +109,14 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         if (getBridge() instanceof Bridge bridge) {
             if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 ringAccount.sendCommand(url + "/" + config.id + command);
+            }
+        }
+    }
+
+    protected void sendCommand(String url, String command, HttpMethod httpMethod, String payload) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
+                ringAccount.sendCommand(url + "/" + config.id + command, httpMethod, payload);
             }
         }
     }

@@ -49,7 +49,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
@@ -57,8 +56,10 @@ import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scope.ScriptExtensionModuleProvider;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
+import org.openhab.automation.jsscripting.internal.util.Slf4jOutputStream;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
@@ -68,6 +69,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 
@@ -85,7 +87,7 @@ public class OpenhabGraalJSScriptEngine
         implements Lock {
 
     // see private constant GraalJSScriptEngine.ID
-    private static final String LANGUAGE_ID = "js";
+    static final String LANGUAGE_ID = "js";
 
     private static final Source GLOBAL_SOURCE;
     static {
@@ -109,7 +111,7 @@ public class OpenhabGraalJSScriptEngine
         }
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
+    private static final String EVENT_CONVERSION_CODE = "(this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event);";
     private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
             .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
     /**
@@ -124,9 +126,6 @@ public class OpenhabGraalJSScriptEngine
         File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
         System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
     }
-    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
-    private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
-            .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
@@ -175,13 +174,15 @@ public class OpenhabGraalJSScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
+    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration, Engine engine,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialized, so we cannot set it immediately
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
-        delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder(LANGUAGE_ID) //
+        Logger contextLogger = LoggerFactory
+                .getLogger(OpenhabGraalJSScriptEngine.class.getPackageName() + ".org.graalvm.polyglot.Context");
+        delegate = GraalJSScriptEngine.create(engine, Context.newBuilder(LANGUAGE_ID) //
                 .allowIO(IOAccess.newBuilder() //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
@@ -256,6 +257,9 @@ public class OpenhabGraalJSScriptEngine
                 .hostClassLoader(getClass().getClassLoader()) //
                 // allow experimental options
                 .allowExperimentalOptions(true) //
+                // redirect context's out/err streams to SLF4J
+                .out(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(contextLogger, Level.WARN)) //
                 // choose the path to look for CommonJS module (i.e. node_modules)
                 .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString()) //
                 // enable Nashorn compat mode as openhab-js relies on accessors, see
@@ -409,7 +413,6 @@ public class OpenhabGraalJSScriptEngine
             for (int i = 0; i < lines.size(); i++) {
                 if (i == lineNumber) {
                     sb.append(EVENT_CONVERSION_CODE);
-                    sb.append(System.lineSeparator());
                 }
                 sb.append(lines.get(i));
                 sb.append(System.lineSeparator());
@@ -419,7 +422,8 @@ public class OpenhabGraalJSScriptEngine
 
         if (useWrapper) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-            newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
+            // the line separator after the script is required so the end of the IIFE cannot be "commented out"
+            newScript = "(function() {" + newScript + System.lineSeparator() + "})()";
         }
         return super.onScript(newScript);
     }
@@ -601,14 +605,5 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public Condition newCondition() {
         return lock.newCondition();
-    }
-
-    /**
-     * Gets the Graal language of {@link OpenhabGraalJSScriptEngine}.
-     * 
-     * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
-     */
-    public static @Nullable Language getLanguage() {
-        return ENGINE.getLanguages().get(LANGUAGE_ID);
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.folding.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -20,27 +22,26 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
+@NonNullByDefault
 public class FoldingDiscoveryProxy {
 
-    private static FoldingDiscoveryProxy instance;
-    private FoldingSlotDiscoveryService discoveryService = null;
+    private static final FoldingDiscoveryProxy INSTANCE = new FoldingDiscoveryProxy();
+    private volatile @Nullable FoldingSlotDiscoveryService discoveryService;
 
     private FoldingDiscoveryProxy() {
     }
 
     public static FoldingDiscoveryProxy getInstance() {
-        if (instance == null) {
-            instance = new FoldingDiscoveryProxy();
-        }
-        return instance;
+        return INSTANCE;
     }
 
     public void setService(FoldingSlotDiscoveryService service) {
         this.discoveryService = service;
     }
 
-    public void newSlot(ThingUID bridgeUID, String host, String id, String description) {
-        if (instance != null) {
+    public void newSlot(ThingUID bridgeUID, String host, @Nullable String id, @Nullable String description) {
+        FoldingSlotDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
             discoveryService.newSlot(bridgeUID, host, id, description);
         }
     }

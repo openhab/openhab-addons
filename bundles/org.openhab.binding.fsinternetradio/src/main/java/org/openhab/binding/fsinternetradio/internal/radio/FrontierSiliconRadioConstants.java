@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.fsinternetradio.internal.radio;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Internal constants for the frontier silicon radio.
  *
  * @author Markus Rathgeb - Initial contribution, moved the constants to separate class
  */
+@NonNullByDefault
 public class FrontierSiliconRadioConstants {
 
     public static final String REQUEST_SET_POWER = "SET/netRemote.sys.power";
