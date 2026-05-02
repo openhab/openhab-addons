@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -33,6 +34,12 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link TelegramHandlerFactory} is responsible for creating things and
  * thing handlers.
  *
+ * <p>
+ * A single {@link TelegramMessageStore} is created per factory (= per binding
+ * instance) and shared across all {@link TelegramHandler}s. This is safe
+ * because the store is keyed by {@code chatId + replyId}, which is globally
+ * unique within one Telegram bot.
+ *
  * @author Jens Runge - Initial contribution
  */
 @NonNullByDefault
@@ -43,9 +50,22 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
 
+    /**
+     * Shared persistent store for message IDs and callback IDs.
+     *
+     * <p>
+     * Backed by openHAB's {@link StorageService}, which writes entries to disk
+     * (MapDB by default). All handlers that belong to this factory share the
+     * same store so that multi-thing setups with the same bot still work
+     * correctly.
+     */
+    private final TelegramMessageStore messageStore;
+
     @Activate
-    public TelegramHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+    public TelegramHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
+            @Reference final StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.messageStore = new TelegramMessageStore(storageService);
     }
 
     @Override
@@ -58,7 +78,7 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TELEGRAM_THING.equals(thingTypeUID)) {
-            return new TelegramHandler(thing, httpClient);
+            return new TelegramHandler(thing, httpClient, messageStore);
         }
         return null;
     }
