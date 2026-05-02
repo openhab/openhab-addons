@@ -19,7 +19,9 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,6 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.CommandClass;
+import org.openhab.binding.zwavejs.internal.api.dto.Endpoint;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSChannelTypeInMemmoryProvider;
@@ -423,5 +427,78 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertEquals(47, channels.values().stream().map(f -> f.getChannelTypeUID()).distinct().count());
         assertTrue(channels.containsKey("color-switch-color-temperature"));
+    }
+
+    @Test
+    public void testSceneActivationChannelCreatedFromEndpointCommandClassList() {
+        // Synthetic node: endpoint 0 lists CC 0x2B (Scene Activation) but has no value entry for it
+        // (this matches what zwave-js exposes for stateless CCs). We expect a Number channel to be
+        // synthesized so that runtime "value notification" events have a destination.
+        Node node = new Node();
+        node.nodeId = 99;
+        node.values = new ArrayList<>();
+        Endpoint ep = new Endpoint();
+        ep.index = 0;
+        ep.commandClasses = new ArrayList<>();
+        CommandClass sceneActivation = new CommandClass();
+        sceneActivation.id = 0x2B;
+        sceneActivation.name = "Scene Activation";
+        sceneActivation.version = 1;
+        ep.commandClasses.add(sceneActivation);
+        node.endpoints = List.of(ep);
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+
+        Channel channel = results.channels.get("scene-activation-scene-id");
+        assertNotNull(channel);
+        assertEquals(CoreItemFactory.NUMBER, channel.getAcceptedItemType());
+        assertEquals("Scene Activation", channel.getLabel());
+
+        Configuration config = channel.getConfiguration();
+        assertEquals("Scene Activation", config.get(BindingConstants.CONFIG_CHANNEL_COMMANDCLASS_NAME));
+    }
+
+    @Test
+    public void testSceneActivationChannelPerEndpoint() {
+        // Two endpoints both listing CC 0x2B should produce two channels with the -N suffix.
+        Node node = new Node();
+        node.nodeId = 100;
+        node.values = new ArrayList<>();
+        node.endpoints = new ArrayList<>();
+        for (int idx : new int[] { 0, 1 }) {
+            Endpoint ep = new Endpoint();
+            ep.index = idx;
+            ep.commandClasses = new ArrayList<>();
+            CommandClass cc = new CommandClass();
+            cc.id = 0x2B;
+            cc.name = "Scene Activation";
+            cc.version = 1;
+            ep.commandClasses.add(cc);
+            node.endpoints.add(ep);
+        }
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+
+        assertNotNull(results.channels.get("scene-activation-scene-id"));
+        assertNotNull(results.channels.get("scene-activation-scene-id-1"));
+    }
+
+    @Test
+    public void testSceneActivationChannelNotCreatedWhenCcAbsent() {
+        // No endpoint lists CC 0x2B, so no Scene Activation channel should be created.
+        Node node = new Node();
+        node.nodeId = 101;
+        node.values = new ArrayList<>();
+        Endpoint ep = new Endpoint();
+        ep.index = 0;
+        ep.commandClasses = new ArrayList<>();
+        node.endpoints = List.of(ep);
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+
+        assertNull(results.channels.get("scene-activation-scene-id"));
     }
 }
