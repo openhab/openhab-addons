@@ -83,21 +83,27 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
-        if (getThing().getStatus() == ONLINE) {
-            RouterosDevice routeros = getRouterOs();
-            if (routeros != null) {
-                if (command == REFRESH) {
-                    refreshCache.getValue();
-                    refreshChannel(channelUID);
-                } else {
-                    try {
-                        executeCommand(channelUID, command);
-                    } catch (RuntimeException e) {
-                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
-                                e.getMessage());
-                    }
-                }
-            }
+        if (getThing().getStatus() != ONLINE) {
+            return;
+        }
+
+        RouterosDevice routeros = getRouterOs();
+        if (routeros == null) {
+            return;
+        }
+
+        if (command == REFRESH) {
+            refreshCache.getValue();
+            refreshChannel(channelUID);
+
+            return;
+        }
+
+        try {
+            executeCommand(channelUID, command);
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
+                    e.getMessage());
         }
     }
 
