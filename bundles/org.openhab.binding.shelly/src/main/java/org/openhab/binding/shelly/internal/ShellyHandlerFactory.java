@@ -48,6 +48,7 @@ import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
+    private final NetworkAddressService networkAddressService;
     private volatile ShellyBindingConfiguration bindingConfig;
 
     /**
@@ -83,6 +85,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         this.messages = translationProvider;
         this.thingTable = thingTable;
+        this.networkAddressService = networkAddressService;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
         this.webSocketClient = client;
         try {
@@ -95,6 +98,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         String localIP = new ShellyBindingConfiguration(networkAddressService).getLocalIP();
         bindingConfig = ShellyBindingConfiguration.fromProperties(localIP, configProperties);
         if (bindingConfig.getLocalIP().isEmpty()) {
+            // Intentionally hard-fail: without a local IP the binding cannot build callback
+            // URLs, register CoIoT listeners, or handle WebSocket events. Starting in a
+            // degraded state would silently break all Gen1 event handling and Gen2 battery
+            // devices, so we fail fast here rather than logging a warning.
             logger.error("{}", messages.get("message.init.noipaddress"));
             throw new ComponentException("Failed to activate: Local IP can't be detected");
         }
@@ -114,6 +121,29 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             webSocketClient.stop();
         } catch (Exception e) {
             logger.warn("Failed to stop ShellyHandlerFactory WebSocketClient: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Called by OSGi DS when the binding configuration is changed at runtime (user edits binding settings in the UI).
+     * Rebuilds {@link ShellyBindingConfiguration} from the new properties and propagates it to all active handlers so
+     * they can apply the new credentials, local IP or autoCoIoT flag without a full factory restart.
+     */
+    @Modified
+    protected void modified(Map<String, Object> configProperties) {
+        String localIP = new ShellyBindingConfiguration(networkAddressService).getLocalIP();
+        if (localIP.isEmpty()) {
+            logger.warn("Binding configuration update ignored: unable to detect local IP address");
+            return;
+        }
+        int httpPort = HttpServiceUtil.getHttpServicePort(bundleContext);
+        ShellyBindingConfiguration newConfig = ShellyBindingConfiguration.fromProperties(localIP, configProperties)
+                .withHttpPort(httpPort);
+        bindingConfig = newConfig;
+        logger.debug("Binding configuration updated (localIP={}, httpPort={}), propagating to {} thing(s)", localIP,
+                newConfig.getHttpPort(), thingTable.size());
+        for (ShellyThingInterface handler : thingTable.getAll().values()) {
+            handler.updateBindingConfig(newConfig);
         }
     }
 

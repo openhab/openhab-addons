@@ -142,7 +142,7 @@ public class ShellyBindingConfigurationTest {
         ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("",
                 Map.of("unknownKey", "value"));
         assertThat(config.getDefaultUserId(), is("admin"));
-        assertThat(config.getDefaultPassword(), is("admin"));
+        assertThat(config.getDefaultPassword(), is(""));
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
@@ -154,7 +154,19 @@ public class ShellyBindingConfigurationTest {
                 (Dictionary<String, Object>) null);
         assertThat(config.getLocalIP(), is("10.0.0.2"));
         assertThat(config.getDefaultUserId(), is("admin"));
+        assertThat(config.getDefaultPassword(), is(""));
         assertThat(config.isAutoCoIoT(), is(true));
+    }
+
+    @Test
+    void fromPropertiesNullDictionaryAndMapYieldSameDefaults() {
+        // null Dictionary must produce identical defaults to an empty Map — no "admin" password leak
+        ShellyBindingConfiguration fromNull = ShellyBindingConfiguration.fromProperties("10.0.0.3",
+                (Dictionary<String, Object>) null);
+        ShellyBindingConfiguration fromEmpty = ShellyBindingConfiguration.fromProperties("10.0.0.3", Map.of());
+        assertThat(fromNull.getDefaultUserId(), is(fromEmpty.getDefaultUserId()));
+        assertThat(fromNull.getDefaultPassword(), is(fromEmpty.getDefaultPassword()));
+        assertThat(fromNull.isAutoCoIoT(), is(fromEmpty.isAutoCoIoT()));
     }
 
     @Test

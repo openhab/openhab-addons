@@ -84,16 +84,25 @@ public class ShellyApiConfiguration {
     private final String localPort; // local port, used by callbacks through servlet
 
     /*
-     * Those values are updated after device settings has been read
+     * The two fields below are intentionally mutable after construction:
+     *
+     * - realm: not known until the first /shelly response is parsed (hostname may be returned by
+     * the device only after getDeviceInfo() or getDeviceProfile() succeeds).
+     * - enableCoIOT: the auto-CoIoT feature (bindingConfig.autoCoIoT) promotes this flag from
+     * false → true at runtime after the firmware version is checked in checkVersion().
+     *
+     * Both use thread-safe atomic types and are the only allowed exceptions to the
+     * "immutable after construction" rule for ShellyApiConfiguration.
      */
-
     private final AtomicReference<String> realm = new AtomicReference<>("");
     private final AtomicBoolean enableCoIOT = new AtomicBoolean(true); // true: CoIoT/COAP enabled, event urls disabled
 
     /**
-     * Constructor for Thing handler
+     * Constructor for Thing handler — resolves the device hostname to an IP address.
+     * Must only be called from a background/scheduler thread. Use the overload with
+     * {@code resolveHostname=false} when constructing on the OSGi framework thread
+     * (e.g. inside a ThingHandler constructor) to avoid blocking DNS lookups.
      *
-     * @param thingName Thing name used for logging
      * @param thingConfig OH Thing configuration
      * @param bindingConfig Binding configuration
      * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
@@ -101,6 +110,23 @@ public class ShellyApiConfiguration {
      */
     public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
             String realm, boolean gen2) {
+        this(thingConfig, bindingConfig, realm, gen2, true);
+    }
+
+    /**
+     * Constructor for Thing handler.
+     *
+     * @param thingConfig OH Thing configuration
+     * @param bindingConfig Binding configuration
+     * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
+     * @param gen2 True for Generation 2 or newer devices
+     * @param resolveHostname When {@code true} the device hostname is resolved to an IP address via
+     *            DNS (blocking). Pass {@code false} when called from the framework/OSGi thread to
+     *            avoid blocking; hostname resolution then happens on the first scheduler-thread call
+     *            to {@code buildApiConfig()} inside {@code initializeThingConfig()}.
+     */
+    public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
+            String realm, boolean gen2, boolean resolveHostname) {
         this.localIp = bindingConfig.getLocalIP();
         this.localPort = String.valueOf(bindingConfig.getHttpPort());
         this.realm.set(realm);
@@ -112,7 +138,8 @@ public class ShellyApiConfiguration {
             deviceAddress = thingConfig.getDeviceAddress().toLowerCase(Locale.ROOT).replace(":", "");
             deviceIp = "";
         } else {
-            deviceIp = deviceAddress = resolveIp(thingConfig.getDeviceIp());
+            String raw = thingConfig.getDeviceIp();
+            deviceIp = deviceAddress = resolveHostname ? resolveIp(raw) : raw;
         }
 
         credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),

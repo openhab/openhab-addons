@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.config;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_USERID;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -48,7 +49,7 @@ public class ShellyBindingConfiguration {
 
     /** No-arg constructor: empty localIP, all other fields use defaults. */
     public ShellyBindingConfiguration() {
-        this("", "admin", "", -1, true);
+        this("", SHELLY2_DEFAULT_USERID, "", -1, true);
     }
 
     /**
@@ -56,7 +57,7 @@ public class ShellyBindingConfiguration {
      * Combine with {@link #fromProperties} to apply binding.cfg overrides on top.
      */
     public ShellyBindingConfiguration(NetworkAddressService networkAddressService) {
-        this(resolveLocalIP(networkAddressService), "admin", "", -1, true);
+        this(resolveLocalIP(networkAddressService), SHELLY2_DEFAULT_USERID, "", -1, true);
     }
 
     private ShellyBindingConfiguration(String localIP, String defaultUserId, String defaultPassword, int httpPort,
@@ -75,7 +76,7 @@ public class ShellyBindingConfiguration {
      * callers control whether a network-resolved address or an empty placeholder is used.
      */
     public static ShellyBindingConfiguration fromProperties(String localIP, Map<String, Object> properties) {
-        return new ShellyBindingConfiguration(localIP, "admin", "admin", -1, true).withOverrides(properties);
+        return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, "", -1, true).withOverrides(properties);
     }
 
     /**
@@ -84,7 +85,7 @@ public class ShellyBindingConfiguration {
     public static ShellyBindingConfiguration fromProperties(String localIP,
             @Nullable Dictionary<String, Object> properties) {
         if (properties == null) {
-            return new ShellyBindingConfiguration(localIP, "admin", "admin", -1, true);
+            return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, "", -1, true);
         }
         List<String> keys = Collections.list(properties.keys());
         Map<String, Object> map = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));

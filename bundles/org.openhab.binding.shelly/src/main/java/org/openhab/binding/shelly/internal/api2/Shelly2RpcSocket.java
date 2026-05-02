@@ -298,6 +298,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Clears {@code sendQueue} (NOT preserved across reconnects).
      */
     public void disconnect() {
+        stopPing();
         Session session;
         synchronized (this) {
             session = this.session;
