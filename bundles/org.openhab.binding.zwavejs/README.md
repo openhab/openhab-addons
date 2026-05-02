@@ -65,6 +65,13 @@ It provides the event payload in JSON as a string value.
 A common scenario is using this JSON to determine the userId that unlocked a door lock.
 This channel is added automatically; no manual configuration is required.
 
+### Scene-Activation Channel
+
+The binding automatically adds a `scene-activation-scene-id` channel (or `scene-activation-scene-id-N` per endpoint) for endpoints that support Scene Activation (Command Class 0x2B).
+Scene Activation is a stateless command class, so its values are not part of the static Z-Wave JS node snapshot; the channel is pre-created so the binding can post the activated scene id (`Number`) when the device sends a Scene Activation Set.
+This is useful for devices like the Fibaro FGD212 / FGS222, which expose Scene Activation but not Central Scene.
+This channel is added automatically; no manual configuration is required.
+
 ## Channel Configuration and Inversion
 
 Channels in the `zwavejs` binding support an **inversion** configuration option.

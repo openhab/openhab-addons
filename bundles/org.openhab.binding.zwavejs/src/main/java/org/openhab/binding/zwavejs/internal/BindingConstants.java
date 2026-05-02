@@ -96,4 +96,10 @@ public class BindingConstants {
     public static final String VIRTUAL_NOTIFICATION_PROPERTY = "virtual";
     public static final String VIRTUAL_NOTIFICATION_CHANNEL_ID = String.format("%s-%s",
             VIRTUAL_COMMAND_CLASS_NOTIFICATION, VIRTUAL_NOTIFICATION_PROPERTY);
+
+    // Scene Activation CC (0x2B) is event-only: zwave-js does not include it in the static
+    // node.values snapshot, so a channel must be synthesized at interview time using these names
+    // to match the metadata id derived from runtime "value notification" events.
+    public static final String SCENE_ACTIVATION_CHANNEL_COMMAND_CLASS_NAME = "Scene Activation";
+    public static final String SCENE_ACTIVATION_CHANNEL_PROPERTY_NAME = "sceneId";
 }
