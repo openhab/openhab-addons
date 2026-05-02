@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -72,6 +73,7 @@ import com.pengrad.telegrambot.response.SendResponse;
  * Provides the actions for the Telegram API.
  *
  * @author Alexander Krasnogolowy - Initial contribution
+ * @author Christoph Pfarrherr - fixing message "Avoid method with implicit default Locale: xxx.toLowerCase()"
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = TelegramActions.class)
 @ThingActionsScope(name = "telegram")
@@ -423,7 +425,7 @@ public class TelegramActions implements ThingActions {
             logger.warn("chatId not defined; action skipped.");
             return false;
         }
-        String lowercasePhotoUrl = photoURL.toLowerCase();
+        String lowercasePhotoUrl = photoURL.toLowerCase(Locale.ROOT);
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             final SendPhoto sendPhoto;
@@ -583,7 +585,7 @@ public class TelegramActions implements ThingActions {
 
             for (int i = 0; i < mediaUrls.size(); i++) {
                 String url = mediaUrls.get(i);
-                String type = mediaTypes.get(i).toLowerCase();
+                String type = mediaTypes.get(i).toLowerCase(Locale.ROOT);
 
                 try {
                     InputMedia<?> media = switch (type) {
@@ -664,7 +666,7 @@ public class TelegramActions implements ThingActions {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
             final SendAnimation sendAnimation;
-            if (animationURL.toLowerCase().startsWith("http")) {
+            if (animationURL.toLowerCase(Locale.ROOT).startsWith("http")) {
                 // load image from url
                 logger.debug("Animation URL provided.");
                 HttpClient client = localHandler.getClient();
@@ -692,7 +694,7 @@ public class TelegramActions implements ThingActions {
                 }
             } else {
                 String temp = animationURL;
-                if (!animationURL.toLowerCase().startsWith("file:")) {
+                if (!animationURL.toLowerCase(Locale.ROOT).startsWith("file:")) {
                     temp = "file://" + animationURL;
                 }
                 // Load video from local file system
@@ -746,7 +748,7 @@ public class TelegramActions implements ThingActions {
         }
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            if (videoURL.toLowerCase().startsWith("http")) {
+            if (videoURL.toLowerCase(Locale.ROOT).startsWith("http")) {
                 logger.debug("Video http://URL provided.");
                 HttpClient client = localHandler.getClient();
                 if (client == null) {
@@ -778,7 +780,7 @@ public class TelegramActions implements ThingActions {
                 }
             } else {
                 String temp = videoURL;
-                if (!videoURL.toLowerCase().startsWith("file:")) {
+                if (!videoURL.toLowerCase(Locale.ROOT).startsWith("file:")) {
                     temp = "file://" + videoURL;
                 }
                 // Load video from local file system with file://path
