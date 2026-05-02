@@ -50,30 +50,6 @@ checkEnvironment
 
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
 
-# Dynamically create licenseInfo.mustache from Maven license header to ensure consistency
-CURRENT_YEAR=$(date +%Y)
-LICENSE_HEADER_FILE="../../licenses/epl-2.0/header.txt"
-
-if [ ! -f "${LICENSE_HEADER_FILE}" ]; then
-    echo "❌ ERROR: License header file not found: ${LICENSE_HEADER_FILE}"
-    exit 1
-fi
-
-mkdir -p tools/generate-sources/scripts/templates
-
-# Read license header from repository and transform ${year} placeholder to actual year
-# Wrap each line with " * " prefix for Java comment block format
-{
-    echo "/*"
-    sed "s/\${year}/${CURRENT_YEAR}/g" "${LICENSE_HEADER_FILE}" | sed 's/^/ \* /'
-    echo " */"
-} > tools/generate-sources/scripts/templates/licenseInfo.mustache
-
-# Verify template was created successfully
-if [ ! -f "tools/generate-sources/scripts/templates/licenseInfo.mustache" ]; then
-    echo "❌ ERROR: Failed to create licenseInfo.mustache template"
-    exit 1
-fi
 
 # Get the latest stable release tag from GitHub for openapi-generator
 LATEST_OPENAPI_GENERATOR_CLI_TAG=$(curl -s "https://api.github.com/repos/OpenAPITools/openapi-generator/releases/latest" |
@@ -229,9 +205,6 @@ done
 rm -rf "${OUTPUT}"
 
 cd ${ROOT}
-
-# Clean up dynamically generated license template
-rm -f tools/generate-sources/scripts/templates/licenseInfo.mustache
 
 MVN_OPT="--quiet"
 
