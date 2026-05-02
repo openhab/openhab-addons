@@ -65,6 +65,11 @@ public class SmartThingsStateHandlerLight extends SmartThingsStateHandler {
                 SmartThingsBindingConstants.CHANNEL_NAME_COLOR);
 
         if (SmartThingsBindingConstants.CHANNEL_NAME_HUE.equals(channelName)) {
+            if (state instanceof DecimalType dec) {
+                if (dec.doubleValue() >= 360) {
+                    state = new DecimalType(dec.doubleValue() - 360);
+                }
+            }
             putState(thingUID, SmartThingsBindingConstants.CHANNEL_NAME_HUE, state);
             HSBType newColorState = new HSBType((DecimalType) state, (PercentType) oldSaturationState,
                     (PercentType) oldLevelState);

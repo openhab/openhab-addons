@@ -16,8 +16,11 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.dto.ColorObject;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -62,10 +65,25 @@ public class SmartThingsHue100Converter extends SmartThingsConverter {
             this.pushCommand(componentKey, capaKey, cmdName, arguments);
         } else if (command instanceof DecimalType dec) {
             double hue = dec.doubleValue() / conversionFactor;
+            double sat = 0;
 
-            String cmdName = SmartThingsBindingConstants.CMD_SET_HUE;
+            SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory
+                    .getStateHandler(SmartThingsBindingConstants.THING_LIGHT);
+            if (stateHandler != null) {
+                State stateSat = stateHandler.getState(thing.getUID(),
+                        SmartThingsBindingConstants.CHANNEL_NAME_SATURATION);
+
+                if (stateSat instanceof DecimalType decSat) {
+                    sat = decSat.doubleValue();
+                }
+            }
+
+            String cmdName = SmartThingsBindingConstants.CMD_SET_COLOR;
             Object[] arguments = new Object[1];
-            arguments[0] = hue;
+            ColorObject colorObj = new ColorObject();
+            colorObj.hue = hue;
+            colorObj.saturation = sat;
+            arguments[0] = colorObj;
 
             this.pushCommand(componentKey, capaKey, cmdName, arguments);
         } else {
