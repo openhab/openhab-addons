@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -115,14 +114,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -136,7 +133,6 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersionNumber() {
     return versionNumber;
   }
@@ -157,14 +153,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getChangelog() {
     return changelog;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChangelog(@org.eclipse.jdt.annotation.Nullable
  String changelog) {
     this.changelog = changelog;
@@ -184,14 +178,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTargetAbi() {
     return targetAbi;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTargetAbi(@org.eclipse.jdt.annotation.Nullable
  String targetAbi) {
     this.targetAbi = targetAbi;
@@ -211,14 +203,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSourceUrl() {
     return sourceUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSourceUrl(@org.eclipse.jdt.annotation.Nullable
  String sourceUrl) {
     this.sourceUrl = sourceUrl;
@@ -238,14 +228,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getChecksum() {
     return checksum;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChecksum(@org.eclipse.jdt.annotation.Nullable
  String checksum) {
     this.checksum = checksum;
@@ -265,14 +253,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTimestamp() {
     return timestamp;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTimestamp(@org.eclipse.jdt.annotation.Nullable
  String timestamp) {
     this.timestamp = timestamp;
@@ -292,14 +278,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRepositoryName() {
     return repositoryName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepositoryName(@org.eclipse.jdt.annotation.Nullable
  String repositoryName) {
     this.repositoryName = repositoryName;
@@ -319,14 +303,12 @@ public class VersionInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRepositoryUrl() {
     return repositoryUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepositoryUrl(@org.eclipse.jdt.annotation.Nullable
  String repositoryUrl) {
     this.repositoryUrl = repositoryUrl;

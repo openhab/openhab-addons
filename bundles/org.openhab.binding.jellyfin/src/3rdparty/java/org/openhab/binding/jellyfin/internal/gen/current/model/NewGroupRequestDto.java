@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -59,14 +58,12 @@ public class NewGroupRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGroupName() {
     return groupName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupName(@org.eclipse.jdt.annotation.Nullable
  String groupName) {
     this.groupName = groupName;

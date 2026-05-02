@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -79,14 +78,12 @@ public class ArtistInfoRemoteSearchQuery {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ArtistInfo getSearchInfo() {
     return searchInfo;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchInfo(@org.eclipse.jdt.annotation.Nullable
  ArtistInfo searchInfo) {
     this.searchInfo = searchInfo;
@@ -106,14 +103,12 @@ public class ArtistInfoRemoteSearchQuery {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -133,14 +128,12 @@ public class ArtistInfoRemoteSearchQuery {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSearchProviderName() {
     return searchProviderName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchProviderName(@org.eclipse.jdt.annotation.Nullable
  String searchProviderName) {
     this.searchProviderName = searchProviderName;
@@ -160,14 +153,12 @@ public class ArtistInfoRemoteSearchQuery {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIncludeDisabledProviders() {
     return includeDisabledProviders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIncludeDisabledProviders(@org.eclipse.jdt.annotation.Nullable
  Boolean includeDisabledProviders) {
     this.includeDisabledProviders = includeDisabledProviders;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -82,14 +81,12 @@ public class PlayRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getPlayingQueue() {
     return playingQueue;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayingQueue(@org.eclipse.jdt.annotation.Nullable
  List<UUID> playingQueue) {
     this.playingQueue = playingQueue;
@@ -109,14 +106,12 @@ public class PlayRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPlayingItemPosition() {
     return playingItemPosition;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayingItemPosition(@org.eclipse.jdt.annotation.Nullable
  Integer playingItemPosition) {
     this.playingItemPosition = playingItemPosition;
@@ -136,14 +131,12 @@ public class PlayRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -65,14 +64,12 @@ public class EndPointInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsLocal() {
     return isLocal;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsLocal(@org.eclipse.jdt.annotation.Nullable
  Boolean isLocal) {
     this.isLocal = isLocal;
@@ -92,14 +89,12 @@ public class EndPointInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsInNetwork() {
     return isInNetwork;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsInNetwork(@org.eclipse.jdt.annotation.Nullable
  Boolean isInNetwork) {
     this.isInNetwork = isInNetwork;

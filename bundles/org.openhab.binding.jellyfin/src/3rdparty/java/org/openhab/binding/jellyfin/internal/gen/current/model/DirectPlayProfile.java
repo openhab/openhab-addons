@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -78,14 +77,12 @@ public class DirectPlayProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -105,14 +102,12 @@ public class DirectPlayProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAudioCodec() {
     return audioCodec;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioCodec(@org.eclipse.jdt.annotation.Nullable
  String audioCodec) {
     this.audioCodec = audioCodec;
@@ -132,14 +127,12 @@ public class DirectPlayProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVideoCodec() {
     return videoCodec;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVideoCodec(@org.eclipse.jdt.annotation.Nullable
  String videoCodec) {
     this.videoCodec = videoCodec;
@@ -159,14 +152,12 @@ public class DirectPlayProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DlnaProfileType getType() {
     return type;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  DlnaProfileType type) {
     this.type = type;

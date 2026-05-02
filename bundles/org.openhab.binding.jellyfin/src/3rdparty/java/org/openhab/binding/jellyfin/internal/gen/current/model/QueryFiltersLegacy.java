@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -87,14 +86,12 @@ public class QueryFiltersLegacy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getGenres() {
     return genres;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<String> genres) {
     this.genres = genres;
@@ -122,14 +119,12 @@ public class QueryFiltersLegacy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getTags() {
     return tags;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTags(@org.eclipse.jdt.annotation.Nullable
  List<String> tags) {
     this.tags = tags;
@@ -157,14 +152,12 @@ public class QueryFiltersLegacy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getOfficialRatings() {
     return officialRatings;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOfficialRatings(@org.eclipse.jdt.annotation.Nullable
  List<String> officialRatings) {
     this.officialRatings = officialRatings;
@@ -192,14 +185,12 @@ public class QueryFiltersLegacy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_YEARS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Integer> getYears() {
     return years;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_YEARS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setYears(@org.eclipse.jdt.annotation.Nullable
  List<Integer> years) {
     this.years = years;

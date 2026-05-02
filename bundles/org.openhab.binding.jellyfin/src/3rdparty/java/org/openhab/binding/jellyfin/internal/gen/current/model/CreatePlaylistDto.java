@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -94,14 +93,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -129,14 +126,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getIds() {
     return ids;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> ids) {
     this.ids = ids;
@@ -156,14 +151,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUserId() {
     return userId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -183,14 +176,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaType getMediaType() {
     return mediaType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaType(@org.eclipse.jdt.annotation.Nullable
  MediaType mediaType) {
     this.mediaType = mediaType;
@@ -218,14 +209,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PlaylistUserPermissions> getUsers() {
     return users;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsers(@org.eclipse.jdt.annotation.Nullable
  List<PlaylistUserPermissions> users) {
     this.users = users;
@@ -245,14 +234,12 @@ public class CreatePlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPublic() {
     return isPublic;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPublic(@org.eclipse.jdt.annotation.Nullable
  Boolean isPublic) {
     this.isPublic = isPublic;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -90,14 +89,12 @@ public class ChannelMappingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TunerChannelMapping> getTunerChannels() {
     return tunerChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTunerChannels(@org.eclipse.jdt.annotation.Nullable
  List<TunerChannelMapping> tunerChannels) {
     this.tunerChannels = tunerChannels;
@@ -125,14 +122,12 @@ public class ChannelMappingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameIdPair> getProviderChannels() {
     return providerChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderChannels(@org.eclipse.jdt.annotation.Nullable
  List<NameIdPair> providerChannels) {
     this.providerChannels = providerChannels;
@@ -160,14 +155,12 @@ public class ChannelMappingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameValuePair> getMappings() {
     return mappings;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MAPPINGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMappings(@org.eclipse.jdt.annotation.Nullable
  List<NameValuePair> mappings) {
     this.mappings = mappings;
@@ -187,14 +180,12 @@ public class ChannelMappingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProviderName() {
     return providerName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderName(@org.eclipse.jdt.annotation.Nullable
  String providerName) {
     this.providerName = providerName;

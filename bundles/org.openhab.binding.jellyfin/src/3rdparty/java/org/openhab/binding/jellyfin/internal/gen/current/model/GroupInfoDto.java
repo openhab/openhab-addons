@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -88,14 +87,12 @@ public class GroupInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGroupId() {
     return groupId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupId(@org.eclipse.jdt.annotation.Nullable
  UUID groupId) {
     this.groupId = groupId;
@@ -115,14 +112,12 @@ public class GroupInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getGroupName() {
     return groupName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGroupName(@org.eclipse.jdt.annotation.Nullable
  String groupName) {
     this.groupName = groupName;
@@ -142,14 +137,12 @@ public class GroupInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupStateType getState() {
     return state;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setState(@org.eclipse.jdt.annotation.Nullable
  GroupStateType state) {
     this.state = state;
@@ -177,14 +170,12 @@ public class GroupInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getParticipants() {
     return participants;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setParticipants(@org.eclipse.jdt.annotation.Nullable
  List<String> participants) {
     this.participants = participants;
@@ -204,14 +195,12 @@ public class GroupInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getLastUpdatedAt() {
     return lastUpdatedAt;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastUpdatedAt(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastUpdatedAt) {
     this.lastUpdatedAt = lastUpdatedAt;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -95,14 +94,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLocalAddress() {
     return localAddress;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalAddress(@org.eclipse.jdt.annotation.Nullable
  String localAddress) {
     this.localAddress = localAddress;
@@ -122,14 +119,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerName() {
     return serverName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -149,14 +144,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -176,14 +169,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProductName() {
     return productName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProductName(@org.eclipse.jdt.annotation.Nullable
  String productName) {
     this.productName = productName;
@@ -205,14 +196,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperatingSystem() {
     return operatingSystem;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOperatingSystem(@org.eclipse.jdt.annotation.Nullable
  String operatingSystem) {
     this.operatingSystem = operatingSystem;
@@ -232,14 +221,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -259,14 +246,12 @@ public class PublicSystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getStartupWizardCompleted() {
     return startupWizardCompleted;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartupWizardCompleted(@org.eclipse.jdt.annotation.Nullable
  Boolean startupWizardCompleted) {
     this.startupWizardCompleted = startupWizardCompleted;

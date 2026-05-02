@@ -99,14 +99,12 @@ public class MediaPathDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPath() {
     return path;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -126,14 +124,12 @@ public class MediaPathDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaPathInfo getPathInfo() {
     return pathInfo;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPathInfo(@org.eclipse.jdt.annotation.Nullable
  MediaPathInfo pathInfo) {
     this.pathInfo = pathInfo;

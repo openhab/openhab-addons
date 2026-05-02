@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -187,14 +186,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SEEK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSeek() {
     return canSeek;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SEEK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSeek(@org.eclipse.jdt.annotation.Nullable
  Boolean canSeek) {
     this.canSeek = canSeek;
@@ -214,14 +211,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BaseItemDto getItem() {
     return item;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItem(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto item) {
     this.item = item;
@@ -241,14 +236,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -268,14 +261,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSessionId() {
     return sessionId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSessionId(@org.eclipse.jdt.annotation.Nullable
  String sessionId) {
     this.sessionId = sessionId;
@@ -295,14 +286,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMediaSourceId() {
     return mediaSourceId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSourceId(@org.eclipse.jdt.annotation.Nullable
  String mediaSourceId) {
     this.mediaSourceId = mediaSourceId;
@@ -322,14 +311,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAudioStreamIndex() {
     return audioStreamIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer audioStreamIndex) {
     this.audioStreamIndex = audioStreamIndex;
@@ -349,14 +336,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSubtitleStreamIndex() {
     return subtitleStreamIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer subtitleStreamIndex) {
     this.subtitleStreamIndex = subtitleStreamIndex;
@@ -376,14 +361,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_PAUSED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPaused() {
     return isPaused;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_PAUSED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPaused(@org.eclipse.jdt.annotation.Nullable
  Boolean isPaused) {
     this.isPaused = isPaused;
@@ -403,14 +386,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_MUTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsMuted() {
     return isMuted;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_MUTED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsMuted(@org.eclipse.jdt.annotation.Nullable
  Boolean isMuted) {
     this.isMuted = isMuted;
@@ -430,14 +411,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
@@ -457,14 +436,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYBACK_START_TIME_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPlaybackStartTimeTicks() {
     return playbackStartTimeTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYBACK_START_TIME_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaybackStartTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long playbackStartTimeTicks) {
     this.playbackStartTimeTicks = playbackStartTimeTicks;
@@ -484,14 +461,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getVolumeLevel() {
     return volumeLevel;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVolumeLevel(@org.eclipse.jdt.annotation.Nullable
  Integer volumeLevel) {
     this.volumeLevel = volumeLevel;
@@ -511,14 +486,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BRIGHTNESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBrightness() {
     return brightness;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BRIGHTNESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBrightness(@org.eclipse.jdt.annotation.Nullable
  Integer brightness) {
     this.brightness = brightness;
@@ -538,14 +511,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAspectRatio() {
     return aspectRatio;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAspectRatio(@org.eclipse.jdt.annotation.Nullable
  String aspectRatio) {
     this.aspectRatio = aspectRatio;
@@ -565,14 +536,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlayMethod getPlayMethod() {
     return playMethod;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayMethod(@org.eclipse.jdt.annotation.Nullable
  PlayMethod playMethod) {
     this.playMethod = playMethod;
@@ -592,14 +561,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLiveStreamId() {
     return liveStreamId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLiveStreamId(@org.eclipse.jdt.annotation.Nullable
  String liveStreamId) {
     this.liveStreamId = liveStreamId;
@@ -619,14 +586,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPlaySessionId() {
     return playSessionId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaySessionId(@org.eclipse.jdt.annotation.Nullable
  String playSessionId) {
     this.playSessionId = playSessionId;
@@ -646,14 +611,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RepeatMode getRepeatMode() {
     return repeatMode;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRepeatMode(@org.eclipse.jdt.annotation.Nullable
  RepeatMode repeatMode) {
     this.repeatMode = repeatMode;
@@ -673,14 +636,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaybackOrder getPlaybackOrder() {
     return playbackOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaybackOrder(@org.eclipse.jdt.annotation.Nullable
  PlaybackOrder playbackOrder) {
     this.playbackOrder = playbackOrder;
@@ -708,14 +669,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<QueueItem> getNowPlayingQueue() {
     return nowPlayingQueue;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNowPlayingQueue(@org.eclipse.jdt.annotation.Nullable
  List<QueueItem> nowPlayingQueue) {
     this.nowPlayingQueue = nowPlayingQueue;
@@ -735,14 +694,12 @@ public class PlaybackProgressInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPlaylistItemId() {
     return playlistItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  String playlistItemId) {
     this.playlistItemId = playlistItemId;

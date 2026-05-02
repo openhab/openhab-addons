@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -113,14 +112,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFoldersAddedTo() {
     return foldersAddedTo;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFoldersAddedTo(@org.eclipse.jdt.annotation.Nullable
  List<String> foldersAddedTo) {
     this.foldersAddedTo = foldersAddedTo;
@@ -148,14 +145,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getFoldersRemovedFrom() {
     return foldersRemovedFrom;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFoldersRemovedFrom(@org.eclipse.jdt.annotation.Nullable
  List<String> foldersRemovedFrom) {
     this.foldersRemovedFrom = foldersRemovedFrom;
@@ -183,14 +178,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsAdded() {
     return itemsAdded;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsAdded(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsAdded) {
     this.itemsAdded = itemsAdded;
@@ -218,14 +211,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsRemoved() {
     return itemsRemoved;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsRemoved(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsRemoved) {
     this.itemsRemoved = itemsRemoved;
@@ -253,14 +244,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getItemsUpdated() {
     return itemsUpdated;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsUpdated(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsUpdated) {
     this.itemsUpdated = itemsUpdated;
@@ -288,14 +277,12 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getCollectionFolders() {
     return collectionFolders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCollectionFolders(@org.eclipse.jdt.annotation.Nullable
  List<String> collectionFolders) {
     this.collectionFolders = collectionFolders;
@@ -309,7 +296,6 @@ public class LibraryUpdateInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_EMPTY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsEmpty() {
     return isEmpty;
   }

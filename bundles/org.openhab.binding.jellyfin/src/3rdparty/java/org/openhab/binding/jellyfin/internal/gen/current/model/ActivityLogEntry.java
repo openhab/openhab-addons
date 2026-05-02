@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -116,14 +115,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  Long id) {
     this.id = id;
@@ -143,14 +140,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -170,14 +165,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOverview() {
     return overview;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -197,14 +190,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SHORT_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getShortOverview() {
     return shortOverview;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SHORT_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setShortOverview(@org.eclipse.jdt.annotation.Nullable
  String shortOverview) {
     this.shortOverview = shortOverview;
@@ -224,14 +215,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getType() {
     return type;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -251,14 +240,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  String itemId) {
     this.itemId = itemId;
@@ -278,14 +265,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDate() {
     return date;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime date) {
     this.date = date;
@@ -305,14 +290,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUserId() {
     return userId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -334,14 +317,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserPrimaryImageTag() {
     return userPrimaryImageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String userPrimaryImageTag) {
     this.userPrimaryImageTag = userPrimaryImageTag;
@@ -361,14 +342,12 @@ public class ActivityLogEntry {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEVERITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LogLevel getSeverity() {
     return severity;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEVERITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeverity(@org.eclipse.jdt.annotation.Nullable
  LogLevel severity) {
     this.severity = severity;

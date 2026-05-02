@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -85,14 +84,12 @@ public class BackupManifestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerVersion() {
     return serverVersion;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerVersion(@org.eclipse.jdt.annotation.Nullable
  String serverVersion) {
     this.serverVersion = serverVersion;
@@ -112,14 +109,12 @@ public class BackupManifestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBackupEngineVersion() {
     return backupEngineVersion;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBackupEngineVersion(@org.eclipse.jdt.annotation.Nullable
  String backupEngineVersion) {
     this.backupEngineVersion = backupEngineVersion;
@@ -139,14 +134,12 @@ public class BackupManifestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -166,14 +159,12 @@ public class BackupManifestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPath() {
     return path;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -193,14 +184,12 @@ public class BackupManifestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BackupOptionsDto getOptions() {
     return options;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOptions(@org.eclipse.jdt.annotation.Nullable
  BackupOptionsDto options) {
     this.options = options;

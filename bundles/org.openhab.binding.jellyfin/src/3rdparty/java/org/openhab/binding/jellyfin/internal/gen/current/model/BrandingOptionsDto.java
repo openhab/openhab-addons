@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -71,14 +70,12 @@ public class BrandingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLoginDisclaimer() {
     return loginDisclaimer;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLoginDisclaimer(@org.eclipse.jdt.annotation.Nullable
  String loginDisclaimer) {
     this.loginDisclaimer = loginDisclaimer;
@@ -98,14 +95,12 @@ public class BrandingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCustomCss() {
     return customCss;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomCss(@org.eclipse.jdt.annotation.Nullable
  String customCss) {
     this.customCss = customCss;
@@ -125,14 +120,12 @@ public class BrandingOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSplashscreenEnabled() {
     return splashscreenEnabled;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSplashscreenEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean splashscreenEnabled) {
     this.splashscreenEnabled = splashscreenEnabled;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -77,14 +76,12 @@ public class UpdateUserPassword {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCurrentPassword() {
     return currentPassword;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCurrentPassword(@org.eclipse.jdt.annotation.Nullable
  String currentPassword) {
     this.currentPassword = currentPassword;
@@ -104,14 +101,12 @@ public class UpdateUserPassword {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCurrentPw() {
     return currentPw;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCurrentPw(@org.eclipse.jdt.annotation.Nullable
  String currentPw) {
     this.currentPw = currentPw;
@@ -131,14 +126,12 @@ public class UpdateUserPassword {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNewPw() {
     return newPw;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNewPw(@org.eclipse.jdt.annotation.Nullable
  String newPw) {
     this.newPw = newPw;
@@ -158,14 +151,12 @@ public class UpdateUserPassword {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getResetPassword() {
     return resetPassword;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResetPassword(@org.eclipse.jdt.annotation.Nullable
  Boolean resetPassword) {
     this.resetPassword = resetPassword;

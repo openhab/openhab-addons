@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -66,14 +65,12 @@ public class GuideInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getStartDate() {
     return startDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startDate) {
     this.startDate = startDate;
@@ -93,14 +90,12 @@ public class GuideInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getEndDate() {
     return endDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endDate) {
     this.endDate = endDate;

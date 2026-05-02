@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -93,14 +92,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CodecType getType() {
     return type;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  CodecType type) {
     this.type = type;
@@ -128,14 +125,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> conditions) {
     this.conditions = conditions;
@@ -163,14 +158,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProfileCondition> getApplyConditions() {
     return applyConditions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setApplyConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> applyConditions) {
     this.applyConditions = applyConditions;
@@ -190,14 +183,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCodec() {
     return codec;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCodec(@org.eclipse.jdt.annotation.Nullable
  String codec) {
     this.codec = codec;
@@ -217,14 +208,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -244,14 +233,12 @@ public class CodecProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSubContainer() {
     return subContainer;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubContainer(@org.eclipse.jdt.annotation.Nullable
  String subContainer) {
     this.subContainer = subContainer;

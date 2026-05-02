@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -105,14 +104,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -140,14 +137,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocations() {
     return locations;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocations(@org.eclipse.jdt.annotation.Nullable
  List<String> locations) {
     this.locations = locations;
@@ -167,14 +162,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CollectionTypeOptions getCollectionType() {
     return collectionType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCollectionType(@org.eclipse.jdt.annotation.Nullable
  CollectionTypeOptions collectionType) {
     this.collectionType = collectionType;
@@ -194,14 +187,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LibraryOptions getLibraryOptions() {
     return libraryOptions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraryOptions(@org.eclipse.jdt.annotation.Nullable
  LibraryOptions libraryOptions) {
     this.libraryOptions = libraryOptions;
@@ -221,14 +212,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  String itemId) {
     this.itemId = itemId;
@@ -248,14 +237,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPrimaryImageItemId() {
     return primaryImageItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPrimaryImageItemId(@org.eclipse.jdt.annotation.Nullable
  String primaryImageItemId) {
     this.primaryImageItemId = primaryImageItemId;
@@ -275,14 +262,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REFRESH_PROGRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getRefreshProgress() {
     return refreshProgress;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REFRESH_PROGRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRefreshProgress(@org.eclipse.jdt.annotation.Nullable
  Double refreshProgress) {
     this.refreshProgress = refreshProgress;
@@ -302,14 +287,12 @@ public class VirtualFolderInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REFRESH_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRefreshStatus() {
     return refreshStatus;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REFRESH_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRefreshStatus(@org.eclipse.jdt.annotation.Nullable
  String refreshStatus) {
     this.refreshStatus = refreshStatus;

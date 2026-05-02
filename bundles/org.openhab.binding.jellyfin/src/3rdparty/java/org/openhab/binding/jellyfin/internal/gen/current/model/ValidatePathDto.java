@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -71,14 +70,12 @@ public class ValidatePathDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getValidateWritable() {
     return validateWritable;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValidateWritable(@org.eclipse.jdt.annotation.Nullable
  Boolean validateWritable) {
     this.validateWritable = validateWritable;
@@ -98,14 +95,12 @@ public class ValidatePathDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPath() {
     return path;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -125,14 +120,12 @@ public class ValidatePathDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsFile() {
     return isFile;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsFile(@org.eclipse.jdt.annotation.Nullable
  Boolean isFile) {
     this.isFile = isFile;

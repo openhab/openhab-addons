@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -105,14 +104,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getBackdropSizes() {
     return backdropSizes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBackdropSizes(@org.eclipse.jdt.annotation.Nullable
  List<String> backdropSizes) {
     this.backdropSizes = backdropSizes;
@@ -132,14 +129,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBaseUrl() {
     return baseUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBaseUrl(@org.eclipse.jdt.annotation.Nullable
  String baseUrl) {
     this.baseUrl = baseUrl;
@@ -167,14 +162,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLogoSizes() {
     return logoSizes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLogoSizes(@org.eclipse.jdt.annotation.Nullable
  List<String> logoSizes) {
     this.logoSizes = logoSizes;
@@ -202,14 +195,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getPosterSizes() {
     return posterSizes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPosterSizes(@org.eclipse.jdt.annotation.Nullable
  List<String> posterSizes) {
     this.posterSizes = posterSizes;
@@ -237,14 +228,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getProfileSizes() {
     return profileSizes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProfileSizes(@org.eclipse.jdt.annotation.Nullable
  List<String> profileSizes) {
     this.profileSizes = profileSizes;
@@ -264,14 +253,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSecureBaseUrl() {
     return secureBaseUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSecureBaseUrl(@org.eclipse.jdt.annotation.Nullable
  String secureBaseUrl) {
     this.secureBaseUrl = secureBaseUrl;
@@ -299,14 +286,12 @@ public class ConfigImageTypes {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STILL_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getStillSizes() {
     return stillSizes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STILL_SIZES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStillSizes(@org.eclipse.jdt.annotation.Nullable
  List<String> stillSizes) {
     this.stillSizes = stillSizes;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -118,14 +117,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -145,14 +142,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TaskState getState() {
     return state;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setState(@org.eclipse.jdt.annotation.Nullable
  TaskState state) {
     this.state = state;
@@ -172,14 +167,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getCurrentProgressPercentage() {
     return currentProgressPercentage;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCurrentProgressPercentage(@org.eclipse.jdt.annotation.Nullable
  Double currentProgressPercentage) {
     this.currentProgressPercentage = currentProgressPercentage;
@@ -199,14 +192,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -226,14 +217,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LAST_EXECUTION_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TaskResult getLastExecutionResult() {
     return lastExecutionResult;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LAST_EXECUTION_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLastExecutionResult(@org.eclipse.jdt.annotation.Nullable
  TaskResult lastExecutionResult) {
     this.lastExecutionResult = lastExecutionResult;
@@ -261,14 +250,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TaskTriggerInfo> getTriggers() {
     return triggers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TRIGGERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTriggers(@org.eclipse.jdt.annotation.Nullable
  List<TaskTriggerInfo> triggers) {
     this.triggers = triggers;
@@ -288,14 +275,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@org.eclipse.jdt.annotation.Nullable
  String description) {
     this.description = description;
@@ -315,14 +300,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCategory() {
     return category;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategory(@org.eclipse.jdt.annotation.Nullable
  String category) {
     this.category = category;
@@ -342,14 +325,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsHidden() {
     return isHidden;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsHidden(@org.eclipse.jdt.annotation.Nullable
  Boolean isHidden) {
     this.isHidden = isHidden;
@@ -369,14 +350,12 @@ public class TaskInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKey(@org.eclipse.jdt.annotation.Nullable
  String key) {
     this.key = key;

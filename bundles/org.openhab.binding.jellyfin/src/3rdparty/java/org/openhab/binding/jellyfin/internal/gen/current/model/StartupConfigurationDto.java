@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -77,14 +76,12 @@ public class StartupConfigurationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerName() {
     return serverName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -104,14 +101,12 @@ public class StartupConfigurationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUiCulture() {
     return uiCulture;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUiCulture(@org.eclipse.jdt.annotation.Nullable
  String uiCulture) {
     this.uiCulture = uiCulture;
@@ -131,14 +126,12 @@ public class StartupConfigurationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMetadataCountryCode() {
     return metadataCountryCode;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataCountryCode(@org.eclipse.jdt.annotation.Nullable
  String metadataCountryCode) {
     this.metadataCountryCode = metadataCountryCode;
@@ -158,14 +151,12 @@ public class StartupConfigurationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPreferredMetadataLanguage() {
     return preferredMetadataLanguage;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.Nullable
  String preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;

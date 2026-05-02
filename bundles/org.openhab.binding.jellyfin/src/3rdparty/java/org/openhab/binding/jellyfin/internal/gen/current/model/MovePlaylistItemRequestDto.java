@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -66,14 +65,12 @@ public class MovePlaylistItemRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  UUID playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -93,14 +90,12 @@ public class MovePlaylistItemRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getNewIndex() {
     return newIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNewIndex(@org.eclipse.jdt.annotation.Nullable
  Integer newIndex) {
     this.newIndex = newIndex;

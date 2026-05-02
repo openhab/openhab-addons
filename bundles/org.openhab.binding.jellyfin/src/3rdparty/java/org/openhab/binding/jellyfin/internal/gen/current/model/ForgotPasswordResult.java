@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -73,14 +72,12 @@ public class ForgotPasswordResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ForgotPasswordAction getAction() {
     return action;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAction(@org.eclipse.jdt.annotation.Nullable
  ForgotPasswordAction action) {
     this.action = action;
@@ -100,14 +97,12 @@ public class ForgotPasswordResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPinFile() {
     return pinFile;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPinFile(@org.eclipse.jdt.annotation.Nullable
  String pinFile) {
     this.pinFile = pinFile;
@@ -127,14 +122,12 @@ public class ForgotPasswordResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getPinExpirationDate() {
     return pinExpirationDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPinExpirationDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime pinExpirationDate) {
     this.pinExpirationDate = pinExpirationDate;

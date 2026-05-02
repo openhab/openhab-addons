@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -80,14 +79,12 @@ public class CustomDatabaseOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPluginName() {
     return pluginName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPluginName(@org.eclipse.jdt.annotation.Nullable
  String pluginName) {
     this.pluginName = pluginName;
@@ -107,14 +104,12 @@ public class CustomDatabaseOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPluginAssembly() {
     return pluginAssembly;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPluginAssembly(@org.eclipse.jdt.annotation.Nullable
  String pluginAssembly) {
     this.pluginAssembly = pluginAssembly;
@@ -134,14 +129,12 @@ public class CustomDatabaseOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getConnectionString() {
     return connectionString;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConnectionString(@org.eclipse.jdt.annotation.Nullable
  String connectionString) {
     this.connectionString = connectionString;
@@ -169,14 +162,12 @@ public class CustomDatabaseOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CustomDatabaseOption> getOptions() {
     return options;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOptions(@org.eclipse.jdt.annotation.Nullable
  List<CustomDatabaseOption> options) {
     this.options = options;

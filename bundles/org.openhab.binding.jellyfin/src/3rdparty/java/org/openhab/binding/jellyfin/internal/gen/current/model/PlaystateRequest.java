@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -72,14 +71,12 @@ public class PlaystateRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaystateCommand getCommand() {
     return command;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCommand(@org.eclipse.jdt.annotation.Nullable
  PlaystateCommand command) {
     this.command = command;
@@ -99,14 +96,12 @@ public class PlaystateRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSeekPositionTicks() {
     return seekPositionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeekPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long seekPositionTicks) {
     this.seekPositionTicks = seekPositionTicks;
@@ -126,14 +121,12 @@ public class PlaystateRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getControllingUserId() {
     return controllingUserId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setControllingUserId(@org.eclipse.jdt.annotation.Nullable
  String controllingUserId) {
     this.controllingUserId = controllingUserId;

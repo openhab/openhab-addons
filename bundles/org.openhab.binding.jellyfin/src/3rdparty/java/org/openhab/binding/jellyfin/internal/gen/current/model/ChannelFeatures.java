@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -131,14 +130,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -158,14 +155,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -185,14 +180,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SEARCH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSearch() {
     return canSearch;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SEARCH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSearch(@org.eclipse.jdt.annotation.Nullable
  Boolean canSearch) {
     this.canSearch = canSearch;
@@ -220,14 +213,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelMediaType> getMediaTypes() {
     return mediaTypes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaTypes(@org.eclipse.jdt.annotation.Nullable
  List<ChannelMediaType> mediaTypes) {
     this.mediaTypes = mediaTypes;
@@ -255,14 +246,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelMediaContentType> getContentTypes() {
     return contentTypes;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContentTypes(@org.eclipse.jdt.annotation.Nullable
  List<ChannelMediaContentType> contentTypes) {
     this.contentTypes = contentTypes;
@@ -282,14 +271,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PAGE_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxPageSize() {
     return maxPageSize;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PAGE_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxPageSize(@org.eclipse.jdt.annotation.Nullable
  Integer maxPageSize) {
     this.maxPageSize = maxPageSize;
@@ -309,14 +296,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUTO_REFRESH_LEVELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAutoRefreshLevels() {
     return autoRefreshLevels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUTO_REFRESH_LEVELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutoRefreshLevels(@org.eclipse.jdt.annotation.Nullable
  Integer autoRefreshLevels) {
     this.autoRefreshLevels = autoRefreshLevels;
@@ -344,14 +329,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DEFAULT_SORT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ChannelItemSortField> getDefaultSortFields() {
     return defaultSortFields;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DEFAULT_SORT_FIELDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDefaultSortFields(@org.eclipse.jdt.annotation.Nullable
  List<ChannelItemSortField> defaultSortFields) {
     this.defaultSortFields = defaultSortFields;
@@ -371,14 +354,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsSortOrderToggle() {
     return supportsSortOrderToggle;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsSortOrderToggle(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsSortOrderToggle) {
     this.supportsSortOrderToggle = supportsSortOrderToggle;
@@ -398,14 +379,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LATEST_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsLatestMedia() {
     return supportsLatestMedia;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LATEST_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsLatestMedia(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsLatestMedia) {
     this.supportsLatestMedia = supportsLatestMedia;
@@ -425,14 +404,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAN_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanFilter() {
     return canFilter;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAN_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanFilter(@org.eclipse.jdt.annotation.Nullable
  Boolean canFilter) {
     this.canFilter = canFilter;
@@ -452,14 +429,12 @@ public class ChannelFeatures {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsContentDownloading() {
     return supportsContentDownloading;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsContentDownloading(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsContentDownloading) {
     this.supportsContentDownloading = supportsContentDownloading;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -235,14 +234,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -262,14 +259,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -289,14 +284,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -316,14 +309,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MATCHED_TERM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMatchedTerm() {
     return matchedTerm;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MATCHED_TERM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMatchedTerm(@org.eclipse.jdt.annotation.Nullable
  String matchedTerm) {
     this.matchedTerm = matchedTerm;
@@ -343,14 +334,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIndexNumber() {
     return indexNumber;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumber) {
     this.indexNumber = indexNumber;
@@ -370,14 +359,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getProductionYear() {
     return productionYear;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProductionYear(@org.eclipse.jdt.annotation.Nullable
  Integer productionYear) {
     this.productionYear = productionYear;
@@ -397,14 +384,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getParentIndexNumber() {
     return parentIndexNumber;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setParentIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer parentIndexNumber) {
     this.parentIndexNumber = parentIndexNumber;
@@ -424,14 +409,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPrimaryImageTag() {
     return primaryImageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String primaryImageTag) {
     this.primaryImageTag = primaryImageTag;
@@ -451,14 +434,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getThumbImageTag() {
     return thumbImageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThumbImageTag(@org.eclipse.jdt.annotation.Nullable
  String thumbImageTag) {
     this.thumbImageTag = thumbImageTag;
@@ -478,14 +459,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getThumbImageItemId() {
     return thumbImageItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THUMB_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThumbImageItemId(@org.eclipse.jdt.annotation.Nullable
  String thumbImageItemId) {
     this.thumbImageItemId = thumbImageItemId;
@@ -505,14 +484,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBackdropImageTag() {
     return backdropImageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBackdropImageTag(@org.eclipse.jdt.annotation.Nullable
  String backdropImageTag) {
     this.backdropImageTag = backdropImageTag;
@@ -532,14 +509,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBackdropImageItemId() {
     return backdropImageItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBackdropImageItemId(@org.eclipse.jdt.annotation.Nullable
  String backdropImageItemId) {
     this.backdropImageItemId = backdropImageItemId;
@@ -559,14 +534,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BaseItemKind getType() {
     return type;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  BaseItemKind type) {
     this.type = type;
@@ -586,14 +559,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsFolder() {
     return isFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsFolder(@org.eclipse.jdt.annotation.Nullable
  Boolean isFolder) {
     this.isFolder = isFolder;
@@ -613,14 +584,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getRunTimeTicks() {
     return runTimeTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRunTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long runTimeTicks) {
     this.runTimeTicks = runTimeTicks;
@@ -640,14 +609,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MediaType getMediaType() {
     return mediaType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaType(@org.eclipse.jdt.annotation.Nullable
  MediaType mediaType) {
     this.mediaType = mediaType;
@@ -667,14 +634,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getStartDate() {
     return startDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startDate) {
     this.startDate = startDate;
@@ -694,14 +659,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getEndDate() {
     return endDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endDate) {
     this.endDate = endDate;
@@ -721,14 +684,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSeries() {
     return series;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeries(@org.eclipse.jdt.annotation.Nullable
  String series) {
     this.series = series;
@@ -748,14 +709,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStatus() {
     return status;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  String status) {
     this.status = status;
@@ -775,14 +734,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAlbum() {
     return album;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbum(@org.eclipse.jdt.annotation.Nullable
  String album) {
     this.album = album;
@@ -802,14 +759,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getAlbumId() {
     return albumId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbumId(@org.eclipse.jdt.annotation.Nullable
  UUID albumId) {
     this.albumId = albumId;
@@ -829,14 +784,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAlbumArtist() {
     return albumArtist;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbumArtist(@org.eclipse.jdt.annotation.Nullable
  String albumArtist) {
     this.albumArtist = albumArtist;
@@ -864,14 +817,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getArtists() {
     return artists;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArtists(@org.eclipse.jdt.annotation.Nullable
  List<String> artists) {
     this.artists = artists;
@@ -891,14 +842,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSongCount() {
     return songCount;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSongCount(@org.eclipse.jdt.annotation.Nullable
  Integer songCount) {
     this.songCount = songCount;
@@ -918,14 +867,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getEpisodeCount() {
     return episodeCount;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEpisodeCount(@org.eclipse.jdt.annotation.Nullable
  Integer episodeCount) {
     this.episodeCount = episodeCount;
@@ -945,14 +892,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getChannelId() {
     return channelId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChannelId(@org.eclipse.jdt.annotation.Nullable
  UUID channelId) {
     this.channelId = channelId;
@@ -972,14 +917,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getChannelName() {
     return channelName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChannelName(@org.eclipse.jdt.annotation.Nullable
  String channelName) {
     this.channelName = channelName;
@@ -999,14 +942,12 @@ public class SearchHint {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getPrimaryImageAspectRatio() {
     return primaryImageAspectRatio;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPrimaryImageAspectRatio(@org.eclipse.jdt.annotation.Nullable
  Double primaryImageAspectRatio) {
     this.primaryImageAspectRatio = primaryImageAspectRatio;

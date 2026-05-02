@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -83,14 +82,12 @@ public class PlaybackInfoResponse {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MediaSourceInfo> getMediaSources() {
     return mediaSources;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSources(@org.eclipse.jdt.annotation.Nullable
  List<MediaSourceInfo> mediaSources) {
     this.mediaSources = mediaSources;
@@ -110,14 +107,12 @@ public class PlaybackInfoResponse {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPlaySessionId() {
     return playSessionId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaySessionId(@org.eclipse.jdt.annotation.Nullable
  String playSessionId) {
     this.playSessionId = playSessionId;
@@ -137,14 +132,12 @@ public class PlaybackInfoResponse {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaybackErrorCode getErrorCode() {
     return errorCode;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setErrorCode(@org.eclipse.jdt.annotation.Nullable
  PlaybackErrorCode errorCode) {
     this.errorCode = errorCode;

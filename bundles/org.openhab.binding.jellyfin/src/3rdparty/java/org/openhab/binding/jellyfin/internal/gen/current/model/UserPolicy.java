@@ -323,14 +323,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_ADMINISTRATOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAdministrator() {
     return isAdministrator;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_ADMINISTRATOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsAdministrator(@org.eclipse.jdt.annotation.Nullable
  Boolean isAdministrator) {
     this.isAdministrator = isAdministrator;
@@ -350,14 +348,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsHidden() {
     return isHidden;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsHidden(@org.eclipse.jdt.annotation.Nullable
  Boolean isHidden) {
     this.isHidden = isHidden;
@@ -377,14 +373,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableCollectionManagement() {
     return enableCollectionManagement;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableCollectionManagement(@org.eclipse.jdt.annotation.Nullable
  Boolean enableCollectionManagement) {
     this.enableCollectionManagement = enableCollectionManagement;
@@ -404,14 +398,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSubtitleManagement() {
     return enableSubtitleManagement;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSubtitleManagement(@org.eclipse.jdt.annotation.Nullable
  Boolean enableSubtitleManagement) {
     this.enableSubtitleManagement = enableSubtitleManagement;
@@ -431,14 +423,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableLyricManagement() {
     return enableLyricManagement;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableLyricManagement(@org.eclipse.jdt.annotation.Nullable
  Boolean enableLyricManagement) {
     this.enableLyricManagement = enableLyricManagement;
@@ -458,14 +448,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_DISABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsDisabled() {
     return isDisabled;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_DISABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsDisabled(@org.eclipse.jdt.annotation.Nullable
  Boolean isDisabled) {
     this.isDisabled = isDisabled;
@@ -485,14 +473,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_RATING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxParentalRating() {
     return maxParentalRating;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_RATING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxParentalRating(@org.eclipse.jdt.annotation.Nullable
  Integer maxParentalRating) {
     this.maxParentalRating = maxParentalRating;
@@ -512,14 +498,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_SUB_RATING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxParentalSubRating() {
     return maxParentalSubRating;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_SUB_RATING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxParentalSubRating(@org.eclipse.jdt.annotation.Nullable
  Integer maxParentalSubRating) {
     this.maxParentalSubRating = maxParentalSubRating;
@@ -547,14 +531,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getBlockedTags() {
     return blockedTags;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockedTags(@org.eclipse.jdt.annotation.Nullable
  List<String> blockedTags) {
     this.blockedTags = blockedTags;
@@ -582,14 +564,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALLOWED_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getAllowedTags() {
     return allowedTags;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALLOWED_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowedTags(@org.eclipse.jdt.annotation.Nullable
  List<String> allowedTags) {
     this.allowedTags = allowedTags;
@@ -609,14 +589,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableUserPreferenceAccess() {
     return enableUserPreferenceAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableUserPreferenceAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean enableUserPreferenceAccess) {
     this.enableUserPreferenceAccess = enableUserPreferenceAccess;
@@ -644,14 +622,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_SCHEDULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AccessSchedule> getAccessSchedules() {
     return accessSchedules;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_SCHEDULES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccessSchedules(@org.eclipse.jdt.annotation.Nullable
  List<AccessSchedule> accessSchedules) {
     this.accessSchedules = accessSchedules;
@@ -679,14 +655,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BLOCK_UNRATED_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UnratedItem> getBlockUnratedItems() {
     return blockUnratedItems;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BLOCK_UNRATED_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockUnratedItems(@org.eclipse.jdt.annotation.Nullable
  List<UnratedItem> blockUnratedItems) {
     this.blockUnratedItems = blockUnratedItems;
@@ -706,14 +680,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRemoteControlOfOtherUsers() {
     return enableRemoteControlOfOtherUsers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRemoteControlOfOtherUsers(@org.eclipse.jdt.annotation.Nullable
  Boolean enableRemoteControlOfOtherUsers) {
     this.enableRemoteControlOfOtherUsers = enableRemoteControlOfOtherUsers;
@@ -733,14 +705,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSharedDeviceControl() {
     return enableSharedDeviceControl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSharedDeviceControl(@org.eclipse.jdt.annotation.Nullable
  Boolean enableSharedDeviceControl) {
     this.enableSharedDeviceControl = enableSharedDeviceControl;
@@ -760,14 +730,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRemoteAccess() {
     return enableRemoteAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRemoteAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean enableRemoteAccess) {
     this.enableRemoteAccess = enableRemoteAccess;
@@ -787,14 +755,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableLiveTvManagement() {
     return enableLiveTvManagement;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableLiveTvManagement(@org.eclipse.jdt.annotation.Nullable
  Boolean enableLiveTvManagement) {
     this.enableLiveTvManagement = enableLiveTvManagement;
@@ -814,14 +780,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableLiveTvAccess() {
     return enableLiveTvAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableLiveTvAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean enableLiveTvAccess) {
     this.enableLiveTvAccess = enableLiveTvAccess;
@@ -841,14 +805,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableMediaPlayback() {
     return enableMediaPlayback;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableMediaPlayback(@org.eclipse.jdt.annotation.Nullable
  Boolean enableMediaPlayback) {
     this.enableMediaPlayback = enableMediaPlayback;
@@ -868,14 +830,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAudioPlaybackTranscoding() {
     return enableAudioPlaybackTranscoding;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAudioPlaybackTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAudioPlaybackTranscoding) {
     this.enableAudioPlaybackTranscoding = enableAudioPlaybackTranscoding;
@@ -895,14 +855,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableVideoPlaybackTranscoding() {
     return enableVideoPlaybackTranscoding;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableVideoPlaybackTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableVideoPlaybackTranscoding) {
     this.enableVideoPlaybackTranscoding = enableVideoPlaybackTranscoding;
@@ -922,14 +880,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePlaybackRemuxing() {
     return enablePlaybackRemuxing;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePlaybackRemuxing(@org.eclipse.jdt.annotation.Nullable
  Boolean enablePlaybackRemuxing) {
     this.enablePlaybackRemuxing = enablePlaybackRemuxing;
@@ -949,14 +905,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getForceRemoteSourceTranscoding() {
     return forceRemoteSourceTranscoding;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setForceRemoteSourceTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean forceRemoteSourceTranscoding) {
     this.forceRemoteSourceTranscoding = forceRemoteSourceTranscoding;
@@ -976,14 +930,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableContentDeletion() {
     return enableContentDeletion;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableContentDeletion(@org.eclipse.jdt.annotation.Nullable
  Boolean enableContentDeletion) {
     this.enableContentDeletion = enableContentDeletion;
@@ -1011,14 +963,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getEnableContentDeletionFromFolders() {
     return enableContentDeletionFromFolders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableContentDeletionFromFolders(@org.eclipse.jdt.annotation.Nullable
  List<String> enableContentDeletionFromFolders) {
     this.enableContentDeletionFromFolders = enableContentDeletionFromFolders;
@@ -1038,14 +988,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableContentDownloading() {
     return enableContentDownloading;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableContentDownloading(@org.eclipse.jdt.annotation.Nullable
  Boolean enableContentDownloading) {
     this.enableContentDownloading = enableContentDownloading;
@@ -1065,14 +1013,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SYNC_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableSyncTranscoding() {
     return enableSyncTranscoding;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_SYNC_TRANSCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableSyncTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableSyncTranscoding) {
     this.enableSyncTranscoding = enableSyncTranscoding;
@@ -1092,14 +1038,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_CONVERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableMediaConversion() {
     return enableMediaConversion;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_CONVERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableMediaConversion(@org.eclipse.jdt.annotation.Nullable
  Boolean enableMediaConversion) {
     this.enableMediaConversion = enableMediaConversion;
@@ -1127,14 +1071,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_DEVICES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getEnabledDevices() {
     return enabledDevices;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_DEVICES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabledDevices(@org.eclipse.jdt.annotation.Nullable
  List<String> enabledDevices) {
     this.enabledDevices = enabledDevices;
@@ -1154,14 +1096,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_DEVICES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAllDevices() {
     return enableAllDevices;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_DEVICES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAllDevices(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAllDevices) {
     this.enableAllDevices = enableAllDevices;
@@ -1189,14 +1129,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getEnabledChannels() {
     return enabledChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabledChannels(@org.eclipse.jdt.annotation.Nullable
  List<UUID> enabledChannels) {
     this.enabledChannels = enabledChannels;
@@ -1216,14 +1154,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAllChannels() {
     return enableAllChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAllChannels(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAllChannels) {
     this.enableAllChannels = enableAllChannels;
@@ -1251,14 +1187,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getEnabledFolders() {
     return enabledFolders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabledFolders(@org.eclipse.jdt.annotation.Nullable
  List<UUID> enabledFolders) {
     this.enabledFolders = enabledFolders;
@@ -1278,14 +1212,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAllFolders() {
     return enableAllFolders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAllFolders(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAllFolders) {
     this.enableAllFolders = enableAllFolders;
@@ -1305,14 +1237,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInvalidLoginAttemptCount() {
     return invalidLoginAttemptCount;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInvalidLoginAttemptCount(@org.eclipse.jdt.annotation.Nullable
  Integer invalidLoginAttemptCount) {
     this.invalidLoginAttemptCount = invalidLoginAttemptCount;
@@ -1332,14 +1262,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getLoginAttemptsBeforeLockout() {
     return loginAttemptsBeforeLockout;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLoginAttemptsBeforeLockout(@org.eclipse.jdt.annotation.Nullable
  Integer loginAttemptsBeforeLockout) {
     this.loginAttemptsBeforeLockout = loginAttemptsBeforeLockout;
@@ -1359,14 +1287,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MAX_ACTIVE_SESSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getMaxActiveSessions() {
     return maxActiveSessions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MAX_ACTIVE_SESSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMaxActiveSessions(@org.eclipse.jdt.annotation.Nullable
  Integer maxActiveSessions) {
     this.maxActiveSessions = maxActiveSessions;
@@ -1386,14 +1312,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLIC_SHARING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePublicSharing() {
     return enablePublicSharing;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLIC_SHARING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePublicSharing(@org.eclipse.jdt.annotation.Nullable
  Boolean enablePublicSharing) {
     this.enablePublicSharing = enablePublicSharing;
@@ -1421,14 +1345,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getBlockedMediaFolders() {
     return blockedMediaFolders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockedMediaFolders(@org.eclipse.jdt.annotation.Nullable
  List<UUID> blockedMediaFolders) {
     this.blockedMediaFolders = blockedMediaFolders;
@@ -1456,14 +1378,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getBlockedChannels() {
     return blockedChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BLOCKED_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlockedChannels(@org.eclipse.jdt.annotation.Nullable
  List<UUID> blockedChannels) {
     this.blockedChannels = blockedChannels;
@@ -1483,14 +1403,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getRemoteClientBitrateLimit() {
     return remoteClientBitrateLimit;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemoteClientBitrateLimit(@org.eclipse.jdt.annotation.Nullable
  Integer remoteClientBitrateLimit) {
     this.remoteClientBitrateLimit = remoteClientBitrateLimit;
@@ -1564,14 +1482,12 @@ public class UserPolicy {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SYNC_PLAY_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SyncPlayUserAccessType getSyncPlayAccess() {
     return syncPlayAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SYNC_PLAY_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSyncPlayAccess(@org.eclipse.jdt.annotation.Nullable
  SyncPlayUserAccessType syncPlayAccess) {
     this.syncPlayAccess = syncPlayAccess;

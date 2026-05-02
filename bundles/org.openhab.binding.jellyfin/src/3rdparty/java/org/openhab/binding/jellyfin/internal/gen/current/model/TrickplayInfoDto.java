@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -95,14 +94,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWidth() {
     return width;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -122,14 +119,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHeight() {
     return height;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -149,14 +144,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileWidth() {
     return tileWidth;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileWidth(@org.eclipse.jdt.annotation.Nullable
  Integer tileWidth) {
     this.tileWidth = tileWidth;
@@ -176,14 +169,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileHeight() {
     return tileHeight;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileHeight(@org.eclipse.jdt.annotation.Nullable
  Integer tileHeight) {
     this.tileHeight = tileHeight;
@@ -203,14 +194,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getThumbnailCount() {
     return thumbnailCount;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThumbnailCount(@org.eclipse.jdt.annotation.Nullable
  Integer thumbnailCount) {
     this.thumbnailCount = thumbnailCount;
@@ -230,14 +219,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInterval() {
     return interval;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInterval(@org.eclipse.jdt.annotation.Nullable
  Integer interval) {
     this.interval = interval;
@@ -257,14 +244,12 @@ public class TrickplayInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BANDWIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBandwidth() {
     return bandwidth;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BANDWIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBandwidth(@org.eclipse.jdt.annotation.Nullable
  Integer bandwidth) {
     this.bandwidth = bandwidth;

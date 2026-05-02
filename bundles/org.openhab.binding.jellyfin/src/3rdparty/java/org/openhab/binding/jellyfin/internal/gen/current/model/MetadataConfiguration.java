@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -59,14 +58,12 @@ public class MetadataConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUseFileCreationTimeForDateAdded() {
     return useFileCreationTimeForDateAdded;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUseFileCreationTimeForDateAdded(@org.eclipse.jdt.annotation.Nullable
  Boolean useFileCreationTimeForDateAdded) {
     this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -77,14 +76,12 @@ public class BackupOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getMetadata() {
     return metadata;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadata(@org.eclipse.jdt.annotation.Nullable
  Boolean metadata) {
     this.metadata = metadata;
@@ -104,14 +101,12 @@ public class BackupOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getTrickplay() {
     return trickplay;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTrickplay(@org.eclipse.jdt.annotation.Nullable
  Boolean trickplay) {
     this.trickplay = trickplay;
@@ -131,14 +126,12 @@ public class BackupOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSubtitles() {
     return subtitles;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitles(@org.eclipse.jdt.annotation.Nullable
  Boolean subtitles) {
     this.subtitles = subtitles;
@@ -158,14 +151,12 @@ public class BackupOptionsDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATABASE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDatabase() {
     return database;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATABASE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDatabase(@org.eclipse.jdt.annotation.Nullable
  Boolean database) {
     this.database = database;

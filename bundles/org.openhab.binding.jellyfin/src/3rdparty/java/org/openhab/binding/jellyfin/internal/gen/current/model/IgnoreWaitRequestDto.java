@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -59,14 +58,12 @@ public class IgnoreWaitRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreWait() {
     return ignoreWait;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreWait(@org.eclipse.jdt.annotation.Nullable
  Boolean ignoreWait) {
     this.ignoreWait = ignoreWait;

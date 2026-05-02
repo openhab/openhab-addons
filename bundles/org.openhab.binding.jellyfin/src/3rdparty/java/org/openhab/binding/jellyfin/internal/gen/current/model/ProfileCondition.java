@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -79,14 +78,12 @@ public class ProfileCondition {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProfileConditionType getCondition() {
     return condition;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCondition(@org.eclipse.jdt.annotation.Nullable
  ProfileConditionType condition) {
     this.condition = condition;
@@ -106,14 +103,12 @@ public class ProfileCondition {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProfileConditionValue getProperty() {
     return property;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProperty(@org.eclipse.jdt.annotation.Nullable
  ProfileConditionValue property) {
     this.property = property;
@@ -133,14 +128,12 @@ public class ProfileCondition {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getValue() {
     return value;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setValue(@org.eclipse.jdt.annotation.Nullable
  String value) {
     this.value = value;
@@ -160,14 +153,12 @@ public class ProfileCondition {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRequired() {
     return isRequired;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRequired(@org.eclipse.jdt.annotation.Nullable
  Boolean isRequired) {
     this.isRequired = isRequired;

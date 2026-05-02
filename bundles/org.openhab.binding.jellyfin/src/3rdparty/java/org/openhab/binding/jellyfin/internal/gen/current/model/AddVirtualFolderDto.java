@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -60,14 +59,12 @@ public class AddVirtualFolderDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LibraryOptions getLibraryOptions() {
     return libraryOptions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraryOptions(@org.eclipse.jdt.annotation.Nullable
  LibraryOptions libraryOptions) {
     this.libraryOptions = libraryOptions;

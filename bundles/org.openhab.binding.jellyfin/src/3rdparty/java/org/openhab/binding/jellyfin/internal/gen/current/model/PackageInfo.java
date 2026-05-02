@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -105,14 +104,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -132,14 +129,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(@org.eclipse.jdt.annotation.Nullable
  String description) {
     this.description = description;
@@ -159,14 +154,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOverview() {
     return overview;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -186,14 +179,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOwner() {
     return owner;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOwner(@org.eclipse.jdt.annotation.Nullable
  String owner) {
     this.owner = owner;
@@ -213,14 +204,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCategory() {
     return category;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategory(@org.eclipse.jdt.annotation.Nullable
  String category) {
     this.category = category;
@@ -240,14 +229,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getGuid() {
     return guid;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGuid(@org.eclipse.jdt.annotation.Nullable
  UUID guid) {
     this.guid = guid;
@@ -275,14 +262,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<VersionInfo> getVersions() {
     return versions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersions(@org.eclipse.jdt.annotation.Nullable
  List<VersionInfo> versions) {
     this.versions = versions;
@@ -302,14 +287,12 @@ public class PackageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImageUrl() {
     return imageUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageUrl(@org.eclipse.jdt.annotation.Nullable
  String imageUrl) {
     this.imageUrl = imageUrl;

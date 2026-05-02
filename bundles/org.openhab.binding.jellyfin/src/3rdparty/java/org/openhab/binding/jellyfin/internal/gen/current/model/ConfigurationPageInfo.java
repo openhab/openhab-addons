@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -90,14 +89,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -117,14 +114,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_IN_MAIN_MENU, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableInMainMenu() {
     return enableInMainMenu;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_IN_MAIN_MENU, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableInMainMenu(@org.eclipse.jdt.annotation.Nullable
  Boolean enableInMainMenu) {
     this.enableInMainMenu = enableInMainMenu;
@@ -144,14 +139,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MENU_SECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMenuSection() {
     return menuSection;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MENU_SECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMenuSection(@org.eclipse.jdt.annotation.Nullable
  String menuSection) {
     this.menuSection = menuSection;
@@ -171,14 +164,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MENU_ICON, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMenuIcon() {
     return menuIcon;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MENU_ICON, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMenuIcon(@org.eclipse.jdt.annotation.Nullable
  String menuIcon) {
     this.menuIcon = menuIcon;
@@ -198,14 +189,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayName(@org.eclipse.jdt.annotation.Nullable
  String displayName) {
     this.displayName = displayName;
@@ -225,14 +214,12 @@ public class ConfigurationPageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getPluginId() {
     return pluginId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLUGIN_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPluginId(@org.eclipse.jdt.annotation.Nullable
  UUID pluginId) {
     this.pluginId = pluginId;

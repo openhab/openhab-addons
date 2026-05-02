@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -84,14 +83,12 @@ public class ChapterInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
@@ -111,14 +108,12 @@ public class ChapterInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -138,14 +133,12 @@ public class ChapterInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImagePath() {
     return imagePath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImagePath(@org.eclipse.jdt.annotation.Nullable
  String imagePath) {
     this.imagePath = imagePath;
@@ -165,14 +158,12 @@ public class ChapterInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getImageDateModified() {
     return imageDateModified;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageDateModified(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime imageDateModified) {
     this.imageDateModified = imageDateModified;
@@ -192,14 +183,12 @@ public class ChapterInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImageTag() {
     return imageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageTag(@org.eclipse.jdt.annotation.Nullable
  String imageTag) {
     this.imageTag = imageTag;

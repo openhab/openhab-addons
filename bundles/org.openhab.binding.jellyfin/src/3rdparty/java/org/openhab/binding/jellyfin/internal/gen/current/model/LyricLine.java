@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -74,14 +73,12 @@ public class LyricLine {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getText() {
     return text;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setText(@org.eclipse.jdt.annotation.Nullable
  String text) {
     this.text = text;
@@ -101,14 +98,12 @@ public class LyricLine {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStart() {
     return start;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStart(@org.eclipse.jdt.annotation.Nullable
  Long start) {
     this.start = start;
@@ -136,14 +131,12 @@ public class LyricLine {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LyricLineCue> getCues() {
     return cues;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCues(@org.eclipse.jdt.annotation.Nullable
  List<LyricLineCue> cues) {
     this.cues = cues;

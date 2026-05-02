@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -67,14 +66,12 @@ public class GroupStateUpdate {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GroupStateType getState() {
     return state;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setState(@org.eclipse.jdt.annotation.Nullable
  GroupStateType state) {
     this.state = state;
@@ -94,14 +91,12 @@ public class GroupStateUpdate {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlaybackRequestType getReason() {
     return reason;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setReason(@org.eclipse.jdt.annotation.Nullable
  PlaybackRequestType reason) {
     this.reason = reason;

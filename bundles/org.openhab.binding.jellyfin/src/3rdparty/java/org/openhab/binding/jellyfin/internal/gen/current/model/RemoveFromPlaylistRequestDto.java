@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -82,14 +81,12 @@ public class RemoveFromPlaylistRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getPlaylistItemIds() {
     return playlistItemIds;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> playlistItemIds) {
     this.playlistItemIds = playlistItemIds;
@@ -109,14 +106,12 @@ public class RemoveFromPlaylistRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getClearPlaylist() {
     return clearPlaylist;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClearPlaylist(@org.eclipse.jdt.annotation.Nullable
  Boolean clearPlaylist) {
     this.clearPlaylist = clearPlaylist;
@@ -136,14 +131,12 @@ public class RemoveFromPlaylistRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getClearPlayingItem() {
     return clearPlayingItem;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setClearPlayingItem(@org.eclipse.jdt.annotation.Nullable
  Boolean clearPlayingItem) {
     this.clearPlayingItem = clearPlayingItem;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -135,14 +134,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAudioCodec() {
     return audioCodec;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioCodec(@org.eclipse.jdt.annotation.Nullable
  String audioCodec) {
     this.audioCodec = audioCodec;
@@ -162,14 +159,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVideoCodec() {
     return videoCodec;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVideoCodec(@org.eclipse.jdt.annotation.Nullable
  String videoCodec) {
     this.videoCodec = videoCodec;
@@ -189,14 +184,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -216,14 +209,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_VIDEO_DIRECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsVideoDirect() {
     return isVideoDirect;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_VIDEO_DIRECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsVideoDirect(@org.eclipse.jdt.annotation.Nullable
  Boolean isVideoDirect) {
     this.isVideoDirect = isVideoDirect;
@@ -243,14 +234,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_AUDIO_DIRECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsAudioDirect() {
     return isAudioDirect;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_AUDIO_DIRECT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsAudioDirect(@org.eclipse.jdt.annotation.Nullable
  Boolean isAudioDirect) {
     this.isAudioDirect = isAudioDirect;
@@ -270,14 +259,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getBitrate() {
     return bitrate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BITRATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer bitrate) {
     this.bitrate = bitrate;
@@ -297,14 +284,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FRAMERATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Float getFramerate() {
     return framerate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FRAMERATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFramerate(@org.eclipse.jdt.annotation.Nullable
  Float framerate) {
     this.framerate = framerate;
@@ -324,14 +309,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getCompletionPercentage() {
     return completionPercentage;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCompletionPercentage(@org.eclipse.jdt.annotation.Nullable
  Double completionPercentage) {
     this.completionPercentage = completionPercentage;
@@ -351,14 +334,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWidth() {
     return width;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -378,14 +359,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHeight() {
     return height;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -405,14 +384,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAudioChannels() {
     return audioChannels;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_CHANNELS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioChannels(@org.eclipse.jdt.annotation.Nullable
  Integer audioChannels) {
     this.audioChannels = audioChannels;
@@ -432,14 +409,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public HardwareAccelerationType getHardwareAccelerationType() {
     return hardwareAccelerationType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHardwareAccelerationType(@org.eclipse.jdt.annotation.Nullable
  HardwareAccelerationType hardwareAccelerationType) {
     this.hardwareAccelerationType = hardwareAccelerationType;
@@ -467,14 +442,12 @@ public class TranscodingInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODE_REASONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TranscodeReason> getTranscodeReasons() {
     return transcodeReasons;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODE_REASONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodeReasons(@org.eclipse.jdt.annotation.Nullable
  List<TranscodeReason> transcodeReasons) {
     this.transcodeReasons = transcodeReasons;

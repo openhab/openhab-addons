@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -97,14 +96,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getItemType() {
     return itemType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemType(@org.eclipse.jdt.annotation.Nullable
  String itemType) {
     this.itemType = itemType;
@@ -132,14 +129,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledMetadataSavers() {
     return disabledMetadataSavers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledMetadataSavers(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledMetadataSavers) {
     this.disabledMetadataSavers = disabledMetadataSavers;
@@ -167,14 +162,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalMetadataReaderOrder() {
     return localMetadataReaderOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalMetadataReaderOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> localMetadataReaderOrder) {
     this.localMetadataReaderOrder = localMetadataReaderOrder;
@@ -202,14 +195,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledMetadataFetchers() {
     return disabledMetadataFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledMetadataFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledMetadataFetchers) {
     this.disabledMetadataFetchers = disabledMetadataFetchers;
@@ -237,14 +228,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getMetadataFetcherOrder() {
     return metadataFetcherOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> metadataFetcherOrder) {
     this.metadataFetcherOrder = metadataFetcherOrder;
@@ -272,14 +261,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_IMAGE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledImageFetchers() {
     return disabledImageFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_IMAGE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledImageFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledImageFetchers) {
     this.disabledImageFetchers = disabledImageFetchers;
@@ -307,14 +294,12 @@ public class MetadataOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getImageFetcherOrder() {
     return imageFetcherOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> imageFetcherOrder) {
     this.imageFetcherOrder = imageFetcherOrder;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -101,14 +100,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMetadataSavers() {
     return metadataSavers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataSavers(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> metadataSavers) {
     this.metadataSavers = metadataSavers;
@@ -136,14 +133,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_READERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMetadataReaders() {
     return metadataReaders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_READERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataReaders(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> metadataReaders) {
     this.metadataReaders = metadataReaders;
@@ -171,14 +166,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getSubtitleFetchers() {
     return subtitleFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleFetchers(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> subtitleFetchers) {
     this.subtitleFetchers = subtitleFetchers;
@@ -206,14 +199,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getLyricFetchers() {
     return lyricFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLyricFetchers(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> lyricFetchers) {
     this.lyricFetchers = lyricFetchers;
@@ -241,14 +232,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryOptionInfoDto> getMediaSegmentProviders() {
     return mediaSegmentProviders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSegmentProviders(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> mediaSegmentProviders) {
     this.mediaSegmentProviders = mediaSegmentProviders;
@@ -276,14 +265,12 @@ public class LibraryOptionsResultDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryTypeOptionsDto> getTypeOptions() {
     return typeOptions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeOptions(@org.eclipse.jdt.annotation.Nullable
  List<LibraryTypeOptionsDto> typeOptions) {
     this.typeOptions = typeOptions;

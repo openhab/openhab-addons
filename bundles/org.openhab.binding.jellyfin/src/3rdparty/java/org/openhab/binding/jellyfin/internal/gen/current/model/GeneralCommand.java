@@ -75,14 +75,12 @@ public class GeneralCommand {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public GeneralCommandType getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  GeneralCommandType name) {
     this.name = name;
@@ -102,14 +100,12 @@ public class GeneralCommand {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getControllingUserId() {
     return controllingUserId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setControllingUserId(@org.eclipse.jdt.annotation.Nullable
  UUID controllingUserId) {
     this.controllingUserId = controllingUserId;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -105,14 +104,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getProgramDataFolder() {
     return programDataFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProgramDataFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto programDataFolder) {
     this.programDataFolder = programDataFolder;
@@ -132,14 +129,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getWebFolder() {
     return webFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWebFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto webFolder) {
     this.webFolder = webFolder;
@@ -159,14 +154,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getImageCacheFolder() {
     return imageCacheFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageCacheFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto imageCacheFolder) {
     this.imageCacheFolder = imageCacheFolder;
@@ -186,14 +179,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getCacheFolder() {
     return cacheFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCacheFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto cacheFolder) {
     this.cacheFolder = cacheFolder;
@@ -213,14 +204,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getLogFolder() {
     return logFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLogFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto logFolder) {
     this.logFolder = logFolder;
@@ -240,14 +229,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getInternalMetadataFolder() {
     return internalMetadataFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalMetadataFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto internalMetadataFolder) {
     this.internalMetadataFolder = internalMetadataFolder;
@@ -267,14 +254,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public FolderStorageDto getTranscodingTempFolder() {
     return transcodingTempFolder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodingTempFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto transcodingTempFolder) {
     this.transcodingTempFolder = transcodingTempFolder;
@@ -302,14 +287,12 @@ public class SystemStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<LibraryStorageDto> getLibraries() {
     return libraries;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LIBRARIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLibraries(@org.eclipse.jdt.annotation.Nullable
  List<LibraryStorageDto> libraries) {
     this.libraries = libraries;

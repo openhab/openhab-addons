@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -77,14 +76,12 @@ public class LyricLineCue {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPosition() {
     return position;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPosition(@org.eclipse.jdt.annotation.Nullable
  Integer position) {
     this.position = position;
@@ -104,14 +101,12 @@ public class LyricLineCue {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_END_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getEndPosition() {
     return endPosition;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_END_POSITION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndPosition(@org.eclipse.jdt.annotation.Nullable
  Integer endPosition) {
     this.endPosition = endPosition;
@@ -131,14 +126,12 @@ public class LyricLineCue {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStart() {
     return start;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStart(@org.eclipse.jdt.annotation.Nullable
  Long start) {
     this.start = start;
@@ -158,14 +151,12 @@ public class LyricLineCue {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_END, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getEnd() {
     return end;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_END, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnd(@org.eclipse.jdt.annotation.Nullable
  Long end) {
     this.end = end;

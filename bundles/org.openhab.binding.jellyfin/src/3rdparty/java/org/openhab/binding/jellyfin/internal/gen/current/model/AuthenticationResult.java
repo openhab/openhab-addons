@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -79,14 +78,12 @@ public class AuthenticationResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UserDto getUser() {
     return user;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUser(@org.eclipse.jdt.annotation.Nullable
  UserDto user) {
     this.user = user;
@@ -106,14 +103,12 @@ public class AuthenticationResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SessionInfoDto getSessionInfo() {
     return sessionInfo;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSessionInfo(@org.eclipse.jdt.annotation.Nullable
  SessionInfoDto sessionInfo) {
     this.sessionInfo = sessionInfo;
@@ -133,14 +128,12 @@ public class AuthenticationResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccessToken() {
     return accessToken;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccessToken(@org.eclipse.jdt.annotation.Nullable
  String accessToken) {
     this.accessToken = accessToken;
@@ -160,14 +153,12 @@ public class AuthenticationResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerId() {
     return serverId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;

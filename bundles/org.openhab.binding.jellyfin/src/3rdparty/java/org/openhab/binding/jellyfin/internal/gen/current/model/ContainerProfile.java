@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -81,14 +80,12 @@ public class ContainerProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DlnaProfileType getType() {
     return type;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  DlnaProfileType type) {
     this.type = type;
@@ -116,14 +113,12 @@ public class ContainerProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> conditions) {
     this.conditions = conditions;
@@ -143,14 +138,12 @@ public class ContainerProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -170,14 +163,12 @@ public class ContainerProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSubContainer() {
     return subContainer;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubContainer(@org.eclipse.jdt.annotation.Nullable
  String subContainer) {
     this.subContainer = subContainer;

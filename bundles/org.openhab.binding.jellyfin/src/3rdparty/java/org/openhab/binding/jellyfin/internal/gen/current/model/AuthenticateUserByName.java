@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -65,14 +64,12 @@ public class AuthenticateUserByName {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUsername() {
     return username;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsername(@org.eclipse.jdt.annotation.Nullable
  String username) {
     this.username = username;
@@ -92,14 +89,12 @@ public class AuthenticateUserByName {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPw() {
     return pw;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPw(@org.eclipse.jdt.annotation.Nullable
  String pw) {
     this.pw = pw;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -82,14 +81,12 @@ public class AuthenticationInfoQueryResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<AuthenticationInfo> getItems() {
     return items;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItems(@org.eclipse.jdt.annotation.Nullable
  List<AuthenticationInfo> items) {
     this.items = items;
@@ -109,14 +106,12 @@ public class AuthenticationInfoQueryResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTotalRecordCount() {
     return totalRecordCount;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTotalRecordCount(@org.eclipse.jdt.annotation.Nullable
  Integer totalRecordCount) {
     this.totalRecordCount = totalRecordCount;
@@ -136,14 +131,12 @@ public class AuthenticationInfoQueryResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartIndex() {
     return startIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartIndex(@org.eclipse.jdt.annotation.Nullable
  Integer startIndex) {
     this.startIndex = startIndex;

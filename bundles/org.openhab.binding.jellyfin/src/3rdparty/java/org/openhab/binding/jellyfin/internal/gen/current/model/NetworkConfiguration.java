@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -193,14 +192,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBaseUrl() {
     return baseUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BASE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBaseUrl(@org.eclipse.jdt.annotation.Nullable
  String baseUrl) {
     this.baseUrl = baseUrl;
@@ -220,14 +217,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HTTPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHttps() {
     return enableHttps;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HTTPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHttps(@org.eclipse.jdt.annotation.Nullable
  Boolean enableHttps) {
     this.enableHttps = enableHttps;
@@ -247,14 +242,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REQUIRE_HTTPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequireHttps() {
     return requireHttps;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REQUIRE_HTTPS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequireHttps(@org.eclipse.jdt.annotation.Nullable
  Boolean requireHttps) {
     this.requireHttps = requireHttps;
@@ -274,14 +267,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCertificatePath() {
     return certificatePath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCertificatePath(@org.eclipse.jdt.annotation.Nullable
  String certificatePath) {
     this.certificatePath = certificatePath;
@@ -301,14 +292,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCertificatePassword() {
     return certificatePassword;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCertificatePassword(@org.eclipse.jdt.annotation.Nullable
  String certificatePassword) {
     this.certificatePassword = certificatePassword;
@@ -328,14 +317,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTP_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInternalHttpPort() {
     return internalHttpPort;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTP_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalHttpPort(@org.eclipse.jdt.annotation.Nullable
  Integer internalHttpPort) {
     this.internalHttpPort = internalHttpPort;
@@ -355,14 +342,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTPS_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInternalHttpsPort() {
     return internalHttpsPort;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTPS_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalHttpsPort(@org.eclipse.jdt.annotation.Nullable
  Integer internalHttpsPort) {
     this.internalHttpsPort = internalHttpsPort;
@@ -382,14 +367,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTP_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPublicHttpPort() {
     return publicHttpPort;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTP_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublicHttpPort(@org.eclipse.jdt.annotation.Nullable
  Integer publicHttpPort) {
     this.publicHttpPort = publicHttpPort;
@@ -409,14 +392,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTPS_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getPublicHttpsPort() {
     return publicHttpsPort;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTPS_PORT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublicHttpsPort(@org.eclipse.jdt.annotation.Nullable
  Integer publicHttpsPort) {
     this.publicHttpsPort = publicHttpsPort;
@@ -436,14 +417,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUTO_DISCOVERY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAutoDiscovery() {
     return autoDiscovery;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUTO_DISCOVERY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutoDiscovery(@org.eclipse.jdt.annotation.Nullable
  Boolean autoDiscovery) {
     this.autoDiscovery = autoDiscovery;
@@ -465,14 +444,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_U_PN_P, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableUPnP() {
     return enableUPnP;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_U_PN_P, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableUPnP(@org.eclipse.jdt.annotation.Nullable
  Boolean enableUPnP) {
     this.enableUPnP = enableUPnP;
@@ -492,14 +469,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV4, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIPv4() {
     return enableIPv4;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV4, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIPv4(@org.eclipse.jdt.annotation.Nullable
  Boolean enableIPv4) {
     this.enableIPv4 = enableIPv4;
@@ -519,14 +494,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV6, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableIPv6() {
     return enableIPv6;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV6, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableIPv6(@org.eclipse.jdt.annotation.Nullable
  Boolean enableIPv6) {
     this.enableIPv6 = enableIPv6;
@@ -546,14 +519,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRemoteAccess() {
     return enableRemoteAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRemoteAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean enableRemoteAccess) {
     this.enableRemoteAccess = enableRemoteAccess;
@@ -581,14 +552,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_SUBNETS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalNetworkSubnets() {
     return localNetworkSubnets;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_SUBNETS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalNetworkSubnets(@org.eclipse.jdt.annotation.Nullable
  List<String> localNetworkSubnets) {
     this.localNetworkSubnets = localNetworkSubnets;
@@ -616,14 +585,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalNetworkAddresses() {
     return localNetworkAddresses;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalNetworkAddresses(@org.eclipse.jdt.annotation.Nullable
  List<String> localNetworkAddresses) {
     this.localNetworkAddresses = localNetworkAddresses;
@@ -651,14 +618,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_KNOWN_PROXIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getKnownProxies() {
     return knownProxies;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_KNOWN_PROXIES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setKnownProxies(@org.eclipse.jdt.annotation.Nullable
  List<String> knownProxies) {
     this.knownProxies = knownProxies;
@@ -678,14 +643,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIgnoreVirtualInterfaces() {
     return ignoreVirtualInterfaces;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIgnoreVirtualInterfaces(@org.eclipse.jdt.annotation.Nullable
  Boolean ignoreVirtualInterfaces) {
     this.ignoreVirtualInterfaces = ignoreVirtualInterfaces;
@@ -713,14 +676,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getVirtualInterfaceNames() {
     return virtualInterfaceNames;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVirtualInterfaceNames(@org.eclipse.jdt.annotation.Nullable
  List<String> virtualInterfaceNames) {
     this.virtualInterfaceNames = virtualInterfaceNames;
@@ -740,14 +701,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePublishedServerUriByRequest() {
     return enablePublishedServerUriByRequest;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePublishedServerUriByRequest(@org.eclipse.jdt.annotation.Nullable
  Boolean enablePublishedServerUriByRequest) {
     this.enablePublishedServerUriByRequest = enablePublishedServerUriByRequest;
@@ -775,14 +734,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getPublishedServerUriBySubnet() {
     return publishedServerUriBySubnet;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPublishedServerUriBySubnet(@org.eclipse.jdt.annotation.Nullable
  List<String> publishedServerUriBySubnet) {
     this.publishedServerUriBySubnet = publishedServerUriBySubnet;
@@ -810,14 +767,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REMOTE_I_P_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getRemoteIPFilter() {
     return remoteIPFilter;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REMOTE_I_P_FILTER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRemoteIPFilter(@org.eclipse.jdt.annotation.Nullable
  List<String> remoteIPFilter) {
     this.remoteIPFilter = remoteIPFilter;
@@ -837,14 +792,12 @@ public class NetworkConfiguration {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsRemoteIPFilterBlacklist() {
     return isRemoteIPFilterBlacklist;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsRemoteIPFilterBlacklist(@org.eclipse.jdt.annotation.Nullable
  Boolean isRemoteIPFilterBlacklist) {
     this.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;

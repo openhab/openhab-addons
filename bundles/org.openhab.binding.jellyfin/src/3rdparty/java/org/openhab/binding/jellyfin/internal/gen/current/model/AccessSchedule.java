@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -87,7 +86,6 @@ public class AccessSchedule {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getId() {
     return id;
   }
@@ -108,14 +106,12 @@ public class AccessSchedule {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUserId() {
     return userId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -135,14 +131,12 @@ public class AccessSchedule {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DynamicDayOfWeek getDayOfWeek() {
     return dayOfWeek;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDayOfWeek(@org.eclipse.jdt.annotation.Nullable
  DynamicDayOfWeek dayOfWeek) {
     this.dayOfWeek = dayOfWeek;
@@ -162,14 +156,12 @@ public class AccessSchedule {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getStartHour() {
     return startHour;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartHour(@org.eclipse.jdt.annotation.Nullable
  Double startHour) {
     this.startHour = startHour;
@@ -189,14 +181,12 @@ public class AccessSchedule {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getEndHour() {
     return endHour;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEndHour(@org.eclipse.jdt.annotation.Nullable
  Double endHour) {
     this.endHour = endHour;

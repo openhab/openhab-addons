@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -90,14 +89,12 @@ public class RecommendationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<BaseItemDto> getItems() {
     return items;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItems(@org.eclipse.jdt.annotation.Nullable
  List<BaseItemDto> items) {
     this.items = items;
@@ -117,14 +114,12 @@ public class RecommendationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RecommendationType getRecommendationType() {
     return recommendationType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRecommendationType(@org.eclipse.jdt.annotation.Nullable
  RecommendationType recommendationType) {
     this.recommendationType = recommendationType;
@@ -144,14 +139,12 @@ public class RecommendationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBaselineItemName() {
     return baselineItemName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBaselineItemName(@org.eclipse.jdt.annotation.Nullable
  String baselineItemName) {
     this.baselineItemName = baselineItemName;
@@ -171,14 +164,12 @@ public class RecommendationDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getCategoryId() {
     return categoryId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCategoryId(@org.eclipse.jdt.annotation.Nullable
  UUID categoryId) {
     this.categoryId = categoryId;

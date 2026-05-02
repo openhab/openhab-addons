@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -102,14 +101,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ImageType getImageType() {
     return imageType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageType(@org.eclipse.jdt.annotation.Nullable
  ImageType imageType) {
     this.imageType = imageType;
@@ -129,14 +126,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getImageIndex() {
     return imageIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageIndex(@org.eclipse.jdt.annotation.Nullable
  Integer imageIndex) {
     this.imageIndex = imageIndex;
@@ -156,14 +151,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImageTag() {
     return imageTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageTag(@org.eclipse.jdt.annotation.Nullable
  String imageTag) {
     this.imageTag = imageTag;
@@ -183,14 +176,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPath() {
     return path;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -210,14 +201,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getBlurHash() {
     return blurHash;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setBlurHash(@org.eclipse.jdt.annotation.Nullable
  String blurHash) {
     this.blurHash = blurHash;
@@ -237,14 +226,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getHeight() {
     return height;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -264,14 +251,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWidth() {
     return width;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -291,14 +276,12 @@ public class ImageInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getSize() {
     return size;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSize(@org.eclipse.jdt.annotation.Nullable
  Long size) {
     this.size = size;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -77,14 +76,12 @@ public class CountryInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -104,14 +101,12 @@ public class CountryInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDisplayName() {
     return displayName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisplayName(@org.eclipse.jdt.annotation.Nullable
  String displayName) {
     this.displayName = displayName;
@@ -131,14 +126,12 @@ public class CountryInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTwoLetterISORegionName() {
     return twoLetterISORegionName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTwoLetterISORegionName(@org.eclipse.jdt.annotation.Nullable
  String twoLetterISORegionName) {
     this.twoLetterISORegionName = twoLetterISORegionName;
@@ -158,14 +151,12 @@ public class CountryInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getThreeLetterISORegionName() {
     return threeLetterISORegionName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThreeLetterISORegionName(@org.eclipse.jdt.annotation.Nullable
  String threeLetterISORegionName) {
     this.threeLetterISORegionName = threeLetterISORegionName;

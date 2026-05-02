@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -83,14 +82,12 @@ public class FolderStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPath() {
     return path;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -110,14 +107,12 @@ public class FolderStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FREE_SPACE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getFreeSpace() {
     return freeSpace;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FREE_SPACE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFreeSpace(@org.eclipse.jdt.annotation.Nullable
  Long freeSpace) {
     this.freeSpace = freeSpace;
@@ -137,14 +132,12 @@ public class FolderStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USED_SPACE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getUsedSpace() {
     return usedSpace;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USED_SPACE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsedSpace(@org.eclipse.jdt.annotation.Nullable
  Long usedSpace) {
     this.usedSpace = usedSpace;
@@ -164,14 +157,12 @@ public class FolderStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStorageType() {
     return storageType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStorageType(@org.eclipse.jdt.annotation.Nullable
  String storageType) {
     this.storageType = storageType;
@@ -191,14 +182,12 @@ public class FolderStorageDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceId() {
     return deviceId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;

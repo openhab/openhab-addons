@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -113,14 +112,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getItemIds() {
     return itemIds;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> itemIds) {
     this.itemIds = itemIds;
@@ -140,14 +137,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
@@ -167,14 +162,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_COMMAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PlayCommand getPlayCommand() {
     return playCommand;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_COMMAND, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlayCommand(@org.eclipse.jdt.annotation.Nullable
  PlayCommand playCommand) {
     this.playCommand = playCommand;
@@ -194,14 +187,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getControllingUserId() {
     return controllingUserId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setControllingUserId(@org.eclipse.jdt.annotation.Nullable
  UUID controllingUserId) {
     this.controllingUserId = controllingUserId;
@@ -221,14 +212,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSubtitleStreamIndex() {
     return subtitleStreamIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer subtitleStreamIndex) {
     this.subtitleStreamIndex = subtitleStreamIndex;
@@ -248,14 +237,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAudioStreamIndex() {
     return audioStreamIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAudioStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer audioStreamIndex) {
     this.audioStreamIndex = audioStreamIndex;
@@ -275,14 +262,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMediaSourceId() {
     return mediaSourceId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSourceId(@org.eclipse.jdt.annotation.Nullable
  String mediaSourceId) {
     this.mediaSourceId = mediaSourceId;
@@ -302,14 +287,12 @@ public class PlayRequest {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getStartIndex() {
     return startIndex;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartIndex(@org.eclipse.jdt.annotation.Nullable
  Integer startIndex) {
     this.startIndex = startIndex;

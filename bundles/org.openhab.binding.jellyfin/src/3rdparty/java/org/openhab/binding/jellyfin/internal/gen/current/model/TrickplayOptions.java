@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -129,14 +128,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ACCELERATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHwAcceleration() {
     return enableHwAcceleration;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ACCELERATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHwAcceleration(@org.eclipse.jdt.annotation.Nullable
  Boolean enableHwAcceleration) {
     this.enableHwAcceleration = enableHwAcceleration;
@@ -156,14 +153,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ENCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableHwEncoding() {
     return enableHwEncoding;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ENCODING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableHwEncoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableHwEncoding) {
     this.enableHwEncoding = enableHwEncoding;
@@ -183,14 +178,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableKeyFrameOnlyExtraction() {
     return enableKeyFrameOnlyExtraction;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableKeyFrameOnlyExtraction(@org.eclipse.jdt.annotation.Nullable
  Boolean enableKeyFrameOnlyExtraction) {
     this.enableKeyFrameOnlyExtraction = enableKeyFrameOnlyExtraction;
@@ -210,14 +203,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SCAN_BEHAVIOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TrickplayScanBehavior getScanBehavior() {
     return scanBehavior;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SCAN_BEHAVIOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScanBehavior(@org.eclipse.jdt.annotation.Nullable
  TrickplayScanBehavior scanBehavior) {
     this.scanBehavior = scanBehavior;
@@ -237,14 +228,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROCESS_PRIORITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProcessPriorityClass getProcessPriority() {
     return processPriority;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROCESS_PRIORITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProcessPriority(@org.eclipse.jdt.annotation.Nullable
  ProcessPriorityClass processPriority) {
     this.processPriority = processPriority;
@@ -264,14 +253,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getInterval() {
     return interval;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInterval(@org.eclipse.jdt.annotation.Nullable
  Integer interval) {
     this.interval = interval;
@@ -299,14 +286,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH_RESOLUTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Integer> getWidthResolutions() {
     return widthResolutions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WIDTH_RESOLUTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWidthResolutions(@org.eclipse.jdt.annotation.Nullable
  List<Integer> widthResolutions) {
     this.widthResolutions = widthResolutions;
@@ -326,14 +311,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileWidth() {
     return tileWidth;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileWidth(@org.eclipse.jdt.annotation.Nullable
  Integer tileWidth) {
     this.tileWidth = tileWidth;
@@ -353,14 +336,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getTileHeight() {
     return tileHeight;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTileHeight(@org.eclipse.jdt.annotation.Nullable
  Integer tileHeight) {
     this.tileHeight = tileHeight;
@@ -380,14 +361,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_QSCALE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getQscale() {
     return qscale;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_QSCALE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setQscale(@org.eclipse.jdt.annotation.Nullable
  Integer qscale) {
     this.qscale = qscale;
@@ -407,14 +386,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_JPEG_QUALITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getJpegQuality() {
     return jpegQuality;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_JPEG_QUALITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setJpegQuality(@org.eclipse.jdt.annotation.Nullable
  Integer jpegQuality) {
     this.jpegQuality = jpegQuality;
@@ -434,14 +411,12 @@ public class TrickplayOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROCESS_THREADS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getProcessThreads() {
     return processThreads;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROCESS_THREADS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProcessThreads(@org.eclipse.jdt.annotation.Nullable
  Integer processThreads) {
     this.processThreads = processThreads;

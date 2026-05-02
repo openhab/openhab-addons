@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -79,14 +78,12 @@ public class BufferRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getWhen() {
     return when;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWhen(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime when) {
     this.when = when;
@@ -106,14 +103,12 @@ public class BufferRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
@@ -133,14 +128,12 @@ public class BufferRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsPlaying() {
     return isPlaying;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsPlaying(@org.eclipse.jdt.annotation.Nullable
  Boolean isPlaying) {
     this.isPlaying = isPlaying;
@@ -160,14 +153,12 @@ public class BufferRequestDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  UUID playlistItemId) {
     this.playlistItemId = playlistItemId;

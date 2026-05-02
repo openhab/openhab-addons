@@ -130,14 +130,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -192,14 +190,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getProductionYear() {
     return productionYear;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProductionYear(@org.eclipse.jdt.annotation.Nullable
  Integer productionYear) {
     this.productionYear = productionYear;
@@ -219,14 +215,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIndexNumber() {
     return indexNumber;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumber) {
     this.indexNumber = indexNumber;
@@ -246,14 +240,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getIndexNumberEnd() {
     return indexNumberEnd;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIndexNumberEnd(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumberEnd) {
     this.indexNumberEnd = indexNumberEnd;
@@ -273,14 +265,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getParentIndexNumber() {
     return parentIndexNumber;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setParentIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer parentIndexNumber) {
     this.parentIndexNumber = parentIndexNumber;
@@ -300,14 +290,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getPremiereDate() {
     return premiereDate;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPremiereDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime premiereDate) {
     this.premiereDate = premiereDate;
@@ -327,14 +315,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImageUrl() {
     return imageUrl;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setImageUrl(@org.eclipse.jdt.annotation.Nullable
  String imageUrl) {
     this.imageUrl = imageUrl;
@@ -354,14 +340,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSearchProviderName() {
     return searchProviderName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSearchProviderName(@org.eclipse.jdt.annotation.Nullable
  String searchProviderName) {
     this.searchProviderName = searchProviderName;
@@ -381,14 +365,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOverview() {
     return overview;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -408,14 +390,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RemoteSearchResult getAlbumArtist() {
     return albumArtist;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAlbumArtist(@org.eclipse.jdt.annotation.Nullable
  RemoteSearchResult albumArtist) {
     this.albumArtist = albumArtist;
@@ -443,14 +423,12 @@ public class RemoteSearchResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<RemoteSearchResult> getArtists() {
     return artists;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setArtists(@org.eclipse.jdt.annotation.Nullable
  List<RemoteSearchResult> artists) {
     this.artists = artists;

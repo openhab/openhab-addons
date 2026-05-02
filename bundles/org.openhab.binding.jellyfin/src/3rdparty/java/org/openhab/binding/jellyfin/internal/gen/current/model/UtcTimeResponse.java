@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -66,14 +65,12 @@ public class UtcTimeResponse {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getRequestReceptionTime() {
     return requestReceptionTime;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequestReceptionTime(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime requestReceptionTime) {
     this.requestReceptionTime = requestReceptionTime;
@@ -93,14 +90,12 @@ public class UtcTimeResponse {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getResponseTransmissionTime() {
     return responseTransmissionTime;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setResponseTransmissionTime(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime responseTransmissionTime) {
     this.responseTransmissionTime = responseTransmissionTime;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -219,14 +218,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLocalAddress() {
     return localAddress;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalAddress(@org.eclipse.jdt.annotation.Nullable
  String localAddress) {
     this.localAddress = localAddress;
@@ -246,14 +243,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getServerName() {
     return serverName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -273,14 +268,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -300,14 +293,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProductName() {
     return productName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProductName(@org.eclipse.jdt.annotation.Nullable
  String productName) {
     this.productName = productName;
@@ -329,14 +320,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperatingSystem() {
     return operatingSystem;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOperatingSystem(@org.eclipse.jdt.annotation.Nullable
  String operatingSystem) {
     this.operatingSystem = operatingSystem;
@@ -356,14 +345,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -383,14 +370,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getStartupWizardCompleted() {
     return startupWizardCompleted;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setStartupWizardCompleted(@org.eclipse.jdt.annotation.Nullable
  Boolean startupWizardCompleted) {
     this.startupWizardCompleted = startupWizardCompleted;
@@ -412,14 +397,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperatingSystemDisplayName() {
     return operatingSystemDisplayName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOperatingSystemDisplayName(@org.eclipse.jdt.annotation.Nullable
  String operatingSystemDisplayName) {
     this.operatingSystemDisplayName = operatingSystemDisplayName;
@@ -439,14 +422,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPackageName() {
     return packageName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPackageName(@org.eclipse.jdt.annotation.Nullable
  String packageName) {
     this.packageName = packageName;
@@ -466,14 +447,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasPendingRestart() {
     return hasPendingRestart;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasPendingRestart(@org.eclipse.jdt.annotation.Nullable
  Boolean hasPendingRestart) {
     this.hasPendingRestart = hasPendingRestart;
@@ -493,14 +472,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsShuttingDown() {
     return isShuttingDown;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsShuttingDown(@org.eclipse.jdt.annotation.Nullable
  Boolean isShuttingDown) {
     this.isShuttingDown = isShuttingDown;
@@ -520,14 +497,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSupportsLibraryMonitor() {
     return supportsLibraryMonitor;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSupportsLibraryMonitor(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsLibraryMonitor) {
     this.supportsLibraryMonitor = supportsLibraryMonitor;
@@ -547,14 +522,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getWebSocketPortNumber() {
     return webSocketPortNumber;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWebSocketPortNumber(@org.eclipse.jdt.annotation.Nullable
  Integer webSocketPortNumber) {
     this.webSocketPortNumber = webSocketPortNumber;
@@ -582,14 +555,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<InstallationInfo> getCompletedInstallations() {
     return completedInstallations;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCompletedInstallations(@org.eclipse.jdt.annotation.Nullable
  List<InstallationInfo> completedInstallations) {
     this.completedInstallations = completedInstallations;
@@ -611,14 +582,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanSelfRestart() {
     return canSelfRestart;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanSelfRestart(@org.eclipse.jdt.annotation.Nullable
  Boolean canSelfRestart) {
     this.canSelfRestart = canSelfRestart;
@@ -640,14 +609,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getCanLaunchWebBrowser() {
     return canLaunchWebBrowser;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCanLaunchWebBrowser(@org.eclipse.jdt.annotation.Nullable
  Boolean canLaunchWebBrowser) {
     this.canLaunchWebBrowser = canLaunchWebBrowser;
@@ -669,14 +636,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProgramDataPath() {
     return programDataPath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProgramDataPath(@org.eclipse.jdt.annotation.Nullable
  String programDataPath) {
     this.programDataPath = programDataPath;
@@ -698,14 +663,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_WEB_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getWebPath() {
     return webPath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_WEB_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setWebPath(@org.eclipse.jdt.annotation.Nullable
  String webPath) {
     this.webPath = webPath;
@@ -727,14 +690,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getItemsByNamePath() {
     return itemsByNamePath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemsByNamePath(@org.eclipse.jdt.annotation.Nullable
  String itemsByNamePath) {
     this.itemsByNamePath = itemsByNamePath;
@@ -756,14 +717,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCachePath() {
     return cachePath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CACHE_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCachePath(@org.eclipse.jdt.annotation.Nullable
  String cachePath) {
     this.cachePath = cachePath;
@@ -785,14 +744,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOG_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLogPath() {
     return logPath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOG_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLogPath(@org.eclipse.jdt.annotation.Nullable
  String logPath) {
     this.logPath = logPath;
@@ -814,14 +771,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getInternalMetadataPath() {
     return internalMetadataPath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setInternalMetadataPath(@org.eclipse.jdt.annotation.Nullable
  String internalMetadataPath) {
     this.internalMetadataPath = internalMetadataPath;
@@ -843,14 +798,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTranscodingTempPath() {
     return transcodingTempPath;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTranscodingTempPath(@org.eclipse.jdt.annotation.Nullable
  String transcodingTempPath) {
     this.transcodingTempPath = transcodingTempPath;
@@ -878,14 +831,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<CastReceiverApplication> getCastReceiverApplications() {
     return castReceiverApplications;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCastReceiverApplications(@org.eclipse.jdt.annotation.Nullable
  List<CastReceiverApplication> castReceiverApplications) {
     this.castReceiverApplications = castReceiverApplications;
@@ -907,14 +858,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getHasUpdateAvailable() {
     return hasUpdateAvailable;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setHasUpdateAvailable(@org.eclipse.jdt.annotation.Nullable
  Boolean hasUpdateAvailable) {
     this.hasUpdateAvailable = hasUpdateAvailable;
@@ -936,14 +885,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEncoderLocation() {
     return encoderLocation;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEncoderLocation(@org.eclipse.jdt.annotation.Nullable
  String encoderLocation) {
     this.encoderLocation = encoderLocation;
@@ -965,14 +912,12 @@ public class SystemInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSystemArchitecture() {
     return systemArchitecture;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSystemArchitecture(@org.eclipse.jdt.annotation.Nullable
  String systemArchitecture) {
     this.systemArchitecture = systemArchitecture;

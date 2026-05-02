@@ -257,6 +257,16 @@ echo "🔧 remove @NonNullByDefault from generated classes (covered by package-i
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
+echo "🔧 remove redundant @JsonInclude(USE_DEFAULTS) annotations and orphaned imports"
+# USE_DEFAULTS is the implicit default when no class-level @JsonInclude is present, so these are no-ops.
+# Fields with @JsonInclude(ALWAYS) are intentional and must be preserved.
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@JsonInclude(value = JsonInclude\.Include\.USE_DEFAULTS)/d' {} \;
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f | while read f; do
+    if ! grep -q "JsonInclude" "$f"; then
+        sed -i '/import com\.fasterxml\.jackson\.annotation\.JsonInclude;/d' "$f"
+    fi
+done
+
 echo "🔧 guard url.replace calls in ServerConfiguration to avoid nullness mismatch"
 # Ensure generated ServerConfiguration calls to url.replace are null-guarded to satisfy static null analysis
 if [ -f "${GEN_ROOT_TARGET}/ServerConfiguration.java" ]; then

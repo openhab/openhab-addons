@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -310,14 +309,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnabled() {
     return enabled;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean enabled) {
     this.enabled = enabled;
@@ -337,14 +334,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PHOTOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnablePhotos() {
     return enablePhotos;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_PHOTOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnablePhotos(@org.eclipse.jdt.annotation.Nullable
  Boolean enablePhotos) {
     this.enablePhotos = enablePhotos;
@@ -364,14 +359,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REALTIME_MONITOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableRealtimeMonitor() {
     return enableRealtimeMonitor;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_REALTIME_MONITOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableRealtimeMonitor(@org.eclipse.jdt.annotation.Nullable
  Boolean enableRealtimeMonitor) {
     this.enableRealtimeMonitor = enableRealtimeMonitor;
@@ -391,14 +384,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_L_U_F_S_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableLUFSScan() {
     return enableLUFSScan;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_L_U_F_S_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableLUFSScan(@org.eclipse.jdt.annotation.Nullable
  Boolean enableLUFSScan) {
     this.enableLUFSScan = enableLUFSScan;
@@ -418,14 +409,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableChapterImageExtraction() {
     return enableChapterImageExtraction;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableChapterImageExtraction(@org.eclipse.jdt.annotation.Nullable
  Boolean enableChapterImageExtraction) {
     this.enableChapterImageExtraction = enableChapterImageExtraction;
@@ -445,14 +434,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getExtractChapterImagesDuringLibraryScan() {
     return extractChapterImagesDuringLibraryScan;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExtractChapterImagesDuringLibraryScan(@org.eclipse.jdt.annotation.Nullable
  Boolean extractChapterImagesDuringLibraryScan) {
     this.extractChapterImagesDuringLibraryScan = extractChapterImagesDuringLibraryScan;
@@ -472,14 +459,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableTrickplayImageExtraction() {
     return enableTrickplayImageExtraction;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableTrickplayImageExtraction(@org.eclipse.jdt.annotation.Nullable
  Boolean enableTrickplayImageExtraction) {
     this.enableTrickplayImageExtraction = enableTrickplayImageExtraction;
@@ -499,14 +484,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getExtractTrickplayImagesDuringLibraryScan() {
     return extractTrickplayImagesDuringLibraryScan;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExtractTrickplayImagesDuringLibraryScan(@org.eclipse.jdt.annotation.Nullable
  Boolean extractTrickplayImagesDuringLibraryScan) {
     this.extractTrickplayImagesDuringLibraryScan = extractTrickplayImagesDuringLibraryScan;
@@ -534,14 +517,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PATH_INFOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MediaPathInfo> getPathInfos() {
     return pathInfos;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PATH_INFOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPathInfos(@org.eclipse.jdt.annotation.Nullable
  List<MediaPathInfo> pathInfos) {
     this.pathInfos = pathInfos;
@@ -561,14 +542,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_LOCAL_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveLocalMetadata() {
     return saveLocalMetadata;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_LOCAL_METADATA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveLocalMetadata(@org.eclipse.jdt.annotation.Nullable
  Boolean saveLocalMetadata) {
     this.saveLocalMetadata = saveLocalMetadata;
@@ -590,14 +569,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableInternetProviders() {
     return enableInternetProviders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableInternetProviders(@org.eclipse.jdt.annotation.Nullable
  Boolean enableInternetProviders) {
     this.enableInternetProviders = enableInternetProviders;
@@ -617,14 +594,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableAutomaticSeriesGrouping() {
     return enableAutomaticSeriesGrouping;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableAutomaticSeriesGrouping(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAutomaticSeriesGrouping) {
     this.enableAutomaticSeriesGrouping = enableAutomaticSeriesGrouping;
@@ -644,14 +619,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_TITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEmbeddedTitles() {
     return enableEmbeddedTitles;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_TITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEmbeddedTitles(@org.eclipse.jdt.annotation.Nullable
  Boolean enableEmbeddedTitles) {
     this.enableEmbeddedTitles = enableEmbeddedTitles;
@@ -671,14 +644,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEmbeddedExtrasTitles() {
     return enableEmbeddedExtrasTitles;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEmbeddedExtrasTitles(@org.eclipse.jdt.annotation.Nullable
  Boolean enableEmbeddedExtrasTitles) {
     this.enableEmbeddedExtrasTitles = enableEmbeddedExtrasTitles;
@@ -698,14 +669,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getEnableEmbeddedEpisodeInfos() {
     return enableEmbeddedEpisodeInfos;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setEnableEmbeddedEpisodeInfos(@org.eclipse.jdt.annotation.Nullable
  Boolean enableEmbeddedEpisodeInfos) {
     this.enableEmbeddedEpisodeInfos = enableEmbeddedEpisodeInfos;
@@ -725,14 +694,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getAutomaticRefreshIntervalDays() {
     return automaticRefreshIntervalDays;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutomaticRefreshIntervalDays(@org.eclipse.jdt.annotation.Nullable
  Integer automaticRefreshIntervalDays) {
     this.automaticRefreshIntervalDays = automaticRefreshIntervalDays;
@@ -752,14 +719,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPreferredMetadataLanguage() {
     return preferredMetadataLanguage;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.Nullable
  String preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;
@@ -779,14 +744,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMetadataCountryCode() {
     return metadataCountryCode;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataCountryCode(@org.eclipse.jdt.annotation.Nullable
  String metadataCountryCode) {
     this.metadataCountryCode = metadataCountryCode;
@@ -806,14 +769,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSeasonZeroDisplayName() {
     return seasonZeroDisplayName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSeasonZeroDisplayName(@org.eclipse.jdt.annotation.Nullable
  String seasonZeroDisplayName) {
     this.seasonZeroDisplayName = seasonZeroDisplayName;
@@ -841,14 +802,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getMetadataSavers() {
     return metadataSavers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMetadataSavers(@org.eclipse.jdt.annotation.Nullable
  List<String> metadataSavers) {
     this.metadataSavers = metadataSavers;
@@ -876,14 +835,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledLocalMetadataReaders() {
     return disabledLocalMetadataReaders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledLocalMetadataReaders(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledLocalMetadataReaders) {
     this.disabledLocalMetadataReaders = disabledLocalMetadataReaders;
@@ -911,14 +868,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLocalMetadataReaderOrder() {
     return localMetadataReaderOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLocalMetadataReaderOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> localMetadataReaderOrder) {
     this.localMetadataReaderOrder = localMetadataReaderOrder;
@@ -946,14 +901,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledSubtitleFetchers() {
     return disabledSubtitleFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledSubtitleFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledSubtitleFetchers) {
     this.disabledSubtitleFetchers = disabledSubtitleFetchers;
@@ -981,14 +934,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSubtitleFetcherOrder() {
     return subtitleFetcherOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> subtitleFetcherOrder) {
     this.subtitleFetcherOrder = subtitleFetcherOrder;
@@ -1016,14 +967,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledMediaSegmentProviders() {
     return disabledMediaSegmentProviders;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledMediaSegmentProviders(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledMediaSegmentProviders) {
     this.disabledMediaSegmentProviders = disabledMediaSegmentProviders;
@@ -1051,14 +1000,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getMediaSegmentProviderOrder() {
     return mediaSegmentProviderOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSegmentProviderOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> mediaSegmentProviderOrder) {
     this.mediaSegmentProviderOrder = mediaSegmentProviderOrder;
@@ -1078,14 +1025,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
     return skipSubtitlesIfEmbeddedSubtitlesPresent;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipSubtitlesIfEmbeddedSubtitlesPresent(@org.eclipse.jdt.annotation.Nullable
  Boolean skipSubtitlesIfEmbeddedSubtitlesPresent) {
     this.skipSubtitlesIfEmbeddedSubtitlesPresent = skipSubtitlesIfEmbeddedSubtitlesPresent;
@@ -1105,14 +1050,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSkipSubtitlesIfAudioTrackMatches() {
     return skipSubtitlesIfAudioTrackMatches;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSkipSubtitlesIfAudioTrackMatches(@org.eclipse.jdt.annotation.Nullable
  Boolean skipSubtitlesIfAudioTrackMatches) {
     this.skipSubtitlesIfAudioTrackMatches = skipSubtitlesIfAudioTrackMatches;
@@ -1140,14 +1083,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getSubtitleDownloadLanguages() {
     return subtitleDownloadLanguages;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubtitleDownloadLanguages(@org.eclipse.jdt.annotation.Nullable
  List<String> subtitleDownloadLanguages) {
     this.subtitleDownloadLanguages = subtitleDownloadLanguages;
@@ -1167,14 +1108,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getRequirePerfectSubtitleMatch() {
     return requirePerfectSubtitleMatch;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setRequirePerfectSubtitleMatch(@org.eclipse.jdt.annotation.Nullable
  Boolean requirePerfectSubtitleMatch) {
     this.requirePerfectSubtitleMatch = requirePerfectSubtitleMatch;
@@ -1194,14 +1133,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveSubtitlesWithMedia() {
     return saveSubtitlesWithMedia;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveSubtitlesWithMedia(@org.eclipse.jdt.annotation.Nullable
  Boolean saveSubtitlesWithMedia) {
     this.saveSubtitlesWithMedia = saveSubtitlesWithMedia;
@@ -1221,14 +1158,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveLyricsWithMedia() {
     return saveLyricsWithMedia;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveLyricsWithMedia(@org.eclipse.jdt.annotation.Nullable
  Boolean saveLyricsWithMedia) {
     this.saveLyricsWithMedia = saveLyricsWithMedia;
@@ -1248,14 +1183,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSaveTrickplayWithMedia() {
     return saveTrickplayWithMedia;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSaveTrickplayWithMedia(@org.eclipse.jdt.annotation.Nullable
  Boolean saveTrickplayWithMedia) {
     this.saveTrickplayWithMedia = saveTrickplayWithMedia;
@@ -1283,14 +1216,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_LYRIC_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDisabledLyricFetchers() {
     return disabledLyricFetchers;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DISABLED_LYRIC_FETCHERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDisabledLyricFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> disabledLyricFetchers) {
     this.disabledLyricFetchers = disabledLyricFetchers;
@@ -1318,14 +1249,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getLyricFetcherOrder() {
     return lyricFetcherOrder;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHER_ORDER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLyricFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> lyricFetcherOrder) {
     this.lyricFetcherOrder = lyricFetcherOrder;
@@ -1345,14 +1274,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getPreferNonstandardArtistsTag() {
     return preferNonstandardArtistsTag;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPreferNonstandardArtistsTag(@org.eclipse.jdt.annotation.Nullable
  Boolean preferNonstandardArtistsTag) {
     this.preferNonstandardArtistsTag = preferNonstandardArtistsTag;
@@ -1372,14 +1299,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getUseCustomTagDelimiters() {
     return useCustomTagDelimiters;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUseCustomTagDelimiters(@org.eclipse.jdt.annotation.Nullable
  Boolean useCustomTagDelimiters) {
     this.useCustomTagDelimiters = useCustomTagDelimiters;
@@ -1407,14 +1332,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_TAG_DELIMITERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getCustomTagDelimiters() {
     return customTagDelimiters;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_TAG_DELIMITERS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomTagDelimiters(@org.eclipse.jdt.annotation.Nullable
  List<String> customTagDelimiters) {
     this.customTagDelimiters = customTagDelimiters;
@@ -1442,14 +1365,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DELIMITER_WHITELIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getDelimiterWhitelist() {
     return delimiterWhitelist;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DELIMITER_WHITELIST, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDelimiterWhitelist(@org.eclipse.jdt.annotation.Nullable
  List<String> delimiterWhitelist) {
     this.delimiterWhitelist = delimiterWhitelist;
@@ -1469,14 +1390,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAutomaticallyAddToCollection() {
     return automaticallyAddToCollection;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAutomaticallyAddToCollection(@org.eclipse.jdt.annotation.Nullable
  Boolean automaticallyAddToCollection) {
     this.automaticallyAddToCollection = automaticallyAddToCollection;
@@ -1496,14 +1415,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
     return allowEmbeddedSubtitles;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAllowEmbeddedSubtitles(@org.eclipse.jdt.annotation.Nullable
  EmbeddedSubtitleOptions allowEmbeddedSubtitles) {
     this.allowEmbeddedSubtitles = allowEmbeddedSubtitles;
@@ -1531,14 +1448,12 @@ public class LibraryOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<TypeOptions> getTypeOptions() {
     return typeOptions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTypeOptions(@org.eclipse.jdt.annotation.Nullable
  List<TypeOptions> typeOptions) {
     this.typeOptions = typeOptions;

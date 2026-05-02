@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -67,14 +66,12 @@ public class PinRedeemResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getSuccess() {
     return success;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSuccess(@org.eclipse.jdt.annotation.Nullable
  Boolean success) {
     this.success = success;
@@ -102,14 +99,12 @@ public class PinRedeemResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getUsersReset() {
     return usersReset;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUsersReset(@org.eclipse.jdt.annotation.Nullable
  List<String> usersReset) {
     this.usersReset = usersReset;

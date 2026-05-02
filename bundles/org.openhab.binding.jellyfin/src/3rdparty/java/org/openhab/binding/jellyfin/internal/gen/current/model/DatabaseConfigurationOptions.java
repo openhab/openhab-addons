@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -73,14 +72,12 @@ public class DatabaseConfigurationOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDatabaseType() {
     return databaseType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDatabaseType(@org.eclipse.jdt.annotation.Nullable
  String databaseType) {
     this.databaseType = databaseType;
@@ -100,14 +97,12 @@ public class DatabaseConfigurationOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public CustomDatabaseOptions getCustomProviderOptions() {
     return customProviderOptions;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomProviderOptions(@org.eclipse.jdt.annotation.Nullable
  CustomDatabaseOptions customProviderOptions) {
     this.customProviderOptions = customProviderOptions;
@@ -127,14 +122,12 @@ public class DatabaseConfigurationOptions {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DatabaseLockingBehaviorTypes getLockingBehavior() {
     return lockingBehavior;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLockingBehavior(@org.eclipse.jdt.annotation.Nullable
  DatabaseLockingBehaviorTypes lockingBehavior) {
     this.lockingBehavior = lockingBehavior;

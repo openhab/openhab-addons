@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -65,14 +64,12 @@ public class ParentalRatingScore {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getScore() {
     return score;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setScore(@org.eclipse.jdt.annotation.Nullable
  Integer score) {
     this.score = score;
@@ -92,14 +89,12 @@ public class ParentalRatingScore {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SUB_SCORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getSubScore() {
     return subScore;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SUB_SCORE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSubScore(@org.eclipse.jdt.annotation.Nullable
  Integer subScore) {
     this.subScore = subScore;

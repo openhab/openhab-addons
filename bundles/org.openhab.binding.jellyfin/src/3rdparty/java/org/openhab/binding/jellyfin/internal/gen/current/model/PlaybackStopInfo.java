@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -124,14 +123,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BaseItemDto getItem() {
     return item;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItem(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto item) {
     this.item = item;
@@ -151,14 +148,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getItemId() {
     return itemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -178,14 +173,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSessionId() {
     return sessionId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSessionId(@org.eclipse.jdt.annotation.Nullable
  String sessionId) {
     this.sessionId = sessionId;
@@ -205,14 +198,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getMediaSourceId() {
     return mediaSourceId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMediaSourceId(@org.eclipse.jdt.annotation.Nullable
  String mediaSourceId) {
     this.mediaSourceId = mediaSourceId;
@@ -232,14 +223,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
@@ -259,14 +248,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLiveStreamId() {
     return liveStreamId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLiveStreamId(@org.eclipse.jdt.annotation.Nullable
  String liveStreamId) {
     this.liveStreamId = liveStreamId;
@@ -286,14 +273,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPlaySessionId() {
     return playSessionId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaySessionId(@org.eclipse.jdt.annotation.Nullable
  String playSessionId) {
     this.playSessionId = playSessionId;
@@ -313,14 +298,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FAILED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getFailed() {
     return failed;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FAILED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFailed(@org.eclipse.jdt.annotation.Nullable
  Boolean failed) {
     this.failed = failed;
@@ -340,14 +323,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NEXT_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNextMediaType() {
     return nextMediaType;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NEXT_MEDIA_TYPE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNextMediaType(@org.eclipse.jdt.annotation.Nullable
  String nextMediaType) {
     this.nextMediaType = nextMediaType;
@@ -367,14 +348,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPlaylistItemId() {
     return playlistItemId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  String playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -402,14 +381,12 @@ public class PlaybackStopInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<QueueItem> getNowPlayingQueue() {
     return nowPlayingQueue;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setNowPlayingQueue(@org.eclipse.jdt.annotation.Nullable
  List<QueueItem> nowPlayingQueue) {
     this.nowPlayingQueue = nowPlayingQueue;

@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -75,14 +74,12 @@ public class PlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOpenAccess() {
     return openAccess;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setOpenAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean openAccess) {
     this.openAccess = openAccess;
@@ -110,14 +107,12 @@ public class PlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PlaylistUserPermissions> getShares() {
     return shares;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setShares(@org.eclipse.jdt.annotation.Nullable
  List<PlaylistUserPermissions> shares) {
     this.shares = shares;
@@ -145,14 +140,12 @@ public class PlaylistDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<UUID> getItemIds() {
     return itemIds;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> itemIds) {
     this.itemIds = itemIds;

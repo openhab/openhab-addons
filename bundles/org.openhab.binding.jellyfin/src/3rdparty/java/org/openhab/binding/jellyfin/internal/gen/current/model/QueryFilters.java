@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -76,14 +75,12 @@ public class QueryFilters {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<NameGuidPair> getGenres() {
     return genres;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> genres) {
     this.genres = genres;
@@ -111,14 +108,12 @@ public class QueryFilters {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getTags() {
     return tags;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTags(@org.eclipse.jdt.annotation.Nullable
  List<String> tags) {
     this.tags = tags;

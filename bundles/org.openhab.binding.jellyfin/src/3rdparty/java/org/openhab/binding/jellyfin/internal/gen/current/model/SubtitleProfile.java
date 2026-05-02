@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -84,14 +83,12 @@ public class SubtitleProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFormat() {
     return format;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFormat(@org.eclipse.jdt.annotation.Nullable
  String format) {
     this.format = format;
@@ -111,14 +108,12 @@ public class SubtitleProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_METHOD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public SubtitleDeliveryMethod getMethod() {
     return method;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_METHOD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setMethod(@org.eclipse.jdt.annotation.Nullable
  SubtitleDeliveryMethod method) {
     this.method = method;
@@ -138,14 +133,12 @@ public class SubtitleProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DIDL_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDidlMode() {
     return didlMode;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DIDL_MODE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDidlMode(@org.eclipse.jdt.annotation.Nullable
  String didlMode) {
     this.didlMode = didlMode;
@@ -165,14 +158,12 @@ public class SubtitleProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLanguage() {
     return language;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLanguage(@org.eclipse.jdt.annotation.Nullable
  String language) {
     this.language = language;
@@ -192,14 +183,12 @@ public class SubtitleProfile {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getContainer() {
     return container;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;

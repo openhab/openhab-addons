@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -127,14 +126,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  Long id) {
     this.id = id;
@@ -154,14 +151,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAccessToken() {
     return accessToken;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAccessToken(@org.eclipse.jdt.annotation.Nullable
  String accessToken) {
     this.accessToken = accessToken;
@@ -181,14 +176,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceId() {
     return deviceId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;
@@ -208,14 +201,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAppName() {
     return appName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAppName(@org.eclipse.jdt.annotation.Nullable
  String appName) {
     this.appName = appName;
@@ -235,14 +226,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAppVersion() {
     return appVersion;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setAppVersion(@org.eclipse.jdt.annotation.Nullable
  String appVersion) {
     this.appVersion = appVersion;
@@ -262,14 +251,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceName() {
     return deviceName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDeviceName(@org.eclipse.jdt.annotation.Nullable
  String deviceName) {
     this.deviceName = deviceName;
@@ -289,14 +276,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public UUID getUserId() {
     return userId;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -316,14 +301,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getIsActive() {
     return isActive;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setIsActive(@org.eclipse.jdt.annotation.Nullable
  Boolean isActive) {
     this.isActive = isActive;
@@ -343,14 +326,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -370,14 +351,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATE_REVOKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateRevoked() {
     return dateRevoked;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATE_REVOKED, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateRevoked(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateRevoked) {
     this.dateRevoked = dateRevoked;
@@ -397,14 +376,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getDateLastActivity() {
     return dateLastActivity;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDateLastActivity(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateLastActivity) {
     this.dateLastActivity = dateLastActivity;
@@ -424,14 +401,12 @@ public class AuthenticationInfo {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserName() {
     return userName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setUserName(@org.eclipse.jdt.annotation.Nullable
  String userName) {
     this.userName = userName;

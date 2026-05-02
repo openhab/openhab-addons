@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -72,14 +71,12 @@ public class AllThemeMediaResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ThemeMediaResult getThemeVideosResult() {
     return themeVideosResult;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThemeVideosResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult themeVideosResult) {
     this.themeVideosResult = themeVideosResult;
@@ -99,14 +96,12 @@ public class AllThemeMediaResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ThemeMediaResult getThemeSongsResult() {
     return themeSongsResult;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setThemeSongsResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult themeSongsResult) {
     this.themeSongsResult = themeSongsResult;
@@ -126,14 +121,12 @@ public class AllThemeMediaResult {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ThemeMediaResult getSoundtrackSongsResult() {
     return soundtrackSongsResult;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setSoundtrackSongsResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult soundtrackSongsResult) {
     this.soundtrackSongsResult = soundtrackSongsResult;

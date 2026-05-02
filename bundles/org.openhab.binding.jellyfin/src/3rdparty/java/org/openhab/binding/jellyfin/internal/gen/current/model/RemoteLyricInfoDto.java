@@ -20,7 +20,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -72,14 +71,12 @@ public class RemoteLyricInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_ID, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -99,14 +96,12 @@ public class RemoteLyricInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getProviderName() {
     return providerName;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderName(@org.eclipse.jdt.annotation.Nullable
  String providerName) {
     this.providerName = providerName;
@@ -126,14 +121,12 @@ public class RemoteLyricInfoDto {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LyricDto getLyrics() {
     return lyrics;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setLyrics(@org.eclipse.jdt.annotation.Nullable
  LyricDto lyrics) {
     this.lyrics = lyrics;

@@ -92,14 +92,12 @@ public class CreateUserByName {
   @org.eclipse.jdt.annotation.Nullable
 
   @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getPassword() {
     return password;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setPassword(@org.eclipse.jdt.annotation.Nullable
  String password) {
     this.password = password;
