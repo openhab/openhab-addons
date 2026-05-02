@@ -304,6 +304,25 @@ public class ZwaveJSNodeHandlerTest {
     }
 
     @Test
+    public void testNode60SceneActivationValueNotificationLazyChannel() throws IOException {
+        final Thing thing = ZwaveJSNodeHandlerMock.mockThing(60);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSNodeHandlerMock handler = ZwaveJSNodeHandlerMock.createAndInitHandler(callback, thing,
+                "store_4.json");
+
+        EventMessage eventMessage = DataUtil.fromJson("event_node_60_scene_activation_notification.json",
+                EventMessage.class);
+        handler.onNodeStateChanged(ZwaveJSBridgeHandler.normalizeValueNotification(eventMessage.event));
+
+        ChannelUID channelId = new ChannelUID("zwavejs:test-bridge:test-thing:scene-activation-scene-id");
+        try {
+            verify(callback, times(1)).stateUpdated(eq(channelId), eq(new DecimalType(16)));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testNode37CentralSceneValueNotificationUpdate() throws IOException {
         final Thing thing = ZwaveJSNodeHandlerMock.mockThing(37);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);

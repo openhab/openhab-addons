@@ -13,6 +13,7 @@
 package org.openhab.binding.zwavejs.internal.handler;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SCENE_ACTIVATION;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.EQUIPMENT_MAP;
 import static org.openhab.core.thing.Thing.*;
 
@@ -535,8 +536,16 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         logger.trace("Getting the configuration for linked channel {}", metadata.id);
         Channel channel = thing.getChannel(metadata.id);
         if (channel == null) {
-            logger.debug("Node {}. Channel {} not found, ignoring event", config.id, channelId);
-            return false;
+            // Some Fibaro dimmers (e.g. FGD212) emit Scene Activation (CC 0x2B) events but do not
+            // list the CC in their endpoint commandClasses, so the eager generator cannot create
+            // the channel up front. Fall back to lazy creation here on first event arrival.
+            if (event.args.commandClass == COMMAND_CLASS_SCENE_ACTIVATION) {
+                channel = lazilyAddSceneActivationChannel(event.args.endpoint);
+            }
+            if (channel == null) {
+                logger.debug("Node {}. Channel {} not found, ignoring event", config.id, channelId);
+                return false;
+            }
         }
 
         ZwaveJSChannelConfiguration channelConfig = getChannelConfiguration(channel);
@@ -741,6 +750,37 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public Integer getId() {
         return this.config.id;
+    }
+
+    /**
+     * Lazy fallback for nodes whose interview did not list CC 0x2B (Scene Activation) in their
+     * endpoint commandClasses. When a Scene Activation event arrives and no channel exists yet,
+     * synthesize one, attach it to the Thing, and return it so the caller can dispatch the event
+     * normally.
+     *
+     * @param endpoint the endpoint index reported in the incoming event
+     * @return the freshly attached Channel, or {@code null} if attaching failed
+     */
+    private @Nullable Channel lazilyAddSceneActivationChannel(int endpoint) {
+        try {
+            Channel channel = typeGenerator.createSceneActivationChannel(thing.getUID(), config.id, endpoint);
+            String newChannelId = channel.getUID().getId();
+
+            // Re-check under the lock-free fast path: another event may have created it concurrently.
+            Channel existing = thing.getChannel(newChannelId);
+            if (existing != null) {
+                return existing;
+            }
+
+            logger.debug("Node {}. Lazily adding Scene Activation channel {} on first event", config.id, newChannelId);
+            ThingBuilder builder = editThing().withChannel(channel);
+            updateThing(builder.build());
+            return thing.getChannel(newChannelId);
+        } catch (RuntimeException e) {
+            logger.warn("Node {}. Failed to lazily add Scene Activation channel for endpoint {}", config.id, endpoint,
+                    e);
+            return null;
+        }
     }
 
     private boolean setupThing(Node node) {

@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -36,4 +37,20 @@ public interface ZwaveJSTypeGenerator {
      * @return a ZwaveJSTypeGeneratorResult containing the generated type information
      */
     ZwaveJSTypeGeneratorResult generate(ThingUID thingUID, Node node, boolean configurationAsChannels);
+
+    /*
+     * Builds a Scene Activation (CC 0x2B) channel for the given endpoint and registers its
+     * ChannelType. Used to lazily add the channel on first incoming "value notification" event
+     * for nodes whose interview did not list CC 0x2B in the endpoint's commandClasses (some Fibaro
+     * dimmers, e.g. FGD212).
+     *
+     * @param thingUID the ThingUID of the node
+     * 
+     * @param nodeId the Z-Wave node id (used only for log context)
+     * 
+     * @param endpoint the endpoint index that received the Scene Activation event
+     * 
+     * @return the created Channel
+     */
+    Channel createSceneActivationChannel(ThingUID thingUID, int nodeId, int endpoint);
 }

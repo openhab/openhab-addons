@@ -278,14 +278,18 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         if (node.endpoints == null) {
             return;
         }
-        node.endpoints.stream()
-                .filter(ep -> ep.commandClasses != null && ep.commandClasses.stream()
-                        .anyMatch(cc -> cc != null && COMMAND_CLASS_SCENE_ACTIVATION == cc.id))
-                .forEach(ep -> createSceneActivationChannel(thingUID, node, result, ep.index));
+        node.endpoints.stream().filter(ep -> ep.commandClasses != null
+                && ep.commandClasses.stream().anyMatch(cc -> cc != null && COMMAND_CLASS_SCENE_ACTIVATION == cc.id))
+                .forEach(ep -> {
+                    Channel channel = createSceneActivationChannel(thingUID, node.nodeId, ep.index);
+                    if (!result.channels.containsKey(channel.getUID().getId())) {
+                        result.channels.put(channel.getUID().getId(), channel);
+                    }
+                });
     }
 
-    private void createSceneActivationChannel(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result,
-            int endpoint) {
+    @Override
+    public Channel createSceneActivationChannel(ThingUID thingUID, int nodeId, int endpoint) {
         Value value = new Value();
         value.endpoint = endpoint;
         value.commandClass = COMMAND_CLASS_SCENE_ACTIVATION;
@@ -299,21 +303,15 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         value.metadata.label = "Scene Activation";
         value.metadata.description = "Last received scene id (CC 0x2B Scene Activation)";
 
-        ChannelMetadata details = new ChannelMetadata(node.nodeId, value);
-        if (result.channels.containsKey(details.id)) {
-            return;
-        }
-
+        ChannelMetadata details = new ChannelMetadata(nodeId, value);
         logger.trace("Node {} building Scene Activation channel with Id: {}", details.nodeId, details.id);
 
         ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
-        ChannelType type = getOrGenerate(channelTypeUID, details);
-        if (type == null) {
-            return;
-        }
+        ChannelType type = Objects.requireNonNull(getOrGenerate(channelTypeUID, details),
+                "Scene Activation ChannelType could not be generated");
         Configuration config = buildChannelConfiguration(details);
 
-        Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.NUMBER)
+        return ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.NUMBER)
                 .withType(type.getUID()) //
                 .withDefaultTags(type.getTags()) //
                 .withKind(type.getKind()) //
@@ -322,8 +320,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
                 .withConfiguration(config) //
                 .build();
-
-        result.channels.put(details.id, channel);
     }
 
     private ConfigDescriptionParameter createConfigDescription(ConfigMetadata details) {
