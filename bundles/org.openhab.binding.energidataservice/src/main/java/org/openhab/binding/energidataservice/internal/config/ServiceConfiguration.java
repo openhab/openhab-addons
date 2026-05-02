@@ -19,38 +19,33 @@ import org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingCo
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
 
 /**
- * The {@link EnergiDataServiceConfiguration} class contains fields mapping thing configuration parameters.
+ * Configuration for the {@code service} Thing.
+ *
+ * @param priceArea Price area (DK1 = West of the Great Belt, DK2 = East of the Great Belt)
+ * @param currencyCode Currency code for the prices
+ * @param gridCompanyGLN Global Location Number of the Grid Company
+ * @param energinetGLN Global Location Number of Energinet
+ * @param reducedElectricityTax Whether reduced electricity tax applies (for electric heating customers only)
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class EnergiDataServiceConfiguration {
+public record ServiceConfiguration(String priceArea, String currencyCode, String gridCompanyGLN, String energinetGLN,
+        boolean reducedElectricityTax) {
 
-    /**
-     * Price area (DK1 = West of the Great Belt, DK2 = East of the Great Belt).
-     */
-    public String priceArea = "";
+    public static final ServiceConfiguration DEFAULT = new ServiceConfiguration(null, null, null, null, false);
 
-    /**
-     * Currency code for the prices.
-     */
-    public String currencyCode = EnergiDataServiceBindingConstants.CURRENCY_DKK.getCurrencyCode();
+    public ServiceConfiguration {
+        priceArea = priceArea != null ? priceArea : "";
 
-    /**
-     * Global Location Number of the Grid Company.
-     */
-    public String gridCompanyGLN = "";
+        if (currencyCode == null || currencyCode.isBlank()) {
+            currencyCode = EnergiDataServiceBindingConstants.CURRENCY_DKK.getCurrencyCode();
+        }
 
-    /**
-     * Global Location Number of Energinet.
-     */
-    public String energinetGLN = "5790000432752";
+        gridCompanyGLN = gridCompanyGLN != null ? gridCompanyGLN : "";
 
-    /**
-     * Reduced electricity tax applies.
-     * For electric heating customers only.
-     */
-    public boolean reducedElectricityTax;
+        energinetGLN = energinetGLN != null ? energinetGLN : "5790000432752";
+    }
 
     /**
      * Get {@link Currency} representing the configured currency code.
