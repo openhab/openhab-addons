@@ -57,13 +57,13 @@ public class PingRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PING)
   public Long getPing() {
     return ping;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PING)
   public void setPing(@org.eclipse.jdt.annotation.Nullable
  Long ping) {
     this.ping = ping;

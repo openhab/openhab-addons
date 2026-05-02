@@ -237,13 +237,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_STATE)
   public PlayerStateInfo getPlayState() {
     return playState;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_STATE)
   public void setPlayState(@org.eclipse.jdt.annotation.Nullable
  PlayerStateInfo playState) {
     this.playState = playState;
@@ -270,13 +270,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS)
   public List<SessionUserInfo> getAdditionalUsers() {
     return additionalUsers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS)
   public void setAdditionalUsers(@org.eclipse.jdt.annotation.Nullable
  List<SessionUserInfo> additionalUsers) {
     this.additionalUsers = additionalUsers;
@@ -295,13 +295,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
   public ClientCapabilitiesDto getCapabilities() {
     return capabilities;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
   public void setCapabilities(@org.eclipse.jdt.annotation.Nullable
  ClientCapabilitiesDto capabilities) {
     this.capabilities = capabilities;
@@ -320,13 +320,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT)
   public String getRemoteEndPoint() {
     return remoteEndPoint;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT)
   public void setRemoteEndPoint(@org.eclipse.jdt.annotation.Nullable
  String remoteEndPoint) {
     this.remoteEndPoint = remoteEndPoint;
@@ -353,13 +353,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
   public List<MediaType> getPlayableMediaTypes() {
     return playableMediaTypes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
   public void setPlayableMediaTypes(@org.eclipse.jdt.annotation.Nullable
  List<MediaType> playableMediaTypes) {
     this.playableMediaTypes = playableMediaTypes;
@@ -378,13 +378,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -403,13 +403,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -428,13 +428,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_NAME)
   public String getUserName() {
     return userName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_NAME)
   public void setUserName(@org.eclipse.jdt.annotation.Nullable
  String userName) {
     this.userName = userName;
@@ -453,13 +453,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLIENT)
   public String getClient() {
     return client;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLIENT)
   public void setClient(@org.eclipse.jdt.annotation.Nullable
  String client) {
     this.client = client;
@@ -478,13 +478,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
   public OffsetDateTime getLastActivityDate() {
     return lastActivityDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
   public void setLastActivityDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastActivityDate) {
     this.lastActivityDate = lastActivityDate;
@@ -503,13 +503,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
   public OffsetDateTime getLastPlaybackCheckIn() {
     return lastPlaybackCheckIn;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
   public void setLastPlaybackCheckIn(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastPlaybackCheckIn) {
     this.lastPlaybackCheckIn = lastPlaybackCheckIn;
@@ -528,13 +528,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE)
   public OffsetDateTime getLastPausedDate() {
     return lastPausedDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE)
   public void setLastPausedDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastPausedDate) {
     this.lastPausedDate = lastPausedDate;
@@ -553,13 +553,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME)
   public String getDeviceName() {
     return deviceName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME)
   public void setDeviceName(@org.eclipse.jdt.annotation.Nullable
  String deviceName) {
     this.deviceName = deviceName;
@@ -578,13 +578,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE)
   public String getDeviceType() {
     return deviceType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE)
   public void setDeviceType(@org.eclipse.jdt.annotation.Nullable
  String deviceType) {
     this.deviceType = deviceType;
@@ -603,13 +603,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM)
   public BaseItemDto getNowPlayingItem() {
     return nowPlayingItem;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM)
   public void setNowPlayingItem(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto nowPlayingItem) {
     this.nowPlayingItem = nowPlayingItem;
@@ -628,13 +628,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM)
   public BaseItemDto getNowViewingItem() {
     return nowViewingItem;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM)
   public void setNowViewingItem(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto nowViewingItem) {
     this.nowViewingItem = nowViewingItem;
@@ -653,13 +653,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public String getDeviceId() {
     return deviceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;
@@ -678,13 +678,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION)
   public String getApplicationVersion() {
     return applicationVersion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION)
   public void setApplicationVersion(@org.eclipse.jdt.annotation.Nullable
  String applicationVersion) {
     this.applicationVersion = applicationVersion;
@@ -703,13 +703,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO)
   public TranscodingInfo getTranscodingInfo() {
     return transcodingInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO)
   public void setTranscodingInfo(@org.eclipse.jdt.annotation.Nullable
  TranscodingInfo transcodingInfo) {
     this.transcodingInfo = transcodingInfo;
@@ -728,13 +728,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE)
   public Boolean getIsActive() {
     return isActive;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE)
   public void setIsActive(@org.eclipse.jdt.annotation.Nullable
  Boolean isActive) {
     this.isActive = isActive;
@@ -753,13 +753,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
   public Boolean getSupportsMediaControl() {
     return supportsMediaControl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
   public void setSupportsMediaControl(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsMediaControl) {
     this.supportsMediaControl = supportsMediaControl;
@@ -778,13 +778,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
   public Boolean getSupportsRemoteControl() {
     return supportsRemoteControl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
   public void setSupportsRemoteControl(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsRemoteControl) {
     this.supportsRemoteControl = supportsRemoteControl;
@@ -811,13 +811,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE)
   public List<QueueItem> getNowPlayingQueue() {
     return nowPlayingQueue;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE)
   public void setNowPlayingQueue(@org.eclipse.jdt.annotation.Nullable
  List<QueueItem> nowPlayingQueue) {
     this.nowPlayingQueue = nowPlayingQueue;
@@ -844,13 +844,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
   public List<BaseItemDto> getNowPlayingQueueFullItems() {
     return nowPlayingQueueFullItems;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
   public void setNowPlayingQueueFullItems(@org.eclipse.jdt.annotation.Nullable
  List<BaseItemDto> nowPlayingQueueFullItems) {
     this.nowPlayingQueueFullItems = nowPlayingQueueFullItems;
@@ -869,13 +869,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
   public Boolean getHasCustomDeviceName() {
     return hasCustomDeviceName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
   public void setHasCustomDeviceName(@org.eclipse.jdt.annotation.Nullable
  Boolean hasCustomDeviceName) {
     this.hasCustomDeviceName = hasCustomDeviceName;
@@ -894,13 +894,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public String getPlaylistItemId() {
     return playlistItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  String playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -919,13 +919,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public String getServerId() {
     return serverId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;
@@ -944,13 +944,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
   public String getUserPrimaryImageTag() {
     return userPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
   public void setUserPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String userPrimaryImageTag) {
     this.userPrimaryImageTag = userPrimaryImageTag;
@@ -977,13 +977,13 @@ public class SessionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
   public List<GeneralCommandType> getSupportedCommands() {
     return supportedCommands;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
   public void setSupportedCommands(@org.eclipse.jdt.annotation.Nullable
  List<GeneralCommandType> supportedCommands) {
     this.supportedCommands = supportedCommands;

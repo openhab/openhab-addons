@@ -86,13 +86,13 @@ public class GroupInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public UUID getGroupId() {
     return groupId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public void setGroupId(@org.eclipse.jdt.annotation.Nullable
  UUID groupId) {
     this.groupId = groupId;
@@ -111,13 +111,13 @@ public class GroupInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME)
   public String getGroupName() {
     return groupName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME)
   public void setGroupName(@org.eclipse.jdt.annotation.Nullable
  String groupName) {
     this.groupName = groupName;
@@ -136,13 +136,13 @@ public class GroupInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATE)
   public GroupStateType getState() {
     return state;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATE)
   public void setState(@org.eclipse.jdt.annotation.Nullable
  GroupStateType state) {
     this.state = state;
@@ -169,13 +169,13 @@ public class GroupInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS)
   public List<String> getParticipants() {
     return participants;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS)
   public void setParticipants(@org.eclipse.jdt.annotation.Nullable
  List<String> participants) {
     this.participants = participants;
@@ -194,13 +194,13 @@ public class GroupInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT)
   public OffsetDateTime getLastUpdatedAt() {
     return lastUpdatedAt;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT)
   public void setLastUpdatedAt(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastUpdatedAt) {
     this.lastUpdatedAt = lastUpdatedAt;

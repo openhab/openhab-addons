@@ -72,13 +72,13 @@ public class LyricLine {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TEXT)
   public String getText() {
     return text;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TEXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TEXT)
   public void setText(@org.eclipse.jdt.annotation.Nullable
  String text) {
     this.text = text;
@@ -97,13 +97,13 @@ public class LyricLine {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START)
   public Long getStart() {
     return start;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START)
   public void setStart(@org.eclipse.jdt.annotation.Nullable
  Long start) {
     this.start = start;
@@ -130,13 +130,13 @@ public class LyricLine {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUES)
   public List<LyricLineCue> getCues() {
     return cues;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUES)
   public void setCues(@org.eclipse.jdt.annotation.Nullable
  List<LyricLineCue> cues) {
     this.cues = cues;

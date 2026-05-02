@@ -162,13 +162,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -187,13 +187,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -212,13 +212,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERNAME)
   public String getUsername() {
     return username;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERNAME)
   public void setUsername(@org.eclipse.jdt.annotation.Nullable
  String username) {
     this.username = username;
@@ -237,13 +237,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PASSWORD)
   public String getPassword() {
     return password;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PASSWORD)
   public void setPassword(@org.eclipse.jdt.annotation.Nullable
  String password) {
     this.password = password;
@@ -262,13 +262,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID)
   public String getListingsId() {
     return listingsId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID)
   public void setListingsId(@org.eclipse.jdt.annotation.Nullable
  String listingsId) {
     this.listingsId = listingsId;
@@ -287,13 +287,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ZIP_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ZIP_CODE)
   public String getZipCode() {
     return zipCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ZIP_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ZIP_CODE)
   public void setZipCode(@org.eclipse.jdt.annotation.Nullable
  String zipCode) {
     this.zipCode = zipCode;
@@ -312,13 +312,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COUNTRY)
   public String getCountry() {
     return country;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COUNTRY)
   public void setCountry(@org.eclipse.jdt.annotation.Nullable
  String country) {
     this.country = country;
@@ -337,13 +337,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -370,13 +370,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS)
   public List<String> getEnabledTuners() {
     return enabledTuners;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS)
   public void setEnabledTuners(@org.eclipse.jdt.annotation.Nullable
  List<String> enabledTuners) {
     this.enabledTuners = enabledTuners;
@@ -395,13 +395,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS)
   public Boolean getEnableAllTuners() {
     return enableAllTuners;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS)
   public void setEnableAllTuners(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAllTuners) {
     this.enableAllTuners = enableAllTuners;
@@ -428,13 +428,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES)
   public List<String> getNewsCategories() {
     return newsCategories;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES)
   public void setNewsCategories(@org.eclipse.jdt.annotation.Nullable
  List<String> newsCategories) {
     this.newsCategories = newsCategories;
@@ -461,13 +461,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES)
   public List<String> getSportsCategories() {
     return sportsCategories;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES)
   public void setSportsCategories(@org.eclipse.jdt.annotation.Nullable
  List<String> sportsCategories) {
     this.sportsCategories = sportsCategories;
@@ -494,13 +494,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES)
   public List<String> getKidsCategories() {
     return kidsCategories;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES)
   public void setKidsCategories(@org.eclipse.jdt.annotation.Nullable
  List<String> kidsCategories) {
     this.kidsCategories = kidsCategories;
@@ -527,13 +527,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES)
   public List<String> getMovieCategories() {
     return movieCategories;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES)
   public void setMovieCategories(@org.eclipse.jdt.annotation.Nullable
  List<String> movieCategories) {
     this.movieCategories = movieCategories;
@@ -560,13 +560,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS)
   public List<NameValuePair> getChannelMappings() {
     return channelMappings;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS)
   public void setChannelMappings(@org.eclipse.jdt.annotation.Nullable
  List<NameValuePair> channelMappings) {
     this.channelMappings = channelMappings;
@@ -585,13 +585,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX)
   public String getMoviePrefix() {
     return moviePrefix;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX)
   public void setMoviePrefix(@org.eclipse.jdt.annotation.Nullable
  String moviePrefix) {
     this.moviePrefix = moviePrefix;
@@ -610,13 +610,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE)
   public String getPreferredLanguage() {
     return preferredLanguage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE)
   public void setPreferredLanguage(@org.eclipse.jdt.annotation.Nullable
  String preferredLanguage) {
     this.preferredLanguage = preferredLanguage;
@@ -635,13 +635,13 @@ public class ListingsProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_AGENT)
   public String getUserAgent() {
     return userAgent;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_AGENT)
   public void setUserAgent(@org.eclipse.jdt.annotation.Nullable
  String userAgent) {
     this.userAgent = userAgent;

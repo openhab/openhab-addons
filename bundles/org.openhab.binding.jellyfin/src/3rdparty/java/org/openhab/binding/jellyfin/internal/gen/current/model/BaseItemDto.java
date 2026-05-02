@@ -1000,13 +1000,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -1025,13 +1025,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE)
   public String getOriginalTitle() {
     return originalTitle;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE)
   public void setOriginalTitle(@org.eclipse.jdt.annotation.Nullable
  String originalTitle) {
     this.originalTitle = originalTitle;
@@ -1050,13 +1050,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public String getServerId() {
     return serverId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;
@@ -1075,13 +1075,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -1100,13 +1100,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ETAG)
   public String getEtag() {
     return etag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ETAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ETAG)
   public void setEtag(@org.eclipse.jdt.annotation.Nullable
  String etag) {
     this.etag = etag;
@@ -1125,13 +1125,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_TYPE)
   public String getSourceType() {
     return sourceType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_TYPE)
   public void setSourceType(@org.eclipse.jdt.annotation.Nullable
  String sourceType) {
     this.sourceType = sourceType;
@@ -1150,13 +1150,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public String getPlaylistItemId() {
     return playlistItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  String playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -1175,13 +1175,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -1200,13 +1200,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_MEDIA_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
   public OffsetDateTime getDateLastMediaAdded() {
     return dateLastMediaAdded;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_MEDIA_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_MEDIA_ADDED)
   public void setDateLastMediaAdded(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateLastMediaAdded) {
     this.dateLastMediaAdded = dateLastMediaAdded;
@@ -1225,13 +1225,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTRA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTRA_TYPE)
   public ExtraType getExtraType() {
     return extraType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTRA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTRA_TYPE)
   public void setExtraType(@org.eclipse.jdt.annotation.Nullable
  ExtraType extraType) {
     this.extraType = extraType;
@@ -1250,13 +1250,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
   public Integer getAirsBeforeSeasonNumber() {
     return airsBeforeSeasonNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_SEASON_NUMBER)
   public void setAirsBeforeSeasonNumber(@org.eclipse.jdt.annotation.Nullable
  Integer airsBeforeSeasonNumber) {
     this.airsBeforeSeasonNumber = airsBeforeSeasonNumber;
@@ -1275,13 +1275,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
   public Integer getAirsAfterSeasonNumber() {
     return airsAfterSeasonNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_AFTER_SEASON_NUMBER)
   public void setAirsAfterSeasonNumber(@org.eclipse.jdt.annotation.Nullable
  Integer airsAfterSeasonNumber) {
     this.airsAfterSeasonNumber = airsAfterSeasonNumber;
@@ -1300,13 +1300,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
   public Integer getAirsBeforeEpisodeNumber() {
     return airsBeforeEpisodeNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIRS_BEFORE_EPISODE_NUMBER)
   public void setAirsBeforeEpisodeNumber(@org.eclipse.jdt.annotation.Nullable
  Integer airsBeforeEpisodeNumber) {
     this.airsBeforeEpisodeNumber = airsBeforeEpisodeNumber;
@@ -1325,13 +1325,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE)
   public Boolean getCanDelete() {
     return canDelete;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_DELETE)
   public void setCanDelete(@org.eclipse.jdt.annotation.Nullable
  Boolean canDelete) {
     this.canDelete = canDelete;
@@ -1350,13 +1350,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_DOWNLOAD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_DOWNLOAD)
   public Boolean getCanDownload() {
     return canDownload;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_DOWNLOAD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_DOWNLOAD)
   public void setCanDownload(@org.eclipse.jdt.annotation.Nullable
  Boolean canDownload) {
     this.canDownload = canDownload;
@@ -1375,13 +1375,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_LYRICS)
   public Boolean getHasLyrics() {
     return hasLyrics;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_LYRICS)
   public void setHasLyrics(@org.eclipse.jdt.annotation.Nullable
  Boolean hasLyrics) {
     this.hasLyrics = hasLyrics;
@@ -1400,13 +1400,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_SUBTITLES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_SUBTITLES)
   public Boolean getHasSubtitles() {
     return hasSubtitles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_SUBTITLES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_SUBTITLES)
   public void setHasSubtitles(@org.eclipse.jdt.annotation.Nullable
  Boolean hasSubtitles) {
     this.hasSubtitles = hasSubtitles;
@@ -1425,13 +1425,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
   public String getPreferredMetadataLanguage() {
     return preferredMetadataLanguage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
   public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.Nullable
  String preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;
@@ -1450,13 +1450,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
   public String getPreferredMetadataCountryCode() {
     return preferredMetadataCountryCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_COUNTRY_CODE)
   public void setPreferredMetadataCountryCode(@org.eclipse.jdt.annotation.Nullable
  String preferredMetadataCountryCode) {
     this.preferredMetadataCountryCode = preferredMetadataCountryCode;
@@ -1475,13 +1475,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public String getContainer() {
     return container;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -1500,13 +1500,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_NAME)
   public String getSortName() {
     return sortName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_NAME)
   public void setSortName(@org.eclipse.jdt.annotation.Nullable
  String sortName) {
     this.sortName = sortName;
@@ -1525,13 +1525,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FORCED_SORT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORCED_SORT_NAME)
   public String getForcedSortName() {
     return forcedSortName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FORCED_SORT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORCED_SORT_NAME)
   public void setForcedSortName(@org.eclipse.jdt.annotation.Nullable
  String forcedSortName) {
     this.forcedSortName = forcedSortName;
@@ -1550,13 +1550,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT)
   public Video3DFormat getVideo3DFormat() {
     return video3DFormat;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO3_D_FORMAT)
   public void setVideo3DFormat(@org.eclipse.jdt.annotation.Nullable
  Video3DFormat video3DFormat) {
     this.video3DFormat = video3DFormat;
@@ -1575,13 +1575,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public OffsetDateTime getPremiereDate() {
     return premiereDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public void setPremiereDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime premiereDate) {
     this.premiereDate = premiereDate;
@@ -1608,13 +1608,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_URLS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_URLS)
   public List<ExternalUrl> getExternalUrls() {
     return externalUrls;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_URLS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_URLS)
   public void setExternalUrls(@org.eclipse.jdt.annotation.Nullable
  List<ExternalUrl> externalUrls) {
     this.externalUrls = externalUrls;
@@ -1641,13 +1641,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES)
   public List<MediaSourceInfo> getMediaSources() {
     return mediaSources;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES)
   public void setMediaSources(@org.eclipse.jdt.annotation.Nullable
  List<MediaSourceInfo> mediaSources) {
     this.mediaSources = mediaSources;
@@ -1666,13 +1666,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CRITIC_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CRITIC_RATING)
   public Float getCriticRating() {
     return criticRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CRITIC_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CRITIC_RATING)
   public void setCriticRating(@org.eclipse.jdt.annotation.Nullable
  Float criticRating) {
     this.criticRating = criticRating;
@@ -1699,13 +1699,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_LOCATIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_LOCATIONS)
   public List<String> getProductionLocations() {
     return productionLocations;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_LOCATIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_LOCATIONS)
   public void setProductionLocations(@org.eclipse.jdt.annotation.Nullable
  List<String> productionLocations) {
     this.productionLocations = productionLocations;
@@ -1724,13 +1724,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -1749,13 +1749,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
   public Boolean getEnableMediaSourceDisplay() {
     return enableMediaSourceDisplay;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_SOURCE_DISPLAY)
   public void setEnableMediaSourceDisplay(@org.eclipse.jdt.annotation.Nullable
  Boolean enableMediaSourceDisplay) {
     this.enableMediaSourceDisplay = enableMediaSourceDisplay;
@@ -1774,13 +1774,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATING)
   public String getOfficialRating() {
     return officialRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATING)
   public void setOfficialRating(@org.eclipse.jdt.annotation.Nullable
  String officialRating) {
     this.officialRating = officialRating;
@@ -1799,13 +1799,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_RATING)
   public String getCustomRating() {
     return customRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_RATING)
   public void setCustomRating(@org.eclipse.jdt.annotation.Nullable
  String customRating) {
     this.customRating = customRating;
@@ -1824,13 +1824,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID)
   public UUID getChannelId() {
     return channelId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID)
   public void setChannelId(@org.eclipse.jdt.annotation.Nullable
  UUID channelId) {
     this.channelId = channelId;
@@ -1849,13 +1849,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME)
   public String getChannelName() {
     return channelName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME)
   public void setChannelName(@org.eclipse.jdt.annotation.Nullable
  String channelName) {
     this.channelName = channelName;
@@ -1874,13 +1874,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public String getOverview() {
     return overview;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -1907,13 +1907,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TAGLINES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGLINES)
   public List<String> getTaglines() {
     return taglines;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TAGLINES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGLINES)
   public void setTaglines(@org.eclipse.jdt.annotation.Nullable
  List<String> taglines) {
     this.taglines = taglines;
@@ -1940,13 +1940,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public List<String> getGenres() {
     return genres;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<String> genres) {
     this.genres = genres;
@@ -1965,13 +1965,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
   public Float getCommunityRating() {
     return communityRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
   public void setCommunityRating(@org.eclipse.jdt.annotation.Nullable
  Float communityRating) {
     this.communityRating = communityRating;
@@ -1990,13 +1990,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
   public Long getCumulativeRunTimeTicks() {
     return cumulativeRunTimeTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUMULATIVE_RUN_TIME_TICKS)
   public void setCumulativeRunTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long cumulativeRunTimeTicks) {
     this.cumulativeRunTimeTicks = cumulativeRunTimeTicks;
@@ -2015,13 +2015,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS)
   public Long getRunTimeTicks() {
     return runTimeTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS)
   public void setRunTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long runTimeTicks) {
     this.runTimeTicks = runTimeTicks;
@@ -2040,13 +2040,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_ACCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_ACCESS)
   public PlayAccess getPlayAccess() {
     return playAccess;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_ACCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_ACCESS)
   public void setPlayAccess(@org.eclipse.jdt.annotation.Nullable
  PlayAccess playAccess) {
     this.playAccess = playAccess;
@@ -2065,13 +2065,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
   public String getAspectRatio() {
     return aspectRatio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
   public void setAspectRatio(@org.eclipse.jdt.annotation.Nullable
  String aspectRatio) {
     this.aspectRatio = aspectRatio;
@@ -2090,13 +2090,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR)
   public Integer getProductionYear() {
     return productionYear;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR)
   public void setProductionYear(@org.eclipse.jdt.annotation.Nullable
  Integer productionYear) {
     this.productionYear = productionYear;
@@ -2115,13 +2115,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLACE_HOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLACE_HOLDER)
   public Boolean getIsPlaceHolder() {
     return isPlaceHolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLACE_HOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLACE_HOLDER)
   public void setIsPlaceHolder(@org.eclipse.jdt.annotation.Nullable
  Boolean isPlaceHolder) {
     this.isPlaceHolder = isPlaceHolder;
@@ -2140,13 +2140,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NUMBER)
   public String getNumber() {
     return number;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NUMBER)
   public void setNumber(@org.eclipse.jdt.annotation.Nullable
  String number) {
     this.number = number;
@@ -2165,13 +2165,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NUMBER)
   public String getChannelNumber() {
     return channelNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NUMBER)
   public void setChannelNumber(@org.eclipse.jdt.annotation.Nullable
  String channelNumber) {
     this.channelNumber = channelNumber;
@@ -2190,13 +2190,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public Integer getIndexNumber() {
     return indexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public void setIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumber) {
     this.indexNumber = indexNumber;
@@ -2215,13 +2215,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END)
   public Integer getIndexNumberEnd() {
     return indexNumberEnd;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END)
   public void setIndexNumberEnd(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumberEnd) {
     this.indexNumberEnd = indexNumberEnd;
@@ -2240,13 +2240,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public Integer getParentIndexNumber() {
     return parentIndexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public void setParentIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer parentIndexNumber) {
     this.parentIndexNumber = parentIndexNumber;
@@ -2273,13 +2273,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REMOTE_TRAILERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMOTE_TRAILERS)
   public List<MediaUrl> getRemoteTrailers() {
     return remoteTrailers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REMOTE_TRAILERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMOTE_TRAILERS)
   public void setRemoteTrailers(@org.eclipse.jdt.annotation.Nullable
  List<MediaUrl> remoteTrailers) {
     this.remoteTrailers = remoteTrailers;
@@ -2306,14 +2306,14 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProviderIds() {
     return providerIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderIds(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> providerIds) {
@@ -2333,13 +2333,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_H_D, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_H_D)
   public Boolean getIsHD() {
     return isHD;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_H_D, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_H_D)
   public void setIsHD(@org.eclipse.jdt.annotation.Nullable
  Boolean isHD) {
     this.isHD = isHD;
@@ -2358,13 +2358,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FOLDER)
   public Boolean getIsFolder() {
     return isFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FOLDER)
   public void setIsFolder(@org.eclipse.jdt.annotation.Nullable
  Boolean isFolder) {
     this.isFolder = isFolder;
@@ -2383,13 +2383,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ID)
   public UUID getParentId() {
     return parentId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ID)
   public void setParentId(@org.eclipse.jdt.annotation.Nullable
  UUID parentId) {
     this.parentId = parentId;
@@ -2408,13 +2408,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public BaseItemKind getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  BaseItemKind type) {
     this.type = type;
@@ -2441,13 +2441,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PEOPLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PEOPLE)
   public List<BaseItemPerson> getPeople() {
     return people;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PEOPLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PEOPLE)
   public void setPeople(@org.eclipse.jdt.annotation.Nullable
  List<BaseItemPerson> people) {
     this.people = people;
@@ -2474,13 +2474,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STUDIOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STUDIOS)
   public List<NameGuidPair> getStudios() {
     return studios;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STUDIOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STUDIOS)
   public void setStudios(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> studios) {
     this.studios = studios;
@@ -2507,13 +2507,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRE_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRE_ITEMS)
   public List<NameGuidPair> getGenreItems() {
     return genreItems;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRE_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRE_ITEMS)
   public void setGenreItems(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> genreItems) {
     this.genreItems = genreItems;
@@ -2532,13 +2532,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
   public UUID getParentLogoItemId() {
     return parentLogoItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_ITEM_ID)
   public void setParentLogoItemId(@org.eclipse.jdt.annotation.Nullable
  UUID parentLogoItemId) {
     this.parentLogoItemId = parentLogoItemId;
@@ -2557,13 +2557,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
   public UUID getParentBackdropItemId() {
     return parentBackdropItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
   public void setParentBackdropItemId(@org.eclipse.jdt.annotation.Nullable
  UUID parentBackdropItemId) {
     this.parentBackdropItemId = parentBackdropItemId;
@@ -2590,13 +2590,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
   public List<String> getParentBackdropImageTags() {
     return parentBackdropImageTags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
   public void setParentBackdropImageTags(@org.eclipse.jdt.annotation.Nullable
  List<String> parentBackdropImageTags) {
     this.parentBackdropImageTags = parentBackdropImageTags;
@@ -2615,13 +2615,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCAL_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCAL_TRAILER_COUNT)
   public Integer getLocalTrailerCount() {
     return localTrailerCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCAL_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCAL_TRAILER_COUNT)
   public void setLocalTrailerCount(@org.eclipse.jdt.annotation.Nullable
  Integer localTrailerCount) {
     this.localTrailerCount = localTrailerCount;
@@ -2640,13 +2640,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_DATA)
   public UserItemDataDto getUserData() {
     return userData;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_DATA)
   public void setUserData(@org.eclipse.jdt.annotation.Nullable
  UserItemDataDto userData) {
     this.userData = userData;
@@ -2665,13 +2665,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RECURSIVE_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
   public Integer getRecursiveItemCount() {
     return recursiveItemCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RECURSIVE_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RECURSIVE_ITEM_COUNT)
   public void setRecursiveItemCount(@org.eclipse.jdt.annotation.Nullable
  Integer recursiveItemCount) {
     this.recursiveItemCount = recursiveItemCount;
@@ -2690,13 +2690,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHILD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHILD_COUNT)
   public Integer getChildCount() {
     return childCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHILD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHILD_COUNT)
   public void setChildCount(@org.eclipse.jdt.annotation.Nullable
  Integer childCount) {
     this.childCount = childCount;
@@ -2715,13 +2715,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_NAME)
   public String getSeriesName() {
     return seriesName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_NAME)
   public void setSeriesName(@org.eclipse.jdt.annotation.Nullable
  String seriesName) {
     this.seriesName = seriesName;
@@ -2740,13 +2740,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_ID)
   public UUID getSeriesId() {
     return seriesId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_ID)
   public void setSeriesId(@org.eclipse.jdt.annotation.Nullable
  UUID seriesId) {
     this.seriesId = seriesId;
@@ -2765,13 +2765,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEASON_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEASON_ID)
   public UUID getSeasonId() {
     return seasonId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEASON_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEASON_ID)
   public void setSeasonId(@org.eclipse.jdt.annotation.Nullable
  UUID seasonId) {
     this.seasonId = seasonId;
@@ -2790,13 +2790,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SPECIAL_FEATURE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
   public Integer getSpecialFeatureCount() {
     return specialFeatureCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SPECIAL_FEATURE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPECIAL_FEATURE_COUNT)
   public void setSpecialFeatureCount(@org.eclipse.jdt.annotation.Nullable
  Integer specialFeatureCount) {
     this.specialFeatureCount = specialFeatureCount;
@@ -2815,13 +2815,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_PREFERENCES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
   public String getDisplayPreferencesId() {
     return displayPreferencesId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_PREFERENCES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_PREFERENCES_ID)
   public void setDisplayPreferencesId(@org.eclipse.jdt.annotation.Nullable
  String displayPreferencesId) {
     this.displayPreferencesId = displayPreferencesId;
@@ -2840,13 +2840,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public String getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  String status) {
     this.status = status;
@@ -2865,13 +2865,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AIR_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIR_TIME)
   public String getAirTime() {
     return airTime;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AIR_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIR_TIME)
   public void setAirTime(@org.eclipse.jdt.annotation.Nullable
  String airTime) {
     this.airTime = airTime;
@@ -2898,13 +2898,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AIR_DAYS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIR_DAYS)
   public List<DayOfWeek> getAirDays() {
     return airDays;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AIR_DAYS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AIR_DAYS)
   public void setAirDays(@org.eclipse.jdt.annotation.Nullable
  List<DayOfWeek> airDays) {
     this.airDays = airDays;
@@ -2931,13 +2931,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public List<String> getTags() {
     return tags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public void setTags(@org.eclipse.jdt.annotation.Nullable
  List<String> tags) {
     this.tags = tags;
@@ -2956,13 +2956,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
   public Double getPrimaryImageAspectRatio() {
     return primaryImageAspectRatio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
   public void setPrimaryImageAspectRatio(@org.eclipse.jdt.annotation.Nullable
  Double primaryImageAspectRatio) {
     this.primaryImageAspectRatio = primaryImageAspectRatio;
@@ -2989,13 +2989,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTISTS)
   public List<String> getArtists() {
     return artists;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTISTS)
   public void setArtists(@org.eclipse.jdt.annotation.Nullable
  List<String> artists) {
     this.artists = artists;
@@ -3022,13 +3022,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_ITEMS)
   public List<NameGuidPair> getArtistItems() {
     return artistItems;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_ITEMS)
   public void setArtistItems(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> artistItems) {
     this.artistItems = artistItems;
@@ -3047,13 +3047,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM)
   public String getAlbum() {
     return album;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM)
   public void setAlbum(@org.eclipse.jdt.annotation.Nullable
  String album) {
     this.album = album;
@@ -3072,13 +3072,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE)
   public CollectionType getCollectionType() {
     return collectionType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE)
   public void setCollectionType(@org.eclipse.jdt.annotation.Nullable
  CollectionType collectionType) {
     this.collectionType = collectionType;
@@ -3097,13 +3097,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_ORDER)
   public String getDisplayOrder() {
     return displayOrder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_ORDER)
   public void setDisplayOrder(@org.eclipse.jdt.annotation.Nullable
  String displayOrder) {
     this.displayOrder = displayOrder;
@@ -3122,13 +3122,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ID)
   public UUID getAlbumId() {
     return albumId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ID)
   public void setAlbumId(@org.eclipse.jdt.annotation.Nullable
  UUID albumId) {
     this.albumId = albumId;
@@ -3147,13 +3147,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
   public String getAlbumPrimaryImageTag() {
     return albumPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_PRIMARY_IMAGE_TAG)
   public void setAlbumPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String albumPrimaryImageTag) {
     this.albumPrimaryImageTag = albumPrimaryImageTag;
@@ -3172,13 +3172,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
   public String getSeriesPrimaryImageTag() {
     return seriesPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_PRIMARY_IMAGE_TAG)
   public void setSeriesPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String seriesPrimaryImageTag) {
     this.seriesPrimaryImageTag = seriesPrimaryImageTag;
@@ -3197,13 +3197,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST)
   public String getAlbumArtist() {
     return albumArtist;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST)
   public void setAlbumArtist(@org.eclipse.jdt.annotation.Nullable
  String albumArtist) {
     this.albumArtist = albumArtist;
@@ -3230,13 +3230,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS)
   public List<NameGuidPair> getAlbumArtists() {
     return albumArtists;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS)
   public void setAlbumArtists(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> albumArtists) {
     this.albumArtists = albumArtists;
@@ -3255,13 +3255,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEASON_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEASON_NAME)
   public String getSeasonName() {
     return seasonName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEASON_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEASON_NAME)
   public void setSeasonName(@org.eclipse.jdt.annotation.Nullable
  String seasonName) {
     this.seasonName = seasonName;
@@ -3288,13 +3288,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS)
   public List<MediaStream> getMediaStreams() {
     return mediaStreams;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_STREAMS)
   public void setMediaStreams(@org.eclipse.jdt.annotation.Nullable
  List<MediaStream> mediaStreams) {
     this.mediaStreams = mediaStreams;
@@ -3313,13 +3313,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE)
   public VideoType getVideoType() {
     return videoType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_TYPE)
   public void setVideoType(@org.eclipse.jdt.annotation.Nullable
  VideoType videoType) {
     this.videoType = videoType;
@@ -3338,13 +3338,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PART_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PART_COUNT)
   public Integer getPartCount() {
     return partCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PART_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PART_COUNT)
   public void setPartCount(@org.eclipse.jdt.annotation.Nullable
  Integer partCount) {
     this.partCount = partCount;
@@ -3363,13 +3363,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_COUNT)
   public Integer getMediaSourceCount() {
     return mediaSourceCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_COUNT)
   public void setMediaSourceCount(@org.eclipse.jdt.annotation.Nullable
  Integer mediaSourceCount) {
     this.mediaSourceCount = mediaSourceCount;
@@ -3396,13 +3396,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS)
   public Map<String, String> getImageTags() {
     return imageTags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAGS)
   public void setImageTags(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> imageTags) {
     this.imageTags = imageTags;
@@ -3429,13 +3429,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
   public List<String> getBackdropImageTags() {
     return backdropImageTags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKDROP_IMAGE_TAGS)
   public void setBackdropImageTags(@org.eclipse.jdt.annotation.Nullable
  List<String> backdropImageTags) {
     this.backdropImageTags = backdropImageTags;
@@ -3462,13 +3462,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
   public List<String> getScreenshotImageTags() {
     return screenshotImageTags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT_IMAGE_TAGS)
   public void setScreenshotImageTags(@org.eclipse.jdt.annotation.Nullable
  List<String> screenshotImageTags) {
     this.screenshotImageTags = screenshotImageTags;
@@ -3487,13 +3487,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
   public String getParentLogoImageTag() {
     return parentLogoImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_LOGO_IMAGE_TAG)
   public void setParentLogoImageTag(@org.eclipse.jdt.annotation.Nullable
  String parentLogoImageTag) {
     this.parentLogoImageTag = parentLogoImageTag;
@@ -3512,13 +3512,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_ITEM_ID)
   public UUID getParentArtItemId() {
     return parentArtItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_ITEM_ID)
   public void setParentArtItemId(@org.eclipse.jdt.annotation.Nullable
  UUID parentArtItemId) {
     this.parentArtItemId = parentArtItemId;
@@ -3537,13 +3537,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
   public String getParentArtImageTag() {
     return parentArtImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_ART_IMAGE_TAG)
   public void setParentArtImageTag(@org.eclipse.jdt.annotation.Nullable
  String parentArtImageTag) {
     this.parentArtImageTag = parentArtImageTag;
@@ -3562,13 +3562,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
   public String getSeriesThumbImageTag() {
     return seriesThumbImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_THUMB_IMAGE_TAG)
   public void setSeriesThumbImageTag(@org.eclipse.jdt.annotation.Nullable
  String seriesThumbImageTag) {
     this.seriesThumbImageTag = seriesThumbImageTag;
@@ -3587,13 +3587,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES)
   public BaseItemDtoImageBlurHashes getImageBlurHashes() {
     return imageBlurHashes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES)
   public void setImageBlurHashes(@org.eclipse.jdt.annotation.Nullable
  BaseItemDtoImageBlurHashes imageBlurHashes) {
     this.imageBlurHashes = imageBlurHashes;
@@ -3612,13 +3612,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_STUDIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_STUDIO)
   public String getSeriesStudio() {
     return seriesStudio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_STUDIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_STUDIO)
   public void setSeriesStudio(@org.eclipse.jdt.annotation.Nullable
  String seriesStudio) {
     this.seriesStudio = seriesStudio;
@@ -3637,13 +3637,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
   public UUID getParentThumbItemId() {
     return parentThumbItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_ITEM_ID)
   public void setParentThumbItemId(@org.eclipse.jdt.annotation.Nullable
  UUID parentThumbItemId) {
     this.parentThumbItemId = parentThumbItemId;
@@ -3662,13 +3662,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
   public String getParentThumbImageTag() {
     return parentThumbImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_THUMB_IMAGE_TAG)
   public void setParentThumbImageTag(@org.eclipse.jdt.annotation.Nullable
  String parentThumbImageTag) {
     this.parentThumbImageTag = parentThumbImageTag;
@@ -3687,13 +3687,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
   public UUID getParentPrimaryImageItemId() {
     return parentPrimaryImageItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_ITEM_ID)
   public void setParentPrimaryImageItemId(@org.eclipse.jdt.annotation.Nullable
  UUID parentPrimaryImageItemId) {
     this.parentPrimaryImageItemId = parentPrimaryImageItemId;
@@ -3712,13 +3712,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
   public String getParentPrimaryImageTag() {
     return parentPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_PRIMARY_IMAGE_TAG)
   public void setParentPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String parentPrimaryImageTag) {
     this.parentPrimaryImageTag = parentPrimaryImageTag;
@@ -3745,13 +3745,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHAPTERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHAPTERS)
   public List<ChapterInfo> getChapters() {
     return chapters;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHAPTERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHAPTERS)
   public void setChapters(@org.eclipse.jdt.annotation.Nullable
  List<ChapterInfo> chapters) {
     this.chapters = chapters;
@@ -3778,13 +3778,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY)
   public Map<String, Map<String, TrickplayInfoDto>> getTrickplay() {
     return trickplay;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY)
   public void setTrickplay(@org.eclipse.jdt.annotation.Nullable
  Map<String, Map<String, TrickplayInfoDto>> trickplay) {
     this.trickplay = trickplay;
@@ -3803,13 +3803,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCATION_TYPE)
   public LocationType getLocationType() {
     return locationType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCATION_TYPE)
   public void setLocationType(@org.eclipse.jdt.annotation.Nullable
  LocationType locationType) {
     this.locationType = locationType;
@@ -3828,13 +3828,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ISO_TYPE)
   public IsoType getIsoType() {
     return isoType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ISO_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ISO_TYPE)
   public void setIsoType(@org.eclipse.jdt.annotation.Nullable
  IsoType isoType) {
     this.isoType = isoType;
@@ -3853,13 +3853,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE)
   public MediaType getMediaType() {
     return mediaType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE)
   public void setMediaType(@org.eclipse.jdt.annotation.Nullable
  MediaType mediaType) {
     this.mediaType = mediaType;
@@ -3878,13 +3878,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public OffsetDateTime getEndDate() {
     return endDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public void setEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endDate) {
     this.endDate = endDate;
@@ -3911,13 +3911,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCKED_FIELDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCKED_FIELDS)
   public List<MetadataField> getLockedFields() {
     return lockedFields;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCKED_FIELDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCKED_FIELDS)
   public void setLockedFields(@org.eclipse.jdt.annotation.Nullable
  List<MetadataField> lockedFields) {
     this.lockedFields = lockedFields;
@@ -3936,13 +3936,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT)
   public Integer getTrailerCount() {
     return trailerCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT)
   public void setTrailerCount(@org.eclipse.jdt.annotation.Nullable
  Integer trailerCount) {
     this.trailerCount = trailerCount;
@@ -3961,13 +3961,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT)
   public Integer getMovieCount() {
     return movieCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT)
   public void setMovieCount(@org.eclipse.jdt.annotation.Nullable
  Integer movieCount) {
     this.movieCount = movieCount;
@@ -3986,13 +3986,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT)
   public Integer getSeriesCount() {
     return seriesCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT)
   public void setSeriesCount(@org.eclipse.jdt.annotation.Nullable
  Integer seriesCount) {
     this.seriesCount = seriesCount;
@@ -4011,13 +4011,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT)
   public Integer getProgramCount() {
     return programCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT)
   public void setProgramCount(@org.eclipse.jdt.annotation.Nullable
  Integer programCount) {
     this.programCount = programCount;
@@ -4036,13 +4036,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT)
   public Integer getEpisodeCount() {
     return episodeCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT)
   public void setEpisodeCount(@org.eclipse.jdt.annotation.Nullable
  Integer episodeCount) {
     this.episodeCount = episodeCount;
@@ -4061,13 +4061,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT)
   public Integer getSongCount() {
     return songCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT)
   public void setSongCount(@org.eclipse.jdt.annotation.Nullable
  Integer songCount) {
     this.songCount = songCount;
@@ -4086,13 +4086,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT)
   public Integer getAlbumCount() {
     return albumCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT)
   public void setAlbumCount(@org.eclipse.jdt.annotation.Nullable
  Integer albumCount) {
     this.albumCount = albumCount;
@@ -4111,13 +4111,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT)
   public Integer getArtistCount() {
     return artistCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT)
   public void setArtistCount(@org.eclipse.jdt.annotation.Nullable
  Integer artistCount) {
     this.artistCount = artistCount;
@@ -4136,13 +4136,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT)
   public Integer getMusicVideoCount() {
     return musicVideoCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT)
   public void setMusicVideoCount(@org.eclipse.jdt.annotation.Nullable
  Integer musicVideoCount) {
     this.musicVideoCount = musicVideoCount;
@@ -4161,13 +4161,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCK_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCK_DATA)
   public Boolean getLockData() {
     return lockData;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCK_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCK_DATA)
   public void setLockData(@org.eclipse.jdt.annotation.Nullable
  Boolean lockData) {
     this.lockData = lockData;
@@ -4186,13 +4186,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public Integer getWidth() {
     return width;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -4211,13 +4211,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public Integer getHeight() {
     return height;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -4236,13 +4236,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAMERA_MAKE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAMERA_MAKE)
   public String getCameraMake() {
     return cameraMake;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAMERA_MAKE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAMERA_MAKE)
   public void setCameraMake(@org.eclipse.jdt.annotation.Nullable
  String cameraMake) {
     this.cameraMake = cameraMake;
@@ -4261,13 +4261,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAMERA_MODEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAMERA_MODEL)
   public String getCameraModel() {
     return cameraModel;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAMERA_MODEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAMERA_MODEL)
   public void setCameraModel(@org.eclipse.jdt.annotation.Nullable
  String cameraModel) {
     this.cameraModel = cameraModel;
@@ -4286,13 +4286,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOFTWARE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOFTWARE)
   public String getSoftware() {
     return software;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOFTWARE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOFTWARE)
   public void setSoftware(@org.eclipse.jdt.annotation.Nullable
  String software) {
     this.software = software;
@@ -4311,13 +4311,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXPOSURE_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXPOSURE_TIME)
   public Double getExposureTime() {
     return exposureTime;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXPOSURE_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXPOSURE_TIME)
   public void setExposureTime(@org.eclipse.jdt.annotation.Nullable
  Double exposureTime) {
     this.exposureTime = exposureTime;
@@ -4336,13 +4336,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FOCAL_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOCAL_LENGTH)
   public Double getFocalLength() {
     return focalLength;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FOCAL_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOCAL_LENGTH)
   public void setFocalLength(@org.eclipse.jdt.annotation.Nullable
  Double focalLength) {
     this.focalLength = focalLength;
@@ -4361,13 +4361,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_ORIENTATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_ORIENTATION)
   public ImageOrientation getImageOrientation() {
     return imageOrientation;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_ORIENTATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_ORIENTATION)
   public void setImageOrientation(@org.eclipse.jdt.annotation.Nullable
  ImageOrientation imageOrientation) {
     this.imageOrientation = imageOrientation;
@@ -4386,13 +4386,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APERTURE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APERTURE)
   public Double getAperture() {
     return aperture;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APERTURE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APERTURE)
   public void setAperture(@org.eclipse.jdt.annotation.Nullable
  Double aperture) {
     this.aperture = aperture;
@@ -4411,13 +4411,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SHUTTER_SPEED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHUTTER_SPEED)
   public Double getShutterSpeed() {
     return shutterSpeed;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SHUTTER_SPEED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHUTTER_SPEED)
   public void setShutterSpeed(@org.eclipse.jdt.annotation.Nullable
  Double shutterSpeed) {
     this.shutterSpeed = shutterSpeed;
@@ -4436,13 +4436,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LATITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LATITUDE)
   public Double getLatitude() {
     return latitude;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LATITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LATITUDE)
   public void setLatitude(@org.eclipse.jdt.annotation.Nullable
  Double latitude) {
     this.latitude = latitude;
@@ -4461,13 +4461,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LONGITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LONGITUDE)
   public Double getLongitude() {
     return longitude;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LONGITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LONGITUDE)
   public void setLongitude(@org.eclipse.jdt.annotation.Nullable
  Double longitude) {
     this.longitude = longitude;
@@ -4486,13 +4486,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALTITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALTITUDE)
   public Double getAltitude() {
     return altitude;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALTITUDE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALTITUDE)
   public void setAltitude(@org.eclipse.jdt.annotation.Nullable
  Double altitude) {
     this.altitude = altitude;
@@ -4511,13 +4511,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ISO_SPEED_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ISO_SPEED_RATING)
   public Integer getIsoSpeedRating() {
     return isoSpeedRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ISO_SPEED_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ISO_SPEED_RATING)
   public void setIsoSpeedRating(@org.eclipse.jdt.annotation.Nullable
  Integer isoSpeedRating) {
     this.isoSpeedRating = isoSpeedRating;
@@ -4536,13 +4536,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public String getSeriesTimerId() {
     return seriesTimerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public void setSeriesTimerId(@org.eclipse.jdt.annotation.Nullable
  String seriesTimerId) {
     this.seriesTimerId = seriesTimerId;
@@ -4561,13 +4561,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public String getProgramId() {
     return programId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public void setProgramId(@org.eclipse.jdt.annotation.Nullable
  String programId) {
     this.programId = programId;
@@ -4586,13 +4586,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
   public String getChannelPrimaryImageTag() {
     return channelPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
   public void setChannelPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String channelPrimaryImageTag) {
     this.channelPrimaryImageTag = channelPrimaryImageTag;
@@ -4611,13 +4611,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public OffsetDateTime getStartDate() {
     return startDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public void setStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startDate) {
     this.startDate = startDate;
@@ -4636,13 +4636,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE)
   public Double getCompletionPercentage() {
     return completionPercentage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMPLETION_PERCENTAGE)
   public void setCompletionPercentage(@org.eclipse.jdt.annotation.Nullable
  Double completionPercentage) {
     this.completionPercentage = completionPercentage;
@@ -4661,13 +4661,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_REPEAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_REPEAT)
   public Boolean getIsRepeat() {
     return isRepeat;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_REPEAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_REPEAT)
   public void setIsRepeat(@org.eclipse.jdt.annotation.Nullable
  Boolean isRepeat) {
     this.isRepeat = isRepeat;
@@ -4686,13 +4686,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_TITLE)
   public String getEpisodeTitle() {
     return episodeTitle;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_TITLE)
   public void setEpisodeTitle(@org.eclipse.jdt.annotation.Nullable
  String episodeTitle) {
     this.episodeTitle = episodeTitle;
@@ -4711,13 +4711,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_TYPE)
   public ChannelType getChannelType() {
     return channelType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_TYPE)
   public void setChannelType(@org.eclipse.jdt.annotation.Nullable
  ChannelType channelType) {
     this.channelType = channelType;
@@ -4736,13 +4736,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO)
   public ProgramAudio getAudio() {
     return audio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO)
   public void setAudio(@org.eclipse.jdt.annotation.Nullable
  ProgramAudio audio) {
     this.audio = audio;
@@ -4761,13 +4761,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE)
   public Boolean getIsMovie() {
     return isMovie;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE)
   public void setIsMovie(@org.eclipse.jdt.annotation.Nullable
  Boolean isMovie) {
     this.isMovie = isMovie;
@@ -4786,13 +4786,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS)
   public Boolean getIsSports() {
     return isSports;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS)
   public void setIsSports(@org.eclipse.jdt.annotation.Nullable
  Boolean isSports) {
     this.isSports = isSports;
@@ -4811,13 +4811,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SERIES)
   public Boolean getIsSeries() {
     return isSeries;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SERIES)
   public void setIsSeries(@org.eclipse.jdt.annotation.Nullable
  Boolean isSeries) {
     this.isSeries = isSeries;
@@ -4836,13 +4836,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_LIVE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_LIVE)
   public Boolean getIsLive() {
     return isLive;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_LIVE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_LIVE)
   public void setIsLive(@org.eclipse.jdt.annotation.Nullable
  Boolean isLive) {
     this.isLive = isLive;
@@ -4861,13 +4861,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_NEWS)
   public Boolean getIsNews() {
     return isNews;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_NEWS)
   public void setIsNews(@org.eclipse.jdt.annotation.Nullable
  Boolean isNews) {
     this.isNews = isNews;
@@ -4886,13 +4886,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_KIDS)
   public Boolean getIsKids() {
     return isKids;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_KIDS)
   public void setIsKids(@org.eclipse.jdt.annotation.Nullable
  Boolean isKids) {
     this.isKids = isKids;
@@ -4911,13 +4911,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PREMIERE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PREMIERE)
   public Boolean getIsPremiere() {
     return isPremiere;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PREMIERE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PREMIERE)
   public void setIsPremiere(@org.eclipse.jdt.annotation.Nullable
  Boolean isPremiere) {
     this.isPremiere = isPremiere;
@@ -4936,13 +4936,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMER_ID)
   public String getTimerId() {
     return timerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMER_ID)
   public void setTimerId(@org.eclipse.jdt.annotation.Nullable
  String timerId) {
     this.timerId = timerId;
@@ -4961,13 +4961,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NORMALIZATION_GAIN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NORMALIZATION_GAIN)
   public Float getNormalizationGain() {
     return normalizationGain;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NORMALIZATION_GAIN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NORMALIZATION_GAIN)
   public void setNormalizationGain(@org.eclipse.jdt.annotation.Nullable
  Float normalizationGain) {
     this.normalizationGain = normalizationGain;
@@ -4986,13 +4986,13 @@ public class BaseItemDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRAM)
   public BaseItemDto getCurrentProgram() {
     return currentProgram;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRAM)
   public void setCurrentProgram(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto currentProgram) {
     this.currentProgram = currentProgram;

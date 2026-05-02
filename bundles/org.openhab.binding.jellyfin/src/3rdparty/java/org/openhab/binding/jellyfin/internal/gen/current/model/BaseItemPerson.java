@@ -90,13 +90,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -115,13 +115,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -140,13 +140,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ROLE)
   public String getRole() {
     return role;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ROLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ROLE)
   public void setRole(@org.eclipse.jdt.annotation.Nullable
  String role) {
     this.role = role;
@@ -165,13 +165,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public PersonKind getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  PersonKind type) {
     this.type = type;
@@ -190,13 +190,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
   public String getPrimaryImageTag() {
     return primaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
   public void setPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String primaryImageTag) {
     this.primaryImageTag = primaryImageTag;
@@ -215,13 +215,13 @@ public class BaseItemPerson {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES)
   public BaseItemPersonImageBlurHashes getImageBlurHashes() {
     return imageBlurHashes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES)
   public void setImageBlurHashes(@org.eclipse.jdt.annotation.Nullable
  BaseItemPersonImageBlurHashes imageBlurHashes) {
     this.imageBlurHashes = imageBlurHashes;

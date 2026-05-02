@@ -57,13 +57,13 @@ public class UpdatePlaylistUserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT)
   public Boolean getCanEdit() {
     return canEdit;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT)
   public void setCanEdit(@org.eclipse.jdt.annotation.Nullable
  Boolean canEdit) {
     this.canEdit = canEdit;

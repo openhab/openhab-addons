@@ -80,13 +80,13 @@ public class RemoveFromPlaylistRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS)
   public List<UUID> getPlaylistItemIds() {
     return playlistItemIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS)
   public void setPlaylistItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> playlistItemIds) {
     this.playlistItemIds = playlistItemIds;
@@ -105,13 +105,13 @@ public class RemoveFromPlaylistRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST)
   public Boolean getClearPlaylist() {
     return clearPlaylist;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST)
   public void setClearPlaylist(@org.eclipse.jdt.annotation.Nullable
  Boolean clearPlaylist) {
     this.clearPlaylist = clearPlaylist;
@@ -130,13 +130,13 @@ public class RemoveFromPlaylistRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM)
   public Boolean getClearPlayingItem() {
     return clearPlayingItem;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM)
   public void setClearPlayingItem(@org.eclipse.jdt.annotation.Nullable
  Boolean clearPlayingItem) {
     this.clearPlayingItem = clearPlayingItem;

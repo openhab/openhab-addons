@@ -90,13 +90,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public UUID getGroupId() {
     return groupId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public void setGroupId(@org.eclipse.jdt.annotation.Nullable
  UUID groupId) {
     this.groupId = groupId;
@@ -115,13 +115,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  UUID playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -140,13 +140,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WHEN)
   public OffsetDateTime getWhen() {
     return when;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WHEN)
   public void setWhen(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime when) {
     this.when = when;
@@ -165,13 +165,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
@@ -190,13 +190,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMAND)
   public SendCommandType getCommand() {
     return command;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMAND)
   public void setCommand(@org.eclipse.jdt.annotation.Nullable
  SendCommandType command) {
     this.command = command;
@@ -215,13 +215,13 @@ public class SendCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EMITTED_AT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EMITTED_AT)
   public OffsetDateTime getEmittedAt() {
     return emittedAt;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EMITTED_AT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EMITTED_AT)
   public void setEmittedAt(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime emittedAt) {
     this.emittedAt = emittedAt;

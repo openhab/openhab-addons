@@ -81,13 +81,13 @@ public class FolderStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -106,13 +106,13 @@ public class FolderStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FREE_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FREE_SPACE)
   public Long getFreeSpace() {
     return freeSpace;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FREE_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FREE_SPACE)
   public void setFreeSpace(@org.eclipse.jdt.annotation.Nullable
  Long freeSpace) {
     this.freeSpace = freeSpace;
@@ -131,13 +131,13 @@ public class FolderStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USED_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USED_SPACE)
   public Long getUsedSpace() {
     return usedSpace;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USED_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USED_SPACE)
   public void setUsedSpace(@org.eclipse.jdt.annotation.Nullable
  Long usedSpace) {
     this.usedSpace = usedSpace;
@@ -156,13 +156,13 @@ public class FolderStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE)
   public String getStorageType() {
     return storageType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE)
   public void setStorageType(@org.eclipse.jdt.annotation.Nullable
  String storageType) {
     this.storageType = storageType;
@@ -181,13 +181,13 @@ public class FolderStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public String getDeviceId() {
     return deviceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;

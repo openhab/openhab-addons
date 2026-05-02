@@ -80,13 +80,13 @@ public class AuthenticationInfoQueryResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS)
   public List<AuthenticationInfo> getItems() {
     return items;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS)
   public void setItems(@org.eclipse.jdt.annotation.Nullable
  List<AuthenticationInfo> items) {
     this.items = items;
@@ -105,13 +105,13 @@ public class AuthenticationInfoQueryResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public Integer getTotalRecordCount() {
     return totalRecordCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public void setTotalRecordCount(@org.eclipse.jdt.annotation.Nullable
  Integer totalRecordCount) {
     this.totalRecordCount = totalRecordCount;
@@ -130,13 +130,13 @@ public class AuthenticationInfoQueryResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_INDEX)
   public Integer getStartIndex() {
     return startIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_INDEX)
   public void setStartIndex(@org.eclipse.jdt.annotation.Nullable
  Integer startIndex) {
     this.startIndex = startIndex;

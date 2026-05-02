@@ -57,13 +57,13 @@ public class IgnoreWaitRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT)
   public Boolean getIgnoreWait() {
     return ignoreWait;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT)
   public void setIgnoreWait(@org.eclipse.jdt.annotation.Nullable
  Boolean ignoreWait) {
     this.ignoreWait = ignoreWait;

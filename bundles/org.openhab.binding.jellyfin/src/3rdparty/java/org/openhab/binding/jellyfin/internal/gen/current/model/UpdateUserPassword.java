@@ -75,13 +75,13 @@ public class UpdateUserPassword {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD)
   public String getCurrentPassword() {
     return currentPassword;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD)
   public void setCurrentPassword(@org.eclipse.jdt.annotation.Nullable
  String currentPassword) {
     this.currentPassword = currentPassword;
@@ -100,13 +100,13 @@ public class UpdateUserPassword {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PW)
   public String getCurrentPw() {
     return currentPw;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CURRENT_PW)
   public void setCurrentPw(@org.eclipse.jdt.annotation.Nullable
  String currentPw) {
     this.currentPw = currentPw;
@@ -125,13 +125,13 @@ public class UpdateUserPassword {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEW_PW)
   public String getNewPw() {
     return newPw;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NEW_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEW_PW)
   public void setNewPw(@org.eclipse.jdt.annotation.Nullable
  String newPw) {
     this.newPw = newPw;
@@ -150,13 +150,13 @@ public class UpdateUserPassword {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD)
   public Boolean getResetPassword() {
     return resetPassword;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD)
   public void setResetPassword(@org.eclipse.jdt.annotation.Nullable
  Boolean resetPassword) {
     this.resetPassword = resetPassword;

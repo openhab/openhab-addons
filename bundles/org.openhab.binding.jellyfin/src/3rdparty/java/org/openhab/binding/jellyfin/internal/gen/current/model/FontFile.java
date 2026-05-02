@@ -76,13 +76,13 @@ public class FontFile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -101,13 +101,13 @@ public class FontFile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SIZE)
   public Long getSize() {
     return size;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SIZE)
   public void setSize(@org.eclipse.jdt.annotation.Nullable
  Long size) {
     this.size = size;
@@ -126,13 +126,13 @@ public class FontFile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -151,13 +151,13 @@ public class FontFile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED)
   public OffsetDateTime getDateModified() {
     return dateModified;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED)
   public void setDateModified(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateModified) {
     this.dateModified = dateModified;

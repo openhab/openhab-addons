@@ -78,13 +78,13 @@ public class CustomDatabaseOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME)
   public String getPluginName() {
     return pluginName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME)
   public void setPluginName(@org.eclipse.jdt.annotation.Nullable
  String pluginName) {
     this.pluginName = pluginName;
@@ -103,13 +103,13 @@ public class CustomDatabaseOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY)
   public String getPluginAssembly() {
     return pluginAssembly;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY)
   public void setPluginAssembly(@org.eclipse.jdt.annotation.Nullable
  String pluginAssembly) {
     this.pluginAssembly = pluginAssembly;
@@ -128,13 +128,13 @@ public class CustomDatabaseOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING)
   public String getConnectionString() {
     return connectionString;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING)
   public void setConnectionString(@org.eclipse.jdt.annotation.Nullable
  String connectionString) {
     this.connectionString = connectionString;
@@ -161,13 +161,13 @@ public class CustomDatabaseOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPTIONS)
   public List<CustomDatabaseOption> getOptions() {
     return options;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPTIONS)
   public void setOptions(@org.eclipse.jdt.annotation.Nullable
  List<CustomDatabaseOption> options) {
     this.options = options;

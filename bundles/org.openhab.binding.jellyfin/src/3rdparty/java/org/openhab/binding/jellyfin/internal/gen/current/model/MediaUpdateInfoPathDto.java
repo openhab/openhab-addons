@@ -63,13 +63,13 @@ public class MediaUpdateInfoPathDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -88,13 +88,13 @@ public class MediaUpdateInfoPathDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE)
   public String getUpdateType() {
     return updateType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE)
   public void setUpdateType(@org.eclipse.jdt.annotation.Nullable
  String updateType) {
     this.updateType = updateType;

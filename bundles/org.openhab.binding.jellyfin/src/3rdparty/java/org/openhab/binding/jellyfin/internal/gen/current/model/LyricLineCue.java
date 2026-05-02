@@ -75,13 +75,13 @@ public class LyricLineCue {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION)
   public Integer getPosition() {
     return position;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION)
   public void setPosition(@org.eclipse.jdt.annotation.Nullable
  Integer position) {
     this.position = position;
@@ -100,13 +100,13 @@ public class LyricLineCue {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_POSITION)
   public Integer getEndPosition() {
     return endPosition;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_POSITION)
   public void setEndPosition(@org.eclipse.jdt.annotation.Nullable
  Integer endPosition) {
     this.endPosition = endPosition;
@@ -125,13 +125,13 @@ public class LyricLineCue {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START)
   public Long getStart() {
     return start;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START)
   public void setStart(@org.eclipse.jdt.annotation.Nullable
  Long start) {
     this.start = start;
@@ -150,13 +150,13 @@ public class LyricLineCue {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END)
   public Long getEnd() {
     return end;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END)
   public void setEnd(@org.eclipse.jdt.annotation.Nullable
  Long end) {
     this.end = end;

@@ -63,13 +63,13 @@ public class MediaUrl {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public String getUrl() {
     return url;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public void setUrl(@org.eclipse.jdt.annotation.Nullable
  String url) {
     this.url = url;
@@ -88,13 +88,13 @@ public class MediaUrl {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;

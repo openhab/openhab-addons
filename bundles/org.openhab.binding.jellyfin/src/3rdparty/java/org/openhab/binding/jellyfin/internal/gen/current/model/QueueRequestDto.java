@@ -75,13 +75,13 @@ public class QueueRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS)
   public List<UUID> getItemIds() {
     return itemIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS)
   public void setItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> itemIds) {
     this.itemIds = itemIds;
@@ -100,13 +100,13 @@ public class QueueRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public GroupQueueMode getMode() {
     return mode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public void setMode(@org.eclipse.jdt.annotation.Nullable
  GroupQueueMode mode) {
     this.mode = mode;

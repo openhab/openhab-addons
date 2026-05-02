@@ -63,13 +63,13 @@ public class StartupUserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -88,13 +88,13 @@ public class StartupUserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PASSWORD)
   public String getPassword() {
     return password;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PASSWORD)
   public void setPassword(@org.eclipse.jdt.annotation.Nullable
  String password) {
     this.password = password;

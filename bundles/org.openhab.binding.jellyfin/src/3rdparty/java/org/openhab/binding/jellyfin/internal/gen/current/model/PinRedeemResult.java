@@ -65,13 +65,13 @@ public class PinRedeemResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUCCESS)
   public Boolean getSuccess() {
     return success;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUCCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUCCESS)
   public void setSuccess(@org.eclipse.jdt.annotation.Nullable
  Boolean success) {
     this.success = success;
@@ -98,13 +98,13 @@ public class PinRedeemResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERS_RESET)
   public List<String> getUsersReset() {
     return usersReset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USERS_RESET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERS_RESET)
   public void setUsersReset(@org.eclipse.jdt.annotation.Nullable
  List<String> usersReset) {
     this.usersReset = usersReset;

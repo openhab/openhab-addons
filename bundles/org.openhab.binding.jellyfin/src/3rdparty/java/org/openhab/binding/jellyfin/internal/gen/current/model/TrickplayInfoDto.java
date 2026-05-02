@@ -93,13 +93,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public Integer getWidth() {
     return width;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -118,13 +118,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public Integer getHeight() {
     return height;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -143,13 +143,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH)
   public Integer getTileWidth() {
     return tileWidth;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH)
   public void setTileWidth(@org.eclipse.jdt.annotation.Nullable
  Integer tileWidth) {
     this.tileWidth = tileWidth;
@@ -168,13 +168,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT)
   public Integer getTileHeight() {
     return tileHeight;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT)
   public void setTileHeight(@org.eclipse.jdt.annotation.Nullable
  Integer tileHeight) {
     this.tileHeight = tileHeight;
@@ -193,13 +193,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT)
   public Integer getThumbnailCount() {
     return thumbnailCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT)
   public void setThumbnailCount(@org.eclipse.jdt.annotation.Nullable
  Integer thumbnailCount) {
     this.thumbnailCount = thumbnailCount;
@@ -218,13 +218,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INTERVAL)
   public Integer getInterval() {
     return interval;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INTERVAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INTERVAL)
   public void setInterval(@org.eclipse.jdt.annotation.Nullable
  Integer interval) {
     this.interval = interval;
@@ -243,13 +243,13 @@ public class TrickplayInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BANDWIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BANDWIDTH)
   public Integer getBandwidth() {
     return bandwidth;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BANDWIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BANDWIDTH)
   public void setBandwidth(@org.eclipse.jdt.annotation.Nullable
  Integer bandwidth) {
     this.bandwidth = bandwidth;

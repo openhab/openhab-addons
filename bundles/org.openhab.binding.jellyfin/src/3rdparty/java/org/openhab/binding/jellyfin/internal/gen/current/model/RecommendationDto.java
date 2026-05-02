@@ -88,13 +88,13 @@ public class RecommendationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS)
   public List<BaseItemDto> getItems() {
     return items;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS)
   public void setItems(@org.eclipse.jdt.annotation.Nullable
  List<BaseItemDto> items) {
     this.items = items;
@@ -113,13 +113,13 @@ public class RecommendationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE)
   public RecommendationType getRecommendationType() {
     return recommendationType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE)
   public void setRecommendationType(@org.eclipse.jdt.annotation.Nullable
  RecommendationType recommendationType) {
     this.recommendationType = recommendationType;
@@ -138,13 +138,13 @@ public class RecommendationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME)
   public String getBaselineItemName() {
     return baselineItemName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME)
   public void setBaselineItemName(@org.eclipse.jdt.annotation.Nullable
  String baselineItemName) {
     this.baselineItemName = baselineItemName;
@@ -163,13 +163,13 @@ public class RecommendationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID)
   public UUID getCategoryId() {
     return categoryId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID)
   public void setCategoryId(@org.eclipse.jdt.annotation.Nullable
  UUID categoryId) {
     this.categoryId = categoryId;

@@ -58,13 +58,13 @@ public class SetRepeatModeRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public GroupRepeatMode getMode() {
     return mode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public void setMode(@org.eclipse.jdt.annotation.Nullable
  GroupRepeatMode mode) {
     this.mode = mode;

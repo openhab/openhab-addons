@@ -69,13 +69,13 @@ public class ValidatePathDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE)
   public Boolean getValidateWritable() {
     return validateWritable;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE)
   public void setValidateWritable(@org.eclipse.jdt.annotation.Nullable
  Boolean validateWritable) {
     this.validateWritable = validateWritable;
@@ -94,13 +94,13 @@ public class ValidatePathDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -119,13 +119,13 @@ public class ValidatePathDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FILE)
   public Boolean getIsFile() {
     return isFile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FILE)
   public void setIsFile(@org.eclipse.jdt.annotation.Nullable
  Boolean isFile) {
     this.isFile = isFile;

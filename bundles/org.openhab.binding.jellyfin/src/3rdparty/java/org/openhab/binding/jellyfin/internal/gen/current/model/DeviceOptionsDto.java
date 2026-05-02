@@ -69,13 +69,13 @@ public class DeviceOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public Integer getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  Integer id) {
     this.id = id;
@@ -94,13 +94,13 @@ public class DeviceOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public String getDeviceId() {
     return deviceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;
@@ -119,13 +119,13 @@ public class DeviceOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
   public String getCustomName() {
     return customName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
   public void setCustomName(@org.eclipse.jdt.annotation.Nullable
  String customName) {
     this.customName = customName;

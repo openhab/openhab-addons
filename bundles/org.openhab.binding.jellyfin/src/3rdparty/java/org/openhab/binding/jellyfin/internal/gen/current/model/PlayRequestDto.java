@@ -80,13 +80,13 @@ public class PlayRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE)
   public List<UUID> getPlayingQueue() {
     return playingQueue;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE)
   public void setPlayingQueue(@org.eclipse.jdt.annotation.Nullable
  List<UUID> playingQueue) {
     this.playingQueue = playingQueue;
@@ -105,13 +105,13 @@ public class PlayRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION)
   public Integer getPlayingItemPosition() {
     return playingItemPosition;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION)
   public void setPlayingItemPosition(@org.eclipse.jdt.annotation.Nullable
  Integer playingItemPosition) {
     this.playingItemPosition = playingItemPosition;
@@ -130,13 +130,13 @@ public class PlayRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;

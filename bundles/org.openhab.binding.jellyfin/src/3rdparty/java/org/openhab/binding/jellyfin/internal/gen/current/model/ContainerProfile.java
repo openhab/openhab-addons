@@ -79,13 +79,13 @@ public class ContainerProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public DlnaProfileType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  DlnaProfileType type) {
     this.type = type;
@@ -112,13 +112,13 @@ public class ContainerProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
   public void setConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> conditions) {
     this.conditions = conditions;
@@ -137,13 +137,13 @@ public class ContainerProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public String getContainer() {
     return container;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -162,13 +162,13 @@ public class ContainerProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER)
   public String getSubContainer() {
     return subContainer;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER)
   public void setSubContainer(@org.eclipse.jdt.annotation.Nullable
  String subContainer) {
     this.subContainer = subContainer;

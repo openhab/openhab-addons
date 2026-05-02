@@ -70,13 +70,13 @@ public class MessageCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEADER)
   public String getHeader() {
     return header;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEADER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEADER)
   public void setHeader(@org.eclipse.jdt.annotation.Nullable
  String header) {
     this.header = header;
@@ -122,13 +122,13 @@ public class MessageCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS)
   public Long getTimeoutMs() {
     return timeoutMs;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS)
   public void setTimeoutMs(@org.eclipse.jdt.annotation.Nullable
  Long timeoutMs) {
     this.timeoutMs = timeoutMs;

@@ -139,13 +139,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY)
   public Map<String, String> getPrimary() {
     return primary;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY)
   public void setPrimary(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> primary) {
     this.primary = primary;
@@ -172,13 +172,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ART, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ART)
   public Map<String, String> getArt() {
     return art;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ART, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ART)
   public void setArt(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> art) {
     this.art = art;
@@ -205,13 +205,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BACKDROP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKDROP)
   public Map<String, String> getBackdrop() {
     return backdrop;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BACKDROP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKDROP)
   public void setBackdrop(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> backdrop) {
     this.backdrop = backdrop;
@@ -238,13 +238,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BANNER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BANNER)
   public Map<String, String> getBanner() {
     return banner;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BANNER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BANNER)
   public void setBanner(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> banner) {
     this.banner = banner;
@@ -271,13 +271,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOGO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOGO)
   public Map<String, String> getLogo() {
     return logo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOGO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOGO)
   public void setLogo(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> logo) {
     this.logo = logo;
@@ -304,13 +304,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THUMB, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THUMB)
   public Map<String, String> getThumb() {
     return thumb;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THUMB, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THUMB)
   public void setThumb(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> thumb) {
     this.thumb = thumb;
@@ -337,13 +337,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DISC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISC)
   public Map<String, String> getDisc() {
     return disc;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DISC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISC)
   public void setDisc(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> disc) {
     this.disc = disc;
@@ -370,13 +370,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BOX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX)
   public Map<String, String> getBox() {
     return box;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BOX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX)
   public void setBox(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> box) {
     this.box = box;
@@ -403,13 +403,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT)
   public Map<String, String> getScreenshot() {
     return screenshot;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCREENSHOT)
   public void setScreenshot(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> screenshot) {
     this.screenshot = screenshot;
@@ -436,13 +436,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MENU, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MENU)
   public Map<String, String> getMenu() {
     return menu;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MENU, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MENU)
   public void setMenu(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> menu) {
     this.menu = menu;
@@ -469,13 +469,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHAPTER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHAPTER)
   public Map<String, String> getChapter() {
     return chapter;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHAPTER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHAPTER)
   public void setChapter(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> chapter) {
     this.chapter = chapter;
@@ -502,13 +502,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BOX_REAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX_REAR)
   public Map<String, String> getBoxRear() {
     return boxRear;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BOX_REAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX_REAR)
   public void setBoxRear(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> boxRear) {
     this.boxRear = boxRear;
@@ -535,13 +535,13 @@ public class BaseItemDtoImageBlurHashes {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROFILE)
   public Map<String, String> getProfile() {
     return profile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROFILE)
   public void setProfile(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> profile) {
     this.profile = profile;

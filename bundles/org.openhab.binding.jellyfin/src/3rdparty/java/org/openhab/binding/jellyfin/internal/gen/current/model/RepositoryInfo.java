@@ -69,13 +69,13 @@ public class RepositoryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -94,13 +94,13 @@ public class RepositoryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public String getUrl() {
     return url;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public void setUrl(@org.eclipse.jdt.annotation.Nullable
  String url) {
     this.url = url;
@@ -119,13 +119,13 @@ public class RepositoryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED)
   public Boolean getEnabled() {
     return enabled;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED)
   public void setEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean enabled) {
     this.enabled = enabled;

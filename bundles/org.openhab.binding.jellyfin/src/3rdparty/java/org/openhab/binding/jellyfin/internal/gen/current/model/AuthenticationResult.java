@@ -77,13 +77,13 @@ public class AuthenticationResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER)
   public UserDto getUser() {
     return user;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER)
   public void setUser(@org.eclipse.jdt.annotation.Nullable
  UserDto user) {
     this.user = user;
@@ -102,13 +102,13 @@ public class AuthenticationResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SESSION_INFO)
   public SessionInfoDto getSessionInfo() {
     return sessionInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SESSION_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SESSION_INFO)
   public void setSessionInfo(@org.eclipse.jdt.annotation.Nullable
  SessionInfoDto sessionInfo) {
     this.sessionInfo = sessionInfo;
@@ -127,13 +127,13 @@ public class AuthenticationResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
   public String getAccessToken() {
     return accessToken;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
   public void setAccessToken(@org.eclipse.jdt.annotation.Nullable
  String accessToken) {
     this.accessToken = accessToken;
@@ -152,13 +152,13 @@ public class AuthenticationResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public String getServerId() {
     return serverId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;

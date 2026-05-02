@@ -64,13 +64,13 @@ public class GuideInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public OffsetDateTime getStartDate() {
     return startDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public void setStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startDate) {
     this.startDate = startDate;
@@ -89,13 +89,13 @@ public class GuideInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public OffsetDateTime getEndDate() {
     return endDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public void setEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endDate) {
     this.endDate = endDate;

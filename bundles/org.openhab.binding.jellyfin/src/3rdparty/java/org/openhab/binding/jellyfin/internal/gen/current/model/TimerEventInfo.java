@@ -64,13 +64,13 @@ public class TimerEventInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -89,13 +89,13 @@ public class TimerEventInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public UUID getProgramId() {
     return programId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public void setProgramId(@org.eclipse.jdt.annotation.Nullable
  UUID programId) {
     this.programId = programId;

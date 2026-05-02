@@ -229,13 +229,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS)
   public List<UUID> getChannelIds() {
     return channelIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS)
   public void setChannelIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> channelIds) {
     this.channelIds = channelIds;
@@ -254,13 +254,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -279,13 +279,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE)
   public OffsetDateTime getMinStartDate() {
     return minStartDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE)
   public void setMinStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime minStartDate) {
     this.minStartDate = minStartDate;
@@ -304,13 +304,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_AIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_AIRED)
   public Boolean getHasAired() {
     return hasAired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_AIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_AIRED)
   public void setHasAired(@org.eclipse.jdt.annotation.Nullable
  Boolean hasAired) {
     this.hasAired = hasAired;
@@ -329,13 +329,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_AIRING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_AIRING)
   public Boolean getIsAiring() {
     return isAiring;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_AIRING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_AIRING)
   public void setIsAiring(@org.eclipse.jdt.annotation.Nullable
  Boolean isAiring) {
     this.isAiring = isAiring;
@@ -354,13 +354,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE)
   public OffsetDateTime getMaxStartDate() {
     return maxStartDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE)
   public void setMaxStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime maxStartDate) {
     this.maxStartDate = maxStartDate;
@@ -379,13 +379,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE)
   public OffsetDateTime getMinEndDate() {
     return minEndDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE)
   public void setMinEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime minEndDate) {
     this.minEndDate = minEndDate;
@@ -404,13 +404,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE)
   public OffsetDateTime getMaxEndDate() {
     return maxEndDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE)
   public void setMaxEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime maxEndDate) {
     this.maxEndDate = maxEndDate;
@@ -429,13 +429,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE)
   public Boolean getIsMovie() {
     return isMovie;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_MOVIE)
   public void setIsMovie(@org.eclipse.jdt.annotation.Nullable
  Boolean isMovie) {
     this.isMovie = isMovie;
@@ -454,13 +454,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SERIES)
   public Boolean getIsSeries() {
     return isSeries;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SERIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SERIES)
   public void setIsSeries(@org.eclipse.jdt.annotation.Nullable
  Boolean isSeries) {
     this.isSeries = isSeries;
@@ -479,13 +479,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_NEWS)
   public Boolean getIsNews() {
     return isNews;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_NEWS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_NEWS)
   public void setIsNews(@org.eclipse.jdt.annotation.Nullable
  Boolean isNews) {
     this.isNews = isNews;
@@ -504,13 +504,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_KIDS)
   public Boolean getIsKids() {
     return isKids;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_KIDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_KIDS)
   public void setIsKids(@org.eclipse.jdt.annotation.Nullable
  Boolean isKids) {
     this.isKids = isKids;
@@ -529,13 +529,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS)
   public Boolean getIsSports() {
     return isSports;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SPORTS)
   public void setIsSports(@org.eclipse.jdt.annotation.Nullable
  Boolean isSports) {
     this.isSports = isSports;
@@ -554,13 +554,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_INDEX)
   public Integer getStartIndex() {
     return startIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_INDEX)
   public void setStartIndex(@org.eclipse.jdt.annotation.Nullable
  Integer startIndex) {
     this.startIndex = startIndex;
@@ -579,13 +579,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIMIT)
   public Integer getLimit() {
     return limit;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIMIT)
   public void setLimit(@org.eclipse.jdt.annotation.Nullable
  Integer limit) {
     this.limit = limit;
@@ -612,13 +612,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_BY)
   public List<ItemSortBy> getSortBy() {
     return sortBy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_BY)
   public void setSortBy(@org.eclipse.jdt.annotation.Nullable
  List<ItemSortBy> sortBy) {
     this.sortBy = sortBy;
@@ -645,13 +645,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
   public List<SortOrder> getSortOrder() {
     return sortOrder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
   public void setSortOrder(@org.eclipse.jdt.annotation.Nullable
  List<SortOrder> sortOrder) {
     this.sortOrder = sortOrder;
@@ -678,13 +678,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public List<String> getGenres() {
     return genres;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<String> genres) {
     this.genres = genres;
@@ -711,13 +711,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRE_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRE_IDS)
   public List<UUID> getGenreIds() {
     return genreIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRE_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRE_IDS)
   public void setGenreIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> genreIds) {
     this.genreIds = genreIds;
@@ -736,13 +736,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES)
   public Boolean getEnableImages() {
     return enableImages;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES)
   public void setEnableImages(@org.eclipse.jdt.annotation.Nullable
  Boolean enableImages) {
     this.enableImages = enableImages;
@@ -761,13 +761,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
   public Boolean getEnableTotalRecordCount() {
     return enableTotalRecordCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
   public void setEnableTotalRecordCount(@org.eclipse.jdt.annotation.Nullable
  Boolean enableTotalRecordCount) {
     this.enableTotalRecordCount = enableTotalRecordCount;
@@ -786,13 +786,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT)
   public Integer getImageTypeLimit() {
     return imageTypeLimit;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT)
   public void setImageTypeLimit(@org.eclipse.jdt.annotation.Nullable
  Integer imageTypeLimit) {
     this.imageTypeLimit = imageTypeLimit;
@@ -819,13 +819,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES)
   public List<ImageType> getEnableImageTypes() {
     return enableImageTypes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES)
   public void setEnableImageTypes(@org.eclipse.jdt.annotation.Nullable
  List<ImageType> enableImageTypes) {
     this.enableImageTypes = enableImageTypes;
@@ -844,13 +844,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA)
   public Boolean getEnableUserData() {
     return enableUserData;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA)
   public void setEnableUserData(@org.eclipse.jdt.annotation.Nullable
  Boolean enableUserData) {
     this.enableUserData = enableUserData;
@@ -869,13 +869,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public String getSeriesTimerId() {
     return seriesTimerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public void setSeriesTimerId(@org.eclipse.jdt.annotation.Nullable
  String seriesTimerId) {
     this.seriesTimerId = seriesTimerId;
@@ -894,13 +894,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID)
   public UUID getLibrarySeriesId() {
     return librarySeriesId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID)
   public void setLibrarySeriesId(@org.eclipse.jdt.annotation.Nullable
  UUID librarySeriesId) {
     this.librarySeriesId = librarySeriesId;
@@ -927,13 +927,13 @@ public class GetProgramsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FIELDS)
   public List<ItemFields> getFields() {
     return fields;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FIELDS)
   public void setFields(@org.eclipse.jdt.annotation.Nullable
  List<ItemFields> fields) {
     this.fields = fields;

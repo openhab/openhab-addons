@@ -70,13 +70,13 @@ public class RemoteLyricInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -95,13 +95,13 @@ public class RemoteLyricInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
   public String getProviderName() {
     return providerName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
   public void setProviderName(@org.eclipse.jdt.annotation.Nullable
  String providerName) {
     this.providerName = providerName;
@@ -120,13 +120,13 @@ public class RemoteLyricInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LYRICS)
   public LyricDto getLyrics() {
     return lyrics;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LYRICS)
   public void setLyrics(@org.eclipse.jdt.annotation.Nullable
  LyricDto lyrics) {
     this.lyrics = lyrics;

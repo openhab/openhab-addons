@@ -63,13 +63,13 @@ public class AuthenticateUserByName {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERNAME)
   public String getUsername() {
     return username;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USERNAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERNAME)
   public void setUsername(@org.eclipse.jdt.annotation.Nullable
  String username) {
     this.username = username;
@@ -88,13 +88,13 @@ public class AuthenticateUserByName {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PW)
   public String getPw() {
     return pw;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PW)
   public void setPw(@org.eclipse.jdt.annotation.Nullable
  String pw) {
     this.pw = pw;

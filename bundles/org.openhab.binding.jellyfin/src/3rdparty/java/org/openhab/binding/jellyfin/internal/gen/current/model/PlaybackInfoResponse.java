@@ -81,13 +81,13 @@ public class PlaybackInfoResponse {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES)
   public List<MediaSourceInfo> getMediaSources() {
     return mediaSources;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES)
   public void setMediaSources(@org.eclipse.jdt.annotation.Nullable
  List<MediaSourceInfo> mediaSources) {
     this.mediaSources = mediaSources;
@@ -106,13 +106,13 @@ public class PlaybackInfoResponse {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID)
   public String getPlaySessionId() {
     return playSessionId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID)
   public void setPlaySessionId(@org.eclipse.jdt.annotation.Nullable
  String playSessionId) {
     this.playSessionId = playSessionId;
@@ -131,13 +131,13 @@ public class PlaybackInfoResponse {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ERROR_CODE)
   public PlaybackErrorCode getErrorCode() {
     return errorCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ERROR_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ERROR_CODE)
   public void setErrorCode(@org.eclipse.jdt.annotation.Nullable
  PlaybackErrorCode errorCode) {
     this.errorCode = errorCode;

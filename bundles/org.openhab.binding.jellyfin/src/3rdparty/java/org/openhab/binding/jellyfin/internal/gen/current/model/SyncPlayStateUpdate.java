@@ -78,7 +78,7 @@ public class SyncPlayStateUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public UUID getGroupId() {
     return groupId;
   }
@@ -92,7 +92,7 @@ public class SyncPlayStateUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA)
   public GroupStateUpdate getData() {
     return data;
   }
@@ -106,7 +106,7 @@ public class SyncPlayStateUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public GroupUpdateType getType() {
     return type;
   }

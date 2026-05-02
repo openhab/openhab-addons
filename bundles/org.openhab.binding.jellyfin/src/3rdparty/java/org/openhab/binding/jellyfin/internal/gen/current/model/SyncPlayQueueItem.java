@@ -72,13 +72,13 @@ public class SyncPlayQueueItem {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public UUID getItemId() {
     return itemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -91,7 +91,7 @@ public class SyncPlayQueueItem {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }

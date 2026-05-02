@@ -77,13 +77,13 @@ public class ArtistInfoRemoteSearchQuery {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO)
   public ArtistInfo getSearchInfo() {
     return searchInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO)
   public void setSearchInfo(@org.eclipse.jdt.annotation.Nullable
  ArtistInfo searchInfo) {
     this.searchInfo = searchInfo;
@@ -102,13 +102,13 @@ public class ArtistInfoRemoteSearchQuery {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public UUID getItemId() {
     return itemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -127,13 +127,13 @@ public class ArtistInfoRemoteSearchQuery {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
   public String getSearchProviderName() {
     return searchProviderName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
   public void setSearchProviderName(@org.eclipse.jdt.annotation.Nullable
  String searchProviderName) {
     this.searchProviderName = searchProviderName;
@@ -152,13 +152,13 @@ public class ArtistInfoRemoteSearchQuery {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
   public Boolean getIncludeDisabledProviders() {
     return includeDisabledProviders;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
   public void setIncludeDisabledProviders(@org.eclipse.jdt.annotation.Nullable
  Boolean includeDisabledProviders) {
     this.includeDisabledProviders = includeDisabledProviders;

@@ -342,13 +342,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT)
   public Integer getEncodingThreadCount() {
     return encodingThreadCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT)
   public void setEncodingThreadCount(@org.eclipse.jdt.annotation.Nullable
  Integer encodingThreadCount) {
     this.encodingThreadCount = encodingThreadCount;
@@ -367,13 +367,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH)
   public String getTranscodingTempPath() {
     return transcodingTempPath;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH)
   public void setTranscodingTempPath(@org.eclipse.jdt.annotation.Nullable
  String transcodingTempPath) {
     this.transcodingTempPath = transcodingTempPath;
@@ -392,13 +392,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH)
   public String getFallbackFontPath() {
     return fallbackFontPath;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH)
   public void setFallbackFontPath(@org.eclipse.jdt.annotation.Nullable
  String fallbackFontPath) {
     this.fallbackFontPath = fallbackFontPath;
@@ -417,13 +417,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT)
   public Boolean getEnableFallbackFont() {
     return enableFallbackFont;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT)
   public void setEnableFallbackFont(@org.eclipse.jdt.annotation.Nullable
  Boolean enableFallbackFont) {
     this.enableFallbackFont = enableFallbackFont;
@@ -442,13 +442,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR)
   public Boolean getEnableAudioVbr() {
     return enableAudioVbr;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR)
   public void setEnableAudioVbr(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAudioVbr) {
     this.enableAudioVbr = enableAudioVbr;
@@ -467,13 +467,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
   public Double getDownMixAudioBoost() {
     return downMixAudioBoost;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
   public void setDownMixAudioBoost(@org.eclipse.jdt.annotation.Nullable
  Double downMixAudioBoost) {
     this.downMixAudioBoost = downMixAudioBoost;
@@ -492,13 +492,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM)
   public DownMixStereoAlgorithms getDownMixStereoAlgorithm() {
     return downMixStereoAlgorithm;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM)
   public void setDownMixStereoAlgorithm(@org.eclipse.jdt.annotation.Nullable
  DownMixStereoAlgorithms downMixStereoAlgorithm) {
     this.downMixStereoAlgorithm = downMixStereoAlgorithm;
@@ -517,13 +517,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
   public Integer getMaxMuxingQueueSize() {
     return maxMuxingQueueSize;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
   public void setMaxMuxingQueueSize(@org.eclipse.jdt.annotation.Nullable
  Integer maxMuxingQueueSize) {
     this.maxMuxingQueueSize = maxMuxingQueueSize;
@@ -542,13 +542,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING)
   public Boolean getEnableThrottling() {
     return enableThrottling;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING)
   public void setEnableThrottling(@org.eclipse.jdt.annotation.Nullable
  Boolean enableThrottling) {
     this.enableThrottling = enableThrottling;
@@ -567,13 +567,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
   public Integer getThrottleDelaySeconds() {
     return throttleDelaySeconds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
   public void setThrottleDelaySeconds(@org.eclipse.jdt.annotation.Nullable
  Integer throttleDelaySeconds) {
     this.throttleDelaySeconds = throttleDelaySeconds;
@@ -592,13 +592,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION)
   public Boolean getEnableSegmentDeletion() {
     return enableSegmentDeletion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION)
   public void setEnableSegmentDeletion(@org.eclipse.jdt.annotation.Nullable
  Boolean enableSegmentDeletion) {
     this.enableSegmentDeletion = enableSegmentDeletion;
@@ -617,13 +617,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS)
   public Integer getSegmentKeepSeconds() {
     return segmentKeepSeconds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS)
   public void setSegmentKeepSeconds(@org.eclipse.jdt.annotation.Nullable
  Integer segmentKeepSeconds) {
     this.segmentKeepSeconds = segmentKeepSeconds;
@@ -642,13 +642,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
   public HardwareAccelerationType getHardwareAccelerationType() {
     return hardwareAccelerationType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
   public void setHardwareAccelerationType(@org.eclipse.jdt.annotation.Nullable
  HardwareAccelerationType hardwareAccelerationType) {
     this.hardwareAccelerationType = hardwareAccelerationType;
@@ -667,13 +667,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH)
   public String getEncoderAppPath() {
     return encoderAppPath;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH)
   public void setEncoderAppPath(@org.eclipse.jdt.annotation.Nullable
  String encoderAppPath) {
     this.encoderAppPath = encoderAppPath;
@@ -692,13 +692,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
   public String getEncoderAppPathDisplay() {
     return encoderAppPathDisplay;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
   public void setEncoderAppPathDisplay(@org.eclipse.jdt.annotation.Nullable
  String encoderAppPathDisplay) {
     this.encoderAppPathDisplay = encoderAppPathDisplay;
@@ -717,13 +717,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE)
   public String getVaapiDevice() {
     return vaapiDevice;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE)
   public void setVaapiDevice(@org.eclipse.jdt.annotation.Nullable
  String vaapiDevice) {
     this.vaapiDevice = vaapiDevice;
@@ -742,13 +742,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE)
   public String getQsvDevice() {
     return qsvDevice;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE)
   public void setQsvDevice(@org.eclipse.jdt.annotation.Nullable
  String qsvDevice) {
     this.qsvDevice = qsvDevice;
@@ -767,13 +767,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING)
   public Boolean getEnableTonemapping() {
     return enableTonemapping;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING)
   public void setEnableTonemapping(@org.eclipse.jdt.annotation.Nullable
  Boolean enableTonemapping) {
     this.enableTonemapping = enableTonemapping;
@@ -792,13 +792,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
   public Boolean getEnableVppTonemapping() {
     return enableVppTonemapping;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
   public void setEnableVppTonemapping(@org.eclipse.jdt.annotation.Nullable
  Boolean enableVppTonemapping) {
     this.enableVppTonemapping = enableVppTonemapping;
@@ -817,13 +817,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING)
   public Boolean getEnableVideoToolboxTonemapping() {
     return enableVideoToolboxTonemapping;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING)
   public void setEnableVideoToolboxTonemapping(@org.eclipse.jdt.annotation.Nullable
  Boolean enableVideoToolboxTonemapping) {
     this.enableVideoToolboxTonemapping = enableVideoToolboxTonemapping;
@@ -842,13 +842,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM)
   public TonemappingAlgorithm getTonemappingAlgorithm() {
     return tonemappingAlgorithm;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM)
   public void setTonemappingAlgorithm(@org.eclipse.jdt.annotation.Nullable
  TonemappingAlgorithm tonemappingAlgorithm) {
     this.tonemappingAlgorithm = tonemappingAlgorithm;
@@ -867,13 +867,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE)
   public TonemappingMode getTonemappingMode() {
     return tonemappingMode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE)
   public void setTonemappingMode(@org.eclipse.jdt.annotation.Nullable
  TonemappingMode tonemappingMode) {
     this.tonemappingMode = tonemappingMode;
@@ -892,13 +892,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE)
   public TonemappingRange getTonemappingRange() {
     return tonemappingRange;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE)
   public void setTonemappingRange(@org.eclipse.jdt.annotation.Nullable
  TonemappingRange tonemappingRange) {
     this.tonemappingRange = tonemappingRange;
@@ -917,13 +917,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT)
   public Double getTonemappingDesat() {
     return tonemappingDesat;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT)
   public void setTonemappingDesat(@org.eclipse.jdt.annotation.Nullable
  Double tonemappingDesat) {
     this.tonemappingDesat = tonemappingDesat;
@@ -942,13 +942,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK)
   public Double getTonemappingPeak() {
     return tonemappingPeak;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK)
   public void setTonemappingPeak(@org.eclipse.jdt.annotation.Nullable
  Double tonemappingPeak) {
     this.tonemappingPeak = tonemappingPeak;
@@ -967,13 +967,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM)
   public Double getTonemappingParam() {
     return tonemappingParam;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM)
   public void setTonemappingParam(@org.eclipse.jdt.annotation.Nullable
  Double tonemappingParam) {
     this.tonemappingParam = tonemappingParam;
@@ -992,13 +992,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
   public Double getVppTonemappingBrightness() {
     return vppTonemappingBrightness;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
   public void setVppTonemappingBrightness(@org.eclipse.jdt.annotation.Nullable
  Double vppTonemappingBrightness) {
     this.vppTonemappingBrightness = vppTonemappingBrightness;
@@ -1017,13 +1017,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
   public Double getVppTonemappingContrast() {
     return vppTonemappingContrast;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
   public void setVppTonemappingContrast(@org.eclipse.jdt.annotation.Nullable
  Double vppTonemappingContrast) {
     this.vppTonemappingContrast = vppTonemappingContrast;
@@ -1042,13 +1042,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_H264_CRF, required = false)
+  @JsonProperty(value = JSON_PROPERTY_H264_CRF)
   public Integer getH264Crf() {
     return h264Crf;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_H264_CRF, required = false)
+  @JsonProperty(value = JSON_PROPERTY_H264_CRF)
   public void setH264Crf(@org.eclipse.jdt.annotation.Nullable
  Integer h264Crf) {
     this.h264Crf = h264Crf;
@@ -1067,13 +1067,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_H265_CRF, required = false)
+  @JsonProperty(value = JSON_PROPERTY_H265_CRF)
   public Integer getH265Crf() {
     return h265Crf;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_H265_CRF, required = false)
+  @JsonProperty(value = JSON_PROPERTY_H265_CRF)
   public void setH265Crf(@org.eclipse.jdt.annotation.Nullable
  Integer h265Crf) {
     this.h265Crf = h265Crf;
@@ -1092,13 +1092,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET)
   public EncoderPreset getEncoderPreset() {
     return encoderPreset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET)
   public void setEncoderPreset(@org.eclipse.jdt.annotation.Nullable
  EncoderPreset encoderPreset) {
     this.encoderPreset = encoderPreset;
@@ -1117,13 +1117,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
   public Boolean getDeinterlaceDoubleRate() {
     return deinterlaceDoubleRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
   public void setDeinterlaceDoubleRate(@org.eclipse.jdt.annotation.Nullable
  Boolean deinterlaceDoubleRate) {
     this.deinterlaceDoubleRate = deinterlaceDoubleRate;
@@ -1142,13 +1142,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD)
   public DeinterlaceMethod getDeinterlaceMethod() {
     return deinterlaceMethod;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD)
   public void setDeinterlaceMethod(@org.eclipse.jdt.annotation.Nullable
  DeinterlaceMethod deinterlaceMethod) {
     this.deinterlaceMethod = deinterlaceMethod;
@@ -1167,13 +1167,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
   public Boolean getEnableDecodingColorDepth10Hevc() {
     return enableDecodingColorDepth10Hevc;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
   public void setEnableDecodingColorDepth10Hevc(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDecodingColorDepth10Hevc) {
     this.enableDecodingColorDepth10Hevc = enableDecodingColorDepth10Hevc;
@@ -1192,13 +1192,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
   public Boolean getEnableDecodingColorDepth10Vp9() {
     return enableDecodingColorDepth10Vp9;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
   public void setEnableDecodingColorDepth10Vp9(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDecodingColorDepth10Vp9) {
     this.enableDecodingColorDepth10Vp9 = enableDecodingColorDepth10Vp9;
@@ -1217,13 +1217,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT)
   public Boolean getEnableDecodingColorDepth10HevcRext() {
     return enableDecodingColorDepth10HevcRext;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT)
   public void setEnableDecodingColorDepth10HevcRext(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDecodingColorDepth10HevcRext) {
     this.enableDecodingColorDepth10HevcRext = enableDecodingColorDepth10HevcRext;
@@ -1242,13 +1242,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT)
   public Boolean getEnableDecodingColorDepth12HevcRext() {
     return enableDecodingColorDepth12HevcRext;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT)
   public void setEnableDecodingColorDepth12HevcRext(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDecodingColorDepth12HevcRext) {
     this.enableDecodingColorDepth12HevcRext = enableDecodingColorDepth12HevcRext;
@@ -1267,13 +1267,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
   public Boolean getEnableEnhancedNvdecDecoder() {
     return enableEnhancedNvdecDecoder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
   public void setEnableEnhancedNvdecDecoder(@org.eclipse.jdt.annotation.Nullable
  Boolean enableEnhancedNvdecDecoder) {
     this.enableEnhancedNvdecDecoder = enableEnhancedNvdecDecoder;
@@ -1292,13 +1292,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
   public Boolean getPreferSystemNativeHwDecoder() {
     return preferSystemNativeHwDecoder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
   public void setPreferSystemNativeHwDecoder(@org.eclipse.jdt.annotation.Nullable
  Boolean preferSystemNativeHwDecoder) {
     this.preferSystemNativeHwDecoder = preferSystemNativeHwDecoder;
@@ -1317,13 +1317,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
   public Boolean getEnableIntelLowPowerH264HwEncoder() {
     return enableIntelLowPowerH264HwEncoder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
   public void setEnableIntelLowPowerH264HwEncoder(@org.eclipse.jdt.annotation.Nullable
  Boolean enableIntelLowPowerH264HwEncoder) {
     this.enableIntelLowPowerH264HwEncoder = enableIntelLowPowerH264HwEncoder;
@@ -1342,13 +1342,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
   public Boolean getEnableIntelLowPowerHevcHwEncoder() {
     return enableIntelLowPowerHevcHwEncoder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
   public void setEnableIntelLowPowerHevcHwEncoder(@org.eclipse.jdt.annotation.Nullable
  Boolean enableIntelLowPowerHevcHwEncoder) {
     this.enableIntelLowPowerHevcHwEncoder = enableIntelLowPowerHevcHwEncoder;
@@ -1367,13 +1367,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
   public Boolean getEnableHardwareEncoding() {
     return enableHardwareEncoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
   public void setEnableHardwareEncoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableHardwareEncoding) {
     this.enableHardwareEncoding = enableHardwareEncoding;
@@ -1392,13 +1392,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING)
   public Boolean getAllowHevcEncoding() {
     return allowHevcEncoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING)
   public void setAllowHevcEncoding(@org.eclipse.jdt.annotation.Nullable
  Boolean allowHevcEncoding) {
     this.allowHevcEncoding = allowHevcEncoding;
@@ -1417,13 +1417,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING)
   public Boolean getAllowAv1Encoding() {
     return allowAv1Encoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING)
   public void setAllowAv1Encoding(@org.eclipse.jdt.annotation.Nullable
  Boolean allowAv1Encoding) {
     this.allowAv1Encoding = allowAv1Encoding;
@@ -1442,13 +1442,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
   public Boolean getEnableSubtitleExtraction() {
     return enableSubtitleExtraction;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
   public void setEnableSubtitleExtraction(@org.eclipse.jdt.annotation.Nullable
  Boolean enableSubtitleExtraction) {
     this.enableSubtitleExtraction = enableSubtitleExtraction;
@@ -1475,13 +1475,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS)
   public List<String> getHardwareDecodingCodecs() {
     return hardwareDecodingCodecs;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS)
   public void setHardwareDecodingCodecs(@org.eclipse.jdt.annotation.Nullable
  List<String> hardwareDecodingCodecs) {
     this.hardwareDecodingCodecs = hardwareDecodingCodecs;
@@ -1508,13 +1508,13 @@ public class EncodingOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
   public List<String> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() {
     return allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
   public void setAllowOnDemandMetadataBasedKeyframeExtractionForExtensions(@org.eclipse.jdt.annotation.Nullable
  List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions) {
     this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = allowOnDemandMetadataBasedKeyframeExtractionForExtensions;

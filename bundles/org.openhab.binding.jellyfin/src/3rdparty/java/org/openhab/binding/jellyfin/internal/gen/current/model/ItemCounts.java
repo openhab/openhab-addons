@@ -123,13 +123,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT)
   public Integer getMovieCount() {
     return movieCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT)
   public void setMovieCount(@org.eclipse.jdt.annotation.Nullable
  Integer movieCount) {
     this.movieCount = movieCount;
@@ -148,13 +148,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT)
   public Integer getSeriesCount() {
     return seriesCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT)
   public void setSeriesCount(@org.eclipse.jdt.annotation.Nullable
  Integer seriesCount) {
     this.seriesCount = seriesCount;
@@ -173,13 +173,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT)
   public Integer getEpisodeCount() {
     return episodeCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT)
   public void setEpisodeCount(@org.eclipse.jdt.annotation.Nullable
  Integer episodeCount) {
     this.episodeCount = episodeCount;
@@ -198,13 +198,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT)
   public Integer getArtistCount() {
     return artistCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT)
   public void setArtistCount(@org.eclipse.jdt.annotation.Nullable
  Integer artistCount) {
     this.artistCount = artistCount;
@@ -223,13 +223,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT)
   public Integer getProgramCount() {
     return programCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT)
   public void setProgramCount(@org.eclipse.jdt.annotation.Nullable
  Integer programCount) {
     this.programCount = programCount;
@@ -248,13 +248,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT)
   public Integer getTrailerCount() {
     return trailerCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT)
   public void setTrailerCount(@org.eclipse.jdt.annotation.Nullable
  Integer trailerCount) {
     this.trailerCount = trailerCount;
@@ -273,13 +273,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT)
   public Integer getSongCount() {
     return songCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_COUNT)
   public void setSongCount(@org.eclipse.jdt.annotation.Nullable
  Integer songCount) {
     this.songCount = songCount;
@@ -298,13 +298,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT)
   public Integer getAlbumCount() {
     return albumCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT)
   public void setAlbumCount(@org.eclipse.jdt.annotation.Nullable
  Integer albumCount) {
     this.albumCount = albumCount;
@@ -323,13 +323,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT)
   public Integer getMusicVideoCount() {
     return musicVideoCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT)
   public void setMusicVideoCount(@org.eclipse.jdt.annotation.Nullable
  Integer musicVideoCount) {
     this.musicVideoCount = musicVideoCount;
@@ -348,13 +348,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT)
   public Integer getBoxSetCount() {
     return boxSetCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT)
   public void setBoxSetCount(@org.eclipse.jdt.annotation.Nullable
  Integer boxSetCount) {
     this.boxSetCount = boxSetCount;
@@ -373,13 +373,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT)
   public Integer getBookCount() {
     return bookCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT)
   public void setBookCount(@org.eclipse.jdt.annotation.Nullable
  Integer bookCount) {
     this.bookCount = bookCount;
@@ -398,13 +398,13 @@ public class ItemCounts {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT)
   public Integer getItemCount() {
     return itemCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT)
   public void setItemCount(@org.eclipse.jdt.annotation.Nullable
  Integer itemCount) {
     this.itemCount = itemCount;

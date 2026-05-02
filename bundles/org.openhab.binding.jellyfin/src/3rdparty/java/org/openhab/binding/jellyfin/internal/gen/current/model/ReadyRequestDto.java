@@ -77,13 +77,13 @@ public class ReadyRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WHEN)
   public OffsetDateTime getWhen() {
     return when;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WHEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WHEN)
   public void setWhen(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime when) {
     this.when = when;
@@ -102,13 +102,13 @@ public class ReadyRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
@@ -127,13 +127,13 @@ public class ReadyRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
   public Boolean getIsPlaying() {
     return isPlaying;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
   public void setIsPlaying(@org.eclipse.jdt.annotation.Nullable
  Boolean isPlaying) {
     this.isPlaying = isPlaying;
@@ -152,13 +152,13 @@ public class ReadyRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  UUID playlistItemId) {
     this.playlistItemId = playlistItemId;

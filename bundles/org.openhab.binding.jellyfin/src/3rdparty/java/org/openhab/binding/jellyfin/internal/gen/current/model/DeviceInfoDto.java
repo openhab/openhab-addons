@@ -120,13 +120,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -145,13 +145,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
   public String getCustomName() {
     return customName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
   public void setCustomName(@org.eclipse.jdt.annotation.Nullable
  String customName) {
     this.customName = customName;
@@ -170,13 +170,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
   public String getAccessToken() {
     return accessToken;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
   public void setAccessToken(@org.eclipse.jdt.annotation.Nullable
  String accessToken) {
     this.accessToken = accessToken;
@@ -195,13 +195,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -220,13 +220,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME)
   public String getLastUserName() {
     return lastUserName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME)
   public void setLastUserName(@org.eclipse.jdt.annotation.Nullable
  String lastUserName) {
     this.lastUserName = lastUserName;
@@ -245,13 +245,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_NAME)
   public String getAppName() {
     return appName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_NAME)
   public void setAppName(@org.eclipse.jdt.annotation.Nullable
  String appName) {
     this.appName = appName;
@@ -270,13 +270,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_VERSION)
   public String getAppVersion() {
     return appVersion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APP_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_VERSION)
   public void setAppVersion(@org.eclipse.jdt.annotation.Nullable
  String appVersion) {
     this.appVersion = appVersion;
@@ -295,13 +295,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID)
   public UUID getLastUserId() {
     return lastUserId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID)
   public void setLastUserId(@org.eclipse.jdt.annotation.Nullable
  UUID lastUserId) {
     this.lastUserId = lastUserId;
@@ -320,13 +320,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY)
   public OffsetDateTime getDateLastActivity() {
     return dateLastActivity;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY)
   public void setDateLastActivity(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateLastActivity) {
     this.dateLastActivity = dateLastActivity;
@@ -345,13 +345,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
   public ClientCapabilitiesDto getCapabilities() {
     return capabilities;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
   public void setCapabilities(@org.eclipse.jdt.annotation.Nullable
  ClientCapabilitiesDto capabilities) {
     this.capabilities = capabilities;
@@ -370,13 +370,13 @@ public class DeviceInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ICON_URL)
   public String getIconUrl() {
     return iconUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ICON_URL)
   public void setIconUrl(@org.eclipse.jdt.annotation.Nullable
  String iconUrl) {
     this.iconUrl = iconUrl;

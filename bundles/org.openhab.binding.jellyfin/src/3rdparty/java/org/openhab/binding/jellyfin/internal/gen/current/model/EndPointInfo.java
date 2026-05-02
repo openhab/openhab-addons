@@ -63,13 +63,13 @@ public class EndPointInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_LOCAL)
   public Boolean getIsLocal() {
     return isLocal;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_LOCAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_LOCAL)
   public void setIsLocal(@org.eclipse.jdt.annotation.Nullable
  Boolean isLocal) {
     this.isLocal = isLocal;
@@ -88,13 +88,13 @@ public class EndPointInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK)
   public Boolean getIsInNetwork() {
     return isInNetwork;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK)
   public void setIsInNetwork(@org.eclipse.jdt.annotation.Nullable
  Boolean isInNetwork) {
     this.isInNetwork = isInNetwork;

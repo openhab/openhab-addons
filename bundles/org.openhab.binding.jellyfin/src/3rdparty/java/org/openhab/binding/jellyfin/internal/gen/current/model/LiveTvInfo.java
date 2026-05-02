@@ -80,13 +80,13 @@ public class LiveTvInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVICES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVICES)
   public List<LiveTvServiceInfo> getServices() {
     return services;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVICES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVICES)
   public void setServices(@org.eclipse.jdt.annotation.Nullable
  List<LiveTvServiceInfo> services) {
     this.services = services;
@@ -105,13 +105,13 @@ public class LiveTvInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED)
   public Boolean getIsEnabled() {
     return isEnabled;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ENABLED)
   public void setIsEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean isEnabled) {
     this.isEnabled = isEnabled;
@@ -138,13 +138,13 @@ public class LiveTvInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS)
   public List<String> getEnabledUsers() {
     return enabledUsers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS)
   public void setEnabledUsers(@org.eclipse.jdt.annotation.Nullable
  List<String> enabledUsers) {
     this.enabledUsers = enabledUsers;

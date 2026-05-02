@@ -57,13 +57,13 @@ public class ClientLogDocumentResponseDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FILE_NAME)
   public String getFileName() {
     return fileName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FILE_NAME)
   public void setFileName(@org.eclipse.jdt.annotation.Nullable
  String fileName) {
     this.fileName = fileName;

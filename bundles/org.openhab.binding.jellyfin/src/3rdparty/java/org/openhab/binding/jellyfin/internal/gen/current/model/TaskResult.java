@@ -101,13 +101,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC)
   public OffsetDateTime getStartTimeUtc() {
     return startTimeUtc;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC)
   public void setStartTimeUtc(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startTimeUtc) {
     this.startTimeUtc = startTimeUtc;
@@ -126,13 +126,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC)
   public OffsetDateTime getEndTimeUtc() {
     return endTimeUtc;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC)
   public void setEndTimeUtc(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endTimeUtc) {
     this.endTimeUtc = endTimeUtc;
@@ -151,13 +151,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public TaskCompletionStatus getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  TaskCompletionStatus status) {
     this.status = status;
@@ -176,13 +176,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -201,13 +201,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public String getKey() {
     return key;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public void setKey(@org.eclipse.jdt.annotation.Nullable
  String key) {
     this.key = key;
@@ -226,13 +226,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -251,13 +251,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE)
   public String getErrorMessage() {
     return errorMessage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE)
   public void setErrorMessage(@org.eclipse.jdt.annotation.Nullable
  String errorMessage) {
     this.errorMessage = errorMessage;
@@ -276,13 +276,13 @@ public class TaskResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE)
   public String getLongErrorMessage() {
     return longErrorMessage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE)
   public void setLongErrorMessage(@org.eclipse.jdt.annotation.Nullable
  String longErrorMessage) {
     this.longErrorMessage = longErrorMessage;

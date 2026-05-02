@@ -73,13 +73,13 @@ public class PlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS)
   public Boolean getOpenAccess() {
     return openAccess;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS)
   public void setOpenAccess(@org.eclipse.jdt.annotation.Nullable
  Boolean openAccess) {
     this.openAccess = openAccess;
@@ -106,13 +106,13 @@ public class PlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHARES)
   public List<PlaylistUserPermissions> getShares() {
     return shares;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SHARES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHARES)
   public void setShares(@org.eclipse.jdt.annotation.Nullable
  List<PlaylistUserPermissions> shares) {
     this.shares = shares;
@@ -139,13 +139,13 @@ public class PlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS)
   public List<UUID> getItemIds() {
     return itemIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_IDS)
   public void setItemIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> itemIds) {
     this.itemIds = itemIds;

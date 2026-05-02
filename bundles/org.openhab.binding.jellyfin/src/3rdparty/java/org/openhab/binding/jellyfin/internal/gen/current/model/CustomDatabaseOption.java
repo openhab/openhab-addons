@@ -63,13 +63,13 @@ public class CustomDatabaseOption {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public String getKey() {
     return key;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public void setKey(@org.eclipse.jdt.annotation.Nullable
  String key) {
     this.key = key;
@@ -88,13 +88,13 @@ public class CustomDatabaseOption {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public String getValue() {
     return value;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public void setValue(@org.eclipse.jdt.annotation.Nullable
  String value) {
     this.value = value;

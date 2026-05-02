@@ -106,13 +106,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REASON)
   public PlayQueueUpdateReason getReason() {
     return reason;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REASON)
   public void setReason(@org.eclipse.jdt.annotation.Nullable
  PlayQueueUpdateReason reason) {
     this.reason = reason;
@@ -131,13 +131,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE)
   public OffsetDateTime getLastUpdate() {
     return lastUpdate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE)
   public void setLastUpdate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastUpdate) {
     this.lastUpdate = lastUpdate;
@@ -164,13 +164,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST)
   public List<SyncPlayQueueItem> getPlaylist() {
     return playlist;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST)
   public void setPlaylist(@org.eclipse.jdt.annotation.Nullable
  List<SyncPlayQueueItem> playlist) {
     this.playlist = playlist;
@@ -189,13 +189,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX)
   public Integer getPlayingItemIndex() {
     return playingItemIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX)
   public void setPlayingItemIndex(@org.eclipse.jdt.annotation.Nullable
  Integer playingItemIndex) {
     this.playingItemIndex = playingItemIndex;
@@ -214,13 +214,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
@@ -239,13 +239,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
   public Boolean getIsPlaying() {
     return isPlaying;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
   public void setIsPlaying(@org.eclipse.jdt.annotation.Nullable
  Boolean isPlaying) {
     this.isPlaying = isPlaying;
@@ -264,13 +264,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE)
   public GroupShuffleMode getShuffleMode() {
     return shuffleMode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE)
   public void setShuffleMode(@org.eclipse.jdt.annotation.Nullable
  GroupShuffleMode shuffleMode) {
     this.shuffleMode = shuffleMode;
@@ -289,13 +289,13 @@ public class PlayQueueUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE)
   public GroupRepeatMode getRepeatMode() {
     return repeatMode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE)
   public void setRepeatMode(@org.eclipse.jdt.annotation.Nullable
  GroupRepeatMode repeatMode) {
     this.repeatMode = repeatMode;

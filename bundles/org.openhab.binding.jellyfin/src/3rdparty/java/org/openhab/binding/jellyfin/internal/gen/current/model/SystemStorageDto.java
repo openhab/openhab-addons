@@ -103,13 +103,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER)
   public FolderStorageDto getProgramDataFolder() {
     return programDataFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER)
   public void setProgramDataFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto programDataFolder) {
     this.programDataFolder = programDataFolder;
@@ -128,13 +128,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER)
   public FolderStorageDto getWebFolder() {
     return webFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER)
   public void setWebFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto webFolder) {
     this.webFolder = webFolder;
@@ -153,13 +153,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER)
   public FolderStorageDto getImageCacheFolder() {
     return imageCacheFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER)
   public void setImageCacheFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto imageCacheFolder) {
     this.imageCacheFolder = imageCacheFolder;
@@ -178,13 +178,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER)
   public FolderStorageDto getCacheFolder() {
     return cacheFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER)
   public void setCacheFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto cacheFolder) {
     this.cacheFolder = cacheFolder;
@@ -203,13 +203,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER)
   public FolderStorageDto getLogFolder() {
     return logFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER)
   public void setLogFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto logFolder) {
     this.logFolder = logFolder;
@@ -228,13 +228,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER)
   public FolderStorageDto getInternalMetadataFolder() {
     return internalMetadataFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER)
   public void setInternalMetadataFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto internalMetadataFolder) {
     this.internalMetadataFolder = internalMetadataFolder;
@@ -253,13 +253,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER)
   public FolderStorageDto getTranscodingTempFolder() {
     return transcodingTempFolder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER)
   public void setTranscodingTempFolder(@org.eclipse.jdt.annotation.Nullable
  FolderStorageDto transcodingTempFolder) {
     this.transcodingTempFolder = transcodingTempFolder;
@@ -286,13 +286,13 @@ public class SystemStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARIES)
   public List<LibraryStorageDto> getLibraries() {
     return libraries;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARIES)
   public void setLibraries(@org.eclipse.jdt.annotation.Nullable
  List<LibraryStorageDto> libraries) {
     this.libraries = libraries;

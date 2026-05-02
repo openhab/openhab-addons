@@ -70,13 +70,13 @@ public class ParentalRating {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -95,13 +95,13 @@ public class ParentalRating {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public Integer getValue() {
     return value;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public void setValue(@org.eclipse.jdt.annotation.Nullable
  Integer value) {
     this.value = value;
@@ -120,13 +120,13 @@ public class ParentalRating {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RATING_SCORE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RATING_SCORE)
   public ParentalRatingScore getRatingScore() {
     return ratingScore;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RATING_SCORE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RATING_SCORE)
   public void setRatingScore(@org.eclipse.jdt.annotation.Nullable
  ParentalRatingScore ratingScore) {
     this.ratingScore = ratingScore;

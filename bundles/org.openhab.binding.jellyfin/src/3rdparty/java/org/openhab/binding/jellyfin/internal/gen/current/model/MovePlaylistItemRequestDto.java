@@ -64,13 +64,13 @@ public class MovePlaylistItemRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public UUID getPlaylistItemId() {
     return playlistItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
   public void setPlaylistItemId(@org.eclipse.jdt.annotation.Nullable
  UUID playlistItemId) {
     this.playlistItemId = playlistItemId;
@@ -89,13 +89,13 @@ public class MovePlaylistItemRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEW_INDEX)
   public Integer getNewIndex() {
     return newIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NEW_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NEW_INDEX)
   public void setNewIndex(@org.eclipse.jdt.annotation.Nullable
  Integer newIndex) {
     this.newIndex = newIndex;

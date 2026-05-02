@@ -80,13 +80,13 @@ public class RemoteImageResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGES)
   public List<RemoteImageInfo> getImages() {
     return images;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGES)
   public void setImages(@org.eclipse.jdt.annotation.Nullable
  List<RemoteImageInfo> images) {
     this.images = images;
@@ -105,13 +105,13 @@ public class RemoteImageResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public Integer getTotalRecordCount() {
     return totalRecordCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public void setTotalRecordCount(@org.eclipse.jdt.annotation.Nullable
  Integer totalRecordCount) {
     this.totalRecordCount = totalRecordCount;
@@ -138,13 +138,13 @@ public class RemoteImageResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDERS)
   public List<String> getProviders() {
     return providers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDERS)
   public void setProviders(@org.eclipse.jdt.annotation.Nullable
  List<String> providers) {
     this.providers = providers;

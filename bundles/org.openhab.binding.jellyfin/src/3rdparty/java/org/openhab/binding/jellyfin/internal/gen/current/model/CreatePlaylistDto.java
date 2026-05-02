@@ -92,13 +92,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -125,13 +125,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IDS)
   public List<UUID> getIds() {
     return ids;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IDS)
   public void setIds(@org.eclipse.jdt.annotation.Nullable
  List<UUID> ids) {
     this.ids = ids;
@@ -150,13 +150,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -175,13 +175,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE)
   public MediaType getMediaType() {
     return mediaType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE)
   public void setMediaType(@org.eclipse.jdt.annotation.Nullable
  MediaType mediaType) {
     this.mediaType = mediaType;
@@ -208,13 +208,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERS)
   public List<PlaylistUserPermissions> getUsers() {
     return users;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USERS)
   public void setUsers(@org.eclipse.jdt.annotation.Nullable
  List<PlaylistUserPermissions> users) {
     this.users = users;
@@ -233,13 +233,13 @@ public class CreatePlaylistDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC)
   public Boolean getIsPublic() {
     return isPublic;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC)
   public void setIsPublic(@org.eclipse.jdt.annotation.Nullable
  Boolean isPublic) {
     this.isPublic = isPublic;

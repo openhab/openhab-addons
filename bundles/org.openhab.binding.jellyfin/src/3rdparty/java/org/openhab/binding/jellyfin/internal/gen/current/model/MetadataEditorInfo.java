@@ -103,13 +103,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
   public List<ParentalRating> getParentalRatingOptions() {
     return parentalRatingOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
   public void setParentalRatingOptions(@org.eclipse.jdt.annotation.Nullable
  List<ParentalRating> parentalRatingOptions) {
     this.parentalRatingOptions = parentalRatingOptions;
@@ -136,13 +136,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COUNTRIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COUNTRIES)
   public List<CountryInfo> getCountries() {
     return countries;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COUNTRIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COUNTRIES)
   public void setCountries(@org.eclipse.jdt.annotation.Nullable
  List<CountryInfo> countries) {
     this.countries = countries;
@@ -169,13 +169,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CULTURES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CULTURES)
   public List<CultureDto> getCultures() {
     return cultures;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CULTURES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CULTURES)
   public void setCultures(@org.eclipse.jdt.annotation.Nullable
  List<CultureDto> cultures) {
     this.cultures = cultures;
@@ -202,13 +202,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS)
   public List<ExternalIdInfo> getExternalIdInfos() {
     return externalIdInfos;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS)
   public void setExternalIdInfos(@org.eclipse.jdt.annotation.Nullable
  List<ExternalIdInfo> externalIdInfos) {
     this.externalIdInfos = externalIdInfos;
@@ -227,13 +227,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE)
   public CollectionType getContentType() {
     return contentType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE)
   public void setContentType(@org.eclipse.jdt.annotation.Nullable
  CollectionType contentType) {
     this.contentType = contentType;
@@ -260,13 +260,13 @@ public class MetadataEditorInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
   public List<NameValuePair> getContentTypeOptions() {
     return contentTypeOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
   public void setContentTypeOptions(@org.eclipse.jdt.annotation.Nullable
  List<NameValuePair> contentTypeOptions) {
     this.contentTypeOptions = contentTypeOptions;

@@ -147,13 +147,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -172,13 +172,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public String getUrl() {
     return url;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_URL)
   public void setUrl(@org.eclipse.jdt.annotation.Nullable
  String url) {
     this.url = url;
@@ -197,13 +197,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -222,13 +222,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public String getDeviceId() {
     return deviceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
   public void setDeviceId(@org.eclipse.jdt.annotation.Nullable
  String deviceId) {
     this.deviceId = deviceId;
@@ -247,13 +247,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME)
   public String getFriendlyName() {
     return friendlyName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FRIENDLY_NAME)
   public void setFriendlyName(@org.eclipse.jdt.annotation.Nullable
  String friendlyName) {
     this.friendlyName = friendlyName;
@@ -272,13 +272,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
   public Boolean getImportFavoritesOnly() {
     return importFavoritesOnly;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMPORT_FAVORITES_ONLY)
   public void setImportFavoritesOnly(@org.eclipse.jdt.annotation.Nullable
  Boolean importFavoritesOnly) {
     this.importFavoritesOnly = importFavoritesOnly;
@@ -297,13 +297,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
   public Boolean getAllowHWTranscoding() {
     return allowHWTranscoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_H_W_TRANSCODING)
   public void setAllowHWTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean allowHWTranscoding) {
     this.allowHWTranscoding = allowHWTranscoding;
@@ -322,13 +322,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
   public Boolean getAllowFmp4TranscodingContainer() {
     return allowFmp4TranscodingContainer;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_FMP4_TRANSCODING_CONTAINER)
   public void setAllowFmp4TranscodingContainer(@org.eclipse.jdt.annotation.Nullable
  Boolean allowFmp4TranscodingContainer) {
     this.allowFmp4TranscodingContainer = allowFmp4TranscodingContainer;
@@ -347,13 +347,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING)
   public Boolean getAllowStreamSharing() {
     return allowStreamSharing;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_STREAM_SHARING)
   public void setAllowStreamSharing(@org.eclipse.jdt.annotation.Nullable
  Boolean allowStreamSharing) {
     this.allowStreamSharing = allowStreamSharing;
@@ -372,13 +372,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
   public Integer getFallbackMaxStreamingBitrate() {
     return fallbackMaxStreamingBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FALLBACK_MAX_STREAMING_BITRATE)
   public void setFallbackMaxStreamingBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer fallbackMaxStreamingBitrate) {
     this.fallbackMaxStreamingBitrate = fallbackMaxStreamingBitrate;
@@ -397,13 +397,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING)
   public Boolean getEnableStreamLooping() {
     return enableStreamLooping;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_STREAM_LOOPING)
   public void setEnableStreamLooping(@org.eclipse.jdt.annotation.Nullable
  Boolean enableStreamLooping) {
     this.enableStreamLooping = enableStreamLooping;
@@ -422,13 +422,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE)
   public String getSource() {
     return source;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE)
   public void setSource(@org.eclipse.jdt.annotation.Nullable
  String source) {
     this.source = source;
@@ -447,13 +447,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT)
   public Integer getTunerCount() {
     return tunerCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TUNER_COUNT)
   public void setTunerCount(@org.eclipse.jdt.annotation.Nullable
  Integer tunerCount) {
     this.tunerCount = tunerCount;
@@ -472,13 +472,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_AGENT)
   public String getUserAgent() {
     return userAgent;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_AGENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_AGENT)
   public void setUserAgent(@org.eclipse.jdt.annotation.Nullable
  String userAgent) {
     this.userAgent = userAgent;
@@ -497,13 +497,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS)
   public Boolean getIgnoreDts() {
     return ignoreDts;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IGNORE_DTS)
   public void setIgnoreDts(@org.eclipse.jdt.annotation.Nullable
  Boolean ignoreDts) {
     this.ignoreDts = ignoreDts;
@@ -522,13 +522,13 @@ public class TunerHostInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
   public Boolean getReadAtNativeFramerate() {
     return readAtNativeFramerate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_READ_AT_NATIVE_FRAMERATE)
   public void setReadAtNativeFramerate(@org.eclipse.jdt.annotation.Nullable
  Boolean readAtNativeFramerate) {
     this.readAtNativeFramerate = readAtNativeFramerate;

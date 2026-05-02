@@ -65,13 +65,13 @@ public class UpdateLibraryOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -90,13 +90,13 @@ public class UpdateLibraryOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS)
   public LibraryOptions getLibraryOptions() {
     return libraryOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS)
   public void setLibraryOptions(@org.eclipse.jdt.annotation.Nullable
  LibraryOptions libraryOptions) {
     this.libraryOptions = libraryOptions;

@@ -66,13 +66,13 @@ public class ImageProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -99,13 +99,13 @@ public class ImageProviderInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES)
   public List<ImageType> getSupportedImages() {
     return supportedImages;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGES)
   public void setSupportedImages(@org.eclipse.jdt.annotation.Nullable
  List<ImageType> supportedImages) {
     this.supportedImages = supportedImages;

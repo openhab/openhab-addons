@@ -60,7 +60,7 @@ public class ActivityLogEntryStopMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
   public SessionMessageType getMessageType() {
     return messageType;
   }

@@ -106,13 +106,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
   public List<MediaType> getPlayableMediaTypes() {
     return playableMediaTypes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
   public void setPlayableMediaTypes(@org.eclipse.jdt.annotation.Nullable
  List<MediaType> playableMediaTypes) {
     this.playableMediaTypes = playableMediaTypes;
@@ -139,13 +139,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
   public List<GeneralCommandType> getSupportedCommands() {
     return supportedCommands;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
   public void setSupportedCommands(@org.eclipse.jdt.annotation.Nullable
  List<GeneralCommandType> supportedCommands) {
     this.supportedCommands = supportedCommands;
@@ -164,13 +164,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
   public Boolean getSupportsMediaControl() {
     return supportsMediaControl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
   public void setSupportsMediaControl(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsMediaControl) {
     this.supportsMediaControl = supportsMediaControl;
@@ -189,13 +189,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
   public Boolean getSupportsPersistentIdentifier() {
     return supportsPersistentIdentifier;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
   public void setSupportsPersistentIdentifier(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsPersistentIdentifier) {
     this.supportsPersistentIdentifier = supportsPersistentIdentifier;
@@ -214,13 +214,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
   public DeviceProfile getDeviceProfile() {
     return deviceProfile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
   public void setDeviceProfile(@org.eclipse.jdt.annotation.Nullable
  DeviceProfile deviceProfile) {
     this.deviceProfile = deviceProfile;
@@ -239,13 +239,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL)
   public String getAppStoreUrl() {
     return appStoreUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL)
   public void setAppStoreUrl(@org.eclipse.jdt.annotation.Nullable
  String appStoreUrl) {
     this.appStoreUrl = appStoreUrl;
@@ -264,13 +264,13 @@ public class ClientCapabilitiesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ICON_URL)
   public String getIconUrl() {
     return iconUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ICON_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ICON_URL)
   public void setIconUrl(@org.eclipse.jdt.annotation.Nullable
  String iconUrl) {
     this.iconUrl = iconUrl;

@@ -93,13 +93,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS)
   public String getLocalAddress() {
     return localAddress;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS)
   public void setLocalAddress(@org.eclipse.jdt.annotation.Nullable
  String localAddress) {
     this.localAddress = localAddress;
@@ -118,13 +118,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public String getServerName() {
     return serverName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -143,13 +143,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -168,13 +168,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME)
   public String getProductName() {
     return productName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME)
   public void setProductName(@org.eclipse.jdt.annotation.Nullable
  String productName) {
     this.productName = productName;
@@ -195,13 +195,13 @@ public class PublicSystemInfo {
   @Deprecated
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM)
   public String getOperatingSystem() {
     return operatingSystem;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM)
   public void setOperatingSystem(@org.eclipse.jdt.annotation.Nullable
  String operatingSystem) {
     this.operatingSystem = operatingSystem;
@@ -220,13 +220,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -245,13 +245,13 @@ public class PublicSystemInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
   public Boolean getStartupWizardCompleted() {
     return startupWizardCompleted;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
   public void setStartupWizardCompleted(@org.eclipse.jdt.annotation.Nullable
  Boolean startupWizardCompleted) {
     this.startupWizardCompleted = startupWizardCompleted;

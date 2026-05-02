@@ -118,13 +118,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RATING)
   public Double getRating() {
     return rating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RATING)
   public void setRating(@org.eclipse.jdt.annotation.Nullable
  Double rating) {
     this.rating = rating;
@@ -143,13 +143,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE)
   public Double getPlayedPercentage() {
     return playedPercentage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE)
   public void setPlayedPercentage(@org.eclipse.jdt.annotation.Nullable
  Double playedPercentage) {
     this.playedPercentage = playedPercentage;
@@ -168,13 +168,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
   public Integer getUnplayedItemCount() {
     return unplayedItemCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
   public void setUnplayedItemCount(@org.eclipse.jdt.annotation.Nullable
  Integer unplayedItemCount) {
     this.unplayedItemCount = unplayedItemCount;
@@ -193,13 +193,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
   public Long getPlaybackPositionTicks() {
     return playbackPositionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
   public void setPlaybackPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long playbackPositionTicks) {
     this.playbackPositionTicks = playbackPositionTicks;
@@ -218,13 +218,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT)
   public Integer getPlayCount() {
     return playCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT)
   public void setPlayCount(@org.eclipse.jdt.annotation.Nullable
  Integer playCount) {
     this.playCount = playCount;
@@ -243,13 +243,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE)
   public Boolean getIsFavorite() {
     return isFavorite;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE)
   public void setIsFavorite(@org.eclipse.jdt.annotation.Nullable
  Boolean isFavorite) {
     this.isFavorite = isFavorite;
@@ -268,13 +268,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIKES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIKES)
   public Boolean getLikes() {
     return likes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIKES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIKES)
   public void setLikes(@org.eclipse.jdt.annotation.Nullable
  Boolean likes) {
     this.likes = likes;
@@ -293,13 +293,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE)
   public OffsetDateTime getLastPlayedDate() {
     return lastPlayedDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE)
   public void setLastPlayedDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastPlayedDate) {
     this.lastPlayedDate = lastPlayedDate;
@@ -318,13 +318,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYED)
   public Boolean getPlayed() {
     return played;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PLAYED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PLAYED)
   public void setPlayed(@org.eclipse.jdt.annotation.Nullable
  Boolean played) {
     this.played = played;
@@ -343,13 +343,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public String getKey() {
     return key;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_KEY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEY)
   public void setKey(@org.eclipse.jdt.annotation.Nullable
  String key) {
     this.key = key;
@@ -368,13 +368,13 @@ public class UpdateUserItemDataDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public String getItemId() {
     return itemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  String itemId) {
     this.itemId = itemId;

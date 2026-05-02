@@ -71,13 +71,13 @@ public class ForgotPasswordResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACTION)
   public ForgotPasswordAction getAction() {
     return action;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ACTION)
   public void setAction(@org.eclipse.jdt.annotation.Nullable
  ForgotPasswordAction action) {
     this.action = action;
@@ -96,13 +96,13 @@ public class ForgotPasswordResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIN_FILE)
   public String getPinFile() {
     return pinFile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PIN_FILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIN_FILE)
   public void setPinFile(@org.eclipse.jdt.annotation.Nullable
  String pinFile) {
     this.pinFile = pinFile;
@@ -121,13 +121,13 @@ public class ForgotPasswordResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE)
   public OffsetDateTime getPinExpirationDate() {
     return pinExpirationDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIN_EXPIRATION_DATE)
   public void setPinExpirationDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime pinExpirationDate) {
     this.pinExpirationDate = pinExpirationDate;

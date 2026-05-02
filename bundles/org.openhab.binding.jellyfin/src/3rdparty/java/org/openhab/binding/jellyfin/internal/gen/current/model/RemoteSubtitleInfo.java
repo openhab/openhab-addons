@@ -148,13 +148,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
   public String getThreeLetterISOLanguageName() {
     return threeLetterISOLanguageName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
   public void setThreeLetterISOLanguageName(@org.eclipse.jdt.annotation.Nullable
  String threeLetterISOLanguageName) {
     this.threeLetterISOLanguageName = threeLetterISOLanguageName;
@@ -173,13 +173,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -198,13 +198,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
   public String getProviderName() {
     return providerName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
   public void setProviderName(@org.eclipse.jdt.annotation.Nullable
  String providerName) {
     this.providerName = providerName;
@@ -223,13 +223,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -248,13 +248,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORMAT)
   public String getFormat() {
     return format;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORMAT)
   public void setFormat(@org.eclipse.jdt.annotation.Nullable
  String format) {
     this.format = format;
@@ -273,13 +273,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTHOR)
   public String getAuthor() {
     return author;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTHOR)
   public void setAuthor(@org.eclipse.jdt.annotation.Nullable
  String author) {
     this.author = author;
@@ -298,13 +298,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public String getComment() {
     return comment;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public void setComment(@org.eclipse.jdt.annotation.Nullable
  String comment) {
     this.comment = comment;
@@ -323,13 +323,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -348,13 +348,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
   public Float getCommunityRating() {
     return communityRating;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
   public void setCommunityRating(@org.eclipse.jdt.annotation.Nullable
  Float communityRating) {
     this.communityRating = communityRating;
@@ -373,13 +373,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FRAME_RATE)
   public Float getFrameRate() {
     return frameRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FRAME_RATE)
   public void setFrameRate(@org.eclipse.jdt.annotation.Nullable
  Float frameRate) {
     this.frameRate = frameRate;
@@ -398,13 +398,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT)
   public Integer getDownloadCount() {
     return downloadCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT)
   public void setDownloadCount(@org.eclipse.jdt.annotation.Nullable
  Integer downloadCount) {
     this.downloadCount = downloadCount;
@@ -423,13 +423,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH)
   public Boolean getIsHashMatch() {
     return isHashMatch;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH)
   public void setIsHashMatch(@org.eclipse.jdt.annotation.Nullable
  Boolean isHashMatch) {
     this.isHashMatch = isHashMatch;
@@ -448,13 +448,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED)
   public Boolean getAiTranslated() {
     return aiTranslated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED)
   public void setAiTranslated(@org.eclipse.jdt.annotation.Nullable
  Boolean aiTranslated) {
     this.aiTranslated = aiTranslated;
@@ -473,13 +473,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED)
   public Boolean getMachineTranslated() {
     return machineTranslated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED)
   public void setMachineTranslated(@org.eclipse.jdt.annotation.Nullable
  Boolean machineTranslated) {
     this.machineTranslated = machineTranslated;
@@ -498,13 +498,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORCED)
   public Boolean getForced() {
     return forced;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FORCED)
   public void setForced(@org.eclipse.jdt.annotation.Nullable
  Boolean forced) {
     this.forced = forced;
@@ -523,13 +523,13 @@ public class RemoteSubtitleInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED)
   public Boolean getHearingImpaired() {
     return hearingImpaired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED)
   public void setHearingImpaired(@org.eclipse.jdt.annotation.Nullable
  Boolean hearingImpaired) {
     this.hearingImpaired = hearingImpaired;

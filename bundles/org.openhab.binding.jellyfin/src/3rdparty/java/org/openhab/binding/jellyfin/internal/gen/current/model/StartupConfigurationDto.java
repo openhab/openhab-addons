@@ -75,13 +75,13 @@ public class StartupConfigurationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public String getServerName() {
     return serverName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -100,13 +100,13 @@ public class StartupConfigurationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UI_CULTURE)
   public String getUiCulture() {
     return uiCulture;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_UI_CULTURE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UI_CULTURE)
   public void setUiCulture(@org.eclipse.jdt.annotation.Nullable
  String uiCulture) {
     this.uiCulture = uiCulture;
@@ -125,13 +125,13 @@ public class StartupConfigurationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
   public String getMetadataCountryCode() {
     return metadataCountryCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
   public void setMetadataCountryCode(@org.eclipse.jdt.annotation.Nullable
  String metadataCountryCode) {
     this.metadataCountryCode = metadataCountryCode;
@@ -150,13 +150,13 @@ public class StartupConfigurationDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
   public String getPreferredMetadataLanguage() {
     return preferredMetadataLanguage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
   public void setPreferredMetadataLanguage(@org.eclipse.jdt.annotation.Nullable
  String preferredMetadataLanguage) {
     this.preferredMetadataLanguage = preferredMetadataLanguage;

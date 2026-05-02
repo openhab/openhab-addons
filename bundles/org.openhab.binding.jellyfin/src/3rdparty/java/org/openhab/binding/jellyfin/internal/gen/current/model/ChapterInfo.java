@@ -82,13 +82,13 @@ public class ChapterInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public Long getStartPositionTicks() {
     return startPositionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
   public void setStartPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long startPositionTicks) {
     this.startPositionTicks = startPositionTicks;
@@ -107,13 +107,13 @@ public class ChapterInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -132,13 +132,13 @@ public class ChapterInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH)
   public String getImagePath() {
     return imagePath;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH)
   public void setImagePath(@org.eclipse.jdt.annotation.Nullable
  String imagePath) {
     this.imagePath = imagePath;
@@ -157,13 +157,13 @@ public class ChapterInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED)
   public OffsetDateTime getImageDateModified() {
     return imageDateModified;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED)
   public void setImageDateModified(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime imageDateModified) {
     this.imageDateModified = imageDateModified;
@@ -182,13 +182,13 @@ public class ChapterInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
   public String getImageTag() {
     return imageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
   public void setImageTag(@org.eclipse.jdt.annotation.Nullable
  String imageTag) {
     this.imageTag = imageTag;

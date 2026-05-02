@@ -111,13 +111,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST)
   public String getArtist() {
     return artist;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTIST)
   public void setArtist(@org.eclipse.jdt.annotation.Nullable
  String artist) {
     this.artist = artist;
@@ -136,13 +136,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM)
   public String getAlbum() {
     return album;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM)
   public void setAlbum(@org.eclipse.jdt.annotation.Nullable
  String album) {
     this.album = album;
@@ -161,13 +161,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public String getTitle() {
     return title;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public void setTitle(@org.eclipse.jdt.annotation.Nullable
  String title) {
     this.title = title;
@@ -186,13 +186,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTHOR)
   public String getAuthor() {
     return author;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUTHOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTHOR)
   public void setAuthor(@org.eclipse.jdt.annotation.Nullable
  String author) {
     this.author = author;
@@ -211,13 +211,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LENGTH)
   public Long getLength() {
     return length;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LENGTH)
   public void setLength(@org.eclipse.jdt.annotation.Nullable
  Long length) {
     this.length = length;
@@ -236,13 +236,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BY)
   public String getBy() {
     return by;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BY)
   public void setBy(@org.eclipse.jdt.annotation.Nullable
  String by) {
     this.by = by;
@@ -261,13 +261,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OFFSET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFSET)
   public Long getOffset() {
     return offset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OFFSET, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFSET)
   public void setOffset(@org.eclipse.jdt.annotation.Nullable
  Long offset) {
     this.offset = offset;
@@ -286,13 +286,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CREATOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CREATOR)
   public String getCreator() {
     return creator;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CREATOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CREATOR)
   public void setCreator(@org.eclipse.jdt.annotation.Nullable
  String creator) {
     this.creator = creator;
@@ -311,13 +311,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -336,13 +336,13 @@ public class LyricMetadata {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SYNCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SYNCED)
   public Boolean getIsSynced() {
     return isSynced;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_SYNCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_SYNCED)
   public void setIsSynced(@org.eclipse.jdt.annotation.Nullable
  Boolean isSynced) {
     this.isSynced = isSynced;

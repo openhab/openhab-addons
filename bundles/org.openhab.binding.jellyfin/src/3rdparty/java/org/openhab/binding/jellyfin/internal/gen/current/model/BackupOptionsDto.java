@@ -75,13 +75,13 @@ public class BackupOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA)
   public Boolean getMetadata() {
     return metadata;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA)
   public void setMetadata(@org.eclipse.jdt.annotation.Nullable
  Boolean metadata) {
     this.metadata = metadata;
@@ -100,13 +100,13 @@ public class BackupOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY)
   public Boolean getTrickplay() {
     return trickplay;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRICKPLAY)
   public void setTrickplay(@org.eclipse.jdt.annotation.Nullable
  Boolean trickplay) {
     this.trickplay = trickplay;
@@ -125,13 +125,13 @@ public class BackupOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLES)
   public Boolean getSubtitles() {
     return subtitles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLES)
   public void setSubtitles(@org.eclipse.jdt.annotation.Nullable
  Boolean subtitles) {
     this.subtitles = subtitles;
@@ -150,13 +150,13 @@ public class BackupOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATABASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATABASE)
   public Boolean getDatabase() {
     return database;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATABASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATABASE)
   public void setDatabase(@org.eclipse.jdt.annotation.Nullable
  Boolean database) {
     this.database = database;

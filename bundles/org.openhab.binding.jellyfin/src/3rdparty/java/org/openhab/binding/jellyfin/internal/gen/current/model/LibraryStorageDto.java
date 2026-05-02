@@ -73,13 +73,13 @@ public class LibraryStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -98,13 +98,13 @@ public class LibraryStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -131,13 +131,13 @@ public class LibraryStorageDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS)
   public List<FolderStorageDto> getFolders() {
     return folders;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS)
   public void setFolders(@org.eclipse.jdt.annotation.Nullable
  List<FolderStorageDto> folders) {
     this.folders = folders;

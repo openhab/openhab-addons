@@ -71,13 +71,13 @@ public class DatabaseConfigurationOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE)
   public String getDatabaseType() {
     return databaseType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE)
   public void setDatabaseType(@org.eclipse.jdt.annotation.Nullable
  String databaseType) {
     this.databaseType = databaseType;
@@ -96,13 +96,13 @@ public class DatabaseConfigurationOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS)
   public CustomDatabaseOptions getCustomProviderOptions() {
     return customProviderOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS)
   public void setCustomProviderOptions(@org.eclipse.jdt.annotation.Nullable
  CustomDatabaseOptions customProviderOptions) {
     this.customProviderOptions = customProviderOptions;
@@ -121,13 +121,13 @@ public class DatabaseConfigurationOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR)
   public DatabaseLockingBehaviorTypes getLockingBehavior() {
     return lockingBehavior;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR)
   public void setLockingBehavior(@org.eclipse.jdt.annotation.Nullable
  DatabaseLockingBehaviorTypes lockingBehavior) {
     this.lockingBehavior = lockingBehavior;

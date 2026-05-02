@@ -74,13 +74,13 @@ public class QueryFilters {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public List<NameGuidPair> getGenres() {
     return genres;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<NameGuidPair> genres) {
     this.genres = genres;
@@ -107,13 +107,13 @@ public class QueryFilters {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public List<String> getTags() {
     return tags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public void setTags(@org.eclipse.jdt.annotation.Nullable
  List<String> tags) {
     this.tags = tags;

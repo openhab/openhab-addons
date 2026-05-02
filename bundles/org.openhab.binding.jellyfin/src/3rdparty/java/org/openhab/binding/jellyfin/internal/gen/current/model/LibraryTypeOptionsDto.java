@@ -86,13 +86,13 @@ public class LibraryTypeOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -119,13 +119,13 @@ public class LibraryTypeOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
   public List<LibraryOptionInfoDto> getMetadataFetchers() {
     return metadataFetchers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
   public void setMetadataFetchers(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> metadataFetchers) {
     this.metadataFetchers = metadataFetchers;
@@ -152,13 +152,13 @@ public class LibraryTypeOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
   public List<LibraryOptionInfoDto> getImageFetchers() {
     return imageFetchers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
   public void setImageFetchers(@org.eclipse.jdt.annotation.Nullable
  List<LibraryOptionInfoDto> imageFetchers) {
     this.imageFetchers = imageFetchers;
@@ -185,13 +185,13 @@ public class LibraryTypeOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
   public List<ImageType> getSupportedImageTypes() {
     return supportedImageTypes;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
   public void setSupportedImageTypes(@org.eclipse.jdt.annotation.Nullable
  List<ImageType> supportedImageTypes) {
     this.supportedImageTypes = supportedImageTypes;
@@ -218,13 +218,13 @@ public class LibraryTypeOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
   public List<ImageOption> getDefaultImageOptions() {
     return defaultImageOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
   public void setDefaultImageOptions(@org.eclipse.jdt.annotation.Nullable
  List<ImageOption> defaultImageOptions) {
     this.defaultImageOptions = defaultImageOptions;

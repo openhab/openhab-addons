@@ -129,13 +129,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -162,14 +162,14 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProviderIds() {
     return providerIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderIds(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> providerIds) {
@@ -189,13 +189,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR)
   public Integer getProductionYear() {
     return productionYear;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR)
   public void setProductionYear(@org.eclipse.jdt.annotation.Nullable
  Integer productionYear) {
     this.productionYear = productionYear;
@@ -214,13 +214,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public Integer getIndexNumber() {
     return indexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public void setIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumber) {
     this.indexNumber = indexNumber;
@@ -239,13 +239,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END)
   public Integer getIndexNumberEnd() {
     return indexNumberEnd;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END)
   public void setIndexNumberEnd(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumberEnd) {
     this.indexNumberEnd = indexNumberEnd;
@@ -264,13 +264,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public Integer getParentIndexNumber() {
     return parentIndexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public void setParentIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer parentIndexNumber) {
     this.parentIndexNumber = parentIndexNumber;
@@ -289,13 +289,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public OffsetDateTime getPremiereDate() {
     return premiereDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public void setPremiereDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime premiereDate) {
     this.premiereDate = premiereDate;
@@ -314,13 +314,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
   public String getImageUrl() {
     return imageUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
   public void setImageUrl(@org.eclipse.jdt.annotation.Nullable
  String imageUrl) {
     this.imageUrl = imageUrl;
@@ -339,13 +339,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
   public String getSearchProviderName() {
     return searchProviderName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
   public void setSearchProviderName(@org.eclipse.jdt.annotation.Nullable
  String searchProviderName) {
     this.searchProviderName = searchProviderName;
@@ -364,13 +364,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public String getOverview() {
     return overview;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -389,13 +389,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST)
   public RemoteSearchResult getAlbumArtist() {
     return albumArtist;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST)
   public void setAlbumArtist(@org.eclipse.jdt.annotation.Nullable
  RemoteSearchResult albumArtist) {
     this.albumArtist = albumArtist;
@@ -422,13 +422,13 @@ public class RemoteSearchResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTISTS)
   public List<RemoteSearchResult> getArtists() {
     return artists;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARTISTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARTISTS)
   public void setArtists(@org.eclipse.jdt.annotation.Nullable
  List<RemoteSearchResult> artists) {
     this.artists = artists;

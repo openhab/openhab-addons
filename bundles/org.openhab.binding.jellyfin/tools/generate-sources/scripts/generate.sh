@@ -257,10 +257,11 @@ echo "🔧 remove @NonNullByDefault from generated classes (covered by package-i
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
 
-echo "🔧 remove redundant @JsonInclude(USE_DEFAULTS) annotations and orphaned imports"
-# USE_DEFAULTS is the implicit default when no class-level @JsonInclude is present, so these are no-ops.
-# Fields with @JsonInclude(ALWAYS) are intentional and must be preserved.
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@JsonInclude(value = JsonInclude\.Include\.USE_DEFAULTS)/d' {} \;
+echo "🔧 remove redundant annotations from generated model classes"
+# - @JsonInclude(USE_DEFAULTS): no-op when no class-level @JsonInclude is present; ALWAYS fields are preserved.
+# - @JsonProperty required=false: redundant as false is the Jackson default.
+find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i -e '/@JsonInclude(value = JsonInclude\.Include\.USE_DEFAULTS)/d' -e 's/, required = false//' {} \;
+# Remove the JsonInclude import from files that no longer reference it at all (ALWAYS-annotated files keep theirs)
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f | while read f; do
     if ! grep -q "JsonInclude" "$f"; then
         sed -i '/import com\.fasterxml\.jackson\.annotation\.JsonInclude;/d' "$f"

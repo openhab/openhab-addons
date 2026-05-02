@@ -91,13 +91,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public CodecType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  CodecType type) {
     this.type = type;
@@ -124,13 +124,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
   public List<ProfileCondition> getConditions() {
     return conditions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
   public void setConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> conditions) {
     this.conditions = conditions;
@@ -157,13 +157,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS)
   public List<ProfileCondition> getApplyConditions() {
     return applyConditions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_APPLY_CONDITIONS)
   public void setApplyConditions(@org.eclipse.jdt.annotation.Nullable
  List<ProfileCondition> applyConditions) {
     this.applyConditions = applyConditions;
@@ -182,13 +182,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public String getCodec() {
     return codec;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public void setCodec(@org.eclipse.jdt.annotation.Nullable
  String codec) {
     this.codec = codec;
@@ -207,13 +207,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public String getContainer() {
     return container;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -232,13 +232,13 @@ public class CodecProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER)
   public String getSubContainer() {
     return subContainer;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER)
   public void setSubContainer(@org.eclipse.jdt.annotation.Nullable
  String subContainer) {
     this.subContainer = subContainer;

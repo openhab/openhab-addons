@@ -90,13 +90,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -123,13 +123,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
   public List<String> getMetadataFetchers() {
     return metadataFetchers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
   public void setMetadataFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> metadataFetchers) {
     this.metadataFetchers = metadataFetchers;
@@ -156,13 +156,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER)
   public List<String> getMetadataFetcherOrder() {
     return metadataFetcherOrder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER)
   public void setMetadataFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> metadataFetcherOrder) {
     this.metadataFetcherOrder = metadataFetcherOrder;
@@ -189,13 +189,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
   public List<String> getImageFetchers() {
     return imageFetchers;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
   public void setImageFetchers(@org.eclipse.jdt.annotation.Nullable
  List<String> imageFetchers) {
     this.imageFetchers = imageFetchers;
@@ -222,13 +222,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER)
   public List<String> getImageFetcherOrder() {
     return imageFetcherOrder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER)
   public void setImageFetcherOrder(@org.eclipse.jdt.annotation.Nullable
  List<String> imageFetcherOrder) {
     this.imageFetcherOrder = imageFetcherOrder;
@@ -255,13 +255,13 @@ public class TypeOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS)
   public List<ImageOption> getImageOptions() {
     return imageOptions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS)
   public void setImageOptions(@org.eclipse.jdt.annotation.Nullable
  List<ImageOption> imageOptions) {
     this.imageOptions = imageOptions;

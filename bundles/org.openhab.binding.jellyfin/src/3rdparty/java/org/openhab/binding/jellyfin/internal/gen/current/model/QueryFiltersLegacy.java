@@ -85,13 +85,13 @@ public class QueryFiltersLegacy {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public List<String> getGenres() {
     return genres;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GENRES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GENRES)
   public void setGenres(@org.eclipse.jdt.annotation.Nullable
  List<String> genres) {
     this.genres = genres;
@@ -118,13 +118,13 @@ public class QueryFiltersLegacy {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public List<String> getTags() {
     return tags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TAGS)
   public void setTags(@org.eclipse.jdt.annotation.Nullable
  List<String> tags) {
     this.tags = tags;
@@ -151,13 +151,13 @@ public class QueryFiltersLegacy {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS)
   public List<String> getOfficialRatings() {
     return officialRatings;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS)
   public void setOfficialRatings(@org.eclipse.jdt.annotation.Nullable
  List<String> officialRatings) {
     this.officialRatings = officialRatings;
@@ -184,13 +184,13 @@ public class QueryFiltersLegacy {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_YEARS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_YEARS)
   public List<Integer> getYears() {
     return years;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_YEARS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_YEARS)
   public void setYears(@org.eclipse.jdt.annotation.Nullable
  List<Integer> years) {
     this.years = years;

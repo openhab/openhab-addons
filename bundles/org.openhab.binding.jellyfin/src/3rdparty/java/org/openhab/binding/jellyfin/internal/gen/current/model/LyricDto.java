@@ -67,13 +67,13 @@ public class LyricDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA)
   public LyricMetadata getMetadata() {
     return metadata;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA)
   public void setMetadata(@org.eclipse.jdt.annotation.Nullable
  LyricMetadata metadata) {
     this.metadata = metadata;
@@ -100,13 +100,13 @@ public class LyricDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LYRICS)
   public List<LyricLine> getLyrics() {
     return lyrics;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LYRICS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LYRICS)
   public void setLyrics(@org.eclipse.jdt.annotation.Nullable
  List<LyricLine> lyrics) {
     this.lyrics = lyrics;

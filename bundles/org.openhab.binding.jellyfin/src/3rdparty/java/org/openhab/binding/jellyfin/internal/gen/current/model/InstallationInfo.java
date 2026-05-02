@@ -95,13 +95,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GUID)
   public UUID getGuid() {
     return guid;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GUID)
   public void setGuid(@org.eclipse.jdt.annotation.Nullable
  UUID guid) {
     this.guid = guid;
@@ -120,13 +120,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -145,13 +145,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -170,13 +170,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
   public String getChangelog() {
     return changelog;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
   public void setChangelog(@org.eclipse.jdt.annotation.Nullable
  String changelog) {
     this.changelog = changelog;
@@ -195,13 +195,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
   public String getSourceUrl() {
     return sourceUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
   public void setSourceUrl(@org.eclipse.jdt.annotation.Nullable
  String sourceUrl) {
     this.sourceUrl = sourceUrl;
@@ -220,13 +220,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
   public String getChecksum() {
     return checksum;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
   public void setChecksum(@org.eclipse.jdt.annotation.Nullable
  String checksum) {
     this.checksum = checksum;
@@ -245,13 +245,13 @@ public class InstallationInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO)
   public PackageInfo getPackageInfo() {
     return packageInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO)
   public void setPackageInfo(@org.eclipse.jdt.annotation.Nullable
  PackageInfo packageInfo) {
     this.packageInfo = packageInfo;

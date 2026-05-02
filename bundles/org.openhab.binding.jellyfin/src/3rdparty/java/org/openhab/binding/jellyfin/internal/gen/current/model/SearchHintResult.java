@@ -74,13 +74,13 @@ public class SearchHintResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS)
   public List<SearchHint> getSearchHints() {
     return searchHints;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS)
   public void setSearchHints(@org.eclipse.jdt.annotation.Nullable
  List<SearchHint> searchHints) {
     this.searchHints = searchHints;
@@ -99,13 +99,13 @@ public class SearchHintResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public Integer getTotalRecordCount() {
     return totalRecordCount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
   public void setTotalRecordCount(@org.eclipse.jdt.annotation.Nullable
  Integer totalRecordCount) {
     this.totalRecordCount = totalRecordCount;

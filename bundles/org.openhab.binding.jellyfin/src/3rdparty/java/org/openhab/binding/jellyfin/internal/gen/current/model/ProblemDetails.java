@@ -85,13 +85,13 @@ public class ProblemDetails {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -110,13 +110,13 @@ public class ProblemDetails {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public String getTitle() {
     return title;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public void setTitle(@org.eclipse.jdt.annotation.Nullable
  String title) {
     this.title = title;
@@ -135,13 +135,13 @@ public class ProblemDetails {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public Integer getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  Integer status) {
     this.status = status;
@@ -160,13 +160,13 @@ public class ProblemDetails {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DETAIL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DETAIL)
   public String getDetail() {
     return detail;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DETAIL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DETAIL)
   public void setDetail(@org.eclipse.jdt.annotation.Nullable
  String detail) {
     this.detail = detail;
@@ -185,13 +185,13 @@ public class ProblemDetails {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INSTANCE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INSTANCE)
   public String getInstance() {
     return instance;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INSTANCE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INSTANCE)
   public void setInstance(@org.eclipse.jdt.annotation.Nullable
  String instance) {
     this.instance = instance;

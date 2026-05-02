@@ -83,13 +83,13 @@ public class MediaSegmentDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -108,13 +108,13 @@ public class MediaSegmentDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public UUID getItemId() {
     return itemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
   public void setItemId(@org.eclipse.jdt.annotation.Nullable
  UUID itemId) {
     this.itemId = itemId;
@@ -133,13 +133,13 @@ public class MediaSegmentDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public MediaSegmentType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  MediaSegmentType type) {
     this.type = type;
@@ -158,13 +158,13 @@ public class MediaSegmentDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TICKS)
   public Long getStartTicks() {
     return startTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TICKS)
   public void setStartTicks(@org.eclipse.jdt.annotation.Nullable
  Long startTicks) {
     this.startTicks = startTicks;
@@ -183,13 +183,13 @@ public class MediaSegmentDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_TICKS)
   public Long getEndTicks() {
     return endTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_TICKS)
   public void setEndTicks(@org.eclipse.jdt.annotation.Nullable
  Long endTicks) {
     this.endTicks = endTicks;

@@ -75,13 +75,13 @@ public class ServerDiscoveryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS)
   public String getAddress() {
     return address;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS)
   public void setAddress(@org.eclipse.jdt.annotation.Nullable
  String address) {
     this.address = address;
@@ -100,13 +100,13 @@ public class ServerDiscoveryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -125,13 +125,13 @@ public class ServerDiscoveryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -150,13 +150,13 @@ public class ServerDiscoveryInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS)
   public String getEndpointAddress() {
     return endpointAddress;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS)
   public void setEndpointAddress(@org.eclipse.jdt.annotation.Nullable
  String endpointAddress) {
     this.endpointAddress = endpointAddress;

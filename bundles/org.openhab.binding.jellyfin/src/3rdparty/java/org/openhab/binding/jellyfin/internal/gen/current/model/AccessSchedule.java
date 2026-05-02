@@ -85,7 +85,7 @@ public class AccessSchedule {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public Integer getId() {
     return id;
   }
@@ -105,13 +105,13 @@ public class AccessSchedule {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -130,13 +130,13 @@ public class AccessSchedule {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK)
   public DynamicDayOfWeek getDayOfWeek() {
     return dayOfWeek;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK)
   public void setDayOfWeek(@org.eclipse.jdt.annotation.Nullable
  DynamicDayOfWeek dayOfWeek) {
     this.dayOfWeek = dayOfWeek;
@@ -155,13 +155,13 @@ public class AccessSchedule {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_HOUR)
   public Double getStartHour() {
     return startHour;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_HOUR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_HOUR)
   public void setStartHour(@org.eclipse.jdt.annotation.Nullable
  Double startHour) {
     this.startHour = startHour;
@@ -180,13 +180,13 @@ public class AccessSchedule {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_HOUR)
   public Double getEndHour() {
     return endHour;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_HOUR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_HOUR)
   public void setEndHour(@org.eclipse.jdt.annotation.Nullable
  Double endHour) {
     this.endHour = endHour;

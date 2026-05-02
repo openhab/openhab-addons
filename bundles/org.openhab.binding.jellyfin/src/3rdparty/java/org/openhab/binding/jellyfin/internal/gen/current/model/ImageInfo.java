@@ -100,13 +100,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE)
   public ImageType getImageType() {
     return imageType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE)
   public void setImageType(@org.eclipse.jdt.annotation.Nullable
  ImageType imageType) {
     this.imageType = imageType;
@@ -125,13 +125,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX)
   public Integer getImageIndex() {
     return imageIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX)
   public void setImageIndex(@org.eclipse.jdt.annotation.Nullable
  Integer imageIndex) {
     this.imageIndex = imageIndex;
@@ -150,13 +150,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
   public String getImageTag() {
     return imageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
   public void setImageTag(@org.eclipse.jdt.annotation.Nullable
  String imageTag) {
     this.imageTag = imageTag;
@@ -175,13 +175,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -200,13 +200,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BLUR_HASH)
   public String getBlurHash() {
     return blurHash;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BLUR_HASH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BLUR_HASH)
   public void setBlurHash(@org.eclipse.jdt.annotation.Nullable
  String blurHash) {
     this.blurHash = blurHash;
@@ -225,13 +225,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public Integer getHeight() {
     return height;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -250,13 +250,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public Integer getWidth() {
     return width;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -275,13 +275,13 @@ public class ImageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SIZE)
   public Long getSize() {
     return size;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SIZE)
   public void setSize(@org.eclipse.jdt.annotation.Nullable
  Long size) {
     this.size = size;

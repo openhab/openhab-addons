@@ -58,13 +58,13 @@ public class JoinGroupRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public UUID getGroupId() {
     return groupId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
   public void setGroupId(@org.eclipse.jdt.annotation.Nullable
  UUID groupId) {
     this.groupId = groupId;

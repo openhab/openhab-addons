@@ -93,13 +93,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public String getCodec() {
     return codec;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public void setCodec(@org.eclipse.jdt.annotation.Nullable
  String codec) {
     this.codec = codec;
@@ -118,13 +118,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
   public String getCodecTag() {
     return codecTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
   public void setCodecTag(@org.eclipse.jdt.annotation.Nullable
  String codecTag) {
     this.codecTag = codecTag;
@@ -143,13 +143,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public String getComment() {
     return comment;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public void setComment(@org.eclipse.jdt.annotation.Nullable
  String comment) {
     this.comment = comment;
@@ -168,13 +168,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX)
   public Integer getIndex() {
     return index;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX)
   public void setIndex(@org.eclipse.jdt.annotation.Nullable
  Integer index) {
     this.index = index;
@@ -193,13 +193,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FILE_NAME)
   public String getFileName() {
     return fileName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FILE_NAME)
   public void setFileName(@org.eclipse.jdt.annotation.Nullable
  String fileName) {
     this.fileName = fileName;
@@ -218,13 +218,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE)
   public String getMimeType() {
     return mimeType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIME_TYPE)
   public void setMimeType(@org.eclipse.jdt.annotation.Nullable
  String mimeType) {
     this.mimeType = mimeType;
@@ -243,13 +243,13 @@ public class MediaAttachment {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
   public String getDeliveryUrl() {
     return deliveryUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
   public void setDeliveryUrl(@org.eclipse.jdt.annotation.Nullable
  String deliveryUrl) {
     this.deliveryUrl = deliveryUrl;

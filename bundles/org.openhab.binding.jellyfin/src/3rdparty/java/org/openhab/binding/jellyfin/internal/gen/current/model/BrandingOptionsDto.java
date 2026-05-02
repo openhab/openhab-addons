@@ -69,13 +69,13 @@ public class BrandingOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER)
   public String getLoginDisclaimer() {
     return loginDisclaimer;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER)
   public void setLoginDisclaimer(@org.eclipse.jdt.annotation.Nullable
  String loginDisclaimer) {
     this.loginDisclaimer = loginDisclaimer;
@@ -94,13 +94,13 @@ public class BrandingOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS)
   public String getCustomCss() {
     return customCss;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS)
   public void setCustomCss(@org.eclipse.jdt.annotation.Nullable
  String customCss) {
     this.customCss = customCss;
@@ -119,13 +119,13 @@ public class BrandingOptionsDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED)
   public Boolean getSplashscreenEnabled() {
     return splashscreenEnabled;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED)
   public void setSplashscreenEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean splashscreenEnabled) {
     this.splashscreenEnabled = splashscreenEnabled;

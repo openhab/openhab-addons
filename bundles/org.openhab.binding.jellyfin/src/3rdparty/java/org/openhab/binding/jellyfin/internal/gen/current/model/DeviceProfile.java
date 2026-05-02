@@ -125,13 +125,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -150,13 +150,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -175,13 +175,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
   public Integer getMaxStreamingBitrate() {
     return maxStreamingBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
   public void setMaxStreamingBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer maxStreamingBitrate) {
     this.maxStreamingBitrate = maxStreamingBitrate;
@@ -200,13 +200,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE)
   public Integer getMaxStaticBitrate() {
     return maxStaticBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE)
   public void setMaxStaticBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer maxStaticBitrate) {
     this.maxStaticBitrate = maxStaticBitrate;
@@ -225,13 +225,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
   public Integer getMusicStreamingTranscodingBitrate() {
     return musicStreamingTranscodingBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
   public void setMusicStreamingTranscodingBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer musicStreamingTranscodingBitrate) {
     this.musicStreamingTranscodingBitrate = musicStreamingTranscodingBitrate;
@@ -250,13 +250,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
   public Integer getMaxStaticMusicBitrate() {
     return maxStaticMusicBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
   public void setMaxStaticMusicBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer maxStaticMusicBitrate) {
     this.maxStaticMusicBitrate = maxStaticMusicBitrate;
@@ -283,13 +283,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES)
   public List<DirectPlayProfile> getDirectPlayProfiles() {
     return directPlayProfiles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES)
   public void setDirectPlayProfiles(@org.eclipse.jdt.annotation.Nullable
  List<DirectPlayProfile> directPlayProfiles) {
     this.directPlayProfiles = directPlayProfiles;
@@ -316,13 +316,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES)
   public List<TranscodingProfile> getTranscodingProfiles() {
     return transcodingProfiles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES)
   public void setTranscodingProfiles(@org.eclipse.jdt.annotation.Nullable
  List<TranscodingProfile> transcodingProfiles) {
     this.transcodingProfiles = transcodingProfiles;
@@ -349,13 +349,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES)
   public List<ContainerProfile> getContainerProfiles() {
     return containerProfiles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES)
   public void setContainerProfiles(@org.eclipse.jdt.annotation.Nullable
  List<ContainerProfile> containerProfiles) {
     this.containerProfiles = containerProfiles;
@@ -382,13 +382,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES)
   public List<CodecProfile> getCodecProfiles() {
     return codecProfiles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES)
   public void setCodecProfiles(@org.eclipse.jdt.annotation.Nullable
  List<CodecProfile> codecProfiles) {
     this.codecProfiles = codecProfiles;
@@ -415,13 +415,13 @@ public class DeviceProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES)
   public List<SubtitleProfile> getSubtitleProfiles() {
     return subtitleProfiles;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES)
   public void setSubtitleProfiles(@org.eclipse.jdt.annotation.Nullable
  List<SubtitleProfile> subtitleProfiles) {
     this.subtitleProfiles = subtitleProfiles;

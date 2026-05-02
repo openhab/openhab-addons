@@ -101,13 +101,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -126,13 +126,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -151,13 +151,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME)
   public String getConfigurationFileName() {
     return configurationFileName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME)
   public void setConfigurationFileName(@org.eclipse.jdt.annotation.Nullable
  String configurationFileName) {
     this.configurationFileName = configurationFileName;
@@ -176,13 +176,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
   public String getDescription() {
     return description;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
   public void setDescription(@org.eclipse.jdt.annotation.Nullable
  String description) {
     this.description = description;
@@ -201,13 +201,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -226,13 +226,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL)
   public Boolean getCanUninstall() {
     return canUninstall;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL)
   public void setCanUninstall(@org.eclipse.jdt.annotation.Nullable
  Boolean canUninstall) {
     this.canUninstall = canUninstall;
@@ -251,13 +251,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE)
   public Boolean getHasImage() {
     return hasImage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE)
   public void setHasImage(@org.eclipse.jdt.annotation.Nullable
  Boolean hasImage) {
     this.hasImage = hasImage;
@@ -276,13 +276,13 @@ public class PluginInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public PluginStatus getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  PluginStatus status) {
     this.status = status;

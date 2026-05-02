@@ -70,13 +70,13 @@ public class ImageOption {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public ImageType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  ImageType type) {
     this.type = type;
@@ -95,13 +95,13 @@ public class ImageOption {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIMIT)
   public Integer getLimit() {
     return limit;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIMIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIMIT)
   public void setLimit(@org.eclipse.jdt.annotation.Nullable
  Integer limit) {
     this.limit = limit;
@@ -120,13 +120,13 @@ public class ImageOption {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH)
   public Integer getMinWidth() {
     return minWidth;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH)
   public void setMinWidth(@org.eclipse.jdt.annotation.Nullable
  Integer minWidth) {
     this.minWidth = minWidth;

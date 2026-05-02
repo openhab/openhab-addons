@@ -63,13 +63,13 @@ public class PathSubstitution {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FROM)
   public String getFrom() {
     return from;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FROM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FROM)
   public void setFrom(@org.eclipse.jdt.annotation.Nullable
  String from) {
     this.from = from;
@@ -88,13 +88,13 @@ public class PathSubstitution {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TO)
   public String getTo() {
     return to;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TO)
   public void setTo(@org.eclipse.jdt.annotation.Nullable
  String to) {
     this.to = to;

@@ -80,13 +80,13 @@ public class PlaystateMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA)
   public PlaystateRequest getData() {
     return data;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA)
   public void setData(@org.eclipse.jdt.annotation.Nullable
  PlaystateRequest data) {
     this.data = data;
@@ -105,13 +105,13 @@ public class PlaystateMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID)
   public UUID getMessageId() {
     return messageId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID)
   public void setMessageId(@org.eclipse.jdt.annotation.Nullable
  UUID messageId) {
     this.messageId = messageId;
@@ -124,7 +124,7 @@ public class PlaystateMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
   public SessionMessageType getMessageType() {
     return messageType;
   }

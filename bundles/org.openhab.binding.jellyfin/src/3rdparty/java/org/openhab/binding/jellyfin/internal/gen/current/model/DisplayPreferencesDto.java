@@ -140,13 +140,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -165,13 +165,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE)
   public String getViewType() {
     return viewType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE)
   public void setViewType(@org.eclipse.jdt.annotation.Nullable
  String viewType) {
     this.viewType = viewType;
@@ -190,13 +190,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_BY)
   public String getSortBy() {
     return sortBy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_BY)
   public void setSortBy(@org.eclipse.jdt.annotation.Nullable
  String sortBy) {
     this.sortBy = sortBy;
@@ -215,13 +215,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_BY)
   public String getIndexBy() {
     return indexBy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_BY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_BY)
   public void setIndexBy(@org.eclipse.jdt.annotation.Nullable
  String indexBy) {
     this.indexBy = indexBy;
@@ -240,13 +240,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING)
   public Boolean getRememberIndexing() {
     return rememberIndexing;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING)
   public void setRememberIndexing(@org.eclipse.jdt.annotation.Nullable
  Boolean rememberIndexing) {
     this.rememberIndexing = rememberIndexing;
@@ -265,13 +265,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
   public Integer getPrimaryImageHeight() {
     return primaryImageHeight;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
   public void setPrimaryImageHeight(@org.eclipse.jdt.annotation.Nullable
  Integer primaryImageHeight) {
     this.primaryImageHeight = primaryImageHeight;
@@ -290,13 +290,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
   public Integer getPrimaryImageWidth() {
     return primaryImageWidth;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
   public void setPrimaryImageWidth(@org.eclipse.jdt.annotation.Nullable
  Integer primaryImageWidth) {
     this.primaryImageWidth = primaryImageWidth;
@@ -323,14 +323,14 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getCustomPrefs() {
     return customPrefs;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setCustomPrefs(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> customPrefs) {
@@ -350,13 +350,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION)
   public ScrollDirection getScrollDirection() {
     return scrollDirection;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION)
   public void setScrollDirection(@org.eclipse.jdt.annotation.Nullable
  ScrollDirection scrollDirection) {
     this.scrollDirection = scrollDirection;
@@ -375,13 +375,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP)
   public Boolean getShowBackdrop() {
     return showBackdrop;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP)
   public void setShowBackdrop(@org.eclipse.jdt.annotation.Nullable
  Boolean showBackdrop) {
     this.showBackdrop = showBackdrop;
@@ -400,13 +400,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING)
   public Boolean getRememberSorting() {
     return rememberSorting;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING)
   public void setRememberSorting(@org.eclipse.jdt.annotation.Nullable
  Boolean rememberSorting) {
     this.rememberSorting = rememberSorting;
@@ -425,13 +425,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
   public SortOrder getSortOrder() {
     return sortOrder;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
   public void setSortOrder(@org.eclipse.jdt.annotation.Nullable
  SortOrder sortOrder) {
     this.sortOrder = sortOrder;
@@ -450,13 +450,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR)
   public Boolean getShowSidebar() {
     return showSidebar;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR)
   public void setShowSidebar(@org.eclipse.jdt.annotation.Nullable
  Boolean showSidebar) {
     this.showSidebar = showSidebar;
@@ -475,13 +475,13 @@ public class DisplayPreferencesDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLIENT)
   public String getClient() {
     return client;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CLIENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CLIENT)
   public void setClient(@org.eclipse.jdt.annotation.Nullable
  String client) {
     this.client = client;

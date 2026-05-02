@@ -70,13 +70,13 @@ public class AllThemeMediaResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT)
   public ThemeMediaResult getThemeVideosResult() {
     return themeVideosResult;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT)
   public void setThemeVideosResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult themeVideosResult) {
     this.themeVideosResult = themeVideosResult;
@@ -95,13 +95,13 @@ public class AllThemeMediaResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT)
   public ThemeMediaResult getThemeSongsResult() {
     return themeSongsResult;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT)
   public void setThemeSongsResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult themeSongsResult) {
     this.themeSongsResult = themeSongsResult;
@@ -120,13 +120,13 @@ public class AllThemeMediaResult {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
   public ThemeMediaResult getSoundtrackSongsResult() {
     return soundtrackSongsResult;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
   public void setSoundtrackSongsResult(@org.eclipse.jdt.annotation.Nullable
  ThemeMediaResult soundtrackSongsResult) {
     this.soundtrackSongsResult = soundtrackSongsResult;

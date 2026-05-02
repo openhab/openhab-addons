@@ -149,13 +149,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -174,13 +174,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
   public Integer getMaxStreamingBitrate() {
     return maxStreamingBitrate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
   public void setMaxStreamingBitrate(@org.eclipse.jdt.annotation.Nullable
  Integer maxStreamingBitrate) {
     this.maxStreamingBitrate = maxStreamingBitrate;
@@ -199,13 +199,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS)
   public Long getStartTimeTicks() {
     return startTimeTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS)
   public void setStartTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long startTimeTicks) {
     this.startTimeTicks = startTimeTicks;
@@ -224,13 +224,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX)
   public Integer getAudioStreamIndex() {
     return audioStreamIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX)
   public void setAudioStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer audioStreamIndex) {
     this.audioStreamIndex = audioStreamIndex;
@@ -249,13 +249,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
   public Integer getSubtitleStreamIndex() {
     return subtitleStreamIndex;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
   public void setSubtitleStreamIndex(@org.eclipse.jdt.annotation.Nullable
  Integer subtitleStreamIndex) {
     this.subtitleStreamIndex = subtitleStreamIndex;
@@ -274,13 +274,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS)
   public Integer getMaxAudioChannels() {
     return maxAudioChannels;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS)
   public void setMaxAudioChannels(@org.eclipse.jdt.annotation.Nullable
  Integer maxAudioChannels) {
     this.maxAudioChannels = maxAudioChannels;
@@ -299,13 +299,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID)
   public String getMediaSourceId() {
     return mediaSourceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID)
   public void setMediaSourceId(@org.eclipse.jdt.annotation.Nullable
  String mediaSourceId) {
     this.mediaSourceId = mediaSourceId;
@@ -324,13 +324,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID)
   public String getLiveStreamId() {
     return liveStreamId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID)
   public void setLiveStreamId(@org.eclipse.jdt.annotation.Nullable
  String liveStreamId) {
     this.liveStreamId = liveStreamId;
@@ -349,13 +349,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
   public DeviceProfile getDeviceProfile() {
     return deviceProfile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
   public void setDeviceProfile(@org.eclipse.jdt.annotation.Nullable
  DeviceProfile deviceProfile) {
     this.deviceProfile = deviceProfile;
@@ -374,13 +374,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY)
   public Boolean getEnableDirectPlay() {
     return enableDirectPlay;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY)
   public void setEnableDirectPlay(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDirectPlay) {
     this.enableDirectPlay = enableDirectPlay;
@@ -399,13 +399,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM)
   public Boolean getEnableDirectStream() {
     return enableDirectStream;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM)
   public void setEnableDirectStream(@org.eclipse.jdt.annotation.Nullable
  Boolean enableDirectStream) {
     this.enableDirectStream = enableDirectStream;
@@ -424,13 +424,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING)
   public Boolean getEnableTranscoding() {
     return enableTranscoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_TRANSCODING)
   public void setEnableTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean enableTranscoding) {
     this.enableTranscoding = enableTranscoding;
@@ -449,13 +449,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
   public Boolean getAllowVideoStreamCopy() {
     return allowVideoStreamCopy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_VIDEO_STREAM_COPY)
   public void setAllowVideoStreamCopy(@org.eclipse.jdt.annotation.Nullable
  Boolean allowVideoStreamCopy) {
     this.allowVideoStreamCopy = allowVideoStreamCopy;
@@ -474,13 +474,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
   public Boolean getAllowAudioStreamCopy() {
     return allowAudioStreamCopy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALLOW_AUDIO_STREAM_COPY)
   public void setAllowAudioStreamCopy(@org.eclipse.jdt.annotation.Nullable
  Boolean allowAudioStreamCopy) {
     this.allowAudioStreamCopy = allowAudioStreamCopy;
@@ -499,13 +499,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
   public Boolean getAutoOpenLiveStream() {
     return autoOpenLiveStream;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUTO_OPEN_LIVE_STREAM)
   public void setAutoOpenLiveStream(@org.eclipse.jdt.annotation.Nullable
  Boolean autoOpenLiveStream) {
     this.autoOpenLiveStream = autoOpenLiveStream;
@@ -524,13 +524,13 @@ public class PlaybackInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
   public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
     return alwaysBurnInSubtitleWhenTranscoding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
   public void setAlwaysBurnInSubtitleWhenTranscoding(@org.eclipse.jdt.annotation.Nullable
  Boolean alwaysBurnInSubtitleWhenTranscoding) {
     this.alwaysBurnInSubtitleWhenTranscoding = alwaysBurnInSubtitleWhenTranscoding;

@@ -63,13 +63,13 @@ public class LibraryOptionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -88,13 +88,13 @@ public class LibraryOptionInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED)
   public Boolean getDefaultEnabled() {
     return defaultEnabled;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED)
   public void setDefaultEnabled(@org.eclipse.jdt.annotation.Nullable
  Boolean defaultEnabled) {
     this.defaultEnabled = defaultEnabled;

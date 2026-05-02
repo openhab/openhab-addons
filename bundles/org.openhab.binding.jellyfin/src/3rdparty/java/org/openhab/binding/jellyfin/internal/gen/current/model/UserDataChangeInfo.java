@@ -67,13 +67,13 @@ public class UserDataChangeInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -100,13 +100,13 @@ public class UserDataChangeInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST)
   public List<UserItemDataDto> getUserDataList() {
     return userDataList;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST)
   public void setUserDataList(@org.eclipse.jdt.annotation.Nullable
  List<UserItemDataDto> userDataList) {
     this.userDataList = userDataList;

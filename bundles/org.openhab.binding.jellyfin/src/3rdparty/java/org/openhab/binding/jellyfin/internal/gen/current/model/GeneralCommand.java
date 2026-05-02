@@ -74,13 +74,13 @@ public class GeneralCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public GeneralCommandType getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  GeneralCommandType name) {
     this.name = name;
@@ -99,13 +99,13 @@ public class GeneralCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
   public UUID getControllingUserId() {
     return controllingUserId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
   public void setControllingUserId(@org.eclipse.jdt.annotation.Nullable
  UUID controllingUserId) {
     this.controllingUserId = controllingUserId;
@@ -132,14 +132,14 @@ public class GeneralCommand {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARGUMENTS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getArguments() {
     return arguments;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARGUMENTS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARGUMENTS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setArguments(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> arguments) {

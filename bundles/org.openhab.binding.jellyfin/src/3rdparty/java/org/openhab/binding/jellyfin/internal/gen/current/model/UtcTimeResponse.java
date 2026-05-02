@@ -64,13 +64,13 @@ public class UtcTimeResponse {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME)
   public OffsetDateTime getRequestReceptionTime() {
     return requestReceptionTime;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME)
   public void setRequestReceptionTime(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime requestReceptionTime) {
     this.requestReceptionTime = requestReceptionTime;
@@ -89,13 +89,13 @@ public class UtcTimeResponse {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
   public OffsetDateTime getResponseTransmissionTime() {
     return responseTransmissionTime;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
   public void setResponseTransmissionTime(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime responseTransmissionTime) {
     this.responseTransmissionTime = responseTransmissionTime;

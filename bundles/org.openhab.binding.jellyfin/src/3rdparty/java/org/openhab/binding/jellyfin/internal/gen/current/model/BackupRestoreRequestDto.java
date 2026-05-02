@@ -57,13 +57,13 @@ public class BackupRestoreRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME)
   public String getArchiveFileName() {
     return archiveFileName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME)
   public void setArchiveFileName(@org.eclipse.jdt.annotation.Nullable
  String archiveFileName) {
     this.archiveFileName = archiveFileName;

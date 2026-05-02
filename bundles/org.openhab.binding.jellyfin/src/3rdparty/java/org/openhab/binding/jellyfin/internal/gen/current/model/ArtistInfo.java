@@ -130,13 +130,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -155,13 +155,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE)
   public String getOriginalTitle() {
     return originalTitle;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE)
   public void setOriginalTitle(@org.eclipse.jdt.annotation.Nullable
  String originalTitle) {
     this.originalTitle = originalTitle;
@@ -180,13 +180,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -205,13 +205,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE)
   public String getMetadataLanguage() {
     return metadataLanguage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE)
   public void setMetadataLanguage(@org.eclipse.jdt.annotation.Nullable
  String metadataLanguage) {
     this.metadataLanguage = metadataLanguage;
@@ -230,13 +230,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
   public String getMetadataCountryCode() {
     return metadataCountryCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
   public void setMetadataCountryCode(@org.eclipse.jdt.annotation.Nullable
  String metadataCountryCode) {
     this.metadataCountryCode = metadataCountryCode;
@@ -263,14 +263,14 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProviderIds() {
     return providerIds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
   public void setProviderIds(@org.eclipse.jdt.annotation.Nullable
  Map<String, String> providerIds) {
@@ -290,13 +290,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_YEAR)
   public Integer getYear() {
     return year;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_YEAR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_YEAR)
   public void setYear(@org.eclipse.jdt.annotation.Nullable
  Integer year) {
     this.year = year;
@@ -315,13 +315,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public Integer getIndexNumber() {
     return indexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
   public void setIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer indexNumber) {
     this.indexNumber = indexNumber;
@@ -340,13 +340,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public Integer getParentIndexNumber() {
     return parentIndexNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
   public void setParentIndexNumber(@org.eclipse.jdt.annotation.Nullable
  Integer parentIndexNumber) {
     this.parentIndexNumber = parentIndexNumber;
@@ -365,13 +365,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public OffsetDateTime getPremiereDate() {
     return premiereDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
   public void setPremiereDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime premiereDate) {
     this.premiereDate = premiereDate;
@@ -390,13 +390,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED)
   public Boolean getIsAutomated() {
     return isAutomated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED)
   public void setIsAutomated(@org.eclipse.jdt.annotation.Nullable
  Boolean isAutomated) {
     this.isAutomated = isAutomated;
@@ -423,13 +423,13 @@ public class ArtistInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_INFOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_INFOS)
   public List<SongInfo> getSongInfos() {
     return songInfos;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SONG_INFOS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SONG_INFOS)
   public void setSongInfos(@org.eclipse.jdt.annotation.Nullable
  List<SongInfo> songInfos) {
     this.songInfos = songInfos;

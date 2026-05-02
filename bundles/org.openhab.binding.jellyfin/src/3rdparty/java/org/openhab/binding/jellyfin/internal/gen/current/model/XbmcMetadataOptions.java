@@ -81,13 +81,13 @@ public class XbmcMetadataOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public String getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  String userId) {
     this.userId = userId;
@@ -106,13 +106,13 @@ public class XbmcMetadataOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT)
   public String getReleaseDateFormat() {
     return releaseDateFormat;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT)
   public void setReleaseDateFormat(@org.eclipse.jdt.annotation.Nullable
  String releaseDateFormat) {
     this.releaseDateFormat = releaseDateFormat;
@@ -131,13 +131,13 @@ public class XbmcMetadataOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
   public Boolean getSaveImagePathsInNfo() {
     return saveImagePathsInNfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
   public void setSaveImagePathsInNfo(@org.eclipse.jdt.annotation.Nullable
  Boolean saveImagePathsInNfo) {
     this.saveImagePathsInNfo = saveImagePathsInNfo;
@@ -156,13 +156,13 @@ public class XbmcMetadataOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
   public Boolean getEnablePathSubstitution() {
     return enablePathSubstitution;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
   public void setEnablePathSubstitution(@org.eclipse.jdt.annotation.Nullable
  Boolean enablePathSubstitution) {
     this.enablePathSubstitution = enablePathSubstitution;
@@ -181,13 +181,13 @@ public class XbmcMetadataOptions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
   public Boolean getEnableExtraThumbsDuplication() {
     return enableExtraThumbsDuplication;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
   public void setEnableExtraThumbsDuplication(@org.eclipse.jdt.annotation.Nullable
  Boolean enableExtraThumbsDuplication) {
     this.enableExtraThumbsDuplication = enableExtraThumbsDuplication;

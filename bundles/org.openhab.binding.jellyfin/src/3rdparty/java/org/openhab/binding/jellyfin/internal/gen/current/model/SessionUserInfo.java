@@ -64,13 +64,13 @@ public class SessionUserInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -89,13 +89,13 @@ public class SessionUserInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_NAME)
   public String getUserName() {
     return userName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_NAME)
   public void setUserName(@org.eclipse.jdt.annotation.Nullable
  String userName) {
     this.userName = userName;

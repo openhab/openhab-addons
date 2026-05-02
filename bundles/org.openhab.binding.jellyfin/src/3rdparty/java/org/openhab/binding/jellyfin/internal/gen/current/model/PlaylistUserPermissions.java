@@ -64,13 +64,13 @@ public class PlaylistUserPermissions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public UUID getUserId() {
     return userId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USER_ID)
   public void setUserId(@org.eclipse.jdt.annotation.Nullable
  UUID userId) {
     this.userId = userId;
@@ -89,13 +89,13 @@ public class PlaylistUserPermissions {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT)
   public Boolean getCanEdit() {
     return canEdit;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_EDIT)
   public void setCanEdit(@org.eclipse.jdt.annotation.Nullable
  Boolean canEdit) {
     this.canEdit = canEdit;

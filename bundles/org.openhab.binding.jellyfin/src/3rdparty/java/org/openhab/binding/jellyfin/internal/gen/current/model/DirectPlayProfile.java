@@ -76,13 +76,13 @@ public class DirectPlayProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public String getContainer() {
     return container;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTAINER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTAINER)
   public void setContainer(@org.eclipse.jdt.annotation.Nullable
  String container) {
     this.container = container;
@@ -101,13 +101,13 @@ public class DirectPlayProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC)
   public String getAudioCodec() {
     return audioCodec;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC)
   public void setAudioCodec(@org.eclipse.jdt.annotation.Nullable
  String audioCodec) {
     this.audioCodec = audioCodec;
@@ -126,13 +126,13 @@ public class DirectPlayProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC)
   public String getVideoCodec() {
     return videoCodec;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC)
   public void setVideoCodec(@org.eclipse.jdt.annotation.Nullable
  String videoCodec) {
     this.videoCodec = videoCodec;
@@ -151,13 +151,13 @@ public class DirectPlayProfile {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public DlnaProfileType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  DlnaProfileType type) {
     this.type = type;

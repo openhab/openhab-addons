@@ -102,13 +102,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -127,13 +127,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL)
   public String getHomePageUrl() {
     return homePageUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL)
   public void setHomePageUrl(@org.eclipse.jdt.annotation.Nullable
  String homePageUrl) {
     this.homePageUrl = homePageUrl;
@@ -152,13 +152,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public LiveTvServiceStatus getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  LiveTvServiceStatus status) {
     this.status = status;
@@ -177,13 +177,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE)
   public String getStatusMessage() {
     return statusMessage;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE)
   public void setStatusMessage(@org.eclipse.jdt.annotation.Nullable
  String statusMessage) {
     this.statusMessage = statusMessage;
@@ -202,13 +202,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -227,13 +227,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
   public Boolean getHasUpdateAvailable() {
     return hasUpdateAvailable;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
   public void setHasUpdateAvailable(@org.eclipse.jdt.annotation.Nullable
  Boolean hasUpdateAvailable) {
     this.hasUpdateAvailable = hasUpdateAvailable;
@@ -252,13 +252,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE)
   public Boolean getIsVisible() {
     return isVisible;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE)
   public void setIsVisible(@org.eclipse.jdt.annotation.Nullable
  Boolean isVisible) {
     this.isVisible = isVisible;
@@ -285,13 +285,13 @@ public class LiveTvServiceInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TUNERS)
   public List<String> getTuners() {
     return tuners;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TUNERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TUNERS)
   public void setTuners(@org.eclipse.jdt.annotation.Nullable
  List<String> tuners) {
     this.tuners = tuners;

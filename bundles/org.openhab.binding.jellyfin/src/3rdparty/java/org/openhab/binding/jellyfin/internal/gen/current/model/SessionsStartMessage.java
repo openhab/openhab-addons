@@ -72,13 +72,13 @@ public class SessionsStartMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA)
   public String getData() {
     return data;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATA, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA)
   public void setData(@org.eclipse.jdt.annotation.Nullable
  String data) {
     this.data = data;
@@ -91,7 +91,7 @@ public class SessionsStartMessage {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
   public SessionMessageType getMessageType() {
     return messageType;
   }

@@ -91,13 +91,13 @@ public class CultureDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -116,13 +116,13 @@ public class CultureDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME)
   public String getDisplayName() {
     return displayName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME)
   public void setDisplayName(@org.eclipse.jdt.annotation.Nullable
  String displayName) {
     this.displayName = displayName;
@@ -141,13 +141,13 @@ public class CultureDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
   public String getTwoLetterISOLanguageName() {
     return twoLetterISOLanguageName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
   public void setTwoLetterISOLanguageName(@org.eclipse.jdt.annotation.Nullable
  String twoLetterISOLanguageName) {
     this.twoLetterISOLanguageName = twoLetterISOLanguageName;
@@ -160,7 +160,7 @@ public class CultureDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
   public String getThreeLetterISOLanguageName() {
     return threeLetterISOLanguageName;
   }
@@ -188,13 +188,13 @@ public class CultureDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
   public List<String> getThreeLetterISOLanguageNames() {
     return threeLetterISOLanguageNames;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
   public void setThreeLetterISOLanguageNames(@org.eclipse.jdt.annotation.Nullable
  List<String> threeLetterISOLanguageNames) {
     this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;

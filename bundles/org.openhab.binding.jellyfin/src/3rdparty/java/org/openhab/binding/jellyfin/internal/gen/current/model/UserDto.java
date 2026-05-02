@@ -139,13 +139,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -164,13 +164,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public String getServerId() {
     return serverId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;
@@ -189,13 +189,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public String getServerName() {
     return serverName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
   public void setServerName(@org.eclipse.jdt.annotation.Nullable
  String serverName) {
     this.serverName = serverName;
@@ -214,13 +214,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  UUID id) {
     this.id = id;
@@ -239,13 +239,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
   public String getPrimaryImageTag() {
     return primaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
   public void setPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String primaryImageTag) {
     this.primaryImageTag = primaryImageTag;
@@ -264,13 +264,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD)
   public Boolean getHasPassword() {
     return hasPassword;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD)
   public void setHasPassword(@org.eclipse.jdt.annotation.Nullable
  Boolean hasPassword) {
     this.hasPassword = hasPassword;
@@ -289,13 +289,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
   public Boolean getHasConfiguredPassword() {
     return hasConfiguredPassword;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
   public void setHasConfiguredPassword(@org.eclipse.jdt.annotation.Nullable
  Boolean hasConfiguredPassword) {
     this.hasConfiguredPassword = hasConfiguredPassword;
@@ -316,13 +316,13 @@ public class UserDto {
   @Deprecated
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
   public Boolean getHasConfiguredEasyPassword() {
     return hasConfiguredEasyPassword;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
   public void setHasConfiguredEasyPassword(@org.eclipse.jdt.annotation.Nullable
  Boolean hasConfiguredEasyPassword) {
     this.hasConfiguredEasyPassword = hasConfiguredEasyPassword;
@@ -341,13 +341,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN)
   public Boolean getEnableAutoLogin() {
     return enableAutoLogin;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN)
   public void setEnableAutoLogin(@org.eclipse.jdt.annotation.Nullable
  Boolean enableAutoLogin) {
     this.enableAutoLogin = enableAutoLogin;
@@ -366,13 +366,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE)
   public OffsetDateTime getLastLoginDate() {
     return lastLoginDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE)
   public void setLastLoginDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastLoginDate) {
     this.lastLoginDate = lastLoginDate;
@@ -391,13 +391,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
   public OffsetDateTime getLastActivityDate() {
     return lastActivityDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
   public void setLastActivityDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime lastActivityDate) {
     this.lastActivityDate = lastActivityDate;
@@ -416,13 +416,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION)
   public UserConfiguration getConfiguration() {
     return _configuration;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONFIGURATION)
   public void setConfiguration(@org.eclipse.jdt.annotation.Nullable
  UserConfiguration _configuration) {
     this._configuration = _configuration;
@@ -441,13 +441,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POLICY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POLICY)
   public UserPolicy getPolicy() {
     return policy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POLICY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POLICY)
   public void setPolicy(@org.eclipse.jdt.annotation.Nullable
  UserPolicy policy) {
     this.policy = policy;
@@ -466,13 +466,13 @@ public class UserDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
   public Double getPrimaryImageAspectRatio() {
     return primaryImageAspectRatio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
   public void setPrimaryImageAspectRatio(@org.eclipse.jdt.annotation.Nullable
  Double primaryImageAspectRatio) {
     this.primaryImageAspectRatio = primaryImageAspectRatio;

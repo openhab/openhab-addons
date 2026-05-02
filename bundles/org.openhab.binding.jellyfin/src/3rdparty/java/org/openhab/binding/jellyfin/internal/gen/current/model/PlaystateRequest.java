@@ -70,13 +70,13 @@ public class PlaystateRequest {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMAND)
   public PlaystateCommand getCommand() {
     return command;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMAND, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMAND)
   public void setCommand(@org.eclipse.jdt.annotation.Nullable
  PlaystateCommand command) {
     this.command = command;
@@ -95,13 +95,13 @@ public class PlaystateRequest {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS)
   public Long getSeekPositionTicks() {
     return seekPositionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS)
   public void setSeekPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long seekPositionTicks) {
     this.seekPositionTicks = seekPositionTicks;
@@ -120,13 +120,13 @@ public class PlaystateRequest {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
   public String getControllingUserId() {
     return controllingUserId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
   public void setControllingUserId(@org.eclipse.jdt.annotation.Nullable
  String controllingUserId) {
     this.controllingUserId = controllingUserId;

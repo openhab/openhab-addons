@@ -226,13 +226,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;
@@ -251,13 +251,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  String type) {
     this.type = type;
@@ -276,13 +276,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public String getServerId() {
     return serverId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
   public void setServerId(@org.eclipse.jdt.annotation.Nullable
  String serverId) {
     this.serverId = serverId;
@@ -301,13 +301,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID)
   public String getExternalId() {
     return externalId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID)
   public void setExternalId(@org.eclipse.jdt.annotation.Nullable
  String externalId) {
     this.externalId = externalId;
@@ -326,13 +326,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID)
   public UUID getChannelId() {
     return channelId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID)
   public void setChannelId(@org.eclipse.jdt.annotation.Nullable
  UUID channelId) {
     this.channelId = channelId;
@@ -351,13 +351,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
   public String getExternalChannelId() {
     return externalChannelId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
   public void setExternalChannelId(@org.eclipse.jdt.annotation.Nullable
  String externalChannelId) {
     this.externalChannelId = externalChannelId;
@@ -376,13 +376,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME)
   public String getChannelName() {
     return channelName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME)
   public void setChannelName(@org.eclipse.jdt.annotation.Nullable
  String channelName) {
     this.channelName = channelName;
@@ -401,13 +401,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
   public String getChannelPrimaryImageTag() {
     return channelPrimaryImageTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
   public void setChannelPrimaryImageTag(@org.eclipse.jdt.annotation.Nullable
  String channelPrimaryImageTag) {
     this.channelPrimaryImageTag = channelPrimaryImageTag;
@@ -426,13 +426,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public String getProgramId() {
     return programId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
   public void setProgramId(@org.eclipse.jdt.annotation.Nullable
  String programId) {
     this.programId = programId;
@@ -451,13 +451,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
   public String getExternalProgramId() {
     return externalProgramId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
   public void setExternalProgramId(@org.eclipse.jdt.annotation.Nullable
  String externalProgramId) {
     this.externalProgramId = externalProgramId;
@@ -476,13 +476,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -501,13 +501,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public String getOverview() {
     return overview;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -526,13 +526,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public OffsetDateTime getStartDate() {
     return startDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_START_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_START_DATE)
   public void setStartDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime startDate) {
     this.startDate = startDate;
@@ -551,13 +551,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public OffsetDateTime getEndDate() {
     return endDate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_END_DATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_END_DATE)
   public void setEndDate(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime endDate) {
     this.endDate = endDate;
@@ -576,13 +576,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME)
   public String getServiceName() {
     return serviceName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME)
   public void setServiceName(@org.eclipse.jdt.annotation.Nullable
  String serviceName) {
     this.serviceName = serviceName;
@@ -601,13 +601,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIORITY)
   public Integer getPriority() {
     return priority;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIORITY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRIORITY)
   public void setPriority(@org.eclipse.jdt.annotation.Nullable
  Integer priority) {
     this.priority = priority;
@@ -626,13 +626,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS)
   public Integer getPrePaddingSeconds() {
     return prePaddingSeconds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS)
   public void setPrePaddingSeconds(@org.eclipse.jdt.annotation.Nullable
  Integer prePaddingSeconds) {
     this.prePaddingSeconds = prePaddingSeconds;
@@ -651,13 +651,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS)
   public Integer getPostPaddingSeconds() {
     return postPaddingSeconds;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS)
   public void setPostPaddingSeconds(@org.eclipse.jdt.annotation.Nullable
  Integer postPaddingSeconds) {
     this.postPaddingSeconds = postPaddingSeconds;
@@ -676,13 +676,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
   public Boolean getIsPrePaddingRequired() {
     return isPrePaddingRequired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
   public void setIsPrePaddingRequired(@org.eclipse.jdt.annotation.Nullable
  Boolean isPrePaddingRequired) {
     this.isPrePaddingRequired = isPrePaddingRequired;
@@ -701,13 +701,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
   public String getParentBackdropItemId() {
     return parentBackdropItemId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
   public void setParentBackdropItemId(@org.eclipse.jdt.annotation.Nullable
  String parentBackdropItemId) {
     this.parentBackdropItemId = parentBackdropItemId;
@@ -734,13 +734,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
   public List<String> getParentBackdropImageTags() {
     return parentBackdropImageTags;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
   public void setParentBackdropImageTags(@org.eclipse.jdt.annotation.Nullable
  List<String> parentBackdropImageTags) {
     this.parentBackdropImageTags = parentBackdropImageTags;
@@ -759,13 +759,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
   public Boolean getIsPostPaddingRequired() {
     return isPostPaddingRequired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
   public void setIsPostPaddingRequired(@org.eclipse.jdt.annotation.Nullable
  Boolean isPostPaddingRequired) {
     this.isPostPaddingRequired = isPostPaddingRequired;
@@ -784,13 +784,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL)
   public KeepUntil getKeepUntil() {
     return keepUntil;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL)
   public void setKeepUntil(@org.eclipse.jdt.annotation.Nullable
  KeepUntil keepUntil) {
     this.keepUntil = keepUntil;
@@ -809,13 +809,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public RecordingStatus getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATUS)
   public void setStatus(@org.eclipse.jdt.annotation.Nullable
  RecordingStatus status) {
     this.status = status;
@@ -834,13 +834,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public String getSeriesTimerId() {
     return seriesTimerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
   public void setSeriesTimerId(@org.eclipse.jdt.annotation.Nullable
  String seriesTimerId) {
     this.seriesTimerId = seriesTimerId;
@@ -859,13 +859,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
   public String getExternalSeriesTimerId() {
     return externalSeriesTimerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
   public void setExternalSeriesTimerId(@org.eclipse.jdt.annotation.Nullable
  String externalSeriesTimerId) {
     this.externalSeriesTimerId = externalSeriesTimerId;
@@ -884,13 +884,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS)
   public Long getRunTimeTicks() {
     return runTimeTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS)
   public void setRunTimeTicks(@org.eclipse.jdt.annotation.Nullable
  Long runTimeTicks) {
     this.runTimeTicks = runTimeTicks;
@@ -909,13 +909,13 @@ public class TimerInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO)
   public BaseItemDto getProgramInfo() {
     return programInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO)
   public void setProgramInfo(@org.eclipse.jdt.annotation.Nullable
  BaseItemDto programInfo) {
     this.programInfo = programInfo;

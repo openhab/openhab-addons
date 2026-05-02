@@ -77,13 +77,13 @@ public class ProfileCondition {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITION)
   public ProfileConditionType getCondition() {
     return condition;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONDITION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CONDITION)
   public void setCondition(@org.eclipse.jdt.annotation.Nullable
  ProfileConditionType condition) {
     this.condition = condition;
@@ -102,13 +102,13 @@ public class ProfileCondition {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROPERTY)
   public ProfileConditionValue getProperty() {
     return property;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROPERTY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROPERTY)
   public void setProperty(@org.eclipse.jdt.annotation.Nullable
  ProfileConditionValue property) {
     this.property = property;
@@ -127,13 +127,13 @@ public class ProfileCondition {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public String getValue() {
     return value;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VALUE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VALUE)
   public void setValue(@org.eclipse.jdt.annotation.Nullable
  String value) {
     this.value = value;
@@ -152,13 +152,13 @@ public class ProfileCondition {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED)
   public Boolean getIsRequired() {
     return isRequired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED)
   public void setIsRequired(@org.eclipse.jdt.annotation.Nullable
  Boolean isRequired) {
     this.isRequired = isRequired;

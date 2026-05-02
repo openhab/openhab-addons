@@ -83,13 +83,13 @@ public class BackupManifestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION)
   public String getServerVersion() {
     return serverVersion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION)
   public void setServerVersion(@org.eclipse.jdt.annotation.Nullable
  String serverVersion) {
     this.serverVersion = serverVersion;
@@ -108,13 +108,13 @@ public class BackupManifestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION)
   public String getBackupEngineVersion() {
     return backupEngineVersion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION)
   public void setBackupEngineVersion(@org.eclipse.jdt.annotation.Nullable
  String backupEngineVersion) {
     this.backupEngineVersion = backupEngineVersion;
@@ -133,13 +133,13 @@ public class BackupManifestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public OffsetDateTime getDateCreated() {
     return dateCreated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
   public void setDateCreated(@org.eclipse.jdt.annotation.Nullable
  OffsetDateTime dateCreated) {
     this.dateCreated = dateCreated;
@@ -158,13 +158,13 @@ public class BackupManifestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -183,13 +183,13 @@ public class BackupManifestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPTIONS)
   public BackupOptionsDto getOptions() {
     return options;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPTIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OPTIONS)
   public void setOptions(@org.eclipse.jdt.annotation.Nullable
  BackupOptionsDto options) {
     this.options = options;

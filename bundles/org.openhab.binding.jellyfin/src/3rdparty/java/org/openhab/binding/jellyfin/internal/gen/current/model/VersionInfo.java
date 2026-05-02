@@ -113,13 +113,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public void setVersion(@org.eclipse.jdt.annotation.Nullable
  String version) {
     this.version = version;
@@ -132,7 +132,7 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER)
   public String getVersionNumber() {
     return versionNumber;
   }
@@ -152,13 +152,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
   public String getChangelog() {
     return changelog;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANGELOG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
   public void setChangelog(@org.eclipse.jdt.annotation.Nullable
  String changelog) {
     this.changelog = changelog;
@@ -177,13 +177,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TARGET_ABI)
   public String getTargetAbi() {
     return targetAbi;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TARGET_ABI, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TARGET_ABI)
   public void setTargetAbi(@org.eclipse.jdt.annotation.Nullable
  String targetAbi) {
     this.targetAbi = targetAbi;
@@ -202,13 +202,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
   public String getSourceUrl() {
     return sourceUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
   public void setSourceUrl(@org.eclipse.jdt.annotation.Nullable
  String sourceUrl) {
     this.sourceUrl = sourceUrl;
@@ -227,13 +227,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
   public String getChecksum() {
     return checksum;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHECKSUM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
   public void setChecksum(@org.eclipse.jdt.annotation.Nullable
  String checksum) {
     this.checksum = checksum;
@@ -252,13 +252,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP)
   public String getTimestamp() {
     return timestamp;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP)
   public void setTimestamp(@org.eclipse.jdt.annotation.Nullable
  String timestamp) {
     this.timestamp = timestamp;
@@ -277,13 +277,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME)
   public String getRepositoryName() {
     return repositoryName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME)
   public void setRepositoryName(@org.eclipse.jdt.annotation.Nullable
  String repositoryName) {
     this.repositoryName = repositoryName;
@@ -302,13 +302,13 @@ public class VersionInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL)
   public String getRepositoryUrl() {
     return repositoryUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL)
   public void setRepositoryUrl(@org.eclipse.jdt.annotation.Nullable
  String repositoryUrl) {
     this.repositoryUrl = repositoryUrl;

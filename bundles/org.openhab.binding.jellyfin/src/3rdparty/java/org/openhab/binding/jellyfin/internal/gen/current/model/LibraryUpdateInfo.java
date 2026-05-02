@@ -111,13 +111,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO)
   public List<String> getFoldersAddedTo() {
     return foldersAddedTo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO)
   public void setFoldersAddedTo(@org.eclipse.jdt.annotation.Nullable
  List<String> foldersAddedTo) {
     this.foldersAddedTo = foldersAddedTo;
@@ -144,13 +144,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM)
   public List<String> getFoldersRemovedFrom() {
     return foldersRemovedFrom;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM)
   public void setFoldersRemovedFrom(@org.eclipse.jdt.annotation.Nullable
  List<String> foldersRemovedFrom) {
     this.foldersRemovedFrom = foldersRemovedFrom;
@@ -177,13 +177,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED)
   public List<String> getItemsAdded() {
     return itemsAdded;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED)
   public void setItemsAdded(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsAdded) {
     this.itemsAdded = itemsAdded;
@@ -210,13 +210,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED)
   public List<String> getItemsRemoved() {
     return itemsRemoved;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED)
   public void setItemsRemoved(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsRemoved) {
     this.itemsRemoved = itemsRemoved;
@@ -243,13 +243,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED)
   public List<String> getItemsUpdated() {
     return itemsUpdated;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED)
   public void setItemsUpdated(@org.eclipse.jdt.annotation.Nullable
  List<String> itemsUpdated) {
     this.itemsUpdated = itemsUpdated;
@@ -276,13 +276,13 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS)
   public List<String> getCollectionFolders() {
     return collectionFolders;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS)
   public void setCollectionFolders(@org.eclipse.jdt.annotation.Nullable
  List<String> collectionFolders) {
     this.collectionFolders = collectionFolders;
@@ -295,7 +295,7 @@ public class LibraryUpdateInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_EMPTY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_EMPTY)
   public Boolean getIsEmpty() {
     return isEmpty;
   }

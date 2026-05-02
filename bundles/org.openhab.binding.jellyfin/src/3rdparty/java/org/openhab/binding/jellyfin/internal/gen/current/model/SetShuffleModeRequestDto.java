@@ -58,13 +58,13 @@ public class SetShuffleModeRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public GroupShuffleMode getMode() {
     return mode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MODE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_MODE)
   public void setMode(@org.eclipse.jdt.annotation.Nullable
  GroupShuffleMode mode) {
     this.mode = mode;

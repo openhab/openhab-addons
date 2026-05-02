@@ -65,13 +65,13 @@ public class GroupStateUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATE)
   public GroupStateType getState() {
     return state;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_STATE)
   public void setState(@org.eclipse.jdt.annotation.Nullable
  GroupStateType state) {
     this.state = state;
@@ -90,13 +90,13 @@ public class GroupStateUpdate {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REASON)
   public PlaybackRequestType getReason() {
     return reason;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REASON, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REASON)
   public void setReason(@org.eclipse.jdt.annotation.Nullable
  PlaybackRequestType reason) {
     this.reason = reason;

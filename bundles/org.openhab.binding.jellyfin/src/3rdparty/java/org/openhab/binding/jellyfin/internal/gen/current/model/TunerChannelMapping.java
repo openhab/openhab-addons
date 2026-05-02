@@ -75,13 +75,13 @@ public class TunerChannelMapping {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -100,13 +100,13 @@ public class TunerChannelMapping {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
   public String getProviderChannelName() {
     return providerChannelName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_NAME)
   public void setProviderChannelName(@org.eclipse.jdt.annotation.Nullable
  String providerChannelName) {
     this.providerChannelName = providerChannelName;
@@ -125,13 +125,13 @@ public class TunerChannelMapping {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID)
   public String getProviderChannelId() {
     return providerChannelId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID)
   public void setProviderChannelId(@org.eclipse.jdt.annotation.Nullable
  String providerChannelId) {
     this.providerChannelId = providerChannelId;
@@ -150,13 +150,13 @@ public class TunerChannelMapping {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public void setId(@org.eclipse.jdt.annotation.Nullable
  String id) {
     this.id = id;

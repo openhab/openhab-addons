@@ -108,7 +108,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
@@ -122,7 +122,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
   public String getDescription() {
     return description;
   }
@@ -136,7 +136,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ID)
   public UUID getId() {
     return id;
   }
@@ -150,7 +150,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSION)
   public String getVersion() {
     return version;
   }
@@ -164,7 +164,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH)
   public String getAssemblyFilePath() {
     return assemblyFilePath;
   }
@@ -178,7 +178,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL)
   public Boolean getCanUninstall() {
     return canUninstall;
   }
@@ -192,7 +192,7 @@ public class IPlugin {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH)
   public String getDataFolderPath() {
     return dataFolderPath;
   }

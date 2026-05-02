@@ -68,13 +68,13 @@ public class MediaUpdateInfoDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_UPDATES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UPDATES)
   public List<MediaUpdateInfoPathDto> getUpdates() {
     return updates;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_UPDATES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_UPDATES)
   public void setUpdates(@org.eclipse.jdt.annotation.Nullable
  List<MediaUpdateInfoPathDto> updates) {
     this.updates = updates;

@@ -57,13 +57,13 @@ public class MetadataConfiguration {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
   public Boolean getUseFileCreationTimeForDateAdded() {
     return useFileCreationTimeForDateAdded;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
   public void setUseFileCreationTimeForDateAdded(@org.eclipse.jdt.annotation.Nullable
  Boolean useFileCreationTimeForDateAdded) {
     this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;

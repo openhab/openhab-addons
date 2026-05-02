@@ -57,13 +57,13 @@ public class NewGroupRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME)
   public String getGroupName() {
     return groupName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GROUP_NAME)
   public void setGroupName(@org.eclipse.jdt.annotation.Nullable
  String groupName) {
     this.groupName = groupName;

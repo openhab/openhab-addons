@@ -103,13 +103,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAME)
   public void setName(@org.eclipse.jdt.annotation.Nullable
  String name) {
     this.name = name;
@@ -128,13 +128,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
   public String getDescription() {
     return description;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
   public void setDescription(@org.eclipse.jdt.annotation.Nullable
  String description) {
     this.description = description;
@@ -153,13 +153,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public String getOverview() {
     return overview;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OVERVIEW, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
   public void setOverview(@org.eclipse.jdt.annotation.Nullable
  String overview) {
     this.overview = overview;
@@ -178,13 +178,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OWNER)
   public String getOwner() {
     return owner;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_OWNER)
   public void setOwner(@org.eclipse.jdt.annotation.Nullable
  String owner) {
     this.owner = owner;
@@ -203,13 +203,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CATEGORY)
   public String getCategory() {
     return category;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CATEGORY, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CATEGORY)
   public void setCategory(@org.eclipse.jdt.annotation.Nullable
  String category) {
     this.category = category;
@@ -228,13 +228,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GUID)
   public UUID getGuid() {
     return guid;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_GUID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_GUID)
   public void setGuid(@org.eclipse.jdt.annotation.Nullable
  UUID guid) {
     this.guid = guid;
@@ -261,13 +261,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSIONS)
   public List<VersionInfo> getVersions() {
     return versions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_VERSIONS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VERSIONS)
   public void setVersions(@org.eclipse.jdt.annotation.Nullable
  List<VersionInfo> versions) {
     this.versions = versions;
@@ -286,13 +286,13 @@ public class PackageInfo {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
   public String getImageUrl() {
     return imageUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
   public void setImageUrl(@org.eclipse.jdt.annotation.Nullable
  String imageUrl) {
     this.imageUrl = imageUrl;

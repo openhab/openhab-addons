@@ -460,13 +460,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public String getCodec() {
     return codec;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC)
   public void setCodec(@org.eclipse.jdt.annotation.Nullable
  String codec) {
     this.codec = codec;
@@ -485,13 +485,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
   public String getCodecTag() {
     return codecTag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
   public void setCodecTag(@org.eclipse.jdt.annotation.Nullable
  String codecTag) {
     this.codecTag = codecTag;
@@ -510,13 +510,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LANGUAGE)
   public String getLanguage() {
     return language;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LANGUAGE)
   public void setLanguage(@org.eclipse.jdt.annotation.Nullable
  String language) {
     this.language = language;
@@ -535,13 +535,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE)
   public String getColorRange() {
     return colorRange;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE)
   public void setColorRange(@org.eclipse.jdt.annotation.Nullable
  String colorRange) {
     this.colorRange = colorRange;
@@ -560,13 +560,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE)
   public String getColorSpace() {
     return colorSpace;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE)
   public void setColorSpace(@org.eclipse.jdt.annotation.Nullable
  String colorSpace) {
     this.colorSpace = colorSpace;
@@ -585,13 +585,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER)
   public String getColorTransfer() {
     return colorTransfer;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER)
   public void setColorTransfer(@org.eclipse.jdt.annotation.Nullable
  String colorTransfer) {
     this.colorTransfer = colorTransfer;
@@ -610,13 +610,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES)
   public String getColorPrimaries() {
     return colorPrimaries;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES)
   public void setColorPrimaries(@org.eclipse.jdt.annotation.Nullable
  String colorPrimaries) {
     this.colorPrimaries = colorPrimaries;
@@ -635,13 +635,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR)
   public Integer getDvVersionMajor() {
     return dvVersionMajor;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR)
   public void setDvVersionMajor(@org.eclipse.jdt.annotation.Nullable
  Integer dvVersionMajor) {
     this.dvVersionMajor = dvVersionMajor;
@@ -660,13 +660,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR)
   public Integer getDvVersionMinor() {
     return dvVersionMinor;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR)
   public void setDvVersionMinor(@org.eclipse.jdt.annotation.Nullable
  Integer dvVersionMinor) {
     this.dvVersionMinor = dvVersionMinor;
@@ -685,13 +685,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DV_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_PROFILE)
   public Integer getDvProfile() {
     return dvProfile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DV_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_PROFILE)
   public void setDvProfile(@org.eclipse.jdt.annotation.Nullable
  Integer dvProfile) {
     this.dvProfile = dvProfile;
@@ -710,13 +710,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DV_LEVEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_LEVEL)
   public Integer getDvLevel() {
     return dvLevel;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DV_LEVEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_LEVEL)
   public void setDvLevel(@org.eclipse.jdt.annotation.Nullable
  Integer dvLevel) {
     this.dvLevel = dvLevel;
@@ -735,13 +735,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG)
   public Integer getRpuPresentFlag() {
     return rpuPresentFlag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG)
   public void setRpuPresentFlag(@org.eclipse.jdt.annotation.Nullable
  Integer rpuPresentFlag) {
     this.rpuPresentFlag = rpuPresentFlag;
@@ -760,13 +760,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG)
   public Integer getElPresentFlag() {
     return elPresentFlag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG)
   public void setElPresentFlag(@org.eclipse.jdt.annotation.Nullable
  Integer elPresentFlag) {
     this.elPresentFlag = elPresentFlag;
@@ -785,13 +785,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG)
   public Integer getBlPresentFlag() {
     return blPresentFlag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG)
   public void setBlPresentFlag(@org.eclipse.jdt.annotation.Nullable
  Integer blPresentFlag) {
     this.blPresentFlag = blPresentFlag;
@@ -810,13 +810,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
   public Integer getDvBlSignalCompatibilityId() {
     return dvBlSignalCompatibilityId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
   public void setDvBlSignalCompatibilityId(@org.eclipse.jdt.annotation.Nullable
  Integer dvBlSignalCompatibilityId) {
     this.dvBlSignalCompatibilityId = dvBlSignalCompatibilityId;
@@ -835,13 +835,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ROTATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ROTATION)
   public Integer getRotation() {
     return rotation;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ROTATION, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ROTATION)
   public void setRotation(@org.eclipse.jdt.annotation.Nullable
  Integer rotation) {
     this.rotation = rotation;
@@ -860,13 +860,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public String getComment() {
     return comment;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COMMENT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_COMMENT)
   public void setComment(@org.eclipse.jdt.annotation.Nullable
  String comment) {
     this.comment = comment;
@@ -885,13 +885,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TIME_BASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIME_BASE)
   public String getTimeBase() {
     return timeBase;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIME_BASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TIME_BASE)
   public void setTimeBase(@org.eclipse.jdt.annotation.Nullable
  String timeBase) {
     this.timeBase = timeBase;
@@ -910,13 +910,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE)
   public String getCodecTimeBase() {
     return codecTimeBase;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE)
   public void setCodecTimeBase(@org.eclipse.jdt.annotation.Nullable
  String codecTimeBase) {
     this.codecTimeBase = codecTimeBase;
@@ -935,13 +935,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public String getTitle() {
     return title;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TITLE)
   public void setTitle(@org.eclipse.jdt.annotation.Nullable
  String title) {
     this.title = title;
@@ -960,13 +960,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG)
   public Boolean getHdr10PlusPresentFlag() {
     return hdr10PlusPresentFlag;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG)
   public void setHdr10PlusPresentFlag(@org.eclipse.jdt.annotation.Nullable
  Boolean hdr10PlusPresentFlag) {
     this.hdr10PlusPresentFlag = hdr10PlusPresentFlag;
@@ -979,7 +979,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE)
   public VideoRange getVideoRange() {
     return videoRange;
   }
@@ -993,7 +993,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE_TYPE)
   public VideoRangeType getVideoRangeType() {
     return videoRangeType;
   }
@@ -1007,7 +1007,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_VIDEO_DO_VI_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_VIDEO_DO_VI_TITLE)
   public String getVideoDoViTitle() {
     return videoDoViTitle;
   }
@@ -1021,7 +1021,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AUDIO_SPATIAL_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AUDIO_SPATIAL_FORMAT)
   public AudioSpatialFormat getAudioSpatialFormat() {
     return audioSpatialFormat;
   }
@@ -1041,13 +1041,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED)
   public String getLocalizedUndefined() {
     return localizedUndefined;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED)
   public void setLocalizedUndefined(@org.eclipse.jdt.annotation.Nullable
  String localizedUndefined) {
     this.localizedUndefined = localizedUndefined;
@@ -1066,13 +1066,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT)
   public String getLocalizedDefault() {
     return localizedDefault;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT)
   public void setLocalizedDefault(@org.eclipse.jdt.annotation.Nullable
  String localizedDefault) {
     this.localizedDefault = localizedDefault;
@@ -1091,13 +1091,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED)
   public String getLocalizedForced() {
     return localizedForced;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED)
   public void setLocalizedForced(@org.eclipse.jdt.annotation.Nullable
  String localizedForced) {
     this.localizedForced = localizedForced;
@@ -1116,13 +1116,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL)
   public String getLocalizedExternal() {
     return localizedExternal;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL)
   public void setLocalizedExternal(@org.eclipse.jdt.annotation.Nullable
  String localizedExternal) {
     this.localizedExternal = localizedExternal;
@@ -1141,13 +1141,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED)
   public String getLocalizedHearingImpaired() {
     return localizedHearingImpaired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED)
   public void setLocalizedHearingImpaired(@org.eclipse.jdt.annotation.Nullable
  String localizedHearingImpaired) {
     this.localizedHearingImpaired = localizedHearingImpaired;
@@ -1160,7 +1160,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DISPLAY_TITLE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DISPLAY_TITLE)
   public String getDisplayTitle() {
     return displayTitle;
   }
@@ -1180,13 +1180,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE)
   public String getNalLengthSize() {
     return nalLengthSize;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE)
   public void setNalLengthSize(@org.eclipse.jdt.annotation.Nullable
  String nalLengthSize) {
     this.nalLengthSize = nalLengthSize;
@@ -1205,13 +1205,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED)
   public Boolean getIsInterlaced() {
     return isInterlaced;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED)
   public void setIsInterlaced(@org.eclipse.jdt.annotation.Nullable
  Boolean isInterlaced) {
     this.isInterlaced = isInterlaced;
@@ -1230,13 +1230,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_A_V_C, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_A_V_C)
   public Boolean getIsAVC() {
     return isAVC;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_A_V_C, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_A_V_C)
   public void setIsAVC(@org.eclipse.jdt.annotation.Nullable
  Boolean isAVC) {
     this.isAVC = isAVC;
@@ -1255,13 +1255,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT)
   public String getChannelLayout() {
     return channelLayout;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT)
   public void setChannelLayout(@org.eclipse.jdt.annotation.Nullable
  String channelLayout) {
     this.channelLayout = channelLayout;
@@ -1280,13 +1280,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BIT_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BIT_RATE)
   public Integer getBitRate() {
     return bitRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BIT_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BIT_RATE)
   public void setBitRate(@org.eclipse.jdt.annotation.Nullable
  Integer bitRate) {
     this.bitRate = bitRate;
@@ -1305,13 +1305,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH)
   public Integer getBitDepth() {
     return bitDepth;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH)
   public void setBitDepth(@org.eclipse.jdt.annotation.Nullable
  Integer bitDepth) {
     this.bitDepth = bitDepth;
@@ -1330,13 +1330,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REF_FRAMES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REF_FRAMES)
   public Integer getRefFrames() {
     return refFrames;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REF_FRAMES, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REF_FRAMES)
   public void setRefFrames(@org.eclipse.jdt.annotation.Nullable
  Integer refFrames) {
     this.refFrames = refFrames;
@@ -1355,13 +1355,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH)
   public Integer getPacketLength() {
     return packetLength;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH)
   public void setPacketLength(@org.eclipse.jdt.annotation.Nullable
  Integer packetLength) {
     this.packetLength = packetLength;
@@ -1380,13 +1380,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNELS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNELS)
   public Integer getChannels() {
     return channels;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CHANNELS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_CHANNELS)
   public void setChannels(@org.eclipse.jdt.annotation.Nullable
  Integer channels) {
     this.channels = channels;
@@ -1405,13 +1405,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE)
   public Integer getSampleRate() {
     return sampleRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE)
   public void setSampleRate(@org.eclipse.jdt.annotation.Nullable
  Integer sampleRate) {
     this.sampleRate = sampleRate;
@@ -1430,13 +1430,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT)
   public Boolean getIsDefault() {
     return isDefault;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT)
   public void setIsDefault(@org.eclipse.jdt.annotation.Nullable
  Boolean isDefault) {
     this.isDefault = isDefault;
@@ -1455,13 +1455,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FORCED)
   public Boolean getIsForced() {
     return isForced;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_FORCED)
   public void setIsForced(@org.eclipse.jdt.annotation.Nullable
  Boolean isForced) {
     this.isForced = isForced;
@@ -1480,13 +1480,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED)
   public Boolean getIsHearingImpaired() {
     return isHearingImpaired;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED)
   public void setIsHearingImpaired(@org.eclipse.jdt.annotation.Nullable
  Boolean isHearingImpaired) {
     this.isHearingImpaired = isHearingImpaired;
@@ -1505,13 +1505,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public Integer getHeight() {
     return height;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HEIGHT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_HEIGHT)
   public void setHeight(@org.eclipse.jdt.annotation.Nullable
  Integer height) {
     this.height = height;
@@ -1530,13 +1530,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public Integer getWidth() {
     return width;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WIDTH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_WIDTH)
   public void setWidth(@org.eclipse.jdt.annotation.Nullable
  Integer width) {
     this.width = width;
@@ -1555,13 +1555,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE)
   public Float getAverageFrameRate() {
     return averageFrameRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE)
   public void setAverageFrameRate(@org.eclipse.jdt.annotation.Nullable
  Float averageFrameRate) {
     this.averageFrameRate = averageFrameRate;
@@ -1580,13 +1580,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE)
   public Float getRealFrameRate() {
     return realFrameRate;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE)
   public void setRealFrameRate(@org.eclipse.jdt.annotation.Nullable
  Float realFrameRate) {
     this.realFrameRate = realFrameRate;
@@ -1599,7 +1599,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_REFERENCE_FRAME_RATE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_REFERENCE_FRAME_RATE)
   public Float getReferenceFrameRate() {
     return referenceFrameRate;
   }
@@ -1619,13 +1619,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROFILE)
   public String getProfile() {
     return profile;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROFILE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PROFILE)
   public void setProfile(@org.eclipse.jdt.annotation.Nullable
  String profile) {
     this.profile = profile;
@@ -1644,13 +1644,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public MediaStreamType getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_TYPE)
   public void setType(@org.eclipse.jdt.annotation.Nullable
  MediaStreamType type) {
     this.type = type;
@@ -1669,13 +1669,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
   public String getAspectRatio() {
     return aspectRatio;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO, required = false)
+  @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
   public void setAspectRatio(@org.eclipse.jdt.annotation.Nullable
  String aspectRatio) {
     this.aspectRatio = aspectRatio;
@@ -1694,13 +1694,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX)
   public Integer getIndex() {
     return index;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INDEX, required = false)
+  @JsonProperty(value = JSON_PROPERTY_INDEX)
   public void setIndex(@org.eclipse.jdt.annotation.Nullable
  Integer index) {
     this.index = index;
@@ -1719,13 +1719,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCORE)
   public Integer getScore() {
     return score;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SCORE, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SCORE)
   public void setScore(@org.eclipse.jdt.annotation.Nullable
  Integer score) {
     this.score = score;
@@ -1744,13 +1744,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL)
   public Boolean getIsExternal() {
     return isExternal;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL)
   public void setIsExternal(@org.eclipse.jdt.annotation.Nullable
  Boolean isExternal) {
     this.isExternal = isExternal;
@@ -1769,13 +1769,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD)
   public SubtitleDeliveryMethod getDeliveryMethod() {
     return deliveryMethod;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD)
   public void setDeliveryMethod(@org.eclipse.jdt.annotation.Nullable
  SubtitleDeliveryMethod deliveryMethod) {
     this.deliveryMethod = deliveryMethod;
@@ -1794,13 +1794,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
   public String getDeliveryUrl() {
     return deliveryUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
   public void setDeliveryUrl(@org.eclipse.jdt.annotation.Nullable
  String deliveryUrl) {
     this.deliveryUrl = deliveryUrl;
@@ -1819,13 +1819,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL)
   public Boolean getIsExternalUrl() {
     return isExternalUrl;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL)
   public void setIsExternalUrl(@org.eclipse.jdt.annotation.Nullable
  Boolean isExternalUrl) {
     this.isExternalUrl = isExternalUrl;
@@ -1838,7 +1838,7 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
   public Boolean getIsTextSubtitleStream() {
     return isTextSubtitleStream;
   }
@@ -1858,13 +1858,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
   public Boolean getSupportsExternalStream() {
     return supportsExternalStream;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, required = false)
+  @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
   public void setSupportsExternalStream(@org.eclipse.jdt.annotation.Nullable
  Boolean supportsExternalStream) {
     this.supportsExternalStream = supportsExternalStream;
@@ -1883,13 +1883,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public String getPath() {
     return path;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PATH, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PATH)
   public void setPath(@org.eclipse.jdt.annotation.Nullable
  String path) {
     this.path = path;
@@ -1908,13 +1908,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT)
   public String getPixelFormat() {
     return pixelFormat;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT, required = false)
+  @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT)
   public void setPixelFormat(@org.eclipse.jdt.annotation.Nullable
  String pixelFormat) {
     this.pixelFormat = pixelFormat;
@@ -1933,13 +1933,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LEVEL)
   public Double getLevel() {
     return level;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LEVEL, required = false)
+  @JsonProperty(value = JSON_PROPERTY_LEVEL)
   public void setLevel(@org.eclipse.jdt.annotation.Nullable
  Double level) {
     this.level = level;
@@ -1958,13 +1958,13 @@ public class MediaStream {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC)
   public Boolean getIsAnamorphic() {
     return isAnamorphic;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC, required = false)
+  @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC)
   public void setIsAnamorphic(@org.eclipse.jdt.annotation.Nullable
  Boolean isAnamorphic) {
     this.isAnamorphic = isAnamorphic;

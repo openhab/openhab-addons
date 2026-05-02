@@ -57,13 +57,13 @@ public class SeekRequestDto {
    */
   @org.eclipse.jdt.annotation.Nullable
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public Long getPositionTicks() {
     return positionTicks;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS, required = false)
+  @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
   public void setPositionTicks(@org.eclipse.jdt.annotation.Nullable
  Long positionTicks) {
     this.positionTicks = positionTicks;
