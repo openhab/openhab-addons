@@ -182,6 +182,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 public WebhookService addingService(@Nullable ServiceReference<WebhookService> ref) {
                     WebhookService svc = ctx.getService(ref);
                     logger.info("WebhookService arrived !");
+
+                    // We need to wait service arrival before registerCloudWebhook
+                    registerCloudWebhook();
                     return svc;
                 }
 
@@ -195,8 +198,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 }
             });
             tracker.open();
-
-            registerCloudWebhook();
 
             SmartThingsConverterFactory.registerConverters(typeRegistry);
 
@@ -340,10 +341,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         webHookService = getWebhookService();
 
         if (config.useCloudWebhook) {
-            cloudWebHook = properties.get(SmartThingsBindingConstants.WEBHOOK_URL);
-            if (cloudWebHook == null || "".equals(cloudWebHook)) {
-                cloudWebHook = setupWebHookUrl();
-            }
+            // Always register at startup because if we have not run for more then 24 hours webhook is not there anymore
+            cloudWebHook = setupWebHookUrl();
 
             // Schedule daily refresh to keep the 30-day TTL from expiring
             webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> {

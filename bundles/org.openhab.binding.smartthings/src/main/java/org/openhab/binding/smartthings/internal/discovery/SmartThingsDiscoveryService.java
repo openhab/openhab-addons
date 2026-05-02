@@ -96,6 +96,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
 
             for (SmartThingsDevice device : devices) {
                 registerDevice(device, addDevice);
+
             }
         }
 
@@ -141,6 +142,9 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         deviceCategory = UidUtils.sanitizeId(deviceCategory);
 
         String deviceType = device.deviceTypeName;
+        if (deviceType == null) {
+            deviceType = device.name;
+        }
 
         deviceType = UidUtils.sanitizeId(deviceType);
         SmartThingsTypeRegistry registry = this.typeRegistry;
