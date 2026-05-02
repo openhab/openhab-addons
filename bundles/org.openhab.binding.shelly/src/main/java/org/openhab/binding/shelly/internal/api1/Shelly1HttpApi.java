@@ -567,10 +567,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     private void setSensorEventUrls() throws ShellyApiException, ShellyApiException {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
-            setEventUrl(config.getEventsSensorReport(), SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK,
-                    SHELLY_EVENT_TWILIGHT, SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN,
-                    SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY,
-                    SHELLY_EVENT_ALARM_OFF, SHELLY_EVENT_TEMP_OVER, SHELLY_EVENT_TEMP_UNDER);
+            boolean enable = !config.getEnableCoIOT() && config.getEventsSensorReport();
+            setEventUrl(enable, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
+                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN, SHELLY_EVENT_CLOSE,
+                    SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF,
+                    SHELLY_EVENT_TEMP_OVER, SHELLY_EVENT_TEMP_UNDER);
         }
     }
 
@@ -581,26 +582,34 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     private void setEventUrls(Integer index) throws ShellyApiException {
+        // When CoIoT is active all event type flags are forced to false so that any
+        // previously registered action URLs are cleared from the device.
+        boolean coiot = config.getEnableCoIOT();
         if (profile.isRoller) {
-            setEventUrl(EVENT_TYPE_ROLLER, 0, config.getEventsRoller(), SHELLY_EVENT_ROLLER_OPEN,
+            setEventUrl(EVENT_TYPE_ROLLER, 0, !coiot && config.getEventsRoller(), SHELLY_EVENT_ROLLER_OPEN,
                     SHELLY_EVENT_ROLLER_CLOSE, SHELLY_EVENT_ROLLER_STOP);
         } else if (profile.isDimmer) {
             // 2 set of URLs
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.getEventsButton(), SHELLY_EVENT_BTN1_ON, SHELLY_EVENT_BTN1_OFF,
-                    SHELLY_EVENT_BTN2_ON, SHELLY_EVENT_BTN2_OFF);
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.getEventsPush(), SHELLY_EVENT_SHORTPUSH1,
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsButton(), SHELLY_EVENT_BTN1_ON,
+                    SHELLY_EVENT_BTN1_OFF, SHELLY_EVENT_BTN2_ON, SHELLY_EVENT_BTN2_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsPush(), SHELLY_EVENT_SHORTPUSH1,
                     SHELLY_EVENT_LONGPUSH1, SHELLY_EVENT_SHORTPUSH2, SHELLY_EVENT_LONGPUSH2);
 
             // Relay output
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.getEventsSwitch(), SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         } else if (profile.hasRelays) {
             // Standard relays: btn_xxx, out_xxx, short/longpush URLs
-            setEventUrl(EVENT_TYPE_RELAY, index, config.getEventsButton(), SHELLY_EVENT_BTN_ON, SHELLY_EVENT_BTN_OFF);
-            setEventUrl(EVENT_TYPE_RELAY, index, config.getEventsPush(), SHELLY_EVENT_SHORTPUSH, SHELLY_EVENT_LONGPUSH);
-            setEventUrl(EVENT_TYPE_RELAY, index, config.getEventsSwitch(), SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsButton(), SHELLY_EVENT_BTN_ON,
+                    SHELLY_EVENT_BTN_OFF);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsPush(), SHELLY_EVENT_SHORTPUSH,
+                    SHELLY_EVENT_LONGPUSH);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         } else if (profile.isLight) {
             // Duo, Bulb
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.getEventsSwitch(), SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         }
     }
 

@@ -161,7 +161,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void startScan() {
         try {
-            if (getProfile().isBlu) {
+            if (config.getEnableBluGateway()) {
                 installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
@@ -387,7 +387,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
         String url = config.getWebSocketCallback();
-        if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
+        if (!url.isEmpty() && (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server)))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
             wsConfig.server = url;
@@ -1057,7 +1057,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.user = "admin";
+        params.user = SHELLY2_DEFAULT_USERID;
         params.realm = config.getRealm();
         params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
         apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
