@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ public class TuyaChannelTypeProviderTest {
     }
 
     @Test
-    public void unparseableUnitKeepsPlainNumberAndOmitsUnitHint() {
+    public void unparseableUnitAbortsChannelCreation() {
         // A unit string openHAB can't parse used to trigger
         // "A unit hint must not be set if the item type is not a number with dimension!"
         SchemaDp dp = valueDp("bogusunit");
@@ -90,9 +91,7 @@ public class TuyaChannelTypeProviderTest {
 
         ChannelType ct = getChannelType("garbage");
 
-        assertNotNull(ct);
-        assertEquals("Number", ct.getItemType());
-        assertNull(ct.getUnitHint(), "unit hint must not be set on plain Number item type");
+        assertNull(ct);
     }
 
     @Test
@@ -126,11 +125,9 @@ public class TuyaChannelTypeProviderTest {
         schema.put(channelTypeId, dp);
     }
 
-    private ChannelType getChannelType(String channelTypeId) {
+    private @Nullable ChannelType getChannelType(String channelTypeId) {
         TuyaChannelTypeProvider provider = new TuyaChannelTypeProvider(localizationServiceMock);
         ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, PRODUCT_ID + "_" + channelTypeId);
-        ChannelType ct = provider.getChannelType(uid, null);
-        assertNotNull(ct);
-        return ct;
+        return provider.getChannelType(uid, null);
     }
 }
