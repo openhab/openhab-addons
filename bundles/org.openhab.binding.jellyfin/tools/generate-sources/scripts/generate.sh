@@ -248,10 +248,23 @@ echo "🔧 fix ApiResponse Javadoc typo: 'response bod' -> 'response body'"
 # The upstream generator template contains a truncated word in the @param data Javadoc line.
 sed -i 's/response bod\b/response body/' "${GEN_ROOT_TARGET}/ApiResponse.java"
 
-echo "🔧 fix @NonNull annotations on fields to @Nullable (builder pattern compatibility)"
-# Replace @NonNull with @Nullable on field declarations in model classes
-# This fixes compilation errors where fields are marked @NonNull but not initialized in default constructor
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i 's/^\([[:space:]]*\)@org\.eclipse\.jdt\.annotation\.NonNull\([[:space:]]*\)$/\1@org.eclipse.jdt.annotation.Nullable\2/g' {} \;
+echo "🔧 apply template-driven nullability annotations"
+# Nullability is handled in mustache patch templates.
+# Keep post-processing focused on small import edge cases only.
+
+echo "🔧 add missing UnsupportedEncodingException imports for generated toUrlQueryString() methods"
+while IFS= read -r file; do
+    if ! grep -q 'import java\.io\.UnsupportedEncodingException;' "${file}"; then
+        sed -i '/^package /a import java.io.UnsupportedEncodingException;' "${file}"
+    fi
+done < <(grep -rl --include='*.java' 'UnsupportedEncodingException' ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen)
+
+echo "🔧 add missing JsonFormat imports for generated model annotations"
+while IFS= read -r file; do
+    if ! grep -q 'import com\.fasterxml\.jackson\.annotation\.JsonFormat;' "${file}"; then
+        sed -i '/^package /a import com.fasterxml.jackson.annotation.JsonFormat;' "${file}"
+    fi
+done < <(grep -rl --include='*.java' '@JsonFormat' ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen)
 
 echo "🔧 remove @NonNullByDefault from generated classes (covered by package-info.java)"
 # Remove @NonNullByDefault annotation and import from all generated classes

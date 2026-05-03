@@ -28,21 +28,21 @@
    {{#vendorExtensions.x-is-jackson-optional-nullable}}
    {{#isContainer}}
 -  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>undefined();
-+  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_var_annotations}} {{/isDiscriminator}}JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>undefined();
++  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_field_annotations}} {{/isDiscriminator}}JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>undefined();
    {{/isContainer}}
    {{^isContainer}}
 -  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>{{#defaultValue}}of({{{.}}}){{/defaultValue}}{{^defaultValue}}undefined(){{/defaultValue}};
-+  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_var_annotations}} {{/isDiscriminator}}JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>{{#defaultValue}}of({{{.}}}){{/defaultValue}}{{^defaultValue}}undefined(){{/defaultValue}};
++  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_field_annotations}} {{/isDiscriminator}}JsonNullable<{{{datatypeWithEnum}}}> {{name}} = JsonNullable.<{{{datatypeWithEnum}}}>{{#defaultValue}}of({{{.}}}){{/defaultValue}}{{^defaultValue}}undefined(){{/defaultValue}};
    {{/isContainer}}
    {{/vendorExtensions.x-is-jackson-optional-nullable}}
    {{^vendorExtensions.x-is-jackson-optional-nullable}}
    {{#isContainer}}
 -  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
-+  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_var_annotations}} {{/isDiscriminator}}{{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
++  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_field_annotations}} {{/isDiscriminator}}{{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
    {{/isContainer}}
    {{^isContainer}}
 -  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
-+  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_var_annotations}} {{/isDiscriminator}}{{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
++  {{#hasChildren}}protected{{/hasChildren}}{{^hasChildren}}private{{/hasChildren}} {{^isDiscriminator}}{{>nullable_field_annotations}} {{/isDiscriminator}}{{{datatypeWithEnum}}} {{name}}{{#defaultValue}} = {{{.}}}{{/defaultValue}};
    {{/isContainer}}
    {{/vendorExtensions.x-is-jackson-optional-nullable}}
  
@@ -90,7 +90,7 @@
  {{/vendorExtensions.x-is-jackson-optional-nullable}}
 -{{^vendorExtensions.x-is-jackson-optional-nullable}}{{#jackson}}{{> jackson_annotations}}{{/jackson}}{{/vendorExtensions.x-is-jackson-optional-nullable}}
 -  public {{{datatypeWithEnum}}} {{getter}}() {
-+{{^vendorExtensions.x-is-jackson-optional-nullable}}{{#jackson}}{{> jackson_annotations}}{{/jackson}}{{/vendorExtensions.x-is-jackson-optional-nullable}}  public {{>nullable_var_annotations}} {{{datatypeWithEnum}}} {{getter}}() {
++{{^vendorExtensions.x-is-jackson-optional-nullable}}{{#jackson}}{{> jackson_annotations}}{{/jackson}}{{/vendorExtensions.x-is-jackson-optional-nullable}}  public {{>nullable_field_annotations}} {{{datatypeWithEnum}}} {{getter}}() {
      {{#vendorExtensions.x-is-jackson-optional-nullable}}
      {{#isReadOnly}}{{! A readonly attribute doesn't have setter => jackson will set null directly if explicitly returned by API, so make sure we have an empty JsonNullable}}
      if ({{name}} == null) {
