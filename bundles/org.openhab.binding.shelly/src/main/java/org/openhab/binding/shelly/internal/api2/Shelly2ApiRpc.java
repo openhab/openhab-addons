@@ -139,9 +139,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize(ShellyApiConfiguration config) throws ShellyApiException {
-        setConfig(config);
-
+    public void initialize() throws ShellyApiException {
         if (alwaysOn) {
             disconnect();
             Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client,

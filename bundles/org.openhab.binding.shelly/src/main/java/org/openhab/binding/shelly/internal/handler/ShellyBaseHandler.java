@@ -342,7 +342,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize(apiConfig);
+        api.initialize();
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && apiConfig.getPassword().isBlank()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -350,7 +350,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (apiConfig.getRealm().isEmpty()) {
             apiConfig.setRealm(getString(device.hostname).toLowerCase(Locale.ROOT));
-            api.setConfig(apiConfig); // update config
+            api.setRealm(apiConfig.getRealm()); // update config
         }
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
@@ -1154,7 +1154,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             apiConfig.setEnableCoIOT(true);
-            api.setConfig(apiConfig);
+            api.setEnableCoIOT(apiConfig.getEnableCoIOT());
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.isAutoCoIoT(), autoCoIoT);

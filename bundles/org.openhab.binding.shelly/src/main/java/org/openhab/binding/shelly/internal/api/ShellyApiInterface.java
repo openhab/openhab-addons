@@ -24,7 +24,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLig
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 
 /**
  * The {@link ShellyApiInterface} Defines device API
@@ -35,7 +34,9 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     boolean isInitialized();
 
-    void setConfig(ShellyApiConfiguration config);
+    void setRealm(String realm);
+
+    void setEnableCoIOT(boolean flag);
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 

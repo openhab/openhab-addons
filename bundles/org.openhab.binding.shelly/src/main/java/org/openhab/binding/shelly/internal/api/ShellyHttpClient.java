@@ -91,8 +91,12 @@ public class ShellyHttpClient {
         this.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public void setConfig(ShellyApiConfiguration config) {
-        this.config = config;
+    public void setRealm(String realm) {
+        config.setRealm(realm);
+    }
+
+    public void setEnableCoIOT(boolean flag) {
+        config.setEnableCoIOT(flag);
     }
 
     /**

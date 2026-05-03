@@ -122,6 +122,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         super(thingName, config, httpClient);
     }
 
+    @Override
+    public void initialize() throws ShellyApiException {
+    }
+
     protected static final Map<String, String> MAP_INMODE_BTNTYPE = Map.of(//
             SHELLY2_BTNT_MOMENTARY, SHELLY_BTNT_MOMENTARY, //
             SHELLY2_BTNT_FLIP, SHELLY_BTNT_TOGGLE, //
@@ -178,11 +182,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_LIGHT, SHELLY_MODE_WHITE, //
             SHELLY2_PROFILE_RGB, SHELLY_MODE_COLOR, //
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR);
-
-    @Override
-    public void initialize(ShellyApiConfiguration config) throws ShellyApiException {
-        setConfig(config);
-    }
 
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
