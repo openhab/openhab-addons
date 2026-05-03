@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.BindingConfiguration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
@@ -85,7 +86,8 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
                 var uid = new ThingUID(Constants.THING_TYPE_SERVER, serverId);
                 try {
                     var properties = this.getProperties(server);
-                    var version = properties.get(Thing.PROPERTY_FIRMWARE_VERSION).toString();
+                    Object versionProperty = properties.get(Thing.PROPERTY_FIRMWARE_VERSION);
+                    String version = versionProperty != null ? versionProperty.toString() : "";
                     if (this.isVersionSupported(version)) {
                         var resultBuilder = DiscoveryResultBuilder.create(uid).withProperties(properties)
                                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
@@ -152,7 +154,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
      * @param version The version string to check
      * @return true if the version is equal to or newer than 10.10.7, or if parsing fails; false otherwise
      */
-    private boolean isVersionSupported(String version) {
+    private boolean isVersionSupported(@Nullable String version) {
         if (version == null || version.isEmpty()) {
             logger.warn("Empty version string provided, assuming supported version");
             return true;

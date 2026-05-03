@@ -59,9 +59,6 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     /** Default interval for the WebSocket task in seconds (0 = run once) */
     public static final int DEFAULT_INTERVAL = 0;
 
-    /** Connection timeout in seconds */
-    private static final int CONNECTION_TIMEOUT_SECONDS = 30;
-
     /** Maximum reconnection attempts before fallback to polling */
     private static final int MAX_RECONNECTION_ATTEMPTS = 10;
 
@@ -258,7 +255,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         }
 
         // Validate authentication token
-        if (apiToken == null || apiToken.isEmpty()) {
+        if (apiToken.isEmpty()) {
             throw new IllegalStateException("API token is required for WebSocket authentication");
         }
 

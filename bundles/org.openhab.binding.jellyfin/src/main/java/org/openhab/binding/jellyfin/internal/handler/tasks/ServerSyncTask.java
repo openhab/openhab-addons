@@ -37,9 +37,7 @@ public class ServerSyncTask extends AbstractTask {
     /** Default interval for the server sync task in seconds */
     public static final int DEFAULT_INTERVAL = 60;
 
-    private final Consumer<List<UserDto>> usersHandler;
     private final ExceptionHandlerType exceptionHandler;
-    private final ApiClientWrapper client;
 
     /**
      * Create a new ServerSyncTask to synchronize server state (users and sessions).
@@ -52,9 +50,7 @@ public class ServerSyncTask extends AbstractTask {
             ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
 
-        this.usersHandler = usersHandler;
         this.exceptionHandler = exceptionHandler;
-        this.client = client;
     }
 
     @Override

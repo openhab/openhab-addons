@@ -47,10 +47,8 @@ public class ResourceHelper {
             }
 
             TranslationProvider tp = ctx.getService(ref);
-            if (tp != null) {
-                bundle = b;
-                return tp;
-            }
+            bundle = b;
+            return tp;
         } catch (Throwable t) {
             // defensive: any OSGi issues should not break callers
         }

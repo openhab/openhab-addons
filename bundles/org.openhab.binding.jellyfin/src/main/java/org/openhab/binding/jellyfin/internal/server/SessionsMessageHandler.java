@@ -63,8 +63,8 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
 
     @Override
     public void handleMessage(String message) {
-        if (message == null || message.isEmpty()) {
-            throw new IllegalArgumentException("WebSocket message must not be null or empty");
+        if (message.isEmpty()) {
+            throw new IllegalArgumentException("WebSocket message must not be empty");
         }
 
         String truncated = message.length() > LOG_TRUNCATE_LENGTH ? message.substring(0, LOG_TRUNCATE_LENGTH) + "..."

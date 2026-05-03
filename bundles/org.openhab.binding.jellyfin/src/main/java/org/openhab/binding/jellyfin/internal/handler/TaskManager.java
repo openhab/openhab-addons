@@ -77,20 +77,21 @@ public class TaskManager implements TaskManagerInterface {
             Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
             @Nullable ClientDiscoveryService discoveryService) {
 
-        if (taskFactory == null) {
+        TaskFactoryInterface factory = taskFactory;
+        if (factory == null) {
             throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
         }
 
         Map<String, AbstractTask> tasks = new HashMap<>();
 
         // Create tasks using the injected factory with context-specific exception handlers
-        tasks.put(ConnectionTask.TASK_ID, taskFactory.createConnectionTask(apiClient, connectionHandler,
+        tasks.put(ConnectionTask.TASK_ID, factory.createConnectionTask(apiClient, connectionHandler,
                 new ContextualExceptionHandler(errorEventBus, "ConnectionTask")));
 
         tasks.put(UpdateTask.TASK_ID,
-                taskFactory.createUpdateTask(apiClient, new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
+                factory.createUpdateTask(apiClient, new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
 
-        tasks.put(ServerSyncTask.TASK_ID, taskFactory.createServerSyncTask(apiClient, usersHandler,
+        tasks.put(ServerSyncTask.TASK_ID, factory.createServerSyncTask(apiClient, usersHandler,
                 new ContextualExceptionHandler(errorEventBus, "ServerSyncTask")));
 
         // Note: DiscoveryTask is NOT created here because discoveryService is null during initial
@@ -242,7 +243,7 @@ public class TaskManager implements TaskManagerInterface {
      * @param scheduler The scheduler service to use
      * @return The scheduled future for the task
      */
-    private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval,
+    private ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval,
             ScheduledExecutorService scheduler) {
         if (interval <= 0) {
             // One-time task: use schedule() instead of scheduleWithFixedDelay()
@@ -267,11 +268,12 @@ public class TaskManager implements TaskManagerInterface {
     @Override
     public AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
             ErrorEventBus errorEventBus, ApiClientWrapper apiClient, Consumer<List<UserDto>> usersHandler) {
-        if (taskFactory == null) {
+        TaskFactoryInterface factory = taskFactory;
+        if (factory == null) {
             throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
         }
 
-        return taskFactory.createDiscoveryTask(serverHandler, discoveryService, apiClient, usersHandler,
+        return factory.createDiscoveryTask(serverHandler, discoveryService, apiClient, usersHandler,
                 new ContextualExceptionHandler(errorEventBus, "DiscoveryTask"));
     }
 }

@@ -51,12 +51,19 @@ public class UserManager {
         logger.debug("Retrieved users list from Jellyfin server:");
         logger.debug("  Total users: {}", users.size());
 
-        Predicate<UserDto> isVisible = user -> !user.getPolicy().getIsHidden();
-        Predicate<UserDto> isEnabled = user -> !user.getPolicy().getIsDisabled();
+        Predicate<UserDto> isVisible = user -> {
+            var policy = user.getPolicy();
+            return policy != null && !Boolean.TRUE.equals(policy.getIsHidden());
+        };
+        Predicate<UserDto> isEnabled = user -> {
+            var policy = user.getPolicy();
+            return policy != null && !Boolean.TRUE.equals(policy.getIsDisabled());
+        };
 
         List<UserDto> currentUsers = users.stream().filter(isEnabled).filter(isVisible).toList();
 
-        List<String> currentUserIds = currentUsers.stream().map(u -> u.getId().toString()).toList();
+        List<String> currentUserIds = currentUsers.stream().map(UserDto::getId).filter(java.util.Objects::nonNull)
+                .map(id -> id.toString()).toList();
         List<String> addedUserIds = currentUserIds.stream().filter(id -> !previousUserIds.contains(id)).toList();
         List<String> removedUserIds = previousUserIds.stream().filter(id -> !currentUserIds.contains(id)).toList();
 

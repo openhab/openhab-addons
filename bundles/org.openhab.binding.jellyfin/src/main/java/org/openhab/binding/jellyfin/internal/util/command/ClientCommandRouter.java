@@ -319,11 +319,12 @@ public final class ClientCommandRouter {
             return;
         }
         var playingItem = session.getNowPlayingItem();
-        if (playingItem == null || playingItem.getRunTimeTicks() == null) {
+        Long runTimeTicks = playingItem != null ? playingItem.getRunTimeTicks() : null;
+        if (runTimeTicks == null) {
             logger.warn("Cannot seek - no runtime available");
             return;
         }
-        long targetTicks = TickConverter.percentToTicks(playingItem.getRunTimeTicks(), percent);
+        long targetTicks = TickConverter.percentToTicks(runTimeTicks, percent);
         sendPlayStateCommand(PlaystateCommand.SEEK, targetTicks);
     }
 
@@ -340,13 +341,15 @@ public final class ClientCommandRouter {
         try {
             String sessionId = currentSessionId();
             BaseItemDto movie = serverHandler.searchItem(terms, BaseItemKind.MOVIE, null);
-            if (movie != null && playCommand != null) {
-                serverHandler.playItem(sessionId, playCommand, movie.getId().toString(), null);
+            UUID movieId = movie != null ? movie.getId() : null;
+            if (movieId != null && playCommand != null) {
+                serverHandler.playItem(sessionId, playCommand, movieId.toString(), null);
                 return;
             }
             BaseItemDto episode = serverHandler.searchItem(terms, BaseItemKind.EPISODE, null);
-            if (episode != null && playCommand != null) {
-                serverHandler.playItem(sessionId, playCommand, episode.getId().toString(), null);
+            UUID episodeId = episode != null ? episode.getId() : null;
+            if (episodeId != null && playCommand != null) {
+                serverHandler.playItem(sessionId, playCommand, episodeId.toString(), null);
             }
         } catch (Exception e) {
             logger.warn("Failed to run item search for {}: {}", terms, e.getMessage(), e);
@@ -405,6 +408,13 @@ public final class ClientCommandRouter {
     }
 
     private void browseToItem(BaseItemDto item) {
+        UUID itemId = item.getId();
+        BaseItemKind itemType = item.getType();
+        if (itemId == null || itemType == null) {
+            logger.warn("Cannot browse to item without id/type: {}", item.getName());
+            return;
+        }
+
         SessionInfoDto session = sessionSupplier.get();
         String sessionId = session == null ? null : session.getId();
         boolean isPlaying = session != null && session.getNowPlayingItem() != null;
@@ -414,26 +424,20 @@ public final class ClientCommandRouter {
             sendPlayStateCommand(PlaystateCommand.STOP);
 
             cancelDelayedCommand();
-            BaseItemKind itemType = item.getType();
-            if (itemType != null) {
-                delayedCommand = scheduler.schedule(() -> {
-                    try {
-                        serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
-                        logger.debug("Browsed to item: {}", item.getName());
-                    } catch (Exception e) {
-                        logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
-                    }
-                }, 3, TimeUnit.SECONDS);
-            }
-        } else {
-            BaseItemKind itemType = item.getType();
-            if (itemType != null) {
+            delayedCommand = scheduler.schedule(() -> {
                 try {
-                    serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
+                    serverHandler.browseToItem(sessionId, itemId.toString(), itemType, item.getName());
                     logger.debug("Browsed to item: {}", item.getName());
                 } catch (Exception e) {
-                    logger.warn("Failed to browse to item: {}", e.getMessage(), e);
+                    logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
                 }
+            }, 3, TimeUnit.SECONDS);
+        } else {
+            try {
+                serverHandler.browseToItem(sessionId, itemId.toString(), itemType, item.getName());
+                logger.debug("Browsed to item: {}", item.getName());
+            } catch (Exception e) {
+                logger.warn("Failed to browse to item: {}", e.getMessage(), e);
             }
         }
     }

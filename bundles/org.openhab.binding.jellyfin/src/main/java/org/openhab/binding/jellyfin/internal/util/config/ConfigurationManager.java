@@ -40,15 +40,16 @@ public class ConfigurationManager {
      */
     public <T> ConfigurationUpdate analyze(ConfigurationExtractor<T> extractor, T source, Configuration current) {
         ConfigurationUpdate update = extractor.extract(source, current);
+        String sourceName = extractor.getClass().getSimpleName();
 
         if (update.hasChanges()) {
             Configuration updated = update.configuration();
             logger.info(
                     "Configuration changes detected from {}: hostname={} -> {}, port={} -> {}, ssl={} -> {}, path={} -> {}",
-                    source.getClass().getSimpleName(), current.hostname, updated.hostname, current.port, updated.port,
-                    current.ssl, updated.ssl, current.path, updated.path);
+                    sourceName, current.hostname, updated.hostname, current.port, updated.port, current.ssl,
+                    updated.ssl, current.path, updated.path);
         } else {
-            logger.debug("No configuration changes detected from {}", source.getClass().getSimpleName());
+            logger.debug("No configuration changes detected from {}", sourceName);
         }
 
         return update;

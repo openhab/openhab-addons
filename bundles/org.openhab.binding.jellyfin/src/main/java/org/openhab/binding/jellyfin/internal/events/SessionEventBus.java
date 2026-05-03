@@ -42,7 +42,11 @@ public class SessionEventBus {
      * @param listener The listener to notify on session updates
      */
     public void subscribe(String deviceId, SessionEventListener listener) {
-        listeners.computeIfAbsent(deviceId, k -> new CopyOnWriteArrayList<>()).add(listener);
+        listeners.putIfAbsent(deviceId, new CopyOnWriteArrayList<>());
+        List<SessionEventListener> deviceListeners = listeners.get(deviceId);
+        if (deviceListeners != null) {
+            deviceListeners.add(listener);
+        }
         logger.debug("Listener subscribed for device ID: {}", deviceId);
     }
 

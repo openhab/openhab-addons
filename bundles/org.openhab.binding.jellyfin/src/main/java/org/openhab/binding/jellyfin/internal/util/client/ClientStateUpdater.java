@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.gen.current.model.BaseItemKind;
 import org.openhab.binding.jellyfin.internal.gen.current.model.PlayerStateInfo;
 import org.openhab.binding.jellyfin.internal.gen.current.model.RepeatMode;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
@@ -115,8 +116,9 @@ public final class ClientStateUpdater {
             states.put(Constants.PLAYING_ITEM_GENRES_CHANNEL, UnDefType.NULL);
         }
 
-        if (playingItem != null && playingItem.getType() != null) {
-            states.put(Constants.PLAYING_ITEM_TYPE_CHANNEL, new StringType(playingItem.getType().toString()));
+        BaseItemKind itemType = playingItem != null ? playingItem.getType() : null;
+        if (itemType != null) {
+            states.put(Constants.PLAYING_ITEM_TYPE_CHANNEL, new StringType(itemType.toString()));
         } else {
             states.put(Constants.PLAYING_ITEM_TYPE_CHANNEL, UnDefType.NULL);
         }

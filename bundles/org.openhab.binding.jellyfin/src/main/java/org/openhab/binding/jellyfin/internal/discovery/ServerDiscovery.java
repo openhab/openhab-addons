@@ -51,7 +51,7 @@ class ServerDiscovery {
     ServerDiscovery(int port, int timeout, String discoveryMessage) {
         this.port = port;
         this.timeout = timeout;
-        this.discoveryMessage = discoveryMessage != null ? discoveryMessage : "who is JellyfinServer?";
+        this.discoveryMessage = discoveryMessage;
     }
 
     List<ServerDiscoveryInfo> discoverServers() {
