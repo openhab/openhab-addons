@@ -12,13 +12,12 @@
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/25.0.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/25.0.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/25.0.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/25.0.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/25.0.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/25.0.1</bundle>
 		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/25.0.1</bundle>
-        <bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.chromeinspector-tool/25.0.1</bundle>
-        <bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/25.0.1</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.chromeinspector-tool/25.0.1</bundle>
+		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/25.0.1</bundle>
 		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/25.0.1</bundle>
 		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/25.0.1</bundle>
 		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/25.0.1</bundle>

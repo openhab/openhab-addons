@@ -51,7 +51,7 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
 import org.openhab.automation.pythonscripting.internal.context.ContextInput;
 import org.openhab.automation.pythonscripting.internal.context.ContextOutput;
-import org.openhab.automation.pythonscripting.internal.context.ContextOutputLogger;
+import org.openhab.automation.pythonscripting.internal.context.ThreadLocalContextOutputLogger;
 import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker;
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
@@ -157,15 +157,13 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
-     *
-     * @param engine
      */
     public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration, Engine engine,
             PythonScriptEngineFactory pythonScriptEngineFactory) {
         this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
-        this.scriptOutputStream = new ContextOutput(new ContextOutputLogger(logger, Level.INFO));
-        this.scriptErrorStream = new ContextOutput(new ContextOutputLogger(logger, Level.ERROR));
+        this.scriptOutputStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.INFO));
+        this.scriptErrorStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.ERROR));
         this.scriptInputStream = new ContextInput(null);
 
         this.lifecycleTracker = new LifecycleTracker();
@@ -504,8 +502,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
 
         Logger scriptLogger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
 
-        scriptOutputStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.INFO));
-        scriptErrorStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.ERROR));
+        scriptOutputStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.INFO));
+        scriptErrorStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.ERROR));
     }
 
     private String stringifyThrowable(Throwable throwable) {

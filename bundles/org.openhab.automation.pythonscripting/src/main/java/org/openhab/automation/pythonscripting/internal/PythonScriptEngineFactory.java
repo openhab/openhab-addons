@@ -86,23 +86,39 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         this.configuration = new PythonScriptEngineConfiguration(config);
         this.configuration.init(this);
 
-        Engine.Builder engineBuilder = Engine.newBuilder().allowExperimentalOptions(true) //
-                .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false));
+        Engine.Builder engineBuilder = createEngineBuilder();
         if (configuration.isDebuggerEnabled()) {
-            logger.info("Enabling Python debugger support.");
             engineBuilder //
                     .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
                     .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
                     .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
                                                              // attach
                     .option("inspect.Secure", "false"); // Disable TLS
+
+            Engine engine;
+            try {
+                engine = engineBuilder.build();
+            } catch (RuntimeException e) {
+                logger.error(
+                        "Failed to initialize Graal Python engine with debugger support. Continuing without debugger support.",
+                        e);
+                engine = createEngineBuilder().build();
+            }
+            logger.info("Debugger support is enabled for Python Scripting.");
+            this.engine = engine;
+        } else {
+            this.engine = createEngineBuilder().build();
         }
-        this.engine = engineBuilder.build();
 
         if (getLanguage() == null) {
             logger.error(
                     "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
         }
+    }
+
+    private Engine.Builder createEngineBuilder() {
+        return Engine.newBuilder().allowExperimentalOptions(true) //
+                .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false));
     }
 
     @Deactivate

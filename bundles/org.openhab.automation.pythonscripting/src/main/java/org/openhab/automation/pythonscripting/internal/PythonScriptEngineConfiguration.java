@@ -67,7 +67,7 @@ public class PythonScriptEngineConfiguration {
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
 
-    private static final int DEBUGGER_PORT_DEFAULT = 9229;
+    private static final int DEBUGGER_PORT_DEFAULT = 9230;
 
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
@@ -75,8 +75,8 @@ public class PythonScriptEngineConfiguration {
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
-        private boolean debuggerEnabled = false;
-        private int debuggerPort = DEBUGGER_PORT_DEFAULT;
+        public boolean debuggerEnabled = false;
+        public int debuggerPort = DEBUGGER_PORT_DEFAULT;
         public String pipModules = "";
     }
 

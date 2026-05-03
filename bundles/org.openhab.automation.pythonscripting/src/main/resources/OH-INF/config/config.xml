@@ -89,7 +89,7 @@
 		<parameter name="debuggerPort" type="integer" required="true" min="1024" max="49151" groupName="debugger">
 			<label>Debugger Port</label>
 			<description>The port to bind the debugger to.</description>
-			<default>9229</default>
+			<default>9230</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
