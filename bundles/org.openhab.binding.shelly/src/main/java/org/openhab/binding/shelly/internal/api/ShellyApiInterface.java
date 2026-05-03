@@ -35,7 +35,7 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     boolean isInitialized();
 
-    void setConfig(String thingName, ShellyApiConfiguration config);
+    void setConfig(ShellyApiConfiguration config);
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 

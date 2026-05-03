@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public interface ShellyDiscoveryInterface {
-    void initialize(String thingName, ShellyApiConfiguration config) throws ShellyApiException;
+    void initialize(ShellyApiConfiguration config) throws ShellyApiException;
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 

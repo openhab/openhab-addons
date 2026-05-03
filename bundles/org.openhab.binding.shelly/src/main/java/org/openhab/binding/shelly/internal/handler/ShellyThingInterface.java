@@ -23,7 +23,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -73,8 +72,6 @@ public interface ShellyThingInterface {
     void triggerUpdateFromCoap();
 
     void reinitializeThing();
-
-    void updateBindingConfig(ShellyBindingConfiguration bindingConfig);
 
     void restartWatchdog();
 
