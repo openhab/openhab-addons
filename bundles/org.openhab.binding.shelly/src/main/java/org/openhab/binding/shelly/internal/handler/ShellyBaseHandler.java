@@ -50,7 +50,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClien
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -101,7 +101,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final HttpClient httpClient;
     private final ShellyThingTable thingTable;
 
-    private final ShellyBindingConfiguration bindingConfig;
+    private final ShellyBindingRuntimeConfig bindingConfig;
     protected volatile ShellyThingConfiguration config;
     protected volatile ShellyApiConfiguration apiConfig;
     private final ShellyTranslationProvider messages;
@@ -143,7 +143,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @param httpClient from httpService
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
+            final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing);
 
@@ -1112,7 +1112,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         }
         if (!gen2 && bindingConfig.isAutoCoIoT() && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
-                || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
+                || "production_test".equalsIgnoreCase(prf.fwVersion)) {
             if (!apiConfig.getEnableCoIOT()) {
                 logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }

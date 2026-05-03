@@ -196,7 +196,7 @@ public class ShellyManagerPage {
         ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
         try {
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
-            bindingConfig = ShellyBindingConfiguration.fromProperties("", serviceConfig.getProperties());
+            bindingConfig = ShellyBindingConfiguration.fromProperties(serviceConfig.getProperties());
         } catch (IOException e) {
             logger.debug("ShellyManager: Unable to get bindingConfig");
         }

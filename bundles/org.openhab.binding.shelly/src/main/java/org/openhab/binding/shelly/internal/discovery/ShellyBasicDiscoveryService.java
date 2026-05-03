@@ -32,7 +32,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -110,7 +110,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
+            ShellyBindingRuntimeConfig bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
             ShellyThingTable thingTable) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;

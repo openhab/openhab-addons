@@ -19,7 +19,10 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.net.NetworkAddressChangeListener;
+import org.openhab.core.net.NetworkAddressService;
 
 /**
  * Tests for {@link ShellyApiConfiguration} and its inner classes.
@@ -182,15 +185,49 @@ public class ShellyApiConfigurationTest {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private ShellyBindingConfiguration bindingConfig() {
-        return ShellyBindingConfiguration.fromProperties(LOCAL_IP, Map.of()).withHttpPort(8080);
+    private ShellyBindingRuntimeConfig bindingConfig() {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration
+                .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP));
+        return new ShellyBindingRuntimeConfig(raw, nullNas()).withHttpPort(8080);
     }
 
-    private ShellyBindingConfiguration bindingConfig(String userId, String password) {
-        return ShellyBindingConfiguration
-                .fromProperties(LOCAL_IP, Map.of(ShellyBindingConfiguration.CONFIG_DEF_HTTP_USER, userId,
-                        ShellyBindingConfiguration.CONFIG_DEF_HTTP_PWD, password))
-                .withHttpPort(8080);
+    private ShellyBindingRuntimeConfig bindingConfig(String userId, String password) {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(Map.of(
+                ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP, ShellyBindingConfiguration.CONFIG_DEF_HTTP_USER,
+                userId, ShellyBindingConfiguration.CONFIG_DEF_HTTP_PWD, password));
+        return new ShellyBindingRuntimeConfig(raw, nullNas()).withHttpPort(8080);
+    }
+
+    private static NetworkAddressService nullNas() {
+        return new NetworkAddressService() {
+            @Override
+            public @Nullable String getPrimaryIpv4HostAddress() {
+                return null;
+            }
+
+            @Override
+            public @Nullable String getConfiguredBroadcastAddress() {
+                return null;
+            }
+
+            @Override
+            public boolean isUseOnlyOneAddress() {
+                return false;
+            }
+
+            @Override
+            public boolean isUseIPv6() {
+                return false;
+            }
+
+            @Override
+            public void addNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
+            }
+
+            @Override
+            public void removeNetworkAddressChangeListener(NetworkAddressChangeListener listener) {
+            }
+        };
     }
 
     private ShellyThingConfiguration thingConfig(String deviceIp, boolean eventsCoIoT) {

@@ -33,14 +33,14 @@ import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
- * Tests for {@link ShellyBindingConfiguration}.
+ * Tests for {@link ShellyBindingConfiguration} and {@link ShellyBindingRuntimeConfig}.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyBindingConfigurationTest {
 
-    // ── Default constructor ───────────────────────────────────────────────────
+    // ── ShellyBindingConfiguration: default constructor ───────────────────────
 
     @Test
     void defaultConstructorValues() {
@@ -48,84 +48,36 @@ public class ShellyBindingConfigurationTest {
         assertThat(config.getDefaultUserId(), is("admin"));
         assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
         assertThat(config.getLocalIP(), is(""));
-        assertThat(config.getHttpPort(), is(DEFAULT_LOCAL_PORT));
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
-    // ── NetworkAddressService constructor ─────────────────────────────────────
-
-    @Test
-    void networkAddressServiceValidIpIsUsed() {
-        ShellyBindingConfiguration config = new ShellyBindingConfiguration(networkAddressService("10.0.0.1"));
-        assertThat(config.getLocalIP(), is("10.0.0.1"));
-    }
-
-    @Test
-    void networkAddressServiceLinkLocalIpIsFilteredToEmpty() {
-        // 169.254.x.x (link-local) addresses are unreachable from devices; must be discarded
-        ShellyBindingConfiguration config = new ShellyBindingConfiguration(networkAddressService("169.254.1.1"));
-        assertThat(config.getLocalIP(), is(""));
-    }
-
-    @Test
-    void networkAddressServiceNullIpBecomesEmpty() {
-        ShellyBindingConfiguration config = new ShellyBindingConfiguration(networkAddressService(null));
-        assertThat(config.getLocalIP(), is(""));
-    }
-
-    // ── withHttpPort ──────────────────────────────────────────────────────────
-
-    @Test
-    void withHttpPortCreatesNewInstanceWithPort() {
-        ShellyBindingConfiguration original = new ShellyBindingConfiguration();
-        ShellyBindingConfiguration updated = original.withHttpPort(9090);
-        assertThat(updated, is(not(sameInstance(original))));
-        assertThat(updated.getHttpPort(), is(9090));
-    }
-
-    @Test
-    void withHttpPortPreservesOtherFields() {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration
-                .fromProperties("192.168.1.1", Map.of(CONFIG_DEF_HTTP_USER, "user1", CONFIG_DEF_HTTP_PWD, "pass1"))
-                .withHttpPort(9090);
-        assertThat(config.getDefaultUserId(), is("user1"));
-        assertThat(config.getDefaultPassword(), is("pass1"));
-        assertThat(config.getLocalIP(), is("192.168.1.1"));
-    }
-
-    @Test
-    void withHttpPortMinusOneReturnsDefaultPort() {
-        ShellyBindingConfiguration config = new ShellyBindingConfiguration().withHttpPort(9090).withHttpPort(-1);
-        assertThat(config.getHttpPort(), is(DEFAULT_LOCAL_PORT));
-    }
-
-    // ── fromProperties(Map) ───────────────────────────────────────────────────
+    // ── ShellyBindingConfiguration: fromProperties(Map) ───────────────────────
 
     @Test
     void fromPropertiesOverridesCredentials() {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("",
-                Map.of(CONFIG_DEF_HTTP_USER, "myuser", CONFIG_DEF_HTTP_PWD, "secret"));
+        ShellyBindingConfiguration config = ShellyBindingConfiguration
+                .fromProperties(Map.of(CONFIG_DEF_HTTP_USER, "myuser", CONFIG_DEF_HTTP_PWD, "secret"));
         assertThat(config.getDefaultUserId(), is("myuser"));
         assertThat(config.getDefaultPassword(), is("secret"));
     }
 
     @Test
-    void fromPropertiesLocalIpOverridesThenParameter() {
-        // Property overrides the localIP parameter
-        ShellyBindingConfiguration override = ShellyBindingConfiguration.fromProperties("10.0.0.1",
-                Map.of(CONFIG_LOCAL_IP, "192.168.0.50"));
-        assertThat(override.getLocalIP(), is("192.168.0.50"));
+    void fromPropertiesLocalIpOverride() {
+        ShellyBindingConfiguration config = ShellyBindingConfiguration
+                .fromProperties(Map.of(CONFIG_LOCAL_IP, "192.168.0.50"));
+        assertThat(config.getLocalIP(), is("192.168.0.50"));
+    }
 
-        // Without override, the parameter value is used
-        ShellyBindingConfiguration fromParam = ShellyBindingConfiguration.fromProperties("10.0.0.1", Map.of());
-        assertThat(fromParam.getLocalIP(), is("10.0.0.1"));
+    @Test
+    void fromPropertiesLocalIpBlankPreservesDefault() {
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(Map.of());
+        assertThat(config.getLocalIP(), is(""));
     }
 
     @ParameterizedTest
     @MethodSource("autoCoIoTCases")
     void fromPropertiesAutoCoIoTParsing(Object value, boolean expected) {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("",
-                Map.of(CONFIG_AUTOCOIOT, value));
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(Map.of(CONFIG_AUTOCOIOT, value));
         assertThat(config.isAutoCoIoT(), is(expected));
     }
 
@@ -140,34 +92,29 @@ public class ShellyBindingConfigurationTest {
 
     @Test
     void fromPropertiesIgnoresUnknownKeys() {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("",
-                Map.of("unknownKey", "value"));
-        assertThat(config.getDefaultUserId(), is("admin"));
-        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
-        assertThat(config.isAutoCoIoT(), is(true));
-    }
-
-    // ── fromProperties(Dictionary) ────────────────────────────────────────────
-
-    @Test
-    void fromPropertiesNullDictionaryPreservesLocalIpAndDefaults() {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("10.0.0.2",
-                (Dictionary<String, Object>) null);
-        assertThat(config.getLocalIP(), is("10.0.0.2"));
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(Map.of("unknownKey", "value"));
         assertThat(config.getDefaultUserId(), is("admin"));
         assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
     @Test
-    void fromPropertiesNullDictionaryAndMapYieldSameDefaults() {
-        // null Dictionary and empty Map must produce identical defaults
-        ShellyBindingConfiguration fromNull = ShellyBindingConfiguration.fromProperties("10.0.0.3",
-                (Dictionary<String, Object>) null);
-        ShellyBindingConfiguration fromEmpty = ShellyBindingConfiguration.fromProperties("10.0.0.3", Map.of());
-        assertThat(fromNull.getDefaultUserId(), is(fromEmpty.getDefaultUserId()));
-        assertThat(fromNull.getDefaultPassword(), is(fromEmpty.getDefaultPassword()));
-        assertThat(fromNull.isAutoCoIoT(), is(fromEmpty.isAutoCoIoT()));
+    void fromPropertiesNullMapPreservesDefaults() {
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties((Map<String, Object>) null);
+        assertThat(config.getDefaultUserId(), is("admin"));
+        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
+        assertThat(config.isAutoCoIoT(), is(true));
+    }
+
+    // ── ShellyBindingConfiguration: fromProperties(Dictionary) ───────────────
+
+    @Test
+    void fromPropertiesNullDictionaryPreservesDefaults() {
+        ShellyBindingConfiguration config = ShellyBindingConfiguration
+                .fromProperties((Dictionary<String, Object>) null);
+        assertThat(config.getDefaultUserId(), is("admin"));
+        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
+        assertThat(config.isAutoCoIoT(), is(true));
     }
 
     @Test
@@ -176,11 +123,78 @@ public class ShellyBindingConfigurationTest {
         dict.put(CONFIG_DEF_HTTP_USER, "dictuser");
         dict.put(CONFIG_DEF_HTTP_PWD, "dictpass");
         dict.put(CONFIG_AUTOCOIOT, "false");
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("192.168.1.1", dict);
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(dict);
         assertThat(config.getDefaultUserId(), is("dictuser"));
         assertThat(config.getDefaultPassword(), is("dictpass"));
-        assertThat(config.getLocalIP(), is("192.168.1.1"));
         assertThat(config.isAutoCoIoT(), is(false));
+    }
+
+    // ── ShellyBindingRuntimeConfig: IP resolution ─────────────────────────────
+
+    @Test
+    void runtimeConfigUsesNasIpWhenConfigLocalIpIsBlank() {
+        ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("10.0.0.1"));
+        assertThat(runtime.getLocalIP(), is("10.0.0.1"));
+    }
+
+    @Test
+    void runtimeConfigConfigLocalIpWinsOverNas() {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration
+                .fromProperties(Map.of(CONFIG_LOCAL_IP, "192.168.1.5"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("10.0.0.1"));
+        assertThat(runtime.getLocalIP(), is("192.168.1.5"));
+    }
+
+    @Test
+    void runtimeConfigLinkLocalIpFromNasBecomesEmpty() {
+        ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("169.254.1.1"));
+        assertThat(runtime.getLocalIP(), is(""));
+    }
+
+    @Test
+    void runtimeConfigNullNasIpBecomesEmpty() {
+        ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService(null));
+        assertThat(runtime.getLocalIP(), is(""));
+    }
+
+    // ── ShellyBindingRuntimeConfig: withHttpPort ──────────────────────────────
+
+    @Test
+    void withHttpPortCreatesNewInstanceWithPort() {
+        ShellyBindingRuntimeConfig original = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
+                networkAddressService("10.0.0.1"));
+        ShellyBindingRuntimeConfig updated = original.withHttpPort(9090);
+        assertThat(updated, is(not(sameInstance(original))));
+        assertThat(updated.getHttpPort(), is(9090));
+    }
+
+    @Test
+    void withHttpPortPreservesOtherFields() {
+        ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(
+                Map.of(CONFIG_DEF_HTTP_USER, "user1", CONFIG_DEF_HTTP_PWD, "pass1", CONFIG_LOCAL_IP, "192.168.1.1"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService(null))
+                .withHttpPort(9090);
+        assertThat(runtime.getDefaultUserId(), is("user1"));
+        assertThat(runtime.getDefaultPassword(), is("pass1"));
+        assertThat(runtime.getLocalIP(), is("192.168.1.1"));
+        assertThat(runtime.getHttpPort(), is(9090));
+    }
+
+    @Test
+    void withHttpPortMinusOneReturnsDefaultPort() {
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
+                networkAddressService(null)).withHttpPort(9090).withHttpPort(-1);
+        assertThat(runtime.getHttpPort(), is(DEFAULT_LOCAL_PORT));
+    }
+
+    @Test
+    void defaultHttpPortIsDefaultLocalPort() {
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
+                networkAddressService(null));
+        assertThat(runtime.getHttpPort(), is(DEFAULT_LOCAL_PORT));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

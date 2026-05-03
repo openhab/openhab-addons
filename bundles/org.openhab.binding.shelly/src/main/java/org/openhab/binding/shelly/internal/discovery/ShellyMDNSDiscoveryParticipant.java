@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -66,7 +67,8 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
-    private volatile ShellyBindingConfiguration bindingConfig;
+    private volatile ShellyBindingRuntimeConfig bindingConfig;
+    private final NetworkAddressService networkAddressService;
     private final ShellyTranslationProvider messages;
     private final ShellyThingTable thingTable;
     private final HttpClient httpClient;
@@ -89,9 +91,11 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.thingTable = thingTable;
+        this.networkAddressService = networkAddressService;
 
-        bindingConfig = ShellyBindingConfiguration.fromProperties(
-                new ShellyBindingConfiguration(networkAddressService).getLocalIP(), componentContext.getProperties());
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                .fromProperties(componentContext.getProperties());
+        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
     }
 
     @Override
@@ -112,8 +116,9 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Modified
     protected void modified(final ComponentContext componentContext) {
         logger.debug("Shelly Binding Configuration refreshed");
-        bindingConfig = ShellyBindingConfiguration.fromProperties(bindingConfig.getLocalIP(),
-                componentContext.getProperties());
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                .fromProperties(componentContext.getProperties());
+        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
     }
 
     @Override
@@ -137,10 +142,12 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
         try {
             // Get device settings — capture a consistent local snapshot; @Modified may run concurrently
-            ShellyBindingConfiguration cfg = this.bindingConfig;
+            ShellyBindingRuntimeConfig cfg = this.bindingConfig;
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
             if (serviceConfig.getProperties() != null) {
-                cfg = ShellyBindingConfiguration.fromProperties(cfg.getLocalIP(), serviceConfig.getProperties());
+                ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
+                        .fromProperties(serviceConfig.getProperties());
+                cfg = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
             }
 
             String gen = getString(service.getPropertyString("gen"));
