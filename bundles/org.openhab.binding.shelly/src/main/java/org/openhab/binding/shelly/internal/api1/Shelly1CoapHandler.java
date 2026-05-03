@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
@@ -122,13 +123,18 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 stop();
             }
 
+            InetAddress deviceAddr = config.getDeviceIpAddress();
+            if (deviceAddr == null) {
+                throw new ShellyApiException("Unknown/invalid device hostname: " + config.getDeviceHostname());
+            }
+
             logger.debug("{}: Starting CoAP Listener", thingName);
             if (!profile.coiotEndpoint.isEmpty() && profile.coiotEndpoint.contains(":")) {
                 String ps = substringAfter(profile.coiotEndpoint, ":");
                 coiotPort = Integer.parseInt(ps);
             }
             coapServer.start(config.getLocalIp(), coiotPort, this);
-            statusClient = new CoapClient(completeUrl(config.getDeviceIp(), coiotPort, COLOIT_URI_DEVSTATUS))
+            statusClient = new CoapClient(completeUrl(deviceAddr, coiotPort, COLOIT_URI_DEVSTATUS))
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
             Endpoint endpoint = null;
@@ -147,7 +153,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             throw new ShellyApiException("Network error", e);
         } catch (UnknownHostException e) {
             logger.info("{}: CoAP Exception (Unknown Host)", thingName, e);
-            throw new ShellyApiException("Unknown Host: " + config.getDeviceIp(), e);
+            throw new ShellyApiException("Unknown Host: " + config.getDeviceHostname(), e);
         }
     }
 
@@ -176,8 +182,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         }
 
         List<Option> options = response.getOptions().asSortedList();
-        String ip = response.getSourceContext().getPeerAddress().toString();
-        boolean match = ip.contains("/" + config.getDeviceIp() + ":");
+        boolean match = response.getSourceContext().getPeerAddress().getAddress().equals(config.getDeviceIpAddress());
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
@@ -310,8 +315,13 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         if (!updatesRequested) {
             // Observe Status Updates
-            reqStatus = sendRequest(reqStatus, config.getDeviceIp(), COLOIT_URI_DEVSTATUS, Type.NON);
-            updatesRequested = true;
+            InetAddress ipAddr = config.getDeviceIpAddress();
+            if (ipAddr == null) {
+                logger.warn("{}: Unable to request updates because the device IP is unknown", thingName);
+            } else {
+                reqStatus = sendRequest(reqStatus, ipAddr, COLOIT_URI_DEVSTATUS, Type.NON);
+                updatesRequested = true;
+            }
         }
     }
 
@@ -537,7 +547,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 }
             }
         }
-        reqDescription = sendRequest(reqDescription, config.getDeviceIp(), COLOIT_URI_DEVDESC, Type.CON);
+        InetAddress ipAddr = config.getDeviceIpAddress();
+        if (ipAddr == null) {
+            logger.warn("{}: Unable to request CoAP device description because the IP address is unknown", thingName);
+        } else {
+            reqDescription = sendRequest(reqDescription, ipAddr, COLOIT_URI_DEVDESC, Type.CON);
+        }
     }
 
     /**
@@ -565,7 +580,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
      * @param con true: send as CON, false: send as NON
      * @return new packet
      */
-    private Request sendRequest(@Nullable Request request, String ipAddress, String uri, Type con) {
+    private Request sendRequest(@Nullable Request request, InetAddress ipAddress, String uri, Type con) {
         if ((request != null) && !request.isCanceled()) {
             request.cancel();
         }
@@ -585,7 +600,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
      * @return new packet
      */
 
-    private Request newRequest(String ipAddress, int port, String uri, Type con) {
+    private Request newRequest(InetAddress ipAddress, int port, String uri, Type con) {
         // We need to build our own Request to set an empty Token
         Request request = new Request(Code.GET, con);
         request.setURI(completeUrl(ipAddress, port, uri));
@@ -653,7 +668,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         stop();
     }
 
-    private static String completeUrl(String ipAddress, int port, String uri) {
-        return "coap://" + ipAddress + ":" + port + uri;
+    private static String completeUrl(InetAddress ipAddress, int port, String uri) {
+        return "coap://" + ipAddress.getHostAddress() + ":" + port + uri;
     }
 }

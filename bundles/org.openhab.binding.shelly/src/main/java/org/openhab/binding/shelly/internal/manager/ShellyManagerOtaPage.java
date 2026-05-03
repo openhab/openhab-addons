@@ -37,7 +37,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -85,13 +84,12 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         ShellyManagerInterface th = getThingHandlers().get(uid);
         if (th != null) {
             properties = fillProperties(new HashMap<>(), uid, th);
-            ShellyApiConfiguration config = th.getApiConfig();
             ShellyDeviceProfile profile = th.getProfile();
             String deviceType = getDeviceType(properties);
 
             String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.getDeviceIp(), deviceType, mode, version,
+                    : getFirmwareUrl(deviceType, mode, version,
                             connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target
@@ -159,7 +157,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         String failure = getMessage("fwupdate.notfound", deviceType, version, url);
         try {
             if (url.isEmpty()) {
-                url = getFirmwareUrl("", deviceType, deviceMode, version, true);
+                url = getFirmwareUrl(deviceType, deviceMode, version, true);
                 if (url.isEmpty()) {
                     logger.warn("ShellyManager: {}", failure);
                     return new ShellyMgrResponse(failure, HttpStatus.BAD_REQUEST_400);
@@ -191,7 +189,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         }
     }
 
-    protected String getFirmwareUrl(String deviceIp, String deviceType, String mode, String version, boolean local)
+    protected String getFirmwareUrl(String deviceType, String mode, String version, boolean local)
             throws ShellyApiException {
         switch (version) {
             case FWPROD:
