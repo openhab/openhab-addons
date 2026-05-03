@@ -26,8 +26,13 @@ import org.jivesoftware.smack.util.stringencoder.Base64;
 import org.jivesoftware.smack.util.stringencoder.Base64UrlSafeEncoder;
 import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64Encoder;
 import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64UrlSafeEncoder;
+import org.jivesoftware.smack.xml.SmackXmlParser;
+import org.jivesoftware.smack.xml.xpp3.Xpp3XmlPullParserFactory;
 import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
+import org.jivesoftware.smackx.muc.provider.MUCAdminProvider;
+import org.jivesoftware.smackx.muc.provider.MUCOwnerProvider;
+import org.jivesoftware.smackx.muc.provider.MUCUserProvider;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.thing.Bridge;
@@ -70,13 +75,22 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+        SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
+
         Roster.setRosterLoadedAtLoginDefault(false);
-        DNSUtil.setDNSResolver(JavaxResolver.getInstance());
+        var dnsResolver = JavaxResolver.getInstance();
+        if (dnsResolver != null) {
+            DNSUtil.setDNSResolver(dnsResolver);
+        }
         SmackConfiguration.setDefaultHostnameVerifier(new XmppHostnameVerifier());
         Base64.setEncoder(Java7Base64Encoder.getInstance());
         Base64UrlSafeEncoder.setEncoder(Java7Base64UrlSafeEncoder.getInstance());
         ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
         ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#items", new DiscoverItemsProvider());
         ProviderManager.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
+
+        ProviderManager.addExtensionProvider("x", "http://jabber.org/protocol/muc#user", new MUCUserProvider());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/muc#admin", new MUCAdminProvider());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/muc#owner", new MUCOwnerProvider());
     }
 }
