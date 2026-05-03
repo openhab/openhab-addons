@@ -184,13 +184,16 @@ public class Websocket extends RestApi {
     private boolean sendMessage() {
         if (!commandQueue.isEmpty()) {
             ClientMessage message = commandQueue.remove(0);
-            logger.trace("Send Message {}", message.getAllFields());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Send Message {}", message.getAllFields());
+            }
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
                 Session localSession = session;
                 if (localSession != null) {
                     localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                    logger.trace("Send Message {} done", message.getAllFields());
                     return true;
                 } else {
                     logger.warn("Cannot send message {} - no session available", message.getAllFields());
@@ -199,7 +202,6 @@ public class Websocket extends RestApi {
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
-            logger.info("Send Message {} done", message.getAllFields());
         }
         return false;
     }
