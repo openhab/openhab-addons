@@ -52,7 +52,19 @@
  {{#parent}}
      super({{#parentVars}}{{name}}{{^-last}}, {{/-last}}{{/parentVars}});
  {{/parent}}
-@@ -221,7 +215,6 @@
+@@ -145,9 +139,8 @@
+ 
+ {{#vars}}
+   {{^isReadOnly}}
+-  public {{classname}} {{name}}({{>nullable_var_annotations}} {{{datatypeWithEnum}}} {{name}}) {
+-    {{#vendorExtensions.x-is-jackson-optional-nullable}}this.{{name}} = JsonNullable.<{{{datatypeWithEnum}}}>of({{name}});{{/vendorExtensions.x-is-jackson-optional-nullable}}
+-    {{^vendorExtensions.x-is-jackson-optional-nullable}}this.{{name}} = {{name}};{{/vendorExtensions.x-is-jackson-optional-nullable}}
++    public {{classname}} {{name}}({{>nullable_var_annotations}} {{{datatypeWithEnum}}} {{name}}) {
++      {{#vendorExtensions.x-is-jackson-optional-nullable}}this.{{name}} = JsonNullable.<{{{datatypeWithEnum}}}>of({{name}});{{/vendorExtensions.x-is-jackson-optional-nullable}}{{^vendorExtensions.x-is-jackson-optional-nullable}}this.{{name}} = {{name}};{{/vendorExtensions.x-is-jackson-optional-nullable}}
+     return this;
+   }
+   {{#isArray}}
+@@ -221,7 +214,6 @@
  {{#deprecated}}
    @Deprecated
  {{/deprecated}}
@@ -60,7 +72,8 @@
  {{#jsonb}}
    @JsonbProperty("{{baseName}}")
  {{/jsonb}}
-@@ -243,7 +236,6 @@
+@@ -242,8 +234,7 @@
+   {{!unannotated, Jackson would pick this up automatically and add it *in addition* to the _JsonNullable getter field}}
    @JsonIgnore
  {{/vendorExtensions.x-is-jackson-optional-nullable}}
 -{{^vendorExtensions.x-is-jackson-optional-nullable}}{{#jackson}}{{> jackson_annotations}}{{/jackson}}{{/vendorExtensions.x-is-jackson-optional-nullable}}
@@ -69,7 +82,7 @@
      {{#vendorExtensions.x-is-jackson-optional-nullable}}
      {{#isReadOnly}}{{! A readonly attribute doesn't have setter => jackson will set null directly if explicitly returned by API, so make sure we have an empty JsonNullable}}
      if ({{name}} == null) {
-@@ -264,7 +257,7 @@
+@@ -264,7 +255,7 @@
      return {{name}};
    }
    {{/vendorExtensions.x-is-jackson-optional-nullable}}{{#vendorExtensions.x-is-jackson-optional-nullable}}
