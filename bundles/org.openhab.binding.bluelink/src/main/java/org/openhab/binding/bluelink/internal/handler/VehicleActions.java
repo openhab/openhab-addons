@@ -100,6 +100,30 @@ public class VehicleActions implements ThingActions {
         }
     }
 
+    @RuleAction(label = "@text/action.set-charge-limit-dc.label")
+    @ActionOutput(type = "boolean")
+    public boolean setChargeLimitDC(
+            final @ActionInput(name = "limit", type = "int", required = true, label = "@text/action.set-charge-limit-dc.input.limit.label") int limit) {
+        final BluelinkVehicleHandler hnd = handler;
+        try {
+            return hnd != null && hnd.setChargeLimitDC(limit);
+        } catch (final BluelinkApiException e) {
+            return false;
+        }
+    }
+
+    @RuleAction(label = "@text/action.set-charge-limit-ac.label")
+    @ActionOutput(type = "boolean")
+    public boolean setChargeLimitAC(
+            final @ActionInput(name = "limit", type = "int", required = true, label = "@text/action.set-charge-limit-ac.input.limit.label") int limit) {
+        final BluelinkVehicleHandler hnd = handler;
+        try {
+            return hnd != null && hnd.setChargeLimitAC(limit);
+        } catch (final BluelinkApiException e) {
+            return false;
+        }
+    }
+
     @RuleAction(label = "@text/action.climate-start.label")
     @ActionOutput(type = "boolean")
     public boolean climateStart(
@@ -178,6 +202,22 @@ public class VehicleActions implements ThingActions {
     public static void stopCharging(final @Nullable ThingActions actions) {
         if (actions instanceof VehicleActions va) {
             va.stopCharging();
+        } else {
+            throw new IllegalArgumentException("expected VehicleActions");
+        }
+    }
+
+    public static void setChargeLimitDC(final @Nullable ThingActions actions, final int limit) {
+        if (actions instanceof VehicleActions va) {
+            va.setChargeLimitDC(limit);
+        } else {
+            throw new IllegalArgumentException("expected VehicleActions");
+        }
+    }
+
+    public static void setChargeLimitAC(final @Nullable ThingActions actions, final int limit) {
+        if (actions instanceof VehicleActions va) {
+            va.setChargeLimitAC(limit);
         } else {
             throw new IllegalArgumentException("expected VehicleActions");
         }

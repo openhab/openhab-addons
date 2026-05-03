@@ -201,5 +201,29 @@ class BluelinkAccountHandlerTest extends JavaTest {
             final var secondEu = (Vehicle) second;
             assertTrue(secondEu.ccs2ProtocolSupport());
         }
+
+        @Test
+        void testSetChargeLimitDC() throws BluelinkApiException {
+            final var vehicleId = "aa6c0ca6-48eb-430c-9eea-902bb6cd281c";
+            stubFor(post(urlEqualTo("/api/v1/spa/vehicles/" + vehicleId + "/charge/target"))
+                    .withRequestBody(equalToJson("{\"targetSOClist\":[{\"plugType\":0,\"targetSOClevel\":80}]}"))
+                    .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                            .withBody("{\"retCode\":\"S\"}")));
+
+            final var vehicle = handler.getVehicles().getFirst();
+            assertTrue(handler.setChargeLimitDC(vehicle, 80));
+        }
+
+        @Test
+        void testSetChargeLimitAC() throws BluelinkApiException {
+            final var vehicleId = "aa6c0ca6-48eb-430c-9eea-902bb6cd281c";
+            stubFor(post(urlEqualTo("/api/v1/spa/vehicles/" + vehicleId + "/charge/target"))
+                    .withRequestBody(equalToJson("{\"targetSOClist\":[{\"plugType\":1,\"targetSOClevel\":90}]}"))
+                    .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                            .withBody("{\"retCode\":\"S\"}")));
+
+            final var vehicle = handler.getVehicles().getFirst();
+            assertTrue(handler.setChargeLimitAC(vehicle, 90));
+        }
     }
 }
