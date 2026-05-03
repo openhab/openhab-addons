@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,6 +82,7 @@ public class Go2RtcManager {
     private @Nullable Process process;
     private @Nullable File configFile;
     private @Nullable Thread logThread;
+    private @Nullable Thread exitWatcherThread;
 
     /**
      * Creates a new Go2RtcManager.
@@ -165,6 +167,8 @@ public class Go2RtcManager {
 
         ProcessBuilder pb = new ProcessBuilder(go2rtcBinary, "-config", localConfigFile.getAbsolutePath());
         pb.redirectErrorStream(true);
+        LOGGER.debug("Starting go2rtc for streams {} with API port {}, WebRTC port {}, backchannel RTP ports {}",
+                getStreamNames(), apiPort, webRtcPort, getBackchannelPortsSummary());
         Process startedProcess = pb.start();
         process = startedProcess;
         LOGGER.info("go2rtc started (streams={}, apiPort={}, PID={})", getStreamNames(), apiPort, startedProcess.pid());
@@ -184,6 +188,19 @@ public class Go2RtcManager {
         logTh.setDaemon(true);
         logTh.start();
         logThread = logTh;
+
+        Thread exitWatcher = new Thread(() -> {
+            try {
+                int exitCode = startedProcess.waitFor();
+                LOGGER.debug("go2rtc process exited (streams={}, PID={}, exitCode={})", getStreamNames(),
+                        startedProcess.pid(), exitCode);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, "go2rtc-exit-" + getLogThreadNameSuffix());
+        exitWatcher.setDaemon(true);
+        exitWatcher.start();
+        exitWatcherThread = exitWatcher;
 
         waitForHealthy();
     }
@@ -211,6 +228,11 @@ public class Go2RtcManager {
         if (localLogThread != null) {
             localLogThread.interrupt();
             logThread = null;
+        }
+        Thread localExitWatcherThread = exitWatcherThread;
+        if (localExitWatcherThread != null) {
+            localExitWatcherThread.interrupt();
+            exitWatcherThread = null;
         }
         File localConfig = configFile;
         if (localConfig != null && localConfig.exists()) {
@@ -259,7 +281,7 @@ public class Go2RtcManager {
                 + "&subtype=" + rtspSubtype + "#backchannel=0";
 
         StringBuilder yaml = new StringBuilder();
-        yaml.append("log:\n  level: debug\n");
+        yaml.append("log:\n  level: ").append(resolveGo2RtcLogLevel()).append("\n");
         yaml.append("streams:\n");
         for (StreamEntry entry : streams) {
             yaml.append("  ").append(entry.streamName()).append(":\n");
@@ -274,9 +296,39 @@ public class Go2RtcManager {
     }
 
     private String buildBackchannelExec(int backchannelRtpPort) {
-        return "exec:ffmpeg -f alaw -ar 8000 -ac 1 -i - -c:a pcm_s16le -ar 16000 -ac 1 "
+        return "exec:ffmpeg -hide_banner -loglevel " + resolveFfmpegLogLevel()
+                + " -fflags nobuffer -f alaw -ar 8000 -ac 1 " + "-i - -vn -map 0:a:0 -c:a pcm_s16le -ar 16000 -ac 1 "
                 + "-payload_type 97 -ssrc 12345 -f rtp rtp://127.0.0.1:" + backchannelRtpPort
                 + "#backchannel=1#audio=pcma/8000";
+    }
+
+    private String resolveGo2RtcLogLevel() {
+        if (LOGGER.isTraceEnabled()) {
+            return "trace";
+        }
+        if (LOGGER.isDebugEnabled()) {
+            return "debug";
+        }
+        if (LOGGER.isInfoEnabled()) {
+            return "info";
+        }
+        if (LOGGER.isWarnEnabled()) {
+            return "warn";
+        }
+        return "error";
+    }
+
+    private String resolveFfmpegLogLevel() {
+        if (LOGGER.isTraceEnabled() || LOGGER.isDebugEnabled()) {
+            return "debug";
+        }
+        if (LOGGER.isInfoEnabled()) {
+            return "info";
+        }
+        if (LOGGER.isWarnEnabled()) {
+            return "warning";
+        }
+        return "error";
     }
 
     private String getLogContext(String line) {
@@ -329,11 +381,52 @@ public class Go2RtcManager {
     private File writeConfig() throws IOException {
         File cfg = File.createTempFile("go2rtc_" + getStreamName() + "_", ".yaml");
         cfg.deleteOnExit();
+        String yaml = buildYaml();
         try (FileWriter fw = new FileWriter(cfg, StandardCharsets.UTF_8)) {
-            fw.write(buildYaml());
+            fw.write(yaml);
         }
         LOGGER.debug("go2rtc config written to {}", cfg.getAbsolutePath());
+        LOGGER.debug("go2rtc config summary: rtspSource={}, backchannelSource={}, candidates={}", sanitizeRtspSource(),
+                summarizeBackchannelExec(), summarizeCandidates(yaml));
         return cfg;
+    }
+
+    private String sanitizeRtspSource() {
+        return String.format(Locale.ROOT, "rtsp://***:***@%s:554/cam/realmonitor?channel=%d&subtype=%d#backchannel=0",
+                hostname, rtspChannel, rtspSubtype);
+    }
+
+    private String summarizeBackchannelExec() {
+        return String.format(Locale.ROOT,
+                "exec:ffmpeg -f alaw -ar 8000 -ac 1 -i - -map 0:a:0 ... -f rtp rtp://127.0.0.1:ports%s #audio=pcma/8000",
+                getBackchannelPortsSummary());
+    }
+
+    private String getBackchannelPortsSummary() {
+        return streams.stream().map(StreamEntry::backchannelRtpPort).map(String::valueOf).toList().toString();
+    }
+
+    private static String summarizeCandidates(String yaml) {
+        int candidatesIndex = yaml.indexOf("  candidates:\n");
+        if (candidatesIndex < 0) {
+            return "[]";
+        }
+        String tail = yaml.substring(candidatesIndex + "  candidates:\n".length());
+        String[] lines = tail.split("\\n");
+        StringBuilder summary = new StringBuilder("[");
+        boolean first = true;
+        for (String line : lines) {
+            if (!line.startsWith("    - ")) {
+                break;
+            }
+            if (!first) {
+                summary.append(", ");
+            }
+            summary.append(line.substring("    - ".length()));
+            first = false;
+        }
+        summary.append(']');
+        return summary.toString();
     }
 
     /**

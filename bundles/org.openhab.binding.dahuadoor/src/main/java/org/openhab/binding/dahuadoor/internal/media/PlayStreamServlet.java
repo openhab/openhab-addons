@@ -26,6 +26,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -81,6 +82,8 @@ public class PlayStreamServlet extends HttpServlet {
     /** Maximum accepted size for incoming request body. */
     private static final int MAX_REQUEST_BODY_BYTES = 64 * 1024;
     private static final String SESSION_STREAM_PATH = "session";
+    /** Correlation id generator for WebRTC proxy requests. */
+    private static final AtomicLong REQUEST_SEQUENCE = new AtomicLong();
 
     private final HttpService httpService;
     private final DahuaDoorHandlerFactory handlerFactory;
@@ -170,12 +173,14 @@ public class PlayStreamServlet extends HttpServlet {
             }
             streamName = resolvedStreamName;
         }
+        long requestId = REQUEST_SEQUENCE.incrementAndGet();
+        long startedAtNanos = System.nanoTime();
 
         Integer apiPort = streamApiPorts.get(streamName);
         if (apiPort == null) {
             sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
                     "Unknown stream: " + streamName + ". Is the thing online with WebRTC enabled?");
-            LOGGER.warn("Rejected request: unknown stream '{}'", streamName);
+            LOGGER.warn("WebRTC proxy [{}] rejected: unknown stream '{}'", requestId, streamName);
             return;
         }
 
@@ -229,8 +234,15 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
 
+        String remote = firstNonBlank(req.getHeader("X-Forwarded-For"), req.getRemoteAddr());
+        String origin = firstNonBlank(req.getHeader("Origin"), "-");
+        String userAgent = abbreviate(req.getHeader("User-Agent"), 160);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("WebRTC offer for stream '{}' audio={}", streamName, summarizeAudioSdpDirection(sdpOffer));
+            LOGGER.debug(
+                    "WebRTC proxy [{}] incoming POST stream='{}' remote='{}' origin='{}' userAgent='{}' bodyBytes={} offerBytes={} audio={} audioLines={}",
+                    requestId, streamName, remote, origin, userAgent, requestBody.length(),
+                    sdpOffer.getBytes(StandardCharsets.UTF_8).length, summarizeAudioSdpDirection(sdpOffer),
+                    extractAudioSdpLines(sdpOffer));
         }
 
         // Forward to go2rtc API
@@ -246,6 +258,8 @@ public class PlayStreamServlet extends HttpServlet {
             conn.setRequestProperty("Content-Type", "application/sdp");
             byte[] offerBytes = sdpOffer.getBytes(StandardCharsets.UTF_8);
             conn.setRequestProperty("Content-Length", String.valueOf(offerBytes.length));
+            LOGGER.debug("WebRTC proxy [{}] forwarding POST to {} (stream='{}', offerBytes={})", requestId, go2rtcUrl,
+                    streamName, offerBytes.length);
             try (OutputStream out = conn.getOutputStream()) {
                 out.write(offerBytes);
             }
@@ -268,8 +282,10 @@ public class PlayStreamServlet extends HttpServlet {
                 String message = errorBody.isEmpty() ? "go2rtc API returned HTTP " + status
                         : "go2rtc API returned HTTP " + status + ": " + errorBody;
                 sendBase64Message(resp, HttpServletResponse.SC_BAD_GATEWAY, message);
-                LOGGER.warn("Upstream error for stream '{}': mapped to 502 (status={}, bodyBytes={})", streamName,
-                        status, errorBodyBytes.length);
+                LOGGER.warn(
+                        "WebRTC proxy [{}] upstream error stream='{}' status={} bodyBytes={} durationMs={} body='{}'",
+                        requestId, streamName, status, errorBodyBytes.length, elapsedMillis(startedAtNanos),
+                        abbreviate(errorBody, 300));
                 return;
             }
 
@@ -279,8 +295,11 @@ public class PlayStreamServlet extends HttpServlet {
             }
 
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("WebRTC answer for stream '{}' audio={}", streamName,
-                        summarizeAudioSdpDirection(new String(sdpAnswer, StandardCharsets.UTF_8)));
+                String answerText = new String(sdpAnswer, StandardCharsets.UTF_8);
+                LOGGER.debug(
+                        "WebRTC proxy [{}] upstream answer stream='{}' status={} answerBytes={} durationMs={} audio={} audioLines={}",
+                        requestId, streamName, status, sdpAnswer.length, elapsedMillis(startedAtNanos),
+                        summarizeAudioSdpDirection(answerText), extractAudioSdpLines(answerText));
             }
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
@@ -288,7 +307,8 @@ public class PlayStreamServlet extends HttpServlet {
         } catch (IOException e) {
             sendBase64Message(resp, HttpServletResponse.SC_BAD_GATEWAY,
                     "Failed to reach go2rtc API: " + e.getMessage());
-            LOGGER.warn("Upstream communication failure for stream '{}': {}", streamName, e.getMessage());
+            LOGGER.warn("WebRTC proxy [{}] upstream communication failure stream='{}' after {} ms: {}", requestId,
+                    streamName, elapsedMillis(startedAtNanos), e.getMessage());
         } finally {
             conn.disconnect();
         }
@@ -457,6 +477,54 @@ public class PlayStreamServlet extends HttpServlet {
                 ? ("media=" + mediaDirection + ", session=" + sessionDirection + ", effective=" + effective + ", msid="
                         + audioHasMsid + ", ssrc=" + audioHasSsrc + ", codecs=[" + audioCodecs + "]")
                 : "no-audio-media";
+    }
+
+    private static String extractAudioSdpLines(String sdp) {
+        StringBuilder linesSummary = new StringBuilder();
+        boolean inAudioSection = false;
+        for (String rawLine : sdp.split("\\r?\\n")) {
+            String line = rawLine.trim();
+            if (line.startsWith("m=")) {
+                inAudioSection = line.startsWith("m=audio ");
+                if (inAudioSection) {
+                    appendSdpLine(linesSummary, line);
+                }
+                continue;
+            }
+            if (!inAudioSection) {
+                continue;
+            }
+            if (line.startsWith("a=rtpmap:") || "a=sendrecv".equals(line) || "a=sendonly".equals(line)
+                    || "a=recvonly".equals(line) || "a=inactive".equals(line) || line.startsWith("a=fmtp:")) {
+                appendSdpLine(linesSummary, line);
+            }
+        }
+        return linesSummary.length() == 0 ? "[]" : '[' + linesSummary.toString() + ']';
+    }
+
+    private static void appendSdpLine(StringBuilder linesSummary, String line) {
+        if (linesSummary.length() > 0) {
+            linesSummary.append(" | ");
+        }
+        linesSummary.append(line);
+    }
+
+    private static String firstNonBlank(@Nullable String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private static String abbreviate(@Nullable String value, int maxLen) {
+        if (value == null || value.isBlank()) {
+            return "-";
+        }
+        if (value.length() <= maxLen) {
+            return value;
+        }
+        return value.substring(0, Math.max(0, maxLen - 3)) + "...";
+    }
+
+    private static long elapsedMillis(long startedAtNanos) {
+        return (System.nanoTime() - startedAtNanos) / 1_000_000L;
     }
 
     private static byte[] readLimitedBytes(InputStream in, int maxBytes) throws IOException, RequestTooLargeException {

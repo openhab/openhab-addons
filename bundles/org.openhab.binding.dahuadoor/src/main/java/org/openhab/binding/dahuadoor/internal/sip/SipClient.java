@@ -122,6 +122,7 @@ public class SipClient implements SipListener {
     private static final long TERMINATING_TIMEOUT_SECONDS = 5;
     private static final long ANSWERING_TIMEOUT_SECONDS = 15;
     private static final long OUTGOING_RINGING_TIMEOUT_SECONDS = 60;
+    private static final long ACK_FALLBACK_TIMEOUT_MILLIS = 300;
     private final ScheduledExecutorService callStateTimeoutScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread thread = new Thread(r, BINDING_PREFIX + "-sip-answering-timeout");
         thread.setDaemon(true);
@@ -141,6 +142,7 @@ public class SipClient implements SipListener {
     private @Nullable String outgoingCallId;
     private boolean pendingHangupAfterAck = false;
     private @Nullable ScheduledFuture<?> answeringTimeoutFuture;
+    private @Nullable ScheduledFuture<?> ackFallbackFuture;
     private @Nullable ScheduledFuture<?> outgoingRingingTimeoutFuture;
     private SipCallState callState = SipCallState.IDLE;
 
@@ -236,7 +238,7 @@ public class SipClient implements SipListener {
             listeningPoint = localListeningPoint;
             sipProvider = localSipProvider;
 
-            logger.info("SIP stack initialized for {} on {}:{}", sipExtension, localIp, localSipPort);
+            logger.debug("SIP stack initialized for {} on {}:{}", sipExtension, localIp, localSipPort);
         } catch (PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
                 | ObjectInUseException | TooManyListenersException | RuntimeException e) {
             cleanupFailedInitialization(localSipStack, localSipProvider, localListeningPoint);
@@ -463,6 +465,57 @@ public class SipClient implements SipListener {
         }
     }
 
+    private void sendUnregister() {
+        try {
+            AddressFactory addrFactory = addressFactory;
+            HeaderFactory hdrFactory = headerFactory;
+            MessageFactory msgFactory = messageFactory;
+            SipProvider provider = sipProvider;
+
+            if (addrFactory == null || hdrFactory == null || msgFactory == null || provider == null) {
+                return;
+            }
+
+            SipURI requestURI = addrFactory.createSipURI(null, vtoIp);
+            requestURI.setPort(5060);
+
+            String encodedExtension = sipExtension.replace("#", "%23");
+            SipURI fromURI = addrFactory.createSipURI(encodedExtension, vtoIp);
+            fromURI.setPort(5060);
+            Address fromAddress = addrFactory.createAddress(fromURI);
+            FromHeader fromHeader = hdrFactory.createFromHeader(fromAddress, ensureRegisterFromTag());
+            ToHeader toHeader = hdrFactory.createToHeader(fromAddress, null);
+
+            ViaHeader viaHeader = hdrFactory.createViaHeader(localIp, localSipPort, "udp", null);
+            List<ViaHeader> viaHeaders = new ArrayList<>();
+            viaHeaders.add(viaHeader);
+
+            CallIdHeader callIdHeader = hdrFactory.createCallIdHeader(ensureRegisterCallId(provider));
+            CSeqHeader cSeqHeader = hdrFactory.createCSeqHeader(nextRegisterCSeq(), Request.REGISTER);
+            MaxForwardsHeader maxForwards = hdrFactory.createMaxForwardsHeader(70);
+
+            Request request = msgFactory.createRequest(requestURI, Request.REGISTER, callIdHeader, cSeqHeader,
+                    fromHeader, toHeader, viaHeaders, maxForwards);
+
+            // Contact: * with Expires: 0 to unregister all bindings
+            ContactHeader contactHeader = hdrFactory.createContactHeader();
+            contactHeader.setWildCard();
+            request.addHeader(contactHeader);
+
+            ExpiresHeader expiresHeader = hdrFactory.createExpiresHeader(0);
+            request.addHeader(expiresHeader);
+
+            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList("openHAB/5.2.0"));
+            request.addHeader(userAgentHeader);
+
+            ClientTransaction tx = provider.getNewClientTransaction(request);
+            tx.sendRequest();
+            logger.debug("Sent REGISTER Expires:0 (unregister) for {}", sipExtension);
+        } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
+            logger.debug("Failed to send unregister for {}: {}", sipExtension, e.getMessage());
+        }
+    }
+
     /**
      * Dispose SIP client and clean up resources.
      * Must be called before creating a new instance to prevent "Provider already attached" error.
@@ -476,6 +529,9 @@ public class SipClient implements SipListener {
             synchronized (this) {
                 clearCallContextLocked(SipCallState.IDLE);
             }
+
+            // Send unregister before tearing down the stack so the VTO clears the binding immediately
+            sendUnregister();
 
             SipProvider provider = sipProvider;
             SipStack stack = sipStack;
@@ -647,13 +703,52 @@ public class SipClient implements SipListener {
         Response ok = msgFactory.createResponse(Response.OK, request);
         serverTransaction.sendResponse(ok);
 
-        logger.info("Call cancelled by VTO");
-        clearAudioPath("cancel");
+        boolean shouldCancelCall;
+        boolean shouldActivateAudio;
         synchronized (this) {
-            cancelAnsweringTimeout();
-            clearCallContextLocked(SipCallState.IDLE);
+            if (callState == SipCallState.RINGING || callState == SipCallState.IDLE) {
+                // RFC 3261 §9.2: CANCEL is only effective if no final response has been sent yet
+                logger.info("Call cancelled by VTO (state={})", callState);
+                clearAudioPath("cancel");
+                cancelAnsweringTimeout();
+                clearCallContextLocked(SipCallState.IDLE);
+                shouldCancelCall = true;
+                shouldActivateAudio = false;
+            } else if (callState == SipCallState.ANSWERING) {
+                // Dahua VTO firmware quirk: VTO sends CANCEL immediately after our 200 OK and never
+                // sends ACK. Treat CANCEL-in-ANSWERING as implicit ACK to activate the audio path.
+                logger.info("CANCEL received in ANSWERING state - Dahua VTO workaround: activating audio path");
+                cancelAnsweringTimeout();
+                ServerTransaction localInviteServerTransaction = inviteServerTransaction;
+                if (activeDialog == null && localInviteServerTransaction != null) {
+                    activeDialog = localInviteServerTransaction.getDialog();
+                }
+                callState = SipCallState.ACTIVE;
+                shouldCancelCall = false;
+                shouldActivateAudio = true;
+            } else {
+                // A final response (200 OK) was already sent - CANCEL must not affect dialog state
+                logger.info("CANCEL received in state {} - ignoring per RFC 3261 §9.2 (final response already sent)",
+                        callState);
+                shouldCancelCall = false;
+                shouldActivateAudio = false;
+            }
         }
-        listener.onCallCancelled();
+        if (shouldActivateAudio) {
+            SipAudioOffer offer;
+            synchronized (this) {
+                offer = currentAudioOffer;
+            }
+            if (offer != null) {
+                activateAudioPath(offer);
+            } else {
+                logger.warn("CANCEL-in-ANSWERING workaround: no audio offer available");
+            }
+            listener.onCallActive();
+        }
+        if (shouldCancelCall) {
+            listener.onCallCancelled();
+        }
     }
 
     private void handleAck(Request request) {
@@ -664,7 +759,9 @@ public class SipClient implements SipListener {
                 logger.debug("Ignoring ACK in state {}", callState);
                 return;
             }
+            logger.debug("ACK received by {} - activating call", sipExtension);
             cancelAnsweringTimeout();
+            cancelAckFallbackTimeout();
             ServerTransaction localInviteServerTransaction = inviteServerTransaction;
             if (activeDialog == null && localInviteServerTransaction != null) {
                 activeDialog = localInviteServerTransaction.getDialog();
@@ -860,6 +957,7 @@ public class SipClient implements SipListener {
             activeDialog = localInviteServerTransaction.getDialog();
             callState = SipCallState.ANSWERING;
             scheduleAnsweringTimeout();
+            scheduleAckFallbackTimeout();
             logger.debug("Sent 200 OK for incoming INVITE");
             return true;
         } catch (SipException | ParseException | InvalidArgumentException | RuntimeException e) {
@@ -1149,6 +1247,14 @@ public class SipClient implements SipListener {
         }
     }
 
+    private synchronized void cancelAckFallbackTimeout() {
+        ScheduledFuture<?> timeoutFuture = ackFallbackFuture;
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
+            ackFallbackFuture = null;
+        }
+    }
+
     private synchronized void cancelOutgoingRingingTimeout() {
         ScheduledFuture<?> timeoutFuture = outgoingRingingTimeoutFuture;
         if (timeoutFuture != null) {
@@ -1208,6 +1314,52 @@ public class SipClient implements SipListener {
         }, OUTGOING_RINGING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
+    private synchronized void scheduleAckFallbackTimeout() {
+        cancelAckFallbackTimeout();
+        if (callState != SipCallState.ANSWERING) {
+            return;
+        }
+
+        ackFallbackFuture = callStateTimeoutScheduler.schedule(() -> {
+            SipAudioOffer offer;
+            boolean shouldSendDeferredBye;
+
+            synchronized (SipClient.this) {
+                if (callState != SipCallState.ANSWERING) {
+                    ackFallbackFuture = null;
+                    return;
+                }
+
+                cancelAnsweringTimeout();
+                ServerTransaction localInviteServerTransaction = inviteServerTransaction;
+                if (activeDialog == null && localInviteServerTransaction != null) {
+                    activeDialog = localInviteServerTransaction.getDialog();
+                }
+
+                offer = currentAudioOffer;
+                callState = SipCallState.ACTIVE;
+                shouldSendDeferredBye = pendingHangupAfterAck;
+                pendingHangupAfterAck = false;
+                ackFallbackFuture = null;
+            }
+
+            if (offer != null) {
+                logger.info("No ACK received after 200 OK within {} ms - activating audio path via fallback",
+                        ACK_FALLBACK_TIMEOUT_MILLIS);
+                activateAudioPath(offer);
+            } else {
+                logger.warn("ACK fallback triggered but no audio offer available - skipping audio path activation");
+            }
+
+            listener.onCallActive();
+
+            if (shouldSendDeferredBye) {
+                logger.debug("ACK fallback active, executing deferred hangup");
+                sendBye("deferred-after-ack-timeout");
+            }
+        }, ACK_FALLBACK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+    }
+
     private void activateAudioPath(SipAudioOffer offer) {
         SipBackchannelRtpRelay relay = backchannelRelay;
         if (relay != null) {
@@ -1233,6 +1385,7 @@ public class SipClient implements SipListener {
 
     private void clearCallContextLocked(SipCallState nextState) {
         callState = nextState;
+        cancelAckFallbackTimeout();
         inviteRequest = null;
         inviteServerTransaction = null;
         inviteClientTransaction = null;

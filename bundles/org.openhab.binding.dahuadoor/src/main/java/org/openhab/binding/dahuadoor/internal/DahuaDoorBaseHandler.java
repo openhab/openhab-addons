@@ -1064,15 +1064,20 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         String activeIncomingClientId = findUnassignedActiveClientId(availableClientIds, usedClientIds);
         if (activeIncomingClientId != null) {
             sessionToClientId.put(sessionId, activeIncomingClientId);
-            updateBackchannelSession(sessionId, activeIncomingClientId,
-                    getSipClientForExtension(activeIncomingClientId));
+            SipClient activeClient = getSipClientForExtension(activeIncomingClientId);
+            logger.debug("Session {} assigned to active SipClient {} (state={})", sessionId, activeIncomingClientId,
+                    activeClient != null ? activeClient.getCallState() : "unknown");
+            updateBackchannelSession(sessionId, activeIncomingClientId, activeClient);
             return activeIncomingClientId;
         }
 
         for (String clientId : availableClientIds) {
             if (!usedClientIds.contains(clientId)) {
                 sessionToClientId.put(sessionId, clientId);
-                updateBackchannelSession(sessionId, clientId, getSipClientForExtension(clientId));
+                SipClient idleClient = getSipClientForExtension(clientId);
+                logger.debug("Session {} assigned to idle SipClient {} (state={})", sessionId, clientId,
+                        idleClient != null ? idleClient.getCallState() : "unknown");
+                updateBackchannelSession(sessionId, clientId, idleClient);
                 return clientId;
             }
         }
