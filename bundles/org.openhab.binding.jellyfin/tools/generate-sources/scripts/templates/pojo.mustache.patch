@@ -1,5 +1,5 @@
---- a/pojo.mustache	2026-05-03 12:22:17.506389087 +0200
-+++ b/pojo.mustache	2026-05-03 12:20:09.154425944 +0200
+--- a/pojo.mustache
++++ b/pojo.mustache
 @@ -70,29 +70,23 @@
    {{#gson}}
    @SerializedName(SERIALIZED_NAME_{{nameInSnakeCase}})
@@ -34,6 +34,24 @@
    {{/isContainer}}
    {{/vendorExtensions.x-is-jackson-optional-nullable}}
  
+@@ -118,7 +112,7 @@
+   {{#jsonb}}@JsonbCreator{{/jsonb}}{{#jackson}}@JsonCreator{{/jackson}}
+   public {{classname}}(
+   {{#readOnlyVars}}
+-    {{#jsonb}}@JsonbProperty(value = "{{baseName}}"{{^required}}, nullable = true{{/required}}){{/jsonb}}{{#jackson}}@JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}, required = {{#isNullable}}false{{/isNullable}}{{^isNullable}}{{required}}{{/isNullable}}){{/jackson}} {{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}
++    {{#jsonb}}@JsonbProperty(value = "{{baseName}}"{{^required}}, nullable = true{{/required}}){{/jsonb}}{{#jackson}}@JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}{{^isNullable}}{{#required}}, required = true{{/required}}{{/isNullable}}){{/jackson}} {{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}
+   {{/readOnlyVars}}
+   ) {
+     this();
+@@ -133,7 +127,7 @@
+   /**
+    * Constructor with all args parameters
+    */
+-  public {{classname}}({{#vendorExtensions.x-java-all-args-constructor-vars}}{{#jsonb}}@JsonbProperty(value = "{{baseName}}"{{^required}}, nullable = true{{/required}}){{/jsonb}}{{#jackson}}@JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}, required = {{#isNullable}}false{{/isNullable}}{{^isNullable}}{{required}}{{/isNullable}}){{/jackson}} {{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}{{/vendorExtensions.x-java-all-args-constructor-vars}}) {
++  public {{classname}}({{#vendorExtensions.x-java-all-args-constructor-vars}}{{#jsonb}}@JsonbProperty(value = "{{baseName}}"{{^required}}, nullable = true{{/required}}){{/jsonb}}{{#jackson}}@JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}{{^isNullable}}{{#required}}, required = true{{/required}}{{/isNullable}}){{/jackson}} {{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}{{/vendorExtensions.x-java-all-args-constructor-vars}}) {
+ {{#parent}}
+     super({{#parentVars}}{{name}}{{^-last}}, {{/-last}}{{/parentVars}});
+ {{/parent}}
 @@ -221,7 +215,6 @@
  {{#deprecated}}
    @Deprecated
@@ -51,3 +69,12 @@
      {{#vendorExtensions.x-is-jackson-optional-nullable}}
      {{#isReadOnly}}{{! A readonly attribute doesn't have setter => jackson will set null directly if explicitly returned by API, so make sure we have an empty JsonNullable}}
      if ({{name}} == null) {
+@@ -264,7 +257,7 @@
+     return {{name}};
+   }
+   {{/vendorExtensions.x-is-jackson-optional-nullable}}{{#vendorExtensions.x-is-jackson-optional-nullable}}
+-  @JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}, required = {{#isNullable}}false{{/isNullable}}{{^isNullable}}{{required}}{{/isNullable}})
++  @JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}{{^isNullable}}{{#required}}, required = true{{/required}}{{/isNullable}})
+   {{#isReadOnly}}private{{/isReadOnly}}{{^isReadOnly}}public{{/isReadOnly}} void {{setter}}_JsonNullable(JsonNullable<{{{datatypeWithEnum}}}> {{name}}) {
+     {{! For getters/setters that have name differing from attribute name, we must include setter (albeit private) for jackson to be able to set the attribute}}
+     this.{{name}} = {{name}};

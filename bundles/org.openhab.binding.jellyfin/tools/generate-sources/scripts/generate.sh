@@ -62,7 +62,10 @@ echo -e "ℹ️  - Latest openapi-generator-cli version: \033[1m$LATEST_OPENAPI_
 TEMPLATE_DIR="tools/generate-sources/scripts/templates"
 PATCHED_POJO_TEMPLATE="${ROOT}/${TEMPLATE_DIR}/pojo.mustache"
 POJO_TEMPLATE_PATCH="${ROOT}/${TEMPLATE_DIR}/pojo.mustache.patch"
+PATCHED_JACKSON_ANNOTATIONS_TEMPLATE="${ROOT}/${TEMPLATE_DIR}/jackson_annotations.mustache"
+JACKSON_ANNOTATIONS_TEMPLATE_PATCH="${ROOT}/${TEMPLATE_DIR}/jackson_annotations.mustache.patch"
 UPSTREAM_POJO_TEMPLATE_URL="https://raw.githubusercontent.com/OpenAPITools/openapi-generator/v${LATEST_OPENAPI_GENERATOR_CLI_TAG}/modules/openapi-generator/src/main/resources/Java/pojo.mustache"
+UPSTREAM_JACKSON_ANNOTATIONS_TEMPLATE_URL="https://raw.githubusercontent.com/OpenAPITools/openapi-generator/v${LATEST_OPENAPI_GENERATOR_CLI_TAG}/modules/openapi-generator/src/main/resources/Java/jackson_annotations.mustache"
 
 echo "ℹ️  - Fetch upstream Java pojo.mustache template for ${LATEST_OPENAPI_GENERATOR_CLI_TAG}"
 curl -fsSL "${UPSTREAM_POJO_TEMPLATE_URL}" > "${PATCHED_POJO_TEMPLATE}"
@@ -70,6 +73,15 @@ curl -fsSL "${UPSTREAM_POJO_TEMPLATE_URL}" > "${PATCHED_POJO_TEMPLATE}"
 echo "ℹ️  - Apply local pojo.mustache patch"
 if ! patch -s -u "${PATCHED_POJO_TEMPLATE}" "${POJO_TEMPLATE_PATCH}"; then
     echo "  ❌ Error: Failed to apply ${POJO_TEMPLATE_PATCH} to downloaded pojo.mustache"
+    exit 1
+fi
+
+echo "ℹ️  - Fetch upstream Java jackson_annotations.mustache template for ${LATEST_OPENAPI_GENERATOR_CLI_TAG}"
+curl -fsSL "${UPSTREAM_JACKSON_ANNOTATIONS_TEMPLATE_URL}" > "${PATCHED_JACKSON_ANNOTATIONS_TEMPLATE}"
+
+echo "ℹ️  - Apply local jackson_annotations.mustache patch"
+if ! patch -s -u "${PATCHED_JACKSON_ANNOTATIONS_TEMPLATE}" "${JACKSON_ANNOTATIONS_TEMPLATE_PATCH}"; then
+    echo "  ❌ Error: Failed to apply ${JACKSON_ANNOTATIONS_TEMPLATE_PATCH} to downloaded jackson_annotations.mustache"
     exit 1
 fi
 
@@ -219,6 +231,7 @@ rm -rf "${OUTPUT}"
 
 # Clean up transient patched template downloaded for this run
 rm -f "${PATCHED_POJO_TEMPLATE}"
+rm -f "${PATCHED_JACKSON_ANNOTATIONS_TEMPLATE}"
 
 cd ${ROOT}
 
@@ -245,17 +258,6 @@ echo "🔧 remove @NonNullByDefault from generated classes (covered by package-i
 # Null-safety is intentionally disabled for generated thirdparty API code via package-info.java
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/@NonNullByDefault/d' {} \;
 find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i '/import org\.eclipse\.jdt\.annotation\.NonNullByDefault;/d' {} \;
-
-echo "🔧 remove redundant annotations from generated model classes"
-# - @JsonInclude(USE_DEFAULTS): no-op when no class-level @JsonInclude is present; ALWAYS fields are preserved.
-# - @JsonProperty required=false: redundant as false is the Jackson default.
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f -exec sed -i -e '/@JsonInclude(value = JsonInclude\.Include\.USE_DEFAULTS)/d' -e 's/, required = false//' {} \;
-# Remove the JsonInclude import from files that no longer reference it at all (ALWAYS-annotated files keep theirs)
-find ${THIRD_PARTY_OUTPUT_DIR}/org/openhab/binding/jellyfin/internal/gen -name "*.java" -type f | while read f; do
-    if ! grep -q "JsonInclude" "$f"; then
-        sed -i '/import com\.fasterxml\.jackson\.annotation\.JsonInclude;/d' "$f"
-    fi
-done
 
 echo "🔧 guard url.replace calls in ServerConfiguration to avoid nullness mismatch"
 # Ensure generated ServerConfiguration calls to url.replace are null-guarded to satisfy static null analysis
