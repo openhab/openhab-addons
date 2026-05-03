@@ -10,31 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homematic.internal.model.dto;
+package org.openhab.binding.homematic.internal.model;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * Simple class with the XStream mapping for a list of TclRega scripts. Used to load the resource
- * homematic/tclrega-scripts.xml.
+ * Simple class with the XStream mapping for a list of entries returned from a TclRega script.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
+@XStreamAlias("list")
+public class TclScriptDataList {
 
-@XStreamAlias("scripts")
-public class TclScriptList {
-
-    @XStreamImplicit
-    private List<TclScript> scripts = new ArrayList<>();
+    @XStreamImplicit(itemFieldName = "entry")
+    private @Nullable List<TclScriptDataEntry> entries;
 
     /**
-     * Returns all scripts.
+     * Returns all entries.
      */
-    public List<TclScript> getScripts() {
-        return scripts;
+    public @Nullable List<TclScriptDataEntry> getEntries() {
+        return entries;
     }
 }

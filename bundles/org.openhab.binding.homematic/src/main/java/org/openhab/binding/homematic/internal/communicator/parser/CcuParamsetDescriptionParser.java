@@ -21,8 +21,8 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
 /**
  * Parses parameter descriptions from a CCU script and extracts datapoint metadata.

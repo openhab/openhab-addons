@@ -126,7 +126,8 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         }
         validateBinXSignature(message);
         this.binRpcData = message;
-        decodeMessage(methodHeader);;
+        decodeMessage(methodHeader);
+        ;
     }
 
     private void decodeMessage(boolean methodHeader) throws IOException {

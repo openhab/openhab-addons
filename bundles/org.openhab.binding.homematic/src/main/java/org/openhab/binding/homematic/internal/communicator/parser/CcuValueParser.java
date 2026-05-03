@@ -20,8 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

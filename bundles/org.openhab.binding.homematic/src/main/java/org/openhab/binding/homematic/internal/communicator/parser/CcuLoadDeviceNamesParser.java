@@ -21,8 +21,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataEntry;
-import org.openhab.binding.homematic.internal.model.dto.TclScriptDataList;
+import org.openhab.binding.homematic.internal.model.TclScriptDataEntry;
+import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 
 /**
  * Parses a TclRega script result containing names for devices.
