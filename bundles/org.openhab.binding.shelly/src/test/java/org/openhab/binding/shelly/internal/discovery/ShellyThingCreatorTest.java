@@ -79,6 +79,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplugu1-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGU1), //
                 Arguments.of("shellyplusplug-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugsg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of("shellyplugmg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellyplugus-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGUS), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
@@ -189,6 +190,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSSHUTTER, "", THING_TYPE_SHELLYPLUSSHUTTER), //
                 Arguments.of(SHELLYDT_PLUSPLUGS, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
+                Arguments.of(SHELLYDT_PLUSPLUGMG3, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGSAZ, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGIT, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of(SHELLYDT_PLUSPLUGUK, "", THING_TYPE_SHELLYPLUSPLUGS), //
