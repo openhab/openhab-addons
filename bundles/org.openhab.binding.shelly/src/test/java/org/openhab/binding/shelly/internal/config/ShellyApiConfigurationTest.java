@@ -79,7 +79,7 @@ public class ShellyApiConfigurationTest {
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig("myUser", "myPass"), "my-shelly",
                 DEVICE_IP);
         assertThat(config.getRealm(), is("my-shelly"));
-        assertThat(config.getDeviceIp(), is(DEVICE_IP));
+        assertThat(config.getDeviceHostname(), is(DEVICE_IP));
         assertThat(config.getUserId(), is("myUser"));
         assertThat(config.getPassword(), is("myPass"));
     }
@@ -148,8 +148,8 @@ public class ShellyApiConfigurationTest {
         setField(thing, "deviceAddress", "BC:02:6E:C3:A6:C7");
         ShellyApiConfiguration config = new ShellyApiConfiguration(thing, bindingConfig(), "", false);
         // MAC address must be lowercased and colons stripped; deviceIp must be empty for BLU devices
-        assertThat(config.getDeviceAddress(), is("bc026ec3a6c7"));
-        assertThat(config.getDeviceIp(), is(""));
+        assertThat(config.getBdAddr(), is("bc026ec3a6c7"));
+        assertThat(config.getDeviceHostname(), is(""));
     }
 
     // ── Mutable state ─────────────────────────────────────────────────────────

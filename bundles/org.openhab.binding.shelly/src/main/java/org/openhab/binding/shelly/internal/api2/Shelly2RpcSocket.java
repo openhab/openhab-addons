@@ -19,6 +19,8 @@ import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.a
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -70,7 +72,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     private final Gson gson = new Gson();
 
     private volatile String thingName = "";
-    private volatile String deviceIp = "";
+    private volatile @Nullable InetSocketAddress deviceSocketAddr; // TODO: (Nad) Is port relevant here? If not, use InetAddress instead
     private final boolean inbound;
     private final ShellyThingTable thingTable;
 
@@ -94,13 +96,13 @@ public class Shelly2RpcSocket implements WriteCallback {
      *
      * @param thingName Thing/Service name.
      * @param thingTable the {@link ShellyThingTable}.
-     * @param deviceIp IP address for the device.
+     * @param deviceSocketAddr IP address for the device.
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
-    public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, String deviceIp,
+    public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, InetSocketAddress deviceSocketAddr,
             WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         this.thingName = thingName;
-        this.deviceIp = deviceIp;
+        this.deviceSocketAddr = deviceSocketAddr;
         this.thingTable = thingTable;
         this.client = webSocketClient;
         this.scheduler = scheduler;
@@ -137,21 +139,28 @@ public class Shelly2RpcSocket implements WriteCallback {
      *             NOTE: sendQueue is NOT preserved across reconnects; it is cleared on any disconnect/close/error.
      */
     public void connect() throws ShellyApiException {
-        String deviceIp = this.deviceIp;
-        if (deviceIp.isBlank()) {
+        InetSocketAddress socketAddr = this.deviceSocketAddr;
+        InetAddress inetAddr;
+        if (socketAddr == null || (inetAddr = socketAddr.getAddress()) == null) {
             throw new ShellyApiException(thingName + ": Device IP not set");
         }
+        String ipAddr = inetAddr.getHostAddress();
 
         // Prepare connect
         URI uri;
         try {
-            uri = new URI("ws://" + deviceIp + SHELLYRPC_ENDPOINT);
+            int port = socketAddr.getPort();
+            if (port > 0) {
+                uri = new URI("ws://" + ipAddr + ":" + port + SHELLYRPC_ENDPOINT);
+            } else {
+                uri = new URI("ws://" + ipAddr + SHELLYRPC_ENDPOINT);
+            }
         } catch (URISyntaxException e) {
             throw new ShellyApiException("Invalid URI: " + e.getMessage(), e);
         }
         ClientUpgradeRequest request = new ClientUpgradeRequest();
-        request.setHeader(HttpHeaders.HOST, deviceIp);
-        request.setHeader("Origin", "http://" + deviceIp);
+        request.setHeader(HttpHeaders.HOST, ipAddr);
+        request.setHeader("Origin", "http://" + ipAddr);
         request.setHeader("Pragma", "no-cache");
         request.setHeader("Cache-Control", "no-cache");
 
@@ -188,10 +197,10 @@ public class Shelly2RpcSocket implements WriteCallback {
             return;
         }
 
-        String deviceIp = this.deviceIp;
-        if (deviceIp.isEmpty()) {
+        InetSocketAddress socketAddr = this.deviceSocketAddr;
+        if (socketAddr == null) {
             // This is the inbound event web socket
-            this.deviceIp = deviceIp = session.getRemoteAddress().getAddress().getHostAddress();
+            this.deviceSocketAddr = socketAddr = session.getRemoteAddress();
         }
 
         // It's a bit wasteful to retrieve the ThingInterface even if we already have a handler, but we can't call
@@ -199,11 +208,11 @@ public class Shelly2RpcSocket implements WriteCallback {
         // the lock is acquired.
         ShellyThingInterface thing;
         try {
-            thing = thingTable.getThing(deviceIp);
+            thing = thingTable.getThing(socketAddr.getAddress());
             thingName = thing.getThingName();
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: Inbound connection request from {}, but unknown/disabled thing - {}, closing socket",
-                    thingName, deviceIp, e.getMessage());
+                    thingName, socketAddr, e.getMessage());
             session.close(StatusCode.SHUTDOWN, "Thing not active");
             return;
         }
@@ -230,7 +239,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                     session.getRemoteAddress(), session.getIdleTimeout());
         }
         startPing(session);
-        handler.onConnect(deviceIp, true);
+        handler.onConnect(socketAddr.getAddress(), true);
 
         if (queue != null) {
             if (logger.isDebugEnabled()) {

@@ -17,12 +17,14 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +66,14 @@ public class ShellyApiConfiguration {
         }
     }
 
-    private final String deviceIp; // device ip address
-    private final String deviceAddress; // resolved IP address or MAC address for BLU devices
+    /** Unresolved device hostname, can be an IP or a name, with or without a {@code :port} suffix */
+    private final String deviceHostname;
+
+    /** Device IP with or without port or {@code null} */
+    private final AtomicReference<@Nullable InetSocketAddress> deviceSocketAddr = new AtomicReference<>();
+
+    /** Bluetooth device address, a unique 48-bit identifier, similar to a MAC address */
+    private final @Nullable String deviceBdAddr;
     private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
             new ShellyAuthCredentials("", "", "", "")); // auth credentials
     private final ShellyApiUrls urls;
@@ -133,13 +141,17 @@ public class ShellyApiConfiguration {
 
         // deviceIP can be an IP address, IP address:port or a FQDN, which needs to be resolved
         // deviceAddress is the MAC address for BLU device or the resolved IP address
-        if (!thingConfig.getDeviceAddress().isEmpty()) {
+        String bdAddr = thingConfig.getDeviceAddress();
+        if (!bdAddr.isBlank()) {
             // BLU: remove : from MAC address and convert to lower case
-            deviceAddress = thingConfig.getDeviceAddress().toLowerCase(Locale.ROOT).replace(":", "");
-            deviceIp = "";
+            this.deviceBdAddr = bdAddr.toLowerCase(Locale.ROOT).replace(":", "");
+            this.deviceHostname = "";
         } else {
-            String raw = thingConfig.getDeviceIp();
-            deviceIp = deviceAddress = resolveHostname ? resolveIp(raw) : raw;
+            this.deviceBdAddr = null;
+            this.deviceHostname = thingConfig.getDeviceIp();
+            if (resolveHostname) {
+                this.deviceSocketAddr.set(resolveSocketAddr(this.deviceHostname));
+            }
         }
 
         credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
@@ -155,7 +167,7 @@ public class ShellyApiConfiguration {
         eventsRoller = thingConfig.getEventsRoller();
         eventsSensorReport = thingConfig.getEventsSensorReport();
 
-        urls = new ShellyApiUrls(localIp, localPort, deviceIp);
+        urls = new ShellyApiUrls(localIp, localPort, deviceHostname);
     }
 
     /**
@@ -163,12 +175,13 @@ public class ShellyApiConfiguration {
      *
      * @param bindingConfig Binding configuration
      * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
-     * @param deviceIp Device IP address
+     * @param hostname Device host name
      */
-    public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String deviceIp) {
+    public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String hostname) {
         this.realm.set(realm); // mDNS service name or hostname provided by /shelly
-        this.deviceIp = deviceIp;
-        this.deviceAddress = resolveIp(deviceIp);
+        this.deviceHostname = hostname;
+        this.deviceSocketAddr.set(resolveSocketAddr(hostname));
+        this.deviceBdAddr = null; // TODO: (Nad) Is the bdAddr used for discovery?
 
         localIp = bindingConfig.getLocalIP();
         localPort = String.valueOf(bindingConfig.getHttpPort());
@@ -180,39 +193,78 @@ public class ShellyApiConfiguration {
         eventsButton = eventsSwitch = eventsPush = eventsRoller = eventsSensorReport = false;
         enableBluGateway = enableRangeExtender = false;
 
-        urls = new ShellyApiUrls(localIp, localPort, deviceIp);
+        urls = new ShellyApiUrls(localIp, localPort, hostname);
     }
 
-    private String resolveIp(String deviceIp) {
-        String resolvedIp = deviceIp;
-        if (!resolvedIp.isEmpty()) {
+    private @Nullable InetSocketAddress resolveSocketAddr(String hostname) {
+        InetSocketAddress result = null;
+        if (!hostname.isBlank()) {
             try {
-                String ip = deviceIp.contains(":") ? substringBefore(deviceIp, ":") : deviceIp;
-                String port = deviceIp.contains(":") ? substringAfter(deviceIp, ":") : "";
+                String ip = hostname.contains(":") ? substringBefore(hostname, ":") : hostname;
+                String port = hostname.contains(":") ? substringAfter(hostname, ":") : "";
                 InetAddress addr = InetAddress.getByName(ip);
-                String saddr = addr.getHostAddress();
-                if (!ip.equals(saddr)) {
-                    resolvedIp = saddr + (port.isEmpty() ? "" : ":" + port);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: hostname {} resolved to IP address {}", realm.get(), deviceIp, resolvedIp);
+                int portNum = 0;
+                if (!ip.isBlank()) {
+                    try {
+                        portNum = Integer.parseInt(port);
+                    } catch (NumberFormatException e) {
+                        logger.warn("{}: Invalid port number '{}' - ignoring", realm.get(), port);
                     }
                 }
+                result = new InetSocketAddress(addr, portNum);
+                String resultAddr = addr.getHostAddress();
+                if (!ip.equals(resultAddr) && logger.isDebugEnabled()) {
+                    logger.debug("{}: hostname {} resolved to IP address {}", realm.get(), hostname, resultAddr + (port.isEmpty() ? "" : ":" + port));
+                }
             } catch (UnknownHostException e) {
-                logger.debug("{}: Unable to resolve hostname {}", realm.get(), deviceIp);
+                logger.debug("{}: Unable to resolve hostname {}", realm.get(), hostname);
             }
+        } else {
+            logger.debug("{}: Hostname is missing", realm.get());
+            return null;
         }
-        if (resolvedIp.isBlank()) {
-            logger.debug("{}: Device IP is missing or invalid", realm.get());
+        if (result == null) {
+            logger.debug("{}: Hostname '{}' is invalid", realm.get(), hostname);
         }
-        return resolvedIp;
+        return result;
     }
 
-    public String getDeviceIp() {
-        return deviceIp;
+    /**
+     * The unresolved device hostname, can be an IP or a name, with or without a {@code :port} suffix.
+     *
+     * @return The unresolved device hostname.
+     */
+    public String getDeviceHostname() {
+        return deviceHostname;
     }
 
-    public String getDeviceAddress() {
-        return deviceAddress;
+    /**
+     * @return The device IP or {@code null}.
+     */
+    public @Nullable InetAddress getDeviceIpAddress() {
+        InetSocketAddress isa = deviceSocketAddr.get();
+        return isa == null ? null : isa.getAddress();
+    }
+
+    /**
+     * The device IP with or without port or {@code null}. The port is {@code 0} if not specified.
+     *
+     * @return The device socket address or {@code null}.
+     */
+    public @Nullable InetSocketAddress getDeviceSocketAddress() {
+        return deviceSocketAddr.get();
+    }
+
+    public void setDeviceIp(@Nullable InetSocketAddress deviceIp) {
+        this.deviceSocketAddr.set(deviceIp);
+    }
+
+    /**
+     * The Bluetooth device address, a unique 48-bit identifier, similar to a MAC address.
+     * @return The Bluetooth device addres or {@code null}.
+     */
+    public @Nullable String getBdAddr() {
+        return deviceBdAddr;
     }
 
     public String getUserId() {
@@ -292,10 +344,30 @@ public class ShellyApiConfiguration {
         realm.set(value);
     }
 
+    /**
+     * Attempt to resolve the device host name into an IP address.
+     *
+     * @return {@code true} if the IP address is resolved, {@code false} if it isn't.
+     */
+    public boolean resolveIp() {
+        InetSocketAddress socketAddr = deviceSocketAddr.get();
+        if (socketAddr != null) {
+            // Already resolved, just return
+            return true;
+        }
+        socketAddr = resolveSocketAddr(this.deviceHostname);
+        if (socketAddr == null) {
+            logger.debug("{}: Failed to resolve hostname '{}'", realm.get(), deviceHostname);
+            return false;
+        }
+        deviceSocketAddr.set(socketAddr);
+        return true;
+    }
+
     @Override
     public String toString() {
         ShellyAuthCredentials credentials = this.credentials.get();
-        return "Device address=" + deviceAddress + ", HTTP user/password=" + getUserId() + "/"
+        return (deviceBdAddr != null ? "Bluetooth device address=" + deviceBdAddr + ", ": "") + "HTTP user/password=" + getUserId() + "/"
                 + (credentials.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: " + eventsButton
                 + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush + ", Roller: " + eventsRoller
                 + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n" + "Blu Gateway="

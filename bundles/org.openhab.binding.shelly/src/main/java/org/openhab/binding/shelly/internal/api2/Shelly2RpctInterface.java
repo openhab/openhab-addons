@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import java.net.InetAddress;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -24,7 +26,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 @NonNullByDefault
 public interface Shelly2RpctInterface {
 
-    void onConnect(String deviceIp, boolean connected);
+    void onConnect(InetAddress deviceIp, boolean connected);
 
     void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException;
 

@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +144,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void initialize() {
         if (alwaysOn) {
             disconnect();
-            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client,
+            InetSocketAddress socketAddr = config.getDeviceSocketAddress();
+            if (socketAddr == null) {
+                logger.warn("{}: Failed to initialize because the IP address is unknown", thingName);
+                return;
+            }
+            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client,
                     scheduler);
             rpcSocket.addMessageHandler(this);
             this.rpcSocket = rpcSocket;
@@ -597,7 +604,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onConnect(String deviceIp, boolean connected) {
+    public void onConnect(InetAddress deviceIp, boolean connected) {
         thing = thingTable.getThing(deviceIp);
         logger.debug("{}: Get thing from thingTable", thingName);
     }

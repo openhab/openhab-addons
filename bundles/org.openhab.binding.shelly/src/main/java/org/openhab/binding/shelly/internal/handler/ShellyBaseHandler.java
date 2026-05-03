@@ -19,6 +19,8 @@ import static org.openhab.binding.shelly.internal.handler.ShellyComponents.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -187,8 +189,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean checkRepresentation(String key) {
-        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getDeviceAddress())
-                || key.equalsIgnoreCase(apiConfig.getDeviceIp()) || key.equalsIgnoreCase(apiConfig.getRealm())
+        InetAddress ipAddr;
+        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
+                || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))
+                || key.equalsIgnoreCase(apiConfig.getDeviceHostname()) || key.equalsIgnoreCase(apiConfig.getRealm())
                 || key.equalsIgnoreCase(getThingName());
     }
 
@@ -313,12 +317,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         profile.initFromThingType(thing.getThingTypeUID());
         if (logger.isDebugEnabled()) {
+            InetSocketAddress socketAddr = apiConfig.getDeviceSocketAddress();
+            InetAddress ipAddr = socketAddr == null ? null : socketAddr.getAddress();
+            String ipAddrStr = ipAddr == null ? "none" : ipAddr.getHostAddress();
+            int port = socketAddr == null ? 0 : socketAddr.getPort();
+            String bdAddr = apiConfig.getBdAddr();
+            bdAddr = bdAddr == null ? "none" : bdAddr.toLowerCase(Locale.ROOT);
             logger.debug(
-                    "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
-                    thingName, getThing().getLabel(), thingType, apiConfig.getDeviceAddress().toUpperCase(Locale.ROOT),
+                    "{}: Start initializing for thing {}, type {}, Device IP address {}, Device port {}, Bluetooth device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
+                    thingName, getThing().getLabel(), thingType, ipAddrStr, port == 0 ? "none" : port, bdAddr,
                     gen2, profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
-        if (apiConfig.getDeviceAddress().isEmpty()) {
+        if (apiConfig.getBdAddr() == null) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
                     "config-status.error.missing-device-address");
             return false;
@@ -629,13 +639,21 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private void checkRangeExtender(ShellyDeviceProfile prf) {
         if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender()
                 && prf.status.rangeExtender != null && prf.status.rangeExtender.apClients != null) {
-            for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
-                String secondaryIp = apiConfig.getDeviceIp() + ":" + client.mport.toString();
-                String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
-                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
-                        bindingConfig, httpClient, messages, thingTable);
-                if (result != null) {
-                    thingTable.discoveredResult(result);
+            InetAddress inetAddr = apiConfig.getDeviceIpAddress();
+            if (inetAddr == null) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: Skipping range extender check because the IP address is unknown", thingName);
+                }
+            } else {
+                String ipAddr = inetAddr.getHostAddress();
+                for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
+                    String secondaryIp = ipAddr + ":" + client.mport.toString();
+                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
+                    DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
+                            bindingConfig, httpClient, messages, thingTable);
+                    if (result != null) {
+                        thingTable.discoveredResult(result);
+                    }
                 }
             }
         }
@@ -910,7 +928,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
-        if (thingName.equalsIgnoreCase(deviceName) || apiConfig.getDeviceAddress().equals(address)
+        if (thingName.equalsIgnoreCase(deviceName) || address.equals(apiConfig.getBdAddr())
                 || apiConfig.getRealm().equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
@@ -1051,10 +1069,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase(Locale.ROOT);
         }
 
-        if (apiConfig.getDeviceAddress().isEmpty()) {
-            // may not be set in .things file
-            logger.debug("{}: IP/MAC address for the device must not be empty", thingName);
-            return false;
+        if (blu) { // TODO: (Nad) Check if the logic is correct
+            String bdAddr = apiConfig.getBdAddr();
+            if (bdAddr == null || bdAddr.isBlank()) {
+                // may not be set in .things file
+                logger.debug("{}: Bluetooth device address for the device must not be empty", thingName);
+                return false;
+            }
+        } else {
+            if (!apiConfig.resolveIp()) {
+                // may not be set in .things file
+                logger.debug("{}: Unable to resolve IP address for the device from configured value '{}'", thingName, apiConfig.getDeviceHostname());
+                return false;
+            }
         }
 
         if (apiConfig.getLocalIp().startsWith("169.254")) {
