@@ -129,7 +129,7 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 #
 # The port to bind the debugger to.
 #
-#org.openhab.automation.pythonscripting:debuggerPort = 9229
+#org.openhab.automation.pythonscripting:debuggerPort = 9230
 ```
 
 ### Console
