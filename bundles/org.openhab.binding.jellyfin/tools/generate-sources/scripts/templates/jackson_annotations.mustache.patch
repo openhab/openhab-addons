@@ -1,6 +1,6 @@
 --- a/jackson_annotations.mustache
 +++ b/jackson_annotations.mustache
-@@ -1,14 +1,21 @@
+@@ -1,14 +1,17 @@
  {{!
 - If this is map and items are nullable, make sure that nulls are included.
 - To determine what JsonInclude.Include method to use, consider the following:
@@ -13,16 +13,13 @@
   }}
 -  @JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}, required = {{#isNullable}}false{{/isNullable}}{{^isNullable}}{{required}}{{/isNullable}})
 -  @JsonInclude({{#isMap}}{{#items.isNullable}}content = JsonInclude.Include.ALWAYS, {{/items.isNullable}}{{/isMap}}value = JsonInclude.Include.{{#required}}ALWAYS{{/required}}{{^required}}USE_DEFAULTS{{/required}})
+-{{#withXml}}
 +  @JsonProperty(value = JSON_PROPERTY_{{nameInSnakeCase}}{{^isNullable}}{{#required}}, required = true{{/required}}{{/isNullable}})
 +{{#required}}
 +  @JsonInclude({{#isMap}}{{#items.isNullable}}content = JsonInclude.Include.ALWAYS, {{/items.isNullable}}{{/isMap}}value = JsonInclude.Include.ALWAYS)
-+{{/required}}
-+{{^required}}
-+{{#isMap}}{{#items.isNullable}}
++{{/required}}{{^required}}{{#isMap}}{{#items.isNullable}}
 +  @JsonInclude(content = JsonInclude.Include.ALWAYS)
-+{{/items.isNullable}}{{/isMap}}
-+{{/required}}
- {{#withXml}}
++{{/items.isNullable}}{{/isMap}}{{/required}}{{#withXml}}
    @JacksonXmlProperty(localName = "{{items.xmlName}}{{^items.xmlName}}{{xmlName}}{{^xmlName}}{{baseName}}{{/xmlName}}{{/items.xmlName}}"{{#isXmlAttribute}}, isAttribute = true{{/isXmlAttribute}}{{#xmlNamespace}}, namespace = "{{.}}"{{/xmlNamespace}})
    {{#isContainer}}
    @JacksonXmlElementWrapper({{#isXmlWrapped}}localName = "{{xmlName}}{{^xmlName}}{{baseName}}{{/xmlName}}", {{#xmlNamespace}}namespace = "{{.}}", {{/xmlNamespace}}{{/isXmlWrapped}}useWrapping = {{isXmlWrapped}})
