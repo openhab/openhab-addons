@@ -91,8 +91,7 @@ public class ShellyHttpClient {
         this.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public synchronized void setConfig(String thingName, ShellyApiConfiguration config) {
-        this.thingName = thingName;
+    public void setConfig(ShellyApiConfiguration config) {
         this.config = config;
     }
 

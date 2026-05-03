@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.config;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_USERID;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -41,15 +41,15 @@ public class ShellyBindingConfiguration {
     public static final String CONFIG_LOCAL_IP = "localIP";
     public static final String CONFIG_AUTOCOIOT = "autoCoIoT";
 
-    private final String defaultUserId;
-    private final String defaultPassword;
-    private final String localIP;
-    private final int httpPort; // -1 means "use DEFAULT_LOCAL_PORT"
-    private final boolean autoCoIoT;
+    private String defaultUserId;
+    private String defaultPassword;
+    private String localIP;
+    private int httpPort; // -1 means "use DEFAULT_LOCAL_PORT"
+    private boolean autoCoIoT;
 
     /** No-arg constructor: empty localIP, all other fields use defaults. */
     public ShellyBindingConfiguration() {
-        this("", SHELLY2_DEFAULT_USERID, "", -1, true);
+        this("", SHELLY2_DEFAULT_USERID, SHELLY2_DEFAULT_PASSWORD, -1, true);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ShellyBindingConfiguration {
      * Combine with {@link #fromProperties} to apply binding.cfg overrides on top.
      */
     public ShellyBindingConfiguration(NetworkAddressService networkAddressService) {
-        this(resolveLocalIP(networkAddressService), SHELLY2_DEFAULT_USERID, "", -1, true);
+        this(resolveLocalIP(networkAddressService), SHELLY2_DEFAULT_USERID, SHELLY2_DEFAULT_PASSWORD, -1, true);
     }
 
     private ShellyBindingConfiguration(String localIP, String defaultUserId, String defaultPassword, int httpPort,
@@ -76,7 +76,8 @@ public class ShellyBindingConfiguration {
      * callers control whether a network-resolved address or an empty placeholder is used.
      */
     public static ShellyBindingConfiguration fromProperties(String localIP, Map<String, Object> properties) {
-        return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, "", -1, true).withOverrides(properties);
+        return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, SHELLY2_DEFAULT_PASSWORD, -1, true)
+                .withOverrides(properties);
     }
 
     /**
@@ -85,7 +86,7 @@ public class ShellyBindingConfiguration {
     public static ShellyBindingConfiguration fromProperties(String localIP,
             @Nullable Dictionary<String, Object> properties) {
         if (properties == null) {
-            return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, "", -1, true);
+            return new ShellyBindingConfiguration(localIP, SHELLY2_DEFAULT_USERID, SHELLY2_DEFAULT_PASSWORD, -1, true);
         }
         List<String> keys = Collections.list(properties.keys());
         Map<String, Object> map = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
@@ -142,15 +143,22 @@ public class ShellyBindingConfiguration {
         boolean coiot = autoCoIoT;
 
         for (Map.Entry<String, Object> e : properties.entrySet()) {
+            Object localIpValue = e.getValue();
             switch (e.getKey()) {
                 case CONFIG_DEF_HTTP_USER:
-                    uid = (String) e.getValue();
+                    if (localIpValue instanceof String localIpString && !localIpString.isBlank()) {
+                        uid = (String) localIpValue;
+                    }
                     break;
                 case CONFIG_DEF_HTTP_PWD:
-                    pwd = (String) e.getValue();
+                    if (localIpValue instanceof String localIpString && !localIpString.isBlank()) {
+                        pwd = (String) e.getValue();
+                    }
                     break;
                 case CONFIG_LOCAL_IP:
-                    ip = (String) e.getValue();
+                    if (localIpValue instanceof String localIpString && !localIpString.isBlank()) {
+                        ip = localIpString;
+                    }
                     break;
                 case CONFIG_AUTOCOIOT:
                     Object value = e.getValue();

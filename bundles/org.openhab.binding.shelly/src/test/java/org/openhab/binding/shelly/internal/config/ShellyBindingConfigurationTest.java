@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.config;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_PASSWORD;
 import static org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration.*;
 
 import java.util.Dictionary;
@@ -45,7 +46,7 @@ public class ShellyBindingConfigurationTest {
     void defaultConstructorValues() {
         ShellyBindingConfiguration config = new ShellyBindingConfiguration();
         assertThat(config.getDefaultUserId(), is("admin"));
-        assertThat(config.getDefaultPassword(), is(""));
+        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
         assertThat(config.getLocalIP(), is(""));
         assertThat(config.getHttpPort(), is(DEFAULT_LOCAL_PORT));
         assertThat(config.isAutoCoIoT(), is(true));
@@ -142,7 +143,7 @@ public class ShellyBindingConfigurationTest {
         ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties("",
                 Map.of("unknownKey", "value"));
         assertThat(config.getDefaultUserId(), is("admin"));
-        assertThat(config.getDefaultPassword(), is(""));
+        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
@@ -154,13 +155,13 @@ public class ShellyBindingConfigurationTest {
                 (Dictionary<String, Object>) null);
         assertThat(config.getLocalIP(), is("10.0.0.2"));
         assertThat(config.getDefaultUserId(), is("admin"));
-        assertThat(config.getDefaultPassword(), is(""));
+        assertThat(config.getDefaultPassword(), is(SHELLY2_DEFAULT_PASSWORD));
         assertThat(config.isAutoCoIoT(), is(true));
     }
 
     @Test
     void fromPropertiesNullDictionaryAndMapYieldSameDefaults() {
-        // null Dictionary must produce identical defaults to an empty Map — no "admin" password leak
+        // null Dictionary and empty Map must produce identical defaults
         ShellyBindingConfiguration fromNull = ShellyBindingConfiguration.fromProperties("10.0.0.3",
                 (Dictionary<String, Object>) null);
         ShellyBindingConfiguration fromEmpty = ShellyBindingConfiguration.fromProperties("10.0.0.3", Map.of());

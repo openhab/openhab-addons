@@ -101,8 +101,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final HttpClient httpClient;
     private final ShellyThingTable thingTable;
 
-    private volatile ShellyBindingConfiguration bindingConfig;
-    private final Shelly1CoapServer coapServer;
+    private final ShellyBindingConfiguration bindingConfig;
     protected volatile ShellyThingConfiguration config;
     protected volatile ShellyApiConfiguration apiConfig;
     private final ShellyTranslationProvider messages;
@@ -119,7 +118,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected ShellyDeviceProfile profile;
     private volatile ShellyDeviceStats stats = new ShellyDeviceStats();
     private boolean channelsCreated = false;
-    private volatile boolean stopping = false;
+    private boolean stopping = false;
     private int vibrationFilter = 0;
     private String lastWakeupReason = "";
 
@@ -151,7 +150,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.thingTable = thingTable;
         this.thingName = getString(thing.getLabel());
         this.bindingConfig = bindingConfig;
-        this.coapServer = coapServer;
         this.messages = translationProvider;
         this.cache = new ShellyChannelCache(this);
         this.channelDefinitions = new ShellyChannelDefinitions(messages);
@@ -183,14 +181,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private ShellyApiConfiguration buildApiConfig() {
-        return buildApiConfig(config, bindingConfig);
-    }
-
-    private ShellyApiConfiguration buildApiConfig(ShellyThingConfiguration thingCfg,
-            ShellyBindingConfiguration bindingCfg) {
         Map<String, String> properties = getThing().getProperties();
         String realm = getString(properties.get(PROPERTY_SERVICE_NAME));
-        return new ShellyApiConfiguration(thingCfg, bindingCfg, realm, gen2);
+        return new ShellyApiConfiguration(config, bindingConfig, realm, gen2);
     }
 
     @Override
@@ -292,57 +285,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters); // persists new values via updateConfiguration()
+        super.handleConfigurationUpdate(configurationParameters);
         logger.debug("{}: Thing config was updated, re-initialize", thingName);
-
-        // Compute both values before writing to ensure a reader always sees apiConfig
-        // that was built from the same config/bindingConfig combination it observes.
-        ShellyThingConfiguration newConfig = getConfigAs(ShellyThingConfiguration.class);
-        ShellyApiConfiguration newApiConfig = buildApiConfig(newConfig, bindingConfig);
-        config = newConfig;
-        apiConfig = newApiConfig;
-        applyCoapConfig();
-        stopping = false;
-        reinitializeThing();
-    }
-
-    /**
-     * Called by {@link org.openhab.binding.shelly.internal.ShellyHandlerFactory} when the binding-level
-     * configuration (default credentials, local IP, autoCoIoT) is changed at runtime.
-     */
-    @Override
-    public void updateBindingConfig(ShellyBindingConfiguration newBindingConfig) {
-        logger.debug("{}: Binding config updated, re-initialize", thingName);
-        // Compute apiConfig before writing bindingConfig to ensure consistency.
-        ShellyApiConfiguration newApiConfig = buildApiConfig(config, newBindingConfig);
-        bindingConfig = newBindingConfig;
-        apiConfig = newApiConfig;
-        applyCoapConfig();
-        stopping = false;
-        reinitializeThing();
-    }
-
-    /**
-     * Stop/reconfigure/create the CoAP handler after {@code apiConfig} has been rebuilt.
-     * Extracted to avoid duplicating this logic in {@link #handleConfigurationUpdate} and
-     * {@link #updateBindingConfig}.
-     */
-    private void applyCoapConfig() {
-        // Stop existing CoAP handler and propagate new config.
-        // If eventsCoIoT changed false→true, create a new handler; true→false, drop it.
         Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.stop();
         }
-        if (apiConfig.getEnableCoIOT()) {
-            if (coap == null) {
-                this.coap = new Shelly1CoapHandler(this, thingName, apiConfig, coapServer);
-            } else {
-                coap.setConfig(apiConfig);
-            }
-        } else {
-            this.coap = null;
-        }
+        stopping = false;
+        reinitializeThing();// force re-initialization
     }
 
     /**
@@ -392,7 +342,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize(thingName, apiConfig);
+        api.initialize(apiConfig);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && apiConfig.getPassword().isBlank()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -400,7 +350,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (apiConfig.getRealm().isEmpty()) {
             apiConfig.setRealm(getString(device.hostname).toLowerCase(Locale.ROOT));
-            api.setConfig(thingName, apiConfig); // update config
+            api.setConfig(apiConfig); // update config
         }
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
@@ -1161,8 +1111,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
             }
         }
-        if (!gen2 && bindingConfig.isAutoCoIoT() && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0
-                || "production_test".equalsIgnoreCase(prf.fwVersion))) {
+        if (!gen2 && bindingConfig.isAutoCoIoT() && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+                || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
             if (!apiConfig.getEnableCoIOT()) {
                 logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }
@@ -1204,7 +1154,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             apiConfig.setEnableCoIOT(true);
-            api.setConfig(thingName, apiConfig);
+            api.setConfig(apiConfig);
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.isAutoCoIoT(), autoCoIoT);
@@ -1599,11 +1549,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             job.cancel(true);
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
-        }
-        Shelly1CoapHandler coap = this.coap;
-        if (coap != null) {
-            coap.stop();
-            this.coap = null;
         }
         api.close();
         profile.initialized = false;

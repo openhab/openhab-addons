@@ -139,8 +139,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize(String thingName, ShellyApiConfiguration config) throws ShellyApiException {
-        setConfig(thingName, config);
+    public void initialize(ShellyApiConfiguration config) throws ShellyApiException {
+        setConfig(config);
 
         if (alwaysOn) {
             disconnect();
@@ -161,10 +161,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void startScan() {
         try {
-            if (config.getEnableBluGateway()) {
+            if (!profile.isBlu) { // Do not try for BLU devices
                 installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
+            logger.trace("{}: Unable to start/stop {}", thingName, SHELLY2_BLU_GWSCRIPT);
         }
     }
 
@@ -1263,10 +1264,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
-        Shelly2RpcBaseMessage request = buildRequest(method, null);
-        reconnect();
+        if (alwaysOn) {
+            reconnect();
+        }
+
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
+            Shelly2RpcBaseMessage request = buildRequest(method, null);
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
         } else {
             throw new ShellyApiException("RPC socket isn't connected, cannot send async request");
@@ -1349,10 +1353,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void reconnect() throws ShellyApiException {
-        if (!alwaysOn) {
-            return;
-        }
-
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
