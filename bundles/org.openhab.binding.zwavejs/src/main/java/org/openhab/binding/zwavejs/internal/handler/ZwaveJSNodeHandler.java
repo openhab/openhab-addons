@@ -783,6 +783,31 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
     }
 
+    /**
+     * Re-injects channels that the eager generator pass cannot rediscover (because the device's
+     * interview omits the CC) but which were legitimately attached earlier via the lazy path and
+     * persisted to Thing.json.
+     *
+     * Currently scoped to CC 0x2B (Scene Activation): only channels whose configuration
+     * commandClassId equals COMMAND_CLASS_SCENE_ACTIVATION are preserved; all other "missing
+     * from result" channels still go through the normal removal path in updateChannels().
+     *
+     * @param result the type generator result that updateChannels will consume
+     */
+    private void rePrimePersistentLazyChannels(ZwaveJSTypeGeneratorResult result) {
+        for (Channel existing : thing.getChannels()) {
+            String id = existing.getUID().getId();
+            if (result.channels.containsKey(id)) {
+                continue;
+            }
+            ZwaveJSChannelConfiguration cfg = getChannelConfiguration(existing);
+            if (cfg.commandClassId == COMMAND_CLASS_SCENE_ACTIVATION) {
+                logger.debug("Node {}. Preserving lazy Scene Activation channel {} across setupThing", config.id, id);
+                result.channels.put(id, existing);
+            }
+        }
+    }
+
     private boolean setupThing(Node node) {
         logger.debug("Node {}. Building channels and configuration, containing {} values", node.nodeId,
                 node.values.size());
@@ -804,6 +829,12 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         if (!result.location.equals(getThing().getLocation()) && !result.location.isBlank()) {
             builder.withLocation(result.location);
         }
+
+        // Preserve channels previously attached via the lazy CC 0x2B path (Fibaro
+        // FGD212 and similar devices whose interview omits CC 0x2B). Without this,
+        // updateChannels would treat them as "no longer part of the result" and
+        // strip them on every setupThing(), causing the lazy add to repeat each event.
+        rePrimePersistentLazyChannels(result);
 
         // Update channels
         builder = updateChannels(builder, result);
