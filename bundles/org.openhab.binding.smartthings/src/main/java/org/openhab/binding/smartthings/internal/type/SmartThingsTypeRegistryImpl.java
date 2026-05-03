@@ -1,0 +1,698 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.smartthings.internal.type;
+
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
+import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsComponent;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsSchema;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions.ChannelProperty;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsPropMappings;
+import org.openhab.core.config.core.ConfigDescriptionBuilder;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
+import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ChannelDefinitionBuilder;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
+import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
+import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.thing.type.ThingTypeBuilder;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
+import org.openhab.core.util.StringUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
+/**
+ *
+ * @author Laurent Arnal - Initial contribution
+ */
+@NonNullByDefault
+@Component(immediate = true)
+public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
+
+    private final Logger logger = LoggerFactory.getLogger(SmartThingsTypeRegistryImpl.class);
+
+    private HashMap<String, SemanticTag> semanticTags = new HashMap<String, SemanticTag>();
+    private @Nullable SmartThingsThingTypeProvider thingTypeProvider;
+    private @Nullable SmartThingsChannelTypeProvider channelTypeProvider;
+    private @Nullable SmartThingsChannelGroupTypeProvider channelGroupTypeProvider;
+    private @Nullable SmartThingsConfigDescriptionProvider configDescriptionProvider;
+    private @Nullable SmartThingsAccountHandler bridgeHandler;
+    private Gson gson = new Gson();
+
+    private HashMap<String, SmartThingsCapability> capabilitiesDict = new HashMap<String, SmartThingsCapability>();
+
+    public SmartThingsTypeRegistryImpl() {
+        initSemanticTags();
+    }
+
+    public void initSemanticTags() {
+        semanticTags.put("light", Equipment.LIGHTBULB);
+        semanticTags.put("motionsensor", Equipment.MOTION_DETECTOR);
+        semanticTags.put("oven", Equipment.OVEN);
+        semanticTags.put("dishwasher", Equipment.DISHWASHER);
+        semanticTags.put("smartplug", Equipment.POWER_OUTLET);
+        semanticTags.put("leaksensor", Equipment.LEAK_SENSOR);
+        semanticTags.put("airconditioner", Equipment.AIR_CONDITIONER);
+        semanticTags.put("hub", Equipment.NETWORK_APPLIANCE);
+        semanticTags.put("networking", Equipment.NETWORK_APPLIANCE);
+    }
+
+    @Override
+    public void registerCapability(SmartThingsCapability capa) {
+        capabilitiesDict.put(capa.id, capa);
+        createChannelTypes(capa);
+    }
+
+    @Override
+    @Nullable
+    public SmartThingsCapability getCapability(String capaKey) {
+        if (capabilitiesDict.containsKey(capaKey)) {
+            return capabilitiesDict.get(capaKey);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void setCloudBridgeHandler(SmartThingsAccountHandler bridgeHandler) {
+        this.bridgeHandler = bridgeHandler;
+    }
+
+    public @Nullable ChannelProperty getChannelProperty(SmartThingsCapability capa, String key,
+            SmartThingsAttribute attr, SmartThingsProperty prop) {
+        String smartThingsType = prop.type;
+
+        ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + key);
+        if (channelProp != null) {
+            return channelProp;
+        }
+
+        SmartThingsProperty smartThingsUnit = null;
+        String smartThingsUnitKey = null;
+        if (attr.schema.properties.containsKey("unit")) {
+            smartThingsUnit = attr.schema.properties.get("unit");
+            if (smartThingsUnit != null && smartThingsUnit.defaultObj != null) {
+                smartThingsUnitKey = smartThingsUnit.defaultObj.toString();
+            }
+        }
+
+        if (smartThingsUnitKey != null) {
+            channelProp = SmartThingsBridgeChannelDefinitions
+                    .getChannelProperty(smartThingsType + "#" + smartThingsUnitKey);
+            if (channelProp != null) {
+                return channelProp;
+            }
+        }
+
+        channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(smartThingsType);
+        if (channelProp != null) {
+            return channelProp;
+        }
+
+        return null;
+    }
+
+    public void createChannelTypes(SmartThingsCapability capa) {
+        logger.trace("createChannelTypes: capa:{} / {}", capa.id, capa.version);
+
+        for (String key : capa.attributes.keySet()) {
+            SmartThingsAttribute attr = capa.attributes.get(key);
+
+            logger.trace("createChannelTypes: key {}", key);
+
+            try {
+                if (key.indexOf("Range") > 0) {
+                    continue;
+                }
+
+                if (shouldIgnoreProperty(key, attr)) {
+                    continue;
+                }
+
+                if (SmartThingsPropMappings.isProperties(capa.id)) {
+                    continue;
+                }
+
+                if (attr == null) {
+                    continue;
+                }
+                if (attr.schema == null) {
+                    logger.debug("no schema");
+                }
+                if (attr.schema.properties == null) {
+                    logger.debug("no properties");
+                }
+                if (!attr.schema.properties.containsKey("value")) {
+                    logger.debug("no value");
+                }
+
+                SmartThingsProperty prop = attr.schema.properties.get("value");
+
+                if (prop != null) {
+                    if (prop.type != null && prop.type.equals("object") && prop.properties != null) {
+                        for (Map.Entry<String, SmartThingsProperty> subEntry : prop.properties.entrySet()) {
+                            generateChannelTypeForProp(capa, key, subEntry.getKey(), attr, subEntry.getValue());
+                        }
+                    } else {
+                        if (prop.oneOf != null) {
+                            for (SmartThingsProperty subProp : prop.oneOf) {
+                                generateChannelTypeForProp(capa, key, "", attr, subProp);
+                            }
+                        } else {
+                            generateChannelTypeForProp(capa, key, "", attr, prop);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                logger.warn("Unable to register ChannelTypes for capability '{}'", key, ex);
+            }
+        }
+    }
+
+    private boolean shouldIgnoreProperty(String key, @Nullable SmartThingsAttribute attr) {
+        if (attr == null) {
+            return true;
+        }
+
+        // this sort of Attribute contains the enumeration of possible state / actions
+        // they are redondant with companion channels that already contains the information in their schema
+        // just ignore them
+        if (key.startsWith("supported") || key.startsWith("available")) {
+            SmartThingsProperty prop = attr.schema.properties.get("value");
+            if (prop != null) {
+                if (prop.type.equals("array")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private String getChannelTypeName(SmartThingsCapability capa, String key, String subKey) {
+        if ("".equals(subKey)) {
+            return capa.id.replace(".", "_") + "_"
+                    + (String.join("-", StringUtils.splitByCharacterType(key))).toLowerCase(Locale.ROOT);
+        } else {
+            return capa.id.replace(".", "_") + "_"
+                    + (String.join("-", StringUtils.splitByCharacterType(key))).toLowerCase(Locale.ROOT) + "_"
+                    + (String.join("-", StringUtils.splitByCharacterType(subKey))).toLowerCase(Locale.ROOT);
+        }
+    }
+
+    private void generateChannelTypeForProp(SmartThingsCapability capa, String key, String subKey,
+            SmartThingsAttribute attr, SmartThingsProperty prop) {
+        SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+
+        ChannelProperty channelProp = getChannelProperty(capa, key, attr, prop);
+
+        if (channelProp == null) {
+            logger.error("Unable to get channelProp for : capa: {}, key: {}", capa.id, key);
+            return;
+        }
+
+        String label = capa.name;
+
+        String channelTypeName = getChannelTypeName(capa, key, subKey);
+
+        List<StateOption> options = new ArrayList<StateOption>();
+
+        if (prop.enumeration != null) {
+            for (String opt : prop.enumeration) {
+                String optValue = opt;
+                String optName = StringUtils.capitalize(String.join(" ", StringUtils.splitByCharacterType(opt)));
+
+                StateOption option = new StateOption(optValue, optName);
+                options.add(option);
+            }
+        }
+
+        if ("".equals(channelProp.getChannelType())) {
+            return;
+        }
+
+        logger.trace("createChannelTypes: channelTypeName {}", channelTypeName);
+
+        ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
+        ChannelType channelType = null;
+        if (lcChannelTypeProvider != null) {
+            channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+            if (channelType == null) {
+                channelType = createChannelType(capa, attr, channelTypeName, "", label, channelProp, channelTypeUID,
+                        options);
+                lcChannelTypeProvider.addChannelType(channelType);
+            }
+        }
+    }
+
+    private ChannelType createChannelType(SmartThingsCapability capa, SmartThingsAttribute attr, String channelName,
+            String category, String description, ChannelProperty channelProp, ChannelTypeUID channelTypeUID,
+            List<StateOption> options) {
+        ChannelType channelType;
+
+        StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
+
+        if (!options.isEmpty()) {
+            stateFragment = stateFragment.withOptions(options);
+        }
+
+        SmartThingsProperty unit = null;
+        if (attr.schema.properties != null && attr.schema.properties.containsKey("unit")) {
+            unit = attr.schema.properties.get("unit");
+        }
+
+        if (unit != null) {
+            stateFragment = stateFragment.withPattern("%d " + unit.defaultObj);
+            if (unit.minimum != 0) {
+                stateFragment = stateFragment.withMinimum(new BigDecimal(unit.minimum));
+            }
+            if (unit.maximum != 0) {
+                stateFragment = stateFragment.withMaximum(new BigDecimal(unit.maximum));
+            }
+        }
+
+        if (channelName.contains("hue")) {
+            stateFragment = stateFragment.withMaximum(new BigDecimal(360));
+        }
+
+        StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
+                .state(channelTypeUID, channelName, channelProp.getChannelType())
+                .withStateDescriptionFragment(stateFragment.build());
+
+        Boolean isAdvanced = false;
+        channelTypeBuilder = channelTypeBuilder.isAdvanced(isAdvanced);
+        channelTypeBuilder = channelTypeBuilder.withDescription(description);
+        channelTypeBuilder = channelTypeBuilder.withCategory(category);
+
+        SemanticTag semanticTag = channelProp.getSemanticPoint();
+        if (semanticTag != null) {
+            channelTypeBuilder.withTags(semanticTag);
+        }
+
+        SemanticTag semanticProperty = channelProp.getSemanticProperty();
+        if (semanticProperty != null) {
+            channelTypeBuilder.withTags(semanticProperty);
+        }
+
+        channelType = channelTypeBuilder.build();
+
+        return channelType;
+    }
+
+    @Override
+    public void initialize() {
+    }
+
+    @Reference
+    protected void setThingTypeProvider(SmartThingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    protected void unsetThingTypeProvider(SmartThingsThingTypeProvider thingTypeProvider) {
+        this.thingTypeProvider = null;
+    }
+
+    @Reference
+    protected void setChannelTypeProvider(SmartThingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = channelTypeProvider;
+    }
+
+    protected void unsetChannelTypeProvider(SmartThingsChannelTypeProvider channelTypeProvider) {
+        this.channelTypeProvider = null;
+    }
+
+    //
+    @Reference
+    protected void setChannelGroupTypeProvider(SmartThingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = channelGroupTypeProvider;
+    }
+
+    protected void unsetChannelGroupTypeProvider(SmartThingsChannelGroupTypeProvider channelGroupTypeProvider) {
+        this.channelGroupTypeProvider = null;
+    }
+
+    @Reference
+    protected void setConfigDescriptionProvider(SmartThingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = configDescriptionProvider;
+    }
+
+    protected void unsetConfigDescriptionProvider(SmartThingsConfigDescriptionProvider configDescriptionProvider) {
+        this.configDescriptionProvider = null;
+    }
+
+    @Override
+    public void register(String deviceCategory, String deviceType, SmartThingsDevice device) {
+        try {
+            logger.trace("registerDeviceType: {} {}", deviceCategory, gson.toJson(device));
+            generateThingsType(device.deviceId, device.label, deviceCategory, deviceType, device);
+        } catch (Exception ex) {
+            logger.error("wrong: {}", ex.toString(), ex);
+        }
+    }
+
+    private void generateThingsType(String deviceId, String deviceLabel, String deviceCategory, String deviceType,
+            SmartThingsDevice device) {
+        SmartThingsThingTypeProvider lcThingTypeProvider = thingTypeProvider;
+
+        logger.trace("generateThingsType: {} {}", deviceCategory, deviceId);
+
+        if (lcThingTypeProvider != null) {
+            ThingType tt = null;
+            ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
+
+            tt = lcThingTypeProvider.getInternalThingType(thingTypeUID);
+
+            if (tt == null) {
+                List<ChannelGroupType> groupTypes = new ArrayList<>();
+
+                if (device.components == null || device.components.length == 0) {
+                    return;
+                }
+
+                for (SmartThingsComponent component : device.components) {
+                    if (component.capabilities == null || component.capabilities.length == 0) {
+                        continue;
+                    }
+
+                    for (SmartThingsCapability cap : component.capabilities) {
+                        String capId = cap.id;
+
+                        if (SmartThingsPropMappings.isProperties(capId)) {
+                            continue;
+                        }
+
+                        capId = capId.replace('.', '_');
+
+                        SmartThingsCapability capa = null;
+
+                        if (capabilitiesDict.containsKey(capId)) {
+                            capa = capabilitiesDict.get(capId);
+                        } else {
+                            SmartThingsBridgeHandler bridgeHandler = this.bridgeHandler;
+                            if (bridgeHandler != null) {
+                                SmartThingsApi api = bridgeHandler.getSmartThingsApi();
+
+                                if (api == null) {
+                                    logger.error("can't generateThingsType, api is null");
+                                } else {
+                                    try {
+                                        logger.trace("Need capability not registered in cache: id:{} version:{}",
+                                                cap.id, cap.version);
+                                        capa = api.getCapability(cap.id, cap.version, null);
+
+                                        logger.trace("capa is: {}", gson.toJson(capa));
+                                        registerCapability(capa);
+                                    } catch (SmartThingsException ex) {
+                                        logger.error("Exception during capa reading:{}", ex.toString(), ex);
+                                    }
+                                }
+                            }
+                        }
+
+                        logger.trace("capa: {}", cap.id);
+                        if (capa != null) {
+                            addChannels(deviceCategory, deviceType, groupTypes, component, capa);
+                        }
+                    }
+                }
+
+                tt = createThingType(deviceCategory, deviceType, groupTypes);
+                lcThingTypeProvider.addThingType(tt);
+            }
+        }
+    }
+
+    public static String getChannelName(String propKey) {
+        return (String.join("-", StringUtils.splitByCharacterType(propKey))).toLowerCase(Locale.ROOT);
+    }
+
+    private void addChannels(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes,
+            SmartThingsComponent component, SmartThingsCapability capa) {
+        List<ChannelDefinition> channelDefinitions = new ArrayList<>();
+        SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+        SmartThingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
+
+        String namespace = "";
+        String capaKey = capa.id;
+        if (capa.id.contains(".")) {
+            String[] idComponents = capa.id.split("\\.");
+            namespace = idComponents[0];
+            capaKey = idComponents[1];
+        }
+
+        String componentId = UidUtils.sanitizeId(component.id);
+
+        for (String attrKey : capa.attributes.keySet()) {
+            if (attrKey.indexOf("Range") >= 0) {
+                continue;
+            }
+
+            SmartThingsAttribute attr = capa.attributes.get(attrKey);
+            if (attr == null) {
+                continue;
+            }
+            if (shouldIgnoreProperty(attrKey, attr)) {
+                continue;
+            }
+
+            SmartThingsSchema schema = attr.schema;
+            Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
+
+            SmartThingsProperty prop = propsMap.get("value");
+
+            String propType = prop.type;
+
+            Hashtable<String, SmartThingsProperty> subPropList = prop.properties;
+
+            if ("object".equals(propType) && subPropList != null) {
+                for (String subPropKey : subPropList.keySet()) {
+                    Map<String, String> props = new Hashtable<String, String>();
+
+                    String channelName = getChannelName(subPropKey);
+                    String channelTypeName = getChannelTypeName(capa, attrKey, subPropKey);
+
+                    final String fChannelName = channelName;
+
+                    logger.trace("addChannels: channelTypeName: {}", channelTypeName);
+                    ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
+
+                    ChannelType channelType = null;
+                    if (lcChannelTypeProvider != null) {
+                        channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                    }
+
+                    if (channelType == null) {
+                        logger.warn("Can't find channelType for {}", channelTypeUID);
+                    }
+
+                    props.put(SmartThingsBindingConstants.COMPONENT, componentId);
+                    props.put(SmartThingsBindingConstants.CAPABILITY, capa.id);
+                    props.put(SmartThingsBindingConstants.ATTRIBUTE, attrKey);
+
+                    ChannelDefinition channelDef = null;
+
+                    // capa.commands
+                    if (channelType != null) {
+                        channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
+                                .withLabel(StringUtils.capitalize(channelName)).withProperties(props).build();
+
+                        Optional<ChannelDefinition> previous = channelDefinitions.stream()
+                                .filter(x -> x.getId().equals(fChannelName)).findFirst();
+                        if (previous.isEmpty()) {
+                            channelDefinitions.add(channelDef);
+                        }
+                    }
+                }
+            } else {
+                Map<String, String> props = new Hashtable<String, String>();
+
+                String channelName = getChannelName(attrKey);
+                String channelTypeName = capa.id.replace(".", "_") + "_" + channelName;
+                final String fChannelName = channelName;
+
+                logger.trace("addChannels: channelTypeName: {}", channelTypeName);
+                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
+
+                ChannelType channelType = null;
+                if (lcChannelTypeProvider != null) {
+                    channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                }
+
+                if (channelType == null) {
+                    logger.warn("Can't find channelType for {}", channelTypeUID);
+                }
+
+                props.put(SmartThingsBindingConstants.COMPONENT, componentId);
+                props.put(SmartThingsBindingConstants.CAPABILITY, capa.id);
+                props.put(SmartThingsBindingConstants.ATTRIBUTE, attrKey);
+
+                ChannelDefinition channelDef = null;
+
+                // capa.commands
+                if (channelType != null) {
+                    channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
+                            .withLabel(StringUtils.capitalize(channelName)).withProperties(props).build();
+
+                    Optional<ChannelDefinition> previous = channelDefinitions.stream()
+                            .filter(x -> x.getId().equals(fChannelName)).findFirst();
+                    if (previous.isEmpty()) {
+                        channelDefinitions.add(channelDef);
+                    }
+                }
+            }
+
+        }
+
+        // generate group
+        String groupId = deviceType + "_" + componentId + "_";
+
+        if (!"".equals(namespace)) {
+            groupId = groupId + namespace + "_";
+        }
+        groupId = groupId + capaKey;
+
+        logger.trace("addChannels: groupId:{}", groupId);
+        ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(groupId);
+        ChannelGroupType groupType = null;
+
+        if (lcChannelGroupTypeProvider != null) {
+            groupType = lcChannelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
+
+            if (groupType == null) {
+                String groupLabel = StringUtils.capitalize(componentId + " " + namespace + " " + capaKey);
+
+                if (groupLabel != null) {
+                    groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
+                            .withChannelDefinitions(channelDefinitions).withCategory("").build();
+                    lcChannelGroupTypeProvider.addChannelGroupType(groupType);
+                    groupTypes.add(groupType);
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates the ThingType for the given device.
+     */
+    private ThingType createThingType(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes) {
+        SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
+
+        logger.trace("createThingType: device:{} {}", deviceCategory, deviceType);
+
+        List<String> supportedBridgeTypeUids = new ArrayList<>();
+        supportedBridgeTypeUids.add(SmartThingsBindingConstants.THING_TYPE_ACCOUNT.toString());
+
+        logger.trace("GenerateThingTypeUID: device:{}", deviceType);
+        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(deviceType);
+
+        Map<String, String> properties = new HashMap<>();
+
+        URI configDescriptionURI = getConfigDescriptionURI(deviceType);
+        if (lcConfigDescriptionProvider != null
+                && lcConfigDescriptionProvider.getInternalConfigDescription(configDescriptionURI) == null) {
+            generateConfigDescription(deviceType, groupTypes, configDescriptionURI);
+        }
+
+        List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
+        for (ChannelGroupType groupType : groupTypes) {
+            String id = groupType.getUID().getId();
+            groupDefinitions.add(new ChannelGroupDefinition(id, groupType.getUID()));
+        }
+
+        ThingTypeBuilder builder = ThingTypeBuilder.instance(thingTypeUID, deviceType);
+
+        builder = builder.withSupportedBridgeTypeUIDs(supportedBridgeTypeUids);
+        builder = builder.withLabel(deviceType);
+        builder = builder.withRepresentationProperty(Thing.PROPERTY_MODEL_ID);
+        builder = builder.withConfigDescriptionURI(configDescriptionURI);
+        builder = builder.withCategory(SmartThingsBindingConstants.CATEGORY_THING_SMARTTHINGS);
+        builder = builder.withChannelGroupDefinitions(groupDefinitions);
+        builder = builder.withProperties(properties);
+
+        SemanticTag semanticTag = getThingSemanticType(deviceType);
+        if (semanticTag != null) {
+            builder = builder.withSemanticEquipmentTag(semanticTag);
+        }
+
+        return builder.build();
+    }
+
+    public @Nullable SemanticTag getThingSemanticType(String deviceType) {
+        if (semanticTags.containsKey(deviceType)) {
+            return semanticTags.get(deviceType);
+        } else {
+            logger.debug("@todo: need review, missing semanticTag for deviceType: {}", deviceType);
+        }
+        return null;
+    }
+
+    private URI getConfigDescriptionURI(String device) {
+        logger.trace("getConfigDescriptionURI: device: {}", device);
+        ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
+
+        return URI.create((String.format("%s:%s", SmartThingsBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX,
+                thingTypeUID)));
+    }
+
+    private void generateConfigDescription(String device, List<ChannelGroupType> groupTypes, URI configDescriptionURI) {
+        SmartThingsConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
+        List<ConfigDescriptionParameter> parms = new ArrayList<>();
+        List<ConfigDescriptionParameterGroup> groups = new ArrayList<>();
+
+        if (lcConfigDescriptionProvider != null) {
+            lcConfigDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(configDescriptionURI)
+                    .withParameters(parms).withParameterGroups(groups).build());
+        }
+    }
+
+    @Override
+    @Nullable
+    public SmartThingsChannelTypeProvider getSmartThingsChannelTypeProvider() {
+        return this.channelTypeProvider;
+    }
+}
