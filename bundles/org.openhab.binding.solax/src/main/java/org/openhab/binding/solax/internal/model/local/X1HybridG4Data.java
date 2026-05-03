@@ -145,11 +145,11 @@ public class X1HybridG4Data extends CommonLocalDeviceData {
 
     @Override
     public double getTodayBatteryDischargeEnergy() {
-        return ((double) getFromRawData(23)) / 10;
+        return ((double) getFromRawData(87)) / 10;
     }
 
     @Override
     public double getTodayBatteryChargeEnergy() {
-        return ((double) getFromRawData(24)) / 10;
+        return ((double) getFromRawData(85)) / 10;
     }
 }

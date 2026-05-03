@@ -34,7 +34,7 @@ public class TestX1HybridG4Parser extends AbstractParserTest {
                 type:15,
                 Data:[
                     2388,21,460,4998,4483,4483,10,1,487,65,
-                    2,59781,0,70,12180,500,605,33,99,12000,
+                    2,1000,0,70,12180,500,605,33,99,12000,
                     0,23159,0,57,100,0,39,4501,0,0,
                     0,0,12,0,13240,0,63348,2,448,43,
                     256,1314,900,0,350,311,279,33,33,279,1,1,652,0,708,1,65077,65535,65386,65535,0,0,0,0,0,0,0,0,0,0,0,0,65068,65535,4500,0,61036,65535,10,0,90,0,0,12,0,116,7,57,0,0,2320,0,110,0,0,0,0,0,0,12544,7440,5896,594,521,9252,0,0,0,0,0,1,1201,0,0,3342,3336,7296,54,21302,14389,18753,12852,16692,12355,13618,21302,14389,18753,12852,16692,12355,13618,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1025,4609,1026,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -75,13 +75,13 @@ public class TestX1HybridG4Parser extends AbstractParserTest {
         assertEquals(12, data.getFeedInPower()); // [32]
 
         assertEquals(7.0, data.getTodayEnergy()); // [13]
-        assertEquals(5978.1, data.getTotalPVEnergy()); // packU16(12,11) / 10
+        assertEquals(100.0, data.getTotalPVEnergy()); // packU16(12,11) / 10
         assertEquals(448, data.getPowerUsage()); // [38]
         assertEquals(132.4, data.getTotalFeedInEnergy()); // packU16(35,34) / 100
         assertEquals(1944.2, data.getTotalConsumption()); // packU16(37,36) / 100
         assertEquals(4.3, data.getTodayFeedInEnergy()); // [39]
-        assertEquals(5.7, data.getTodayBatteryDischargeEnergy()); // [23]
-        assertEquals(10.0, data.getTodayBatteryChargeEnergy()); // [24]
+        assertEquals(5.7, data.getTodayBatteryDischargeEnergy()); // [87]
+        assertEquals(11.6, data.getTodayBatteryChargeEnergy()); // [85]
     }
 
     @Override
