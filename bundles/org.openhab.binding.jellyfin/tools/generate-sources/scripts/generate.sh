@@ -217,6 +217,9 @@ done
 # Clean up temp output dir
 rm -rf "${OUTPUT}"
 
+# Clean up transient patched template downloaded for this run
+rm -f "${PATCHED_POJO_TEMPLATE}"
+
 cd ${ROOT}
 
 MVN_OPT="--quiet"
