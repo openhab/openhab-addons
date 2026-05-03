@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
+import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
@@ -247,39 +248,43 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         RouterosDevice routerOs = getRouteros();
         String channelID = channelUID.getIdWithoutGroup();
         RouterosSystemResources rbRes = null;
-        if (routerOs != null) {
-            rbRes = routerOs.getSysResources();
+        if (routerOs == null) {
+            return;
         }
+        rbRes = routerOs.getSysResources();
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
 
         if (rbRes == null) {
             newState = UnDefType.NULL;
         } else {
-            switch (channelID) {
-                case MikrotikBindingConstants.CHANNEL_UP_SINCE:
+            switch (channelUID.getId()) {
+                case CHANNEL_UP_SINCE:
                     newState = StateUtil.timeOrNull(rbRes.getUptimeStart());
                     break;
-                case MikrotikBindingConstants.CHANNEL_FREE_SPACE:
+                case CHANNEL_FREE_SPACE:
                     newState = StateUtil.qtyBytesOrNull(rbRes.getFreeSpace());
                     break;
-                case MikrotikBindingConstants.CHANNEL_TOTAL_SPACE:
+                case CHANNEL_TOTAL_SPACE:
                     newState = StateUtil.qtyBytesOrNull(rbRes.getTotalSpace());
                     break;
-                case MikrotikBindingConstants.CHANNEL_USED_SPACE:
+                case CHANNEL_USED_SPACE:
                     newState = StateUtil.qtyPercentOrNull(rbRes.getSpaceUse());
                     break;
-                case MikrotikBindingConstants.CHANNEL_FREE_MEM:
+                case CHANNEL_FREE_MEM:
                     newState = StateUtil.qtyBytesOrNull(rbRes.getFreeMem());
                     break;
-                case MikrotikBindingConstants.CHANNEL_TOTAL_MEM:
+                case CHANNEL_TOTAL_MEM:
                     newState = StateUtil.qtyBytesOrNull(rbRes.getTotalMem());
                     break;
-                case MikrotikBindingConstants.CHANNEL_USED_MEM:
+                case CHANNEL_USED_MEM:
                     newState = StateUtil.qtyPercentOrNull(rbRes.getMemUse());
                     break;
-                case MikrotikBindingConstants.CHANNEL_CPU_LOAD:
+                case CHANNEL_CPU_LOAD:
                     newState = StateUtil.qtyPercentOrNull(rbRes.getCpuLoad());
+                    break;
+                case CHANNEL_UPDATE_AVAILABLE:
+                    newState = StateUtil.stringOrNull(routerOs.firmwareCheck());
                     break;
                 default:
                     logger.warn("Unimplemented channel:{}", channelID);

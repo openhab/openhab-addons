@@ -205,7 +205,8 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             try {
                 refreshChannel(channel.getUID());
             } catch (RuntimeException e) {
-                logger.warn("Unhandled exception while refreshing the {} Mikrotik thing", getThing().getUID(), e);
+                logger.warn("Unhandled exception while refreshing the channel {} of {} Mikrotik thing:{}",
+                        channel.getUID(), getThing().getUID(), e.getMessage());
                 updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }

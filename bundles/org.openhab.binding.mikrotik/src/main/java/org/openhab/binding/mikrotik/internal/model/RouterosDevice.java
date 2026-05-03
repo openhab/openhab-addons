@@ -56,6 +56,7 @@ public class RouterosDevice {
     public static final String PROP_CONFIG_SSID_KEY = "configuration.ssid";
 
     private static final String CMD_PRINT_IFACES = "/interface/print";
+    private static final String CMD_UPDATE_CHECK = "/system/package/update/check-for-updates";
     private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
     private static final String CMD_MONTOR_IFACE_MONITOR_TPL = "/interface/%s/monitor numbers=%s once";
     private static final String CMD_MONITOR_POE_TPL = "/interface/%s/poe/monitor numbers=%s once";
@@ -90,6 +91,10 @@ public class RouterosDevice {
                 return Optional.of(new RouterosBridgeInterface(interfaceProps));
             case CAP:
                 return Optional.of(new RouterosCapInterface(interfaceProps));
+            case VLAN:
+                return Optional.of(new RouterosVlanInterface(interfaceProps));
+            case VETH:
+                return Optional.of(new RouterosVethInterface(interfaceProps));
             case WLAN:
                 return Optional.of(new RouterosWlanInterface(interfaceProps));
             case WIFI:
@@ -223,6 +228,18 @@ public class RouterosDevice {
 
     public RouterosWirelessType getWirelessType() {
         return rbWirelessType;
+    }
+
+    public String getWifiPackageName() {
+        switch (getWirelessType()) {
+            case WIRELESS:
+                return "wireless";
+            case WIFIWAVE2:
+                return "wifiwave2";
+            case WIFI:
+            default:
+                return "wifi";
+        }
     }
 
     public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
@@ -404,6 +421,20 @@ public class RouterosDevice {
         this.resourcesCache = new RouterosSystemResources(response.get(0));
     }
 
+    public @Nullable String firmwareCheck() {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return null;
+        }
+        List<Map<String, String>> response = null;
+        try {
+            response = conn.execute(CMD_UPDATE_CHECK);
+        } catch (MikrotikApiException e) {
+            logger.warn("Can not determine if the firmware is the latest version");
+        }
+        return response.get(response.size() - 1).get("status");
+    }
+
     private void updateRouterboardInfo() throws MikrotikApiException {
         ApiConnection conn = this.connection;
         if (conn == null) {
@@ -428,5 +459,19 @@ public class RouterosDevice {
 
         String cmd = String.format(CMD_SET_POE_OUT_TPL, ifaceModel.getApiType(), ifaceModel.getName(), state);
         conn.execute(cmd);
+    }
+
+    public void setEnabledState(RouterosInterfaceBase ifaceModel, String disabledState) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        String cmd = String.format("/interface/%s/set disabled=%s .id=%s", ifaceModel.getApiType(), disabledState,
+                ifaceModel.getName());
+        try {
+            conn.execute(cmd);
+        } catch (MikrotikApiException e) {
+            logger.warn("Exception {} occured when disabling device {}", e.getMessage(), ifaceModel.getName());
+        }
     }
 }
