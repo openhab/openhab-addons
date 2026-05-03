@@ -1,6 +1,18 @@
 --- a/pojo.mustache
 +++ b/pojo.mustache
-@@ -70,29 +70,23 @@
+@@ -14,11 +14,6 @@
+ {{/description}}
+ {{/swagger2AnnotationLibrary}}
+ {{#jackson}}
+-@JsonPropertyOrder({
+-{{#vars}}
+-  {{classname}}.JSON_PROPERTY_{{nameInSnakeCase}}{{^-last}},{{/-last}}
+-{{/vars}}
+-})
+ {{#isClassnameSanitized}}
+ {{^hasDiscriminatorWithNonEmptyMapping}}
+ @JsonTypeName("{{name}}")
+@@ -70,29 +65,23 @@
    {{#gson}}
    @SerializedName(SERIALIZED_NAME_{{nameInSnakeCase}})
    {{/gson}}
@@ -34,7 +46,7 @@
    {{/isContainer}}
    {{/vendorExtensions.x-is-jackson-optional-nullable}}
  
-@@ -118,7 +112,7 @@
+@@ -118,7 +107,7 @@
    {{#jsonb}}@JsonbCreator{{/jsonb}}{{#jackson}}@JsonCreator{{/jackson}}
    public {{classname}}(
    {{#readOnlyVars}}
@@ -43,7 +55,7 @@
    {{/readOnlyVars}}
    ) {
      this();
-@@ -133,7 +127,7 @@
+@@ -133,7 +122,7 @@
    /**
     * Constructor with all args parameters
     */
@@ -52,7 +64,7 @@
  {{#parent}}
      super({{#parentVars}}{{name}}{{^-last}}, {{/-last}}{{/parentVars}});
  {{/parent}}
-@@ -145,9 +139,8 @@
+@@ -145,9 +134,8 @@
  
  {{#vars}}
    {{^isReadOnly}}
@@ -64,7 +76,7 @@
      return this;
    }
    {{#isArray}}
-@@ -221,7 +214,6 @@
+@@ -221,7 +209,6 @@
  {{#deprecated}}
    @Deprecated
  {{/deprecated}}
@@ -72,7 +84,7 @@
  {{#jsonb}}
    @JsonbProperty("{{baseName}}")
  {{/jsonb}}
-@@ -242,8 +234,7 @@
+@@ -242,8 +229,7 @@
    {{!unannotated, Jackson would pick this up automatically and add it *in addition* to the _JsonNullable getter field}}
    @JsonIgnore
  {{/vendorExtensions.x-is-jackson-optional-nullable}}
@@ -82,7 +94,7 @@
      {{#vendorExtensions.x-is-jackson-optional-nullable}}
      {{#isReadOnly}}{{! A readonly attribute doesn't have setter => jackson will set null directly if explicitly returned by API, so make sure we have an empty JsonNullable}}
      if ({{name}} == null) {
-@@ -264,7 +255,7 @@
+@@ -264,7 +250,7 @@
      return {{name}};
    }
    {{/vendorExtensions.x-is-jackson-optional-nullable}}{{#vendorExtensions.x-is-jackson-optional-nullable}}
