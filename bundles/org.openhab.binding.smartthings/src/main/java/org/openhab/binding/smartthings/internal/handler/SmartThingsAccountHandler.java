@@ -77,6 +77,10 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
         scheduler.submit(() -> {
             try {
                 initRegistry();
+                if (hasLocations()) {
+                    registerSubscriptions();
+                    discoService.doScan(false);
+                }
                 updateStatus(ThingStatus.ONLINE);
             } catch (SmartThingsException e) {
                 logger.error("Unable to initialize", e);
@@ -87,8 +91,12 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
 
     public void initRegistry() throws SmartThingsException {
         initCapabilities();
+    }
+
+    public void initLocation(String locationId) throws SmartThingsException {
+        updateLocationProperties(locationId);
         registerSubscriptions();
-        discoService.doScan(false);
+        discoService.doScan(true);
     }
 
     public void registerSubscriptions() {

@@ -103,7 +103,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
                 logger.warn(
                         "The SmartThings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
                         thing.getUID().getAsString());
-                return null;
+                return bridgeHandler;
             }
 
             bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,

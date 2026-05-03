@@ -131,6 +131,7 @@ public class SmartThingsBindingConstants {
     public static final String IP_ADDRESS = "ipAddress";
     public static final String PORT = "port";
     public static final String WEBHOOK_URL = "webHookUrl";
+    public static final String LOCATIONS = "locations";
 
     // Thing config properties
     public static final String THING_TIMEOUT = "timeout";

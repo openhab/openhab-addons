@@ -401,6 +401,9 @@ public class SmartThingsApi {
             if ("".equals(installedAppId)) {
                 return false;
             }
+
+            logger.info("Try to register callbackSubscription:" + installedAppId);
+
             String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                     + "/subscriptions";
 
@@ -437,6 +440,8 @@ public class SmartThingsApi {
                     logger.error("Unable to register subscriptions: {} {} ", ex.getMessage(), dev.deviceId);
                 }
             }
+
+            logger.info("Succcess register callbackSubscription:" + installedAppId);
 
             return true;
         } catch (SmartThingsException ex) {

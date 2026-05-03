@@ -252,9 +252,9 @@ public class SmartThingsServlet extends HttpServlet
     }
 
     private String handleTemplate(String requestUrl, @Nullable String queryString) {
-        SmartThingsOAuthHandler accountHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
+        SmartThingsOAuthHandler oauthHandler = smartThingsAuthService.getSmartThingsOAuthHandler();
 
-        if (accountHandler == null) {
+        if (oauthHandler == null) {
             logger.error("accountHandler==nul in SmartThingsServlet::handleTemplate");
             return "";
         }
@@ -297,7 +297,7 @@ public class SmartThingsServlet extends HttpServlet
                                 // Finish OAuth flow
                                 bridgeHandler.finishOAuth(callBackURL, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
-                                String authorizationUri = accountHandler.formatAuthorizationUrl(
+                                String authorizationUri = oauthHandler.formatAuthorizationUrl(
                                         SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
                                 String authorizationUriJs = authorizationUri.replace("\\", "\\\\").replace("\"",
                                         "\\\"");
@@ -324,6 +324,9 @@ public class SmartThingsServlet extends HttpServlet
                                     replaceMap.put(KEY_LOCATION,
                                             Encode.forHtml(locations[0].name + " / " + locations[0].locationId));
                                     replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
+
+                                    SmartThingsAccountHandler bridgeAccountHandler = (SmartThingsAccountHandler) bridgeHandler;
+                                    bridgeAccountHandler.initLocation(locations[0].locationId);
                                 }
                             }
                         }
@@ -374,10 +377,10 @@ public class SmartThingsServlet extends HttpServlet
                 SmartThingsAccountHandler bridgeAccountHandler = (SmartThingsAccountHandler) bridgeHandler;
                 // if app already create, go directly to step2 to reauthenticate a location
                 if (bridgeAccountHandler.appCreated()) {
-                    authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
+                    authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
                             "step2", false);
                 } else {
-                    authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
+                    authorizationUri = oauthHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
                             "step1", true);
                 }
 

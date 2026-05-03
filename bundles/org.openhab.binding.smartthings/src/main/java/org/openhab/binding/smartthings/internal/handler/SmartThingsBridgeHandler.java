@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.handler;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -182,9 +183,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 public WebhookService addingService(@Nullable ServiceReference<WebhookService> ref) {
                     WebhookService svc = ctx.getService(ref);
                     logger.info("WebhookService arrived !");
-
-                    // We need to wait service arrival before registerCloudWebhook
-                    registerCloudWebhook();
                     return svc;
                 }
 
@@ -198,6 +196,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 }
             });
             tracker.open();
+
+            registerCloudWebhook();
 
             SmartThingsConverterFactory.registerConverters(typeRegistry);
 
@@ -338,9 +338,19 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public void registerCloudWebhook() {
         Map<String, String> properties = thing.getProperties();
 
-        webHookService = getWebhookService();
-
         if (config.useCloudWebhook) {
+            // We need to wait service arrival before registerCloudWebhook
+            int attempt = 0;
+            while (webHookService == null && attempt < 5) {
+                webHookService = getWebhookService();
+                attempt++;
+            }
+
+            if (webHookService == null) {
+                logger.error("Webhook is enabled, but webHookService is null");
+                return;
+            }
+
             // Always register at startup because if we have not run for more then 24 hours webhook is not there anymore
             cloudWebHook = setupWebHookUrl();
 
@@ -402,6 +412,37 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             properties.put(SmartThingsBindingConstants.WEBHOOK_URL, webHookUrl);
         }
         updateProperties(properties);
+    }
+
+    protected void updateLocationProperties(@Nullable String location) {
+        Map<String, String> properties = new HashMap<>(editProperties());
+        if (location == null) {
+            properties.put(SmartThingsBindingConstants.LOCATIONS, "");
+        } else {
+            String locations = getLocations();
+            Set<String> locationSet = new LinkedHashSet<>();
+            if (!locations.isBlank()) {
+                for (String loc : locations.split(";")) {
+                    if (!loc.isBlank()) {
+                        locationSet.add(loc.trim());
+                    }
+                }
+            }
+
+            locationSet.add(location.trim());
+            String updatedLocations = String.join(";", locationSet);
+            properties.put(SmartThingsBindingConstants.LOCATIONS, updatedLocations);
+        }
+        updateProperties(properties);
+    }
+
+    public String getLocations() {
+        return this.thing.getProperties().getOrDefault(SmartThingsBindingConstants.LOCATIONS, "");
+    }
+
+    public boolean hasLocations() {
+        String locations = this.thing.getProperties().getOrDefault(SmartThingsBindingConstants.LOCATIONS, "");
+        return !(locations.isBlank());
     }
 
     protected void updateConfig(String appName, String oAuthClientId, String oAuthClientSecret) {
