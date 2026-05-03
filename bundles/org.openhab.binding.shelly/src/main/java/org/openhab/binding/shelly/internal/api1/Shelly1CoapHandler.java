@@ -69,7 +69,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapHandler.class);
     private final ShellyThingInterface thingHandler;
-    private volatile ShellyApiConfiguration config;
+    private final ShellyApiConfiguration config;
     private final GsonBuilder gsonBuilder = new GsonBuilder();
     private final Gson gson;
     private String thingName;
@@ -105,10 +105,6 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         gsonBuilder.registerTypeAdapter(CoIotDevDescription.class, new CoIotDevDescrTypeAdapter());
         gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
         gson = gsonBuilder.create();
-    }
-
-    public void setConfig(ShellyApiConfiguration config) {
-        this.config = config;
     }
 
     /**

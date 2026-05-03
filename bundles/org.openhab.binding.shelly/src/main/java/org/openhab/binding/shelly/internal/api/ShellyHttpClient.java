@@ -73,7 +73,7 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
 
-    protected volatile ShellyApiConfiguration config;
+    protected final ShellyApiConfiguration config;
 
     protected final ShellyDeviceProfile profile;
 
@@ -89,14 +89,6 @@ public class ShellyHttpClient {
         this.config = config;
         this.httpClient = httpClient;
         this.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
-    }
-
-    public void setRealm(String realm) {
-        config.setRealm(realm);
-    }
-
-    public void setEnableCoIOT(boolean flag) {
-        config.setEnableCoIOT(flag);
     }
 
     /**

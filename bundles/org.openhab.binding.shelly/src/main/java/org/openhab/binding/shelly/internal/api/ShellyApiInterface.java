@@ -34,10 +34,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     boolean isInitialized();
 
-    void setRealm(String realm);
-
-    void setEnableCoIOT(boolean flag);
-
     ShellySettingsStatus getStatus() throws ShellyApiException;
 
     void setLedStatus(String ledName, boolean value) throws ShellyApiException;
