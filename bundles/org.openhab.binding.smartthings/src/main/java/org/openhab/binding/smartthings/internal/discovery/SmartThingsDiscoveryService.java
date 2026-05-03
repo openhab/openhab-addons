@@ -141,9 +141,9 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         deviceCategory = deviceCategory.toLowerCase(Locale.ROOT);
         deviceCategory = UidUtils.sanitizeId(deviceCategory);
 
-        String deviceType = device.deviceTypeName;
+        String deviceType = device.name;
         if (deviceType == null) {
-            deviceType = device.name;
+            deviceType = device.deviceTypeName;
         }
 
         deviceType = UidUtils.sanitizeId(deviceType);
