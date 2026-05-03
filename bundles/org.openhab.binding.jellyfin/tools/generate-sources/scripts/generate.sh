@@ -35,7 +35,7 @@ if ! type wget &>/dev/null; then
     alias wget=wget2
 fi
 
-REQUIRED=("wget" "yq" "docker" "curl" "jq" "awk" "sed" "grep" "sort" "tail" "mvn" "docker" "npm" "python3")
+REQUIRED=("wget" "yq" "docker" "curl" "jq" "awk" "sed" "grep" "sort" "tail" "mvn" "docker" "npm" "python3" "patch")
 
 function checkEnvironment() {
     for i in "${REQUIRED[@]}"; do
@@ -49,6 +49,7 @@ function checkEnvironment() {
 checkEnvironment
 
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
+ROOT=$(pwd)
 
 
 # Get the latest stable release tag from GitHub for openapi-generator
@@ -57,6 +58,20 @@ LATEST_OPENAPI_GENERATOR_CLI_TAG=$(curl -s "https://api.github.com/repos/OpenAPI
     sed 's/^v//')
 
 echo -e "ℹ️  - Latest openapi-generator-cli version: \033[1m$LATEST_OPENAPI_GENERATOR_CLI_TAG\033[0m"
+
+TEMPLATE_DIR="tools/generate-sources/scripts/templates"
+PATCHED_POJO_TEMPLATE="${ROOT}/${TEMPLATE_DIR}/pojo.mustache"
+POJO_TEMPLATE_PATCH="${ROOT}/${TEMPLATE_DIR}/pojo.mustache.patch"
+UPSTREAM_POJO_TEMPLATE_URL="https://raw.githubusercontent.com/OpenAPITools/openapi-generator/v${LATEST_OPENAPI_GENERATOR_CLI_TAG}/modules/openapi-generator/src/main/resources/Java/pojo.mustache"
+
+echo "ℹ️  - Fetch upstream Java pojo.mustache template for ${LATEST_OPENAPI_GENERATOR_CLI_TAG}"
+curl -fsSL "${UPSTREAM_POJO_TEMPLATE_URL}" > "${PATCHED_POJO_TEMPLATE}"
+
+echo "ℹ️  - Apply local pojo.mustache patch"
+if ! patch -s -u "${PATCHED_POJO_TEMPLATE}" "${POJO_TEMPLATE_PATCH}"; then
+    echo "  ❌ Error: Failed to apply ${POJO_TEMPLATE_PATCH} to downloaded pojo.mustache"
+    exit 1
+fi
 
 DOCKER_IMAGE_OPENAPI="openapitools/openapi-generator-cli:v${LATEST_OPENAPI_GENERATOR_CLI_TAG}"
 
@@ -76,8 +91,6 @@ VERSIONS=("10.11.6")
 VERSION_ALIAS=("current")
 
 DOCKER_VOLUME_WORK="/work"
-
-ROOT=$(pwd)
 
 OPENAPI_SPECIFICATION_DIR="tools/generate-sources/scripts/specifications"
 
