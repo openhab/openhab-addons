@@ -80,7 +80,7 @@ class TelegramMessageStoreTest {
     // -----------------------------------------------------------------------
 
     @Test
-    void messageIdStorageName_containsThingUID() {
+    void messageIdStorageNameContainsThingUID() {
         String name = TelegramMessageStore.messageIdStorageName(THING_UID);
         assertTrue(name.contains(THING_UID.getAsString()),
                 "Storage name must contain the Thing UID to prevent cross-bot collisions");
@@ -89,7 +89,7 @@ class TelegramMessageStoreTest {
     }
 
     @Test
-    void callbackIdStorageName_containsThingUID() {
+    void callbackIdStorageNameContainsThingUID() {
         String name = TelegramMessageStore.callbackIdStorageName(THING_UID);
         assertTrue(name.contains(THING_UID.getAsString()));
         assertTrue(name.startsWith(TelegramMessageStore.STORAGE_NAME_PREFIX));
@@ -97,7 +97,7 @@ class TelegramMessageStoreTest {
     }
 
     @Test
-    void storageNames_differBetweenThings() {
+    void storageNamesDifferBetweenThings() {
         assertNotEquals(TelegramMessageStore.messageIdStorageName(THING_UID),
                 TelegramMessageStore.messageIdStorageName(THING_UID_2),
                 "Two different Things must use different storage namespaces");
@@ -110,7 +110,7 @@ class TelegramMessageStoreTest {
     // -----------------------------------------------------------------------
 
     @Test
-    void messageId_isolatedBetweenThings_sameChatIdAndReplyId() {
+    void messageIdIsolatedBetweenThingsSameChatIdAndReplyId() {
         // Two bots – same chatId, same replyId, but different Things
         TelegramMessageStore store2 = new TelegramMessageStore(createStorageService(), THING_UID_2);
 
@@ -123,7 +123,7 @@ class TelegramMessageStoreTest {
     }
 
     @Test
-    void callbackId_isolatedBetweenThingsSameChatIdAndReplyId() {
+    void callbackIdIsolatedBetweenThingsSameChatIdAndReplyId() {
         TelegramMessageStore store2 = new TelegramMessageStore(createStorageService(), THING_UID_2);
 
         store.putCallbackId(CHAT_ID, REPLY_ID, CALLBACK_ID);
@@ -370,16 +370,16 @@ class TelegramMessageStoreTest {
 
     @Test
     void getMessageIdReturnsNullForCorruptValue() {
-        Map<String, @Nullable String> map = namespaceMap
-                .computeIfAbsent(TelegramMessageStore.messageIdStorageName(THING_UID), k -> new HashMap<>());
+        Map<String, @Nullable String> map = Objects.requireNonNull(namespaceMap
+                .computeIfAbsent(TelegramMessageStore.messageIdStorageName(THING_UID), k -> new HashMap<>()));
         map.put(TelegramMessageStore.buildKey(CHAT_ID, REPLY_ID), "NOT_A_NUMBER");
         assertNull(store.getMessageId(CHAT_ID, REPLY_ID));
     }
 
     @Test
     void removeMessageIdReturnsNullForCorruptValue() {
-        Map<String, @Nullable String> map = namespaceMap
-                .computeIfAbsent(TelegramMessageStore.messageIdStorageName(THING_UID), k -> new HashMap<>());
+        Map<String, @Nullable String> map = Objects.requireNonNull(namespaceMap
+                .computeIfAbsent(TelegramMessageStore.messageIdStorageName(THING_UID), k -> new HashMap<>()));
         map.put(TelegramMessageStore.buildKey(CHAT_ID, REPLY_ID), "NOT_A_NUMBER");
         assertNull(store.removeMessageId(CHAT_ID, REPLY_ID));
     }
