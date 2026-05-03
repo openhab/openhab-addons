@@ -336,8 +336,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     public void registerCloudWebhook() {
-        Map<String, String> properties = thing.getProperties();
-
         if (config.useCloudWebhook) {
             // We need to wait service arrival before registerCloudWebhook
             int attempt = 0;

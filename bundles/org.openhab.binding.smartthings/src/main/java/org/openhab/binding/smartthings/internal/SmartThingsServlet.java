@@ -180,7 +180,6 @@ public class SmartThingsServlet extends HttpServlet
     }
 
     public static String getFullURL(HttpServletRequest req) {
-
         String scheme = extractFirst(req.getHeader("X-Forwarded-Proto"));
         if (scheme == null) {
             scheme = req.getScheme();

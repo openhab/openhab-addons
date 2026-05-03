@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * The {@link SmartThingsActions} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Laurent Arnal - review code for new API
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = SmartThingsActions.class)
 @ThingActionsScope(name = "smartthings") // Your bindings id is usually the scope
@@ -57,7 +57,6 @@ public class SmartThingsActions implements ThingActions {
     public String sendCommand(
             @ActionInput(name = "json", label = "@text/sendCommandActions.jsonLabel", description = "@text/sendCommandActions.jsonDesc") @Nullable String jsonCmd)
             throws SmartThingsException {
-
         SmartThingsThingHandler lcHandler = handler;
 
         if (lcHandler == null) {

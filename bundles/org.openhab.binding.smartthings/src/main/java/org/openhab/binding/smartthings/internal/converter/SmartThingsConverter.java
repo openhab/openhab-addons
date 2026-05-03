@@ -66,7 +66,6 @@ public abstract class SmartThingsConverter {
 
     public String convertToSmartThings(Thing thing, ChannelUID channelUid, Command command)
             throws SmartThingsException {
-
         Channel channel = thing.getChannel(channelUid);
         if (channel == null) {
             logger.error("Channel not found: {}", channelUid);

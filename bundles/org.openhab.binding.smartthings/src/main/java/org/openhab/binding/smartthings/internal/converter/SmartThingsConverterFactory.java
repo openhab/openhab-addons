@@ -32,12 +32,12 @@ import org.slf4j.LoggerFactory;
 public class SmartThingsConverterFactory {
     private static Map<String, SmartThingsConverter> converterCache = new HashMap<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(SmartThingsConverterFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartThingsConverterFactory.class);
 
     public static void registerConverters(SmartThingsTypeRegistry typeRegistry) {
-        logger.info("registerConverters1");
+        LOGGER.info("registerConverters1");
         if (converterCache.isEmpty()) {
-            logger.info("registerConverters2");
+            LOGGER.info("registerConverters2");
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_COLOR,
                     new SmartThingsColorConverter(typeRegistry));
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_HUE,
