@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,10 +26,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateMediaPathRequestDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    private @org.eclipse.jdt.annotation.NonNull String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
-    private @org.eclipse.jdt.annotation.NonNull MediaPathInfo pathInfo;
+    private @org.eclipse.jdt.annotation.Nullable MediaPathInfo pathInfo;
 
     public UpdateMediaPathRequestDto() {
     }
@@ -45,7 +46,7 @@ public class UpdateMediaPathRequestDto {
      */
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -67,7 +68,7 @@ public class UpdateMediaPathRequestDto {
      */
     @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull MediaPathInfo getPathInfo() {
+    public @org.eclipse.jdt.annotation.Nullable MediaPathInfo getPathInfo() {
         return pathInfo;
     }
 

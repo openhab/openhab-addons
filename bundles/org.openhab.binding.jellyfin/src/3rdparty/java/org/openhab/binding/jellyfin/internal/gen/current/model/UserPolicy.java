@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,10 +152,10 @@ public class UserPolicy {
     private @org.eclipse.jdt.annotation.Nullable Integer remoteClientBitrateLimit;
 
     public static final String JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID = "AuthenticationProviderId";
-    private @org.eclipse.jdt.annotation.NonNull String authenticationProviderId;
+    private @org.eclipse.jdt.annotation.Nullable String authenticationProviderId;
 
     public static final String JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID = "PasswordResetProviderId";
-    private @org.eclipse.jdt.annotation.NonNull String passwordResetProviderId;
+    private @org.eclipse.jdt.annotation.Nullable String passwordResetProviderId;
 
     public static final String JSON_PROPERTY_SYNC_PLAY_ACCESS = "SyncPlayAccess";
     private @org.eclipse.jdt.annotation.Nullable SyncPlayUserAccessType syncPlayAccess;
@@ -1088,7 +1089,7 @@ public class UserPolicy {
      */
     @JsonProperty(value = JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getAuthenticationProviderId() {
+    public @org.eclipse.jdt.annotation.Nullable String getAuthenticationProviderId() {
         return authenticationProviderId;
     }
 
@@ -1110,7 +1111,7 @@ public class UserPolicy {
      */
     @JsonProperty(value = JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getPasswordResetProviderId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPasswordResetProviderId() {
         return passwordResetProviderId;
     }
 

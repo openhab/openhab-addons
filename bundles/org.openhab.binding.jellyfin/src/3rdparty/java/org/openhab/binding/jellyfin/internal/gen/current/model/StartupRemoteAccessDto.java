@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,10 +26,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupRemoteAccessDto {
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-    private @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRemoteAccess;
 
     public static final String JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING = "EnableAutomaticPortMapping";
-    private @org.eclipse.jdt.annotation.NonNull Boolean enableAutomaticPortMapping;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAutomaticPortMapping;
 
     public StartupRemoteAccessDto() {
     }
@@ -45,7 +46,7 @@ public class StartupRemoteAccessDto {
      */
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull Boolean getEnableRemoteAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
@@ -70,7 +71,7 @@ public class StartupRemoteAccessDto {
     @Deprecated
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull Boolean getEnableAutomaticPortMapping() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAutomaticPortMapping() {
         return enableAutomaticPortMapping;
     }
 

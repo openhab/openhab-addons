@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaPathDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    private @org.eclipse.jdt.annotation.NonNull String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_PATH = "Path";
     private @org.eclipse.jdt.annotation.Nullable String path;
@@ -48,7 +49,7 @@ public class MediaPathDto {
      */
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 

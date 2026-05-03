@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -28,7 +29,7 @@ public class MessageCommand {
     private @org.eclipse.jdt.annotation.Nullable String header;
 
     public static final String JSON_PROPERTY_TEXT = "Text";
-    private @org.eclipse.jdt.annotation.NonNull String text;
+    private @org.eclipse.jdt.annotation.Nullable String text;
 
     public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
     private @org.eclipse.jdt.annotation.Nullable Long timeoutMs;
@@ -68,7 +69,7 @@ public class MessageCommand {
      */
     @JsonProperty(value = JSON_PROPERTY_TEXT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getText() {
+    public @org.eclipse.jdt.annotation.Nullable String getText() {
         return text;
     }
 

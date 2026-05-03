@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,19 +26,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UploadSubtitleDto {
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    private @org.eclipse.jdt.annotation.NonNull String language;
+    private @org.eclipse.jdt.annotation.Nullable String language;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
-    private @org.eclipse.jdt.annotation.NonNull String format;
+    private @org.eclipse.jdt.annotation.Nullable String format;
 
     public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-    private @org.eclipse.jdt.annotation.NonNull Boolean isForced;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isForced;
 
     public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
-    private @org.eclipse.jdt.annotation.NonNull Boolean isHearingImpaired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isHearingImpaired;
 
     public static final String JSON_PROPERTY_DATA = "Data";
-    private @org.eclipse.jdt.annotation.NonNull String data;
+    private @org.eclipse.jdt.annotation.Nullable String data;
 
     public UploadSubtitleDto() {
     }
@@ -54,7 +55,7 @@ public class UploadSubtitleDto {
      */
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getLanguage() {
         return language;
     }
 
@@ -76,7 +77,7 @@ public class UploadSubtitleDto {
      */
     @JsonProperty(value = JSON_PROPERTY_FORMAT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getFormat() {
+    public @org.eclipse.jdt.annotation.Nullable String getFormat() {
         return format;
     }
 
@@ -98,7 +99,7 @@ public class UploadSubtitleDto {
      */
     @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull Boolean getIsForced() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsForced() {
         return isForced;
     }
 
@@ -120,7 +121,7 @@ public class UploadSubtitleDto {
      */
     @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull Boolean getIsHearingImpaired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
 
@@ -142,7 +143,7 @@ public class UploadSubtitleDto {
      */
     @JsonProperty(value = JSON_PROPERTY_DATA, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getData() {
+    public @org.eclipse.jdt.annotation.Nullable String getData() {
         return data;
     }
 

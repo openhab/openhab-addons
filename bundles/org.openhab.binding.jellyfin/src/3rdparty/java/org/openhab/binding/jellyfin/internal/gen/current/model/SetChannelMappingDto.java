@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,13 +26,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SetChannelMappingDto {
     public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
-    private @org.eclipse.jdt.annotation.NonNull String providerId;
+    private @org.eclipse.jdt.annotation.Nullable String providerId;
 
     public static final String JSON_PROPERTY_TUNER_CHANNEL_ID = "TunerChannelId";
-    private @org.eclipse.jdt.annotation.NonNull String tunerChannelId;
+    private @org.eclipse.jdt.annotation.Nullable String tunerChannelId;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
-    private @org.eclipse.jdt.annotation.NonNull String providerChannelId;
+    private @org.eclipse.jdt.annotation.Nullable String providerChannelId;
 
     public SetChannelMappingDto() {
     }
@@ -48,7 +49,7 @@ public class SetChannelMappingDto {
      */
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getProviderId() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderId() {
         return providerId;
     }
 
@@ -70,7 +71,7 @@ public class SetChannelMappingDto {
      */
     @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getTunerChannelId() {
+    public @org.eclipse.jdt.annotation.Nullable String getTunerChannelId() {
         return tunerChannelId;
     }
 
@@ -92,7 +93,7 @@ public class SetChannelMappingDto {
      */
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getProviderChannelId() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderChannelId() {
         return providerChannelId;
     }
 

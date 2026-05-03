@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ForgotPasswordPinDto {
     public static final String JSON_PROPERTY_PIN = "Pin";
-    private @org.eclipse.jdt.annotation.NonNull String pin;
+    private @org.eclipse.jdt.annotation.Nullable String pin;
 
     public ForgotPasswordPinDto() {
     }
@@ -42,7 +43,7 @@ public class ForgotPasswordPinDto {
      */
     @JsonProperty(value = JSON_PROPERTY_PIN, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public @org.eclipse.jdt.annotation.NonNull String getPin() {
+    public @org.eclipse.jdt.annotation.Nullable String getPin() {
         return pin;
     }
 
