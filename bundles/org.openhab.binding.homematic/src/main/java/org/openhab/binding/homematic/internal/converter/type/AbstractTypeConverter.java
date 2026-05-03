@@ -83,7 +83,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException {
+    public @Nullable Object convertToBinding(Type type, HmDatapoint dp) throws ConverterException {
         if (isLoggingRequired()) {
             logAtDefaultLevel(
                     "Converting type {} with value '{}' using {} to datapoint '{}' (dpType='{}', dpUnit='{}')",
@@ -92,8 +92,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         }
 
         if (type == UnDefType.NULL) {
-            throw new ConverterTypeException("Can't convert UnDefType.NULL to a Homematic datapoint value for "
-                    + this.getClass().getSimpleName() + " with " + new HmDatapointInfo(dp));
+            return null;
         } else if (type.getClass().isEnum() && !(this instanceof OnOffTypeConverter)
                 && !(this instanceof OpenClosedTypeConverter)) {
             return commandToBinding((Command) type, dp);
@@ -109,7 +108,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
 
     @SuppressWarnings("unchecked")
     @Override
-    public T convertFromBinding(HmDatapoint dp) throws ConverterException {
+    public @Nullable T convertFromBinding(HmDatapoint dp) throws ConverterException {
         if (isLoggingRequired()) {
             logAtDefaultLevel("Converting datapoint '{}' (dpType='{}', dpUnit='{}', dpValue='{}') with {}",
                     new HmDatapointInfo(dp), dp.getType(), dp.getUnit(), dp.getValue(),
@@ -165,7 +164,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Converts an openHAB command to a Homematic value.
      */
-    protected Object commandToBinding(Command command, HmDatapoint dp) throws ConverterException {
+    protected @Nullable Object commandToBinding(Command command, HmDatapoint dp) throws ConverterException {
         throw new ConverterException("Unsupported command " + command.getClass().getSimpleName() + " for "
                 + this.getClass().getSimpleName());
     }

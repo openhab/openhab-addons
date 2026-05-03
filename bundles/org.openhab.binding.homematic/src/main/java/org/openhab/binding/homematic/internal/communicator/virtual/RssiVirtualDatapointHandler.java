@@ -58,7 +58,9 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         HmChannel channel = dp.getChannel();
         Object value = getRssiValue(channel);
         HmDatapoint vdpRssi = getVirtualDatapoint(channel);
-        vdpRssi.setValue(value);
+        if (vdpRssi != null) {
+            vdpRssi.setValue(value);
+        }
     }
 
     /**
@@ -85,14 +87,8 @@ public class RssiVirtualDatapointHandler extends AbstractVirtualDatapointHandler
         return (Integer) dp.getValue();
     }
 
-    protected boolean isWirelessDevice(@Nullable HmDevice device) {
-        if (device == null) {
-            return false;
-        }
+    protected boolean isWirelessDevice(HmDevice device) {
         HmChannel channel = device.getChannel(0);
-        if (channel == null) {
-            return false;
-        }
-        return channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE) != null;
+        return channel != null && channel.getDatapoint(HmParamsetType.VALUES, DATAPOINT_NAME_RSSI_DEVICE) != null;
     }
 }

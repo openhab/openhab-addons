@@ -35,6 +35,8 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  */
 @NonNullByDefault
 public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler {
+    private static final int DEFAULT_INSTALL_MODE_DURATION = 60;
+
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_INSTALL_MODE;
@@ -71,8 +73,7 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
     private Integer getDuration(HmChannel channel) {
         HmDatapoint dpDuration = channel
                 .getDatapoint(HmDatapointInfo.createValuesInfo(channel, VIRTUAL_DATAPOINT_NAME_INSTALL_MODE_DURATION));
-        Object dpValue = dpDuration == null ? null : dpDuration.getValue();
-        return dpDuration == null || dpValue == null || dpDuration.getType() != HmValueType.INTEGER ? 60
-                : ((Number) dpValue).intValue();
+        Number value = dpDuration != null ? dpDuration.getNumericValue() : null;
+        return value != null ? value.intValue() : DEFAULT_INSTALL_MODE_DURATION;
     }
 }

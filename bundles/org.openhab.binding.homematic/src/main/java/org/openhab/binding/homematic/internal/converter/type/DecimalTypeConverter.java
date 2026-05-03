@@ -43,12 +43,12 @@ public class DecimalTypeConverter extends AbstractTypeConverter<DecimalType> {
 
     @Override
     protected boolean fromBindingValidation(HmDatapoint dp) {
-        return dp.isNumberType() && dp.getValue() instanceof Number;
+        return dp.getNumericValue() != null;
     }
 
     @Override
     protected DecimalType fromBinding(HmDatapoint dp) throws ConverterException {
-        Number number = Objects.requireNonNull(((Number) dp.getValue())).doubleValue();
+        Number number = Objects.requireNonNull(dp.getNumericValue()).doubleValue();
         if (dp.isIntegerType()) {
             return new DecimalType(new BigDecimal(number.intValue()));
         }

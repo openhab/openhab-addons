@@ -25,7 +25,6 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
-import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +64,8 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
 
     @Override
     public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
-        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null
-                && value instanceof Number numberCommand && numberCommand.doubleValue() > 0.0;
+        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value instanceof Number numberCommand
+                && numberCommand.doubleValue() > 0.0;
         boolean isState = DATAPOINT_NAME_STATE.equals(dp.getName()) && MiscUtils.isTrueValue(value);
 
         return ((isLevel || isState) && getVirtualDatapointValue(dp.getChannel()) > 0.0)
@@ -98,8 +97,7 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
      */
     private Double getVirtualDatapointValue(HmChannel channel) {
         HmDatapoint dpOnTimeAutomatic = getVirtualDatapoint(channel);
-        return dpOnTimeAutomatic == null || dpOnTimeAutomatic.getValue() == null
-                || dpOnTimeAutomatic.getType() != HmValueType.FLOAT ? 0.0
-                        : ((Number) dpOnTimeAutomatic.getValue()).doubleValue();
+        Number value = dpOnTimeAutomatic != null ? dpOnTimeAutomatic.getNumericValue() : null;
+        return value != null ? value.doubleValue() : 0.0;
     }
 }

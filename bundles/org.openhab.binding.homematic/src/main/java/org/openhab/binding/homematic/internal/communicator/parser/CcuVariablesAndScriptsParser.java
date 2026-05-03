@@ -49,7 +49,6 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                     dp = new HmDatapoint(entry.name, entry.description, HmValueType.parse(entry.valueType),
                             convertToType(entry.value), entry.readOnly, HmParamsetType.VALUES);
                     dp.setInfo(entry.name);
-
                     if (dp.isIntegerType()) {
                         dp.setMinValue(toInteger(entry.minValue));
                         dp.setMaxValue(toInteger(entry.maxValue));
@@ -58,8 +57,7 @@ public class CcuVariablesAndScriptsParser extends CommonRpcParser<TclScriptDataL
                         dp.setMaxValue(toDouble(entry.maxValue));
                     }
                     dp.setUnit(entry.unit);
-                    String[] result = entry.options == null || entry.options.isEmpty() ? null
-                            : entry.options.split(";");
+                    String[] result = entry.options.isEmpty() ? null : entry.options.split(";");
                     dp.setOptions(result);
 
                     if (result != null) {

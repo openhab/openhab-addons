@@ -43,7 +43,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
     }
 
     @Override
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings("unchecked")
     public Collection<HmDevice> parse(Object[] message) throws IOException {
         message = unWrapArray(message);
         Map<String, HmDevice> devices = new HashMap<>();

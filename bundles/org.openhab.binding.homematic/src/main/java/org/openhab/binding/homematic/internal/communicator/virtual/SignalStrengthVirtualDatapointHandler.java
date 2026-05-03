@@ -59,7 +59,9 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
                     : RSSI_UNITS - ((strength - RSSI_START) / RSSI_STEP);
 
             HmDatapoint vdpRssi = getVirtualDatapoint(channel);
-            vdpRssi.setValue(strength);
+            if (vdpRssi != null) {
+                vdpRssi.setValue(strength);
+            }
         }
     }
 }

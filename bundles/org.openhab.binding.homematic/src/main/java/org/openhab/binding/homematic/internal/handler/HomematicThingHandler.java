@@ -370,7 +370,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    private void sendDatapoint(HmDatapoint dp, HmDatapointConfig config, Object newValue)
+    private void sendDatapoint(HmDatapoint dp, HmDatapointConfig config, @Nullable Object newValue)
             throws IOException, HomematicClientException, GatewayNotAvailableException {
         String rxMode = getRxModeForDatapointTransmission(dp.getName(), dp.getValue(), newValue);
         getHomematicGateway().sendDatapoint(dp, config, newValue, rxMode);

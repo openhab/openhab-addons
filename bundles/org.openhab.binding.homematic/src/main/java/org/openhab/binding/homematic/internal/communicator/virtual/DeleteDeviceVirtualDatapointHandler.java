@@ -61,21 +61,19 @@ public class DeleteDeviceVirtualDatapointHandler extends AbstractVirtualDatapoin
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
-        if (MiscUtils.isTrueValue(dp.getValue())) {
+        if (MiscUtils.isTrueValue(value)) {
             try {
                 HmDatapoint deleteMode = dp.getChannel().getDatapoint(
                         HmDatapointInfo.createValuesInfo(dp.getChannel(), VIRTUAL_DATAPOINT_NAME_DELETE_DEVICE_MODE));
                 HmDevice device = dp.getChannel().getDevice();
+                String option = deleteMode != null ? deleteMode.getOptionValue() : null;
                 int flag = -1;
-                switch (deleteMode.getOptionValue()) {
-                    case MODE_RESET:
-                        flag = 1;
-                        break;
-                    case MODE_FORCE:
-                        flag = 2;
-                        break;
-                    case MODE_DEFER:
-                        flag = 4;
+                if (MODE_RESET.equals(option)) {
+                    flag = 1;
+                } else if (MODE_FORCE.equals(option)) {
+                    flag = 2;
+                } else if (MODE_DEFER.equals(option)) {
+                    flag = 4;
                 }
                 if (flag == -1) {
                     logger.info("Can't delete device '{}' from gateway '{}', DELETE_MODE is LOCKED",

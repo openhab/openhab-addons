@@ -42,9 +42,9 @@ public class ConverterFactory {
     public static TypeConverter<?> createConverter(@Nullable String itemType) throws ConverterException {
         Class<? extends TypeConverter<?>> converterClass = null;
 
-        if (itemType.startsWith(ITEM_TYPE_NUMBER + ":")) {
+        if (itemType != null && itemType.startsWith(ITEM_TYPE_NUMBER + ":")) {
             converterClass = QuantityTypeConverter.class;
-        } else {
+        } else if (itemType != null) {
             switch (itemType) {
                 case ITEM_TYPE_SWITCH:
                     converterClass = OnOffTypeConverter.class;

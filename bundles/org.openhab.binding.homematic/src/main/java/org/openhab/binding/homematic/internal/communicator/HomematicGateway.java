@@ -95,7 +95,7 @@ public interface HomematicGateway {
      *            {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"}
      *            for wakeup mode, or null for the default mode)
      */
-    void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue, @Nullable String rxMode)
+    void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, @Nullable Object newValue, @Nullable String rxMode)
             throws IOException, HomematicClientException;
 
     /**

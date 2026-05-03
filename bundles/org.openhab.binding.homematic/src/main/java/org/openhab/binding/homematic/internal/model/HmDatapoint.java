@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 
+import ch.qos.logback.classic.Logger;
+
 /**
  * Object that holds the metadata and values for a datapoint.
  *
@@ -191,23 +193,39 @@ public class HmDatapoint implements Cloneable {
     }
 
     public @Nullable Integer getIntegerValue() {
+        Object value = this.value;
         if (value instanceof Integer intValue) {
             return intValue;
-        } else if (value != null) {
-            return Integer.parseInt(value.toString());
-        } else {
-            return null;
         }
+        if (value instanceof Number numberValue) {
+            return numberValue.intValue();
+        }
+        if (value != null) {
+            String stringValue = value.toString();
+            try {
+                return Integer.parseInt(stringValue);
+            } catch (NumberFormatException e1) {
+                try {
+                    return Double.valueOf(stringValue.replace(',', '.')).intValue();
+                } catch (NumberFormatException e2) {
+                }
+            }
+        }
+        return null;
     }
 
     public @Nullable Double getDoubleValue() {
+        Object value = this.value;
         if (value instanceof Double doubleValue) {
             return doubleValue;
-        } else if (value != null) {
-            return Double.parseDouble(value.toString());
-        } else {
-            return null;
         }
+        if (value != null) {
+            try {
+                return Double.parseDouble(value.toString());
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
     }
 
     /**

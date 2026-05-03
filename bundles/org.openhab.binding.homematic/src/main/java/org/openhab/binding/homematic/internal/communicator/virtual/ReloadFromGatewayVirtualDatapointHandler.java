@@ -52,7 +52,7 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
-        if (MiscUtils.isTrueValue(dp.getValue())) {
+        if (MiscUtils.isTrueValue(value)) {
             try {
                 gateway.triggerDeviceValuesReload(dp.getChannel().getDevice());
             } finally {
