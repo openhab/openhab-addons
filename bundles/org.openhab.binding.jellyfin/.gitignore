@@ -8,3 +8,4 @@ mkdocs.yml
 /.apt_generated/
 /.apt_generated_tests/
 /.gen-temp.*
+/tools/generate-sources/scripts/templates/pojo.mustache
