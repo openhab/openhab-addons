@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.addBluThing;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -319,13 +318,14 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param receivedMessage Textual API message
      */
     @OnWebSocketMessage
-    public void onMessage(Session session, String receivedMessage) {
+    public void onMessage(Session session, String eventMessage) {
         Shelly2RpctInterface handler;
         synchronized (this) {
             handler = websocketHandler;
         }
         try {
-            Shelly2RpcBaseMessage message = fromJson(gson, receivedMessage, Shelly2RpcBaseMessage.class);
+            Shelly2RpcBaseMessage message = fromJson(gson, eventMessage, Shelly2RpcBaseMessage.class);
+            String receivedMessage = eventMessage;
             if (logger.isTraceEnabled()) {
                 logger.trace("{}: Inbound RPC message: {}", thingName, receivedMessage);
             }
@@ -346,6 +346,13 @@ public class Shelly2RpcSocket implements WriteCallback {
                         handler.onNotifyStatus(status);
                         return;
                     case SHELLYRPC_METHOD_NOTIFYEVENT:
+                        if (receivedMessage.contains("lora:")) {
+                            // The LoRa add-on doesn't report the data in the structured event format, but raw data
+                            // string modify JSON to avoid an exception, because data is a String and not a structure
+                            // Non-LoRa event, uses standard formal
+                            receivedMessage = eventMessage.replace("\"data\":\"", "\"lora\":\"");
+                        }
+
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
@@ -386,7 +393,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), eventMessage);
         }
     }
 
