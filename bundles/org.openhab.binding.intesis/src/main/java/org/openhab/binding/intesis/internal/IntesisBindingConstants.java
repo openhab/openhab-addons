@@ -32,7 +32,10 @@ public class IntesisBindingConstants {
     public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");
     public static final ThingTypeUID THING_TYPE_INTESISBOX = new ThingTypeUID(BINDING_ID, "intesisBox");
 
-    // List of all Channel ids
+    // List of all Channel Ids
+    public static final String CHANNEL_ID_ERRORSTATUS = "errorStatus";
+
+    // List of all Channel Type Ids (at many place also used as Channel Ids)
     public static final String CHANNEL_TYPE_POWER = "power";
     public static final String CHANNEL_TYPE_MODE = "mode";
     public static final String CHANNEL_TYPE_FANSPEED = "fanSpeed";
@@ -42,6 +45,7 @@ public class IntesisBindingConstants {
     public static final String CHANNEL_TYPE_AMBIENTTEMP = "ambientTemperature";
     public static final String CHANNEL_TYPE_OUTDOORTEMP = "outdoorTemperature";
     public static final String CHANNEL_TYPE_ERRORCODE = "errorCode";
-    public static final String CHANNEL_TYPE_ERRORSTATUS = "errorStatus";
+    public static final String CHANNEL_TYPE_ERRORSTATUS_STRING = "errorStatusString";
+    public static final String CHANNEL_TYPE_ERRORSTATUS_SWITCH = "errorStatusSwitch";
     public static final String CHANNEL_TYPE_RSSI = "wifiSignal";
 }
