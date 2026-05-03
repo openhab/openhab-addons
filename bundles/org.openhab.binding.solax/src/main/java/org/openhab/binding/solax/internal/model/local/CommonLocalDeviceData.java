@@ -72,7 +72,7 @@ public abstract class CommonLocalDeviceData implements LocalData {
         short major = getFromRawData(indexMajor);
         short minor = getFromRawData(indexMinor);
         if (major == 0) {
-            return minor;
+            return Short.toUnsignedLong(minor);
         }
 
         return Integer.toUnsignedLong(major << 16 | minor & 0xFFFF);
