@@ -133,7 +133,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             } else {
                 api = new Shelly1HttpApi(name, config, httpClient);
             }
-            api.initialize(config);
+            api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
