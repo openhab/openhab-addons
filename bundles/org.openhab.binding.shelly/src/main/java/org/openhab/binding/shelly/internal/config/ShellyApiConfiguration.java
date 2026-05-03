@@ -108,7 +108,7 @@ public class ShellyApiConfiguration {
      * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
      * @param gen2 True for Generation 2 or newer devices
      */
-    public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
+    public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingRuntimeConfig bindingConfig,
             String realm, boolean gen2) {
         this(thingConfig, bindingConfig, realm, gen2, true);
     }
@@ -125,7 +125,7 @@ public class ShellyApiConfiguration {
      *            avoid blocking; hostname resolution then happens on the first scheduler-thread call
      *            to {@code buildApiConfig()} inside {@code initializeThingConfig()}.
      */
-    public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingConfiguration bindingConfig,
+    public ShellyApiConfiguration(ShellyThingConfiguration thingConfig, ShellyBindingRuntimeConfig bindingConfig,
             String realm, boolean gen2, boolean resolveHostname) {
         this.localIp = bindingConfig.getLocalIP();
         this.localPort = String.valueOf(bindingConfig.getHttpPort());
@@ -165,7 +165,7 @@ public class ShellyApiConfiguration {
      * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
      * @param deviceIp Device IP address
      */
-    public ShellyApiConfiguration(ShellyBindingConfiguration bindingConfig, String realm, String deviceIp) {
+    public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String deviceIp) {
         this.realm.set(realm); // mDNS service name or hostname provided by /shelly
         this.deviceIp = deviceIp;
         this.deviceAddress = resolveIp(deviceIp);

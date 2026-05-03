@@ -25,6 +25,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
@@ -66,7 +67,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private volatile ShellyBindingConfiguration bindingConfig;
+    private volatile ShellyBindingRuntimeConfig bindingConfig;
 
     /**
      * Activate the bundle: save properties
@@ -92,9 +93,9 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
 
-        String localIP = new ShellyBindingConfiguration(networkAddressService).getLocalIP();
-        bindingConfig = ShellyBindingConfiguration.fromProperties(localIP, configProperties);
-        if (bindingConfig.getLocalIP().isEmpty()) {
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration.fromProperties(configProperties);
+        ShellyBindingRuntimeConfig runtimeConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
+        if (runtimeConfig.getLocalIP().isEmpty()) {
             // Intentionally hard-fail: without a local IP the binding cannot build callback
             // URLs, register CoIoT listeners, or handle WebSocket events. Starting in a
             // degraded state would silently break all Gen1 event handling and Gen2 battery
@@ -106,7 +107,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         logger.debug("Using OH HTTP port {}", httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT);
-        bindingConfig = bindingConfig.withHttpPort(httpPort);
+        bindingConfig = runtimeConfig.withHttpPort(httpPort);
 
         this.coapServer = new Shelly1CoapServer();
         this.thingTable.startDiscoveryService(bundleContext);
@@ -195,7 +196,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    public ShellyBindingConfiguration getBindingConfig() {
+    public ShellyBindingRuntimeConfig getBindingConfig() {
         return bindingConfig;
     }
 
