@@ -181,7 +181,13 @@ public class TelegramActions implements ThingActions {
             Integer messageId = localHandler.removeMessageId(chatId, replyId);
             logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId);
 
-            return sendTelegramAnswer(chatId, callbackId, messageId != null ? Long.valueOf(messageId) : null, message);
+            boolean result = sendTelegramAnswer(chatId, callbackId, messageId != null ? Long.valueOf(messageId) : null,
+                    message);
+            if (result && callbackId != null) {
+                localHandler.removeCallbackId(chatId, replyId);
+                logger.debug("remove callbackId for chatId {} and replyId {}", chatId, replyId);
+            }
+            return result;
         }
         return false;
     }

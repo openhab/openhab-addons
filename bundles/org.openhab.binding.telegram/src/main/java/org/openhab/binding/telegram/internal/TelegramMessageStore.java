@@ -9,9 +9,7 @@
  * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
- * 
  */
-
 package org.openhab.binding.telegram.internal;
 
 import java.util.Collection;
@@ -21,38 +19,59 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Persistent store for Telegram message IDs and callback IDs.
+ * Persistent store for Telegram message IDs and callback IDs, scoped to a
+ * single {@link org.openhab.core.thing.Thing}.
  *
  * <p>
  * openHAB's {@link StorageService} backs this class, so all entries survive
- * a restart of openHAB. The two logical maps are:
+ * a restart of openHAB. Each {@link TelegramHandler} instance owns exactly one
+ * {@code TelegramMessageStore}; the storage namespaces include the Thing UID so
+ * that multiple Telegram Things (each with its own bot token) can never
+ * interfere with each other even if they happen to share the same
+ * {@code chatId}/{@code replyId} values.
+ *
+ * <p>
+ * The two logical maps are:
  * <ul>
  * <li><b>messageId store</b> – maps (chatId, replyId) → Telegram message ID.
  * Required to edit or delete an inline-keyboard message after a restart.</li>
  * <li><b>callbackId store</b> – maps (chatId, replyId) → Telegram callback
  * query ID. Required to answer (acknowledge) a button press after a restart.
- * Note: Telegram callback IDs expire after ~10 min, so entries in this store
- * are automatically removed once they have been used.</li>
+ * Telegram callback IDs expire after approximately 10 minutes, so entries in
+ * this store are removed once they have been used.</li>
  * </ul>
  *
  * <p>
- * Keys are composite strings {@code "<chatId>:<replyId>"} to allow a flat
- * key-value store without nested structures.
+ * Within each store, keys are composite strings {@code "<chatId>:<replyId>"}
+ * to allow a flat key-value layout without nested structures.
+ *
+ * <p>
+ * Storage namespace pattern:
+ *
+ * <pre>
+ *   telegram.&lt;thingUID&gt;.replyIdToMessageId
+ *   telegram.&lt;thingUID&gt;.replyIdToCallbackId
+ * </pre>
  *
  * @author Christoph Pfarrherr - Initial contribution
  */
+
 @NonNullByDefault
 public class TelegramMessageStore {
 
-    /** Storage name for the replyId → message-ID mapping. */
-    static final String MESSAGE_ID_STORAGE_NAME = "telegram.replyIdToMessageId";
+    /** Prefix shared by both storage namespace names. */
+    static final String STORAGE_NAME_PREFIX = "telegram.";
 
-    /** Storage name for the replyId → callback-ID mapping. */
-    static final String CALLBACK_ID_STORAGE_NAME = "telegram.replyIdToCallbackId";
+    /** Suffix for the replyId → message-ID storage namespace. */
+    static final String MESSAGE_ID_STORAGE_SUFFIX = ".replyIdToMessageId";
+
+    /** Suffix for the replyId → callback-ID storage namespace. */
+    static final String CALLBACK_ID_STORAGE_SUFFIX = ".replyIdToCallbackId";
 
     private final Logger logger = LoggerFactory.getLogger(TelegramMessageStore.class);
 
@@ -61,27 +80,63 @@ public class TelegramMessageStore {
     private final Storage<String> callbackIdStorage;
 
     /**
-     * Creates a new store backed by the given {@link StorageService}.
+     * Creates a new store scoped to the given Thing.
      *
-     * @param storageService the openHAB storage service (OSGi injected)
+     * <p>
+     * Using the {@link ThingUID} as part of the storage namespace guarantees
+     * that two {@link TelegramHandler} instances with different bot tokens
+     * never share storage entries, even when their chat IDs and reply IDs are
+     * identical.
+     *
+     * @param storageService the openHAB storage service (injected by
+     *            {@link TelegramHandlerFactory})
+     * @param thingUID the UID of the Thing that owns this store; used
+     *            to build the storage namespace
      */
-    public TelegramMessageStore(StorageService storageService) {
-        this.messageIdStorage = storageService.getStorage(MESSAGE_ID_STORAGE_NAME, String.class.getClassLoader());
-        this.callbackIdStorage = storageService.getStorage(CALLBACK_ID_STORAGE_NAME, String.class.getClassLoader());
+    public TelegramMessageStore(StorageService storageService, ThingUID thingUID) {
+        String uid = thingUID.getAsString();
+        this.messageIdStorage = storageService.getStorage(STORAGE_NAME_PREFIX + uid + MESSAGE_ID_STORAGE_SUFFIX,
+                String.class.getClassLoader());
+        this.callbackIdStorage = storageService.getStorage(STORAGE_NAME_PREFIX + uid + CALLBACK_ID_STORAGE_SUFFIX,
+                String.class.getClassLoader());
     }
 
     // -------------------------------------------------------------------------
-    // Internal helpers
+    // Package-visible helpers (used by tests)
     // -------------------------------------------------------------------------
 
     /**
-     * Builds the composite storage key.
+     * Returns the full message-ID storage namespace for the given Thing UID.
+     *
+     * @param thingUID the Thing UID
+     * @return storage namespace string
+     */
+    static String messageIdStorageName(ThingUID thingUID) {
+        return STORAGE_NAME_PREFIX + thingUID.getAsString() + MESSAGE_ID_STORAGE_SUFFIX;
+    }
+
+    /**
+     * Returns the full callback-ID storage namespace for the given Thing UID.
+     *
+     * @param thingUID the Thing UID
+     * @return storage namespace string
+     */
+    static String callbackIdStorageName(ThingUID thingUID) {
+        return STORAGE_NAME_PREFIX + thingUID.getAsString() + CALLBACK_ID_STORAGE_SUFFIX;
+    }
+
+    /**
+     * Builds the composite storage key from a chat ID and a reply ID.
      *
      * @param chatId Telegram chat ID
      * @param replyId application-level reply identifier (must not contain ':')
      * @return composite key {@code "<chatId>:<replyId>"}
+     * @throws IllegalArgumentException if {@code replyId} contains ':'
      */
     static String buildKey(Long chatId, String replyId) {
+        if (replyId.indexOf(':') >= 0) {
+            throw new IllegalArgumentException("replyId must not contain ':': " + replyId);
+        }
         return chatId + ":" + replyId;
     }
 
@@ -112,8 +167,7 @@ public class TelegramMessageStore {
      */
     public @Nullable Integer removeMessageId(Long chatId, String replyId) {
         String key = buildKey(chatId, replyId);
-        String value = messageIdStorage.remove(key);
-        return parseIntOrNull(value, key, "messageId");
+        return parseIntOrNull(messageIdStorage.remove(key), key, "messageId");
     }
 
     /**
@@ -125,15 +179,15 @@ public class TelegramMessageStore {
      * @return the Telegram message ID, or {@code null}
      */
     public @Nullable Integer getMessageId(Long chatId, String replyId) {
-        String value = messageIdStorage.get(buildKey(chatId, replyId));
-        return parseIntOrNull(value, buildKey(chatId, replyId), "messageId");
+        String key = buildKey(chatId, replyId);
+        return parseIntOrNull(messageIdStorage.get(key), key, "messageId");
     }
 
     /**
      * Returns all keys currently stored in the message-ID store.
-     * Useful for diagnostics and testing.
+     * Intended for diagnostics and testing.
      *
-     * @return collection of composite keys
+     * @return unmodifiable collection of composite keys
      */
     public Collection<String> allMessageIdKeys() {
         return List.copyOf(messageIdStorage.getKeys());
@@ -158,7 +212,7 @@ public class TelegramMessageStore {
 
     /**
      * Retrieves the stored Telegram callback ID for (chatId, replyId).
-     * The entry is <b>not</b> removed; call {@link #removeCallbackId} after use.
+     * The entry is automatically removed after use in {@link TelegramActions#sendTelegramAnswer}.
      *
      * @param chatId Telegram chat ID
      * @param replyId application-level reply identifier

@@ -526,6 +526,16 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     /**
+     * Removes the persisted Telegram callback ID for (chatId, replyId).
+     *
+     * @param chatId Telegram chat ID
+     * @param replyId application-level reply identifier
+     */
+    public void removeCallbackId(Long chatId, String replyId) {
+        messageStore.removeCallbackId(chatId, replyId);
+    }
+
+    /**
      * Retrieves and removes the persisted Telegram message ID for (chatId, replyId).
      * Returns {@code null} if none is stored.
      *

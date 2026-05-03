@@ -31,14 +31,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link TelegramHandlerFactory} is responsible for creating things and
- * thing handlers.
+ * The {@link TelegramHandlerFactory} is responsible for creating things and thing handlers.
  *
  * <p>
- * A single {@link TelegramMessageStore} is created per factory (= per binding
- * instance) and shared across all {@link TelegramHandler}s. This is safe
- * because the store is keyed by {@code chatId + replyId}, which is globally
- * unique within one Telegram bot.
+ * A dedicated {@link TelegramMessageStore} is created for each {@link TelegramHandler}
+ * and scoped to that handler's {@link org.openhab.core.thing.ThingUID}. This guarantees
+ * that two Telegram Things backed by different bot tokens can never share or overwrite
+ * each other's persisted message/callback IDs even if their chat IDs and reply IDs are
+ * identical.
  *
  * @author Jens Runge - Initial contribution
  */
@@ -49,23 +49,13 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TELEGRAM_THING);
 
     private final HttpClient httpClient;
-
-    /**
-     * Shared persistent store for message IDs and callback IDs.
-     *
-     * <p>
-     * Backed by openHAB's {@link StorageService}, which writes entries to disk
-     * (MapDB by default). All handlers that belong to this factory share the
-     * same store so that multi-thing setups with the same bot still work
-     * correctly.
-     */
-    private final TelegramMessageStore messageStore;
+    private final StorageService storageService;
 
     @Activate
     public TelegramHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
             @Reference final StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.messageStore = new TelegramMessageStore(storageService);
+        this.storageService = storageService;
     }
 
     @Override
@@ -75,11 +65,12 @@ public class TelegramHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (TELEGRAM_THING.equals(thingTypeUID)) {
-            return new TelegramHandler(thing, httpClient, messageStore);
+        if (!TELEGRAM_THING.equals(thing.getThingTypeUID())) {
+            return null;
         }
-        return null;
+        // Each handler gets its own store scoped to the Thing UID so that
+        // multiple bots with overlapping chatId/replyId values never collide.
+        TelegramMessageStore messageStore = new TelegramMessageStore(storageService, thing.getUID());
+        return new TelegramHandler(thing, httpClient, messageStore);
     }
 }
