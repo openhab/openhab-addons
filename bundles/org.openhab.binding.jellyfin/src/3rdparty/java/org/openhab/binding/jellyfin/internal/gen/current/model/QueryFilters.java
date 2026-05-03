@@ -12,31 +12,24 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * QueryFilters
  */
-@JsonPropertyOrder({ QueryFilters.JSON_PROPERTY_GENRES, QueryFilters.JSON_PROPERTY_TAGS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class QueryFilters {
     public static final String JSON_PROPERTY_GENRES = "Genres";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<NameGuidPair> genres;
+    private @org.eclipse.jdt.annotation.Nullable List<NameGuidPair> genres;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> tags;
+    private @org.eclipse.jdt.annotation.Nullable List<String> tags;
 
     public QueryFilters() {
     }
@@ -59,10 +52,8 @@ public class QueryFilters {
      * 
      * @return genres
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GENRES)
-    public List<NameGuidPair> getGenres() {
+    public @org.eclipse.jdt.annotation.Nullable List<NameGuidPair> getGenres() {
         return genres;
     }
 
@@ -89,10 +80,8 @@ public class QueryFilters {
      * 
      * @return tags
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TAGS)
-    public List<String> getTags() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getTags() {
         return tags;
     }
 
@@ -101,9 +90,6 @@ public class QueryFilters {
         this.tags = tags;
     }
 
-    /**
-     * Return true if this QueryFilters object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -187,10 +173,16 @@ public class QueryFilters {
         // add `Tags` to the URL query string
         if (getTags() != null) {
             for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sTags%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getTags().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

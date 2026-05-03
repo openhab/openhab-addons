@@ -12,16 +12,14 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A MediaBrowser.Model.Dlna.DeviceProfile represents a set of metadata which determines which content a certain device
@@ -33,68 +31,40 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * cref&#x3D;\&quot;P:MediaBrowser.Model.Dlna.DeviceProfile.TranscodingProfiles\&quot;&gt;containers/codecs to transcode
  * to&lt;/see&gt; in case it isn&#39;t.
  */
-@JsonPropertyOrder({ DeviceProfile.JSON_PROPERTY_NAME, DeviceProfile.JSON_PROPERTY_ID,
-        DeviceProfile.JSON_PROPERTY_MAX_STREAMING_BITRATE, DeviceProfile.JSON_PROPERTY_MAX_STATIC_BITRATE,
-        DeviceProfile.JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE,
-        DeviceProfile.JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE, DeviceProfile.JSON_PROPERTY_DIRECT_PLAY_PROFILES,
-        DeviceProfile.JSON_PROPERTY_TRANSCODING_PROFILES, DeviceProfile.JSON_PROPERTY_CONTAINER_PROFILES,
-        DeviceProfile.JSON_PROPERTY_CODEC_PROFILES, DeviceProfile.JSON_PROPERTY_SUBTITLE_PROFILES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DeviceProfile {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxStreamingBitrate;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_BITRATE = "MaxStaticBitrate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxStaticBitrate;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxStaticBitrate;
 
     public static final String JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE = "MusicStreamingTranscodingBitrate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer musicStreamingTranscodingBitrate;
+    private @org.eclipse.jdt.annotation.Nullable Integer musicStreamingTranscodingBitrate;
 
     public static final String JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE = "MaxStaticMusicBitrate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxStaticMusicBitrate;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxStaticMusicBitrate;
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROFILES = "DirectPlayProfiles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<DirectPlayProfile> directPlayProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TRANSCODING_PROFILES = "TranscodingProfiles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<TranscodingProfile> transcodingProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTAINER_PROFILES = "ContainerProfiles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ContainerProfile> containerProfiles = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ContainerProfile> containerProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CODEC_PROFILES = "CodecProfiles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<CodecProfile> codecProfiles = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<CodecProfile> codecProfiles = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_PROFILES = "SubtitleProfiles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<SubtitleProfile> subtitleProfiles = new ArrayList<>();
 
     public DeviceProfile() {
     }
@@ -109,10 +79,8 @@ public class DeviceProfile {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -131,10 +99,8 @@ public class DeviceProfile {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -153,10 +119,8 @@ public class DeviceProfile {
      * 
      * @return maxStreamingBitrate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public Integer getMaxStreamingBitrate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
@@ -175,10 +139,8 @@ public class DeviceProfile {
      * 
      * @return maxStaticBitrate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_BITRATE)
-    public Integer getMaxStaticBitrate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxStaticBitrate() {
         return maxStaticBitrate;
     }
 
@@ -198,10 +160,8 @@ public class DeviceProfile {
      * 
      * @return musicStreamingTranscodingBitrate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MUSIC_STREAMING_TRANSCODING_BITRATE)
-    public Integer getMusicStreamingTranscodingBitrate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMusicStreamingTranscodingBitrate() {
         return musicStreamingTranscodingBitrate;
     }
 
@@ -221,10 +181,8 @@ public class DeviceProfile {
      * 
      * @return maxStaticMusicBitrate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_STATIC_MUSIC_BITRATE)
-    public Integer getMaxStaticMusicBitrate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxStaticMusicBitrate() {
         return maxStaticMusicBitrate;
     }
 
@@ -252,10 +210,8 @@ public class DeviceProfile {
      * 
      * @return directPlayProfiles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROFILES)
-    public List<DirectPlayProfile> getDirectPlayProfiles() {
+    public @org.eclipse.jdt.annotation.Nullable List<DirectPlayProfile> getDirectPlayProfiles() {
         return directPlayProfiles;
     }
 
@@ -283,10 +239,8 @@ public class DeviceProfile {
      * 
      * @return transcodingProfiles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_PROFILES)
-    public List<TranscodingProfile> getTranscodingProfiles() {
+    public @org.eclipse.jdt.annotation.Nullable List<TranscodingProfile> getTranscodingProfiles() {
         return transcodingProfiles;
     }
 
@@ -315,10 +269,8 @@ public class DeviceProfile {
      * 
      * @return containerProfiles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTAINER_PROFILES)
-    public List<ContainerProfile> getContainerProfiles() {
+    public @org.eclipse.jdt.annotation.Nullable List<ContainerProfile> getContainerProfiles() {
         return containerProfiles;
     }
 
@@ -345,10 +297,8 @@ public class DeviceProfile {
      * 
      * @return codecProfiles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC_PROFILES)
-    public List<CodecProfile> getCodecProfiles() {
+    public @org.eclipse.jdt.annotation.Nullable List<CodecProfile> getCodecProfiles() {
         return codecProfiles;
     }
 
@@ -375,10 +325,8 @@ public class DeviceProfile {
      * 
      * @return subtitleProfiles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_PROFILES)
-    public List<SubtitleProfile> getSubtitleProfiles() {
+    public @org.eclipse.jdt.annotation.Nullable List<SubtitleProfile> getSubtitleProfiles() {
         return subtitleProfiles;
     }
 
@@ -387,9 +335,6 @@ public class DeviceProfile {
         this.subtitleProfiles = subtitleProfiles;
     }
 
-    /**
-     * Return true if this DeviceProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -480,38 +425,70 @@ public class DeviceProfile {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxStreamingBitrate` to the URL query string
         if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxStreamingBitrate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxStaticBitrate` to the URL query string
         if (getMaxStaticBitrate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStaticBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticBitrate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStaticBitrate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxStaticBitrate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MusicStreamingTranscodingBitrate` to the URL query string
         if (getMusicStreamingTranscodingBitrate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMusicStreamingTranscodingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicStreamingTranscodingBitrate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMusicStreamingTranscodingBitrate%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getMusicStreamingTranscodingBitrate()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxStaticMusicBitrate` to the URL query string
         if (getMaxStaticMusicBitrate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStaticMusicBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStaticMusicBitrate()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sMaxStaticMusicBitrate%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getMaxStaticMusicBitrate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DirectPlayProfiles` to the URL query string

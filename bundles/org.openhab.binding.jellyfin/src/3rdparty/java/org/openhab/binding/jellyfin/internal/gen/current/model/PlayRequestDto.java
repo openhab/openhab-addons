@@ -12,38 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PlayRequestDto.
  */
-@JsonPropertyOrder({ PlayRequestDto.JSON_PROPERTY_PLAYING_QUEUE, PlayRequestDto.JSON_PROPERTY_PLAYING_ITEM_POSITION,
-        PlayRequestDto.JSON_PROPERTY_START_POSITION_TICKS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlayRequestDto {
     public static final String JSON_PROPERTY_PLAYING_QUEUE = "PlayingQueue";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> playingQueue = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> playingQueue = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAYING_ITEM_POSITION = "PlayingItemPosition";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer playingItemPosition;
+    private @org.eclipse.jdt.annotation.Nullable Integer playingItemPosition;
 
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long startPositionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long startPositionTicks;
 
     public PlayRequestDto() {
     }
@@ -66,10 +56,8 @@ public class PlayRequestDto {
      * 
      * @return playingQueue
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYING_QUEUE)
-    public List<UUID> getPlayingQueue() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getPlayingQueue() {
         return playingQueue;
     }
 
@@ -88,10 +76,8 @@ public class PlayRequestDto {
      * 
      * @return playingItemPosition
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_POSITION)
-    public Integer getPlayingItemPosition() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPlayingItemPosition() {
         return playingItemPosition;
     }
 
@@ -110,10 +96,8 @@ public class PlayRequestDto {
      * 
      * @return startPositionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
-    public Long getStartPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
@@ -122,9 +106,6 @@ public class PlayRequestDto {
         this.startPositionTicks = startPositionTicks;
     }
 
-    /**
-     * Return true if this PlayRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -199,25 +180,41 @@ public class PlayRequestDto {
         if (getPlayingQueue() != null) {
             for (int i = 0; i < getPlayingQueue().size(); i++) {
                 if (getPlayingQueue().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingQueue%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlayingQueue().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingQueue%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getPlayingQueue().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `PlayingItemPosition` to the URL query string
         if (getPlayingItemPosition() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingItemPosition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemPosition()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingItemPosition%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayingItemPosition()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Library option info dto.
  */
-@JsonPropertyOrder({ LibraryOptionInfoDto.JSON_PROPERTY_NAME, LibraryOptionInfoDto.JSON_PROPERTY_DEFAULT_ENABLED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryOptionInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_DEFAULT_ENABLED = "DefaultEnabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean defaultEnabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean defaultEnabled;
 
     public LibraryOptionInfoDto() {
     }
@@ -49,10 +42,8 @@ public class LibraryOptionInfoDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -71,10 +62,8 @@ public class LibraryOptionInfoDto {
      * 
      * @return defaultEnabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_ENABLED)
-    public Boolean getDefaultEnabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDefaultEnabled() {
         return defaultEnabled;
     }
 
@@ -83,9 +72,6 @@ public class LibraryOptionInfoDto {
         this.defaultEnabled = defaultEnabled;
     }
 
-    /**
-     * Return true if this LibraryOptionInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class LibraryOptionInfoDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DefaultEnabled` to the URL query string
         if (getDefaultEnabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDefaultEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDefaultEnabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDefaultEnabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDefaultEnabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

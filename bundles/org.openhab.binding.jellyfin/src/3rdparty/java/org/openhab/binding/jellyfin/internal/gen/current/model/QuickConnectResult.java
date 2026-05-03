@@ -12,63 +12,41 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Stores the state of an quick connect request.
  */
-@JsonPropertyOrder({ QuickConnectResult.JSON_PROPERTY_AUTHENTICATED, QuickConnectResult.JSON_PROPERTY_SECRET,
-        QuickConnectResult.JSON_PROPERTY_CODE, QuickConnectResult.JSON_PROPERTY_DEVICE_ID,
-        QuickConnectResult.JSON_PROPERTY_DEVICE_NAME, QuickConnectResult.JSON_PROPERTY_APP_NAME,
-        QuickConnectResult.JSON_PROPERTY_APP_VERSION, QuickConnectResult.JSON_PROPERTY_DATE_ADDED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class QuickConnectResult {
     public static final String JSON_PROPERTY_AUTHENTICATED = "Authenticated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean authenticated;
+    private @org.eclipse.jdt.annotation.Nullable Boolean authenticated;
 
     public static final String JSON_PROPERTY_SECRET = "Secret";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String secret;
+    private @org.eclipse.jdt.annotation.Nullable String secret;
 
     public static final String JSON_PROPERTY_CODE = "Code";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String code;
+    private @org.eclipse.jdt.annotation.Nullable String code;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceId;
+    private @org.eclipse.jdt.annotation.Nullable String deviceId;
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceName;
+    private @org.eclipse.jdt.annotation.Nullable String deviceName;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String appName;
+    private @org.eclipse.jdt.annotation.Nullable String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String appVersion;
+    private @org.eclipse.jdt.annotation.Nullable String appVersion;
 
     public static final String JSON_PROPERTY_DATE_ADDED = "DateAdded";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateAdded;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateAdded;
 
     public QuickConnectResult() {
     }
@@ -83,10 +61,8 @@ public class QuickConnectResult {
      * 
      * @return authenticated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTHENTICATED)
-    public Boolean getAuthenticated() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAuthenticated() {
         return authenticated;
     }
 
@@ -105,10 +81,8 @@ public class QuickConnectResult {
      * 
      * @return secret
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SECRET)
-    public String getSecret() {
+    public @org.eclipse.jdt.annotation.Nullable String getSecret() {
         return secret;
     }
 
@@ -127,10 +101,8 @@ public class QuickConnectResult {
      * 
      * @return code
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODE)
-    public String getCode() {
+    public @org.eclipse.jdt.annotation.Nullable String getCode() {
         return code;
     }
 
@@ -149,10 +121,8 @@ public class QuickConnectResult {
      * 
      * @return deviceId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
-    public String getDeviceId() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceId() {
         return deviceId;
     }
 
@@ -171,10 +141,8 @@ public class QuickConnectResult {
      * 
      * @return deviceName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME)
-    public String getDeviceName() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceName() {
         return deviceName;
     }
 
@@ -193,10 +161,8 @@ public class QuickConnectResult {
      * 
      * @return appName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APP_NAME)
-    public String getAppName() {
+    public @org.eclipse.jdt.annotation.Nullable String getAppName() {
         return appName;
     }
 
@@ -215,10 +181,8 @@ public class QuickConnectResult {
      * 
      * @return appVersion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APP_VERSION)
-    public String getAppVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getAppVersion() {
         return appVersion;
     }
 
@@ -237,10 +201,8 @@ public class QuickConnectResult {
      * 
      * @return dateAdded
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_ADDED)
-    public OffsetDateTime getDateAdded() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateAdded() {
         return dateAdded;
     }
 
@@ -249,9 +211,6 @@ public class QuickConnectResult {
         this.dateAdded = dateAdded;
     }
 
-    /**
-     * Return true if this QuickConnectResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -334,50 +293,90 @@ public class QuickConnectResult {
 
         // add `Authenticated` to the URL query string
         if (getAuthenticated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAuthenticated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthenticated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAuthenticated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAuthenticated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Secret` to the URL query string
         if (getSecret() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSecret%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSecret()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSecret%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSecret()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Code` to the URL query string
         if (getCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceName` to the URL query string
         if (getDeviceName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AppName` to the URL query string
         if (getAppName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAppName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AppVersion` to the URL query string
         if (getAppVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAppVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DateAdded` to the URL query string
         if (getDateAdded() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateAdded%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateAdded()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateAdded%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateAdded()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

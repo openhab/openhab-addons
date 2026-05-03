@@ -12,47 +12,32 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Manifest type for backups internal structure.
  */
-@JsonPropertyOrder({ BackupManifestDto.JSON_PROPERTY_SERVER_VERSION,
-        BackupManifestDto.JSON_PROPERTY_BACKUP_ENGINE_VERSION, BackupManifestDto.JSON_PROPERTY_DATE_CREATED,
-        BackupManifestDto.JSON_PROPERTY_PATH, BackupManifestDto.JSON_PROPERTY_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BackupManifestDto {
     public static final String JSON_PROPERTY_SERVER_VERSION = "ServerVersion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverVersion;
+    private @org.eclipse.jdt.annotation.Nullable String serverVersion;
 
     public static final String JSON_PROPERTY_BACKUP_ENGINE_VERSION = "BackupEngineVersion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String backupEngineVersion;
+    private @org.eclipse.jdt.annotation.Nullable String backupEngineVersion;
 
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateCreated;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_OPTIONS = "Options";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BackupOptionsDto options;
+    private @org.eclipse.jdt.annotation.Nullable BackupOptionsDto options;
 
     public BackupManifestDto() {
     }
@@ -67,10 +52,8 @@ public class BackupManifestDto {
      * 
      * @return serverVersion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_VERSION)
-    public String getServerVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerVersion() {
         return serverVersion;
     }
 
@@ -89,10 +72,8 @@ public class BackupManifestDto {
      * 
      * @return backupEngineVersion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BACKUP_ENGINE_VERSION)
-    public String getBackupEngineVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getBackupEngineVersion() {
         return backupEngineVersion;
     }
 
@@ -111,10 +92,8 @@ public class BackupManifestDto {
      * 
      * @return dateCreated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
-    public OffsetDateTime getDateCreated() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -133,10 +112,8 @@ public class BackupManifestDto {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -155,10 +132,8 @@ public class BackupManifestDto {
      * 
      * @return options
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPTIONS)
-    public BackupOptionsDto getOptions() {
+    public @org.eclipse.jdt.annotation.Nullable BackupOptionsDto getOptions() {
         return options;
     }
 
@@ -167,9 +142,6 @@ public class BackupManifestDto {
         this.options = options;
     }
 
-    /**
-     * Return true if this BackupManifestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -246,26 +218,46 @@ public class BackupManifestDto {
 
         // add `ServerVersion` to the URL query string
         if (getServerVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BackupEngineVersion` to the URL query string
         if (getBackupEngineVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBackupEngineVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBackupEngineVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBackupEngineVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBackupEngineVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DateCreated` to the URL query string
         if (getDateCreated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateCreated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Options` to the URL query string

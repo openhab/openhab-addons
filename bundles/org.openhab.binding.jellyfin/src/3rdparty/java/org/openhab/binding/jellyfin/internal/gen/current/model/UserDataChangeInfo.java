@@ -12,32 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class UserDataChangeInfo.
  */
-@JsonPropertyOrder({ UserDataChangeInfo.JSON_PROPERTY_USER_ID, UserDataChangeInfo.JSON_PROPERTY_USER_DATA_LIST })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserDataChangeInfo {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_USER_DATA_LIST = "UserDataList";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UserItemDataDto> userDataList = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UserItemDataDto> userDataList = new ArrayList<>();
 
     public UserDataChangeInfo() {
     }
@@ -52,10 +45,8 @@ public class UserDataChangeInfo {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -82,10 +73,8 @@ public class UserDataChangeInfo {
      * 
      * @return userDataList
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_DATA_LIST)
-    public List<UserItemDataDto> getUserDataList() {
+    public @org.eclipse.jdt.annotation.Nullable List<UserItemDataDto> getUserDataList() {
         return userDataList;
     }
 
@@ -94,9 +83,6 @@ public class UserDataChangeInfo {
         this.userDataList = userDataList;
     }
 
-    /**
-     * Return true if this UserDataChangeInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -167,8 +153,13 @@ public class UserDataChangeInfo {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserDataList` to the URL query string

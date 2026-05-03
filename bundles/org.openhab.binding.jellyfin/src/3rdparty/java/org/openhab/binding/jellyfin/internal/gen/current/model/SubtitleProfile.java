@@ -12,46 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A class for subtitle profile information.
  */
-@JsonPropertyOrder({ SubtitleProfile.JSON_PROPERTY_FORMAT, SubtitleProfile.JSON_PROPERTY_METHOD,
-        SubtitleProfile.JSON_PROPERTY_DIDL_MODE, SubtitleProfile.JSON_PROPERTY_LANGUAGE,
-        SubtitleProfile.JSON_PROPERTY_CONTAINER })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SubtitleProfile {
     public static final String JSON_PROPERTY_FORMAT = "Format";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String format;
+    private @org.eclipse.jdt.annotation.Nullable String format;
 
     public static final String JSON_PROPERTY_METHOD = "Method";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SubtitleDeliveryMethod method;
+    private @org.eclipse.jdt.annotation.Nullable SubtitleDeliveryMethod method;
 
     public static final String JSON_PROPERTY_DIDL_MODE = "DidlMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String didlMode;
+    private @org.eclipse.jdt.annotation.Nullable String didlMode;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String language;
+    private @org.eclipse.jdt.annotation.Nullable String language;
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String container;
+    private @org.eclipse.jdt.annotation.Nullable String container;
 
     public SubtitleProfile() {
     }
@@ -66,10 +51,8 @@ public class SubtitleProfile {
      * 
      * @return format
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FORMAT)
-    public String getFormat() {
+    public @org.eclipse.jdt.annotation.Nullable String getFormat() {
         return format;
     }
 
@@ -88,10 +71,8 @@ public class SubtitleProfile {
      * 
      * @return method
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METHOD)
-    public SubtitleDeliveryMethod getMethod() {
+    public @org.eclipse.jdt.annotation.Nullable SubtitleDeliveryMethod getMethod() {
         return method;
     }
 
@@ -110,10 +91,8 @@ public class SubtitleProfile {
      * 
      * @return didlMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DIDL_MODE)
-    public String getDidlMode() {
+    public @org.eclipse.jdt.annotation.Nullable String getDidlMode() {
         return didlMode;
     }
 
@@ -132,10 +111,8 @@ public class SubtitleProfile {
      * 
      * @return language
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE)
-    public String getLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getLanguage() {
         return language;
     }
 
@@ -154,10 +131,8 @@ public class SubtitleProfile {
      * 
      * @return container
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTAINER)
-    public String getContainer() {
+    public @org.eclipse.jdt.annotation.Nullable String getContainer() {
         return container;
     }
 
@@ -166,9 +141,6 @@ public class SubtitleProfile {
         this.container = container;
     }
 
-    /**
-     * Return true if this SubtitleProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -245,32 +217,57 @@ public class SubtitleProfile {
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Method` to the URL query string
         if (getMethod() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMethod()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMethod%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMethod()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DidlMode` to the URL query string
         if (getDidlMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDidlMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDidlMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDidlMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDidlMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContainer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

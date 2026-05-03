@@ -12,37 +12,27 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PlaybackInfoResponse.
  */
-@JsonPropertyOrder({ PlaybackInfoResponse.JSON_PROPERTY_MEDIA_SOURCES,
-        PlaybackInfoResponse.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackInfoResponse.JSON_PROPERTY_ERROR_CODE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaybackInfoResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCES = "MediaSources";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaSourceInfo> mediaSources = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaSourceInfo> mediaSources = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String playSessionId;
+    private @org.eclipse.jdt.annotation.Nullable String playSessionId;
 
     public static final String JSON_PROPERTY_ERROR_CODE = "ErrorCode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlaybackErrorCode errorCode;
+    private @org.eclipse.jdt.annotation.Nullable PlaybackErrorCode errorCode;
 
     public PlaybackInfoResponse() {
     }
@@ -65,10 +55,8 @@ public class PlaybackInfoResponse {
      * 
      * @return mediaSources
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCES)
-    public List<MediaSourceInfo> getMediaSources() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaSourceInfo> getMediaSources() {
         return mediaSources;
     }
 
@@ -87,10 +75,8 @@ public class PlaybackInfoResponse {
      * 
      * @return playSessionId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID)
-    public String getPlaySessionId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPlaySessionId() {
         return playSessionId;
     }
 
@@ -109,10 +95,8 @@ public class PlaybackInfoResponse {
      * 
      * @return errorCode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ERROR_CODE)
-    public PlaybackErrorCode getErrorCode() {
+    public @org.eclipse.jdt.annotation.Nullable PlaybackErrorCode getErrorCode() {
         return errorCode;
     }
 
@@ -121,9 +105,6 @@ public class PlaybackInfoResponse {
         this.errorCode = errorCode;
     }
 
-    /**
-     * Return true if this PlaybackInfoResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -209,14 +190,24 @@ public class PlaybackInfoResponse {
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaySessionId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ErrorCode` to the URL query string
         if (getErrorCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sErrorCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sErrorCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getErrorCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

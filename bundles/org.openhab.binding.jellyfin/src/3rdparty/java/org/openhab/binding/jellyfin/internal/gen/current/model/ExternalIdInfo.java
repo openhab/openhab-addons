@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Represents the external id information for serialization to the client.
  */
-@JsonPropertyOrder({ ExternalIdInfo.JSON_PROPERTY_NAME, ExternalIdInfo.JSON_PROPERTY_KEY,
-        ExternalIdInfo.JSON_PROPERTY_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ExternalIdInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_KEY = "Key";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String key;
+    private @org.eclipse.jdt.annotation.Nullable String key;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ExternalIdMediaType type;
+    private @org.eclipse.jdt.annotation.Nullable ExternalIdMediaType type;
 
     public ExternalIdInfo() {
     }
@@ -55,10 +45,8 @@ public class ExternalIdInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -77,10 +65,8 @@ public class ExternalIdInfo {
      * 
      * @return key
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEY)
-    public String getKey() {
+    public @org.eclipse.jdt.annotation.Nullable String getKey() {
         return key;
     }
 
@@ -101,10 +87,8 @@ public class ExternalIdInfo {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public ExternalIdMediaType getType() {
+    public @org.eclipse.jdt.annotation.Nullable ExternalIdMediaType getType() {
         return type;
     }
 
@@ -113,9 +97,6 @@ public class ExternalIdInfo {
         this.type = type;
     }
 
-    /**
-     * Return true if this ExternalIdInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -187,20 +168,35 @@ public class ExternalIdInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKey()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

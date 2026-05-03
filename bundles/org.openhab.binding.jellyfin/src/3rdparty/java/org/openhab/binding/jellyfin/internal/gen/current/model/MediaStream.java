@@ -12,382 +12,224 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class MediaStream.
  */
-@JsonPropertyOrder({ MediaStream.JSON_PROPERTY_CODEC, MediaStream.JSON_PROPERTY_CODEC_TAG,
-        MediaStream.JSON_PROPERTY_LANGUAGE, MediaStream.JSON_PROPERTY_COLOR_RANGE,
-        MediaStream.JSON_PROPERTY_COLOR_SPACE, MediaStream.JSON_PROPERTY_COLOR_TRANSFER,
-        MediaStream.JSON_PROPERTY_COLOR_PRIMARIES, MediaStream.JSON_PROPERTY_DV_VERSION_MAJOR,
-        MediaStream.JSON_PROPERTY_DV_VERSION_MINOR, MediaStream.JSON_PROPERTY_DV_PROFILE,
-        MediaStream.JSON_PROPERTY_DV_LEVEL, MediaStream.JSON_PROPERTY_RPU_PRESENT_FLAG,
-        MediaStream.JSON_PROPERTY_EL_PRESENT_FLAG, MediaStream.JSON_PROPERTY_BL_PRESENT_FLAG,
-        MediaStream.JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID, MediaStream.JSON_PROPERTY_ROTATION,
-        MediaStream.JSON_PROPERTY_COMMENT, MediaStream.JSON_PROPERTY_TIME_BASE,
-        MediaStream.JSON_PROPERTY_CODEC_TIME_BASE, MediaStream.JSON_PROPERTY_TITLE,
-        MediaStream.JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG, MediaStream.JSON_PROPERTY_VIDEO_RANGE,
-        MediaStream.JSON_PROPERTY_VIDEO_RANGE_TYPE, MediaStream.JSON_PROPERTY_VIDEO_DO_VI_TITLE,
-        MediaStream.JSON_PROPERTY_AUDIO_SPATIAL_FORMAT, MediaStream.JSON_PROPERTY_LOCALIZED_UNDEFINED,
-        MediaStream.JSON_PROPERTY_LOCALIZED_DEFAULT, MediaStream.JSON_PROPERTY_LOCALIZED_FORCED,
-        MediaStream.JSON_PROPERTY_LOCALIZED_EXTERNAL, MediaStream.JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED,
-        MediaStream.JSON_PROPERTY_DISPLAY_TITLE, MediaStream.JSON_PROPERTY_NAL_LENGTH_SIZE,
-        MediaStream.JSON_PROPERTY_IS_INTERLACED, MediaStream.JSON_PROPERTY_IS_A_V_C,
-        MediaStream.JSON_PROPERTY_CHANNEL_LAYOUT, MediaStream.JSON_PROPERTY_BIT_RATE,
-        MediaStream.JSON_PROPERTY_BIT_DEPTH, MediaStream.JSON_PROPERTY_REF_FRAMES,
-        MediaStream.JSON_PROPERTY_PACKET_LENGTH, MediaStream.JSON_PROPERTY_CHANNELS,
-        MediaStream.JSON_PROPERTY_SAMPLE_RATE, MediaStream.JSON_PROPERTY_IS_DEFAULT,
-        MediaStream.JSON_PROPERTY_IS_FORCED, MediaStream.JSON_PROPERTY_IS_HEARING_IMPAIRED,
-        MediaStream.JSON_PROPERTY_HEIGHT, MediaStream.JSON_PROPERTY_WIDTH, MediaStream.JSON_PROPERTY_AVERAGE_FRAME_RATE,
-        MediaStream.JSON_PROPERTY_REAL_FRAME_RATE, MediaStream.JSON_PROPERTY_REFERENCE_FRAME_RATE,
-        MediaStream.JSON_PROPERTY_PROFILE, MediaStream.JSON_PROPERTY_TYPE, MediaStream.JSON_PROPERTY_ASPECT_RATIO,
-        MediaStream.JSON_PROPERTY_INDEX, MediaStream.JSON_PROPERTY_SCORE, MediaStream.JSON_PROPERTY_IS_EXTERNAL,
-        MediaStream.JSON_PROPERTY_DELIVERY_METHOD, MediaStream.JSON_PROPERTY_DELIVERY_URL,
-        MediaStream.JSON_PROPERTY_IS_EXTERNAL_URL, MediaStream.JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM,
-        MediaStream.JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM, MediaStream.JSON_PROPERTY_PATH,
-        MediaStream.JSON_PROPERTY_PIXEL_FORMAT, MediaStream.JSON_PROPERTY_LEVEL,
-        MediaStream.JSON_PROPERTY_IS_ANAMORPHIC })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaStream {
     public static final String JSON_PROPERTY_CODEC = "Codec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String codec;
+    private @org.eclipse.jdt.annotation.Nullable String codec;
 
     public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String codecTag;
+    private @org.eclipse.jdt.annotation.Nullable String codecTag;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String language;
+    private @org.eclipse.jdt.annotation.Nullable String language;
 
     public static final String JSON_PROPERTY_COLOR_RANGE = "ColorRange";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String colorRange;
+    private @org.eclipse.jdt.annotation.Nullable String colorRange;
 
     public static final String JSON_PROPERTY_COLOR_SPACE = "ColorSpace";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String colorSpace;
+    private @org.eclipse.jdt.annotation.Nullable String colorSpace;
 
     public static final String JSON_PROPERTY_COLOR_TRANSFER = "ColorTransfer";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String colorTransfer;
+    private @org.eclipse.jdt.annotation.Nullable String colorTransfer;
 
     public static final String JSON_PROPERTY_COLOR_PRIMARIES = "ColorPrimaries";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String colorPrimaries;
+    private @org.eclipse.jdt.annotation.Nullable String colorPrimaries;
 
     public static final String JSON_PROPERTY_DV_VERSION_MAJOR = "DvVersionMajor";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer dvVersionMajor;
+    private @org.eclipse.jdt.annotation.Nullable Integer dvVersionMajor;
 
     public static final String JSON_PROPERTY_DV_VERSION_MINOR = "DvVersionMinor";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer dvVersionMinor;
+    private @org.eclipse.jdt.annotation.Nullable Integer dvVersionMinor;
 
     public static final String JSON_PROPERTY_DV_PROFILE = "DvProfile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer dvProfile;
+    private @org.eclipse.jdt.annotation.Nullable Integer dvProfile;
 
     public static final String JSON_PROPERTY_DV_LEVEL = "DvLevel";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer dvLevel;
+    private @org.eclipse.jdt.annotation.Nullable Integer dvLevel;
 
     public static final String JSON_PROPERTY_RPU_PRESENT_FLAG = "RpuPresentFlag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer rpuPresentFlag;
+    private @org.eclipse.jdt.annotation.Nullable Integer rpuPresentFlag;
 
     public static final String JSON_PROPERTY_EL_PRESENT_FLAG = "ElPresentFlag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer elPresentFlag;
+    private @org.eclipse.jdt.annotation.Nullable Integer elPresentFlag;
 
     public static final String JSON_PROPERTY_BL_PRESENT_FLAG = "BlPresentFlag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer blPresentFlag;
+    private @org.eclipse.jdt.annotation.Nullable Integer blPresentFlag;
 
     public static final String JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID = "DvBlSignalCompatibilityId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer dvBlSignalCompatibilityId;
+    private @org.eclipse.jdt.annotation.Nullable Integer dvBlSignalCompatibilityId;
 
     public static final String JSON_PROPERTY_ROTATION = "Rotation";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer rotation;
+    private @org.eclipse.jdt.annotation.Nullable Integer rotation;
 
     public static final String JSON_PROPERTY_COMMENT = "Comment";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String comment;
+    private @org.eclipse.jdt.annotation.Nullable String comment;
 
     public static final String JSON_PROPERTY_TIME_BASE = "TimeBase";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String timeBase;
+    private @org.eclipse.jdt.annotation.Nullable String timeBase;
 
     public static final String JSON_PROPERTY_CODEC_TIME_BASE = "CodecTimeBase";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String codecTimeBase;
+    private @org.eclipse.jdt.annotation.Nullable String codecTimeBase;
 
     public static final String JSON_PROPERTY_TITLE = "Title";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String title;
+    private @org.eclipse.jdt.annotation.Nullable String title;
 
     public static final String JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG = "Hdr10PlusPresentFlag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hdr10PlusPresentFlag;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hdr10PlusPresentFlag;
 
     public static final String JSON_PROPERTY_VIDEO_RANGE = "VideoRange";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private VideoRange videoRange = VideoRange.UNKNOWN;
+    private @org.eclipse.jdt.annotation.Nullable VideoRange videoRange = VideoRange.UNKNOWN;
 
     public static final String JSON_PROPERTY_VIDEO_RANGE_TYPE = "VideoRangeType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private VideoRangeType videoRangeType = VideoRangeType.UNKNOWN;
+    private @org.eclipse.jdt.annotation.Nullable VideoRangeType videoRangeType = VideoRangeType.UNKNOWN;
 
     public static final String JSON_PROPERTY_VIDEO_DO_VI_TITLE = "VideoDoViTitle";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String videoDoViTitle;
+    private @org.eclipse.jdt.annotation.Nullable String videoDoViTitle;
 
     public static final String JSON_PROPERTY_AUDIO_SPATIAL_FORMAT = "AudioSpatialFormat";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private AudioSpatialFormat audioSpatialFormat = AudioSpatialFormat.NONE;
+    private @org.eclipse.jdt.annotation.Nullable AudioSpatialFormat audioSpatialFormat = AudioSpatialFormat.NONE;
 
     public static final String JSON_PROPERTY_LOCALIZED_UNDEFINED = "LocalizedUndefined";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localizedUndefined;
+    private @org.eclipse.jdt.annotation.Nullable String localizedUndefined;
 
     public static final String JSON_PROPERTY_LOCALIZED_DEFAULT = "LocalizedDefault";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localizedDefault;
+    private @org.eclipse.jdt.annotation.Nullable String localizedDefault;
 
     public static final String JSON_PROPERTY_LOCALIZED_FORCED = "LocalizedForced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localizedForced;
+    private @org.eclipse.jdt.annotation.Nullable String localizedForced;
 
     public static final String JSON_PROPERTY_LOCALIZED_EXTERNAL = "LocalizedExternal";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localizedExternal;
+    private @org.eclipse.jdt.annotation.Nullable String localizedExternal;
 
     public static final String JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED = "LocalizedHearingImpaired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localizedHearingImpaired;
+    private @org.eclipse.jdt.annotation.Nullable String localizedHearingImpaired;
 
     public static final String JSON_PROPERTY_DISPLAY_TITLE = "DisplayTitle";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String displayTitle;
+    private @org.eclipse.jdt.annotation.Nullable String displayTitle;
 
     public static final String JSON_PROPERTY_NAL_LENGTH_SIZE = "NalLengthSize";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String nalLengthSize;
+    private @org.eclipse.jdt.annotation.Nullable String nalLengthSize;
 
     public static final String JSON_PROPERTY_IS_INTERLACED = "IsInterlaced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isInterlaced;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isInterlaced;
 
     public static final String JSON_PROPERTY_IS_A_V_C = "IsAVC";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isAVC;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isAVC;
 
     public static final String JSON_PROPERTY_CHANNEL_LAYOUT = "ChannelLayout";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String channelLayout;
+    private @org.eclipse.jdt.annotation.Nullable String channelLayout;
 
     public static final String JSON_PROPERTY_BIT_RATE = "BitRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer bitRate;
+    private @org.eclipse.jdt.annotation.Nullable Integer bitRate;
 
     public static final String JSON_PROPERTY_BIT_DEPTH = "BitDepth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer bitDepth;
+    private @org.eclipse.jdt.annotation.Nullable Integer bitDepth;
 
     public static final String JSON_PROPERTY_REF_FRAMES = "RefFrames";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer refFrames;
+    private @org.eclipse.jdt.annotation.Nullable Integer refFrames;
 
     public static final String JSON_PROPERTY_PACKET_LENGTH = "PacketLength";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer packetLength;
+    private @org.eclipse.jdt.annotation.Nullable Integer packetLength;
 
     public static final String JSON_PROPERTY_CHANNELS = "Channels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer channels;
+    private @org.eclipse.jdt.annotation.Nullable Integer channels;
 
     public static final String JSON_PROPERTY_SAMPLE_RATE = "SampleRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer sampleRate;
+    private @org.eclipse.jdt.annotation.Nullable Integer sampleRate;
 
     public static final String JSON_PROPERTY_IS_DEFAULT = "IsDefault";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isDefault;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isDefault;
 
     public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isForced;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isForced;
 
     public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isHearingImpaired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isHearingImpaired;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer height;
+    private @org.eclipse.jdt.annotation.Nullable Integer height;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer width;
+    private @org.eclipse.jdt.annotation.Nullable Integer width;
 
     public static final String JSON_PROPERTY_AVERAGE_FRAME_RATE = "AverageFrameRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Float averageFrameRate;
+    private @org.eclipse.jdt.annotation.Nullable Float averageFrameRate;
 
     public static final String JSON_PROPERTY_REAL_FRAME_RATE = "RealFrameRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Float realFrameRate;
+    private @org.eclipse.jdt.annotation.Nullable Float realFrameRate;
 
     public static final String JSON_PROPERTY_REFERENCE_FRAME_RATE = "ReferenceFrameRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Float referenceFrameRate;
+    private @org.eclipse.jdt.annotation.Nullable Float referenceFrameRate;
 
     public static final String JSON_PROPERTY_PROFILE = "Profile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String profile;
+    private @org.eclipse.jdt.annotation.Nullable String profile;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaStreamType type;
+    private @org.eclipse.jdt.annotation.Nullable MediaStreamType type;
 
     public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String aspectRatio;
+    private @org.eclipse.jdt.annotation.Nullable String aspectRatio;
 
     public static final String JSON_PROPERTY_INDEX = "Index";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer index;
+    private @org.eclipse.jdt.annotation.Nullable Integer index;
 
     public static final String JSON_PROPERTY_SCORE = "Score";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer score;
+    private @org.eclipse.jdt.annotation.Nullable Integer score;
 
     public static final String JSON_PROPERTY_IS_EXTERNAL = "IsExternal";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isExternal;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isExternal;
 
     public static final String JSON_PROPERTY_DELIVERY_METHOD = "DeliveryMethod";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SubtitleDeliveryMethod deliveryMethod;
+    private @org.eclipse.jdt.annotation.Nullable SubtitleDeliveryMethod deliveryMethod;
 
     public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deliveryUrl;
+    private @org.eclipse.jdt.annotation.Nullable String deliveryUrl;
 
     public static final String JSON_PROPERTY_IS_EXTERNAL_URL = "IsExternalUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isExternalUrl;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isExternalUrl;
 
     public static final String JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM = "IsTextSubtitleStream";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isTextSubtitleStream;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isTextSubtitleStream;
 
     public static final String JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM = "SupportsExternalStream";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsExternalStream;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsExternalStream;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_PIXEL_FORMAT = "PixelFormat";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String pixelFormat;
+    private @org.eclipse.jdt.annotation.Nullable String pixelFormat;
 
     public static final String JSON_PROPERTY_LEVEL = "Level";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double level;
+    private @org.eclipse.jdt.annotation.Nullable Double level;
 
     public static final String JSON_PROPERTY_IS_ANAMORPHIC = "IsAnamorphic";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isAnamorphic;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isAnamorphic;
 
     public MediaStream() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public MediaStream(@JsonProperty(JSON_PROPERTY_VIDEO_RANGE) VideoRange videoRange,
-            @JsonProperty(JSON_PROPERTY_VIDEO_RANGE_TYPE) VideoRangeType videoRangeType,
-            @JsonProperty(JSON_PROPERTY_VIDEO_DO_VI_TITLE) String videoDoViTitle,
-            @JsonProperty(JSON_PROPERTY_AUDIO_SPATIAL_FORMAT) AudioSpatialFormat audioSpatialFormat,
-            @JsonProperty(JSON_PROPERTY_DISPLAY_TITLE) String displayTitle,
-            @JsonProperty(JSON_PROPERTY_REFERENCE_FRAME_RATE) Float referenceFrameRate,
-            @JsonProperty(JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM) Boolean isTextSubtitleStream) {
+    public MediaStream(@JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE) VideoRange videoRange,
+            @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE_TYPE) VideoRangeType videoRangeType,
+            @JsonProperty(value = JSON_PROPERTY_VIDEO_DO_VI_TITLE) String videoDoViTitle,
+            @JsonProperty(value = JSON_PROPERTY_AUDIO_SPATIAL_FORMAT) AudioSpatialFormat audioSpatialFormat,
+            @JsonProperty(value = JSON_PROPERTY_DISPLAY_TITLE) String displayTitle,
+            @JsonProperty(value = JSON_PROPERTY_REFERENCE_FRAME_RATE) Float referenceFrameRate,
+            @JsonProperty(value = JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM) Boolean isTextSubtitleStream) {
         this();
         this.videoRange = videoRange;
         this.videoRangeType = videoRangeType;
@@ -408,10 +250,8 @@ public class MediaStream {
      * 
      * @return codec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC)
-    public String getCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getCodec() {
         return codec;
     }
 
@@ -430,10 +270,8 @@ public class MediaStream {
      * 
      * @return codecTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
-    public String getCodecTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getCodecTag() {
         return codecTag;
     }
 
@@ -452,10 +290,8 @@ public class MediaStream {
      * 
      * @return language
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE)
-    public String getLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getLanguage() {
         return language;
     }
 
@@ -474,10 +310,8 @@ public class MediaStream {
      * 
      * @return colorRange
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLOR_RANGE)
-    public String getColorRange() {
+    public @org.eclipse.jdt.annotation.Nullable String getColorRange() {
         return colorRange;
     }
 
@@ -496,10 +330,8 @@ public class MediaStream {
      * 
      * @return colorSpace
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLOR_SPACE)
-    public String getColorSpace() {
+    public @org.eclipse.jdt.annotation.Nullable String getColorSpace() {
         return colorSpace;
     }
 
@@ -518,10 +350,8 @@ public class MediaStream {
      * 
      * @return colorTransfer
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLOR_TRANSFER)
-    public String getColorTransfer() {
+    public @org.eclipse.jdt.annotation.Nullable String getColorTransfer() {
         return colorTransfer;
     }
 
@@ -540,10 +370,8 @@ public class MediaStream {
      * 
      * @return colorPrimaries
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLOR_PRIMARIES)
-    public String getColorPrimaries() {
+    public @org.eclipse.jdt.annotation.Nullable String getColorPrimaries() {
         return colorPrimaries;
     }
 
@@ -562,10 +390,8 @@ public class MediaStream {
      * 
      * @return dvVersionMajor
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MAJOR)
-    public Integer getDvVersionMajor() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDvVersionMajor() {
         return dvVersionMajor;
     }
 
@@ -584,10 +410,8 @@ public class MediaStream {
      * 
      * @return dvVersionMinor
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DV_VERSION_MINOR)
-    public Integer getDvVersionMinor() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDvVersionMinor() {
         return dvVersionMinor;
     }
 
@@ -606,10 +430,8 @@ public class MediaStream {
      * 
      * @return dvProfile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DV_PROFILE)
-    public Integer getDvProfile() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDvProfile() {
         return dvProfile;
     }
 
@@ -628,10 +450,8 @@ public class MediaStream {
      * 
      * @return dvLevel
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DV_LEVEL)
-    public Integer getDvLevel() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDvLevel() {
         return dvLevel;
     }
 
@@ -650,10 +470,8 @@ public class MediaStream {
      * 
      * @return rpuPresentFlag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RPU_PRESENT_FLAG)
-    public Integer getRpuPresentFlag() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getRpuPresentFlag() {
         return rpuPresentFlag;
     }
 
@@ -672,10 +490,8 @@ public class MediaStream {
      * 
      * @return elPresentFlag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EL_PRESENT_FLAG)
-    public Integer getElPresentFlag() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getElPresentFlag() {
         return elPresentFlag;
     }
 
@@ -694,10 +510,8 @@ public class MediaStream {
      * 
      * @return blPresentFlag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BL_PRESENT_FLAG)
-    public Integer getBlPresentFlag() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBlPresentFlag() {
         return blPresentFlag;
     }
 
@@ -717,10 +531,8 @@ public class MediaStream {
      * 
      * @return dvBlSignalCompatibilityId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DV_BL_SIGNAL_COMPATIBILITY_ID)
-    public Integer getDvBlSignalCompatibilityId() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDvBlSignalCompatibilityId() {
         return dvBlSignalCompatibilityId;
     }
 
@@ -739,10 +551,8 @@ public class MediaStream {
      * 
      * @return rotation
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ROTATION)
-    public Integer getRotation() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getRotation() {
         return rotation;
     }
 
@@ -761,10 +571,8 @@ public class MediaStream {
      * 
      * @return comment
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMENT)
-    public String getComment() {
+    public @org.eclipse.jdt.annotation.Nullable String getComment() {
         return comment;
     }
 
@@ -783,10 +591,8 @@ public class MediaStream {
      * 
      * @return timeBase
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TIME_BASE)
-    public String getTimeBase() {
+    public @org.eclipse.jdt.annotation.Nullable String getTimeBase() {
         return timeBase;
     }
 
@@ -805,10 +611,8 @@ public class MediaStream {
      * 
      * @return codecTimeBase
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC_TIME_BASE)
-    public String getCodecTimeBase() {
+    public @org.eclipse.jdt.annotation.Nullable String getCodecTimeBase() {
         return codecTimeBase;
     }
 
@@ -827,10 +631,8 @@ public class MediaStream {
      * 
      * @return title
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TITLE)
-    public String getTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getTitle() {
         return title;
     }
 
@@ -849,10 +651,8 @@ public class MediaStream {
      * 
      * @return hdr10PlusPresentFlag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HDR10_PLUS_PRESENT_FLAG)
-    public Boolean getHdr10PlusPresentFlag() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHdr10PlusPresentFlag() {
         return hdr10PlusPresentFlag;
     }
 
@@ -866,10 +666,8 @@ public class MediaStream {
      * 
      * @return videoRange
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE)
-    public VideoRange getVideoRange() {
+    public @org.eclipse.jdt.annotation.Nullable VideoRange getVideoRange() {
         return videoRange;
     }
 
@@ -878,10 +676,8 @@ public class MediaStream {
      * 
      * @return videoRangeType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIDEO_RANGE_TYPE)
-    public VideoRangeType getVideoRangeType() {
+    public @org.eclipse.jdt.annotation.Nullable VideoRangeType getVideoRangeType() {
         return videoRangeType;
     }
 
@@ -890,10 +686,8 @@ public class MediaStream {
      * 
      * @return videoDoViTitle
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIDEO_DO_VI_TITLE)
-    public String getVideoDoViTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getVideoDoViTitle() {
         return videoDoViTitle;
     }
 
@@ -902,10 +696,8 @@ public class MediaStream {
      * 
      * @return audioSpatialFormat
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_SPATIAL_FORMAT)
-    public AudioSpatialFormat getAudioSpatialFormat() {
+    public @org.eclipse.jdt.annotation.Nullable AudioSpatialFormat getAudioSpatialFormat() {
         return audioSpatialFormat;
     }
 
@@ -919,10 +711,8 @@ public class MediaStream {
      * 
      * @return localizedUndefined
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCALIZED_UNDEFINED)
-    public String getLocalizedUndefined() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalizedUndefined() {
         return localizedUndefined;
     }
 
@@ -941,10 +731,8 @@ public class MediaStream {
      * 
      * @return localizedDefault
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCALIZED_DEFAULT)
-    public String getLocalizedDefault() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalizedDefault() {
         return localizedDefault;
     }
 
@@ -963,10 +751,8 @@ public class MediaStream {
      * 
      * @return localizedForced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCALIZED_FORCED)
-    public String getLocalizedForced() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalizedForced() {
         return localizedForced;
     }
 
@@ -985,10 +771,8 @@ public class MediaStream {
      * 
      * @return localizedExternal
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCALIZED_EXTERNAL)
-    public String getLocalizedExternal() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalizedExternal() {
         return localizedExternal;
     }
 
@@ -1007,10 +791,8 @@ public class MediaStream {
      * 
      * @return localizedHearingImpaired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCALIZED_HEARING_IMPAIRED)
-    public String getLocalizedHearingImpaired() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalizedHearingImpaired() {
         return localizedHearingImpaired;
     }
 
@@ -1024,10 +806,8 @@ public class MediaStream {
      * 
      * @return displayTitle
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_TITLE)
-    public String getDisplayTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getDisplayTitle() {
         return displayTitle;
     }
 
@@ -1041,10 +821,8 @@ public class MediaStream {
      * 
      * @return nalLengthSize
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAL_LENGTH_SIZE)
-    public String getNalLengthSize() {
+    public @org.eclipse.jdt.annotation.Nullable String getNalLengthSize() {
         return nalLengthSize;
     }
 
@@ -1063,10 +841,8 @@ public class MediaStream {
      * 
      * @return isInterlaced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_INTERLACED)
-    public Boolean getIsInterlaced() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsInterlaced() {
         return isInterlaced;
     }
 
@@ -1085,10 +861,8 @@ public class MediaStream {
      * 
      * @return isAVC
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_A_V_C)
-    public Boolean getIsAVC() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsAVC() {
         return isAVC;
     }
 
@@ -1107,10 +881,8 @@ public class MediaStream {
      * 
      * @return channelLayout
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_LAYOUT)
-    public String getChannelLayout() {
+    public @org.eclipse.jdt.annotation.Nullable String getChannelLayout() {
         return channelLayout;
     }
 
@@ -1129,10 +901,8 @@ public class MediaStream {
      * 
      * @return bitRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BIT_RATE)
-    public Integer getBitRate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBitRate() {
         return bitRate;
     }
 
@@ -1151,10 +921,8 @@ public class MediaStream {
      * 
      * @return bitDepth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BIT_DEPTH)
-    public Integer getBitDepth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBitDepth() {
         return bitDepth;
     }
 
@@ -1173,10 +941,8 @@ public class MediaStream {
      * 
      * @return refFrames
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REF_FRAMES)
-    public Integer getRefFrames() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getRefFrames() {
         return refFrames;
     }
 
@@ -1195,10 +961,8 @@ public class MediaStream {
      * 
      * @return packetLength
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PACKET_LENGTH)
-    public Integer getPacketLength() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPacketLength() {
         return packetLength;
     }
 
@@ -1217,10 +981,8 @@ public class MediaStream {
      * 
      * @return channels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNELS)
-    public Integer getChannels() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getChannels() {
         return channels;
     }
 
@@ -1239,10 +1001,8 @@ public class MediaStream {
      * 
      * @return sampleRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAMPLE_RATE)
-    public Integer getSampleRate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSampleRate() {
         return sampleRate;
     }
 
@@ -1261,10 +1021,8 @@ public class MediaStream {
      * 
      * @return isDefault
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_DEFAULT)
-    public Boolean getIsDefault() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsDefault() {
         return isDefault;
     }
 
@@ -1283,10 +1041,8 @@ public class MediaStream {
      * 
      * @return isForced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_FORCED)
-    public Boolean getIsForced() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsForced() {
         return isForced;
     }
 
@@ -1305,10 +1061,8 @@ public class MediaStream {
      * 
      * @return isHearingImpaired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED)
-    public Boolean getIsHearingImpaired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
 
@@ -1327,10 +1081,8 @@ public class MediaStream {
      * 
      * @return height
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEIGHT)
-    public Integer getHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getHeight() {
         return height;
     }
 
@@ -1349,10 +1101,8 @@ public class MediaStream {
      * 
      * @return width
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WIDTH)
-    public Integer getWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getWidth() {
         return width;
     }
 
@@ -1371,10 +1121,8 @@ public class MediaStream {
      * 
      * @return averageFrameRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AVERAGE_FRAME_RATE)
-    public Float getAverageFrameRate() {
+    public @org.eclipse.jdt.annotation.Nullable Float getAverageFrameRate() {
         return averageFrameRate;
     }
 
@@ -1393,10 +1141,8 @@ public class MediaStream {
      * 
      * @return realFrameRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REAL_FRAME_RATE)
-    public Float getRealFrameRate() {
+    public @org.eclipse.jdt.annotation.Nullable Float getRealFrameRate() {
         return realFrameRate;
     }
 
@@ -1411,10 +1157,8 @@ public class MediaStream {
      * 
      * @return referenceFrameRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REFERENCE_FRAME_RATE)
-    public Float getReferenceFrameRate() {
+    public @org.eclipse.jdt.annotation.Nullable Float getReferenceFrameRate() {
         return referenceFrameRate;
     }
 
@@ -1428,10 +1172,8 @@ public class MediaStream {
      * 
      * @return profile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROFILE)
-    public String getProfile() {
+    public @org.eclipse.jdt.annotation.Nullable String getProfile() {
         return profile;
     }
 
@@ -1450,10 +1192,8 @@ public class MediaStream {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public MediaStreamType getType() {
+    public @org.eclipse.jdt.annotation.Nullable MediaStreamType getType() {
         return type;
     }
 
@@ -1472,10 +1212,8 @@ public class MediaStream {
      * 
      * @return aspectRatio
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
-    public String getAspectRatio() {
+    public @org.eclipse.jdt.annotation.Nullable String getAspectRatio() {
         return aspectRatio;
     }
 
@@ -1494,10 +1232,8 @@ public class MediaStream {
      * 
      * @return index
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX)
-    public Integer getIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getIndex() {
         return index;
     }
 
@@ -1516,10 +1252,8 @@ public class MediaStream {
      * 
      * @return score
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SCORE)
-    public Integer getScore() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getScore() {
         return score;
     }
 
@@ -1538,10 +1272,8 @@ public class MediaStream {
      * 
      * @return isExternal
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL)
-    public Boolean getIsExternal() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsExternal() {
         return isExternal;
     }
 
@@ -1560,10 +1292,8 @@ public class MediaStream {
      * 
      * @return deliveryMethod
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DELIVERY_METHOD)
-    public SubtitleDeliveryMethod getDeliveryMethod() {
+    public @org.eclipse.jdt.annotation.Nullable SubtitleDeliveryMethod getDeliveryMethod() {
         return deliveryMethod;
     }
 
@@ -1582,10 +1312,8 @@ public class MediaStream {
      * 
      * @return deliveryUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
-    public String getDeliveryUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeliveryUrl() {
         return deliveryUrl;
     }
 
@@ -1604,10 +1332,8 @@ public class MediaStream {
      * 
      * @return isExternalUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_EXTERNAL_URL)
-    public Boolean getIsExternalUrl() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsExternalUrl() {
         return isExternalUrl;
     }
 
@@ -1621,10 +1347,8 @@ public class MediaStream {
      * 
      * @return isTextSubtitleStream
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_TEXT_SUBTITLE_STREAM)
-    public Boolean getIsTextSubtitleStream() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsTextSubtitleStream() {
         return isTextSubtitleStream;
     }
 
@@ -1638,10 +1362,8 @@ public class MediaStream {
      * 
      * @return supportsExternalStream
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_EXTERNAL_STREAM)
-    public Boolean getSupportsExternalStream() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsExternalStream() {
         return supportsExternalStream;
     }
 
@@ -1660,10 +1382,8 @@ public class MediaStream {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -1682,10 +1402,8 @@ public class MediaStream {
      * 
      * @return pixelFormat
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PIXEL_FORMAT)
-    public String getPixelFormat() {
+    public @org.eclipse.jdt.annotation.Nullable String getPixelFormat() {
         return pixelFormat;
     }
 
@@ -1704,10 +1422,8 @@ public class MediaStream {
      * 
      * @return level
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LEVEL)
-    public Double getLevel() {
+    public @org.eclipse.jdt.annotation.Nullable Double getLevel() {
         return level;
     }
 
@@ -1726,10 +1442,8 @@ public class MediaStream {
      * 
      * @return isAnamorphic
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_ANAMORPHIC)
-    public Boolean getIsAnamorphic() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsAnamorphic() {
         return isAnamorphic;
     }
 
@@ -1738,9 +1452,6 @@ public class MediaStream {
         this.isAnamorphic = isAnamorphic;
     }
 
-    /**
-     * Return true if this MediaStream object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1939,386 +1650,711 @@ public class MediaStream {
 
         // add `Codec` to the URL query string
         if (getCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CodecTag` to the URL query string
         if (getCodecTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCodecTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ColorRange` to the URL query string
         if (getColorRange() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sColorRange%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getColorRange()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sColorRange%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getColorRange()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ColorSpace` to the URL query string
         if (getColorSpace() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sColorSpace%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getColorSpace()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sColorSpace%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getColorSpace()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ColorTransfer` to the URL query string
         if (getColorTransfer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sColorTransfer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getColorTransfer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sColorTransfer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getColorTransfer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ColorPrimaries` to the URL query string
         if (getColorPrimaries() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sColorPrimaries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getColorPrimaries()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sColorPrimaries%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getColorPrimaries()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DvVersionMajor` to the URL query string
         if (getDvVersionMajor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDvVersionMajor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMajor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDvVersionMajor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDvVersionMajor()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DvVersionMinor` to the URL query string
         if (getDvVersionMinor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDvVersionMinor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDvVersionMinor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDvVersionMinor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDvVersionMinor()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DvProfile` to the URL query string
         if (getDvProfile() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDvProfile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDvProfile()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDvProfile%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDvProfile()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DvLevel` to the URL query string
         if (getDvLevel() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDvLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDvLevel()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDvLevel%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDvLevel()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RpuPresentFlag` to the URL query string
         if (getRpuPresentFlag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRpuPresentFlag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRpuPresentFlag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRpuPresentFlag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRpuPresentFlag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ElPresentFlag` to the URL query string
         if (getElPresentFlag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sElPresentFlag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getElPresentFlag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sElPresentFlag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getElPresentFlag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BlPresentFlag` to the URL query string
         if (getBlPresentFlag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBlPresentFlag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlPresentFlag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBlPresentFlag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBlPresentFlag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DvBlSignalCompatibilityId` to the URL query string
         if (getDvBlSignalCompatibilityId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDvBlSignalCompatibilityId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDvBlSignalCompatibilityId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDvBlSignalCompatibilityId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDvBlSignalCompatibilityId()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Rotation` to the URL query string
         if (getRotation() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRotation%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRotation()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRotation%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRotation()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getComment()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TimeBase` to the URL query string
         if (getTimeBase() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTimeBase%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeBase()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTimeBase%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTimeBase()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CodecTimeBase` to the URL query string
         if (getCodecTimeBase() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTimeBase%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodecTimeBase()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTimeBase%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCodecTimeBase()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Hdr10PlusPresentFlag` to the URL query string
         if (getHdr10PlusPresentFlag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHdr10PlusPresentFlag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHdr10PlusPresentFlag()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sHdr10PlusPresentFlag%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getHdr10PlusPresentFlag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VideoRange` to the URL query string
         if (getVideoRange() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVideoRange%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoRange()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVideoRange%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVideoRange()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VideoRangeType` to the URL query string
         if (getVideoRangeType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVideoRangeType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoRangeType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVideoRangeType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVideoRangeType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VideoDoViTitle` to the URL query string
         if (getVideoDoViTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVideoDoViTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoDoViTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVideoDoViTitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVideoDoViTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AudioSpatialFormat` to the URL query string
         if (getAudioSpatialFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioSpatialFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioSpatialFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioSpatialFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioSpatialFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalizedUndefined` to the URL query string
         if (getLocalizedUndefined() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedUndefined%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalizedUndefined()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedUndefined%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalizedUndefined()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalizedDefault` to the URL query string
         if (getLocalizedDefault() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedDefault%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalizedDefault()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedDefault%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalizedDefault()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalizedForced` to the URL query string
         if (getLocalizedForced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalizedForced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedForced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalizedForced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalizedExternal` to the URL query string
         if (getLocalizedExternal() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedExternal%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalizedExternal()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedExternal%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalizedExternal()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalizedHearingImpaired` to the URL query string
         if (getLocalizedHearingImpaired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalizedHearingImpaired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalizedHearingImpaired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalizedHearingImpaired()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayTitle` to the URL query string
         if (getDisplayTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayTitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NalLengthSize` to the URL query string
         if (getNalLengthSize() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sNalLengthSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNalLengthSize()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sNalLengthSize%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getNalLengthSize()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsInterlaced` to the URL query string
         if (getIsInterlaced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsInterlaced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsInterlaced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsInterlaced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsInterlaced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsAVC` to the URL query string
         if (getIsAVC() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsAVC%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAVC()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsAVC%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsAVC()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ChannelLayout` to the URL query string
         if (getChannelLayout() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChannelLayout%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelLayout()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChannelLayout%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChannelLayout()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BitRate` to the URL query string
         if (getBitRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBitRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBitRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBitRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBitRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BitDepth` to the URL query string
         if (getBitDepth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBitDepth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBitDepth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBitDepth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBitDepth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RefFrames` to the URL query string
         if (getRefFrames() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRefFrames%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefFrames()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRefFrames%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRefFrames()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PacketLength` to the URL query string
         if (getPacketLength() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPacketLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPacketLength()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPacketLength%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPacketLength()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Channels` to the URL query string
         if (getChannels() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannels()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChannels%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChannels()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SampleRate` to the URL query string
         if (getSampleRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSampleRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSampleRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSampleRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSampleRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsDefault` to the URL query string
         if (getIsDefault() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsDefault%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsDefault()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsDefault%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsDefault()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsForced` to the URL query string
         if (getIsForced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsForced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsHearingImpaired` to the URL query string
         if (getIsHearingImpaired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHearingImpaired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsHearingImpaired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AverageFrameRate` to the URL query string
         if (getAverageFrameRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAverageFrameRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAverageFrameRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAverageFrameRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAverageFrameRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RealFrameRate` to the URL query string
         if (getRealFrameRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRealFrameRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRealFrameRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRealFrameRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRealFrameRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ReferenceFrameRate` to the URL query string
         if (getReferenceFrameRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sReferenceFrameRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReferenceFrameRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sReferenceFrameRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getReferenceFrameRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Profile` to the URL query string
         if (getProfile() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProfile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProfile()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProfile%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProfile()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AspectRatio` to the URL query string
         if (getAspectRatio() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAspectRatio()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Index` to the URL query string
         if (getIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Score` to the URL query string
         if (getScore() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sScore%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScore()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sScore%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getScore()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsExternal` to the URL query string
         if (getIsExternal() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsExternal%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsExternal()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsExternal%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsExternal()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeliveryMethod` to the URL query string
         if (getDeliveryMethod() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeliveryMethod()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryMethod%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeliveryMethod()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeliveryUrl` to the URL query string
         if (getDeliveryUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeliveryUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsExternalUrl` to the URL query string
         if (getIsExternalUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsExternalUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsExternalUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsExternalUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsExternalUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsTextSubtitleStream` to the URL query string
         if (getIsTextSubtitleStream() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsTextSubtitleStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsTextSubtitleStream()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sIsTextSubtitleStream%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getIsTextSubtitleStream()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsExternalStream` to the URL query string
         if (getSupportsExternalStream() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsExternalStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsExternalStream()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsExternalStream%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsExternalStream()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PixelFormat` to the URL query string
         if (getPixelFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPixelFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPixelFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPixelFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPixelFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Level` to the URL query string
         if (getLevel() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLevel()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLevel%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLevel()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsAnamorphic` to the URL query string
         if (getIsAnamorphic() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsAnamorphic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAnamorphic()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsAnamorphic%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsAnamorphic()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

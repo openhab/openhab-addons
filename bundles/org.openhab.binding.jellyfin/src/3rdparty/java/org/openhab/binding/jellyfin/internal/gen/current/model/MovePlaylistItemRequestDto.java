@@ -12,31 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class MovePlaylistItemRequestDto.
  */
-@JsonPropertyOrder({ MovePlaylistItemRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-        MovePlaylistItemRequestDto.JSON_PROPERTY_NEW_INDEX })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MovePlaylistItemRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID playlistItemId;
 
     public static final String JSON_PROPERTY_NEW_INDEX = "NewIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer newIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer newIndex;
 
     public MovePlaylistItemRequestDto() {
     }
@@ -51,10 +43,8 @@ public class MovePlaylistItemRequestDto {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public UUID getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
@@ -73,10 +63,8 @@ public class MovePlaylistItemRequestDto {
      * 
      * @return newIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NEW_INDEX)
-    public Integer getNewIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getNewIndex() {
         return newIndex;
     }
 
@@ -85,9 +73,6 @@ public class MovePlaylistItemRequestDto {
         this.newIndex = newIndex;
     }
 
-    /**
-     * Return true if this MovePlaylistItemRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -158,14 +143,24 @@ public class MovePlaylistItemRequestDto {
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NewIndex` to the URL query string
         if (getNewIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sNewIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sNewIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getNewIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ImageOption
  */
-@JsonPropertyOrder({ ImageOption.JSON_PROPERTY_TYPE, ImageOption.JSON_PROPERTY_LIMIT,
-        ImageOption.JSON_PROPERTY_MIN_WIDTH })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ImageOption {
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ImageType type;
+    private @org.eclipse.jdt.annotation.Nullable ImageType type;
 
     public static final String JSON_PROPERTY_LIMIT = "Limit";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer limit;
+    private @org.eclipse.jdt.annotation.Nullable Integer limit;
 
     public static final String JSON_PROPERTY_MIN_WIDTH = "MinWidth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer minWidth;
+    private @org.eclipse.jdt.annotation.Nullable Integer minWidth;
 
     public ImageOption() {
     }
@@ -55,10 +45,8 @@ public class ImageOption {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public ImageType getType() {
+    public @org.eclipse.jdt.annotation.Nullable ImageType getType() {
         return type;
     }
 
@@ -77,10 +65,8 @@ public class ImageOption {
      * 
      * @return limit
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIMIT)
-    public Integer getLimit() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getLimit() {
         return limit;
     }
 
@@ -99,10 +85,8 @@ public class ImageOption {
      * 
      * @return minWidth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MIN_WIDTH)
-    public Integer getMinWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMinWidth() {
         return minWidth;
     }
 
@@ -111,9 +95,6 @@ public class ImageOption {
         this.minWidth = minWidth;
     }
 
-    /**
-     * Return true if this ImageOption object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -185,20 +166,35 @@ public class ImageOption {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Limit` to the URL query string
         if (getLimit() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLimit()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MinWidth` to the URL query string
         if (getMinWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMinWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMinWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMinWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

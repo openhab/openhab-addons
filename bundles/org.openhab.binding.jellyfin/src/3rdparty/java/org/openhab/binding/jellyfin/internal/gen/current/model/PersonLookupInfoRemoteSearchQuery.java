@@ -12,43 +12,29 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * PersonLookupInfoRemoteSearchQuery
  */
-@JsonPropertyOrder({ PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_INFO,
-        PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_ITEM_ID,
-        PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_SEARCH_PROVIDER_NAME,
-        PersonLookupInfoRemoteSearchQuery.JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PersonLookupInfoRemoteSearchQuery {
     public static final String JSON_PROPERTY_SEARCH_INFO = "SearchInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PersonLookupInfo searchInfo;
+    private @org.eclipse.jdt.annotation.Nullable PersonLookupInfo searchInfo;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID itemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID itemId;
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String searchProviderName;
+    private @org.eclipse.jdt.annotation.Nullable String searchProviderName;
 
     public static final String JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS = "IncludeDisabledProviders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean includeDisabledProviders;
+    private @org.eclipse.jdt.annotation.Nullable Boolean includeDisabledProviders;
 
     public PersonLookupInfoRemoteSearchQuery() {
     }
@@ -64,10 +50,8 @@ public class PersonLookupInfoRemoteSearchQuery {
      * 
      * @return searchInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEARCH_INFO)
-    public PersonLookupInfo getSearchInfo() {
+    public @org.eclipse.jdt.annotation.Nullable PersonLookupInfo getSearchInfo() {
         return searchInfo;
     }
 
@@ -86,10 +70,8 @@ public class PersonLookupInfoRemoteSearchQuery {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public UUID getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getItemId() {
         return itemId;
     }
 
@@ -109,10 +91,8 @@ public class PersonLookupInfoRemoteSearchQuery {
      * 
      * @return searchProviderName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public String getSearchProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getSearchProviderName() {
         return searchProviderName;
     }
 
@@ -132,10 +112,8 @@ public class PersonLookupInfoRemoteSearchQuery {
      * 
      * @return includeDisabledProviders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INCLUDE_DISABLED_PROVIDERS)
-    public Boolean getIncludeDisabledProviders() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIncludeDisabledProviders() {
         return includeDisabledProviders;
     }
 
@@ -144,9 +122,6 @@ public class PersonLookupInfoRemoteSearchQuery {
         this.includeDisabledProviders = includeDisabledProviders;
     }
 
-    /**
-     * Return true if this PersonLookupInfoRemoteSearchQuery object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -227,20 +202,36 @@ public class PersonLookupInfoRemoteSearchQuery {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SearchProviderName` to the URL query string
         if (getSearchProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSearchProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IncludeDisabledProviders` to the URL query string
         if (getIncludeDisabledProviders() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIncludeDisabledProviders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIncludeDisabledProviders()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIncludeDisabledProviders%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIncludeDisabledProviders()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

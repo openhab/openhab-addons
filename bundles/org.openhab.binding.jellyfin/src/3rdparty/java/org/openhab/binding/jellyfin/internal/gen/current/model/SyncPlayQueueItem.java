@@ -12,37 +12,33 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class QueueItem.
  */
-@JsonPropertyOrder({ SyncPlayQueueItem.JSON_PROPERTY_ITEM_ID, SyncPlayQueueItem.JSON_PROPERTY_PLAYLIST_ITEM_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SyncPlayQueueItem {
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID itemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID itemId;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID playlistItemId;
 
     public SyncPlayQueueItem() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public SyncPlayQueueItem(@JsonProperty(JSON_PROPERTY_PLAYLIST_ITEM_ID) UUID playlistItemId) {
+    public SyncPlayQueueItem(@JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID) UUID playlistItemId) {
         this();
         this.playlistItemId = playlistItemId;
     }
@@ -57,10 +53,8 @@ public class SyncPlayQueueItem {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public UUID getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getItemId() {
         return itemId;
     }
 
@@ -74,16 +68,11 @@ public class SyncPlayQueueItem {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public UUID getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
-    /**
-     * Return true if this SyncPlayQueueItem object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -154,14 +143,24 @@ public class SyncPlayQueueItem {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

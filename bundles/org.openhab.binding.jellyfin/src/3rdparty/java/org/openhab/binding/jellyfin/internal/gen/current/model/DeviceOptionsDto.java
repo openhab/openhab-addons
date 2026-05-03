@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A dto representing custom options for a device.
  */
-@JsonPropertyOrder({ DeviceOptionsDto.JSON_PROPERTY_ID, DeviceOptionsDto.JSON_PROPERTY_DEVICE_ID,
-        DeviceOptionsDto.JSON_PROPERTY_CUSTOM_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DeviceOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer id;
+    private @org.eclipse.jdt.annotation.Nullable Integer id;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceId;
+    private @org.eclipse.jdt.annotation.Nullable String deviceId;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String customName;
+    private @org.eclipse.jdt.annotation.Nullable String customName;
 
     public DeviceOptionsDto() {
     }
@@ -55,10 +45,8 @@ public class DeviceOptionsDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public Integer getId() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getId() {
         return id;
     }
 
@@ -77,10 +65,8 @@ public class DeviceOptionsDto {
      * 
      * @return deviceId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
-    public String getDeviceId() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceId() {
         return deviceId;
     }
 
@@ -99,10 +85,8 @@ public class DeviceOptionsDto {
      * 
      * @return customName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
-    public String getCustomName() {
+    public @org.eclipse.jdt.annotation.Nullable String getCustomName() {
         return customName;
     }
 
@@ -111,9 +95,6 @@ public class DeviceOptionsDto {
         this.customName = customName;
     }
 
-    /**
-     * Return true if this DeviceOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -185,20 +166,35 @@ public class DeviceOptionsDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomName` to the URL query string
         if (getCustomName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCustomName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

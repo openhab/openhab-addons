@@ -12,52 +12,35 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This is used by the api to get information about a Person within a BaseItem.
  */
-@JsonPropertyOrder({ BaseItemPerson.JSON_PROPERTY_NAME, BaseItemPerson.JSON_PROPERTY_ID,
-        BaseItemPerson.JSON_PROPERTY_ROLE, BaseItemPerson.JSON_PROPERTY_TYPE,
-        BaseItemPerson.JSON_PROPERTY_PRIMARY_IMAGE_TAG, BaseItemPerson.JSON_PROPERTY_IMAGE_BLUR_HASHES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BaseItemPerson {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_ROLE = "Role";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String role;
+    private @org.eclipse.jdt.annotation.Nullable String role;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PersonKind type = PersonKind.UNKNOWN;
+    private @org.eclipse.jdt.annotation.Nullable PersonKind type = PersonKind.UNKNOWN;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String primaryImageTag;
+    private @org.eclipse.jdt.annotation.Nullable String primaryImageTag;
 
     public static final String JSON_PROPERTY_IMAGE_BLUR_HASHES = "ImageBlurHashes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BaseItemPersonImageBlurHashes imageBlurHashes;
+    private @org.eclipse.jdt.annotation.Nullable BaseItemPersonImageBlurHashes imageBlurHashes;
 
     public BaseItemPerson() {
     }
@@ -72,10 +55,8 @@ public class BaseItemPerson {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -94,10 +75,8 @@ public class BaseItemPerson {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -116,10 +95,8 @@ public class BaseItemPerson {
      * 
      * @return role
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ROLE)
-    public String getRole() {
+    public @org.eclipse.jdt.annotation.Nullable String getRole() {
         return role;
     }
 
@@ -138,10 +115,8 @@ public class BaseItemPerson {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public PersonKind getType() {
+    public @org.eclipse.jdt.annotation.Nullable PersonKind getType() {
         return type;
     }
 
@@ -160,10 +135,8 @@ public class BaseItemPerson {
      * 
      * @return primaryImageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-    public String getPrimaryImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
@@ -183,10 +156,8 @@ public class BaseItemPerson {
      * 
      * @return imageBlurHashes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_BLUR_HASHES)
-    public BaseItemPersonImageBlurHashes getImageBlurHashes() {
+    public @org.eclipse.jdt.annotation.Nullable BaseItemPersonImageBlurHashes getImageBlurHashes() {
         return imageBlurHashes;
     }
 
@@ -195,9 +166,6 @@ public class BaseItemPerson {
         this.imageBlurHashes = imageBlurHashes;
     }
 
-    /**
-     * Return true if this BaseItemPerson object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -274,32 +242,57 @@ public class BaseItemPerson {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Role` to the URL query string
         if (getRole() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRole%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRole()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRole%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRole()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrimaryImageTag` to the URL query string
         if (getPrimaryImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageBlurHashes` to the URL query string

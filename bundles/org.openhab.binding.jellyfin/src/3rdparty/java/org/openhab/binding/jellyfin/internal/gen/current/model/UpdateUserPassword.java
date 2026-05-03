@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The update user password request body.
  */
-@JsonPropertyOrder({ UpdateUserPassword.JSON_PROPERTY_CURRENT_PASSWORD, UpdateUserPassword.JSON_PROPERTY_CURRENT_PW,
-        UpdateUserPassword.JSON_PROPERTY_NEW_PW, UpdateUserPassword.JSON_PROPERTY_RESET_PASSWORD })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateUserPassword {
     public static final String JSON_PROPERTY_CURRENT_PASSWORD = "CurrentPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String currentPassword;
+    private @org.eclipse.jdt.annotation.Nullable String currentPassword;
 
     public static final String JSON_PROPERTY_CURRENT_PW = "CurrentPw";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String currentPw;
+    private @org.eclipse.jdt.annotation.Nullable String currentPw;
 
     public static final String JSON_PROPERTY_NEW_PW = "NewPw";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String newPw;
+    private @org.eclipse.jdt.annotation.Nullable String newPw;
 
     public static final String JSON_PROPERTY_RESET_PASSWORD = "ResetPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean resetPassword;
+    private @org.eclipse.jdt.annotation.Nullable Boolean resetPassword;
 
     public UpdateUserPassword() {
     }
@@ -60,10 +48,8 @@ public class UpdateUserPassword {
      * 
      * @return currentPassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PASSWORD)
-    public String getCurrentPassword() {
+    public @org.eclipse.jdt.annotation.Nullable String getCurrentPassword() {
         return currentPassword;
     }
 
@@ -82,10 +68,8 @@ public class UpdateUserPassword {
      * 
      * @return currentPw
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PW)
-    public String getCurrentPw() {
+    public @org.eclipse.jdt.annotation.Nullable String getCurrentPw() {
         return currentPw;
     }
 
@@ -104,10 +88,8 @@ public class UpdateUserPassword {
      * 
      * @return newPw
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NEW_PW)
-    public String getNewPw() {
+    public @org.eclipse.jdt.annotation.Nullable String getNewPw() {
         return newPw;
     }
 
@@ -126,10 +108,8 @@ public class UpdateUserPassword {
      * 
      * @return resetPassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RESET_PASSWORD)
-    public Boolean getResetPassword() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getResetPassword() {
         return resetPassword;
     }
 
@@ -138,9 +118,6 @@ public class UpdateUserPassword {
         this.resetPassword = resetPassword;
     }
 
-    /**
-     * Return true if this UpdateUserPassword object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class UpdateUserPassword {
 
         // add `CurrentPassword` to the URL query string
         if (getCurrentPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCurrentPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CurrentPw` to the URL query string
         if (getCurrentPw() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentPw()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentPw%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCurrentPw()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NewPw` to the URL query string
         if (getNewPw() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sNewPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getNewPw()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sNewPw%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getNewPw()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ResetPassword` to the URL query string
         if (getResetPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sResetPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResetPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sResetPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getResetPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

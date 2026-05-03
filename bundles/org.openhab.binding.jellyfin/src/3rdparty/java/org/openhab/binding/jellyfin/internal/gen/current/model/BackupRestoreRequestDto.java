@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines properties used to start a restore process.
  */
-@JsonPropertyOrder({ BackupRestoreRequestDto.JSON_PROPERTY_ARCHIVE_FILE_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BackupRestoreRequestDto {
     public static final String JSON_PROPERTY_ARCHIVE_FILE_NAME = "ArchiveFileName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String archiveFileName;
+    private @org.eclipse.jdt.annotation.Nullable String archiveFileName;
 
     public BackupRestoreRequestDto() {
     }
@@ -45,10 +40,8 @@ public class BackupRestoreRequestDto {
      * 
      * @return archiveFileName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARCHIVE_FILE_NAME)
-    public String getArchiveFileName() {
+    public @org.eclipse.jdt.annotation.Nullable String getArchiveFileName() {
         return archiveFileName;
     }
 
@@ -57,9 +50,6 @@ public class BackupRestoreRequestDto {
         this.archiveFileName = archiveFileName;
     }
 
-    /**
-     * Return true if this BackupRestoreRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -128,8 +118,13 @@ public class BackupRestoreRequestDto {
 
         // add `ArchiveFileName` to the URL query string
         if (getArchiveFileName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sArchiveFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArchiveFileName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sArchiveFileName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getArchiveFileName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

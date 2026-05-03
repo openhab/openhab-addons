@@ -12,36 +12,32 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Sessions start message. Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
  */
-@JsonPropertyOrder({ SessionsStartMessage.JSON_PROPERTY_DATA, SessionsStartMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionsStartMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String data;
+    private @org.eclipse.jdt.annotation.Nullable String data;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SessionMessageType messageType = SessionMessageType.SESSIONS_START;
+    private @org.eclipse.jdt.annotation.Nullable SessionMessageType messageType = SessionMessageType.SESSIONS_START;
 
     public SessionsStartMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public SessionsStartMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+    public SessionsStartMessage(@JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
         this.messageType = messageType;
     }
@@ -56,10 +52,8 @@ public class SessionsStartMessage {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    public String getData() {
+    public @org.eclipse.jdt.annotation.Nullable String getData() {
         return data;
     }
 
@@ -73,16 +67,11 @@ public class SessionsStartMessage {
      * 
      * @return messageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
-    public SessionMessageType getMessageType() {
+    public @org.eclipse.jdt.annotation.Nullable SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this SessionsStartMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -153,14 +142,24 @@ public class SessionsStartMessage {
 
         // add `Data` to the URL query string
         if (getData() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getData()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Update library options dto.
  */
-@JsonPropertyOrder({ UpdateLibraryOptionsDto.JSON_PROPERTY_ID, UpdateLibraryOptionsDto.JSON_PROPERTY_LIBRARY_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateLibraryOptionsDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LibraryOptions libraryOptions;
+    private @org.eclipse.jdt.annotation.Nullable LibraryOptions libraryOptions;
 
     public UpdateLibraryOptionsDto() {
     }
@@ -50,10 +43,8 @@ public class UpdateLibraryOptionsDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -72,10 +63,8 @@ public class UpdateLibraryOptionsDto {
      * 
      * @return libraryOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS)
-    public LibraryOptions getLibraryOptions() {
+    public @org.eclipse.jdt.annotation.Nullable LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
@@ -84,9 +73,6 @@ public class UpdateLibraryOptionsDto {
         this.libraryOptions = libraryOptions;
     }
 
-    /**
-     * Return true if this UpdateLibraryOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -157,8 +143,13 @@ public class UpdateLibraryOptionsDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LibraryOptions` to the URL query string

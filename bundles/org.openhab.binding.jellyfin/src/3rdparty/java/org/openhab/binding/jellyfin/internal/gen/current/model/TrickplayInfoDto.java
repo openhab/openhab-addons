@@ -12,57 +12,37 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The trickplay api model.
  */
-@JsonPropertyOrder({ TrickplayInfoDto.JSON_PROPERTY_WIDTH, TrickplayInfoDto.JSON_PROPERTY_HEIGHT,
-        TrickplayInfoDto.JSON_PROPERTY_TILE_WIDTH, TrickplayInfoDto.JSON_PROPERTY_TILE_HEIGHT,
-        TrickplayInfoDto.JSON_PROPERTY_THUMBNAIL_COUNT, TrickplayInfoDto.JSON_PROPERTY_INTERVAL,
-        TrickplayInfoDto.JSON_PROPERTY_BANDWIDTH })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TrickplayInfoDto {
     public static final String JSON_PROPERTY_WIDTH = "Width";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer width;
+    private @org.eclipse.jdt.annotation.Nullable Integer width;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer height;
+    private @org.eclipse.jdt.annotation.Nullable Integer height;
 
     public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer tileWidth;
+    private @org.eclipse.jdt.annotation.Nullable Integer tileWidth;
 
     public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer tileHeight;
+    private @org.eclipse.jdt.annotation.Nullable Integer tileHeight;
 
     public static final String JSON_PROPERTY_THUMBNAIL_COUNT = "ThumbnailCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer thumbnailCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer thumbnailCount;
 
     public static final String JSON_PROPERTY_INTERVAL = "Interval";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer interval;
+    private @org.eclipse.jdt.annotation.Nullable Integer interval;
 
     public static final String JSON_PROPERTY_BANDWIDTH = "Bandwidth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer bandwidth;
+    private @org.eclipse.jdt.annotation.Nullable Integer bandwidth;
 
     public TrickplayInfoDto() {
     }
@@ -77,10 +57,8 @@ public class TrickplayInfoDto {
      * 
      * @return width
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WIDTH)
-    public Integer getWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getWidth() {
         return width;
     }
 
@@ -99,10 +77,8 @@ public class TrickplayInfoDto {
      * 
      * @return height
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEIGHT)
-    public Integer getHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getHeight() {
         return height;
     }
 
@@ -121,10 +97,8 @@ public class TrickplayInfoDto {
      * 
      * @return tileWidth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH)
-    public Integer getTileWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTileWidth() {
         return tileWidth;
     }
 
@@ -143,10 +117,8 @@ public class TrickplayInfoDto {
      * 
      * @return tileHeight
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT)
-    public Integer getTileHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTileHeight() {
         return tileHeight;
     }
 
@@ -165,10 +137,8 @@ public class TrickplayInfoDto {
      * 
      * @return thumbnailCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_COUNT)
-    public Integer getThumbnailCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getThumbnailCount() {
         return thumbnailCount;
     }
 
@@ -187,10 +157,8 @@ public class TrickplayInfoDto {
      * 
      * @return interval
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERVAL)
-    public Integer getInterval() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getInterval() {
         return interval;
     }
 
@@ -209,10 +177,8 @@ public class TrickplayInfoDto {
      * 
      * @return bandwidth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BANDWIDTH)
-    public Integer getBandwidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBandwidth() {
         return bandwidth;
     }
 
@@ -221,9 +187,6 @@ public class TrickplayInfoDto {
         this.bandwidth = bandwidth;
     }
 
-    /**
-     * Return true if this TrickplayInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -304,44 +267,79 @@ public class TrickplayInfoDto {
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TileWidth` to the URL query string
         if (getTileWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTileWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTileWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTileWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TileHeight` to the URL query string
         if (getTileHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTileHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTileHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTileHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThumbnailCount` to the URL query string
         if (getThumbnailCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThumbnailCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbnailCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sThumbnailCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getThumbnailCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Interval` to the URL query string
         if (getInterval() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInterval%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sInterval%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInterval()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Bandwidth` to the URL query string
         if (getBandwidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBandwidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBandwidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBandwidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBandwidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PingRequestDto.
  */
-@JsonPropertyOrder({ PingRequestDto.JSON_PROPERTY_PING })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PingRequestDto {
     public static final String JSON_PROPERTY_PING = "Ping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long ping;
+    private @org.eclipse.jdt.annotation.Nullable Long ping;
 
     public PingRequestDto() {
     }
@@ -44,10 +39,8 @@ public class PingRequestDto {
      * 
      * @return ping
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PING)
-    public Long getPing() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPing() {
         return ping;
     }
 
@@ -56,9 +49,6 @@ public class PingRequestDto {
         this.ping = ping;
     }
 
-    /**
-     * Return true if this PingRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +117,13 @@ public class PingRequestDto {
 
         // add `Ping` to the URL query string
         if (getPing() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPing()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPing%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPing()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

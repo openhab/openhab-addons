@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The create user by name request body.
  */
-@JsonPropertyOrder({ CreateUserByName.JSON_PROPERTY_NAME, CreateUserByName.JSON_PROPERTY_PASSWORD })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CreateUserByName {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.NonNull String name;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String password;
+    private @org.eclipse.jdt.annotation.Nullable String password;
 
     public CreateUserByName() {
     }
@@ -50,11 +43,9 @@ public class CreateUserByName {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.NonNull String getName() {
         return name;
     }
 
@@ -74,10 +65,8 @@ public class CreateUserByName {
      * 
      * @return password
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PASSWORD)
-    public String getPassword() {
+    public @org.eclipse.jdt.annotation.Nullable String getPassword() {
         return password;
     }
 
@@ -86,9 +75,6 @@ public class CreateUserByName {
         this.password = password;
     }
 
-    /**
-     * Return true if this CreateUserByName object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -159,14 +145,24 @@ public class CreateUserByName {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Password` to the URL query string
         if (getPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

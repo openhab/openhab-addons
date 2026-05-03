@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The startup user DTO.
  */
-@JsonPropertyOrder({ StartupUserDto.JSON_PROPERTY_NAME, StartupUserDto.JSON_PROPERTY_PASSWORD })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupUserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String password;
+    private @org.eclipse.jdt.annotation.Nullable String password;
 
     public StartupUserDto() {
     }
@@ -49,10 +42,8 @@ public class StartupUserDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -71,10 +62,8 @@ public class StartupUserDto {
      * 
      * @return password
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PASSWORD)
-    public String getPassword() {
+    public @org.eclipse.jdt.annotation.Nullable String getPassword() {
         return password;
     }
 
@@ -83,9 +72,6 @@ public class StartupUserDto {
         this.password = password;
     }
 
-    /**
-     * Return true if this StartupUserDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -155,14 +141,24 @@ public class StartupUserDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Password` to the URL query string
         if (getPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

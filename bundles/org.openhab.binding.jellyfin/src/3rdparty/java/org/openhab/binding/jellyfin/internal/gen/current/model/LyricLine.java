@@ -12,36 +12,27 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Lyric model.
  */
-@JsonPropertyOrder({ LyricLine.JSON_PROPERTY_TEXT, LyricLine.JSON_PROPERTY_START, LyricLine.JSON_PROPERTY_CUES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricLine {
     public static final String JSON_PROPERTY_TEXT = "Text";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String text;
+    private @org.eclipse.jdt.annotation.Nullable String text;
 
     public static final String JSON_PROPERTY_START = "Start";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long start;
+    private @org.eclipse.jdt.annotation.Nullable Long start;
 
     public static final String JSON_PROPERTY_CUES = "Cues";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LyricLineCue> cues;
+    private @org.eclipse.jdt.annotation.Nullable List<LyricLineCue> cues;
 
     public LyricLine() {
     }
@@ -56,10 +47,8 @@ public class LyricLine {
      * 
      * @return text
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TEXT)
-    public String getText() {
+    public @org.eclipse.jdt.annotation.Nullable String getText() {
         return text;
     }
 
@@ -78,10 +67,8 @@ public class LyricLine {
      * 
      * @return start
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START)
-    public Long getStart() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStart() {
         return start;
     }
 
@@ -108,10 +95,8 @@ public class LyricLine {
      * 
      * @return cues
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUES)
-    public List<LyricLineCue> getCues() {
+    public @org.eclipse.jdt.annotation.Nullable List<LyricLineCue> getCues() {
         return cues;
     }
 
@@ -120,9 +105,6 @@ public class LyricLine {
         this.cues = cues;
     }
 
-    /**
-     * Return true if this LyricLine object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -194,14 +176,24 @@ public class LyricLine {
 
         // add `Text` to the URL query string
         if (getText() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sText%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getText()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sText%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getText()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Start` to the URL query string
         if (getStart() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStart()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStart%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStart()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Cues` to the URL query string

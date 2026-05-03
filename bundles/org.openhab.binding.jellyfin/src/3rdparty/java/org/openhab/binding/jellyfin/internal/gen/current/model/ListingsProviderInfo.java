@@ -12,119 +12,72 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ListingsProviderInfo
  */
-@JsonPropertyOrder({ ListingsProviderInfo.JSON_PROPERTY_ID, ListingsProviderInfo.JSON_PROPERTY_TYPE,
-        ListingsProviderInfo.JSON_PROPERTY_USERNAME, ListingsProviderInfo.JSON_PROPERTY_PASSWORD,
-        ListingsProviderInfo.JSON_PROPERTY_LISTINGS_ID, ListingsProviderInfo.JSON_PROPERTY_ZIP_CODE,
-        ListingsProviderInfo.JSON_PROPERTY_COUNTRY, ListingsProviderInfo.JSON_PROPERTY_PATH,
-        ListingsProviderInfo.JSON_PROPERTY_ENABLED_TUNERS, ListingsProviderInfo.JSON_PROPERTY_ENABLE_ALL_TUNERS,
-        ListingsProviderInfo.JSON_PROPERTY_NEWS_CATEGORIES, ListingsProviderInfo.JSON_PROPERTY_SPORTS_CATEGORIES,
-        ListingsProviderInfo.JSON_PROPERTY_KIDS_CATEGORIES, ListingsProviderInfo.JSON_PROPERTY_MOVIE_CATEGORIES,
-        ListingsProviderInfo.JSON_PROPERTY_CHANNEL_MAPPINGS, ListingsProviderInfo.JSON_PROPERTY_MOVIE_PREFIX,
-        ListingsProviderInfo.JSON_PROPERTY_PREFERRED_LANGUAGE, ListingsProviderInfo.JSON_PROPERTY_USER_AGENT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ListingsProviderInfo {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_USERNAME = "Username";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String username;
+    private @org.eclipse.jdt.annotation.Nullable String username;
 
     public static final String JSON_PROPERTY_PASSWORD = "Password";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String password;
+    private @org.eclipse.jdt.annotation.Nullable String password;
 
     public static final String JSON_PROPERTY_LISTINGS_ID = "ListingsId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String listingsId;
+    private @org.eclipse.jdt.annotation.Nullable String listingsId;
 
     public static final String JSON_PROPERTY_ZIP_CODE = "ZipCode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String zipCode;
+    private @org.eclipse.jdt.annotation.Nullable String zipCode;
 
     public static final String JSON_PROPERTY_COUNTRY = "Country";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String country;
+    private @org.eclipse.jdt.annotation.Nullable String country;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_ENABLED_TUNERS = "EnabledTuners";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> enabledTuners;
+    private @org.eclipse.jdt.annotation.Nullable List<String> enabledTuners;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_TUNERS = "EnableAllTuners";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAllTuners;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAllTuners;
 
     public static final String JSON_PROPERTY_NEWS_CATEGORIES = "NewsCategories";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> newsCategories;
+    private @org.eclipse.jdt.annotation.Nullable List<String> newsCategories;
 
     public static final String JSON_PROPERTY_SPORTS_CATEGORIES = "SportsCategories";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> sportsCategories;
+    private @org.eclipse.jdt.annotation.Nullable List<String> sportsCategories;
 
     public static final String JSON_PROPERTY_KIDS_CATEGORIES = "KidsCategories";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> kidsCategories;
+    private @org.eclipse.jdt.annotation.Nullable List<String> kidsCategories;
 
     public static final String JSON_PROPERTY_MOVIE_CATEGORIES = "MovieCategories";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> movieCategories;
+    private @org.eclipse.jdt.annotation.Nullable List<String> movieCategories;
 
     public static final String JSON_PROPERTY_CHANNEL_MAPPINGS = "ChannelMappings";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<NameValuePair> channelMappings;
+    private @org.eclipse.jdt.annotation.Nullable List<NameValuePair> channelMappings;
 
     public static final String JSON_PROPERTY_MOVIE_PREFIX = "MoviePrefix";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String moviePrefix;
+    private @org.eclipse.jdt.annotation.Nullable String moviePrefix;
 
     public static final String JSON_PROPERTY_PREFERRED_LANGUAGE = "PreferredLanguage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String preferredLanguage;
+    private @org.eclipse.jdt.annotation.Nullable String preferredLanguage;
 
     public static final String JSON_PROPERTY_USER_AGENT = "UserAgent";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userAgent;
+    private @org.eclipse.jdt.annotation.Nullable String userAgent;
 
     public ListingsProviderInfo() {
     }
@@ -139,10 +92,8 @@ public class ListingsProviderInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -161,10 +112,8 @@ public class ListingsProviderInfo {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -183,10 +132,8 @@ public class ListingsProviderInfo {
      * 
      * @return username
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USERNAME)
-    public String getUsername() {
+    public @org.eclipse.jdt.annotation.Nullable String getUsername() {
         return username;
     }
 
@@ -205,10 +152,8 @@ public class ListingsProviderInfo {
      * 
      * @return password
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PASSWORD)
-    public String getPassword() {
+    public @org.eclipse.jdt.annotation.Nullable String getPassword() {
         return password;
     }
 
@@ -227,10 +172,8 @@ public class ListingsProviderInfo {
      * 
      * @return listingsId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LISTINGS_ID)
-    public String getListingsId() {
+    public @org.eclipse.jdt.annotation.Nullable String getListingsId() {
         return listingsId;
     }
 
@@ -249,10 +192,8 @@ public class ListingsProviderInfo {
      * 
      * @return zipCode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ZIP_CODE)
-    public String getZipCode() {
+    public @org.eclipse.jdt.annotation.Nullable String getZipCode() {
         return zipCode;
     }
 
@@ -271,10 +212,8 @@ public class ListingsProviderInfo {
      * 
      * @return country
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COUNTRY)
-    public String getCountry() {
+    public @org.eclipse.jdt.annotation.Nullable String getCountry() {
         return country;
     }
 
@@ -293,10 +232,8 @@ public class ListingsProviderInfo {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -323,10 +260,8 @@ public class ListingsProviderInfo {
      * 
      * @return enabledTuners
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED_TUNERS)
-    public List<String> getEnabledTuners() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getEnabledTuners() {
         return enabledTuners;
     }
 
@@ -345,10 +280,8 @@ public class ListingsProviderInfo {
      * 
      * @return enableAllTuners
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_TUNERS)
-    public Boolean getEnableAllTuners() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAllTuners() {
         return enableAllTuners;
     }
 
@@ -375,10 +308,8 @@ public class ListingsProviderInfo {
      * 
      * @return newsCategories
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NEWS_CATEGORIES)
-    public List<String> getNewsCategories() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getNewsCategories() {
         return newsCategories;
     }
 
@@ -405,10 +336,8 @@ public class ListingsProviderInfo {
      * 
      * @return sportsCategories
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SPORTS_CATEGORIES)
-    public List<String> getSportsCategories() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getSportsCategories() {
         return sportsCategories;
     }
 
@@ -435,10 +364,8 @@ public class ListingsProviderInfo {
      * 
      * @return kidsCategories
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KIDS_CATEGORIES)
-    public List<String> getKidsCategories() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getKidsCategories() {
         return kidsCategories;
     }
 
@@ -465,10 +392,8 @@ public class ListingsProviderInfo {
      * 
      * @return movieCategories
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MOVIE_CATEGORIES)
-    public List<String> getMovieCategories() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMovieCategories() {
         return movieCategories;
     }
 
@@ -496,10 +421,8 @@ public class ListingsProviderInfo {
      * 
      * @return channelMappings
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_MAPPINGS)
-    public List<NameValuePair> getChannelMappings() {
+    public @org.eclipse.jdt.annotation.Nullable List<NameValuePair> getChannelMappings() {
         return channelMappings;
     }
 
@@ -518,10 +441,8 @@ public class ListingsProviderInfo {
      * 
      * @return moviePrefix
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MOVIE_PREFIX)
-    public String getMoviePrefix() {
+    public @org.eclipse.jdt.annotation.Nullable String getMoviePrefix() {
         return moviePrefix;
     }
 
@@ -540,10 +461,8 @@ public class ListingsProviderInfo {
      * 
      * @return preferredLanguage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_LANGUAGE)
-    public String getPreferredLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getPreferredLanguage() {
         return preferredLanguage;
     }
 
@@ -562,10 +481,8 @@ public class ListingsProviderInfo {
      * 
      * @return userAgent
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_AGENT)
-    public String getUserAgent() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserAgent() {
         return userAgent;
     }
 
@@ -574,9 +491,6 @@ public class ListingsProviderInfo {
         this.userAgent = userAgent;
     }
 
-    /**
-     * Return true if this ListingsProviderInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -680,105 +594,185 @@ public class ListingsProviderInfo {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Username` to the URL query string
         if (getUsername() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUsername()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Password` to the URL query string
         if (getPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ListingsId` to the URL query string
         if (getListingsId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sListingsId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getListingsId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sListingsId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getListingsId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ZipCode` to the URL query string
         if (getZipCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sZipCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getZipCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sZipCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getZipCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Country` to the URL query string
         if (getCountry() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCountry%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCountry%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCountry()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnabledTuners` to the URL query string
         if (getEnabledTuners() != null) {
             for (int i = 0; i < getEnabledTuners().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledTuners().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledTuners%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getEnabledTuners().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `EnableAllTuners` to the URL query string
         if (getEnableAllTuners() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllTuners%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllTuners()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllTuners%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAllTuners()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NewsCategories` to the URL query string
         if (getNewsCategories() != null) {
             for (int i = 0; i < getNewsCategories().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sNewsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getNewsCategories().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sNewsCategories%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getNewsCategories().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `SportsCategories` to the URL query string
         if (getSportsCategories() != null) {
             for (int i = 0; i < getSportsCategories().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sSportsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSportsCategories().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sSportsCategories%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getSportsCategories().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `KidsCategories` to the URL query string
         if (getKidsCategories() != null) {
             for (int i = 0; i < getKidsCategories().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sKidsCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKidsCategories().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sKidsCategories%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getKidsCategories().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `MovieCategories` to the URL query string
         if (getMovieCategories() != null) {
             for (int i = 0; i < getMovieCategories().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMovieCategories%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMovieCategories().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMovieCategories%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMovieCategories().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -797,20 +791,35 @@ public class ListingsProviderInfo {
 
         // add `MoviePrefix` to the URL query string
         if (getMoviePrefix() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMoviePrefix%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMoviePrefix()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMoviePrefix%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMoviePrefix()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PreferredLanguage` to the URL query string
         if (getPreferredLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPreferredLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserAgent` to the URL query string
         if (getUserAgent() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserAgent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserAgent()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserAgent%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserAgent()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

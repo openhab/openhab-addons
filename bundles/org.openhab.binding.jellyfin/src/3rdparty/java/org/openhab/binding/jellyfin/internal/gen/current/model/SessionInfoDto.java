@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,175 +20,99 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Session info DTO.
  */
-@JsonPropertyOrder({ SessionInfoDto.JSON_PROPERTY_PLAY_STATE, SessionInfoDto.JSON_PROPERTY_ADDITIONAL_USERS,
-        SessionInfoDto.JSON_PROPERTY_CAPABILITIES, SessionInfoDto.JSON_PROPERTY_REMOTE_END_POINT,
-        SessionInfoDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES, SessionInfoDto.JSON_PROPERTY_ID,
-        SessionInfoDto.JSON_PROPERTY_USER_ID, SessionInfoDto.JSON_PROPERTY_USER_NAME,
-        SessionInfoDto.JSON_PROPERTY_CLIENT, SessionInfoDto.JSON_PROPERTY_LAST_ACTIVITY_DATE,
-        SessionInfoDto.JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN, SessionInfoDto.JSON_PROPERTY_LAST_PAUSED_DATE,
-        SessionInfoDto.JSON_PROPERTY_DEVICE_NAME, SessionInfoDto.JSON_PROPERTY_DEVICE_TYPE,
-        SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_ITEM, SessionInfoDto.JSON_PROPERTY_NOW_VIEWING_ITEM,
-        SessionInfoDto.JSON_PROPERTY_DEVICE_ID, SessionInfoDto.JSON_PROPERTY_APPLICATION_VERSION,
-        SessionInfoDto.JSON_PROPERTY_TRANSCODING_INFO, SessionInfoDto.JSON_PROPERTY_IS_ACTIVE,
-        SessionInfoDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL, SessionInfoDto.JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL,
-        SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE, SessionInfoDto.JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS,
-        SessionInfoDto.JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME, SessionInfoDto.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-        SessionInfoDto.JSON_PROPERTY_SERVER_ID, SessionInfoDto.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG,
-        SessionInfoDto.JSON_PROPERTY_SUPPORTED_COMMANDS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionInfoDto {
     public static final String JSON_PROPERTY_PLAY_STATE = "PlayState";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlayerStateInfo playState;
+    private @org.eclipse.jdt.annotation.Nullable PlayerStateInfo playState;
 
     public static final String JSON_PROPERTY_ADDITIONAL_USERS = "AdditionalUsers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SessionUserInfo> additionalUsers;
+    private @org.eclipse.jdt.annotation.Nullable List<SessionUserInfo> additionalUsers;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ClientCapabilitiesDto capabilities;
+    private @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto capabilities;
 
     public static final String JSON_PROPERTY_REMOTE_END_POINT = "RemoteEndPoint";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String remoteEndPoint;
+    private @org.eclipse.jdt.annotation.Nullable String remoteEndPoint;
 
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaType> playableMediaTypes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaType> playableMediaTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userName;
+    private @org.eclipse.jdt.annotation.Nullable String userName;
 
     public static final String JSON_PROPERTY_CLIENT = "Client";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String client;
+    private @org.eclipse.jdt.annotation.Nullable String client;
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastActivityDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastActivityDate;
 
     public static final String JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN = "LastPlaybackCheckIn";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastPlaybackCheckIn;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastPlaybackCheckIn;
 
     public static final String JSON_PROPERTY_LAST_PAUSED_DATE = "LastPausedDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastPausedDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastPausedDate;
 
     public static final String JSON_PROPERTY_DEVICE_NAME = "DeviceName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceName;
+    private @org.eclipse.jdt.annotation.Nullable String deviceName;
 
     public static final String JSON_PROPERTY_DEVICE_TYPE = "DeviceType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceType;
+    private @org.eclipse.jdt.annotation.Nullable String deviceType;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_ITEM = "NowPlayingItem";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BaseItemDto nowPlayingItem;
+    private @org.eclipse.jdt.annotation.Nullable BaseItemDto nowPlayingItem;
 
     public static final String JSON_PROPERTY_NOW_VIEWING_ITEM = "NowViewingItem";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BaseItemDto nowViewingItem;
+    private @org.eclipse.jdt.annotation.Nullable BaseItemDto nowViewingItem;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceId;
+    private @org.eclipse.jdt.annotation.Nullable String deviceId;
 
     public static final String JSON_PROPERTY_APPLICATION_VERSION = "ApplicationVersion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String applicationVersion;
+    private @org.eclipse.jdt.annotation.Nullable String applicationVersion;
 
     public static final String JSON_PROPERTY_TRANSCODING_INFO = "TranscodingInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TranscodingInfo transcodingInfo;
+    private @org.eclipse.jdt.annotation.Nullable TranscodingInfo transcodingInfo;
 
     public static final String JSON_PROPERTY_IS_ACTIVE = "IsActive";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isActive;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isActive;
 
     public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsMediaControl;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsMediaControl;
 
     public static final String JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL = "SupportsRemoteControl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsRemoteControl;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsRemoteControl;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<QueueItem> nowPlayingQueue;
+    private @org.eclipse.jdt.annotation.Nullable List<QueueItem> nowPlayingQueue;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS = "NowPlayingQueueFullItems";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<BaseItemDto> nowPlayingQueueFullItems;
+    private @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> nowPlayingQueueFullItems;
 
     public static final String JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME = "HasCustomDeviceName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasCustomDeviceName;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasCustomDeviceName;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable String playlistItemId;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverId;
+    private @org.eclipse.jdt.annotation.Nullable String serverId;
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userPrimaryImageTag;
+    private @org.eclipse.jdt.annotation.Nullable String userPrimaryImageTag;
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<GeneralCommandType> supportedCommands = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<GeneralCommandType> supportedCommands = new ArrayList<>();
 
     public SessionInfoDto() {
     }
@@ -202,10 +127,8 @@ public class SessionInfoDto {
      * 
      * @return playState
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_STATE)
-    public PlayerStateInfo getPlayState() {
+    public @org.eclipse.jdt.annotation.Nullable PlayerStateInfo getPlayState() {
         return playState;
     }
 
@@ -232,10 +155,8 @@ public class SessionInfoDto {
      * 
      * @return additionalUsers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_USERS)
-    public List<SessionUserInfo> getAdditionalUsers() {
+    public @org.eclipse.jdt.annotation.Nullable List<SessionUserInfo> getAdditionalUsers() {
         return additionalUsers;
     }
 
@@ -254,10 +175,8 @@ public class SessionInfoDto {
      * 
      * @return capabilities
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
-    public ClientCapabilitiesDto getCapabilities() {
+    public @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto getCapabilities() {
         return capabilities;
     }
 
@@ -276,10 +195,8 @@ public class SessionInfoDto {
      * 
      * @return remoteEndPoint
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMOTE_END_POINT)
-    public String getRemoteEndPoint() {
+    public @org.eclipse.jdt.annotation.Nullable String getRemoteEndPoint() {
         return remoteEndPoint;
     }
 
@@ -306,10 +223,8 @@ public class SessionInfoDto {
      * 
      * @return playableMediaTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    public List<MediaType> getPlayableMediaTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaType> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
@@ -328,10 +243,8 @@ public class SessionInfoDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -350,10 +263,8 @@ public class SessionInfoDto {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -372,10 +283,8 @@ public class SessionInfoDto {
      * 
      * @return userName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_NAME)
-    public String getUserName() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserName() {
         return userName;
     }
 
@@ -394,10 +303,8 @@ public class SessionInfoDto {
      * 
      * @return client
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CLIENT)
-    public String getClient() {
+    public @org.eclipse.jdt.annotation.Nullable String getClient() {
         return client;
     }
 
@@ -416,10 +323,8 @@ public class SessionInfoDto {
      * 
      * @return lastActivityDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
-    public OffsetDateTime getLastActivityDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
 
@@ -438,10 +343,8 @@ public class SessionInfoDto {
      * 
      * @return lastPlaybackCheckIn
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_PLAYBACK_CHECK_IN)
-    public OffsetDateTime getLastPlaybackCheckIn() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastPlaybackCheckIn() {
         return lastPlaybackCheckIn;
     }
 
@@ -460,10 +363,8 @@ public class SessionInfoDto {
      * 
      * @return lastPausedDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_PAUSED_DATE)
-    public OffsetDateTime getLastPausedDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastPausedDate() {
         return lastPausedDate;
     }
 
@@ -482,10 +383,8 @@ public class SessionInfoDto {
      * 
      * @return deviceName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_NAME)
-    public String getDeviceName() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceName() {
         return deviceName;
     }
 
@@ -504,10 +403,8 @@ public class SessionInfoDto {
      * 
      * @return deviceType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_TYPE)
-    public String getDeviceType() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceType() {
         return deviceType;
     }
 
@@ -526,10 +423,8 @@ public class SessionInfoDto {
      * 
      * @return nowPlayingItem
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_ITEM)
-    public BaseItemDto getNowPlayingItem() {
+    public @org.eclipse.jdt.annotation.Nullable BaseItemDto getNowPlayingItem() {
         return nowPlayingItem;
     }
 
@@ -548,10 +443,8 @@ public class SessionInfoDto {
      * 
      * @return nowViewingItem
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NOW_VIEWING_ITEM)
-    public BaseItemDto getNowViewingItem() {
+    public @org.eclipse.jdt.annotation.Nullable BaseItemDto getNowViewingItem() {
         return nowViewingItem;
     }
 
@@ -570,10 +463,8 @@ public class SessionInfoDto {
      * 
      * @return deviceId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
-    public String getDeviceId() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceId() {
         return deviceId;
     }
 
@@ -592,10 +483,8 @@ public class SessionInfoDto {
      * 
      * @return applicationVersion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APPLICATION_VERSION)
-    public String getApplicationVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getApplicationVersion() {
         return applicationVersion;
     }
 
@@ -614,10 +503,8 @@ public class SessionInfoDto {
      * 
      * @return transcodingInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_INFO)
-    public TranscodingInfo getTranscodingInfo() {
+    public @org.eclipse.jdt.annotation.Nullable TranscodingInfo getTranscodingInfo() {
         return transcodingInfo;
     }
 
@@ -636,10 +523,8 @@ public class SessionInfoDto {
      * 
      * @return isActive
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_ACTIVE)
-    public Boolean getIsActive() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsActive() {
         return isActive;
     }
 
@@ -658,10 +543,8 @@ public class SessionInfoDto {
      * 
      * @return supportsMediaControl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    public Boolean getSupportsMediaControl() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
 
@@ -680,10 +563,8 @@ public class SessionInfoDto {
      * 
      * @return supportsRemoteControl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_REMOTE_CONTROL)
-    public Boolean getSupportsRemoteControl() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsRemoteControl() {
         return supportsRemoteControl;
     }
 
@@ -710,10 +591,8 @@ public class SessionInfoDto {
      * 
      * @return nowPlayingQueue
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE)
-    public List<QueueItem> getNowPlayingQueue() {
+    public @org.eclipse.jdt.annotation.Nullable List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
@@ -741,10 +620,8 @@ public class SessionInfoDto {
      * 
      * @return nowPlayingQueueFullItems
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE_FULL_ITEMS)
-    public List<BaseItemDto> getNowPlayingQueueFullItems() {
+    public @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> getNowPlayingQueueFullItems() {
         return nowPlayingQueueFullItems;
     }
 
@@ -764,10 +641,8 @@ public class SessionInfoDto {
      * 
      * @return hasCustomDeviceName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_CUSTOM_DEVICE_NAME)
-    public Boolean getHasCustomDeviceName() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasCustomDeviceName() {
         return hasCustomDeviceName;
     }
 
@@ -786,10 +661,8 @@ public class SessionInfoDto {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public String getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPlaylistItemId() {
         return playlistItemId;
     }
 
@@ -808,10 +681,8 @@ public class SessionInfoDto {
      * 
      * @return serverId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
-    public String getServerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerId() {
         return serverId;
     }
 
@@ -830,10 +701,8 @@ public class SessionInfoDto {
      * 
      * @return userPrimaryImageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    public String getUserPrimaryImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
@@ -861,10 +730,8 @@ public class SessionInfoDto {
      * 
      * @return supportedCommands
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
-    public List<GeneralCommandType> getSupportedCommands() {
+    public @org.eclipse.jdt.annotation.Nullable List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
 
@@ -873,9 +740,6 @@ public class SessionInfoDto {
         this.supportedCommands = supportedCommands;
     }
 
-    /**
-     * Return true if this SessionInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1026,75 +890,131 @@ public class SessionInfoDto {
 
         // add `RemoteEndPoint` to the URL query string
         if (getRemoteEndPoint() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteEndPoint%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteEndPoint()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteEndPoint%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRemoteEndPoint()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlayableMediaTypes` to the URL query string
         if (getPlayableMediaTypes() != null) {
             for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
                 if (getPlayableMediaTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getPlayableMediaTypes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserName` to the URL query string
         if (getUserName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Client` to the URL query string
         if (getClient() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sClient%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sClient%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getClient()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastActivityDate` to the URL query string
         if (getLastActivityDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastActivityDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastPlaybackCheckIn` to the URL query string
         if (getLastPlaybackCheckIn() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastPlaybackCheckIn%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPlaybackCheckIn()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastPlaybackCheckIn%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastPlaybackCheckIn()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastPausedDate` to the URL query string
         if (getLastPausedDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastPausedDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPausedDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastPausedDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastPausedDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceName` to the URL query string
         if (getDeviceName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceType` to the URL query string
         if (getDeviceType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NowPlayingItem` to the URL query string
@@ -1109,14 +1029,24 @@ public class SessionInfoDto {
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ApplicationVersion` to the URL query string
         if (getApplicationVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sApplicationVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getApplicationVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sApplicationVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getApplicationVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TranscodingInfo` to the URL query string
@@ -1126,20 +1056,37 @@ public class SessionInfoDto {
 
         // add `IsActive` to the URL query string
         if (getIsActive() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsActive%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsActive()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsActive%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsActive()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsMediaControl` to the URL query string
         if (getSupportsMediaControl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getSupportsMediaControl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsRemoteControl` to the URL query string
         if (getSupportsRemoteControl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsRemoteControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsRemoteControl()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sSupportsRemoteControl%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getSupportsRemoteControl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NowPlayingQueue` to the URL query string
@@ -1171,37 +1118,63 @@ public class SessionInfoDto {
 
         // add `HasCustomDeviceName` to the URL query string
         if (getHasCustomDeviceName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasCustomDeviceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasCustomDeviceName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasCustomDeviceName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasCustomDeviceName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserPrimaryImageTag` to the URL query string
         if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserPrimaryImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportedCommands` to the URL query string
         if (getSupportedCommands() != null) {
             for (int i = 0; i < getSupportedCommands().size(); i++) {
                 if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getSupportedCommands().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

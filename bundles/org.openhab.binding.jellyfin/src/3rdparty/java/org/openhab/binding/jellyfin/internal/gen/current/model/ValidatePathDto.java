@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Validate path object.
  */
-@JsonPropertyOrder({ ValidatePathDto.JSON_PROPERTY_VALIDATE_WRITABLE, ValidatePathDto.JSON_PROPERTY_PATH,
-        ValidatePathDto.JSON_PROPERTY_IS_FILE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ValidatePathDto {
     public static final String JSON_PROPERTY_VALIDATE_WRITABLE = "ValidateWritable";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean validateWritable;
+    private @org.eclipse.jdt.annotation.Nullable Boolean validateWritable;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_IS_FILE = "IsFile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isFile;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isFile;
 
     public ValidatePathDto() {
     }
@@ -55,10 +45,8 @@ public class ValidatePathDto {
      * 
      * @return validateWritable
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VALIDATE_WRITABLE)
-    public Boolean getValidateWritable() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getValidateWritable() {
         return validateWritable;
     }
 
@@ -77,10 +65,8 @@ public class ValidatePathDto {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -99,10 +85,8 @@ public class ValidatePathDto {
      * 
      * @return isFile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_FILE)
-    public Boolean getIsFile() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsFile() {
         return isFile;
     }
 
@@ -111,9 +95,6 @@ public class ValidatePathDto {
         this.isFile = isFile;
     }
 
-    /**
-     * Return true if this ValidatePathDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -186,20 +167,35 @@ public class ValidatePathDto {
 
         // add `ValidateWritable` to the URL query string
         if (getValidateWritable() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sValidateWritable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValidateWritable()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sValidateWritable%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getValidateWritable()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsFile` to the URL query string
         if (getIsFile() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsFile%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFile()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsFile%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsFile()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

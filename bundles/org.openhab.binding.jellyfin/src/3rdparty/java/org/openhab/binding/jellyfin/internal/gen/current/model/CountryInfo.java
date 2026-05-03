@@ -12,41 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class CountryInfo.
  */
-@JsonPropertyOrder({ CountryInfo.JSON_PROPERTY_NAME, CountryInfo.JSON_PROPERTY_DISPLAY_NAME,
-        CountryInfo.JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME,
-        CountryInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CountryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String displayName;
+    private @org.eclipse.jdt.annotation.Nullable String displayName;
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME = "TwoLetterISORegionName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String twoLetterISORegionName;
+    private @org.eclipse.jdt.annotation.Nullable String twoLetterISORegionName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME = "ThreeLetterISORegionName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String threeLetterISORegionName;
+    private @org.eclipse.jdt.annotation.Nullable String threeLetterISORegionName;
 
     public CountryInfo() {
     }
@@ -61,10 +48,8 @@ public class CountryInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -83,10 +68,8 @@ public class CountryInfo {
      * 
      * @return displayName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME)
-    public String getDisplayName() {
+    public @org.eclipse.jdt.annotation.Nullable String getDisplayName() {
         return displayName;
     }
 
@@ -105,10 +88,8 @@ public class CountryInfo {
      * 
      * @return twoLetterISORegionName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_REGION_NAME)
-    public String getTwoLetterISORegionName() {
+    public @org.eclipse.jdt.annotation.Nullable String getTwoLetterISORegionName() {
         return twoLetterISORegionName;
     }
 
@@ -127,10 +108,8 @@ public class CountryInfo {
      * 
      * @return threeLetterISORegionName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_REGION_NAME)
-    public String getThreeLetterISORegionName() {
+    public @org.eclipse.jdt.annotation.Nullable String getThreeLetterISORegionName() {
         return threeLetterISORegionName;
     }
 
@@ -139,9 +118,6 @@ public class CountryInfo {
         this.threeLetterISORegionName = threeLetterISORegionName;
     }
 
-    /**
-     * Return true if this CountryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +191,48 @@ public class CountryInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TwoLetterISORegionName` to the URL query string
         if (getTwoLetterISORegionName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTwoLetterISORegionName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISORegionName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTwoLetterISORegionName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTwoLetterISORegionName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThreeLetterISORegionName` to the URL query string
         if (getThreeLetterISORegionName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISORegionName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISORegionName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISORegionName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getThreeLetterISORegionName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

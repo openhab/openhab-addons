@@ -12,31 +12,24 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SearchHintResult.
  */
-@JsonPropertyOrder({ SearchHintResult.JSON_PROPERTY_SEARCH_HINTS, SearchHintResult.JSON_PROPERTY_TOTAL_RECORD_COUNT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SearchHintResult {
     public static final String JSON_PROPERTY_SEARCH_HINTS = "SearchHints";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SearchHint> searchHints = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<SearchHint> searchHints = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer totalRecordCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer totalRecordCount;
 
     public SearchHintResult() {
     }
@@ -59,10 +52,8 @@ public class SearchHintResult {
      * 
      * @return searchHints
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEARCH_HINTS)
-    public List<SearchHint> getSearchHints() {
+    public @org.eclipse.jdt.annotation.Nullable List<SearchHint> getSearchHints() {
         return searchHints;
     }
 
@@ -81,10 +72,8 @@ public class SearchHintResult {
      * 
      * @return totalRecordCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    public Integer getTotalRecordCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
@@ -93,9 +82,6 @@ public class SearchHintResult {
         this.totalRecordCount = totalRecordCount;
     }
 
-    /**
-     * Return true if this SearchHintResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -179,8 +165,13 @@ public class SearchHintResult {
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTotalRecordCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

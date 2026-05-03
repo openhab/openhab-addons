@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The authenticate user by name request body.
  */
-@JsonPropertyOrder({ AuthenticateUserByName.JSON_PROPERTY_USERNAME, AuthenticateUserByName.JSON_PROPERTY_PW })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AuthenticateUserByName {
     public static final String JSON_PROPERTY_USERNAME = "Username";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String username;
+    private @org.eclipse.jdt.annotation.Nullable String username;
 
     public static final String JSON_PROPERTY_PW = "Pw";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String pw;
+    private @org.eclipse.jdt.annotation.Nullable String pw;
 
     public AuthenticateUserByName() {
     }
@@ -49,10 +42,8 @@ public class AuthenticateUserByName {
      * 
      * @return username
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USERNAME)
-    public String getUsername() {
+    public @org.eclipse.jdt.annotation.Nullable String getUsername() {
         return username;
     }
 
@@ -71,10 +62,8 @@ public class AuthenticateUserByName {
      * 
      * @return pw
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PW)
-    public String getPw() {
+    public @org.eclipse.jdt.annotation.Nullable String getPw() {
         return pw;
     }
 
@@ -83,9 +72,6 @@ public class AuthenticateUserByName {
         this.pw = pw;
     }
 
-    /**
-     * Return true if this AuthenticateUserByName object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class AuthenticateUserByName {
 
         // add `Username` to the URL query string
         if (getUsername() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsername()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUsername%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUsername()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Pw` to the URL query string
         if (getPw() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPw%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPw()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPw%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPw()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

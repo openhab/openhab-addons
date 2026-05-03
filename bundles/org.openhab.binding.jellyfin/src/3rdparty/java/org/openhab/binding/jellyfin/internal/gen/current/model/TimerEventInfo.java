@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * TimerEventInfo
  */
-@JsonPropertyOrder({ TimerEventInfo.JSON_PROPERTY_ID, TimerEventInfo.JSON_PROPERTY_PROGRAM_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TimerEventInfo {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID programId;
+    private @org.eclipse.jdt.annotation.Nullable UUID programId;
 
     public TimerEventInfo() {
     }
@@ -50,10 +43,8 @@ public class TimerEventInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -72,10 +63,8 @@ public class TimerEventInfo {
      * 
      * @return programId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
-    public UUID getProgramId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getProgramId() {
         return programId;
     }
 
@@ -84,9 +73,6 @@ public class TimerEventInfo {
         this.programId = programId;
     }
 
-    /**
-     * Return true if this TimerEventInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class TimerEventInfo {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProgramId` to the URL query string
         if (getProgramId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProgramId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

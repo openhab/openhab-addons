@@ -12,43 +12,30 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the options for a custom database connector.
  */
-@JsonPropertyOrder({ CustomDatabaseOptions.JSON_PROPERTY_PLUGIN_NAME,
-        CustomDatabaseOptions.JSON_PROPERTY_PLUGIN_ASSEMBLY, CustomDatabaseOptions.JSON_PROPERTY_CONNECTION_STRING,
-        CustomDatabaseOptions.JSON_PROPERTY_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CustomDatabaseOptions {
     public static final String JSON_PROPERTY_PLUGIN_NAME = "PluginName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String pluginName;
+    private @org.eclipse.jdt.annotation.Nullable String pluginName;
 
     public static final String JSON_PROPERTY_PLUGIN_ASSEMBLY = "PluginAssembly";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String pluginAssembly;
+    private @org.eclipse.jdt.annotation.Nullable String pluginAssembly;
 
     public static final String JSON_PROPERTY_CONNECTION_STRING = "ConnectionString";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String connectionString;
+    private @org.eclipse.jdt.annotation.Nullable String connectionString;
 
     public static final String JSON_PROPERTY_OPTIONS = "Options";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<CustomDatabaseOption> options = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<CustomDatabaseOption> options = new ArrayList<>();
 
     public CustomDatabaseOptions() {
     }
@@ -63,10 +50,8 @@ public class CustomDatabaseOptions {
      * 
      * @return pluginName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_NAME)
-    public String getPluginName() {
+    public @org.eclipse.jdt.annotation.Nullable String getPluginName() {
         return pluginName;
     }
 
@@ -85,10 +70,8 @@ public class CustomDatabaseOptions {
      * 
      * @return pluginAssembly
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_ASSEMBLY)
-    public String getPluginAssembly() {
+    public @org.eclipse.jdt.annotation.Nullable String getPluginAssembly() {
         return pluginAssembly;
     }
 
@@ -107,10 +90,8 @@ public class CustomDatabaseOptions {
      * 
      * @return connectionString
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONNECTION_STRING)
-    public String getConnectionString() {
+    public @org.eclipse.jdt.annotation.Nullable String getConnectionString() {
         return connectionString;
     }
 
@@ -137,10 +118,8 @@ public class CustomDatabaseOptions {
      * 
      * @return options
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPTIONS)
-    public List<CustomDatabaseOption> getOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<CustomDatabaseOption> getOptions() {
         return options;
     }
 
@@ -149,9 +128,6 @@ public class CustomDatabaseOptions {
         this.options = options;
     }
 
-    /**
-     * Return true if this CustomDatabaseOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -226,20 +202,35 @@ public class CustomDatabaseOptions {
 
         // add `PluginName` to the URL query string
         if (getPluginName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPluginName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPluginName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPluginName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPluginName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PluginAssembly` to the URL query string
         if (getPluginAssembly() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPluginAssembly%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPluginAssembly()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPluginAssembly%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPluginAssembly()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ConnectionString` to the URL query string
         if (getConnectionString() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sConnectionString%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getConnectionString()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sConnectionString%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getConnectionString()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Options` to the URL query string

@@ -12,104 +12,63 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LiveTvOptions
  */
-@JsonPropertyOrder({ LiveTvOptions.JSON_PROPERTY_GUIDE_DAYS, LiveTvOptions.JSON_PROPERTY_RECORDING_PATH,
-        LiveTvOptions.JSON_PROPERTY_MOVIE_RECORDING_PATH, LiveTvOptions.JSON_PROPERTY_SERIES_RECORDING_PATH,
-        LiveTvOptions.JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS,
-        LiveTvOptions.JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS,
-        LiveTvOptions.JSON_PROPERTY_TUNER_HOSTS, LiveTvOptions.JSON_PROPERTY_LISTING_PROVIDERS,
-        LiveTvOptions.JSON_PROPERTY_PRE_PADDING_SECONDS, LiveTvOptions.JSON_PROPERTY_POST_PADDING_SECONDS,
-        LiveTvOptions.JSON_PROPERTY_MEDIA_LOCATIONS_CREATED, LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR,
-        LiveTvOptions.JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS,
-        LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_N_F_O, LiveTvOptions.JSON_PROPERTY_SAVE_RECORDING_IMAGES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveTvOptions {
     public static final String JSON_PROPERTY_GUIDE_DAYS = "GuideDays";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer guideDays;
+    private @org.eclipse.jdt.annotation.Nullable Integer guideDays;
 
     public static final String JSON_PROPERTY_RECORDING_PATH = "RecordingPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String recordingPath;
+    private @org.eclipse.jdt.annotation.Nullable String recordingPath;
 
     public static final String JSON_PROPERTY_MOVIE_RECORDING_PATH = "MovieRecordingPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String movieRecordingPath;
+    private @org.eclipse.jdt.annotation.Nullable String movieRecordingPath;
 
     public static final String JSON_PROPERTY_SERIES_RECORDING_PATH = "SeriesRecordingPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String seriesRecordingPath;
+    private @org.eclipse.jdt.annotation.Nullable String seriesRecordingPath;
 
     public static final String JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS = "EnableRecordingSubfolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRecordingSubfolders;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRecordingSubfolders;
 
     public static final String JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS = "EnableOriginalAudioWithEncodedRecordings";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableOriginalAudioWithEncodedRecordings;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableOriginalAudioWithEncodedRecordings;
 
     public static final String JSON_PROPERTY_TUNER_HOSTS = "TunerHosts";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<TunerHostInfo> tunerHosts;
+    private @org.eclipse.jdt.annotation.Nullable List<TunerHostInfo> tunerHosts;
 
     public static final String JSON_PROPERTY_LISTING_PROVIDERS = "ListingProviders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ListingsProviderInfo> listingProviders;
+    private @org.eclipse.jdt.annotation.Nullable List<ListingsProviderInfo> listingProviders;
 
     public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer prePaddingSeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer prePaddingSeconds;
 
     public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer postPaddingSeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer postPaddingSeconds;
 
     public static final String JSON_PROPERTY_MEDIA_LOCATIONS_CREATED = "MediaLocationsCreated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> mediaLocationsCreated;
+    private @org.eclipse.jdt.annotation.Nullable List<String> mediaLocationsCreated;
 
     public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR = "RecordingPostProcessor";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String recordingPostProcessor;
+    private @org.eclipse.jdt.annotation.Nullable String recordingPostProcessor;
 
     public static final String JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS = "RecordingPostProcessorArguments";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String recordingPostProcessorArguments;
+    private @org.eclipse.jdt.annotation.Nullable String recordingPostProcessorArguments;
 
     public static final String JSON_PROPERTY_SAVE_RECORDING_N_F_O = "SaveRecordingNFO";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveRecordingNFO;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveRecordingNFO;
 
     public static final String JSON_PROPERTY_SAVE_RECORDING_IMAGES = "SaveRecordingImages";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveRecordingImages;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveRecordingImages;
 
     public LiveTvOptions() {
     }
@@ -124,10 +83,8 @@ public class LiveTvOptions {
      * 
      * @return guideDays
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GUIDE_DAYS)
-    public Integer getGuideDays() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getGuideDays() {
         return guideDays;
     }
 
@@ -146,10 +103,8 @@ public class LiveTvOptions {
      * 
      * @return recordingPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RECORDING_PATH)
-    public String getRecordingPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getRecordingPath() {
         return recordingPath;
     }
 
@@ -168,10 +123,8 @@ public class LiveTvOptions {
      * 
      * @return movieRecordingPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MOVIE_RECORDING_PATH)
-    public String getMovieRecordingPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getMovieRecordingPath() {
         return movieRecordingPath;
     }
 
@@ -190,10 +143,8 @@ public class LiveTvOptions {
      * 
      * @return seriesRecordingPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERIES_RECORDING_PATH)
-    public String getSeriesRecordingPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getSeriesRecordingPath() {
         return seriesRecordingPath;
     }
 
@@ -213,10 +164,8 @@ public class LiveTvOptions {
      * 
      * @return enableRecordingSubfolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_RECORDING_SUBFOLDERS)
-    public Boolean getEnableRecordingSubfolders() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRecordingSubfolders() {
         return enableRecordingSubfolders;
     }
 
@@ -236,10 +185,8 @@ public class LiveTvOptions {
      * 
      * @return enableOriginalAudioWithEncodedRecordings
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ORIGINAL_AUDIO_WITH_ENCODED_RECORDINGS)
-    public Boolean getEnableOriginalAudioWithEncodedRecordings() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableOriginalAudioWithEncodedRecordings() {
         return enableOriginalAudioWithEncodedRecordings;
     }
 
@@ -267,10 +214,8 @@ public class LiveTvOptions {
      * 
      * @return tunerHosts
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TUNER_HOSTS)
-    public List<TunerHostInfo> getTunerHosts() {
+    public @org.eclipse.jdt.annotation.Nullable List<TunerHostInfo> getTunerHosts() {
         return tunerHosts;
     }
 
@@ -298,10 +243,8 @@ public class LiveTvOptions {
      * 
      * @return listingProviders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LISTING_PROVIDERS)
-    public List<ListingsProviderInfo> getListingProviders() {
+    public @org.eclipse.jdt.annotation.Nullable List<ListingsProviderInfo> getListingProviders() {
         return listingProviders;
     }
 
@@ -320,10 +263,8 @@ public class LiveTvOptions {
      * 
      * @return prePaddingSeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS)
-    public Integer getPrePaddingSeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
 
@@ -342,10 +283,8 @@ public class LiveTvOptions {
      * 
      * @return postPaddingSeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS)
-    public Integer getPostPaddingSeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
 
@@ -373,10 +312,8 @@ public class LiveTvOptions {
      * 
      * @return mediaLocationsCreated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_LOCATIONS_CREATED)
-    public List<String> getMediaLocationsCreated() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMediaLocationsCreated() {
         return mediaLocationsCreated;
     }
 
@@ -395,10 +332,8 @@ public class LiveTvOptions {
      * 
      * @return recordingPostProcessor
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR)
-    public String getRecordingPostProcessor() {
+    public @org.eclipse.jdt.annotation.Nullable String getRecordingPostProcessor() {
         return recordingPostProcessor;
     }
 
@@ -418,10 +353,8 @@ public class LiveTvOptions {
      * 
      * @return recordingPostProcessorArguments
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RECORDING_POST_PROCESSOR_ARGUMENTS)
-    public String getRecordingPostProcessorArguments() {
+    public @org.eclipse.jdt.annotation.Nullable String getRecordingPostProcessorArguments() {
         return recordingPostProcessorArguments;
     }
 
@@ -441,10 +374,8 @@ public class LiveTvOptions {
      * 
      * @return saveRecordingNFO
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_N_F_O)
-    public Boolean getSaveRecordingNFO() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveRecordingNFO() {
         return saveRecordingNFO;
     }
 
@@ -463,10 +394,8 @@ public class LiveTvOptions {
      * 
      * @return saveRecordingImages
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_RECORDING_IMAGES)
-    public Boolean getSaveRecordingImages() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveRecordingImages() {
         return saveRecordingImages;
     }
 
@@ -475,9 +404,6 @@ public class LiveTvOptions {
         this.saveRecordingImages = saveRecordingImages;
     }
 
-    /**
-     * Return true if this LiveTvOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -580,39 +506,71 @@ public class LiveTvOptions {
 
         // add `GuideDays` to the URL query string
         if (getGuideDays() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGuideDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuideDays()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGuideDays%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGuideDays()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RecordingPath` to the URL query string
         if (getRecordingPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRecordingPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MovieRecordingPath` to the URL query string
         if (getMovieRecordingPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMovieRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieRecordingPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMovieRecordingPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMovieRecordingPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeriesRecordingPath` to the URL query string
         if (getSeriesRecordingPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesRecordingPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesRecordingPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesRecordingPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeriesRecordingPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableRecordingSubfolders` to the URL query string
         if (getEnableRecordingSubfolders() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRecordingSubfolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRecordingSubfolders()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRecordingSubfolders%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableRecordingSubfolders()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableOriginalAudioWithEncodedRecordings` to the URL query string
         if (getEnableOriginalAudioWithEncodedRecordings() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableOriginalAudioWithEncodedRecordings%s=%s", prefix,
-                    suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableOriginalAudioWithEncodedRecordings()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableOriginalAudioWithEncodedRecordings%s=%s",
+                        prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableOriginalAudioWithEncodedRecordings()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TunerHosts` to the URL query string
@@ -643,48 +601,87 @@ public class LiveTvOptions {
 
         // add `PrePaddingSeconds` to the URL query string
         if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrePaddingSeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PostPaddingSeconds` to the URL query string
         if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPostPaddingSeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MediaLocationsCreated` to the URL query string
         if (getMediaLocationsCreated() != null) {
             for (int i = 0; i < getMediaLocationsCreated().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMediaLocationsCreated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMediaLocationsCreated().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMediaLocationsCreated%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMediaLocationsCreated().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `RecordingPostProcessor` to the URL query string
         if (getRecordingPostProcessor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPostProcessor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPostProcessor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRecordingPostProcessor()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RecordingPostProcessorArguments` to the URL query string
         if (getRecordingPostProcessorArguments() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPostProcessorArguments%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecordingPostProcessorArguments()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRecordingPostProcessorArguments%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getRecordingPostProcessorArguments()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveRecordingNFO` to the URL query string
         if (getSaveRecordingNFO() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveRecordingNFO%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingNFO()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveRecordingNFO%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveRecordingNFO()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveRecordingImages` to the URL query string
         if (getSaveRecordingImages() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveRecordingImages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveRecordingImages()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveRecordingImages%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveRecordingImages()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

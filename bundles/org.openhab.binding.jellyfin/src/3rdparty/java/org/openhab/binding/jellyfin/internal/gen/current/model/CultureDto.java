@@ -12,56 +12,44 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class CultureDto.
  */
-@JsonPropertyOrder({ CultureDto.JSON_PROPERTY_NAME, CultureDto.JSON_PROPERTY_DISPLAY_NAME,
-        CultureDto.JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME,
-        CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
-        CultureDto.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CultureDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String displayName;
+    private @org.eclipse.jdt.annotation.Nullable String displayName;
 
     public static final String JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME = "TwoLetterISOLanguageName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String twoLetterISOLanguageName;
+    private @org.eclipse.jdt.annotation.Nullable String twoLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String threeLetterISOLanguageName;
+    private @org.eclipse.jdt.annotation.Nullable String threeLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES = "ThreeLetterISOLanguageNames";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> threeLetterISOLanguageNames = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> threeLetterISOLanguageNames = new ArrayList<>();
 
     public CultureDto() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public CultureDto(@JsonProperty(JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName) {
+    public CultureDto(
+            @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME) String threeLetterISOLanguageName) {
         this();
         this.threeLetterISOLanguageName = threeLetterISOLanguageName;
     }
@@ -76,10 +64,8 @@ public class CultureDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -98,10 +84,8 @@ public class CultureDto {
      * 
      * @return displayName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME)
-    public String getDisplayName() {
+    public @org.eclipse.jdt.annotation.Nullable String getDisplayName() {
         return displayName;
     }
 
@@ -120,10 +104,8 @@ public class CultureDto {
      * 
      * @return twoLetterISOLanguageName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TWO_LETTER_I_S_O_LANGUAGE_NAME)
-    public String getTwoLetterISOLanguageName() {
+    public @org.eclipse.jdt.annotation.Nullable String getTwoLetterISOLanguageName() {
         return twoLetterISOLanguageName;
     }
 
@@ -137,10 +119,8 @@ public class CultureDto {
      * 
      * @return threeLetterISOLanguageName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-    public String getThreeLetterISOLanguageName() {
+    public @org.eclipse.jdt.annotation.Nullable String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
     }
 
@@ -163,10 +143,8 @@ public class CultureDto {
      * 
      * @return threeLetterISOLanguageNames
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAMES)
-    public List<String> getThreeLetterISOLanguageNames() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getThreeLetterISOLanguageNames() {
         return threeLetterISOLanguageNames;
     }
 
@@ -176,9 +154,6 @@ public class CultureDto {
         this.threeLetterISOLanguageNames = threeLetterISOLanguageNames;
     }
 
-    /**
-     * Return true if this CultureDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -256,35 +231,65 @@ public class CultureDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TwoLetterISOLanguageName` to the URL query string
         if (getTwoLetterISOLanguageName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTwoLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTwoLetterISOLanguageName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTwoLetterISOLanguageName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTwoLetterISOLanguageName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThreeLetterISOLanguageName` to the URL query string
         if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getThreeLetterISOLanguageName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThreeLetterISOLanguageNames` to the URL query string
         if (getThreeLetterISOLanguageNames() != null) {
             for (int i = 0; i < getThreeLetterISOLanguageNames().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageNames().get(i)))));
+                try {
+                    joiner.add(
+                            String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageNames%s%s=%s", prefix, suffix,
+                                    "".equals(suffix) ? ""
+                                            : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                    containerSuffix),
+                                    URLEncoder.encode(String.valueOf(getThreeLetterISOLanguageNames().get(i)), "UTF-8")
+                                            .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

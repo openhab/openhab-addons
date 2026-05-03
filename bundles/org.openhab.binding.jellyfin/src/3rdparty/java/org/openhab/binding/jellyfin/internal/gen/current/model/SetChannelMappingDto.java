@@ -12,36 +12,26 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Set channel mapping dto.
  */
-@JsonPropertyOrder({ SetChannelMappingDto.JSON_PROPERTY_PROVIDER_ID,
-        SetChannelMappingDto.JSON_PROPERTY_TUNER_CHANNEL_ID, SetChannelMappingDto.JSON_PROPERTY_PROVIDER_CHANNEL_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SetChannelMappingDto {
     public static final String JSON_PROPERTY_PROVIDER_ID = "ProviderId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerId;
+    private @org.eclipse.jdt.annotation.NonNull String providerId;
 
     public static final String JSON_PROPERTY_TUNER_CHANNEL_ID = "TunerChannelId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String tunerChannelId;
+    private @org.eclipse.jdt.annotation.NonNull String tunerChannelId;
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNEL_ID = "ProviderChannelId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerChannelId;
+    private @org.eclipse.jdt.annotation.NonNull String providerChannelId;
 
     public SetChannelMappingDto() {
     }
@@ -56,11 +46,9 @@ public class SetChannelMappingDto {
      * 
      * @return providerId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getProviderId() {
+    public @org.eclipse.jdt.annotation.NonNull String getProviderId() {
         return providerId;
     }
 
@@ -80,11 +68,9 @@ public class SetChannelMappingDto {
      * 
      * @return tunerChannelId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getTunerChannelId() {
+    public @org.eclipse.jdt.annotation.NonNull String getTunerChannelId() {
         return tunerChannelId;
     }
 
@@ -104,11 +90,9 @@ public class SetChannelMappingDto {
      * 
      * @return providerChannelId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNEL_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getProviderChannelId() {
+    public @org.eclipse.jdt.annotation.NonNull String getProviderChannelId() {
         return providerChannelId;
     }
 
@@ -118,9 +102,6 @@ public class SetChannelMappingDto {
         this.providerChannelId = providerChannelId;
     }
 
-    /**
-     * Return true if this SetChannelMappingDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -193,20 +174,35 @@ public class SetChannelMappingDto {
 
         // add `ProviderId` to the URL query string
         if (getProviderId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TunerChannelId` to the URL query string
         if (getTunerChannelId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTunerChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTunerChannelId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTunerChannelId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTunerChannelId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProviderChannelId` to the URL query string
         if (getProviderChannelId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderChannelId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderChannelId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderChannelId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

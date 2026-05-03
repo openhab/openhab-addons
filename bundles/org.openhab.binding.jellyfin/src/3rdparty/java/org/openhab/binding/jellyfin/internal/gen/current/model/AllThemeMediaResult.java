@@ -16,30 +16,20 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * AllThemeMediaResult
  */
-@JsonPropertyOrder({ AllThemeMediaResult.JSON_PROPERTY_THEME_VIDEOS_RESULT,
-        AllThemeMediaResult.JSON_PROPERTY_THEME_SONGS_RESULT,
-        AllThemeMediaResult.JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AllThemeMediaResult {
     public static final String JSON_PROPERTY_THEME_VIDEOS_RESULT = "ThemeVideosResult";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ThemeMediaResult themeVideosResult;
+    private @org.eclipse.jdt.annotation.Nullable ThemeMediaResult themeVideosResult;
 
     public static final String JSON_PROPERTY_THEME_SONGS_RESULT = "ThemeSongsResult";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ThemeMediaResult themeSongsResult;
+    private @org.eclipse.jdt.annotation.Nullable ThemeMediaResult themeSongsResult;
 
     public static final String JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT = "SoundtrackSongsResult";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ThemeMediaResult soundtrackSongsResult;
+    private @org.eclipse.jdt.annotation.Nullable ThemeMediaResult soundtrackSongsResult;
 
     public AllThemeMediaResult() {
     }
@@ -55,10 +45,8 @@ public class AllThemeMediaResult {
      * 
      * @return themeVideosResult
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THEME_VIDEOS_RESULT)
-    public ThemeMediaResult getThemeVideosResult() {
+    public @org.eclipse.jdt.annotation.Nullable ThemeMediaResult getThemeVideosResult() {
         return themeVideosResult;
     }
 
@@ -78,10 +66,8 @@ public class AllThemeMediaResult {
      * 
      * @return themeSongsResult
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THEME_SONGS_RESULT)
-    public ThemeMediaResult getThemeSongsResult() {
+    public @org.eclipse.jdt.annotation.Nullable ThemeMediaResult getThemeSongsResult() {
         return themeSongsResult;
     }
 
@@ -101,10 +87,8 @@ public class AllThemeMediaResult {
      * 
      * @return soundtrackSongsResult
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SOUNDTRACK_SONGS_RESULT)
-    public ThemeMediaResult getSoundtrackSongsResult() {
+    public @org.eclipse.jdt.annotation.Nullable ThemeMediaResult getSoundtrackSongsResult() {
         return soundtrackSongsResult;
     }
 
@@ -113,9 +97,6 @@ public class AllThemeMediaResult {
         this.soundtrackSongsResult = soundtrackSongsResult;
     }
 
-    /**
-     * Return true if this AllThemeMediaResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

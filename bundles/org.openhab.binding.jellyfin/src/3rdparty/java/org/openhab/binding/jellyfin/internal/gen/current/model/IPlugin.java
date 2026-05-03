@@ -12,69 +12,54 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Common.Plugins.IPlugin.
  */
-@JsonPropertyOrder({ IPlugin.JSON_PROPERTY_NAME, IPlugin.JSON_PROPERTY_DESCRIPTION, IPlugin.JSON_PROPERTY_ID,
-        IPlugin.JSON_PROPERTY_VERSION, IPlugin.JSON_PROPERTY_ASSEMBLY_FILE_PATH, IPlugin.JSON_PROPERTY_CAN_UNINSTALL,
-        IPlugin.JSON_PROPERTY_DATA_FOLDER_PATH })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class IPlugin {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String description;
+    private @org.eclipse.jdt.annotation.Nullable String description;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_ASSEMBLY_FILE_PATH = "AssemblyFilePath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String assemblyFilePath;
+    private @org.eclipse.jdt.annotation.Nullable String assemblyFilePath;
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canUninstall;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canUninstall;
 
     public static final String JSON_PROPERTY_DATA_FOLDER_PATH = "DataFolderPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String dataFolderPath;
+    private @org.eclipse.jdt.annotation.Nullable String dataFolderPath;
 
     public IPlugin() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public IPlugin(@JsonProperty(JSON_PROPERTY_NAME) String name,
-            @JsonProperty(JSON_PROPERTY_DESCRIPTION) String description, @JsonProperty(JSON_PROPERTY_ID) UUID id,
-            @JsonProperty(JSON_PROPERTY_VERSION) String version,
-            @JsonProperty(JSON_PROPERTY_ASSEMBLY_FILE_PATH) String assemblyFilePath,
-            @JsonProperty(JSON_PROPERTY_CAN_UNINSTALL) Boolean canUninstall,
-            @JsonProperty(JSON_PROPERTY_DATA_FOLDER_PATH) String dataFolderPath) {
+    public IPlugin(@JsonProperty(value = JSON_PROPERTY_NAME) String name,
+            @JsonProperty(value = JSON_PROPERTY_DESCRIPTION) String description,
+            @JsonProperty(value = JSON_PROPERTY_ID) UUID id,
+            @JsonProperty(value = JSON_PROPERTY_VERSION) String version,
+            @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH) String assemblyFilePath,
+            @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL) Boolean canUninstall,
+            @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH) String dataFolderPath) {
         this();
         this.name = name;
         this.description = description;
@@ -90,10 +75,8 @@ public class IPlugin {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -102,10 +85,8 @@ public class IPlugin {
      * 
      * @return description
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
-    public String getDescription() {
+    public @org.eclipse.jdt.annotation.Nullable String getDescription() {
         return description;
     }
 
@@ -114,10 +95,8 @@ public class IPlugin {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -126,10 +105,8 @@ public class IPlugin {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -138,10 +115,8 @@ public class IPlugin {
      * 
      * @return assemblyFilePath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ASSEMBLY_FILE_PATH)
-    public String getAssemblyFilePath() {
+    public @org.eclipse.jdt.annotation.Nullable String getAssemblyFilePath() {
         return assemblyFilePath;
     }
 
@@ -150,10 +125,8 @@ public class IPlugin {
      * 
      * @return canUninstall
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL)
-    public Boolean getCanUninstall() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanUninstall() {
         return canUninstall;
     }
 
@@ -162,16 +135,11 @@ public class IPlugin {
      * 
      * @return dataFolderPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA_FOLDER_PATH)
-    public String getDataFolderPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getDataFolderPath() {
         return dataFolderPath;
     }
 
-    /**
-     * Return true if this IPlugin object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -250,44 +218,79 @@ public class IPlugin {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDescription()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AssemblyFilePath` to the URL query string
         if (getAssemblyFilePath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAssemblyFilePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAssemblyFilePath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAssemblyFilePath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAssemblyFilePath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CanUninstall` to the URL query string
         if (getCanUninstall() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanUninstall()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DataFolderPath` to the URL query string
         if (getDataFolderPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDataFolderPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDataFolderPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDataFolderPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDataFolderPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

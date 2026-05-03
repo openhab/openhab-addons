@@ -12,64 +12,42 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Used to hold information about a user&#39;s list of configured virtual folders.
  */
-@JsonPropertyOrder({ VirtualFolderInfo.JSON_PROPERTY_NAME, VirtualFolderInfo.JSON_PROPERTY_LOCATIONS,
-        VirtualFolderInfo.JSON_PROPERTY_COLLECTION_TYPE, VirtualFolderInfo.JSON_PROPERTY_LIBRARY_OPTIONS,
-        VirtualFolderInfo.JSON_PROPERTY_ITEM_ID, VirtualFolderInfo.JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID,
-        VirtualFolderInfo.JSON_PROPERTY_REFRESH_PROGRESS, VirtualFolderInfo.JSON_PROPERTY_REFRESH_STATUS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class VirtualFolderInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_LOCATIONS = "Locations";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> locations;
+    private @org.eclipse.jdt.annotation.Nullable List<String> locations;
 
     public static final String JSON_PROPERTY_COLLECTION_TYPE = "CollectionType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private CollectionTypeOptions collectionType;
+    private @org.eclipse.jdt.annotation.Nullable CollectionTypeOptions collectionType;
 
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LibraryOptions libraryOptions;
+    private @org.eclipse.jdt.annotation.Nullable LibraryOptions libraryOptions;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String itemId;
+    private @org.eclipse.jdt.annotation.Nullable String itemId;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID = "PrimaryImageItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String primaryImageItemId;
+    private @org.eclipse.jdt.annotation.Nullable String primaryImageItemId;
 
     public static final String JSON_PROPERTY_REFRESH_PROGRESS = "RefreshProgress";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double refreshProgress;
+    private @org.eclipse.jdt.annotation.Nullable Double refreshProgress;
 
     public static final String JSON_PROPERTY_REFRESH_STATUS = "RefreshStatus";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String refreshStatus;
+    private @org.eclipse.jdt.annotation.Nullable String refreshStatus;
 
     public VirtualFolderInfo() {
     }
@@ -84,10 +62,8 @@ public class VirtualFolderInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -114,10 +90,8 @@ public class VirtualFolderInfo {
      * 
      * @return locations
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCATIONS)
-    public List<String> getLocations() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLocations() {
         return locations;
     }
 
@@ -136,10 +110,8 @@ public class VirtualFolderInfo {
      * 
      * @return collectionType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLLECTION_TYPE)
-    public CollectionTypeOptions getCollectionType() {
+    public @org.eclipse.jdt.annotation.Nullable CollectionTypeOptions getCollectionType() {
         return collectionType;
     }
 
@@ -158,10 +130,8 @@ public class VirtualFolderInfo {
      * 
      * @return libraryOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS)
-    public LibraryOptions getLibraryOptions() {
+    public @org.eclipse.jdt.annotation.Nullable LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
@@ -180,10 +150,8 @@ public class VirtualFolderInfo {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public String getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getItemId() {
         return itemId;
     }
 
@@ -202,10 +170,8 @@ public class VirtualFolderInfo {
      * 
      * @return primaryImageItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ITEM_ID)
-    public String getPrimaryImageItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPrimaryImageItemId() {
         return primaryImageItemId;
     }
 
@@ -224,10 +190,8 @@ public class VirtualFolderInfo {
      * 
      * @return refreshProgress
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REFRESH_PROGRESS)
-    public Double getRefreshProgress() {
+    public @org.eclipse.jdt.annotation.Nullable Double getRefreshProgress() {
         return refreshProgress;
     }
 
@@ -246,10 +210,8 @@ public class VirtualFolderInfo {
      * 
      * @return refreshStatus
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REFRESH_STATUS)
-    public String getRefreshStatus() {
+    public @org.eclipse.jdt.annotation.Nullable String getRefreshStatus() {
         return refreshStatus;
     }
 
@@ -258,9 +220,6 @@ public class VirtualFolderInfo {
         this.refreshStatus = refreshStatus;
     }
 
-    /**
-     * Return true if this VirtualFolderInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -344,24 +303,41 @@ public class VirtualFolderInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Locations` to the URL query string
         if (getLocations() != null) {
             for (int i = 0; i < getLocations().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLocations%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocations().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLocations%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLocations().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `CollectionType` to the URL query string
         if (getCollectionType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCollectionType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCollectionType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCollectionType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCollectionType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LibraryOptions` to the URL query string
@@ -371,26 +347,46 @@ public class VirtualFolderInfo {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrimaryImageItemId` to the URL query string
         if (getPrimaryImageItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RefreshProgress` to the URL query string
         if (getRefreshProgress() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRefreshProgress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshProgress()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRefreshProgress%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRefreshProgress()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RefreshStatus` to the URL query string
         if (getRefreshStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRefreshStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRefreshStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRefreshStatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRefreshStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

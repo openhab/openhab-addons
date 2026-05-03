@@ -12,25 +12,20 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Forgot Password Pin enter request body DTO.
  */
-@JsonPropertyOrder({ ForgotPasswordPinDto.JSON_PROPERTY_PIN })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ForgotPasswordPinDto {
     public static final String JSON_PROPERTY_PIN = "Pin";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String pin;
+    private @org.eclipse.jdt.annotation.NonNull String pin;
 
     public ForgotPasswordPinDto() {
     }
@@ -45,11 +40,9 @@ public class ForgotPasswordPinDto {
      * 
      * @return pin
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PIN, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getPin() {
+    public @org.eclipse.jdt.annotation.NonNull String getPin() {
         return pin;
     }
 
@@ -59,9 +52,6 @@ public class ForgotPasswordPinDto {
         this.pin = pin;
     }
 
-    /**
-     * Return true if this ForgotPasswordPinDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -130,8 +120,13 @@ public class ForgotPasswordPinDto {
 
         // add `Pin` to the URL query string
         if (getPin() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPin%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPin()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPin%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPin()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

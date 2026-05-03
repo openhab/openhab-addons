@@ -12,57 +12,37 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class MediaAttachment.
  */
-@JsonPropertyOrder({ MediaAttachment.JSON_PROPERTY_CODEC, MediaAttachment.JSON_PROPERTY_CODEC_TAG,
-        MediaAttachment.JSON_PROPERTY_COMMENT, MediaAttachment.JSON_PROPERTY_INDEX,
-        MediaAttachment.JSON_PROPERTY_FILE_NAME, MediaAttachment.JSON_PROPERTY_MIME_TYPE,
-        MediaAttachment.JSON_PROPERTY_DELIVERY_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaAttachment {
     public static final String JSON_PROPERTY_CODEC = "Codec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String codec;
+    private @org.eclipse.jdt.annotation.Nullable String codec;
 
     public static final String JSON_PROPERTY_CODEC_TAG = "CodecTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String codecTag;
+    private @org.eclipse.jdt.annotation.Nullable String codecTag;
 
     public static final String JSON_PROPERTY_COMMENT = "Comment";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String comment;
+    private @org.eclipse.jdt.annotation.Nullable String comment;
 
     public static final String JSON_PROPERTY_INDEX = "Index";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer index;
+    private @org.eclipse.jdt.annotation.Nullable Integer index;
 
     public static final String JSON_PROPERTY_FILE_NAME = "FileName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String fileName;
+    private @org.eclipse.jdt.annotation.Nullable String fileName;
 
     public static final String JSON_PROPERTY_MIME_TYPE = "MimeType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String mimeType;
+    private @org.eclipse.jdt.annotation.Nullable String mimeType;
 
     public static final String JSON_PROPERTY_DELIVERY_URL = "DeliveryUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deliveryUrl;
+    private @org.eclipse.jdt.annotation.Nullable String deliveryUrl;
 
     public MediaAttachment() {
     }
@@ -77,10 +57,8 @@ public class MediaAttachment {
      * 
      * @return codec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC)
-    public String getCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getCodec() {
         return codec;
     }
 
@@ -99,10 +77,8 @@ public class MediaAttachment {
      * 
      * @return codecTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CODEC_TAG)
-    public String getCodecTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getCodecTag() {
         return codecTag;
     }
 
@@ -121,10 +97,8 @@ public class MediaAttachment {
      * 
      * @return comment
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMENT)
-    public String getComment() {
+    public @org.eclipse.jdt.annotation.Nullable String getComment() {
         return comment;
     }
 
@@ -143,10 +117,8 @@ public class MediaAttachment {
      * 
      * @return index
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX)
-    public Integer getIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getIndex() {
         return index;
     }
 
@@ -165,10 +137,8 @@ public class MediaAttachment {
      * 
      * @return fileName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FILE_NAME)
-    public String getFileName() {
+    public @org.eclipse.jdt.annotation.Nullable String getFileName() {
         return fileName;
     }
 
@@ -187,10 +157,8 @@ public class MediaAttachment {
      * 
      * @return mimeType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MIME_TYPE)
-    public String getMimeType() {
+    public @org.eclipse.jdt.annotation.Nullable String getMimeType() {
         return mimeType;
     }
 
@@ -209,10 +177,8 @@ public class MediaAttachment {
      * 
      * @return deliveryUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DELIVERY_URL)
-    public String getDeliveryUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeliveryUrl() {
         return deliveryUrl;
     }
 
@@ -221,9 +187,6 @@ public class MediaAttachment {
         this.deliveryUrl = deliveryUrl;
     }
 
-    /**
-     * Return true if this MediaAttachment object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -304,44 +267,79 @@ public class MediaAttachment {
 
         // add `Codec` to the URL query string
         if (getCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CodecTag` to the URL query string
         if (getCodecTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCodecTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCodecTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCodecTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getComment()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Index` to the URL query string
         if (getIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `FileName` to the URL query string
         if (getFileName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFileName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFileName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFileName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MimeType` to the URL query string
         if (getMimeType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMimeType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMimeType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMimeType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMimeType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeliveryUrl` to the URL query string
         if (getDeliveryUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeliveryUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeliveryUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeliveryUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

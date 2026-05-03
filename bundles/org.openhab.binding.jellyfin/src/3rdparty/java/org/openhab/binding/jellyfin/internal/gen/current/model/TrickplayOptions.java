@@ -12,87 +12,54 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class TrickplayOptions.
  */
-@JsonPropertyOrder({ TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ACCELERATION,
-        TrickplayOptions.JSON_PROPERTY_ENABLE_HW_ENCODING,
-        TrickplayOptions.JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION, TrickplayOptions.JSON_PROPERTY_SCAN_BEHAVIOR,
-        TrickplayOptions.JSON_PROPERTY_PROCESS_PRIORITY, TrickplayOptions.JSON_PROPERTY_INTERVAL,
-        TrickplayOptions.JSON_PROPERTY_WIDTH_RESOLUTIONS, TrickplayOptions.JSON_PROPERTY_TILE_WIDTH,
-        TrickplayOptions.JSON_PROPERTY_TILE_HEIGHT, TrickplayOptions.JSON_PROPERTY_QSCALE,
-        TrickplayOptions.JSON_PROPERTY_JPEG_QUALITY, TrickplayOptions.JSON_PROPERTY_PROCESS_THREADS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TrickplayOptions {
     public static final String JSON_PROPERTY_ENABLE_HW_ACCELERATION = "EnableHwAcceleration";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableHwAcceleration;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableHwAcceleration;
 
     public static final String JSON_PROPERTY_ENABLE_HW_ENCODING = "EnableHwEncoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableHwEncoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableHwEncoding;
 
     public static final String JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION = "EnableKeyFrameOnlyExtraction";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableKeyFrameOnlyExtraction;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableKeyFrameOnlyExtraction;
 
     public static final String JSON_PROPERTY_SCAN_BEHAVIOR = "ScanBehavior";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TrickplayScanBehavior scanBehavior;
+    private @org.eclipse.jdt.annotation.Nullable TrickplayScanBehavior scanBehavior;
 
     public static final String JSON_PROPERTY_PROCESS_PRIORITY = "ProcessPriority";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ProcessPriorityClass processPriority;
+    private @org.eclipse.jdt.annotation.Nullable ProcessPriorityClass processPriority;
 
     public static final String JSON_PROPERTY_INTERVAL = "Interval";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer interval;
+    private @org.eclipse.jdt.annotation.Nullable Integer interval;
 
     public static final String JSON_PROPERTY_WIDTH_RESOLUTIONS = "WidthResolutions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<Integer> widthResolutions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<Integer> widthResolutions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TILE_WIDTH = "TileWidth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer tileWidth;
+    private @org.eclipse.jdt.annotation.Nullable Integer tileWidth;
 
     public static final String JSON_PROPERTY_TILE_HEIGHT = "TileHeight";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer tileHeight;
+    private @org.eclipse.jdt.annotation.Nullable Integer tileHeight;
 
     public static final String JSON_PROPERTY_QSCALE = "Qscale";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer qscale;
+    private @org.eclipse.jdt.annotation.Nullable Integer qscale;
 
     public static final String JSON_PROPERTY_JPEG_QUALITY = "JpegQuality";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer jpegQuality;
+    private @org.eclipse.jdt.annotation.Nullable Integer jpegQuality;
 
     public static final String JSON_PROPERTY_PROCESS_THREADS = "ProcessThreads";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer processThreads;
+    private @org.eclipse.jdt.annotation.Nullable Integer processThreads;
 
     public TrickplayOptions() {
     }
@@ -107,10 +74,8 @@ public class TrickplayOptions {
      * 
      * @return enableHwAcceleration
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ACCELERATION)
-    public Boolean getEnableHwAcceleration() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableHwAcceleration() {
         return enableHwAcceleration;
     }
 
@@ -129,10 +94,8 @@ public class TrickplayOptions {
      * 
      * @return enableHwEncoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_HW_ENCODING)
-    public Boolean getEnableHwEncoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableHwEncoding() {
         return enableHwEncoding;
     }
 
@@ -153,10 +116,8 @@ public class TrickplayOptions {
      * 
      * @return enableKeyFrameOnlyExtraction
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_KEY_FRAME_ONLY_EXTRACTION)
-    public Boolean getEnableKeyFrameOnlyExtraction() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableKeyFrameOnlyExtraction() {
         return enableKeyFrameOnlyExtraction;
     }
 
@@ -176,10 +137,8 @@ public class TrickplayOptions {
      * 
      * @return scanBehavior
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SCAN_BEHAVIOR)
-    public TrickplayScanBehavior getScanBehavior() {
+    public @org.eclipse.jdt.annotation.Nullable TrickplayScanBehavior getScanBehavior() {
         return scanBehavior;
     }
 
@@ -198,10 +157,8 @@ public class TrickplayOptions {
      * 
      * @return processPriority
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROCESS_PRIORITY)
-    public ProcessPriorityClass getProcessPriority() {
+    public @org.eclipse.jdt.annotation.Nullable ProcessPriorityClass getProcessPriority() {
         return processPriority;
     }
 
@@ -220,10 +177,8 @@ public class TrickplayOptions {
      * 
      * @return interval
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERVAL)
-    public Integer getInterval() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getInterval() {
         return interval;
     }
 
@@ -250,10 +205,8 @@ public class TrickplayOptions {
      * 
      * @return widthResolutions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WIDTH_RESOLUTIONS)
-    public List<Integer> getWidthResolutions() {
+    public @org.eclipse.jdt.annotation.Nullable List<Integer> getWidthResolutions() {
         return widthResolutions;
     }
 
@@ -272,10 +225,8 @@ public class TrickplayOptions {
      * 
      * @return tileWidth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TILE_WIDTH)
-    public Integer getTileWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTileWidth() {
         return tileWidth;
     }
 
@@ -294,10 +245,8 @@ public class TrickplayOptions {
      * 
      * @return tileHeight
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TILE_HEIGHT)
-    public Integer getTileHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTileHeight() {
         return tileHeight;
     }
 
@@ -316,10 +265,8 @@ public class TrickplayOptions {
      * 
      * @return qscale
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_QSCALE)
-    public Integer getQscale() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getQscale() {
         return qscale;
     }
 
@@ -338,10 +285,8 @@ public class TrickplayOptions {
      * 
      * @return jpegQuality
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_JPEG_QUALITY)
-    public Integer getJpegQuality() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getJpegQuality() {
         return jpegQuality;
     }
 
@@ -360,10 +305,8 @@ public class TrickplayOptions {
      * 
      * @return processThreads
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROCESS_THREADS)
-    public Integer getProcessThreads() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getProcessThreads() {
         return processThreads;
     }
 
@@ -372,9 +315,6 @@ public class TrickplayOptions {
         this.processThreads = processThreads;
     }
 
-    /**
-     * Return true if this TrickplayOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -468,78 +408,142 @@ public class TrickplayOptions {
 
         // add `EnableHwAcceleration` to the URL query string
         if (getEnableHwAcceleration() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHwAcceleration%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwAcceleration()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableHwAcceleration%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableHwAcceleration()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableHwEncoding` to the URL query string
         if (getEnableHwEncoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHwEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHwEncoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHwEncoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableHwEncoding()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableKeyFrameOnlyExtraction` to the URL query string
         if (getEnableKeyFrameOnlyExtraction() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableKeyFrameOnlyExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableKeyFrameOnlyExtraction()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableKeyFrameOnlyExtraction%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableKeyFrameOnlyExtraction()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ScanBehavior` to the URL query string
         if (getScanBehavior() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sScanBehavior%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScanBehavior()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sScanBehavior%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getScanBehavior()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProcessPriority` to the URL query string
         if (getProcessPriority() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProcessPriority%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessPriority()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProcessPriority%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProcessPriority()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Interval` to the URL query string
         if (getInterval() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInterval%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInterval()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sInterval%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInterval()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `WidthResolutions` to the URL query string
         if (getWidthResolutions() != null) {
             for (int i = 0; i < getWidthResolutions().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sWidthResolutions%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getWidthResolutions().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sWidthResolutions%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getWidthResolutions().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `TileWidth` to the URL query string
         if (getTileWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTileWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTileWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTileWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TileHeight` to the URL query string
         if (getTileHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTileHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTileHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTileHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTileHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Qscale` to the URL query string
         if (getQscale() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sQscale%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getQscale()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sQscale%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getQscale()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `JpegQuality` to the URL query string
         if (getJpegQuality() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sJpegQuality%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getJpegQuality()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sJpegQuality%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getJpegQuality()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProcessThreads` to the URL query string
         if (getProcessThreads() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProcessThreads%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProcessThreads()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProcessThreads%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProcessThreads()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

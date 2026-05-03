@@ -12,25 +12,20 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class JoinGroupRequestDto.
  */
-@JsonPropertyOrder({ JoinGroupRequestDto.JSON_PROPERTY_GROUP_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class JoinGroupRequestDto {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID groupId;
+    private @org.eclipse.jdt.annotation.Nullable UUID groupId;
 
     public JoinGroupRequestDto() {
     }
@@ -45,10 +40,8 @@ public class JoinGroupRequestDto {
      * 
      * @return groupId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
-    public UUID getGroupId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGroupId() {
         return groupId;
     }
 
@@ -57,9 +50,6 @@ public class JoinGroupRequestDto {
         this.groupId = groupId;
     }
 
-    /**
-     * Return true if this JoinGroupRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -128,8 +118,13 @@ public class JoinGroupRequestDto {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGroupId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

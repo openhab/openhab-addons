@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Update library options dto.
  */
-@JsonPropertyOrder({ UpdateMediaPathRequestDto.JSON_PROPERTY_NAME, UpdateMediaPathRequestDto.JSON_PROPERTY_PATH_INFO })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateMediaPathRequestDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.NonNull String name;
 
     public static final String JSON_PROPERTY_PATH_INFO = "PathInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaPathInfo pathInfo;
+    private @org.eclipse.jdt.annotation.NonNull MediaPathInfo pathInfo;
 
     public UpdateMediaPathRequestDto() {
     }
@@ -50,11 +43,9 @@ public class UpdateMediaPathRequestDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.NonNull String getName() {
         return name;
     }
 
@@ -74,11 +65,9 @@ public class UpdateMediaPathRequestDto {
      * 
      * @return pathInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH_INFO, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public MediaPathInfo getPathInfo() {
+    public @org.eclipse.jdt.annotation.NonNull MediaPathInfo getPathInfo() {
         return pathInfo;
     }
 
@@ -88,9 +77,6 @@ public class UpdateMediaPathRequestDto {
         this.pathInfo = pathInfo;
     }
 
-    /**
-     * Return true if this UpdateMediaPathRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -161,8 +147,13 @@ public class UpdateMediaPathRequestDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PathInfo` to the URL query string

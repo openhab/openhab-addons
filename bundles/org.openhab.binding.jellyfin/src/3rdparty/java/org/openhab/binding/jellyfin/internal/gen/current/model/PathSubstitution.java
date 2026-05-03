@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Model.Configuration.PathSubstitution.
  */
-@JsonPropertyOrder({ PathSubstitution.JSON_PROPERTY_FROM, PathSubstitution.JSON_PROPERTY_TO })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PathSubstitution {
     public static final String JSON_PROPERTY_FROM = "From";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String from;
+    private @org.eclipse.jdt.annotation.Nullable String from;
 
     public static final String JSON_PROPERTY_TO = "To";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String to;
+    private @org.eclipse.jdt.annotation.Nullable String to;
 
     public PathSubstitution() {
     }
@@ -49,10 +42,8 @@ public class PathSubstitution {
      * 
      * @return from
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FROM)
-    public String getFrom() {
+    public @org.eclipse.jdt.annotation.Nullable String getFrom() {
         return from;
     }
 
@@ -71,10 +62,8 @@ public class PathSubstitution {
      * 
      * @return to
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TO)
-    public String getTo() {
+    public @org.eclipse.jdt.annotation.Nullable String getTo() {
         return to;
     }
 
@@ -83,9 +72,6 @@ public class PathSubstitution {
         this.to = to;
     }
 
-    /**
-     * Return true if this PathSubstitution object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -155,14 +141,24 @@ public class PathSubstitution {
 
         // add `From` to the URL query string
         if (getFrom() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFrom%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFrom()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFrom%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFrom()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `To` to the URL query string
         if (getTo() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTo()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTo%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTo()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

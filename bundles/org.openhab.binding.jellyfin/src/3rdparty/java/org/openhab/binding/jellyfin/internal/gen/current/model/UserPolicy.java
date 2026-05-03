@@ -12,265 +12,152 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * UserPolicy
  */
-@JsonPropertyOrder({ UserPolicy.JSON_PROPERTY_IS_ADMINISTRATOR, UserPolicy.JSON_PROPERTY_IS_HIDDEN,
-        UserPolicy.JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT, UserPolicy.JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT,
-        UserPolicy.JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT, UserPolicy.JSON_PROPERTY_IS_DISABLED,
-        UserPolicy.JSON_PROPERTY_MAX_PARENTAL_RATING, UserPolicy.JSON_PROPERTY_MAX_PARENTAL_SUB_RATING,
-        UserPolicy.JSON_PROPERTY_BLOCKED_TAGS, UserPolicy.JSON_PROPERTY_ALLOWED_TAGS,
-        UserPolicy.JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS, UserPolicy.JSON_PROPERTY_ACCESS_SCHEDULES,
-        UserPolicy.JSON_PROPERTY_BLOCK_UNRATED_ITEMS, UserPolicy.JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS,
-        UserPolicy.JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL, UserPolicy.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
-        UserPolicy.JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT, UserPolicy.JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS,
-        UserPolicy.JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK, UserPolicy.JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING,
-        UserPolicy.JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING, UserPolicy.JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING,
-        UserPolicy.JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING, UserPolicy.JSON_PROPERTY_ENABLE_CONTENT_DELETION,
-        UserPolicy.JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS,
-        UserPolicy.JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING, UserPolicy.JSON_PROPERTY_ENABLE_SYNC_TRANSCODING,
-        UserPolicy.JSON_PROPERTY_ENABLE_MEDIA_CONVERSION, UserPolicy.JSON_PROPERTY_ENABLED_DEVICES,
-        UserPolicy.JSON_PROPERTY_ENABLE_ALL_DEVICES, UserPolicy.JSON_PROPERTY_ENABLED_CHANNELS,
-        UserPolicy.JSON_PROPERTY_ENABLE_ALL_CHANNELS, UserPolicy.JSON_PROPERTY_ENABLED_FOLDERS,
-        UserPolicy.JSON_PROPERTY_ENABLE_ALL_FOLDERS, UserPolicy.JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT,
-        UserPolicy.JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT, UserPolicy.JSON_PROPERTY_MAX_ACTIVE_SESSIONS,
-        UserPolicy.JSON_PROPERTY_ENABLE_PUBLIC_SHARING, UserPolicy.JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS,
-        UserPolicy.JSON_PROPERTY_BLOCKED_CHANNELS, UserPolicy.JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT,
-        UserPolicy.JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID, UserPolicy.JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID,
-        UserPolicy.JSON_PROPERTY_SYNC_PLAY_ACCESS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserPolicy {
     public static final String JSON_PROPERTY_IS_ADMINISTRATOR = "IsAdministrator";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isAdministrator;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isAdministrator;
 
     public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isHidden;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isHidden;
 
     public static final String JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT = "EnableCollectionManagement";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableCollectionManagement = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableCollectionManagement = false;
 
     public static final String JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT = "EnableSubtitleManagement";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSubtitleManagement = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSubtitleManagement = false;
 
     public static final String JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT = "EnableLyricManagement";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableLyricManagement = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableLyricManagement = false;
 
     public static final String JSON_PROPERTY_IS_DISABLED = "IsDisabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isDisabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isDisabled;
 
     public static final String JSON_PROPERTY_MAX_PARENTAL_RATING = "MaxParentalRating";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxParentalRating;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxParentalRating;
 
     public static final String JSON_PROPERTY_MAX_PARENTAL_SUB_RATING = "MaxParentalSubRating";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxParentalSubRating;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxParentalSubRating;
 
     public static final String JSON_PROPERTY_BLOCKED_TAGS = "BlockedTags";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> blockedTags;
+    private @org.eclipse.jdt.annotation.Nullable List<String> blockedTags;
 
     public static final String JSON_PROPERTY_ALLOWED_TAGS = "AllowedTags";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> allowedTags;
+    private @org.eclipse.jdt.annotation.Nullable List<String> allowedTags;
 
     public static final String JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS = "EnableUserPreferenceAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableUserPreferenceAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableUserPreferenceAccess;
 
     public static final String JSON_PROPERTY_ACCESS_SCHEDULES = "AccessSchedules";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<AccessSchedule> accessSchedules;
+    private @org.eclipse.jdt.annotation.Nullable List<AccessSchedule> accessSchedules;
 
     public static final String JSON_PROPERTY_BLOCK_UNRATED_ITEMS = "BlockUnratedItems";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UnratedItem> blockUnratedItems;
+    private @org.eclipse.jdt.annotation.Nullable List<UnratedItem> blockUnratedItems;
 
     public static final String JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS = "EnableRemoteControlOfOtherUsers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRemoteControlOfOtherUsers;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRemoteControlOfOtherUsers;
 
     public static final String JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL = "EnableSharedDeviceControl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSharedDeviceControl;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSharedDeviceControl;
 
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRemoteAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRemoteAccess;
 
     public static final String JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT = "EnableLiveTvManagement";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableLiveTvManagement;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableLiveTvManagement;
 
     public static final String JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS = "EnableLiveTvAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableLiveTvAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableLiveTvAccess;
 
     public static final String JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK = "EnableMediaPlayback";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableMediaPlayback;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableMediaPlayback;
 
     public static final String JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING = "EnableAudioPlaybackTranscoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAudioPlaybackTranscoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAudioPlaybackTranscoding;
 
     public static final String JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING = "EnableVideoPlaybackTranscoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableVideoPlaybackTranscoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableVideoPlaybackTranscoding;
 
     public static final String JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING = "EnablePlaybackRemuxing";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enablePlaybackRemuxing;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enablePlaybackRemuxing;
 
     public static final String JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING = "ForceRemoteSourceTranscoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean forceRemoteSourceTranscoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean forceRemoteSourceTranscoding;
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DELETION = "EnableContentDeletion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableContentDeletion;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableContentDeletion;
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS = "EnableContentDeletionFromFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> enableContentDeletionFromFolders;
+    private @org.eclipse.jdt.annotation.Nullable List<String> enableContentDeletionFromFolders;
 
     public static final String JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING = "EnableContentDownloading";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableContentDownloading;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableContentDownloading;
 
     public static final String JSON_PROPERTY_ENABLE_SYNC_TRANSCODING = "EnableSyncTranscoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSyncTranscoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSyncTranscoding;
 
     public static final String JSON_PROPERTY_ENABLE_MEDIA_CONVERSION = "EnableMediaConversion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableMediaConversion;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableMediaConversion;
 
     public static final String JSON_PROPERTY_ENABLED_DEVICES = "EnabledDevices";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> enabledDevices;
+    private @org.eclipse.jdt.annotation.Nullable List<String> enabledDevices;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_DEVICES = "EnableAllDevices";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAllDevices;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAllDevices;
 
     public static final String JSON_PROPERTY_ENABLED_CHANNELS = "EnabledChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> enabledChannels;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> enabledChannels;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_CHANNELS = "EnableAllChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAllChannels;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAllChannels;
 
     public static final String JSON_PROPERTY_ENABLED_FOLDERS = "EnabledFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> enabledFolders;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> enabledFolders;
 
     public static final String JSON_PROPERTY_ENABLE_ALL_FOLDERS = "EnableAllFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAllFolders;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAllFolders;
 
     public static final String JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT = "InvalidLoginAttemptCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer invalidLoginAttemptCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer invalidLoginAttemptCount;
 
     public static final String JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT = "LoginAttemptsBeforeLockout";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer loginAttemptsBeforeLockout;
+    private @org.eclipse.jdt.annotation.Nullable Integer loginAttemptsBeforeLockout;
 
     public static final String JSON_PROPERTY_MAX_ACTIVE_SESSIONS = "MaxActiveSessions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxActiveSessions;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxActiveSessions;
 
     public static final String JSON_PROPERTY_ENABLE_PUBLIC_SHARING = "EnablePublicSharing";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enablePublicSharing;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enablePublicSharing;
 
     public static final String JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS = "BlockedMediaFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> blockedMediaFolders;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> blockedMediaFolders;
 
     public static final String JSON_PROPERTY_BLOCKED_CHANNELS = "BlockedChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> blockedChannels;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> blockedChannels;
 
     public static final String JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT = "RemoteClientBitrateLimit";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer remoteClientBitrateLimit;
+    private @org.eclipse.jdt.annotation.Nullable Integer remoteClientBitrateLimit;
 
     public static final String JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID = "AuthenticationProviderId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String authenticationProviderId;
+    private @org.eclipse.jdt.annotation.NonNull String authenticationProviderId;
 
     public static final String JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID = "PasswordResetProviderId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String passwordResetProviderId;
+    private @org.eclipse.jdt.annotation.NonNull String passwordResetProviderId;
 
     public static final String JSON_PROPERTY_SYNC_PLAY_ACCESS = "SyncPlayAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SyncPlayUserAccessType syncPlayAccess;
+    private @org.eclipse.jdt.annotation.Nullable SyncPlayUserAccessType syncPlayAccess;
 
     public UserPolicy() {
     }
@@ -285,10 +172,8 @@ public class UserPolicy {
      * 
      * @return isAdministrator
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_ADMINISTRATOR)
-    public Boolean getIsAdministrator() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsAdministrator() {
         return isAdministrator;
     }
 
@@ -307,10 +192,8 @@ public class UserPolicy {
      * 
      * @return isHidden
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN)
-    public Boolean getIsHidden() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsHidden() {
         return isHidden;
     }
 
@@ -330,10 +213,8 @@ public class UserPolicy {
      * 
      * @return enableCollectionManagement
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_COLLECTION_MANAGEMENT)
-    public Boolean getEnableCollectionManagement() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableCollectionManagement() {
         return enableCollectionManagement;
     }
 
@@ -352,10 +233,8 @@ public class UserPolicy {
      * 
      * @return enableSubtitleManagement
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_MANAGEMENT)
-    public Boolean getEnableSubtitleManagement() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSubtitleManagement() {
         return enableSubtitleManagement;
     }
 
@@ -374,10 +253,8 @@ public class UserPolicy {
      * 
      * @return enableLyricManagement
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LYRIC_MANAGEMENT)
-    public Boolean getEnableLyricManagement() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableLyricManagement() {
         return enableLyricManagement;
     }
 
@@ -396,10 +273,8 @@ public class UserPolicy {
      * 
      * @return isDisabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_DISABLED)
-    public Boolean getIsDisabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsDisabled() {
         return isDisabled;
     }
 
@@ -418,10 +293,8 @@ public class UserPolicy {
      * 
      * @return maxParentalRating
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_RATING)
-    public Integer getMaxParentalRating() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxParentalRating() {
         return maxParentalRating;
     }
 
@@ -440,10 +313,8 @@ public class UserPolicy {
      * 
      * @return maxParentalSubRating
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_PARENTAL_SUB_RATING)
-    public Integer getMaxParentalSubRating() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxParentalSubRating() {
         return maxParentalSubRating;
     }
 
@@ -470,10 +341,8 @@ public class UserPolicy {
      * 
      * @return blockedTags
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BLOCKED_TAGS)
-    public List<String> getBlockedTags() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getBlockedTags() {
         return blockedTags;
     }
 
@@ -500,10 +369,8 @@ public class UserPolicy {
      * 
      * @return allowedTags
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALLOWED_TAGS)
-    public List<String> getAllowedTags() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getAllowedTags() {
         return allowedTags;
     }
 
@@ -523,10 +390,8 @@ public class UserPolicy {
      * 
      * @return enableUserPreferenceAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_PREFERENCE_ACCESS)
-    public Boolean getEnableUserPreferenceAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableUserPreferenceAccess() {
         return enableUserPreferenceAccess;
     }
 
@@ -553,10 +418,8 @@ public class UserPolicy {
      * 
      * @return accessSchedules
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ACCESS_SCHEDULES)
-    public List<AccessSchedule> getAccessSchedules() {
+    public @org.eclipse.jdt.annotation.Nullable List<AccessSchedule> getAccessSchedules() {
         return accessSchedules;
     }
 
@@ -583,10 +446,8 @@ public class UserPolicy {
      * 
      * @return blockUnratedItems
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BLOCK_UNRATED_ITEMS)
-    public List<UnratedItem> getBlockUnratedItems() {
+    public @org.eclipse.jdt.annotation.Nullable List<UnratedItem> getBlockUnratedItems() {
         return blockUnratedItems;
     }
 
@@ -606,10 +467,8 @@ public class UserPolicy {
      * 
      * @return enableRemoteControlOfOtherUsers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_CONTROL_OF_OTHER_USERS)
-    public Boolean getEnableRemoteControlOfOtherUsers() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRemoteControlOfOtherUsers() {
         return enableRemoteControlOfOtherUsers;
     }
 
@@ -630,10 +489,8 @@ public class UserPolicy {
      * 
      * @return enableSharedDeviceControl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SHARED_DEVICE_CONTROL)
-    public Boolean getEnableSharedDeviceControl() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSharedDeviceControl() {
         return enableSharedDeviceControl;
     }
 
@@ -652,10 +509,8 @@ public class UserPolicy {
      * 
      * @return enableRemoteAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
-    public Boolean getEnableRemoteAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
@@ -674,10 +529,8 @@ public class UserPolicy {
      * 
      * @return enableLiveTvManagement
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_MANAGEMENT)
-    public Boolean getEnableLiveTvManagement() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableLiveTvManagement() {
         return enableLiveTvManagement;
     }
 
@@ -696,10 +549,8 @@ public class UserPolicy {
      * 
      * @return enableLiveTvAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LIVE_TV_ACCESS)
-    public Boolean getEnableLiveTvAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableLiveTvAccess() {
         return enableLiveTvAccess;
     }
 
@@ -718,10 +569,8 @@ public class UserPolicy {
      * 
      * @return enableMediaPlayback
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_PLAYBACK)
-    public Boolean getEnableMediaPlayback() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableMediaPlayback() {
         return enableMediaPlayback;
     }
 
@@ -741,10 +590,8 @@ public class UserPolicy {
      * 
      * @return enableAudioPlaybackTranscoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_PLAYBACK_TRANSCODING)
-    public Boolean getEnableAudioPlaybackTranscoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAudioPlaybackTranscoding() {
         return enableAudioPlaybackTranscoding;
     }
 
@@ -765,10 +612,8 @@ public class UserPolicy {
      * 
      * @return enableVideoPlaybackTranscoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_PLAYBACK_TRANSCODING)
-    public Boolean getEnableVideoPlaybackTranscoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableVideoPlaybackTranscoding() {
         return enableVideoPlaybackTranscoding;
     }
 
@@ -788,10 +633,8 @@ public class UserPolicy {
      * 
      * @return enablePlaybackRemuxing
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_PLAYBACK_REMUXING)
-    public Boolean getEnablePlaybackRemuxing() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnablePlaybackRemuxing() {
         return enablePlaybackRemuxing;
     }
 
@@ -811,10 +654,8 @@ public class UserPolicy {
      * 
      * @return forceRemoteSourceTranscoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FORCE_REMOTE_SOURCE_TRANSCODING)
-    public Boolean getForceRemoteSourceTranscoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getForceRemoteSourceTranscoding() {
         return forceRemoteSourceTranscoding;
     }
 
@@ -834,10 +675,8 @@ public class UserPolicy {
      * 
      * @return enableContentDeletion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION)
-    public Boolean getEnableContentDeletion() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableContentDeletion() {
         return enableContentDeletion;
     }
 
@@ -865,10 +704,8 @@ public class UserPolicy {
      * 
      * @return enableContentDeletionFromFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DELETION_FROM_FOLDERS)
-    public List<String> getEnableContentDeletionFromFolders() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getEnableContentDeletionFromFolders() {
         return enableContentDeletionFromFolders;
     }
 
@@ -888,10 +725,8 @@ public class UserPolicy {
      * 
      * @return enableContentDownloading
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_CONTENT_DOWNLOADING)
-    public Boolean getEnableContentDownloading() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableContentDownloading() {
         return enableContentDownloading;
     }
 
@@ -910,10 +745,8 @@ public class UserPolicy {
      * 
      * @return enableSyncTranscoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SYNC_TRANSCODING)
-    public Boolean getEnableSyncTranscoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSyncTranscoding() {
         return enableSyncTranscoding;
     }
 
@@ -932,10 +765,8 @@ public class UserPolicy {
      * 
      * @return enableMediaConversion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_MEDIA_CONVERSION)
-    public Boolean getEnableMediaConversion() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableMediaConversion() {
         return enableMediaConversion;
     }
 
@@ -962,10 +793,8 @@ public class UserPolicy {
      * 
      * @return enabledDevices
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED_DEVICES)
-    public List<String> getEnabledDevices() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getEnabledDevices() {
         return enabledDevices;
     }
 
@@ -984,10 +813,8 @@ public class UserPolicy {
      * 
      * @return enableAllDevices
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_DEVICES)
-    public Boolean getEnableAllDevices() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAllDevices() {
         return enableAllDevices;
     }
 
@@ -1014,10 +841,8 @@ public class UserPolicy {
      * 
      * @return enabledChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED_CHANNELS)
-    public List<UUID> getEnabledChannels() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getEnabledChannels() {
         return enabledChannels;
     }
 
@@ -1036,10 +861,8 @@ public class UserPolicy {
      * 
      * @return enableAllChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_CHANNELS)
-    public Boolean getEnableAllChannels() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAllChannels() {
         return enableAllChannels;
     }
 
@@ -1066,10 +889,8 @@ public class UserPolicy {
      * 
      * @return enabledFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED_FOLDERS)
-    public List<UUID> getEnabledFolders() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getEnabledFolders() {
         return enabledFolders;
     }
 
@@ -1088,10 +909,8 @@ public class UserPolicy {
      * 
      * @return enableAllFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ALL_FOLDERS)
-    public Boolean getEnableAllFolders() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAllFolders() {
         return enableAllFolders;
     }
 
@@ -1110,10 +929,8 @@ public class UserPolicy {
      * 
      * @return invalidLoginAttemptCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INVALID_LOGIN_ATTEMPT_COUNT)
-    public Integer getInvalidLoginAttemptCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getInvalidLoginAttemptCount() {
         return invalidLoginAttemptCount;
     }
 
@@ -1133,10 +950,8 @@ public class UserPolicy {
      * 
      * @return loginAttemptsBeforeLockout
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOGIN_ATTEMPTS_BEFORE_LOCKOUT)
-    public Integer getLoginAttemptsBeforeLockout() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getLoginAttemptsBeforeLockout() {
         return loginAttemptsBeforeLockout;
     }
 
@@ -1155,10 +970,8 @@ public class UserPolicy {
      * 
      * @return maxActiveSessions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_ACTIVE_SESSIONS)
-    public Integer getMaxActiveSessions() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxActiveSessions() {
         return maxActiveSessions;
     }
 
@@ -1177,10 +990,8 @@ public class UserPolicy {
      * 
      * @return enablePublicSharing
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLIC_SHARING)
-    public Boolean getEnablePublicSharing() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnablePublicSharing() {
         return enablePublicSharing;
     }
 
@@ -1207,10 +1018,8 @@ public class UserPolicy {
      * 
      * @return blockedMediaFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BLOCKED_MEDIA_FOLDERS)
-    public List<UUID> getBlockedMediaFolders() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getBlockedMediaFolders() {
         return blockedMediaFolders;
     }
 
@@ -1237,10 +1046,8 @@ public class UserPolicy {
      * 
      * @return blockedChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BLOCKED_CHANNELS)
-    public List<UUID> getBlockedChannels() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getBlockedChannels() {
         return blockedChannels;
     }
 
@@ -1259,10 +1066,8 @@ public class UserPolicy {
      * 
      * @return remoteClientBitrateLimit
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMOTE_CLIENT_BITRATE_LIMIT)
-    public Integer getRemoteClientBitrateLimit() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getRemoteClientBitrateLimit() {
         return remoteClientBitrateLimit;
     }
 
@@ -1281,11 +1086,9 @@ public class UserPolicy {
      * 
      * @return authenticationProviderId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTHENTICATION_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getAuthenticationProviderId() {
+    public @org.eclipse.jdt.annotation.NonNull String getAuthenticationProviderId() {
         return authenticationProviderId;
     }
 
@@ -1305,11 +1108,9 @@ public class UserPolicy {
      * 
      * @return passwordResetProviderId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PASSWORD_RESET_PROVIDER_ID, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getPasswordResetProviderId() {
+    public @org.eclipse.jdt.annotation.NonNull String getPasswordResetProviderId() {
         return passwordResetProviderId;
     }
 
@@ -1329,10 +1130,8 @@ public class UserPolicy {
      * 
      * @return syncPlayAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SYNC_PLAY_ACCESS)
-    public SyncPlayUserAccessType getSyncPlayAccess() {
+    public @org.eclipse.jdt.annotation.Nullable SyncPlayUserAccessType getSyncPlayAccess() {
         return syncPlayAccess;
     }
 
@@ -1341,9 +1140,6 @@ public class UserPolicy {
         this.syncPlayAccess = syncPlayAccess;
     }
 
-    /**
-     * Return true if this UserPolicy object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1513,76 +1309,140 @@ public class UserPolicy {
 
         // add `IsAdministrator` to the URL query string
         if (getIsAdministrator() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsAdministrator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAdministrator()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsAdministrator%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsAdministrator()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsHidden` to the URL query string
         if (getIsHidden() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsHidden%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsHidden()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableCollectionManagement` to the URL query string
         if (getEnableCollectionManagement() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableCollectionManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableCollectionManagement()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableCollectionManagement%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableCollectionManagement()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSubtitleManagement` to the URL query string
         if (getEnableSubtitleManagement() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitleManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleManagement()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitleManagement%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableSubtitleManagement()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableLyricManagement` to the URL query string
         if (getEnableLyricManagement() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLyricManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLyricManagement()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableLyricManagement%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableLyricManagement()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsDisabled` to the URL query string
         if (getIsDisabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsDisabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsDisabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsDisabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsDisabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxParentalRating` to the URL query string
         if (getMaxParentalRating() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxParentalRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxParentalRating()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxParentalRating%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxParentalRating()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxParentalSubRating` to the URL query string
         if (getMaxParentalSubRating() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxParentalSubRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxParentalSubRating()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sMaxParentalSubRating%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getMaxParentalSubRating()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BlockedTags` to the URL query string
         if (getBlockedTags() != null) {
             for (int i = 0; i < getBlockedTags().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBlockedTags().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedTags%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getBlockedTags().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `AllowedTags` to the URL query string
         if (getAllowedTags() != null) {
             for (int i = 0; i < getAllowedTags().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sAllowedTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getAllowedTags().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sAllowedTags%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getAllowedTags().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `EnableUserPreferenceAccess` to the URL query string
         if (getEnableUserPreferenceAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUserPreferenceAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserPreferenceAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUserPreferenceAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableUserPreferenceAccess()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AccessSchedules` to the URL query string
@@ -1602,197 +1462,353 @@ public class UserPolicy {
         if (getBlockUnratedItems() != null) {
             for (int i = 0; i < getBlockUnratedItems().size(); i++) {
                 if (getBlockUnratedItems().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sBlockUnratedItems%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockUnratedItems().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sBlockUnratedItems%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getBlockUnratedItems().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `EnableRemoteControlOfOtherUsers` to the URL query string
         if (getEnableRemoteControlOfOtherUsers() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteControlOfOtherUsers%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteControlOfOtherUsers()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteControlOfOtherUsers%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnableRemoteControlOfOtherUsers()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSharedDeviceControl` to the URL query string
         if (getEnableSharedDeviceControl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSharedDeviceControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSharedDeviceControl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSharedDeviceControl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableSharedDeviceControl()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableRemoteAccess` to the URL query string
         if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableRemoteAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableLiveTvManagement` to the URL query string
         if (getEnableLiveTvManagement() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLiveTvManagement%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvManagement()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLiveTvManagement%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableLiveTvManagement()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableLiveTvAccess` to the URL query string
         if (getEnableLiveTvAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLiveTvAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLiveTvAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLiveTvAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableLiveTvAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableMediaPlayback` to the URL query string
         if (getEnableMediaPlayback() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableMediaPlayback%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaPlayback()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableMediaPlayback%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableMediaPlayback()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableAudioPlaybackTranscoding` to the URL query string
         if (getEnableAudioPlaybackTranscoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioPlaybackTranscoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioPlaybackTranscoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAudioPlaybackTranscoding()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableVideoPlaybackTranscoding` to the URL query string
         if (getEnableVideoPlaybackTranscoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableVideoPlaybackTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableVideoPlaybackTranscoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableVideoPlaybackTranscoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableVideoPlaybackTranscoding()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnablePlaybackRemuxing` to the URL query string
         if (getEnablePlaybackRemuxing() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePlaybackRemuxing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePlaybackRemuxing()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePlaybackRemuxing%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnablePlaybackRemuxing()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ForceRemoteSourceTranscoding` to the URL query string
         if (getForceRemoteSourceTranscoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sForceRemoteSourceTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForceRemoteSourceTranscoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sForceRemoteSourceTranscoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getForceRemoteSourceTranscoding()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableContentDeletion` to the URL query string
         if (getEnableContentDeletion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableContentDeletion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletion()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableContentDeletion%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableContentDeletion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableContentDeletionFromFolders` to the URL query string
         if (getEnableContentDeletionFromFolders() != null) {
             for (int i = 0; i < getEnableContentDeletionFromFolders().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableContentDeletionFromFolders%s%s=%s", prefix,
-                        suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDeletionFromFolders().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnableContentDeletionFromFolders%s%s=%s", prefix,
+                            suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getEnableContentDeletionFromFolders().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `EnableContentDownloading` to the URL query string
         if (getEnableContentDownloading() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableContentDownloading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableContentDownloading()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableContentDownloading%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableContentDownloading()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSyncTranscoding` to the URL query string
         if (getEnableSyncTranscoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSyncTranscoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSyncTranscoding()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableSyncTranscoding%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableSyncTranscoding()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableMediaConversion` to the URL query string
         if (getEnableMediaConversion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableMediaConversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMediaConversion()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableMediaConversion%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableMediaConversion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnabledDevices` to the URL query string
         if (getEnabledDevices() != null) {
             for (int i = 0; i < getEnabledDevices().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledDevices%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledDevices().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledDevices%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getEnabledDevices().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `EnableAllDevices` to the URL query string
         if (getEnableAllDevices() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllDevices%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllDevices()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllDevices%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAllDevices()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnabledChannels` to the URL query string
         if (getEnabledChannels() != null) {
             for (int i = 0; i < getEnabledChannels().size(); i++) {
                 if (getEnabledChannels().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledChannels().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledChannels%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getEnabledChannels().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `EnableAllChannels` to the URL query string
         if (getEnableAllChannels() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllChannels()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllChannels%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAllChannels()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnabledFolders` to the URL query string
         if (getEnabledFolders() != null) {
             for (int i = 0; i < getEnabledFolders().size(); i++) {
                 if (getEnabledFolders().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnabledFolders().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledFolders%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getEnabledFolders().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `EnableAllFolders` to the URL query string
         if (getEnableAllFolders() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllFolders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAllFolders()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAllFolders%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAllFolders()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `InvalidLoginAttemptCount` to the URL query string
         if (getInvalidLoginAttemptCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInvalidLoginAttemptCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInvalidLoginAttemptCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sInvalidLoginAttemptCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInvalidLoginAttemptCount()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LoginAttemptsBeforeLockout` to the URL query string
         if (getLoginAttemptsBeforeLockout() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLoginAttemptsBeforeLockout%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginAttemptsBeforeLockout()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLoginAttemptsBeforeLockout%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLoginAttemptsBeforeLockout()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxActiveSessions` to the URL query string
         if (getMaxActiveSessions() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxActiveSessions%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxActiveSessions()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxActiveSessions%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxActiveSessions()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnablePublicSharing` to the URL query string
         if (getEnablePublicSharing() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePublicSharing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublicSharing()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePublicSharing%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnablePublicSharing()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BlockedMediaFolders` to the URL query string
         if (getBlockedMediaFolders() != null) {
             for (int i = 0; i < getBlockedMediaFolders().size(); i++) {
                 if (getBlockedMediaFolders().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedMediaFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedMediaFolders().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedMediaFolders%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getBlockedMediaFolders().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -1801,37 +1817,66 @@ public class UserPolicy {
         if (getBlockedChannels() != null) {
             for (int i = 0; i < getBlockedChannels().size(); i++) {
                 if (getBlockedChannels().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedChannels%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getBlockedChannels().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sBlockedChannels%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getBlockedChannels().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `RemoteClientBitrateLimit` to the URL query string
         if (getRemoteClientBitrateLimit() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRemoteClientBitrateLimit()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteClientBitrateLimit%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRemoteClientBitrateLimit()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AuthenticationProviderId` to the URL query string
         if (getAuthenticationProviderId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAuthenticationProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthenticationProviderId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAuthenticationProviderId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAuthenticationProviderId()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PasswordResetProviderId` to the URL query string
         if (getPasswordResetProviderId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPasswordResetProviderId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPasswordResetProviderId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPasswordResetProviderId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPasswordResetProviderId()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SyncPlayAccess` to the URL query string
         if (getSyncPlayAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSyncPlayAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSyncPlayAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSyncPlayAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSyncPlayAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

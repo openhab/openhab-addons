@@ -12,65 +12,43 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PlayQueueUpdate.
  */
-@JsonPropertyOrder({ PlayQueueUpdate.JSON_PROPERTY_REASON, PlayQueueUpdate.JSON_PROPERTY_LAST_UPDATE,
-        PlayQueueUpdate.JSON_PROPERTY_PLAYLIST, PlayQueueUpdate.JSON_PROPERTY_PLAYING_ITEM_INDEX,
-        PlayQueueUpdate.JSON_PROPERTY_START_POSITION_TICKS, PlayQueueUpdate.JSON_PROPERTY_IS_PLAYING,
-        PlayQueueUpdate.JSON_PROPERTY_SHUFFLE_MODE, PlayQueueUpdate.JSON_PROPERTY_REPEAT_MODE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlayQueueUpdate {
     public static final String JSON_PROPERTY_REASON = "Reason";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlayQueueUpdateReason reason;
+    private @org.eclipse.jdt.annotation.Nullable PlayQueueUpdateReason reason;
 
     public static final String JSON_PROPERTY_LAST_UPDATE = "LastUpdate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastUpdate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastUpdate;
 
     public static final String JSON_PROPERTY_PLAYLIST = "Playlist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SyncPlayQueueItem> playlist = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<SyncPlayQueueItem> playlist = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PLAYING_ITEM_INDEX = "PlayingItemIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer playingItemIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer playingItemIndex;
 
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long startPositionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long startPositionTicks;
 
     public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPlaying;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPlaying;
 
     public static final String JSON_PROPERTY_SHUFFLE_MODE = "ShuffleMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupShuffleMode shuffleMode;
+    private @org.eclipse.jdt.annotation.Nullable GroupShuffleMode shuffleMode;
 
     public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupRepeatMode repeatMode;
+    private @org.eclipse.jdt.annotation.Nullable GroupRepeatMode repeatMode;
 
     public PlayQueueUpdate() {
     }
@@ -85,10 +63,8 @@ public class PlayQueueUpdate {
      * 
      * @return reason
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REASON)
-    public PlayQueueUpdateReason getReason() {
+    public @org.eclipse.jdt.annotation.Nullable PlayQueueUpdateReason getReason() {
         return reason;
     }
 
@@ -107,10 +83,8 @@ public class PlayQueueUpdate {
      * 
      * @return lastUpdate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_UPDATE)
-    public OffsetDateTime getLastUpdate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastUpdate() {
         return lastUpdate;
     }
 
@@ -137,10 +111,8 @@ public class PlayQueueUpdate {
      * 
      * @return playlist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST)
-    public List<SyncPlayQueueItem> getPlaylist() {
+    public @org.eclipse.jdt.annotation.Nullable List<SyncPlayQueueItem> getPlaylist() {
         return playlist;
     }
 
@@ -159,10 +131,8 @@ public class PlayQueueUpdate {
      * 
      * @return playingItemIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYING_ITEM_INDEX)
-    public Integer getPlayingItemIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPlayingItemIndex() {
         return playingItemIndex;
     }
 
@@ -181,10 +151,8 @@ public class PlayQueueUpdate {
      * 
      * @return startPositionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
-    public Long getStartPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
@@ -203,10 +171,8 @@ public class PlayQueueUpdate {
      * 
      * @return isPlaying
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
-    public Boolean getIsPlaying() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPlaying() {
         return isPlaying;
     }
 
@@ -225,10 +191,8 @@ public class PlayQueueUpdate {
      * 
      * @return shuffleMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SHUFFLE_MODE)
-    public GroupShuffleMode getShuffleMode() {
+    public @org.eclipse.jdt.annotation.Nullable GroupShuffleMode getShuffleMode() {
         return shuffleMode;
     }
 
@@ -247,10 +211,8 @@ public class PlayQueueUpdate {
      * 
      * @return repeatMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE)
-    public GroupRepeatMode getRepeatMode() {
+    public @org.eclipse.jdt.annotation.Nullable GroupRepeatMode getRepeatMode() {
         return repeatMode;
     }
 
@@ -259,9 +221,6 @@ public class PlayQueueUpdate {
         this.repeatMode = repeatMode;
     }
 
-    /**
-     * Return true if this PlayQueueUpdate object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -345,14 +304,24 @@ public class PlayQueueUpdate {
 
         // add `Reason` to the URL query string
         if (getReason() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sReason%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sReason%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getReason()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastUpdate` to the URL query string
         if (getLastUpdate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastUpdate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUpdate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastUpdate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastUpdate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Playlist` to the URL query string
@@ -370,32 +339,57 @@ public class PlayQueueUpdate {
 
         // add `PlayingItemIndex` to the URL query string
         if (getPlayingItemIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingItemIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayingItemIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayingItemIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayingItemIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsPlaying` to the URL query string
         if (getIsPlaying() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsPlaying()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ShuffleMode` to the URL query string
         if (getShuffleMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sShuffleMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShuffleMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sShuffleMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getShuffleMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RepeatMode` to the URL query string
         if (getRepeatMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRepeatMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

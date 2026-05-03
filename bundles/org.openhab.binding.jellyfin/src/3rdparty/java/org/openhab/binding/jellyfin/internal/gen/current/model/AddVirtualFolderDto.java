@@ -16,18 +16,14 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Add virtual folder dto.
  */
-@JsonPropertyOrder({ AddVirtualFolderDto.JSON_PROPERTY_LIBRARY_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AddVirtualFolderDto {
     public static final String JSON_PROPERTY_LIBRARY_OPTIONS = "LibraryOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LibraryOptions libraryOptions;
+    private @org.eclipse.jdt.annotation.Nullable LibraryOptions libraryOptions;
 
     public AddVirtualFolderDto() {
     }
@@ -42,10 +38,8 @@ public class AddVirtualFolderDto {
      * 
      * @return libraryOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_OPTIONS)
-    public LibraryOptions getLibraryOptions() {
+    public @org.eclipse.jdt.annotation.Nullable LibraryOptions getLibraryOptions() {
         return libraryOptions;
     }
 
@@ -54,9 +48,6 @@ public class AddVirtualFolderDto {
         this.libraryOptions = libraryOptions;
     }
 
-    /**
-     * Return true if this AddVirtualFolderDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

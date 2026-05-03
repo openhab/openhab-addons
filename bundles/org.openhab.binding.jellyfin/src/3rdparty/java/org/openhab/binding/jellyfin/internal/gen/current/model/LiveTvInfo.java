@@ -12,37 +12,27 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LiveTvInfo
  */
-@JsonPropertyOrder({ LiveTvInfo.JSON_PROPERTY_SERVICES, LiveTvInfo.JSON_PROPERTY_IS_ENABLED,
-        LiveTvInfo.JSON_PROPERTY_ENABLED_USERS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveTvInfo {
     public static final String JSON_PROPERTY_SERVICES = "Services";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LiveTvServiceInfo> services = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<LiveTvServiceInfo> services = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_ENABLED = "IsEnabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isEnabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isEnabled;
 
     public static final String JSON_PROPERTY_ENABLED_USERS = "EnabledUsers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> enabledUsers = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> enabledUsers = new ArrayList<>();
 
     public LiveTvInfo() {
     }
@@ -65,10 +55,8 @@ public class LiveTvInfo {
      * 
      * @return services
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVICES)
-    public List<LiveTvServiceInfo> getServices() {
+    public @org.eclipse.jdt.annotation.Nullable List<LiveTvServiceInfo> getServices() {
         return services;
     }
 
@@ -87,10 +75,8 @@ public class LiveTvInfo {
      * 
      * @return isEnabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_ENABLED)
-    public Boolean getIsEnabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsEnabled() {
         return isEnabled;
     }
 
@@ -117,10 +103,8 @@ public class LiveTvInfo {
      * 
      * @return enabledUsers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED_USERS)
-    public List<String> getEnabledUsers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getEnabledUsers() {
         return enabledUsers;
     }
 
@@ -129,9 +113,6 @@ public class LiveTvInfo {
         this.enabledUsers = enabledUsers;
     }
 
-    /**
-     * Return true if this LiveTvInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -217,17 +198,29 @@ public class LiveTvInfo {
 
         // add `IsEnabled` to the URL query string
         if (getIsEnabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsEnabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsEnabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsEnabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnabledUsers` to the URL query string
         if (getEnabledUsers() != null) {
             for (int i = 0; i < getEnabledUsers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledUsers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getEnabledUsers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnabledUsers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getEnabledUsers().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

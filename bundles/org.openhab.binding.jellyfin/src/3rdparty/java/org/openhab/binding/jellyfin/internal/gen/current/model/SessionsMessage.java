@@ -12,45 +12,38 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Sessions message.
  */
-@JsonPropertyOrder({ SessionsMessage.JSON_PROPERTY_DATA, SessionsMessage.JSON_PROPERTY_MESSAGE_ID,
-        SessionsMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionsMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SessionInfoDto> data;
+    private @org.eclipse.jdt.annotation.Nullable List<SessionInfoDto> data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID messageId;
+    private @org.eclipse.jdt.annotation.Nullable UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SessionMessageType messageType = SessionMessageType.SESSIONS;
+    private @org.eclipse.jdt.annotation.Nullable SessionMessageType messageType = SessionMessageType.SESSIONS;
 
     public SessionsMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public SessionsMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+    public SessionsMessage(@JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
         this.messageType = messageType;
     }
@@ -73,10 +66,8 @@ public class SessionsMessage {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    public List<SessionInfoDto> getData() {
+    public @org.eclipse.jdt.annotation.Nullable List<SessionInfoDto> getData() {
         return data;
     }
 
@@ -95,10 +86,8 @@ public class SessionsMessage {
      * 
      * @return messageId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID)
-    public UUID getMessageId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getMessageId() {
         return messageId;
     }
 
@@ -112,16 +101,11 @@ public class SessionsMessage {
      * 
      * @return messageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
-    public SessionMessageType getMessageType() {
+    public @org.eclipse.jdt.annotation.Nullable SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this SessionsMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -207,14 +191,24 @@ public class SessionsMessage {
 
         // add `MessageId` to the URL query string
         if (getMessageId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

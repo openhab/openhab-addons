@@ -12,42 +12,30 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Model.Dlna.ContainerProfile.
  */
-@JsonPropertyOrder({ ContainerProfile.JSON_PROPERTY_TYPE, ContainerProfile.JSON_PROPERTY_CONDITIONS,
-        ContainerProfile.JSON_PROPERTY_CONTAINER, ContainerProfile.JSON_PROPERTY_SUB_CONTAINER })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ContainerProfile {
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DlnaProfileType type;
+    private @org.eclipse.jdt.annotation.Nullable DlnaProfileType type;
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ProfileCondition> conditions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ProfileCondition> conditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String container;
+    private @org.eclipse.jdt.annotation.Nullable String container;
 
     public static final String JSON_PROPERTY_SUB_CONTAINER = "SubContainer";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String subContainer;
+    private @org.eclipse.jdt.annotation.Nullable String subContainer;
 
     public ContainerProfile() {
     }
@@ -62,10 +50,8 @@ public class ContainerProfile {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public DlnaProfileType getType() {
+    public @org.eclipse.jdt.annotation.Nullable DlnaProfileType getType() {
         return type;
     }
 
@@ -92,10 +78,8 @@ public class ContainerProfile {
      * 
      * @return conditions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
-    public List<ProfileCondition> getConditions() {
+    public @org.eclipse.jdt.annotation.Nullable List<ProfileCondition> getConditions() {
         return conditions;
     }
 
@@ -114,10 +98,8 @@ public class ContainerProfile {
      * 
      * @return container
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTAINER)
-    public String getContainer() {
+    public @org.eclipse.jdt.annotation.Nullable String getContainer() {
         return container;
     }
 
@@ -136,10 +118,8 @@ public class ContainerProfile {
      * 
      * @return subContainer
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUB_CONTAINER)
-    public String getSubContainer() {
+    public @org.eclipse.jdt.annotation.Nullable String getSubContainer() {
         return subContainer;
     }
 
@@ -148,9 +128,6 @@ public class ContainerProfile {
         this.subContainer = subContainer;
     }
 
-    /**
-     * Return true if this ContainerProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -225,8 +202,13 @@ public class ContainerProfile {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Conditions` to the URL query string
@@ -244,14 +226,24 @@ public class ContainerProfile {
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContainer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SubContainer` to the URL query string
         if (getSubContainer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubContainer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubContainer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubContainer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

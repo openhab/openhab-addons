@@ -12,42 +12,30 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * QueryFiltersLegacy
  */
-@JsonPropertyOrder({ QueryFiltersLegacy.JSON_PROPERTY_GENRES, QueryFiltersLegacy.JSON_PROPERTY_TAGS,
-        QueryFiltersLegacy.JSON_PROPERTY_OFFICIAL_RATINGS, QueryFiltersLegacy.JSON_PROPERTY_YEARS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class QueryFiltersLegacy {
     public static final String JSON_PROPERTY_GENRES = "Genres";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> genres;
+    private @org.eclipse.jdt.annotation.Nullable List<String> genres;
 
     public static final String JSON_PROPERTY_TAGS = "Tags";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> tags;
+    private @org.eclipse.jdt.annotation.Nullable List<String> tags;
 
     public static final String JSON_PROPERTY_OFFICIAL_RATINGS = "OfficialRatings";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> officialRatings;
+    private @org.eclipse.jdt.annotation.Nullable List<String> officialRatings;
 
     public static final String JSON_PROPERTY_YEARS = "Years";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<Integer> years;
+    private @org.eclipse.jdt.annotation.Nullable List<Integer> years;
 
     public QueryFiltersLegacy() {
     }
@@ -70,10 +58,8 @@ public class QueryFiltersLegacy {
      * 
      * @return genres
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GENRES)
-    public List<String> getGenres() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getGenres() {
         return genres;
     }
 
@@ -100,10 +86,8 @@ public class QueryFiltersLegacy {
      * 
      * @return tags
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TAGS)
-    public List<String> getTags() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getTags() {
         return tags;
     }
 
@@ -130,10 +114,8 @@ public class QueryFiltersLegacy {
      * 
      * @return officialRatings
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OFFICIAL_RATINGS)
-    public List<String> getOfficialRatings() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getOfficialRatings() {
         return officialRatings;
     }
 
@@ -160,10 +142,8 @@ public class QueryFiltersLegacy {
      * 
      * @return years
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_YEARS)
-    public List<Integer> getYears() {
+    public @org.eclipse.jdt.annotation.Nullable List<Integer> getYears() {
         return years;
     }
 
@@ -172,9 +152,6 @@ public class QueryFiltersLegacy {
         this.years = years;
     }
 
-    /**
-     * Return true if this QueryFiltersLegacy object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -250,40 +227,65 @@ public class QueryFiltersLegacy {
         // add `Genres` to the URL query string
         if (getGenres() != null) {
             for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sGenres%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getGenres().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Tags` to the URL query string
         if (getTags() != null) {
             for (int i = 0; i < getTags().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTags().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sTags%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getTags().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `OfficialRatings` to the URL query string
         if (getOfficialRatings() != null) {
             for (int i = 0; i < getOfficialRatings().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sOfficialRatings%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getOfficialRatings().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sOfficialRatings%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getOfficialRatings().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Years` to the URL query string
         if (getYears() != null) {
             for (int i = 0; i < getYears().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sYears%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getYears().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sYears%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getYears().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

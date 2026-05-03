@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,43 +20,27 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class GroupInfoDto.
  */
-@JsonPropertyOrder({ GroupInfoDto.JSON_PROPERTY_GROUP_ID, GroupInfoDto.JSON_PROPERTY_GROUP_NAME,
-        GroupInfoDto.JSON_PROPERTY_STATE, GroupInfoDto.JSON_PROPERTY_PARTICIPANTS,
-        GroupInfoDto.JSON_PROPERTY_LAST_UPDATED_AT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class GroupInfoDto {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID groupId;
+    private @org.eclipse.jdt.annotation.Nullable UUID groupId;
 
     public static final String JSON_PROPERTY_GROUP_NAME = "GroupName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String groupName;
+    private @org.eclipse.jdt.annotation.Nullable String groupName;
 
     public static final String JSON_PROPERTY_STATE = "State";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupStateType state;
+    private @org.eclipse.jdt.annotation.Nullable GroupStateType state;
 
     public static final String JSON_PROPERTY_PARTICIPANTS = "Participants";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> participants = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> participants = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LAST_UPDATED_AT = "LastUpdatedAt";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastUpdatedAt;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastUpdatedAt;
 
     public GroupInfoDto() {
     }
@@ -70,10 +55,8 @@ public class GroupInfoDto {
      * 
      * @return groupId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
-    public UUID getGroupId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGroupId() {
         return groupId;
     }
 
@@ -92,10 +75,8 @@ public class GroupInfoDto {
      * 
      * @return groupName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUP_NAME)
-    public String getGroupName() {
+    public @org.eclipse.jdt.annotation.Nullable String getGroupName() {
         return groupName;
     }
 
@@ -114,10 +95,8 @@ public class GroupInfoDto {
      * 
      * @return state
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATE)
-    public GroupStateType getState() {
+    public @org.eclipse.jdt.annotation.Nullable GroupStateType getState() {
         return state;
     }
 
@@ -144,10 +123,8 @@ public class GroupInfoDto {
      * 
      * @return participants
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARTICIPANTS)
-    public List<String> getParticipants() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getParticipants() {
         return participants;
     }
 
@@ -166,10 +143,8 @@ public class GroupInfoDto {
      * 
      * @return lastUpdatedAt
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_UPDATED_AT)
-    public OffsetDateTime getLastUpdatedAt() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
@@ -178,9 +153,6 @@ public class GroupInfoDto {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    /**
-     * Return true if this GroupInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -257,36 +229,63 @@ public class GroupInfoDto {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGroupId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `GroupName` to the URL query string
         if (getGroupName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGroupName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGroupName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGroupName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getState()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Participants` to the URL query string
         if (getParticipants() != null) {
             for (int i = 0; i < getParticipants().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sParticipants%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParticipants().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sParticipants%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getParticipants().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `LastUpdatedAt` to the URL query string
         if (getLastUpdatedAt() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastUpdatedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUpdatedAt()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastUpdatedAt%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastUpdatedAt()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,36 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Options to configure jellyfins managed database.
  */
-@JsonPropertyOrder({ DatabaseConfigurationOptions.JSON_PROPERTY_DATABASE_TYPE,
-        DatabaseConfigurationOptions.JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS,
-        DatabaseConfigurationOptions.JSON_PROPERTY_LOCKING_BEHAVIOR })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DatabaseConfigurationOptions {
     public static final String JSON_PROPERTY_DATABASE_TYPE = "DatabaseType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String databaseType;
+    private @org.eclipse.jdt.annotation.Nullable String databaseType;
 
     public static final String JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS = "CustomProviderOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private CustomDatabaseOptions customProviderOptions;
+    private @org.eclipse.jdt.annotation.Nullable CustomDatabaseOptions customProviderOptions;
 
     public static final String JSON_PROPERTY_LOCKING_BEHAVIOR = "LockingBehavior";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DatabaseLockingBehaviorTypes lockingBehavior;
+    private @org.eclipse.jdt.annotation.Nullable DatabaseLockingBehaviorTypes lockingBehavior;
 
     public DatabaseConfigurationOptions() {
     }
@@ -56,10 +45,8 @@ public class DatabaseConfigurationOptions {
      * 
      * @return databaseType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATABASE_TYPE)
-    public String getDatabaseType() {
+    public @org.eclipse.jdt.annotation.Nullable String getDatabaseType() {
         return databaseType;
     }
 
@@ -79,10 +66,8 @@ public class DatabaseConfigurationOptions {
      * 
      * @return customProviderOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_PROVIDER_OPTIONS)
-    public CustomDatabaseOptions getCustomProviderOptions() {
+    public @org.eclipse.jdt.annotation.Nullable CustomDatabaseOptions getCustomProviderOptions() {
         return customProviderOptions;
     }
 
@@ -104,10 +89,8 @@ public class DatabaseConfigurationOptions {
      * 
      * @return lockingBehavior
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCKING_BEHAVIOR)
-    public DatabaseLockingBehaviorTypes getLockingBehavior() {
+    public @org.eclipse.jdt.annotation.Nullable DatabaseLockingBehaviorTypes getLockingBehavior() {
         return lockingBehavior;
     }
 
@@ -116,9 +99,6 @@ public class DatabaseConfigurationOptions {
         this.lockingBehavior = lockingBehavior;
     }
 
-    /**
-     * Return true if this DatabaseConfigurationOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -191,8 +171,13 @@ public class DatabaseConfigurationOptions {
 
         // add `DatabaseType` to the URL query string
         if (getDatabaseType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDatabaseType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDatabaseType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDatabaseType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDatabaseType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomProviderOptions` to the URL query string
@@ -202,8 +187,13 @@ public class DatabaseConfigurationOptions {
 
         // add `LockingBehavior` to the URL query string
         if (getLockingBehavior() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLockingBehavior%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLockingBehavior()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLockingBehavior%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLockingBehavior()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

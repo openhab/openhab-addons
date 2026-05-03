@@ -12,54 +12,36 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A class representing metadata editor information.
  */
-@JsonPropertyOrder({ MetadataEditorInfo.JSON_PROPERTY_PARENTAL_RATING_OPTIONS,
-        MetadataEditorInfo.JSON_PROPERTY_COUNTRIES, MetadataEditorInfo.JSON_PROPERTY_CULTURES,
-        MetadataEditorInfo.JSON_PROPERTY_EXTERNAL_ID_INFOS, MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE,
-        MetadataEditorInfo.JSON_PROPERTY_CONTENT_TYPE_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MetadataEditorInfo {
     public static final String JSON_PROPERTY_PARENTAL_RATING_OPTIONS = "ParentalRatingOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ParentalRating> parentalRatingOptions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ParentalRating> parentalRatingOptions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_COUNTRIES = "Countries";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<CountryInfo> countries = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<CountryInfo> countries = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CULTURES = "Cultures";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<CultureDto> cultures = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<CultureDto> cultures = new ArrayList<>();
 
     public static final String JSON_PROPERTY_EXTERNAL_ID_INFOS = "ExternalIdInfos";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ExternalIdInfo> externalIdInfos = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTENT_TYPE = "ContentType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private CollectionType contentType;
+    private @org.eclipse.jdt.annotation.Nullable CollectionType contentType;
 
     public static final String JSON_PROPERTY_CONTENT_TYPE_OPTIONS = "ContentTypeOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<NameValuePair> contentTypeOptions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<NameValuePair> contentTypeOptions = new ArrayList<>();
 
     public MetadataEditorInfo() {
     }
@@ -83,10 +65,8 @@ public class MetadataEditorInfo {
      * 
      * @return parentalRatingOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARENTAL_RATING_OPTIONS)
-    public List<ParentalRating> getParentalRatingOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<ParentalRating> getParentalRatingOptions() {
         return parentalRatingOptions;
     }
 
@@ -114,10 +94,8 @@ public class MetadataEditorInfo {
      * 
      * @return countries
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COUNTRIES)
-    public List<CountryInfo> getCountries() {
+    public @org.eclipse.jdt.annotation.Nullable List<CountryInfo> getCountries() {
         return countries;
     }
 
@@ -144,10 +122,8 @@ public class MetadataEditorInfo {
      * 
      * @return cultures
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CULTURES)
-    public List<CultureDto> getCultures() {
+    public @org.eclipse.jdt.annotation.Nullable List<CultureDto> getCultures() {
         return cultures;
     }
 
@@ -175,10 +151,8 @@ public class MetadataEditorInfo {
      * 
      * @return externalIdInfos
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID_INFOS)
-    public List<ExternalIdInfo> getExternalIdInfos() {
+    public @org.eclipse.jdt.annotation.Nullable List<ExternalIdInfo> getExternalIdInfos() {
         return externalIdInfos;
     }
 
@@ -197,10 +171,8 @@ public class MetadataEditorInfo {
      * 
      * @return contentType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE)
-    public CollectionType getContentType() {
+    public @org.eclipse.jdt.annotation.Nullable CollectionType getContentType() {
         return contentType;
     }
 
@@ -228,10 +200,8 @@ public class MetadataEditorInfo {
      * 
      * @return contentTypeOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPE_OPTIONS)
-    public List<NameValuePair> getContentTypeOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<NameValuePair> getContentTypeOptions() {
         return contentTypeOptions;
     }
 
@@ -240,9 +210,6 @@ public class MetadataEditorInfo {
         this.contentTypeOptions = contentTypeOptions;
     }
 
-    /**
-     * Return true if this MetadataEditorInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -374,8 +341,13 @@ public class MetadataEditorInfo {
 
         // add `ContentType` to the URL query string
         if (getContentType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContentType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContentType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContentType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContentType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ContentTypeOptions` to the URL query string

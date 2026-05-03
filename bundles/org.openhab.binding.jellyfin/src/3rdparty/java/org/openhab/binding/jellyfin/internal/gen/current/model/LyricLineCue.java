@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LyricLineCue model, holds information about the timing of words within a LyricLine.
  */
-@JsonPropertyOrder({ LyricLineCue.JSON_PROPERTY_POSITION, LyricLineCue.JSON_PROPERTY_END_POSITION,
-        LyricLineCue.JSON_PROPERTY_START, LyricLineCue.JSON_PROPERTY_END })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricLineCue {
     public static final String JSON_PROPERTY_POSITION = "Position";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer position;
+    private @org.eclipse.jdt.annotation.Nullable Integer position;
 
     public static final String JSON_PROPERTY_END_POSITION = "EndPosition";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer endPosition;
+    private @org.eclipse.jdt.annotation.Nullable Integer endPosition;
 
     public static final String JSON_PROPERTY_START = "Start";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long start;
+    private @org.eclipse.jdt.annotation.Nullable Long start;
 
     public static final String JSON_PROPERTY_END = "End";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long end;
+    private @org.eclipse.jdt.annotation.Nullable Long end;
 
     public LyricLineCue() {
     }
@@ -60,10 +48,8 @@ public class LyricLineCue {
      * 
      * @return position
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSITION)
-    public Integer getPosition() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPosition() {
         return position;
     }
 
@@ -82,10 +68,8 @@ public class LyricLineCue {
      * 
      * @return endPosition
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_POSITION)
-    public Integer getEndPosition() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getEndPosition() {
         return endPosition;
     }
 
@@ -104,10 +88,8 @@ public class LyricLineCue {
      * 
      * @return start
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START)
-    public Long getStart() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStart() {
         return start;
     }
 
@@ -126,10 +108,8 @@ public class LyricLineCue {
      * 
      * @return end
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END)
-    public Long getEnd() {
+    public @org.eclipse.jdt.annotation.Nullable Long getEnd() {
         return end;
     }
 
@@ -138,9 +118,6 @@ public class LyricLineCue {
         this.end = end;
     }
 
-    /**
-     * Return true if this LyricLineCue object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -214,26 +191,46 @@ public class LyricLineCue {
 
         // add `Position` to the URL query string
         if (getPosition() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPosition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPosition()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPosition%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPosition()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndPosition` to the URL query string
         if (getEndPosition() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndPosition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndPosition()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndPosition%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndPosition()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Start` to the URL query string
         if (getStart() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStart()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStart%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStart()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `End` to the URL query string
         if (getEnd() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnd%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnd()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnd%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnd()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

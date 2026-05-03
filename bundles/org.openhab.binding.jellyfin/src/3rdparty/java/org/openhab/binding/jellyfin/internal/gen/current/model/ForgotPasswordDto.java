@@ -12,25 +12,20 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Forgot Password request body DTO.
  */
-@JsonPropertyOrder({ ForgotPasswordDto.JSON_PROPERTY_ENTERED_USERNAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ForgotPasswordDto {
     public static final String JSON_PROPERTY_ENTERED_USERNAME = "EnteredUsername";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String enteredUsername;
+    private @org.eclipse.jdt.annotation.NonNull String enteredUsername;
 
     public ForgotPasswordDto() {
     }
@@ -45,11 +40,9 @@ public class ForgotPasswordDto {
      * 
      * @return enteredUsername
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENTERED_USERNAME, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getEnteredUsername() {
+    public @org.eclipse.jdt.annotation.NonNull String getEnteredUsername() {
         return enteredUsername;
     }
 
@@ -59,9 +52,6 @@ public class ForgotPasswordDto {
         this.enteredUsername = enteredUsername;
     }
 
-    /**
-     * Return true if this ForgotPasswordDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -130,8 +120,13 @@ public class ForgotPasswordDto {
 
         // add `EnteredUsername` to the URL query string
         if (getEnteredUsername() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnteredUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnteredUsername()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnteredUsername%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnteredUsername()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

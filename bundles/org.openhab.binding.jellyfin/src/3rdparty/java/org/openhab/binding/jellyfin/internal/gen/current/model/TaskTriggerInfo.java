@@ -12,46 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class TaskTriggerInfo.
  */
-@JsonPropertyOrder({ TaskTriggerInfo.JSON_PROPERTY_TYPE, TaskTriggerInfo.JSON_PROPERTY_TIME_OF_DAY_TICKS,
-        TaskTriggerInfo.JSON_PROPERTY_INTERVAL_TICKS, TaskTriggerInfo.JSON_PROPERTY_DAY_OF_WEEK,
-        TaskTriggerInfo.JSON_PROPERTY_MAX_RUNTIME_TICKS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TaskTriggerInfo {
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TaskTriggerInfoType type;
+    private @org.eclipse.jdt.annotation.Nullable TaskTriggerInfoType type;
 
     public static final String JSON_PROPERTY_TIME_OF_DAY_TICKS = "TimeOfDayTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long timeOfDayTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long timeOfDayTicks;
 
     public static final String JSON_PROPERTY_INTERVAL_TICKS = "IntervalTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long intervalTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long intervalTicks;
 
     public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DayOfWeek dayOfWeek;
+    private @org.eclipse.jdt.annotation.Nullable DayOfWeek dayOfWeek;
 
     public static final String JSON_PROPERTY_MAX_RUNTIME_TICKS = "MaxRuntimeTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long maxRuntimeTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long maxRuntimeTicks;
 
     public TaskTriggerInfo() {
     }
@@ -66,10 +51,8 @@ public class TaskTriggerInfo {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public TaskTriggerInfoType getType() {
+    public @org.eclipse.jdt.annotation.Nullable TaskTriggerInfoType getType() {
         return type;
     }
 
@@ -88,10 +71,8 @@ public class TaskTriggerInfo {
      * 
      * @return timeOfDayTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TIME_OF_DAY_TICKS)
-    public Long getTimeOfDayTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getTimeOfDayTicks() {
         return timeOfDayTicks;
     }
 
@@ -110,10 +91,8 @@ public class TaskTriggerInfo {
      * 
      * @return intervalTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERVAL_TICKS)
-    public Long getIntervalTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getIntervalTicks() {
         return intervalTicks;
     }
 
@@ -132,10 +111,8 @@ public class TaskTriggerInfo {
      * 
      * @return dayOfWeek
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK)
-    public DayOfWeek getDayOfWeek() {
+    public @org.eclipse.jdt.annotation.Nullable DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
@@ -154,10 +131,8 @@ public class TaskTriggerInfo {
      * 
      * @return maxRuntimeTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_RUNTIME_TICKS)
-    public Long getMaxRuntimeTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getMaxRuntimeTicks() {
         return maxRuntimeTicks;
     }
 
@@ -166,9 +141,6 @@ public class TaskTriggerInfo {
         this.maxRuntimeTicks = maxRuntimeTicks;
     }
 
-    /**
-     * Return true if this TaskTriggerInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -245,32 +217,57 @@ public class TaskTriggerInfo {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TimeOfDayTicks` to the URL query string
         if (getTimeOfDayTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTimeOfDayTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeOfDayTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTimeOfDayTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTimeOfDayTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IntervalTicks` to the URL query string
         if (getIntervalTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIntervalTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIntervalTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIntervalTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIntervalTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DayOfWeek` to the URL query string
         if (getDayOfWeek() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDayOfWeek()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxRuntimeTicks` to the URL query string
         if (getMaxRuntimeTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxRuntimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxRuntimeTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxRuntimeTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxRuntimeTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

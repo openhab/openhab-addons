@@ -12,38 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * DTO for playlists.
  */
-@JsonPropertyOrder({ PlaylistDto.JSON_PROPERTY_OPEN_ACCESS, PlaylistDto.JSON_PROPERTY_SHARES,
-        PlaylistDto.JSON_PROPERTY_ITEM_IDS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaylistDto {
     public static final String JSON_PROPERTY_OPEN_ACCESS = "OpenAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean openAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean openAccess;
 
     public static final String JSON_PROPERTY_SHARES = "Shares";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<PlaylistUserPermissions> shares = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> shares = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEM_IDS = "ItemIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> itemIds = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> itemIds = new ArrayList<>();
 
     public PlaylistDto() {
     }
@@ -58,10 +48,8 @@ public class PlaylistDto {
      * 
      * @return openAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPEN_ACCESS)
-    public Boolean getOpenAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getOpenAccess() {
         return openAccess;
     }
 
@@ -88,10 +76,8 @@ public class PlaylistDto {
      * 
      * @return shares
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SHARES)
-    public List<PlaylistUserPermissions> getShares() {
+    public @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> getShares() {
         return shares;
     }
 
@@ -118,10 +104,8 @@ public class PlaylistDto {
      * 
      * @return itemIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_IDS)
-    public List<UUID> getItemIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getItemIds() {
         return itemIds;
     }
 
@@ -130,9 +114,6 @@ public class PlaylistDto {
         this.itemIds = itemIds;
     }
 
-    /**
-     * Return true if this PlaylistDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -204,8 +185,13 @@ public class PlaylistDto {
 
         // add `OpenAccess` to the URL query string
         if (getOpenAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOpenAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOpenAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOpenAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Shares` to the URL query string
@@ -225,11 +211,17 @@ public class PlaylistDto {
         if (getItemIds() != null) {
             for (int i = 0; i < getItemIds().size(); i++) {
                 if (getItemIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getItemIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sItemIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getItemIds().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

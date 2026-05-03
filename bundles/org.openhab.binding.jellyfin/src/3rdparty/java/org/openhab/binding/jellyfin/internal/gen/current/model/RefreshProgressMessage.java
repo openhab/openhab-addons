@@ -12,46 +12,39 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Refresh progress message.
  */
-@JsonPropertyOrder({ RefreshProgressMessage.JSON_PROPERTY_DATA, RefreshProgressMessage.JSON_PROPERTY_MESSAGE_ID,
-        RefreshProgressMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RefreshProgressMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> data;
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> data;
 
     public static final String JSON_PROPERTY_MESSAGE_ID = "MessageId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID messageId;
+    private @org.eclipse.jdt.annotation.Nullable UUID messageId;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SessionMessageType messageType = SessionMessageType.REFRESH_PROGRESS;
+    private @org.eclipse.jdt.annotation.Nullable SessionMessageType messageType = SessionMessageType.REFRESH_PROGRESS;
 
     public RefreshProgressMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public RefreshProgressMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+    public RefreshProgressMessage(@JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
         this.messageType = messageType;
     }
@@ -74,16 +67,14 @@ public class RefreshProgressMessage {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public Map<String, String> getData() {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getData() {
         return data;
     }
 
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
     public void setData(@org.eclipse.jdt.annotation.Nullable Map<String, String> data) {
         this.data = data;
     }
@@ -98,10 +89,8 @@ public class RefreshProgressMessage {
      * 
      * @return messageId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_ID)
-    public UUID getMessageId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getMessageId() {
         return messageId;
     }
 
@@ -115,16 +104,11 @@ public class RefreshProgressMessage {
      * 
      * @return messageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
-    public SessionMessageType getMessageType() {
+    public @org.eclipse.jdt.annotation.Nullable SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this RefreshProgressMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -198,24 +182,40 @@ public class RefreshProgressMessage {
         // add `Data` to the URL query string
         if (getData() != null) {
             for (String _key : getData().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sData%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getData().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getData().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sData%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getData().get(_key),
+                            URLEncoder.encode(String.valueOf(getData().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `MessageId` to the URL query string
         if (getMessageId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

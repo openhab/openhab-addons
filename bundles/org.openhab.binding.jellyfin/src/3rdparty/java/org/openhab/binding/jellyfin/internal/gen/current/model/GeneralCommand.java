@@ -12,39 +12,29 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * GeneralCommand
  */
-@JsonPropertyOrder({ GeneralCommand.JSON_PROPERTY_NAME, GeneralCommand.JSON_PROPERTY_CONTROLLING_USER_ID,
-        GeneralCommand.JSON_PROPERTY_ARGUMENTS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class GeneralCommand {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GeneralCommandType name;
+    private @org.eclipse.jdt.annotation.Nullable GeneralCommandType name;
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID controllingUserId;
+    private @org.eclipse.jdt.annotation.Nullable UUID controllingUserId;
 
     public static final String JSON_PROPERTY_ARGUMENTS = "Arguments";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> arguments = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> arguments = new HashMap<>();
 
     public GeneralCommand() {
     }
@@ -59,10 +49,8 @@ public class GeneralCommand {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public GeneralCommandType getName() {
+    public @org.eclipse.jdt.annotation.Nullable GeneralCommandType getName() {
         return name;
     }
 
@@ -81,10 +69,8 @@ public class GeneralCommand {
      * 
      * @return controllingUserId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
-    public UUID getControllingUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getControllingUserId() {
         return controllingUserId;
     }
 
@@ -111,23 +97,18 @@ public class GeneralCommand {
      * 
      * @return arguments
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARGUMENTS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public Map<String, String> getArguments() {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getArguments() {
         return arguments;
     }
 
     @JsonProperty(value = JSON_PROPERTY_ARGUMENTS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
     public void setArguments(@org.eclipse.jdt.annotation.Nullable Map<String, String> arguments) {
         this.arguments = arguments;
     }
 
-    /**
-     * Return true if this GeneralCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -200,25 +181,41 @@ public class GeneralCommand {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ControllingUserId` to the URL query string
         if (getControllingUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getControllingUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Arguments` to the URL query string
         if (getArguments() != null) {
             for (String _key : getArguments().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sArguments%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getArguments().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArguments().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sArguments%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getArguments().get(_key),
+                            URLEncoder.encode(String.valueOf(getArguments().get(_key)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

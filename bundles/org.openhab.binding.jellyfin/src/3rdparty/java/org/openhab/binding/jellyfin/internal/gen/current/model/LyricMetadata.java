@@ -12,72 +12,46 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LyricMetadata model.
  */
-@JsonPropertyOrder({ LyricMetadata.JSON_PROPERTY_ARTIST, LyricMetadata.JSON_PROPERTY_ALBUM,
-        LyricMetadata.JSON_PROPERTY_TITLE, LyricMetadata.JSON_PROPERTY_AUTHOR, LyricMetadata.JSON_PROPERTY_LENGTH,
-        LyricMetadata.JSON_PROPERTY_BY, LyricMetadata.JSON_PROPERTY_OFFSET, LyricMetadata.JSON_PROPERTY_CREATOR,
-        LyricMetadata.JSON_PROPERTY_VERSION, LyricMetadata.JSON_PROPERTY_IS_SYNCED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricMetadata {
     public static final String JSON_PROPERTY_ARTIST = "Artist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String artist;
+    private @org.eclipse.jdt.annotation.Nullable String artist;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String album;
+    private @org.eclipse.jdt.annotation.Nullable String album;
 
     public static final String JSON_PROPERTY_TITLE = "Title";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String title;
+    private @org.eclipse.jdt.annotation.Nullable String title;
 
     public static final String JSON_PROPERTY_AUTHOR = "Author";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String author;
+    private @org.eclipse.jdt.annotation.Nullable String author;
 
     public static final String JSON_PROPERTY_LENGTH = "Length";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long length;
+    private @org.eclipse.jdt.annotation.Nullable Long length;
 
     public static final String JSON_PROPERTY_BY = "By";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String by;
+    private @org.eclipse.jdt.annotation.Nullable String by;
 
     public static final String JSON_PROPERTY_OFFSET = "Offset";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long offset;
+    private @org.eclipse.jdt.annotation.Nullable Long offset;
 
     public static final String JSON_PROPERTY_CREATOR = "Creator";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String creator;
+    private @org.eclipse.jdt.annotation.Nullable String creator;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_IS_SYNCED = "IsSynced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isSynced;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isSynced;
 
     public LyricMetadata() {
     }
@@ -92,10 +66,8 @@ public class LyricMetadata {
      * 
      * @return artist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARTIST)
-    public String getArtist() {
+    public @org.eclipse.jdt.annotation.Nullable String getArtist() {
         return artist;
     }
 
@@ -114,10 +86,8 @@ public class LyricMetadata {
      * 
      * @return album
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALBUM)
-    public String getAlbum() {
+    public @org.eclipse.jdt.annotation.Nullable String getAlbum() {
         return album;
     }
 
@@ -136,10 +106,8 @@ public class LyricMetadata {
      * 
      * @return title
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TITLE)
-    public String getTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getTitle() {
         return title;
     }
 
@@ -158,10 +126,8 @@ public class LyricMetadata {
      * 
      * @return author
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTHOR)
-    public String getAuthor() {
+    public @org.eclipse.jdt.annotation.Nullable String getAuthor() {
         return author;
     }
 
@@ -180,10 +146,8 @@ public class LyricMetadata {
      * 
      * @return length
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LENGTH)
-    public Long getLength() {
+    public @org.eclipse.jdt.annotation.Nullable Long getLength() {
         return length;
     }
 
@@ -202,10 +166,8 @@ public class LyricMetadata {
      * 
      * @return by
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BY)
-    public String getBy() {
+    public @org.eclipse.jdt.annotation.Nullable String getBy() {
         return by;
     }
 
@@ -224,10 +186,8 @@ public class LyricMetadata {
      * 
      * @return offset
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OFFSET)
-    public Long getOffset() {
+    public @org.eclipse.jdt.annotation.Nullable Long getOffset() {
         return offset;
     }
 
@@ -246,10 +206,8 @@ public class LyricMetadata {
      * 
      * @return creator
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CREATOR)
-    public String getCreator() {
+    public @org.eclipse.jdt.annotation.Nullable String getCreator() {
         return creator;
     }
 
@@ -268,10 +226,8 @@ public class LyricMetadata {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -290,10 +246,8 @@ public class LyricMetadata {
      * 
      * @return isSynced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_SYNCED)
-    public Boolean getIsSynced() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsSynced() {
         return isSynced;
     }
 
@@ -302,9 +256,6 @@ public class LyricMetadata {
         this.isSynced = isSynced;
     }
 
-    /**
-     * Return true if this LyricMetadata object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -388,62 +339,112 @@ public class LyricMetadata {
 
         // add `Artist` to the URL query string
         if (getArtist() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sArtist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtist()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sArtist%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getArtist()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Album` to the URL query string
         if (getAlbum() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAlbum()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Author` to the URL query string
         if (getAuthor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAuthor()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Length` to the URL query string
         if (getLength() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLength()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLength%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLength()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `By` to the URL query string
         if (getBy() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBy%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBy()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBy%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBy()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Offset` to the URL query string
         if (getOffset() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOffset%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOffset()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOffset%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOffset()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Creator` to the URL query string
         if (getCreator() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCreator%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCreator()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCreator%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCreator()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsSynced` to the URL query string
         if (getIsSynced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsSynced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSynced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsSynced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsSynced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

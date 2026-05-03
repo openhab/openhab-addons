@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A class representing an parental rating score.
  */
-@JsonPropertyOrder({ ParentalRatingScore.JSON_PROPERTY_SCORE, ParentalRatingScore.JSON_PROPERTY_SUB_SCORE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ParentalRatingScore {
     public static final String JSON_PROPERTY_SCORE = "score";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer score;
+    private @org.eclipse.jdt.annotation.Nullable Integer score;
 
     public static final String JSON_PROPERTY_SUB_SCORE = "subScore";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer subScore;
+    private @org.eclipse.jdt.annotation.Nullable Integer subScore;
 
     public ParentalRatingScore() {
     }
@@ -49,10 +42,8 @@ public class ParentalRatingScore {
      * 
      * @return score
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SCORE)
-    public Integer getScore() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getScore() {
         return score;
     }
 
@@ -71,10 +62,8 @@ public class ParentalRatingScore {
      * 
      * @return subScore
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUB_SCORE)
-    public Integer getSubScore() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSubScore() {
         return subScore;
     }
 
@@ -83,9 +72,6 @@ public class ParentalRatingScore {
         this.subScore = subScore;
     }
 
-    /**
-     * Return true if this ParentalRatingScore object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class ParentalRatingScore {
 
         // add `score` to the URL query string
         if (getScore() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sscore%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScore()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sscore%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getScore()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `subScore` to the URL query string
         if (getSubScore() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%ssubScore%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubScore()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%ssubScore%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubScore()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

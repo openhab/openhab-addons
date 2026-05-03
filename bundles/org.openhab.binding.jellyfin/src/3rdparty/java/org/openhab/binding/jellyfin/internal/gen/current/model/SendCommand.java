@@ -12,53 +12,36 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SendCommand.
  */
-@JsonPropertyOrder({ SendCommand.JSON_PROPERTY_GROUP_ID, SendCommand.JSON_PROPERTY_PLAYLIST_ITEM_ID,
-        SendCommand.JSON_PROPERTY_WHEN, SendCommand.JSON_PROPERTY_POSITION_TICKS, SendCommand.JSON_PROPERTY_COMMAND,
-        SendCommand.JSON_PROPERTY_EMITTED_AT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SendCommand {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID groupId;
+    private @org.eclipse.jdt.annotation.Nullable UUID groupId;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID playlistItemId;
 
     public static final String JSON_PROPERTY_WHEN = "When";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime when;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime when;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long positionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long positionTicks;
 
     public static final String JSON_PROPERTY_COMMAND = "Command";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SendCommandType command;
+    private @org.eclipse.jdt.annotation.Nullable SendCommandType command;
 
     public static final String JSON_PROPERTY_EMITTED_AT = "EmittedAt";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime emittedAt;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime emittedAt;
 
     public SendCommand() {
     }
@@ -73,10 +56,8 @@ public class SendCommand {
      * 
      * @return groupId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
-    public UUID getGroupId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGroupId() {
         return groupId;
     }
 
@@ -95,10 +76,8 @@ public class SendCommand {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public UUID getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
@@ -117,10 +96,8 @@ public class SendCommand {
      * 
      * @return when
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WHEN)
-    public OffsetDateTime getWhen() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getWhen() {
         return when;
     }
 
@@ -139,10 +116,8 @@ public class SendCommand {
      * 
      * @return positionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
-    public Long getPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPositionTicks() {
         return positionTicks;
     }
 
@@ -161,10 +136,8 @@ public class SendCommand {
      * 
      * @return command
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMAND)
-    public SendCommandType getCommand() {
+    public @org.eclipse.jdt.annotation.Nullable SendCommandType getCommand() {
         return command;
     }
 
@@ -183,10 +156,8 @@ public class SendCommand {
      * 
      * @return emittedAt
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EMITTED_AT)
-    public OffsetDateTime getEmittedAt() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getEmittedAt() {
         return emittedAt;
     }
 
@@ -195,9 +166,6 @@ public class SendCommand {
         this.emittedAt = emittedAt;
     }
 
-    /**
-     * Return true if this SendCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -276,38 +244,68 @@ public class SendCommand {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGroupId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `When` to the URL query string
         if (getWhen() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWhen()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Command` to the URL query string
         if (getCommand() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCommand()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EmittedAt` to the URL query string
         if (getEmittedAt() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEmittedAt%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEmittedAt()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEmittedAt%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEmittedAt()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

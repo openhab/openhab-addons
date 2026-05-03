@@ -12,73 +12,46 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class RemoteImageInfo.
  */
-@JsonPropertyOrder({ RemoteImageInfo.JSON_PROPERTY_PROVIDER_NAME, RemoteImageInfo.JSON_PROPERTY_URL,
-        RemoteImageInfo.JSON_PROPERTY_THUMBNAIL_URL, RemoteImageInfo.JSON_PROPERTY_HEIGHT,
-        RemoteImageInfo.JSON_PROPERTY_WIDTH, RemoteImageInfo.JSON_PROPERTY_COMMUNITY_RATING,
-        RemoteImageInfo.JSON_PROPERTY_VOTE_COUNT, RemoteImageInfo.JSON_PROPERTY_LANGUAGE,
-        RemoteImageInfo.JSON_PROPERTY_TYPE, RemoteImageInfo.JSON_PROPERTY_RATING_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoteImageInfo {
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerName;
+    private @org.eclipse.jdt.annotation.Nullable String providerName;
 
     public static final String JSON_PROPERTY_URL = "Url";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String url;
+    private @org.eclipse.jdt.annotation.Nullable String url;
 
     public static final String JSON_PROPERTY_THUMBNAIL_URL = "ThumbnailUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String thumbnailUrl;
+    private @org.eclipse.jdt.annotation.Nullable String thumbnailUrl;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer height;
+    private @org.eclipse.jdt.annotation.Nullable Integer height;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer width;
+    private @org.eclipse.jdt.annotation.Nullable Integer width;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double communityRating;
+    private @org.eclipse.jdt.annotation.Nullable Double communityRating;
 
     public static final String JSON_PROPERTY_VOTE_COUNT = "VoteCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer voteCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer voteCount;
 
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String language;
+    private @org.eclipse.jdt.annotation.Nullable String language;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ImageType type;
+    private @org.eclipse.jdt.annotation.Nullable ImageType type;
 
     public static final String JSON_PROPERTY_RATING_TYPE = "RatingType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private RatingType ratingType;
+    private @org.eclipse.jdt.annotation.Nullable RatingType ratingType;
 
     public RemoteImageInfo() {
     }
@@ -93,10 +66,8 @@ public class RemoteImageInfo {
      * 
      * @return providerName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
-    public String getProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderName() {
         return providerName;
     }
 
@@ -115,10 +86,8 @@ public class RemoteImageInfo {
      * 
      * @return url
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_URL)
-    public String getUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getUrl() {
         return url;
     }
 
@@ -137,10 +106,8 @@ public class RemoteImageInfo {
      * 
      * @return thumbnailUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THUMBNAIL_URL)
-    public String getThumbnailUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getThumbnailUrl() {
         return thumbnailUrl;
     }
 
@@ -159,10 +126,8 @@ public class RemoteImageInfo {
      * 
      * @return height
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEIGHT)
-    public Integer getHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getHeight() {
         return height;
     }
 
@@ -181,10 +146,8 @@ public class RemoteImageInfo {
      * 
      * @return width
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WIDTH)
-    public Integer getWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getWidth() {
         return width;
     }
 
@@ -203,10 +166,8 @@ public class RemoteImageInfo {
      * 
      * @return communityRating
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
-    public Double getCommunityRating() {
+    public @org.eclipse.jdt.annotation.Nullable Double getCommunityRating() {
         return communityRating;
     }
 
@@ -225,10 +186,8 @@ public class RemoteImageInfo {
      * 
      * @return voteCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VOTE_COUNT)
-    public Integer getVoteCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getVoteCount() {
         return voteCount;
     }
 
@@ -247,10 +206,8 @@ public class RemoteImageInfo {
      * 
      * @return language
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE)
-    public String getLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getLanguage() {
         return language;
     }
 
@@ -269,10 +226,8 @@ public class RemoteImageInfo {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public ImageType getType() {
+    public @org.eclipse.jdt.annotation.Nullable ImageType getType() {
         return type;
     }
 
@@ -291,10 +246,8 @@ public class RemoteImageInfo {
      * 
      * @return ratingType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RATING_TYPE)
-    public RatingType getRatingType() {
+    public @org.eclipse.jdt.annotation.Nullable RatingType getRatingType() {
         return ratingType;
     }
 
@@ -303,9 +256,6 @@ public class RemoteImageInfo {
         this.ratingType = ratingType;
     }
 
-    /**
-     * Return true if this RemoteImageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -393,62 +343,112 @@ public class RemoteImageInfo {
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThumbnailUrl` to the URL query string
         if (getThumbnailUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThumbnailUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThumbnailUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sThumbnailUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getThumbnailUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CommunityRating` to the URL query string
         if (getCommunityRating() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCommunityRating()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VoteCount` to the URL query string
         if (getVoteCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVoteCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVoteCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVoteCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVoteCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RatingType` to the URL query string
         if (getRatingType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRatingType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRatingType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRatingType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRatingType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,43 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Update existing playlist dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
  */
-@JsonPropertyOrder({ UpdatePlaylistDto.JSON_PROPERTY_NAME, UpdatePlaylistDto.JSON_PROPERTY_IDS,
-        UpdatePlaylistDto.JSON_PROPERTY_USERS, UpdatePlaylistDto.JSON_PROPERTY_IS_PUBLIC })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_IDS = "Ids";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> ids;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> ids;
 
     public static final String JSON_PROPERTY_USERS = "Users";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<PlaylistUserPermissions> users;
+    private @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> users;
 
     public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPublic;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPublic;
 
     public UpdatePlaylistDto() {
     }
@@ -63,10 +51,8 @@ public class UpdatePlaylistDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -93,10 +79,8 @@ public class UpdatePlaylistDto {
      * 
      * @return ids
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IDS)
-    public List<UUID> getIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getIds() {
         return ids;
     }
 
@@ -123,10 +107,8 @@ public class UpdatePlaylistDto {
      * 
      * @return users
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USERS)
-    public List<PlaylistUserPermissions> getUsers() {
+    public @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> getUsers() {
         return users;
     }
 
@@ -145,10 +127,8 @@ public class UpdatePlaylistDto {
      * 
      * @return isPublic
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC)
-    public Boolean getIsPublic() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPublic() {
         return isPublic;
     }
 
@@ -157,9 +137,6 @@ public class UpdatePlaylistDto {
         this.isPublic = isPublic;
     }
 
-    /**
-     * Return true if this UpdatePlaylistDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -233,19 +210,29 @@ public class UpdatePlaylistDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Ids` to the URL query string
         if (getIds() != null) {
             for (int i = 0; i < getIds().size(); i++) {
                 if (getIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getIds().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -265,8 +252,13 @@ public class UpdatePlaylistDto {
 
         // add `IsPublic` to the URL query string
         if (getIsPublic() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPublic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsPublic%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsPublic()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

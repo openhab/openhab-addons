@@ -12,52 +12,35 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The configuration page info.
  */
-@JsonPropertyOrder({ ConfigurationPageInfo.JSON_PROPERTY_NAME, ConfigurationPageInfo.JSON_PROPERTY_ENABLE_IN_MAIN_MENU,
-        ConfigurationPageInfo.JSON_PROPERTY_MENU_SECTION, ConfigurationPageInfo.JSON_PROPERTY_MENU_ICON,
-        ConfigurationPageInfo.JSON_PROPERTY_DISPLAY_NAME, ConfigurationPageInfo.JSON_PROPERTY_PLUGIN_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ConfigurationPageInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ENABLE_IN_MAIN_MENU = "EnableInMainMenu";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableInMainMenu;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableInMainMenu;
 
     public static final String JSON_PROPERTY_MENU_SECTION = "MenuSection";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String menuSection;
+    private @org.eclipse.jdt.annotation.Nullable String menuSection;
 
     public static final String JSON_PROPERTY_MENU_ICON = "MenuIcon";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String menuIcon;
+    private @org.eclipse.jdt.annotation.Nullable String menuIcon;
 
     public static final String JSON_PROPERTY_DISPLAY_NAME = "DisplayName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String displayName;
+    private @org.eclipse.jdt.annotation.Nullable String displayName;
 
     public static final String JSON_PROPERTY_PLUGIN_ID = "PluginId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID pluginId;
+    private @org.eclipse.jdt.annotation.Nullable UUID pluginId;
 
     public ConfigurationPageInfo() {
     }
@@ -72,10 +55,8 @@ public class ConfigurationPageInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -94,10 +75,8 @@ public class ConfigurationPageInfo {
      * 
      * @return enableInMainMenu
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_IN_MAIN_MENU)
-    public Boolean getEnableInMainMenu() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableInMainMenu() {
         return enableInMainMenu;
     }
 
@@ -116,10 +95,8 @@ public class ConfigurationPageInfo {
      * 
      * @return menuSection
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MENU_SECTION)
-    public String getMenuSection() {
+    public @org.eclipse.jdt.annotation.Nullable String getMenuSection() {
         return menuSection;
     }
 
@@ -138,10 +115,8 @@ public class ConfigurationPageInfo {
      * 
      * @return menuIcon
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MENU_ICON)
-    public String getMenuIcon() {
+    public @org.eclipse.jdt.annotation.Nullable String getMenuIcon() {
         return menuIcon;
     }
 
@@ -160,10 +135,8 @@ public class ConfigurationPageInfo {
      * 
      * @return displayName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_NAME)
-    public String getDisplayName() {
+    public @org.eclipse.jdt.annotation.Nullable String getDisplayName() {
         return displayName;
     }
 
@@ -182,10 +155,8 @@ public class ConfigurationPageInfo {
      * 
      * @return pluginId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLUGIN_ID)
-    public UUID getPluginId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getPluginId() {
         return pluginId;
     }
 
@@ -194,9 +165,6 @@ public class ConfigurationPageInfo {
         this.pluginId = pluginId;
     }
 
-    /**
-     * Return true if this ConfigurationPageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -275,38 +243,68 @@ public class ConfigurationPageInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableInMainMenu` to the URL query string
         if (getEnableInMainMenu() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableInMainMenu%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableInMainMenu()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableInMainMenu%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableInMainMenu()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MenuSection` to the URL query string
         if (getMenuSection() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMenuSection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuSection()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMenuSection%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMenuSection()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MenuIcon` to the URL query string
         if (getMenuIcon() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMenuIcon%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMenuIcon()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMenuIcon%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMenuIcon()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayName` to the URL query string
         if (getDisplayName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PluginId` to the URL query string
         if (getPluginId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPluginId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPluginId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPluginId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPluginId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

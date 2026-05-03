@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class GroupStateUpdate.
  */
-@JsonPropertyOrder({ GroupStateUpdate.JSON_PROPERTY_STATE, GroupStateUpdate.JSON_PROPERTY_REASON })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class GroupStateUpdate {
     public static final String JSON_PROPERTY_STATE = "State";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupStateType state;
+    private @org.eclipse.jdt.annotation.Nullable GroupStateType state;
 
     public static final String JSON_PROPERTY_REASON = "Reason";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlaybackRequestType reason;
+    private @org.eclipse.jdt.annotation.Nullable PlaybackRequestType reason;
 
     public GroupStateUpdate() {
     }
@@ -49,10 +42,8 @@ public class GroupStateUpdate {
      * 
      * @return state
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATE)
-    public GroupStateType getState() {
+    public @org.eclipse.jdt.annotation.Nullable GroupStateType getState() {
         return state;
     }
 
@@ -71,10 +62,8 @@ public class GroupStateUpdate {
      * 
      * @return reason
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REASON)
-    public PlaybackRequestType getReason() {
+    public @org.eclipse.jdt.annotation.Nullable PlaybackRequestType getReason() {
         return reason;
     }
 
@@ -83,9 +72,6 @@ public class GroupStateUpdate {
         this.reason = reason;
     }
 
-    /**
-     * Return true if this GroupStateUpdate object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class GroupStateUpdate {
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getState()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Reason` to the URL query string
         if (getReason() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sReason%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReason()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sReason%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getReason()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

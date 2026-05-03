@@ -12,57 +12,37 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * PublicSystemInfo
  */
-@JsonPropertyOrder({ PublicSystemInfo.JSON_PROPERTY_LOCAL_ADDRESS, PublicSystemInfo.JSON_PROPERTY_SERVER_NAME,
-        PublicSystemInfo.JSON_PROPERTY_VERSION, PublicSystemInfo.JSON_PROPERTY_PRODUCT_NAME,
-        PublicSystemInfo.JSON_PROPERTY_OPERATING_SYSTEM, PublicSystemInfo.JSON_PROPERTY_ID,
-        PublicSystemInfo.JSON_PROPERTY_STARTUP_WIZARD_COMPLETED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PublicSystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localAddress;
+    private @org.eclipse.jdt.annotation.Nullable String localAddress;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverName;
+    private @org.eclipse.jdt.annotation.Nullable String serverName;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String productName;
+    private @org.eclipse.jdt.annotation.Nullable String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String operatingSystem;
+    private @org.eclipse.jdt.annotation.Nullable String operatingSystem;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean startupWizardCompleted;
+    private @org.eclipse.jdt.annotation.Nullable Boolean startupWizardCompleted;
 
     public PublicSystemInfo() {
     }
@@ -77,10 +57,8 @@ public class PublicSystemInfo {
      * 
      * @return localAddress
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS)
-    public String getLocalAddress() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalAddress() {
         return localAddress;
     }
 
@@ -99,10 +77,8 @@ public class PublicSystemInfo {
      * 
      * @return serverName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
-    public String getServerName() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerName() {
         return serverName;
     }
 
@@ -121,10 +97,8 @@ public class PublicSystemInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -143,10 +117,8 @@ public class PublicSystemInfo {
      * 
      * @return productName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME)
-    public String getProductName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProductName() {
         return productName;
     }
 
@@ -167,10 +139,8 @@ public class PublicSystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM)
-    public String getOperatingSystem() {
+    public @org.eclipse.jdt.annotation.Nullable String getOperatingSystem() {
         return operatingSystem;
     }
 
@@ -189,10 +159,8 @@ public class PublicSystemInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -212,10 +180,8 @@ public class PublicSystemInfo {
      * 
      * @return startupWizardCompleted
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
-    public Boolean getStartupWizardCompleted() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
 
@@ -224,9 +190,6 @@ public class PublicSystemInfo {
         this.startupWizardCompleted = startupWizardCompleted;
     }
 
-    /**
-     * Return true if this PublicSystemInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -308,44 +271,80 @@ public class PublicSystemInfo {
 
         // add `LocalAddress` to the URL query string
         if (getLocalAddress() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalAddress()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProductName` to the URL query string
         if (getProductName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProductName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OperatingSystem` to the URL query string
         if (getOperatingSystem() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOperatingSystem()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartupWizardCompleted` to the URL query string
         if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartupWizardCompleted()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

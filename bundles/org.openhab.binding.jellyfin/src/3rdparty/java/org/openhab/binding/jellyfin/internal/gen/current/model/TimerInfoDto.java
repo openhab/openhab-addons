@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,169 +20,96 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * TimerInfoDto
  */
-@JsonPropertyOrder({ TimerInfoDto.JSON_PROPERTY_ID, TimerInfoDto.JSON_PROPERTY_TYPE,
-        TimerInfoDto.JSON_PROPERTY_SERVER_ID, TimerInfoDto.JSON_PROPERTY_EXTERNAL_ID,
-        TimerInfoDto.JSON_PROPERTY_CHANNEL_ID, TimerInfoDto.JSON_PROPERTY_EXTERNAL_CHANNEL_ID,
-        TimerInfoDto.JSON_PROPERTY_CHANNEL_NAME, TimerInfoDto.JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG,
-        TimerInfoDto.JSON_PROPERTY_PROGRAM_ID, TimerInfoDto.JSON_PROPERTY_EXTERNAL_PROGRAM_ID,
-        TimerInfoDto.JSON_PROPERTY_NAME, TimerInfoDto.JSON_PROPERTY_OVERVIEW, TimerInfoDto.JSON_PROPERTY_START_DATE,
-        TimerInfoDto.JSON_PROPERTY_END_DATE, TimerInfoDto.JSON_PROPERTY_SERVICE_NAME,
-        TimerInfoDto.JSON_PROPERTY_PRIORITY, TimerInfoDto.JSON_PROPERTY_PRE_PADDING_SECONDS,
-        TimerInfoDto.JSON_PROPERTY_POST_PADDING_SECONDS, TimerInfoDto.JSON_PROPERTY_IS_PRE_PADDING_REQUIRED,
-        TimerInfoDto.JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID, TimerInfoDto.JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS,
-        TimerInfoDto.JSON_PROPERTY_IS_POST_PADDING_REQUIRED, TimerInfoDto.JSON_PROPERTY_KEEP_UNTIL,
-        TimerInfoDto.JSON_PROPERTY_STATUS, TimerInfoDto.JSON_PROPERTY_SERIES_TIMER_ID,
-        TimerInfoDto.JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID, TimerInfoDto.JSON_PROPERTY_RUN_TIME_TICKS,
-        TimerInfoDto.JSON_PROPERTY_PROGRAM_INFO })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TimerInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverId;
+    private @org.eclipse.jdt.annotation.Nullable String serverId;
 
     public static final String JSON_PROPERTY_EXTERNAL_ID = "ExternalId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String externalId;
+    private @org.eclipse.jdt.annotation.Nullable String externalId;
 
     public static final String JSON_PROPERTY_CHANNEL_ID = "ChannelId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID channelId;
+    private @org.eclipse.jdt.annotation.Nullable UUID channelId;
 
     public static final String JSON_PROPERTY_EXTERNAL_CHANNEL_ID = "ExternalChannelId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String externalChannelId;
+    private @org.eclipse.jdt.annotation.Nullable String externalChannelId;
 
     public static final String JSON_PROPERTY_CHANNEL_NAME = "ChannelName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String channelName;
+    private @org.eclipse.jdt.annotation.Nullable String channelName;
 
     public static final String JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG = "ChannelPrimaryImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String channelPrimaryImageTag;
+    private @org.eclipse.jdt.annotation.Nullable String channelPrimaryImageTag;
 
     public static final String JSON_PROPERTY_PROGRAM_ID = "ProgramId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String programId;
+    private @org.eclipse.jdt.annotation.Nullable String programId;
 
     public static final String JSON_PROPERTY_EXTERNAL_PROGRAM_ID = "ExternalProgramId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String externalProgramId;
+    private @org.eclipse.jdt.annotation.Nullable String externalProgramId;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String overview;
+    private @org.eclipse.jdt.annotation.Nullable String overview;
 
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime startDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime endDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime endDate;
 
     public static final String JSON_PROPERTY_SERVICE_NAME = "ServiceName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serviceName;
+    private @org.eclipse.jdt.annotation.Nullable String serviceName;
 
     public static final String JSON_PROPERTY_PRIORITY = "Priority";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer priority;
+    private @org.eclipse.jdt.annotation.Nullable Integer priority;
 
     public static final String JSON_PROPERTY_PRE_PADDING_SECONDS = "PrePaddingSeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer prePaddingSeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer prePaddingSeconds;
 
     public static final String JSON_PROPERTY_POST_PADDING_SECONDS = "PostPaddingSeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer postPaddingSeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer postPaddingSeconds;
 
     public static final String JSON_PROPERTY_IS_PRE_PADDING_REQUIRED = "IsPrePaddingRequired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPrePaddingRequired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPrePaddingRequired;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID = "ParentBackdropItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String parentBackdropItemId;
+    private @org.eclipse.jdt.annotation.Nullable String parentBackdropItemId;
 
     public static final String JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS = "ParentBackdropImageTags";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> parentBackdropImageTags;
+    private @org.eclipse.jdt.annotation.Nullable List<String> parentBackdropImageTags;
 
     public static final String JSON_PROPERTY_IS_POST_PADDING_REQUIRED = "IsPostPaddingRequired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPostPaddingRequired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPostPaddingRequired;
 
     public static final String JSON_PROPERTY_KEEP_UNTIL = "KeepUntil";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private KeepUntil keepUntil;
+    private @org.eclipse.jdt.annotation.Nullable KeepUntil keepUntil;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private RecordingStatus status;
+    private @org.eclipse.jdt.annotation.Nullable RecordingStatus status;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String seriesTimerId;
+    private @org.eclipse.jdt.annotation.Nullable String seriesTimerId;
 
     public static final String JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID = "ExternalSeriesTimerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String externalSeriesTimerId;
+    private @org.eclipse.jdt.annotation.Nullable String externalSeriesTimerId;
 
     public static final String JSON_PROPERTY_RUN_TIME_TICKS = "RunTimeTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long runTimeTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long runTimeTicks;
 
     public static final String JSON_PROPERTY_PROGRAM_INFO = "ProgramInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BaseItemDto programInfo;
+    private @org.eclipse.jdt.annotation.Nullable BaseItemDto programInfo;
 
     public TimerInfoDto() {
     }
@@ -196,10 +124,8 @@ public class TimerInfoDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -218,10 +144,8 @@ public class TimerInfoDto {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -240,10 +164,8 @@ public class TimerInfoDto {
      * 
      * @return serverId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
-    public String getServerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerId() {
         return serverId;
     }
 
@@ -262,10 +184,8 @@ public class TimerInfoDto {
      * 
      * @return externalId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_ID)
-    public String getExternalId() {
+    public @org.eclipse.jdt.annotation.Nullable String getExternalId() {
         return externalId;
     }
 
@@ -284,10 +204,8 @@ public class TimerInfoDto {
      * 
      * @return channelId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_ID)
-    public UUID getChannelId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getChannelId() {
         return channelId;
     }
 
@@ -306,10 +224,8 @@ public class TimerInfoDto {
      * 
      * @return externalChannelId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_CHANNEL_ID)
-    public String getExternalChannelId() {
+    public @org.eclipse.jdt.annotation.Nullable String getExternalChannelId() {
         return externalChannelId;
     }
 
@@ -328,10 +244,8 @@ public class TimerInfoDto {
      * 
      * @return channelName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_NAME)
-    public String getChannelName() {
+    public @org.eclipse.jdt.annotation.Nullable String getChannelName() {
         return channelName;
     }
 
@@ -350,10 +264,8 @@ public class TimerInfoDto {
      * 
      * @return channelPrimaryImageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_PRIMARY_IMAGE_TAG)
-    public String getChannelPrimaryImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getChannelPrimaryImageTag() {
         return channelPrimaryImageTag;
     }
 
@@ -372,10 +284,8 @@ public class TimerInfoDto {
      * 
      * @return programId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_ID)
-    public String getProgramId() {
+    public @org.eclipse.jdt.annotation.Nullable String getProgramId() {
         return programId;
     }
 
@@ -394,10 +304,8 @@ public class TimerInfoDto {
      * 
      * @return externalProgramId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_PROGRAM_ID)
-    public String getExternalProgramId() {
+    public @org.eclipse.jdt.annotation.Nullable String getExternalProgramId() {
         return externalProgramId;
     }
 
@@ -416,10 +324,8 @@ public class TimerInfoDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -438,10 +344,8 @@ public class TimerInfoDto {
      * 
      * @return overview
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
-    public String getOverview() {
+    public @org.eclipse.jdt.annotation.Nullable String getOverview() {
         return overview;
     }
 
@@ -460,10 +364,8 @@ public class TimerInfoDto {
      * 
      * @return startDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_DATE)
-    public OffsetDateTime getStartDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getStartDate() {
         return startDate;
     }
 
@@ -482,10 +384,8 @@ public class TimerInfoDto {
      * 
      * @return endDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_DATE)
-    public OffsetDateTime getEndDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getEndDate() {
         return endDate;
     }
 
@@ -504,10 +404,8 @@ public class TimerInfoDto {
      * 
      * @return serviceName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVICE_NAME)
-    public String getServiceName() {
+    public @org.eclipse.jdt.annotation.Nullable String getServiceName() {
         return serviceName;
     }
 
@@ -526,10 +424,8 @@ public class TimerInfoDto {
      * 
      * @return priority
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIORITY)
-    public Integer getPriority() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPriority() {
         return priority;
     }
 
@@ -548,10 +444,8 @@ public class TimerInfoDto {
      * 
      * @return prePaddingSeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRE_PADDING_SECONDS)
-    public Integer getPrePaddingSeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPrePaddingSeconds() {
         return prePaddingSeconds;
     }
 
@@ -570,10 +464,8 @@ public class TimerInfoDto {
      * 
      * @return postPaddingSeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POST_PADDING_SECONDS)
-    public Integer getPostPaddingSeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPostPaddingSeconds() {
         return postPaddingSeconds;
     }
 
@@ -592,10 +484,8 @@ public class TimerInfoDto {
      * 
      * @return isPrePaddingRequired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PRE_PADDING_REQUIRED)
-    public Boolean getIsPrePaddingRequired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPrePaddingRequired() {
         return isPrePaddingRequired;
     }
 
@@ -614,10 +504,8 @@ public class TimerInfoDto {
      * 
      * @return parentBackdropItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_ITEM_ID)
-    public String getParentBackdropItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getParentBackdropItemId() {
         return parentBackdropItemId;
     }
 
@@ -645,10 +533,8 @@ public class TimerInfoDto {
      * 
      * @return parentBackdropImageTags
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARENT_BACKDROP_IMAGE_TAGS)
-    public List<String> getParentBackdropImageTags() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getParentBackdropImageTags() {
         return parentBackdropImageTags;
     }
 
@@ -667,10 +553,8 @@ public class TimerInfoDto {
      * 
      * @return isPostPaddingRequired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_POST_PADDING_REQUIRED)
-    public Boolean getIsPostPaddingRequired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPostPaddingRequired() {
         return isPostPaddingRequired;
     }
 
@@ -689,10 +573,8 @@ public class TimerInfoDto {
      * 
      * @return keepUntil
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEEP_UNTIL)
-    public KeepUntil getKeepUntil() {
+    public @org.eclipse.jdt.annotation.Nullable KeepUntil getKeepUntil() {
         return keepUntil;
     }
 
@@ -711,10 +593,8 @@ public class TimerInfoDto {
      * 
      * @return status
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS)
-    public RecordingStatus getStatus() {
+    public @org.eclipse.jdt.annotation.Nullable RecordingStatus getStatus() {
         return status;
     }
 
@@ -733,10 +613,8 @@ public class TimerInfoDto {
      * 
      * @return seriesTimerId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
-    public String getSeriesTimerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getSeriesTimerId() {
         return seriesTimerId;
     }
 
@@ -755,10 +633,8 @@ public class TimerInfoDto {
      * 
      * @return externalSeriesTimerId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTERNAL_SERIES_TIMER_ID)
-    public String getExternalSeriesTimerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getExternalSeriesTimerId() {
         return externalSeriesTimerId;
     }
 
@@ -777,10 +653,8 @@ public class TimerInfoDto {
      * 
      * @return runTimeTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RUN_TIME_TICKS)
-    public Long getRunTimeTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getRunTimeTicks() {
         return runTimeTicks;
     }
 
@@ -799,10 +673,8 @@ public class TimerInfoDto {
      * 
      * @return programInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_INFO)
-    public BaseItemDto getProgramInfo() {
+    public @org.eclipse.jdt.annotation.Nullable BaseItemDto getProgramInfo() {
         return programInfo;
     }
 
@@ -811,9 +683,6 @@ public class TimerInfoDto {
         this.programInfo = programInfo;
     }
 
-    /**
-     * Return true if this TimerInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -938,168 +807,310 @@ public class TimerInfoDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExternalId` to the URL query string
         if (getExternalId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExternalId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sExternalId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getExternalId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ChannelId` to the URL query string
         if (getChannelId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChannelId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChannelId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExternalChannelId` to the URL query string
         if (getExternalChannelId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExternalChannelId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalChannelId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sExternalChannelId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getExternalChannelId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ChannelName` to the URL query string
         if (getChannelName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChannelName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChannelName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChannelName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ChannelPrimaryImageTag` to the URL query string
         if (getChannelPrimaryImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChannelPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChannelPrimaryImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChannelPrimaryImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChannelPrimaryImageTag()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProgramId` to the URL query string
         if (getProgramId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProgramId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProgramId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExternalProgramId` to the URL query string
         if (getExternalProgramId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExternalProgramId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalProgramId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sExternalProgramId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getExternalProgramId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOverview()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServiceName` to the URL query string
         if (getServiceName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServiceName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServiceName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServiceName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServiceName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Priority` to the URL query string
         if (getPriority() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPriority%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPriority()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPriority%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPriority()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrePaddingSeconds` to the URL query string
         if (getPrePaddingSeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrePaddingSeconds()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrePaddingSeconds%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrePaddingSeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PostPaddingSeconds` to the URL query string
         if (getPostPaddingSeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPostPaddingSeconds()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPostPaddingSeconds%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPostPaddingSeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsPrePaddingRequired` to the URL query string
         if (getIsPrePaddingRequired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPrePaddingRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPrePaddingRequired()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sIsPrePaddingRequired%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getIsPrePaddingRequired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ParentBackdropItemId` to the URL query string
         if (getParentBackdropItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sParentBackdropItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropItemId()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sParentBackdropItemId%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getParentBackdropItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ParentBackdropImageTags` to the URL query string
         if (getParentBackdropImageTags() != null) {
             for (int i = 0; i < getParentBackdropImageTags().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sParentBackdropImageTags%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getParentBackdropImageTags().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sParentBackdropImageTags%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getParentBackdropImageTags().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `IsPostPaddingRequired` to the URL query string
         if (getIsPostPaddingRequired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPostPaddingRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPostPaddingRequired()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sIsPostPaddingRequired%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getIsPostPaddingRequired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `KeepUntil` to the URL query string
         if (getKeepUntil() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKeepUntil%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKeepUntil()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKeepUntil%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKeepUntil()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeriesTimerId` to the URL query string
         if (getSeriesTimerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeriesTimerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExternalSeriesTimerId` to the URL query string
         if (getExternalSeriesTimerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExternalSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExternalSeriesTimerId()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sExternalSeriesTimerId%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getExternalSeriesTimerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RunTimeTicks` to the URL query string
         if (getRunTimeTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRunTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRunTimeTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRunTimeTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRunTimeTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProgramInfo` to the URL query string

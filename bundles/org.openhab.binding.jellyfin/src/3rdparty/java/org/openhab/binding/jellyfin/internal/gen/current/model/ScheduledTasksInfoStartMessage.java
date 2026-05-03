@@ -12,37 +12,33 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Scheduled tasks info start message. Data is the timing data encoded as \&quot;$initialDelay,$interval\&quot; in ms.
  */
-@JsonPropertyOrder({ ScheduledTasksInfoStartMessage.JSON_PROPERTY_DATA,
-        ScheduledTasksInfoStartMessage.JSON_PROPERTY_MESSAGE_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ScheduledTasksInfoStartMessage {
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String data;
+    private @org.eclipse.jdt.annotation.Nullable String data;
 
     public static final String JSON_PROPERTY_MESSAGE_TYPE = "MessageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO_START;
+    private @org.eclipse.jdt.annotation.Nullable SessionMessageType messageType = SessionMessageType.SCHEDULED_TASKS_INFO_START;
 
     public ScheduledTasksInfoStartMessage() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public ScheduledTasksInfoStartMessage(@JsonProperty(JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
+    public ScheduledTasksInfoStartMessage(
+            @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE) SessionMessageType messageType) {
         this();
         this.messageType = messageType;
     }
@@ -57,10 +53,8 @@ public class ScheduledTasksInfoStartMessage {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    public String getData() {
+    public @org.eclipse.jdt.annotation.Nullable String getData() {
         return data;
     }
 
@@ -74,16 +68,11 @@ public class ScheduledTasksInfoStartMessage {
      * 
      * @return messageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MESSAGE_TYPE)
-    public SessionMessageType getMessageType() {
+    public @org.eclipse.jdt.annotation.Nullable SessionMessageType getMessageType() {
         return messageType;
     }
 
-    /**
-     * Return true if this ScheduledTasksInfoStartMessage object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -154,14 +143,24 @@ public class ScheduledTasksInfoStartMessage {
 
         // add `Data` to the URL query string
         if (getData() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getData()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MessageType` to the URL query string
         if (getMessageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMessageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMessageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMessageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

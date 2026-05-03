@@ -16,18 +16,14 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LiveStreamResponse
  */
-@JsonPropertyOrder({ LiveStreamResponse.JSON_PROPERTY_MEDIA_SOURCE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveStreamResponse {
     public static final String JSON_PROPERTY_MEDIA_SOURCE = "MediaSource";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaSourceInfo mediaSource;
+    private @org.eclipse.jdt.annotation.Nullable MediaSourceInfo mediaSource;
 
     public LiveStreamResponse() {
     }
@@ -42,10 +38,8 @@ public class LiveStreamResponse {
      * 
      * @return mediaSource
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE)
-    public MediaSourceInfo getMediaSource() {
+    public @org.eclipse.jdt.annotation.Nullable MediaSourceInfo getMediaSource() {
         return mediaSource;
     }
 
@@ -54,9 +48,6 @@ public class LiveStreamResponse {
         this.mediaSource = mediaSource;
     }
 
-    /**
-     * Return true if this LiveStreamResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

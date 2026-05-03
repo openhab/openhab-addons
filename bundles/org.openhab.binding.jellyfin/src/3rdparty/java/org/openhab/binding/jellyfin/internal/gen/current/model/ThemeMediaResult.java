@@ -12,43 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class ThemeMediaResult.
  */
-@JsonPropertyOrder({ ThemeMediaResult.JSON_PROPERTY_ITEMS, ThemeMediaResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-        ThemeMediaResult.JSON_PROPERTY_START_INDEX, ThemeMediaResult.JSON_PROPERTY_OWNER_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ThemeMediaResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<BaseItemDto> items = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> items = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer totalRecordCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer startIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer startIndex;
 
     public static final String JSON_PROPERTY_OWNER_ID = "OwnerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID ownerId;
+    private @org.eclipse.jdt.annotation.Nullable UUID ownerId;
 
     public ThemeMediaResult() {
     }
@@ -71,10 +59,8 @@ public class ThemeMediaResult {
      * 
      * @return items
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS)
-    public List<BaseItemDto> getItems() {
+    public @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> getItems() {
         return items;
     }
 
@@ -93,10 +79,8 @@ public class ThemeMediaResult {
      * 
      * @return totalRecordCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    public Integer getTotalRecordCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
@@ -115,10 +99,8 @@ public class ThemeMediaResult {
      * 
      * @return startIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_INDEX)
-    public Integer getStartIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getStartIndex() {
         return startIndex;
     }
 
@@ -137,10 +119,8 @@ public class ThemeMediaResult {
      * 
      * @return ownerId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OWNER_ID)
-    public UUID getOwnerId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getOwnerId() {
         return ownerId;
     }
 
@@ -149,9 +129,6 @@ public class ThemeMediaResult {
         this.ownerId = ownerId;
     }
 
-    /**
-     * Return true if this ThemeMediaResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -239,20 +216,35 @@ public class ThemeMediaResult {
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTotalRecordCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OwnerId` to the URL query string
         if (getOwnerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOwnerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOwnerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOwnerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOwnerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

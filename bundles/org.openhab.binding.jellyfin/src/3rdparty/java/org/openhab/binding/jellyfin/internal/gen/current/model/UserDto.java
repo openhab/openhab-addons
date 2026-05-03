@@ -12,96 +12,60 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class UserDto.
  */
-@JsonPropertyOrder({ UserDto.JSON_PROPERTY_NAME, UserDto.JSON_PROPERTY_SERVER_ID, UserDto.JSON_PROPERTY_SERVER_NAME,
-        UserDto.JSON_PROPERTY_ID, UserDto.JSON_PROPERTY_PRIMARY_IMAGE_TAG, UserDto.JSON_PROPERTY_HAS_PASSWORD,
-        UserDto.JSON_PROPERTY_HAS_CONFIGURED_PASSWORD, UserDto.JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD,
-        UserDto.JSON_PROPERTY_ENABLE_AUTO_LOGIN, UserDto.JSON_PROPERTY_LAST_LOGIN_DATE,
-        UserDto.JSON_PROPERTY_LAST_ACTIVITY_DATE, UserDto.JSON_PROPERTY_CONFIGURATION, UserDto.JSON_PROPERTY_POLICY,
-        UserDto.JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverId;
+    private @org.eclipse.jdt.annotation.Nullable String serverId;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverName;
+    private @org.eclipse.jdt.annotation.Nullable String serverName;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_TAG = "PrimaryImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String primaryImageTag;
+    private @org.eclipse.jdt.annotation.Nullable String primaryImageTag;
 
     public static final String JSON_PROPERTY_HAS_PASSWORD = "HasPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasPassword;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasPassword;
 
     public static final String JSON_PROPERTY_HAS_CONFIGURED_PASSWORD = "HasConfiguredPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasConfiguredPassword;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasConfiguredPassword;
 
     public static final String JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD = "HasConfiguredEasyPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasConfiguredEasyPassword;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasConfiguredEasyPassword;
 
     public static final String JSON_PROPERTY_ENABLE_AUTO_LOGIN = "EnableAutoLogin";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAutoLogin;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAutoLogin;
 
     public static final String JSON_PROPERTY_LAST_LOGIN_DATE = "LastLoginDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastLoginDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastLoginDate;
 
     public static final String JSON_PROPERTY_LAST_ACTIVITY_DATE = "LastActivityDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastActivityDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastActivityDate;
 
     public static final String JSON_PROPERTY_CONFIGURATION = "Configuration";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UserConfiguration _configuration;
+    private @org.eclipse.jdt.annotation.Nullable UserConfiguration _configuration;
 
     public static final String JSON_PROPERTY_POLICY = "Policy";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UserPolicy policy;
+    private @org.eclipse.jdt.annotation.Nullable UserPolicy policy;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO = "PrimaryImageAspectRatio";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double primaryImageAspectRatio;
+    private @org.eclipse.jdt.annotation.Nullable Double primaryImageAspectRatio;
 
     public UserDto() {
     }
@@ -116,10 +80,8 @@ public class UserDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -138,10 +100,8 @@ public class UserDto {
      * 
      * @return serverId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
-    public String getServerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerId() {
         return serverId;
     }
 
@@ -160,10 +120,8 @@ public class UserDto {
      * 
      * @return serverName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
-    public String getServerName() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerName() {
         return serverName;
     }
 
@@ -182,10 +140,8 @@ public class UserDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -204,10 +160,8 @@ public class UserDto {
      * 
      * @return primaryImageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_TAG)
-    public String getPrimaryImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getPrimaryImageTag() {
         return primaryImageTag;
     }
 
@@ -226,10 +180,8 @@ public class UserDto {
      * 
      * @return hasPassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_PASSWORD)
-    public Boolean getHasPassword() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasPassword() {
         return hasPassword;
     }
 
@@ -248,10 +200,8 @@ public class UserDto {
      * 
      * @return hasConfiguredPassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_PASSWORD)
-    public Boolean getHasConfiguredPassword() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasConfiguredPassword() {
         return hasConfiguredPassword;
     }
 
@@ -272,10 +222,8 @@ public class UserDto {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_CONFIGURED_EASY_PASSWORD)
-    public Boolean getHasConfiguredEasyPassword() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasConfiguredEasyPassword() {
         return hasConfiguredEasyPassword;
     }
 
@@ -294,10 +242,8 @@ public class UserDto {
      * 
      * @return enableAutoLogin
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTO_LOGIN)
-    public Boolean getEnableAutoLogin() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAutoLogin() {
         return enableAutoLogin;
     }
 
@@ -316,10 +262,8 @@ public class UserDto {
      * 
      * @return lastLoginDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_LOGIN_DATE)
-    public OffsetDateTime getLastLoginDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastLoginDate() {
         return lastLoginDate;
     }
 
@@ -338,10 +282,8 @@ public class UserDto {
      * 
      * @return lastActivityDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_ACTIVITY_DATE)
-    public OffsetDateTime getLastActivityDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastActivityDate() {
         return lastActivityDate;
     }
 
@@ -360,10 +302,8 @@ public class UserDto {
      * 
      * @return _configuration
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONFIGURATION)
-    public UserConfiguration getConfiguration() {
+    public @org.eclipse.jdt.annotation.Nullable UserConfiguration getConfiguration() {
         return _configuration;
     }
 
@@ -382,10 +322,8 @@ public class UserDto {
      * 
      * @return policy
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POLICY)
-    public UserPolicy getPolicy() {
+    public @org.eclipse.jdt.annotation.Nullable UserPolicy getPolicy() {
         return policy;
     }
 
@@ -404,10 +342,8 @@ public class UserDto {
      * 
      * @return primaryImageAspectRatio
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_ASPECT_RATIO)
-    public Double getPrimaryImageAspectRatio() {
+    public @org.eclipse.jdt.annotation.Nullable Double getPrimaryImageAspectRatio() {
         return primaryImageAspectRatio;
     }
 
@@ -416,9 +352,6 @@ public class UserDto {
         this.primaryImageAspectRatio = primaryImageAspectRatio;
     }
 
-    /**
-     * Return true if this UserDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -513,68 +446,125 @@ public class UserDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrimaryImageTag` to the URL query string
         if (getPrimaryImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasPassword` to the URL query string
         if (getHasPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasConfiguredPassword` to the URL query string
         if (getHasConfiguredPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasConfiguredPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredPassword()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sHasConfiguredPassword%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getHasConfiguredPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasConfiguredEasyPassword` to the URL query string
         if (getHasConfiguredEasyPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasConfiguredEasyPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasConfiguredEasyPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasConfiguredEasyPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasConfiguredEasyPassword()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableAutoLogin` to the URL query string
         if (getEnableAutoLogin() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutoLogin%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAutoLogin()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutoLogin%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAutoLogin()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastLoginDate` to the URL query string
         if (getLastLoginDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastLoginDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastLoginDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastLoginDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastLoginDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastActivityDate` to the URL query string
         if (getLastActivityDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastActivityDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastActivityDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastActivityDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Configuration` to the URL query string
@@ -589,8 +579,14 @@ public class UserDto {
 
         // add `PrimaryImageAspectRatio` to the URL query string
         if (getPrimaryImageAspectRatio() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageAspectRatio()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageAspectRatio%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageAspectRatio()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

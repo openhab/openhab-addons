@@ -12,54 +12,37 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Create new playlist dto.
  */
-@JsonPropertyOrder({ CreatePlaylistDto.JSON_PROPERTY_NAME, CreatePlaylistDto.JSON_PROPERTY_IDS,
-        CreatePlaylistDto.JSON_PROPERTY_USER_ID, CreatePlaylistDto.JSON_PROPERTY_MEDIA_TYPE,
-        CreatePlaylistDto.JSON_PROPERTY_USERS, CreatePlaylistDto.JSON_PROPERTY_IS_PUBLIC })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CreatePlaylistDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_IDS = "Ids";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> ids = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> ids = new ArrayList<>();
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_MEDIA_TYPE = "MediaType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaType mediaType;
+    private @org.eclipse.jdt.annotation.Nullable MediaType mediaType;
 
     public static final String JSON_PROPERTY_USERS = "Users";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<PlaylistUserPermissions> users = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> users = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_PUBLIC = "IsPublic";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPublic;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPublic;
 
     public CreatePlaylistDto() {
     }
@@ -74,10 +57,8 @@ public class CreatePlaylistDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -104,10 +85,8 @@ public class CreatePlaylistDto {
      * 
      * @return ids
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IDS)
-    public List<UUID> getIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getIds() {
         return ids;
     }
 
@@ -126,10 +105,8 @@ public class CreatePlaylistDto {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -148,10 +125,8 @@ public class CreatePlaylistDto {
      * 
      * @return mediaType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPE)
-    public MediaType getMediaType() {
+    public @org.eclipse.jdt.annotation.Nullable MediaType getMediaType() {
         return mediaType;
     }
 
@@ -178,10 +153,8 @@ public class CreatePlaylistDto {
      * 
      * @return users
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USERS)
-    public List<PlaylistUserPermissions> getUsers() {
+    public @org.eclipse.jdt.annotation.Nullable List<PlaylistUserPermissions> getUsers() {
         return users;
     }
 
@@ -200,10 +173,8 @@ public class CreatePlaylistDto {
      * 
      * @return isPublic
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PUBLIC)
-    public Boolean getIsPublic() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPublic() {
         return isPublic;
     }
 
@@ -212,9 +183,6 @@ public class CreatePlaylistDto {
         this.isPublic = isPublic;
     }
 
-    /**
-     * Return true if this CreatePlaylistDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -292,33 +260,53 @@ public class CreatePlaylistDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Ids` to the URL query string
         if (getIds() != null) {
             for (int i = 0; i < getIds().size(); i++) {
                 if (getIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getIds().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MediaType` to the URL query string
         if (getMediaType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMediaType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMediaType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMediaType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Users` to the URL query string
@@ -336,8 +324,13 @@ public class CreatePlaylistDto {
 
         // add `IsPublic` to the URL query string
         if (getIsPublic() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPublic%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPublic()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsPublic%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsPublic()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

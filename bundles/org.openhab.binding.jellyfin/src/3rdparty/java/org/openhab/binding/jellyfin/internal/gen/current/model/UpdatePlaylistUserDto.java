@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Update existing playlist user dto. Fields set to &#x60;null&#x60; will not be updated and keep their current values.
  */
-@JsonPropertyOrder({ UpdatePlaylistUserDto.JSON_PROPERTY_CAN_EDIT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdatePlaylistUserDto {
     public static final String JSON_PROPERTY_CAN_EDIT = "CanEdit";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canEdit;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canEdit;
 
     public UpdatePlaylistUserDto() {
     }
@@ -44,10 +39,8 @@ public class UpdatePlaylistUserDto {
      * 
      * @return canEdit
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_EDIT)
-    public Boolean getCanEdit() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanEdit() {
         return canEdit;
     }
 
@@ -56,9 +49,6 @@ public class UpdatePlaylistUserDto {
         this.canEdit = canEdit;
     }
 
-    /**
-     * Return true if this UpdatePlaylistUserDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +117,13 @@ public class UpdatePlaylistUserDto {
 
         // add `CanEdit` to the URL query string
         if (getCanEdit() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanEdit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanEdit()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanEdit%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanEdit()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

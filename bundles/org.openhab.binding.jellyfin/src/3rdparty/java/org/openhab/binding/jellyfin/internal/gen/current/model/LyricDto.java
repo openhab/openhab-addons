@@ -18,23 +18,17 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LyricResponse model.
  */
-@JsonPropertyOrder({ LyricDto.JSON_PROPERTY_METADATA, LyricDto.JSON_PROPERTY_LYRICS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricDto {
     public static final String JSON_PROPERTY_METADATA = "Metadata";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LyricMetadata metadata;
+    private @org.eclipse.jdt.annotation.Nullable LyricMetadata metadata;
 
     public static final String JSON_PROPERTY_LYRICS = "Lyrics";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LyricLine> lyrics = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<LyricLine> lyrics = new ArrayList<>();
 
     public LyricDto() {
     }
@@ -49,10 +43,8 @@ public class LyricDto {
      * 
      * @return metadata
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA)
-    public LyricMetadata getMetadata() {
+    public @org.eclipse.jdt.annotation.Nullable LyricMetadata getMetadata() {
         return metadata;
     }
 
@@ -79,10 +71,8 @@ public class LyricDto {
      * 
      * @return lyrics
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LYRICS)
-    public List<LyricLine> getLyrics() {
+    public @org.eclipse.jdt.annotation.Nullable List<LyricLine> getLyrics() {
         return lyrics;
     }
 
@@ -91,9 +81,6 @@ public class LyricDto {
         this.lyrics = lyrics;
     }
 
-    /**
-     * Return true if this LyricDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

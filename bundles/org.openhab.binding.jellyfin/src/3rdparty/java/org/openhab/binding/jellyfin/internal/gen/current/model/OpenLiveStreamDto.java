@@ -12,99 +12,61 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Open live stream dto.
  */
-@JsonPropertyOrder({ OpenLiveStreamDto.JSON_PROPERTY_OPEN_TOKEN, OpenLiveStreamDto.JSON_PROPERTY_USER_ID,
-        OpenLiveStreamDto.JSON_PROPERTY_PLAY_SESSION_ID, OpenLiveStreamDto.JSON_PROPERTY_MAX_STREAMING_BITRATE,
-        OpenLiveStreamDto.JSON_PROPERTY_START_TIME_TICKS, OpenLiveStreamDto.JSON_PROPERTY_AUDIO_STREAM_INDEX,
-        OpenLiveStreamDto.JSON_PROPERTY_SUBTITLE_STREAM_INDEX, OpenLiveStreamDto.JSON_PROPERTY_MAX_AUDIO_CHANNELS,
-        OpenLiveStreamDto.JSON_PROPERTY_ITEM_ID, OpenLiveStreamDto.JSON_PROPERTY_ENABLE_DIRECT_PLAY,
-        OpenLiveStreamDto.JSON_PROPERTY_ENABLE_DIRECT_STREAM,
-        OpenLiveStreamDto.JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING,
-        OpenLiveStreamDto.JSON_PROPERTY_DEVICE_PROFILE, OpenLiveStreamDto.JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class OpenLiveStreamDto {
     public static final String JSON_PROPERTY_OPEN_TOKEN = "OpenToken";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String openToken;
+    private @org.eclipse.jdt.annotation.Nullable String openToken;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String playSessionId;
+    private @org.eclipse.jdt.annotation.Nullable String playSessionId;
 
     public static final String JSON_PROPERTY_MAX_STREAMING_BITRATE = "MaxStreamingBitrate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxStreamingBitrate;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxStreamingBitrate;
 
     public static final String JSON_PROPERTY_START_TIME_TICKS = "StartTimeTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long startTimeTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long startTimeTicks;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer audioStreamIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer subtitleStreamIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxAudioChannels;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxAudioChannels;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID itemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID itemId;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_PLAY = "EnableDirectPlay";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDirectPlay;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDirectPlay;
 
     public static final String JSON_PROPERTY_ENABLE_DIRECT_STREAM = "EnableDirectStream";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDirectStream;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDirectStream;
 
     public static final String JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING = "AlwaysBurnInSubtitleWhenTranscoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean alwaysBurnInSubtitleWhenTranscoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean alwaysBurnInSubtitleWhenTranscoding;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DeviceProfile deviceProfile;
+    private @org.eclipse.jdt.annotation.Nullable DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS = "DirectPlayProtocols";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaProtocol> directPlayProtocols = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaProtocol> directPlayProtocols = new ArrayList<>();
 
     public OpenLiveStreamDto() {
     }
@@ -119,10 +81,8 @@ public class OpenLiveStreamDto {
      * 
      * @return openToken
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPEN_TOKEN)
-    public String getOpenToken() {
+    public @org.eclipse.jdt.annotation.Nullable String getOpenToken() {
         return openToken;
     }
 
@@ -141,10 +101,8 @@ public class OpenLiveStreamDto {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -163,10 +121,8 @@ public class OpenLiveStreamDto {
      * 
      * @return playSessionId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID)
-    public String getPlaySessionId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPlaySessionId() {
         return playSessionId;
     }
 
@@ -185,10 +141,8 @@ public class OpenLiveStreamDto {
      * 
      * @return maxStreamingBitrate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_STREAMING_BITRATE)
-    public Integer getMaxStreamingBitrate() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxStreamingBitrate() {
         return maxStreamingBitrate;
     }
 
@@ -207,10 +161,8 @@ public class OpenLiveStreamDto {
      * 
      * @return startTimeTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_TIME_TICKS)
-    public Long getStartTimeTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStartTimeTicks() {
         return startTimeTicks;
     }
 
@@ -229,10 +181,8 @@ public class OpenLiveStreamDto {
      * 
      * @return audioStreamIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    public Integer getAudioStreamIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
@@ -251,10 +201,8 @@ public class OpenLiveStreamDto {
      * 
      * @return subtitleStreamIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    public Integer getSubtitleStreamIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
@@ -273,10 +221,8 @@ public class OpenLiveStreamDto {
      * 
      * @return maxAudioChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-    public Integer getMaxAudioChannels() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
@@ -295,10 +241,8 @@ public class OpenLiveStreamDto {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public UUID getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getItemId() {
         return itemId;
     }
 
@@ -317,10 +261,8 @@ public class OpenLiveStreamDto {
      * 
      * @return enableDirectPlay
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_PLAY)
-    public Boolean getEnableDirectPlay() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDirectPlay() {
         return enableDirectPlay;
     }
 
@@ -339,10 +281,8 @@ public class OpenLiveStreamDto {
      * 
      * @return enableDirectStream
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DIRECT_STREAM)
-    public Boolean getEnableDirectStream() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDirectStream() {
         return enableDirectStream;
     }
 
@@ -362,10 +302,8 @@ public class OpenLiveStreamDto {
      * 
      * @return alwaysBurnInSubtitleWhenTranscoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALWAYS_BURN_IN_SUBTITLE_WHEN_TRANSCODING)
-    public Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAlwaysBurnInSubtitleWhenTranscoding() {
         return alwaysBurnInSubtitleWhenTranscoding;
     }
 
@@ -392,10 +330,8 @@ public class OpenLiveStreamDto {
      * 
      * @return deviceProfile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
-    public DeviceProfile getDeviceProfile() {
+    public @org.eclipse.jdt.annotation.Nullable DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
@@ -423,10 +359,8 @@ public class OpenLiveStreamDto {
      * 
      * @return directPlayProtocols
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DIRECT_PLAY_PROTOCOLS)
-    public List<MediaProtocol> getDirectPlayProtocols() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaProtocol> getDirectPlayProtocols() {
         return directPlayProtocols;
     }
 
@@ -435,9 +369,6 @@ public class OpenLiveStreamDto {
         this.directPlayProtocols = directPlayProtocols;
     }
 
-    /**
-     * Return true if this OpenLiveStreamDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -536,74 +467,135 @@ public class OpenLiveStreamDto {
 
         // add `OpenToken` to the URL query string
         if (getOpenToken() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOpenToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenToken()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOpenToken%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOpenToken()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaySessionId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxStreamingBitrate` to the URL query string
         if (getMaxStreamingBitrate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStreamingBitrate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStreamingBitrate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxStreamingBitrate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartTimeTicks` to the URL query string
         if (getStartTimeTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartTimeTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartTimeTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AudioStreamIndex` to the URL query string
         if (getAudioStreamIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioStreamIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SubtitleStreamIndex` to the URL query string
         if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubtitleStreamIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxAudioChannels` to the URL query string
         if (getMaxAudioChannels() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxAudioChannels()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDirectPlay` to the URL query string
         if (getEnableDirectPlay() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDirectPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectPlay()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDirectPlay%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableDirectPlay()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDirectStream` to the URL query string
         if (getEnableDirectStream() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDirectStream%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDirectStream()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDirectStream%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableDirectStream()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AlwaysBurnInSubtitleWhenTranscoding` to the URL query string
         if (getAlwaysBurnInSubtitleWhenTranscoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAlwaysBurnInSubtitleWhenTranscoding%s=%s", prefix,
-                    suffix, ApiClient.urlEncode(ApiClient.valueToString(getAlwaysBurnInSubtitleWhenTranscoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAlwaysBurnInSubtitleWhenTranscoding%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getAlwaysBurnInSubtitleWhenTranscoding()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceProfile` to the URL query string
@@ -615,11 +607,17 @@ public class OpenLiveStreamDto {
         if (getDirectPlayProtocols() != null) {
             for (int i = 0; i < getDirectPlayProtocols().size(); i++) {
                 if (getDirectPlayProtocols().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sDirectPlayProtocols%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getDirectPlayProtocols().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sDirectPlayProtocols%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getDirectPlayProtocols().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

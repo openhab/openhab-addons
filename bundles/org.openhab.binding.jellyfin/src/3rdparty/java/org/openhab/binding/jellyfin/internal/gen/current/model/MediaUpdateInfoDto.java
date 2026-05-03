@@ -18,18 +18,14 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Media Update Info Dto.
  */
-@JsonPropertyOrder({ MediaUpdateInfoDto.JSON_PROPERTY_UPDATES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaUpdateInfoDto {
     public static final String JSON_PROPERTY_UPDATES = "Updates";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaUpdateInfoPathDto> updates = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaUpdateInfoPathDto> updates = new ArrayList<>();
 
     public MediaUpdateInfoDto() {
     }
@@ -52,10 +48,8 @@ public class MediaUpdateInfoDto {
      * 
      * @return updates
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_UPDATES)
-    public List<MediaUpdateInfoPathDto> getUpdates() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaUpdateInfoPathDto> getUpdates() {
         return updates;
     }
 
@@ -64,9 +58,6 @@ public class MediaUpdateInfoDto {
         this.updates = updates;
     }
 
-    /**
-     * Return true if this MediaUpdateInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

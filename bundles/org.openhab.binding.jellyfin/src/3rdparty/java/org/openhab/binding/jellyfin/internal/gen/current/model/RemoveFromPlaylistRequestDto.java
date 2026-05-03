@@ -12,39 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class RemoveFromPlaylistRequestDto.
  */
-@JsonPropertyOrder({ RemoveFromPlaylistRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_IDS,
-        RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYLIST,
-        RemoveFromPlaylistRequestDto.JSON_PROPERTY_CLEAR_PLAYING_ITEM })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoveFromPlaylistRequestDto {
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_IDS = "PlaylistItemIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> playlistItemIds = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> playlistItemIds = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CLEAR_PLAYLIST = "ClearPlaylist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean clearPlaylist;
+    private @org.eclipse.jdt.annotation.Nullable Boolean clearPlaylist;
 
     public static final String JSON_PROPERTY_CLEAR_PLAYING_ITEM = "ClearPlayingItem";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean clearPlayingItem;
+    private @org.eclipse.jdt.annotation.Nullable Boolean clearPlayingItem;
 
     public RemoveFromPlaylistRequestDto() {
     }
@@ -68,10 +57,8 @@ public class RemoveFromPlaylistRequestDto {
      * 
      * @return playlistItemIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_IDS)
-    public List<UUID> getPlaylistItemIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getPlaylistItemIds() {
         return playlistItemIds;
     }
 
@@ -90,10 +77,8 @@ public class RemoveFromPlaylistRequestDto {
      * 
      * @return clearPlaylist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYLIST)
-    public Boolean getClearPlaylist() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getClearPlaylist() {
         return clearPlaylist;
     }
 
@@ -114,10 +99,8 @@ public class RemoveFromPlaylistRequestDto {
      * 
      * @return clearPlayingItem
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CLEAR_PLAYING_ITEM)
-    public Boolean getClearPlayingItem() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getClearPlayingItem() {
         return clearPlayingItem;
     }
 
@@ -126,9 +109,6 @@ public class RemoveFromPlaylistRequestDto {
         this.clearPlayingItem = clearPlayingItem;
     }
 
-    /**
-     * Return true if this RemoveFromPlaylistRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -203,25 +183,41 @@ public class RemoveFromPlaylistRequestDto {
         if (getPlaylistItemIds() != null) {
             for (int i = 0; i < getPlaylistItemIds().size(); i++) {
                 if (getPlaylistItemIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getPlaylistItemIds().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `ClearPlaylist` to the URL query string
         if (getClearPlaylist() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sClearPlaylist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlaylist()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sClearPlaylist%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getClearPlaylist()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ClearPlayingItem` to the URL query string
         if (getClearPlayingItem() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sClearPlayingItem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClearPlayingItem()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sClearPlayingItem%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getClearPlayingItem()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

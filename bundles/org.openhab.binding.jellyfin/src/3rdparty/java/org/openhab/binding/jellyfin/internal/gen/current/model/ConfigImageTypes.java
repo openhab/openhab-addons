@@ -12,59 +12,39 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ConfigImageTypes
  */
-@JsonPropertyOrder({ ConfigImageTypes.JSON_PROPERTY_BACKDROP_SIZES, ConfigImageTypes.JSON_PROPERTY_BASE_URL,
-        ConfigImageTypes.JSON_PROPERTY_LOGO_SIZES, ConfigImageTypes.JSON_PROPERTY_POSTER_SIZES,
-        ConfigImageTypes.JSON_PROPERTY_PROFILE_SIZES, ConfigImageTypes.JSON_PROPERTY_SECURE_BASE_URL,
-        ConfigImageTypes.JSON_PROPERTY_STILL_SIZES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ConfigImageTypes {
     public static final String JSON_PROPERTY_BACKDROP_SIZES = "BackdropSizes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> backdropSizes;
+    private @org.eclipse.jdt.annotation.Nullable List<String> backdropSizes;
 
     public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String baseUrl;
+    private @org.eclipse.jdt.annotation.Nullable String baseUrl;
 
     public static final String JSON_PROPERTY_LOGO_SIZES = "LogoSizes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> logoSizes;
+    private @org.eclipse.jdt.annotation.Nullable List<String> logoSizes;
 
     public static final String JSON_PROPERTY_POSTER_SIZES = "PosterSizes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> posterSizes;
+    private @org.eclipse.jdt.annotation.Nullable List<String> posterSizes;
 
     public static final String JSON_PROPERTY_PROFILE_SIZES = "ProfileSizes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> profileSizes;
+    private @org.eclipse.jdt.annotation.Nullable List<String> profileSizes;
 
     public static final String JSON_PROPERTY_SECURE_BASE_URL = "SecureBaseUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String secureBaseUrl;
+    private @org.eclipse.jdt.annotation.Nullable String secureBaseUrl;
 
     public static final String JSON_PROPERTY_STILL_SIZES = "StillSizes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> stillSizes;
+    private @org.eclipse.jdt.annotation.Nullable List<String> stillSizes;
 
     public ConfigImageTypes() {
     }
@@ -87,10 +67,8 @@ public class ConfigImageTypes {
      * 
      * @return backdropSizes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BACKDROP_SIZES)
-    public List<String> getBackdropSizes() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getBackdropSizes() {
         return backdropSizes;
     }
 
@@ -109,10 +87,8 @@ public class ConfigImageTypes {
      * 
      * @return baseUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BASE_URL)
-    public String getBaseUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getBaseUrl() {
         return baseUrl;
     }
 
@@ -139,10 +115,8 @@ public class ConfigImageTypes {
      * 
      * @return logoSizes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOGO_SIZES)
-    public List<String> getLogoSizes() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLogoSizes() {
         return logoSizes;
     }
 
@@ -169,10 +143,8 @@ public class ConfigImageTypes {
      * 
      * @return posterSizes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSTER_SIZES)
-    public List<String> getPosterSizes() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getPosterSizes() {
         return posterSizes;
     }
 
@@ -199,10 +171,8 @@ public class ConfigImageTypes {
      * 
      * @return profileSizes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROFILE_SIZES)
-    public List<String> getProfileSizes() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getProfileSizes() {
         return profileSizes;
     }
 
@@ -221,10 +191,8 @@ public class ConfigImageTypes {
      * 
      * @return secureBaseUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SECURE_BASE_URL)
-    public String getSecureBaseUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getSecureBaseUrl() {
         return secureBaseUrl;
     }
 
@@ -251,10 +219,8 @@ public class ConfigImageTypes {
      * 
      * @return stillSizes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STILL_SIZES)
-    public List<String> getStillSizes() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getStillSizes() {
         return stillSizes;
     }
 
@@ -263,9 +229,6 @@ public class ConfigImageTypes {
         this.stillSizes = stillSizes;
     }
 
-    /**
-     * Return true if this ConfigImageTypes object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -347,62 +310,107 @@ public class ConfigImageTypes {
         // add `BackdropSizes` to the URL query string
         if (getBackdropSizes() != null) {
             for (int i = 0; i < getBackdropSizes().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBackdropSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBackdropSizes().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBackdropSizes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getBackdropSizes().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `BaseUrl` to the URL query string
         if (getBaseUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBaseUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LogoSizes` to the URL query string
         if (getLogoSizes() != null) {
             for (int i = 0; i < getLogoSizes().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLogoSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLogoSizes().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLogoSizes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLogoSizes().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `PosterSizes` to the URL query string
         if (getPosterSizes() != null) {
             for (int i = 0; i < getPosterSizes().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sPosterSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPosterSizes().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sPosterSizes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getPosterSizes().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ProfileSizes` to the URL query string
         if (getProfileSizes() != null) {
             for (int i = 0; i < getProfileSizes().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sProfileSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProfileSizes().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sProfileSizes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getProfileSizes().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `SecureBaseUrl` to the URL query string
         if (getSecureBaseUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSecureBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSecureBaseUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSecureBaseUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSecureBaseUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StillSizes` to the URL query string
         if (getStillSizes() != null) {
             for (int i = 0; i < getStillSizes().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sStillSizes%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getStillSizes().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sStillSizes%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getStillSizes().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

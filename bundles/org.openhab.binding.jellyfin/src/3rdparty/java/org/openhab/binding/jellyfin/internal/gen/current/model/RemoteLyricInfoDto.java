@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The remote lyric info dto.
  */
-@JsonPropertyOrder({ RemoteLyricInfoDto.JSON_PROPERTY_ID, RemoteLyricInfoDto.JSON_PROPERTY_PROVIDER_NAME,
-        RemoteLyricInfoDto.JSON_PROPERTY_LYRICS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoteLyricInfoDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerName;
+    private @org.eclipse.jdt.annotation.Nullable String providerName;
 
     public static final String JSON_PROPERTY_LYRICS = "Lyrics";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LyricDto lyrics;
+    private @org.eclipse.jdt.annotation.Nullable LyricDto lyrics;
 
     public RemoteLyricInfoDto() {
     }
@@ -55,10 +45,8 @@ public class RemoteLyricInfoDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -77,10 +65,8 @@ public class RemoteLyricInfoDto {
      * 
      * @return providerName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
-    public String getProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderName() {
         return providerName;
     }
 
@@ -99,10 +85,8 @@ public class RemoteLyricInfoDto {
      * 
      * @return lyrics
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LYRICS)
-    public LyricDto getLyrics() {
+    public @org.eclipse.jdt.annotation.Nullable LyricDto getLyrics() {
         return lyrics;
     }
 
@@ -111,9 +95,6 @@ public class RemoteLyricInfoDto {
         this.lyrics = lyrics;
     }
 
-    /**
-     * Return true if this RemoteLyricInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -186,14 +167,24 @@ public class RemoteLyricInfoDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Lyrics` to the URL query string

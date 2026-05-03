@@ -12,45 +12,38 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * SyncPlayPlayQueueUpdate
  */
-@JsonPropertyOrder({ SyncPlayPlayQueueUpdate.JSON_PROPERTY_GROUP_ID, SyncPlayPlayQueueUpdate.JSON_PROPERTY_DATA,
-        SyncPlayPlayQueueUpdate.JSON_PROPERTY_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SyncPlayPlayQueueUpdate {
     public static final String JSON_PROPERTY_GROUP_ID = "GroupId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID groupId;
+    private @org.eclipse.jdt.annotation.Nullable UUID groupId;
 
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlayQueueUpdate data;
+    private @org.eclipse.jdt.annotation.Nullable PlayQueueUpdate data;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupUpdateType type = GroupUpdateType.PLAY_QUEUE;
+    private @org.eclipse.jdt.annotation.Nullable GroupUpdateType type = GroupUpdateType.PLAY_QUEUE;
 
     public SyncPlayPlayQueueUpdate() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public SyncPlayPlayQueueUpdate(@JsonProperty(JSON_PROPERTY_GROUP_ID) UUID groupId,
-            @JsonProperty(JSON_PROPERTY_DATA) PlayQueueUpdate data,
-            @JsonProperty(JSON_PROPERTY_TYPE) GroupUpdateType type) {
+    public SyncPlayPlayQueueUpdate(@JsonProperty(value = JSON_PROPERTY_GROUP_ID) UUID groupId,
+            @JsonProperty(value = JSON_PROPERTY_DATA) PlayQueueUpdate data,
+            @JsonProperty(value = JSON_PROPERTY_TYPE) GroupUpdateType type) {
         this();
         this.groupId = groupId;
         this.data = data;
@@ -62,10 +55,8 @@ public class SyncPlayPlayQueueUpdate {
      * 
      * @return groupId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUP_ID)
-    public UUID getGroupId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGroupId() {
         return groupId;
     }
 
@@ -74,10 +65,8 @@ public class SyncPlayPlayQueueUpdate {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA)
-    public PlayQueueUpdate getData() {
+    public @org.eclipse.jdt.annotation.Nullable PlayQueueUpdate getData() {
         return data;
     }
 
@@ -86,16 +75,11 @@ public class SyncPlayPlayQueueUpdate {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public GroupUpdateType getType() {
+    public @org.eclipse.jdt.annotation.Nullable GroupUpdateType getType() {
         return type;
     }
 
-    /**
-     * Return true if this SyncPlayPlayQueueUpdate object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -168,8 +152,13 @@ public class SyncPlayPlayQueueUpdate {
 
         // add `GroupId` to the URL query string
         if (getGroupId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGroupId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGroupId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGroupId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Data` to the URL query string
@@ -179,8 +168,13 @@ public class SyncPlayPlayQueueUpdate {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

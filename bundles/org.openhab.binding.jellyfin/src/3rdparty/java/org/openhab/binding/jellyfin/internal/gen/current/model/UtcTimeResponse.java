@@ -12,31 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class UtcTimeResponse.
  */
-@JsonPropertyOrder({ UtcTimeResponse.JSON_PROPERTY_REQUEST_RECEPTION_TIME,
-        UtcTimeResponse.JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UtcTimeResponse {
     public static final String JSON_PROPERTY_REQUEST_RECEPTION_TIME = "RequestReceptionTime";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime requestReceptionTime;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime requestReceptionTime;
 
     public static final String JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME = "ResponseTransmissionTime";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime responseTransmissionTime;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime responseTransmissionTime;
 
     public UtcTimeResponse() {
     }
@@ -52,10 +44,8 @@ public class UtcTimeResponse {
      * 
      * @return requestReceptionTime
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REQUEST_RECEPTION_TIME)
-    public OffsetDateTime getRequestReceptionTime() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getRequestReceptionTime() {
         return requestReceptionTime;
     }
 
@@ -75,10 +65,8 @@ public class UtcTimeResponse {
      * 
      * @return responseTransmissionTime
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RESPONSE_TRANSMISSION_TIME)
-    public OffsetDateTime getResponseTransmissionTime() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getResponseTransmissionTime() {
         return responseTransmissionTime;
     }
 
@@ -88,9 +76,6 @@ public class UtcTimeResponse {
         this.responseTransmissionTime = responseTransmissionTime;
     }
 
-    /**
-     * Return true if this UtcTimeResponse object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -161,14 +146,26 @@ public class UtcTimeResponse {
 
         // add `RequestReceptionTime` to the URL query string
         if (getRequestReceptionTime() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRequestReceptionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequestReceptionTime()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sRequestReceptionTime%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getRequestReceptionTime()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ResponseTransmissionTime` to the URL query string
         if (getResponseTransmissionTime() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sResponseTransmissionTime%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getResponseTransmissionTime()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sResponseTransmissionTime%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getResponseTransmissionTime()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

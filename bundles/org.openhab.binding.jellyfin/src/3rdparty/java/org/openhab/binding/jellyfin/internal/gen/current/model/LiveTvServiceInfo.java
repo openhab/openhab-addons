@@ -12,64 +12,42 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class ServiceInfo.
  */
-@JsonPropertyOrder({ LiveTvServiceInfo.JSON_PROPERTY_NAME, LiveTvServiceInfo.JSON_PROPERTY_HOME_PAGE_URL,
-        LiveTvServiceInfo.JSON_PROPERTY_STATUS, LiveTvServiceInfo.JSON_PROPERTY_STATUS_MESSAGE,
-        LiveTvServiceInfo.JSON_PROPERTY_VERSION, LiveTvServiceInfo.JSON_PROPERTY_HAS_UPDATE_AVAILABLE,
-        LiveTvServiceInfo.JSON_PROPERTY_IS_VISIBLE, LiveTvServiceInfo.JSON_PROPERTY_TUNERS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveTvServiceInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_HOME_PAGE_URL = "HomePageUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String homePageUrl;
+    private @org.eclipse.jdt.annotation.Nullable String homePageUrl;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LiveTvServiceStatus status;
+    private @org.eclipse.jdt.annotation.Nullable LiveTvServiceStatus status;
 
     public static final String JSON_PROPERTY_STATUS_MESSAGE = "StatusMessage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String statusMessage;
+    private @org.eclipse.jdt.annotation.Nullable String statusMessage;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasUpdateAvailable;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasUpdateAvailable;
 
     public static final String JSON_PROPERTY_IS_VISIBLE = "IsVisible";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isVisible;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isVisible;
 
     public static final String JSON_PROPERTY_TUNERS = "Tuners";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> tuners;
+    private @org.eclipse.jdt.annotation.Nullable List<String> tuners;
 
     public LiveTvServiceInfo() {
     }
@@ -84,10 +62,8 @@ public class LiveTvServiceInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -106,10 +82,8 @@ public class LiveTvServiceInfo {
      * 
      * @return homePageUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HOME_PAGE_URL)
-    public String getHomePageUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getHomePageUrl() {
         return homePageUrl;
     }
 
@@ -128,10 +102,8 @@ public class LiveTvServiceInfo {
      * 
      * @return status
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS)
-    public LiveTvServiceStatus getStatus() {
+    public @org.eclipse.jdt.annotation.Nullable LiveTvServiceStatus getStatus() {
         return status;
     }
 
@@ -150,10 +122,8 @@ public class LiveTvServiceInfo {
      * 
      * @return statusMessage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS_MESSAGE)
-    public String getStatusMessage() {
+    public @org.eclipse.jdt.annotation.Nullable String getStatusMessage() {
         return statusMessage;
     }
 
@@ -172,10 +142,8 @@ public class LiveTvServiceInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -194,10 +162,8 @@ public class LiveTvServiceInfo {
      * 
      * @return hasUpdateAvailable
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
-    public Boolean getHasUpdateAvailable() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
 
@@ -216,10 +182,8 @@ public class LiveTvServiceInfo {
      * 
      * @return isVisible
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_VISIBLE)
-    public Boolean getIsVisible() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsVisible() {
         return isVisible;
     }
 
@@ -246,10 +210,8 @@ public class LiveTvServiceInfo {
      * 
      * @return tuners
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TUNERS)
-    public List<String> getTuners() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getTuners() {
         return tuners;
     }
 
@@ -258,9 +220,6 @@ public class LiveTvServiceInfo {
         this.tuners = tuners;
     }
 
-    /**
-     * Return true if this LiveTvServiceInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -343,53 +302,94 @@ public class LiveTvServiceInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HomePageUrl` to the URL query string
         if (getHomePageUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHomePageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHomePageUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHomePageUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHomePageUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StatusMessage` to the URL query string
         if (getStatusMessage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStatusMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatusMessage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStatusMessage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatusMessage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasUpdateAvailable` to the URL query string
         if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasUpdateAvailable()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsVisible` to the URL query string
         if (getIsVisible() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsVisible%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsVisible()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsVisible%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsVisible()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Tuners` to the URL query string
         if (getTuners() != null) {
             for (int i = 0; i < getTuners().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sTuners%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getTuners().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sTuners%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getTuners().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

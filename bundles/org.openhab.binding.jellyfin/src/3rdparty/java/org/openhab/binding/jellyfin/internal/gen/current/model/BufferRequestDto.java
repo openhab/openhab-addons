@@ -12,42 +12,30 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class BufferRequestDto.
  */
-@JsonPropertyOrder({ BufferRequestDto.JSON_PROPERTY_WHEN, BufferRequestDto.JSON_PROPERTY_POSITION_TICKS,
-        BufferRequestDto.JSON_PROPERTY_IS_PLAYING, BufferRequestDto.JSON_PROPERTY_PLAYLIST_ITEM_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BufferRequestDto {
     public static final String JSON_PROPERTY_WHEN = "When";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime when;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime when;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long positionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long positionTicks;
 
     public static final String JSON_PROPERTY_IS_PLAYING = "IsPlaying";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPlaying;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPlaying;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID playlistItemId;
 
     public BufferRequestDto() {
     }
@@ -62,10 +50,8 @@ public class BufferRequestDto {
      * 
      * @return when
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WHEN)
-    public OffsetDateTime getWhen() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getWhen() {
         return when;
     }
 
@@ -84,10 +70,8 @@ public class BufferRequestDto {
      * 
      * @return positionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
-    public Long getPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPositionTicks() {
         return positionTicks;
     }
 
@@ -106,10 +90,8 @@ public class BufferRequestDto {
      * 
      * @return isPlaying
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PLAYING)
-    public Boolean getIsPlaying() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPlaying() {
         return isPlaying;
     }
 
@@ -128,10 +110,8 @@ public class BufferRequestDto {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public UUID getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getPlaylistItemId() {
         return playlistItemId;
     }
 
@@ -140,9 +120,6 @@ public class BufferRequestDto {
         this.playlistItemId = playlistItemId;
     }
 
-    /**
-     * Return true if this BufferRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -217,26 +194,46 @@ public class BufferRequestDto {
 
         // add `When` to the URL query string
         if (getWhen() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWhen()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWhen%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWhen()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsPlaying` to the URL query string
         if (getIsPlaying() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPlaying()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsPlaying%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsPlaying()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

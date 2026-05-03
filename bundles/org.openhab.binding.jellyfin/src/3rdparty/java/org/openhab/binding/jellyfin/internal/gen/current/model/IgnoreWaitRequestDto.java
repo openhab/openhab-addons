@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class IgnoreWaitRequestDto.
  */
-@JsonPropertyOrder({ IgnoreWaitRequestDto.JSON_PROPERTY_IGNORE_WAIT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class IgnoreWaitRequestDto {
     public static final String JSON_PROPERTY_IGNORE_WAIT = "IgnoreWait";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean ignoreWait;
+    private @org.eclipse.jdt.annotation.Nullable Boolean ignoreWait;
 
     public IgnoreWaitRequestDto() {
     }
@@ -44,10 +39,8 @@ public class IgnoreWaitRequestDto {
      * 
      * @return ignoreWait
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IGNORE_WAIT)
-    public Boolean getIgnoreWait() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIgnoreWait() {
         return ignoreWait;
     }
 
@@ -56,9 +49,6 @@ public class IgnoreWaitRequestDto {
         this.ignoreWait = ignoreWait;
     }
 
-    /**
-     * Return true if this IgnoreWaitRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +117,13 @@ public class IgnoreWaitRequestDto {
 
         // add `IgnoreWait` to the URL query string
         if (getIgnoreWait() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIgnoreWait%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreWait()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIgnoreWait%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIgnoreWait()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,47 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * XbmcMetadataOptions
  */
-@JsonPropertyOrder({ XbmcMetadataOptions.JSON_PROPERTY_USER_ID, XbmcMetadataOptions.JSON_PROPERTY_RELEASE_DATE_FORMAT,
-        XbmcMetadataOptions.JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO,
-        XbmcMetadataOptions.JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION,
-        XbmcMetadataOptions.JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class XbmcMetadataOptions {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userId;
+    private @org.eclipse.jdt.annotation.Nullable String userId;
 
     public static final String JSON_PROPERTY_RELEASE_DATE_FORMAT = "ReleaseDateFormat";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String releaseDateFormat;
+    private @org.eclipse.jdt.annotation.Nullable String releaseDateFormat;
 
     public static final String JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO = "SaveImagePathsInNfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveImagePathsInNfo;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveImagePathsInNfo;
 
     public static final String JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION = "EnablePathSubstitution";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enablePathSubstitution;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enablePathSubstitution;
 
     public static final String JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION = "EnableExtraThumbsDuplication";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableExtraThumbsDuplication;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableExtraThumbsDuplication;
 
     public XbmcMetadataOptions() {
     }
@@ -67,10 +51,8 @@ public class XbmcMetadataOptions {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public String getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserId() {
         return userId;
     }
 
@@ -89,10 +71,8 @@ public class XbmcMetadataOptions {
      * 
      * @return releaseDateFormat
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RELEASE_DATE_FORMAT)
-    public String getReleaseDateFormat() {
+    public @org.eclipse.jdt.annotation.Nullable String getReleaseDateFormat() {
         return releaseDateFormat;
     }
 
@@ -111,10 +91,8 @@ public class XbmcMetadataOptions {
      * 
      * @return saveImagePathsInNfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_IMAGE_PATHS_IN_NFO)
-    public Boolean getSaveImagePathsInNfo() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveImagePathsInNfo() {
         return saveImagePathsInNfo;
     }
 
@@ -134,10 +112,8 @@ public class XbmcMetadataOptions {
      * 
      * @return enablePathSubstitution
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_PATH_SUBSTITUTION)
-    public Boolean getEnablePathSubstitution() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnablePathSubstitution() {
         return enablePathSubstitution;
     }
 
@@ -157,10 +133,8 @@ public class XbmcMetadataOptions {
      * 
      * @return enableExtraThumbsDuplication
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_EXTRA_THUMBS_DUPLICATION)
-    public Boolean getEnableExtraThumbsDuplication() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableExtraThumbsDuplication() {
         return enableExtraThumbsDuplication;
     }
 
@@ -170,9 +144,6 @@ public class XbmcMetadataOptions {
         this.enableExtraThumbsDuplication = enableExtraThumbsDuplication;
     }
 
-    /**
-     * Return true if this XbmcMetadataOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -251,32 +222,59 @@ public class XbmcMetadataOptions {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ReleaseDateFormat` to the URL query string
         if (getReleaseDateFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sReleaseDateFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getReleaseDateFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sReleaseDateFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getReleaseDateFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveImagePathsInNfo` to the URL query string
         if (getSaveImagePathsInNfo() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveImagePathsInNfo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveImagePathsInNfo()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveImagePathsInNfo%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveImagePathsInNfo()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnablePathSubstitution` to the URL query string
         if (getEnablePathSubstitution() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePathSubstitution%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePathSubstitution()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePathSubstitution%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnablePathSubstitution()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableExtraThumbsDuplication` to the URL query string
         if (getEnableExtraThumbsDuplication() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableExtraThumbsDuplication%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableExtraThumbsDuplication()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableExtraThumbsDuplication%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableExtraThumbsDuplication()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

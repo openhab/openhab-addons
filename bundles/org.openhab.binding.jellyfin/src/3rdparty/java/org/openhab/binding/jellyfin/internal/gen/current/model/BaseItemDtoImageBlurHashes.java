@@ -12,92 +12,59 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * Gets or sets the blurhashes for the image tags. Maps image type to dictionary mapping image tag to blurhash value.
  */
-@JsonPropertyOrder({ BaseItemDtoImageBlurHashes.JSON_PROPERTY_PRIMARY, BaseItemDtoImageBlurHashes.JSON_PROPERTY_ART,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_BACKDROP, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BANNER,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_LOGO, BaseItemDtoImageBlurHashes.JSON_PROPERTY_THUMB,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_DISC, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_SCREENSHOT, BaseItemDtoImageBlurHashes.JSON_PROPERTY_MENU,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_CHAPTER, BaseItemDtoImageBlurHashes.JSON_PROPERTY_BOX_REAR,
-        BaseItemDtoImageBlurHashes.JSON_PROPERTY_PROFILE })
+@JsonTypeName("BaseItemDto_ImageBlurHashes")
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BaseItemDtoImageBlurHashes {
     public static final String JSON_PROPERTY_PRIMARY = "Primary";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> primary = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> primary = new HashMap<>();
 
     public static final String JSON_PROPERTY_ART = "Art";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> art = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> art = new HashMap<>();
 
     public static final String JSON_PROPERTY_BACKDROP = "Backdrop";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> backdrop = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> backdrop = new HashMap<>();
 
     public static final String JSON_PROPERTY_BANNER = "Banner";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> banner = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> banner = new HashMap<>();
 
     public static final String JSON_PROPERTY_LOGO = "Logo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> logo = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> logo = new HashMap<>();
 
     public static final String JSON_PROPERTY_THUMB = "Thumb";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> thumb = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> thumb = new HashMap<>();
 
     public static final String JSON_PROPERTY_DISC = "Disc";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> disc = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> disc = new HashMap<>();
 
     public static final String JSON_PROPERTY_BOX = "Box";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> box = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> box = new HashMap<>();
 
     public static final String JSON_PROPERTY_SCREENSHOT = "Screenshot";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> screenshot = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> screenshot = new HashMap<>();
 
     public static final String JSON_PROPERTY_MENU = "Menu";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> menu = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> menu = new HashMap<>();
 
     public static final String JSON_PROPERTY_CHAPTER = "Chapter";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> chapter = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> chapter = new HashMap<>();
 
     public static final String JSON_PROPERTY_BOX_REAR = "BoxRear";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> boxRear = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> boxRear = new HashMap<>();
 
     public static final String JSON_PROPERTY_PROFILE = "Profile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> profile = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> profile = new HashMap<>();
 
     public BaseItemDtoImageBlurHashes() {
     }
@@ -120,10 +87,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return primary
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY)
-    public Map<String, String> getPrimary() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getPrimary() {
         return primary;
     }
 
@@ -150,10 +115,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return art
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ART)
-    public Map<String, String> getArt() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getArt() {
         return art;
     }
 
@@ -180,10 +143,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return backdrop
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BACKDROP)
-    public Map<String, String> getBackdrop() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getBackdrop() {
         return backdrop;
     }
 
@@ -210,10 +171,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return banner
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BANNER)
-    public Map<String, String> getBanner() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getBanner() {
         return banner;
     }
 
@@ -240,10 +199,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return logo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOGO)
-    public Map<String, String> getLogo() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getLogo() {
         return logo;
     }
 
@@ -270,10 +227,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return thumb
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THUMB)
-    public Map<String, String> getThumb() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getThumb() {
         return thumb;
     }
 
@@ -300,10 +255,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return disc
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISC)
-    public Map<String, String> getDisc() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getDisc() {
         return disc;
     }
 
@@ -330,10 +283,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return box
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BOX)
-    public Map<String, String> getBox() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getBox() {
         return box;
     }
 
@@ -360,10 +311,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return screenshot
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SCREENSHOT)
-    public Map<String, String> getScreenshot() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getScreenshot() {
         return screenshot;
     }
 
@@ -390,10 +339,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return menu
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MENU)
-    public Map<String, String> getMenu() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getMenu() {
         return menu;
     }
 
@@ -420,10 +367,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return chapter
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHAPTER)
-    public Map<String, String> getChapter() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getChapter() {
         return chapter;
     }
 
@@ -450,10 +395,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return boxRear
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BOX_REAR)
-    public Map<String, String> getBoxRear() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getBoxRear() {
         return boxRear;
     }
 
@@ -480,10 +423,8 @@ public class BaseItemDtoImageBlurHashes {
      * 
      * @return profile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROFILE)
-    public Map<String, String> getProfile() {
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getProfile() {
         return profile;
     }
 
@@ -492,9 +433,6 @@ public class BaseItemDtoImageBlurHashes {
         this.profile = profile;
     }
 
-    /**
-     * Return true if this BaseItemDto_ImageBlurHashes object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -589,145 +527,222 @@ public class BaseItemDtoImageBlurHashes {
         // add `Primary` to the URL query string
         if (getPrimary() != null) {
             for (String _key : getPrimary().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimary%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getPrimary().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getPrimary().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sPrimary%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getPrimary().get(_key), URLEncoder.encode(String.valueOf(getPrimary().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Art` to the URL query string
         if (getArt() != null) {
             for (String _key : getArt().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sArt%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getArt().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getArt().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sArt%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getArt().get(_key),
+                            URLEncoder.encode(String.valueOf(getArt().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Backdrop` to the URL query string
         if (getBackdrop() != null) {
             for (String _key : getBackdrop().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBackdrop%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getBackdrop().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getBackdrop().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBackdrop%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getBackdrop().get(_key), URLEncoder.encode(String.valueOf(getBackdrop().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Banner` to the URL query string
         if (getBanner() != null) {
             for (String _key : getBanner().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBanner%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getBanner().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBanner().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBanner%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getBanner().get(_key), URLEncoder.encode(String.valueOf(getBanner().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Logo` to the URL query string
         if (getLogo() != null) {
             for (String _key : getLogo().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLogo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getLogo().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getLogo().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLogo%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getLogo().get(_key),
+                            URLEncoder.encode(String.valueOf(getLogo().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Thumb` to the URL query string
         if (getThumb() != null) {
             for (String _key : getThumb().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sThumb%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getThumb().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getThumb().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sThumb%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getThumb().get(_key),
+                            URLEncoder.encode(String.valueOf(getThumb().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Disc` to the URL query string
         if (getDisc() != null) {
             for (String _key : getDisc().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisc%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getDisc().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getDisc().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisc%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getDisc().get(_key),
+                            URLEncoder.encode(String.valueOf(getDisc().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Box` to the URL query string
         if (getBox() != null) {
             for (String _key : getBox().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBox%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getBox().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBox().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBox%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getBox().get(_key),
+                            URLEncoder.encode(String.valueOf(getBox().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Screenshot` to the URL query string
         if (getScreenshot() != null) {
             for (String _key : getScreenshot().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sScreenshot%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getScreenshot().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getScreenshot().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sScreenshot%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getScreenshot().get(_key),
+                            URLEncoder.encode(String.valueOf(getScreenshot().get(_key)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Menu` to the URL query string
         if (getMenu() != null) {
             for (String _key : getMenu().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMenu%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getMenu().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMenu().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMenu%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getMenu().get(_key),
+                            URLEncoder.encode(String.valueOf(getMenu().get(_key)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Chapter` to the URL query string
         if (getChapter() != null) {
             for (String _key : getChapter().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sChapter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getChapter().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getChapter().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sChapter%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getChapter().get(_key), URLEncoder.encode(String.valueOf(getChapter().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `BoxRear` to the URL query string
         if (getBoxRear() != null) {
             for (String _key : getBoxRear().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sBoxRear%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getBoxRear().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getBoxRear().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sBoxRear%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getBoxRear().get(_key), URLEncoder.encode(String.valueOf(getBoxRear().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Profile` to the URL query string
         if (getProfile() != null) {
             for (String _key : getProfile().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sProfile%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getProfile().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getProfile().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sProfile%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getProfile().get(_key), URLEncoder.encode(String.valueOf(getProfile().get(_key)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

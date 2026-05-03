@@ -12,47 +12,32 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class ChapterInfo.
  */
-@JsonPropertyOrder({ ChapterInfo.JSON_PROPERTY_START_POSITION_TICKS, ChapterInfo.JSON_PROPERTY_NAME,
-        ChapterInfo.JSON_PROPERTY_IMAGE_PATH, ChapterInfo.JSON_PROPERTY_IMAGE_DATE_MODIFIED,
-        ChapterInfo.JSON_PROPERTY_IMAGE_TAG })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ChapterInfo {
     public static final String JSON_PROPERTY_START_POSITION_TICKS = "StartPositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long startPositionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long startPositionTicks;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_IMAGE_PATH = "ImagePath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String imagePath;
+    private @org.eclipse.jdt.annotation.Nullable String imagePath;
 
     public static final String JSON_PROPERTY_IMAGE_DATE_MODIFIED = "ImageDateModified";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime imageDateModified;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime imageDateModified;
 
     public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String imageTag;
+    private @org.eclipse.jdt.annotation.Nullable String imageTag;
 
     public ChapterInfo() {
     }
@@ -67,10 +52,8 @@ public class ChapterInfo {
      * 
      * @return startPositionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_POSITION_TICKS)
-    public Long getStartPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStartPositionTicks() {
         return startPositionTicks;
     }
 
@@ -89,10 +72,8 @@ public class ChapterInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -111,10 +92,8 @@ public class ChapterInfo {
      * 
      * @return imagePath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_PATH)
-    public String getImagePath() {
+    public @org.eclipse.jdt.annotation.Nullable String getImagePath() {
         return imagePath;
     }
 
@@ -133,10 +112,8 @@ public class ChapterInfo {
      * 
      * @return imageDateModified
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_DATE_MODIFIED)
-    public OffsetDateTime getImageDateModified() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getImageDateModified() {
         return imageDateModified;
     }
 
@@ -155,10 +132,8 @@ public class ChapterInfo {
      * 
      * @return imageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
-    public String getImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getImageTag() {
         return imageTag;
     }
 
@@ -167,9 +142,6 @@ public class ChapterInfo {
         this.imageTag = imageTag;
     }
 
-    /**
-     * Return true if this ChapterInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -245,32 +217,57 @@ public class ChapterInfo {
 
         // add `StartPositionTicks` to the URL query string
         if (getStartPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImagePath` to the URL query string
         if (getImagePath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImagePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImagePath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImagePath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImagePath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageDateModified` to the URL query string
         if (getImageDateModified() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageDateModified%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageDateModified()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageDateModified%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageDateModified()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageTag` to the URL query string
         if (getImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,47 +12,32 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Upload subtitles dto.
  */
-@JsonPropertyOrder({ UploadSubtitleDto.JSON_PROPERTY_LANGUAGE, UploadSubtitleDto.JSON_PROPERTY_FORMAT,
-        UploadSubtitleDto.JSON_PROPERTY_IS_FORCED, UploadSubtitleDto.JSON_PROPERTY_IS_HEARING_IMPAIRED,
-        UploadSubtitleDto.JSON_PROPERTY_DATA })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UploadSubtitleDto {
     public static final String JSON_PROPERTY_LANGUAGE = "Language";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String language;
+    private @org.eclipse.jdt.annotation.NonNull String language;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String format;
+    private @org.eclipse.jdt.annotation.NonNull String format;
 
     public static final String JSON_PROPERTY_IS_FORCED = "IsForced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isForced;
+    private @org.eclipse.jdt.annotation.NonNull Boolean isForced;
 
     public static final String JSON_PROPERTY_IS_HEARING_IMPAIRED = "IsHearingImpaired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isHearingImpaired;
+    private @org.eclipse.jdt.annotation.NonNull Boolean isHearingImpaired;
 
     public static final String JSON_PROPERTY_DATA = "Data";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String data;
+    private @org.eclipse.jdt.annotation.NonNull String data;
 
     public UploadSubtitleDto() {
     }
@@ -67,11 +52,9 @@ public class UploadSubtitleDto {
      * 
      * @return language
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LANGUAGE, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getLanguage() {
+    public @org.eclipse.jdt.annotation.NonNull String getLanguage() {
         return language;
     }
 
@@ -91,11 +74,9 @@ public class UploadSubtitleDto {
      * 
      * @return format
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FORMAT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getFormat() {
+    public @org.eclipse.jdt.annotation.NonNull String getFormat() {
         return format;
     }
 
@@ -115,11 +96,9 @@ public class UploadSubtitleDto {
      * 
      * @return isForced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_FORCED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public Boolean getIsForced() {
+    public @org.eclipse.jdt.annotation.NonNull Boolean getIsForced() {
         return isForced;
     }
 
@@ -139,11 +118,9 @@ public class UploadSubtitleDto {
      * 
      * @return isHearingImpaired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_HEARING_IMPAIRED, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public Boolean getIsHearingImpaired() {
+    public @org.eclipse.jdt.annotation.NonNull Boolean getIsHearingImpaired() {
         return isHearingImpaired;
     }
 
@@ -163,11 +140,9 @@ public class UploadSubtitleDto {
      * 
      * @return data
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATA, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getData() {
+    public @org.eclipse.jdt.annotation.NonNull String getData() {
         return data;
     }
 
@@ -177,9 +152,6 @@ public class UploadSubtitleDto {
         this.data = data;
     }
 
-    /**
-     * Return true if this UploadSubtitleDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -256,32 +228,57 @@ public class UploadSubtitleDto {
 
         // add `Language` to the URL query string
         if (getLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsForced` to the URL query string
         if (getIsForced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsForced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsForced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsForced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsHearingImpaired` to the URL query string
         if (getIsHearingImpaired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHearingImpaired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsHearingImpaired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsHearingImpaired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Data` to the URL query string
         if (getData() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getData()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sData%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getData()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

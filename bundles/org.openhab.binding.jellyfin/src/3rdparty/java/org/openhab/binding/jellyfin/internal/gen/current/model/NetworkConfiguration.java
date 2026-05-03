@@ -12,150 +12,87 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Common.Net.NetworkConfiguration.
  */
-@JsonPropertyOrder({ NetworkConfiguration.JSON_PROPERTY_BASE_URL, NetworkConfiguration.JSON_PROPERTY_ENABLE_HTTPS,
-        NetworkConfiguration.JSON_PROPERTY_REQUIRE_HTTPS, NetworkConfiguration.JSON_PROPERTY_CERTIFICATE_PATH,
-        NetworkConfiguration.JSON_PROPERTY_CERTIFICATE_PASSWORD, NetworkConfiguration.JSON_PROPERTY_INTERNAL_HTTP_PORT,
-        NetworkConfiguration.JSON_PROPERTY_INTERNAL_HTTPS_PORT, NetworkConfiguration.JSON_PROPERTY_PUBLIC_HTTP_PORT,
-        NetworkConfiguration.JSON_PROPERTY_PUBLIC_HTTPS_PORT, NetworkConfiguration.JSON_PROPERTY_AUTO_DISCOVERY,
-        NetworkConfiguration.JSON_PROPERTY_ENABLE_U_PN_P, NetworkConfiguration.JSON_PROPERTY_ENABLE_I_PV4,
-        NetworkConfiguration.JSON_PROPERTY_ENABLE_I_PV6, NetworkConfiguration.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
-        NetworkConfiguration.JSON_PROPERTY_LOCAL_NETWORK_SUBNETS,
-        NetworkConfiguration.JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES, NetworkConfiguration.JSON_PROPERTY_KNOWN_PROXIES,
-        NetworkConfiguration.JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES,
-        NetworkConfiguration.JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES,
-        NetworkConfiguration.JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST,
-        NetworkConfiguration.JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET,
-        NetworkConfiguration.JSON_PROPERTY_REMOTE_I_P_FILTER,
-        NetworkConfiguration.JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class NetworkConfiguration {
     public static final String JSON_PROPERTY_BASE_URL = "BaseUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String baseUrl;
+    private @org.eclipse.jdt.annotation.Nullable String baseUrl;
 
     public static final String JSON_PROPERTY_ENABLE_HTTPS = "EnableHttps";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableHttps;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableHttps;
 
     public static final String JSON_PROPERTY_REQUIRE_HTTPS = "RequireHttps";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean requireHttps;
+    private @org.eclipse.jdt.annotation.Nullable Boolean requireHttps;
 
     public static final String JSON_PROPERTY_CERTIFICATE_PATH = "CertificatePath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String certificatePath;
+    private @org.eclipse.jdt.annotation.Nullable String certificatePath;
 
     public static final String JSON_PROPERTY_CERTIFICATE_PASSWORD = "CertificatePassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String certificatePassword;
+    private @org.eclipse.jdt.annotation.Nullable String certificatePassword;
 
     public static final String JSON_PROPERTY_INTERNAL_HTTP_PORT = "InternalHttpPort";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer internalHttpPort;
+    private @org.eclipse.jdt.annotation.Nullable Integer internalHttpPort;
 
     public static final String JSON_PROPERTY_INTERNAL_HTTPS_PORT = "InternalHttpsPort";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer internalHttpsPort;
+    private @org.eclipse.jdt.annotation.Nullable Integer internalHttpsPort;
 
     public static final String JSON_PROPERTY_PUBLIC_HTTP_PORT = "PublicHttpPort";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer publicHttpPort;
+    private @org.eclipse.jdt.annotation.Nullable Integer publicHttpPort;
 
     public static final String JSON_PROPERTY_PUBLIC_HTTPS_PORT = "PublicHttpsPort";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer publicHttpsPort;
+    private @org.eclipse.jdt.annotation.Nullable Integer publicHttpsPort;
 
     public static final String JSON_PROPERTY_AUTO_DISCOVERY = "AutoDiscovery";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean autoDiscovery;
+    private @org.eclipse.jdt.annotation.Nullable Boolean autoDiscovery;
 
     public static final String JSON_PROPERTY_ENABLE_U_PN_P = "EnableUPnP";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableUPnP;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableUPnP;
 
     public static final String JSON_PROPERTY_ENABLE_I_PV4 = "EnableIPv4";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableIPv4;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableIPv4;
 
     public static final String JSON_PROPERTY_ENABLE_I_PV6 = "EnableIPv6";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableIPv6;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableIPv6;
 
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRemoteAccess;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRemoteAccess;
 
     public static final String JSON_PROPERTY_LOCAL_NETWORK_SUBNETS = "LocalNetworkSubnets";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> localNetworkSubnets = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> localNetworkSubnets = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES = "LocalNetworkAddresses";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> localNetworkAddresses = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> localNetworkAddresses = new ArrayList<>();
 
     public static final String JSON_PROPERTY_KNOWN_PROXIES = "KnownProxies";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> knownProxies = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> knownProxies = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES = "IgnoreVirtualInterfaces";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean ignoreVirtualInterfaces;
+    private @org.eclipse.jdt.annotation.Nullable Boolean ignoreVirtualInterfaces;
 
     public static final String JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES = "VirtualInterfaceNames";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> virtualInterfaceNames = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> virtualInterfaceNames = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST = "EnablePublishedServerUriByRequest";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enablePublishedServerUriByRequest;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enablePublishedServerUriByRequest;
 
     public static final String JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET = "PublishedServerUriBySubnet";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> publishedServerUriBySubnet = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> publishedServerUriBySubnet = new ArrayList<>();
 
     public static final String JSON_PROPERTY_REMOTE_I_P_FILTER = "RemoteIPFilter";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> remoteIPFilter = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> remoteIPFilter = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST = "IsRemoteIPFilterBlacklist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isRemoteIPFilterBlacklist;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isRemoteIPFilterBlacklist;
 
     public NetworkConfiguration() {
     }
@@ -170,10 +107,8 @@ public class NetworkConfiguration {
      * 
      * @return baseUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BASE_URL)
-    public String getBaseUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getBaseUrl() {
         return baseUrl;
     }
 
@@ -192,10 +127,8 @@ public class NetworkConfiguration {
      * 
      * @return enableHttps
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_HTTPS)
-    public Boolean getEnableHttps() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableHttps() {
         return enableHttps;
     }
 
@@ -214,10 +147,8 @@ public class NetworkConfiguration {
      * 
      * @return requireHttps
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REQUIRE_HTTPS)
-    public Boolean getRequireHttps() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRequireHttps() {
         return requireHttps;
     }
 
@@ -236,10 +167,8 @@ public class NetworkConfiguration {
      * 
      * @return certificatePath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PATH)
-    public String getCertificatePath() {
+    public @org.eclipse.jdt.annotation.Nullable String getCertificatePath() {
         return certificatePath;
     }
 
@@ -259,10 +188,8 @@ public class NetworkConfiguration {
      * 
      * @return certificatePassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CERTIFICATE_PASSWORD)
-    public String getCertificatePassword() {
+    public @org.eclipse.jdt.annotation.Nullable String getCertificatePassword() {
         return certificatePassword;
     }
 
@@ -281,10 +208,8 @@ public class NetworkConfiguration {
      * 
      * @return internalHttpPort
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTP_PORT)
-    public Integer getInternalHttpPort() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getInternalHttpPort() {
         return internalHttpPort;
     }
 
@@ -303,10 +228,8 @@ public class NetworkConfiguration {
      * 
      * @return internalHttpsPort
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_HTTPS_PORT)
-    public Integer getInternalHttpsPort() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getInternalHttpsPort() {
         return internalHttpsPort;
     }
 
@@ -325,10 +248,8 @@ public class NetworkConfiguration {
      * 
      * @return publicHttpPort
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTP_PORT)
-    public Integer getPublicHttpPort() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPublicHttpPort() {
         return publicHttpPort;
     }
 
@@ -347,10 +268,8 @@ public class NetworkConfiguration {
      * 
      * @return publicHttpsPort
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PUBLIC_HTTPS_PORT)
-    public Integer getPublicHttpsPort() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPublicHttpsPort() {
         return publicHttpsPort;
     }
 
@@ -369,10 +288,8 @@ public class NetworkConfiguration {
      * 
      * @return autoDiscovery
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTO_DISCOVERY)
-    public Boolean getAutoDiscovery() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAutoDiscovery() {
         return autoDiscovery;
     }
 
@@ -393,10 +310,8 @@ public class NetworkConfiguration {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_U_PN_P)
-    public Boolean getEnableUPnP() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableUPnP() {
         return enableUPnP;
     }
 
@@ -415,10 +330,8 @@ public class NetworkConfiguration {
      * 
      * @return enableIPv4
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV4)
-    public Boolean getEnableIPv4() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableIPv4() {
         return enableIPv4;
     }
 
@@ -437,10 +350,8 @@ public class NetworkConfiguration {
      * 
      * @return enableIPv6
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_I_PV6)
-    public Boolean getEnableIPv6() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableIPv6() {
         return enableIPv6;
     }
 
@@ -459,10 +370,8 @@ public class NetworkConfiguration {
      * 
      * @return enableRemoteAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS)
-    public Boolean getEnableRemoteAccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
@@ -490,10 +399,8 @@ public class NetworkConfiguration {
      * 
      * @return localNetworkSubnets
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_SUBNETS)
-    public List<String> getLocalNetworkSubnets() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLocalNetworkSubnets() {
         return localNetworkSubnets;
     }
 
@@ -521,10 +428,8 @@ public class NetworkConfiguration {
      * 
      * @return localNetworkAddresses
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_NETWORK_ADDRESSES)
-    public List<String> getLocalNetworkAddresses() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLocalNetworkAddresses() {
         return localNetworkAddresses;
     }
 
@@ -551,10 +456,8 @@ public class NetworkConfiguration {
      * 
      * @return knownProxies
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KNOWN_PROXIES)
-    public List<String> getKnownProxies() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getKnownProxies() {
         return knownProxies;
     }
 
@@ -575,10 +478,8 @@ public class NetworkConfiguration {
      * 
      * @return ignoreVirtualInterfaces
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IGNORE_VIRTUAL_INTERFACES)
-    public Boolean getIgnoreVirtualInterfaces() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIgnoreVirtualInterfaces() {
         return ignoreVirtualInterfaces;
     }
 
@@ -608,10 +509,8 @@ public class NetworkConfiguration {
      * 
      * @return virtualInterfaceNames
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIRTUAL_INTERFACE_NAMES)
-    public List<String> getVirtualInterfaceNames() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getVirtualInterfaceNames() {
         return virtualInterfaceNames;
     }
 
@@ -631,10 +530,8 @@ public class NetworkConfiguration {
      * 
      * @return enablePublishedServerUriByRequest
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_PUBLISHED_SERVER_URI_BY_REQUEST)
-    public Boolean getEnablePublishedServerUriByRequest() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnablePublishedServerUriByRequest() {
         return enablePublishedServerUriByRequest;
     }
 
@@ -663,10 +560,8 @@ public class NetworkConfiguration {
      * 
      * @return publishedServerUriBySubnet
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PUBLISHED_SERVER_URI_BY_SUBNET)
-    public List<String> getPublishedServerUriBySubnet() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getPublishedServerUriBySubnet() {
         return publishedServerUriBySubnet;
     }
 
@@ -695,10 +590,8 @@ public class NetworkConfiguration {
      * 
      * @return remoteIPFilter
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMOTE_I_P_FILTER)
-    public List<String> getRemoteIPFilter() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getRemoteIPFilter() {
         return remoteIPFilter;
     }
 
@@ -720,10 +613,8 @@ public class NetworkConfiguration {
      * 
      * @return isRemoteIPFilterBlacklist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_REMOTE_I_P_FILTER_BLACKLIST)
-    public Boolean getIsRemoteIPFilterBlacklist() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsRemoteIPFilterBlacklist() {
         return isRemoteIPFilterBlacklist;
     }
 
@@ -732,9 +623,6 @@ public class NetworkConfiguration {
         this.isRemoteIPFilterBlacklist = isRemoteIPFilterBlacklist;
     }
 
-    /**
-     * Return true if this NetworkConfiguration object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -853,164 +741,295 @@ public class NetworkConfiguration {
 
         // add `BaseUrl` to the URL query string
         if (getBaseUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaseUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBaseUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBaseUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableHttps` to the URL query string
         if (getEnableHttps() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHttps()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHttps%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableHttps()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RequireHttps` to the URL query string
         if (getRequireHttps() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRequireHttps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequireHttps()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRequireHttps%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRequireHttps()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CertificatePath` to the URL query string
         if (getCertificatePath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCertificatePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCertificatePath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCertificatePath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CertificatePassword` to the URL query string
         if (getCertificatePassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCertificatePassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCertificatePassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCertificatePassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCertificatePassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `InternalHttpPort` to the URL query string
         if (getInternalHttpPort() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInternalHttpPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpPort()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sInternalHttpPort%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInternalHttpPort()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `InternalHttpsPort` to the URL query string
         if (getInternalHttpsPort() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInternalHttpsPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalHttpsPort()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sInternalHttpsPort%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInternalHttpsPort()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PublicHttpPort` to the URL query string
         if (getPublicHttpPort() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPublicHttpPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpPort()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPublicHttpPort%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPublicHttpPort()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PublicHttpsPort` to the URL query string
         if (getPublicHttpsPort() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPublicHttpsPort%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPublicHttpsPort()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPublicHttpsPort%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPublicHttpsPort()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AutoDiscovery` to the URL query string
         if (getAutoDiscovery() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAutoDiscovery%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoDiscovery()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAutoDiscovery%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAutoDiscovery()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableUPnP` to the URL query string
         if (getEnableUPnP() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUPnP%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUPnP()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUPnP%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableUPnP()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableIPv4` to the URL query string
         if (getEnableIPv4() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIPv4%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv4()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIPv4%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableIPv4()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableIPv6` to the URL query string
         if (getEnableIPv6() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIPv6%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIPv6()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIPv6%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableIPv6()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableRemoteAccess` to the URL query string
         if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableRemoteAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LocalNetworkSubnets` to the URL query string
         if (getLocalNetworkSubnets() != null) {
             for (int i = 0; i < getLocalNetworkSubnets().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkSubnets().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLocalNetworkSubnets%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLocalNetworkSubnets().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `LocalNetworkAddresses` to the URL query string
         if (getLocalNetworkAddresses() != null) {
             for (int i = 0; i < getLocalNetworkAddresses().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalNetworkAddresses().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLocalNetworkAddresses%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLocalNetworkAddresses().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `KnownProxies` to the URL query string
         if (getKnownProxies() != null) {
             for (int i = 0; i < getKnownProxies().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sKnownProxies%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getKnownProxies().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sKnownProxies%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getKnownProxies().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `IgnoreVirtualInterfaces` to the URL query string
         if (getIgnoreVirtualInterfaces() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIgnoreVirtualInterfaces()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIgnoreVirtualInterfaces%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIgnoreVirtualInterfaces()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VirtualInterfaceNames` to the URL query string
         if (getVirtualInterfaceNames() != null) {
             for (int i = 0; i < getVirtualInterfaceNames().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getVirtualInterfaceNames().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sVirtualInterfaceNames%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getVirtualInterfaceNames().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `EnablePublishedServerUriByRequest` to the URL query string
         if (getEnablePublishedServerUriByRequest() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePublishedServerUriByRequest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePublishedServerUriByRequest()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePublishedServerUriByRequest%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnablePublishedServerUriByRequest()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PublishedServerUriBySubnet` to the URL query string
         if (getPublishedServerUriBySubnet() != null) {
             for (int i = 0; i < getPublishedServerUriBySubnet().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getPublishedServerUriBySubnet().get(i)))));
+                try {
+                    joiner.add(
+                            String.format(java.util.Locale.ROOT, "%sPublishedServerUriBySubnet%s%s=%s", prefix, suffix,
+                                    "".equals(suffix) ? ""
+                                            : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                    containerSuffix),
+                                    URLEncoder.encode(String.valueOf(getPublishedServerUriBySubnet().get(i)), "UTF-8")
+                                            .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `RemoteIPFilter` to the URL query string
         if (getRemoteIPFilter() != null) {
             for (int i = 0; i < getRemoteIPFilter().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteIPFilter%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getRemoteIPFilter().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sRemoteIPFilter%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getRemoteIPFilter().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `IsRemoteIPFilterBlacklist` to the URL query string
         if (getIsRemoteIPFilterBlacklist() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRemoteIPFilterBlacklist()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsRemoteIPFilterBlacklist%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsRemoteIPFilterBlacklist()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

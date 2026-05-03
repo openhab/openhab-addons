@@ -12,61 +12,40 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class ImageInfo.
  */
-@JsonPropertyOrder({ ImageInfo.JSON_PROPERTY_IMAGE_TYPE, ImageInfo.JSON_PROPERTY_IMAGE_INDEX,
-        ImageInfo.JSON_PROPERTY_IMAGE_TAG, ImageInfo.JSON_PROPERTY_PATH, ImageInfo.JSON_PROPERTY_BLUR_HASH,
-        ImageInfo.JSON_PROPERTY_HEIGHT, ImageInfo.JSON_PROPERTY_WIDTH, ImageInfo.JSON_PROPERTY_SIZE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ImageInfo {
     public static final String JSON_PROPERTY_IMAGE_TYPE = "ImageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ImageType imageType;
+    private @org.eclipse.jdt.annotation.Nullable ImageType imageType;
 
     public static final String JSON_PROPERTY_IMAGE_INDEX = "ImageIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer imageIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer imageIndex;
 
     public static final String JSON_PROPERTY_IMAGE_TAG = "ImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String imageTag;
+    private @org.eclipse.jdt.annotation.Nullable String imageTag;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_BLUR_HASH = "BlurHash";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String blurHash;
+    private @org.eclipse.jdt.annotation.Nullable String blurHash;
 
     public static final String JSON_PROPERTY_HEIGHT = "Height";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer height;
+    private @org.eclipse.jdt.annotation.Nullable Integer height;
 
     public static final String JSON_PROPERTY_WIDTH = "Width";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer width;
+    private @org.eclipse.jdt.annotation.Nullable Integer width;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long size;
+    private @org.eclipse.jdt.annotation.Nullable Long size;
 
     public ImageInfo() {
     }
@@ -81,10 +60,8 @@ public class ImageInfo {
      * 
      * @return imageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE)
-    public ImageType getImageType() {
+    public @org.eclipse.jdt.annotation.Nullable ImageType getImageType() {
         return imageType;
     }
 
@@ -103,10 +80,8 @@ public class ImageInfo {
      * 
      * @return imageIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_INDEX)
-    public Integer getImageIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getImageIndex() {
         return imageIndex;
     }
 
@@ -125,10 +100,8 @@ public class ImageInfo {
      * 
      * @return imageTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TAG)
-    public String getImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getImageTag() {
         return imageTag;
     }
 
@@ -147,10 +120,8 @@ public class ImageInfo {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -169,10 +140,8 @@ public class ImageInfo {
      * 
      * @return blurHash
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BLUR_HASH)
-    public String getBlurHash() {
+    public @org.eclipse.jdt.annotation.Nullable String getBlurHash() {
         return blurHash;
     }
 
@@ -191,10 +160,8 @@ public class ImageInfo {
      * 
      * @return height
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEIGHT)
-    public Integer getHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getHeight() {
         return height;
     }
 
@@ -213,10 +180,8 @@ public class ImageInfo {
      * 
      * @return width
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WIDTH)
-    public Integer getWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getWidth() {
         return width;
     }
 
@@ -235,10 +200,8 @@ public class ImageInfo {
      * 
      * @return size
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SIZE)
-    public Long getSize() {
+    public @org.eclipse.jdt.annotation.Nullable Long getSize() {
         return size;
     }
 
@@ -247,9 +210,6 @@ public class ImageInfo {
         this.size = size;
     }
 
-    /**
-     * Return true if this ImageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -329,50 +289,90 @@ public class ImageInfo {
 
         // add `ImageType` to the URL query string
         if (getImageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageIndex` to the URL query string
         if (getImageIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageTag` to the URL query string
         if (getImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BlurHash` to the URL query string
         if (getBlurHash() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBlurHash%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBlurHash()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBlurHash%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBlurHash()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Height` to the URL query string
         if (getHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Width` to the URL query string
         if (getWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Size` to the URL query string
         if (getSize() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSize%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSize()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

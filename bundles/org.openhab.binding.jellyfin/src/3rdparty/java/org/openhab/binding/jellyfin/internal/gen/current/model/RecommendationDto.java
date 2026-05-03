@@ -12,43 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * RecommendationDto
  */
-@JsonPropertyOrder({ RecommendationDto.JSON_PROPERTY_ITEMS, RecommendationDto.JSON_PROPERTY_RECOMMENDATION_TYPE,
-        RecommendationDto.JSON_PROPERTY_BASELINE_ITEM_NAME, RecommendationDto.JSON_PROPERTY_CATEGORY_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RecommendationDto {
     public static final String JSON_PROPERTY_ITEMS = "Items";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<BaseItemDto> items;
+    private @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> items;
 
     public static final String JSON_PROPERTY_RECOMMENDATION_TYPE = "RecommendationType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private RecommendationType recommendationType;
+    private @org.eclipse.jdt.annotation.Nullable RecommendationType recommendationType;
 
     public static final String JSON_PROPERTY_BASELINE_ITEM_NAME = "BaselineItemName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String baselineItemName;
+    private @org.eclipse.jdt.annotation.Nullable String baselineItemName;
 
     public static final String JSON_PROPERTY_CATEGORY_ID = "CategoryId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID categoryId;
+    private @org.eclipse.jdt.annotation.Nullable UUID categoryId;
 
     public RecommendationDto() {
     }
@@ -71,10 +59,8 @@ public class RecommendationDto {
      * 
      * @return items
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS)
-    public List<BaseItemDto> getItems() {
+    public @org.eclipse.jdt.annotation.Nullable List<BaseItemDto> getItems() {
         return items;
     }
 
@@ -94,10 +80,8 @@ public class RecommendationDto {
      * 
      * @return recommendationType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RECOMMENDATION_TYPE)
-    public RecommendationType getRecommendationType() {
+    public @org.eclipse.jdt.annotation.Nullable RecommendationType getRecommendationType() {
         return recommendationType;
     }
 
@@ -116,10 +100,8 @@ public class RecommendationDto {
      * 
      * @return baselineItemName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BASELINE_ITEM_NAME)
-    public String getBaselineItemName() {
+    public @org.eclipse.jdt.annotation.Nullable String getBaselineItemName() {
         return baselineItemName;
     }
 
@@ -138,10 +120,8 @@ public class RecommendationDto {
      * 
      * @return categoryId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CATEGORY_ID)
-    public UUID getCategoryId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getCategoryId() {
         return categoryId;
     }
 
@@ -150,9 +130,6 @@ public class RecommendationDto {
         this.categoryId = categoryId;
     }
 
-    /**
-     * Return true if this RecommendationDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -240,20 +217,35 @@ public class RecommendationDto {
 
         // add `RecommendationType` to the URL query string
         if (getRecommendationType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRecommendationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRecommendationType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRecommendationType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRecommendationType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BaselineItemName` to the URL query string
         if (getBaselineItemName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBaselineItemName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBaselineItemName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBaselineItemName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBaselineItemName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CategoryId` to the URL query string
         if (getCategoryId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCategoryId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategoryId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCategoryId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCategoryId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

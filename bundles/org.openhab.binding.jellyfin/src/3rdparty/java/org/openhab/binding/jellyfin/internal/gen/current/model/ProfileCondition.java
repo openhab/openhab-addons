@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ProfileCondition
  */
-@JsonPropertyOrder({ ProfileCondition.JSON_PROPERTY_CONDITION, ProfileCondition.JSON_PROPERTY_PROPERTY,
-        ProfileCondition.JSON_PROPERTY_VALUE, ProfileCondition.JSON_PROPERTY_IS_REQUIRED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ProfileCondition {
     public static final String JSON_PROPERTY_CONDITION = "Condition";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ProfileConditionType condition;
+    private @org.eclipse.jdt.annotation.Nullable ProfileConditionType condition;
 
     public static final String JSON_PROPERTY_PROPERTY = "Property";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ProfileConditionValue property;
+    private @org.eclipse.jdt.annotation.Nullable ProfileConditionValue property;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String value;
+    private @org.eclipse.jdt.annotation.Nullable String value;
 
     public static final String JSON_PROPERTY_IS_REQUIRED = "IsRequired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isRequired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isRequired;
 
     public ProfileCondition() {
     }
@@ -60,10 +48,8 @@ public class ProfileCondition {
      * 
      * @return condition
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONDITION)
-    public ProfileConditionType getCondition() {
+    public @org.eclipse.jdt.annotation.Nullable ProfileConditionType getCondition() {
         return condition;
     }
 
@@ -82,10 +68,8 @@ public class ProfileCondition {
      * 
      * @return property
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROPERTY)
-    public ProfileConditionValue getProperty() {
+    public @org.eclipse.jdt.annotation.Nullable ProfileConditionValue getProperty() {
         return property;
     }
 
@@ -104,10 +88,8 @@ public class ProfileCondition {
      * 
      * @return value
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VALUE)
-    public String getValue() {
+    public @org.eclipse.jdt.annotation.Nullable String getValue() {
         return value;
     }
 
@@ -126,10 +108,8 @@ public class ProfileCondition {
      * 
      * @return isRequired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_REQUIRED)
-    public Boolean getIsRequired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsRequired() {
         return isRequired;
     }
 
@@ -138,9 +118,6 @@ public class ProfileCondition {
         this.isRequired = isRequired;
     }
 
-    /**
-     * Return true if this ProfileCondition object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class ProfileCondition {
 
         // add `Condition` to the URL query string
         if (getCondition() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCondition%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCondition()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCondition%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCondition()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Property` to the URL query string
         if (getProperty() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProperty%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProperty()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProperty%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProperty()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Value` to the URL query string
         if (getValue() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getValue()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsRequired` to the URL query string
         if (getIsRequired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsRequired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsRequired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsRequired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsRequired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

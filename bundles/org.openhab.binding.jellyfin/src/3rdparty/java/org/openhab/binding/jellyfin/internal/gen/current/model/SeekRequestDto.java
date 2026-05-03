@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SeekRequestDto.
  */
-@JsonPropertyOrder({ SeekRequestDto.JSON_PROPERTY_POSITION_TICKS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SeekRequestDto {
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long positionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long positionTicks;
 
     public SeekRequestDto() {
     }
@@ -44,10 +39,8 @@ public class SeekRequestDto {
      * 
      * @return positionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
-    public Long getPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPositionTicks() {
         return positionTicks;
     }
 
@@ -56,9 +49,6 @@ public class SeekRequestDto {
         this.positionTicks = positionTicks;
     }
 
-    /**
-     * Return true if this SeekRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +117,13 @@ public class SeekRequestDto {
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

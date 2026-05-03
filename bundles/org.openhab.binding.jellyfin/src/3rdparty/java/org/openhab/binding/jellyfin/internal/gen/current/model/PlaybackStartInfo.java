@@ -12,137 +12,82 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PlaybackStartInfo.
  */
-@JsonPropertyOrder({ PlaybackStartInfo.JSON_PROPERTY_CAN_SEEK, PlaybackStartInfo.JSON_PROPERTY_ITEM,
-        PlaybackStartInfo.JSON_PROPERTY_ITEM_ID, PlaybackStartInfo.JSON_PROPERTY_SESSION_ID,
-        PlaybackStartInfo.JSON_PROPERTY_MEDIA_SOURCE_ID, PlaybackStartInfo.JSON_PROPERTY_AUDIO_STREAM_INDEX,
-        PlaybackStartInfo.JSON_PROPERTY_SUBTITLE_STREAM_INDEX, PlaybackStartInfo.JSON_PROPERTY_IS_PAUSED,
-        PlaybackStartInfo.JSON_PROPERTY_IS_MUTED, PlaybackStartInfo.JSON_PROPERTY_POSITION_TICKS,
-        PlaybackStartInfo.JSON_PROPERTY_PLAYBACK_START_TIME_TICKS, PlaybackStartInfo.JSON_PROPERTY_VOLUME_LEVEL,
-        PlaybackStartInfo.JSON_PROPERTY_BRIGHTNESS, PlaybackStartInfo.JSON_PROPERTY_ASPECT_RATIO,
-        PlaybackStartInfo.JSON_PROPERTY_PLAY_METHOD, PlaybackStartInfo.JSON_PROPERTY_LIVE_STREAM_ID,
-        PlaybackStartInfo.JSON_PROPERTY_PLAY_SESSION_ID, PlaybackStartInfo.JSON_PROPERTY_REPEAT_MODE,
-        PlaybackStartInfo.JSON_PROPERTY_PLAYBACK_ORDER, PlaybackStartInfo.JSON_PROPERTY_NOW_PLAYING_QUEUE,
-        PlaybackStartInfo.JSON_PROPERTY_PLAYLIST_ITEM_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaybackStartInfo {
     public static final String JSON_PROPERTY_CAN_SEEK = "CanSeek";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canSeek;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canSeek;
 
     public static final String JSON_PROPERTY_ITEM = "Item";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private BaseItemDto item;
+    private @org.eclipse.jdt.annotation.Nullable BaseItemDto item;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID itemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID itemId;
 
     public static final String JSON_PROPERTY_SESSION_ID = "SessionId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String sessionId;
+    private @org.eclipse.jdt.annotation.Nullable String sessionId;
 
     public static final String JSON_PROPERTY_MEDIA_SOURCE_ID = "MediaSourceId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String mediaSourceId;
+    private @org.eclipse.jdt.annotation.Nullable String mediaSourceId;
 
     public static final String JSON_PROPERTY_AUDIO_STREAM_INDEX = "AudioStreamIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer audioStreamIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer audioStreamIndex;
 
     public static final String JSON_PROPERTY_SUBTITLE_STREAM_INDEX = "SubtitleStreamIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer subtitleStreamIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer subtitleStreamIndex;
 
     public static final String JSON_PROPERTY_IS_PAUSED = "IsPaused";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isPaused;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isPaused;
 
     public static final String JSON_PROPERTY_IS_MUTED = "IsMuted";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isMuted;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isMuted;
 
     public static final String JSON_PROPERTY_POSITION_TICKS = "PositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long positionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long positionTicks;
 
     public static final String JSON_PROPERTY_PLAYBACK_START_TIME_TICKS = "PlaybackStartTimeTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long playbackStartTimeTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long playbackStartTimeTicks;
 
     public static final String JSON_PROPERTY_VOLUME_LEVEL = "VolumeLevel";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer volumeLevel;
+    private @org.eclipse.jdt.annotation.Nullable Integer volumeLevel;
 
     public static final String JSON_PROPERTY_BRIGHTNESS = "Brightness";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer brightness;
+    private @org.eclipse.jdt.annotation.Nullable Integer brightness;
 
     public static final String JSON_PROPERTY_ASPECT_RATIO = "AspectRatio";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String aspectRatio;
+    private @org.eclipse.jdt.annotation.Nullable String aspectRatio;
 
     public static final String JSON_PROPERTY_PLAY_METHOD = "PlayMethod";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlayMethod playMethod;
+    private @org.eclipse.jdt.annotation.Nullable PlayMethod playMethod;
 
     public static final String JSON_PROPERTY_LIVE_STREAM_ID = "LiveStreamId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String liveStreamId;
+    private @org.eclipse.jdt.annotation.Nullable String liveStreamId;
 
     public static final String JSON_PROPERTY_PLAY_SESSION_ID = "PlaySessionId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String playSessionId;
+    private @org.eclipse.jdt.annotation.Nullable String playSessionId;
 
     public static final String JSON_PROPERTY_REPEAT_MODE = "RepeatMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private RepeatMode repeatMode;
+    private @org.eclipse.jdt.annotation.Nullable RepeatMode repeatMode;
 
     public static final String JSON_PROPERTY_PLAYBACK_ORDER = "PlaybackOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlaybackOrder playbackOrder;
+    private @org.eclipse.jdt.annotation.Nullable PlaybackOrder playbackOrder;
 
     public static final String JSON_PROPERTY_NOW_PLAYING_QUEUE = "NowPlayingQueue";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<QueueItem> nowPlayingQueue;
+    private @org.eclipse.jdt.annotation.Nullable List<QueueItem> nowPlayingQueue;
 
     public static final String JSON_PROPERTY_PLAYLIST_ITEM_ID = "PlaylistItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String playlistItemId;
+    private @org.eclipse.jdt.annotation.Nullable String playlistItemId;
 
     public PlaybackStartInfo() {
     }
@@ -157,10 +102,8 @@ public class PlaybackStartInfo {
      * 
      * @return canSeek
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_SEEK)
-    public Boolean getCanSeek() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanSeek() {
         return canSeek;
     }
 
@@ -179,10 +122,8 @@ public class PlaybackStartInfo {
      * 
      * @return item
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM)
-    public BaseItemDto getItem() {
+    public @org.eclipse.jdt.annotation.Nullable BaseItemDto getItem() {
         return item;
     }
 
@@ -201,10 +142,8 @@ public class PlaybackStartInfo {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public UUID getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getItemId() {
         return itemId;
     }
 
@@ -223,10 +162,8 @@ public class PlaybackStartInfo {
      * 
      * @return sessionId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SESSION_ID)
-    public String getSessionId() {
+    public @org.eclipse.jdt.annotation.Nullable String getSessionId() {
         return sessionId;
     }
 
@@ -245,10 +182,8 @@ public class PlaybackStartInfo {
      * 
      * @return mediaSourceId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SOURCE_ID)
-    public String getMediaSourceId() {
+    public @org.eclipse.jdt.annotation.Nullable String getMediaSourceId() {
         return mediaSourceId;
     }
 
@@ -267,10 +202,8 @@ public class PlaybackStartInfo {
      * 
      * @return audioStreamIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_STREAM_INDEX)
-    public Integer getAudioStreamIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getAudioStreamIndex() {
         return audioStreamIndex;
     }
 
@@ -289,10 +222,8 @@ public class PlaybackStartInfo {
      * 
      * @return subtitleStreamIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_STREAM_INDEX)
-    public Integer getSubtitleStreamIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSubtitleStreamIndex() {
         return subtitleStreamIndex;
     }
 
@@ -311,10 +242,8 @@ public class PlaybackStartInfo {
      * 
      * @return isPaused
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_PAUSED)
-    public Boolean getIsPaused() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsPaused() {
         return isPaused;
     }
 
@@ -333,10 +262,8 @@ public class PlaybackStartInfo {
      * 
      * @return isMuted
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_MUTED)
-    public Boolean getIsMuted() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsMuted() {
         return isMuted;
     }
 
@@ -355,10 +282,8 @@ public class PlaybackStartInfo {
      * 
      * @return positionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_POSITION_TICKS)
-    public Long getPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPositionTicks() {
         return positionTicks;
     }
 
@@ -377,10 +302,8 @@ public class PlaybackStartInfo {
      * 
      * @return playbackStartTimeTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYBACK_START_TIME_TICKS)
-    public Long getPlaybackStartTimeTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPlaybackStartTimeTicks() {
         return playbackStartTimeTicks;
     }
 
@@ -399,10 +322,8 @@ public class PlaybackStartInfo {
      * 
      * @return volumeLevel
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VOLUME_LEVEL)
-    public Integer getVolumeLevel() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getVolumeLevel() {
         return volumeLevel;
     }
 
@@ -421,10 +342,8 @@ public class PlaybackStartInfo {
      * 
      * @return brightness
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BRIGHTNESS)
-    public Integer getBrightness() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBrightness() {
         return brightness;
     }
 
@@ -443,10 +362,8 @@ public class PlaybackStartInfo {
      * 
      * @return aspectRatio
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ASPECT_RATIO)
-    public String getAspectRatio() {
+    public @org.eclipse.jdt.annotation.Nullable String getAspectRatio() {
         return aspectRatio;
     }
 
@@ -465,10 +382,8 @@ public class PlaybackStartInfo {
      * 
      * @return playMethod
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_METHOD)
-    public PlayMethod getPlayMethod() {
+    public @org.eclipse.jdt.annotation.Nullable PlayMethod getPlayMethod() {
         return playMethod;
     }
 
@@ -487,10 +402,8 @@ public class PlaybackStartInfo {
      * 
      * @return liveStreamId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIVE_STREAM_ID)
-    public String getLiveStreamId() {
+    public @org.eclipse.jdt.annotation.Nullable String getLiveStreamId() {
         return liveStreamId;
     }
 
@@ -509,10 +422,8 @@ public class PlaybackStartInfo {
      * 
      * @return playSessionId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_SESSION_ID)
-    public String getPlaySessionId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPlaySessionId() {
         return playSessionId;
     }
 
@@ -531,10 +442,8 @@ public class PlaybackStartInfo {
      * 
      * @return repeatMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REPEAT_MODE)
-    public RepeatMode getRepeatMode() {
+    public @org.eclipse.jdt.annotation.Nullable RepeatMode getRepeatMode() {
         return repeatMode;
     }
 
@@ -553,10 +462,8 @@ public class PlaybackStartInfo {
      * 
      * @return playbackOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYBACK_ORDER)
-    public PlaybackOrder getPlaybackOrder() {
+    public @org.eclipse.jdt.annotation.Nullable PlaybackOrder getPlaybackOrder() {
         return playbackOrder;
     }
 
@@ -583,10 +490,8 @@ public class PlaybackStartInfo {
      * 
      * @return nowPlayingQueue
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NOW_PLAYING_QUEUE)
-    public List<QueueItem> getNowPlayingQueue() {
+    public @org.eclipse.jdt.annotation.Nullable List<QueueItem> getNowPlayingQueue() {
         return nowPlayingQueue;
     }
 
@@ -605,10 +510,8 @@ public class PlaybackStartInfo {
      * 
      * @return playlistItemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYLIST_ITEM_ID)
-    public String getPlaylistItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getPlaylistItemId() {
         return playlistItemId;
     }
 
@@ -617,9 +520,6 @@ public class PlaybackStartInfo {
         this.playlistItemId = playlistItemId;
     }
 
-    /**
-     * Return true if this PlaybackStartInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -730,8 +630,13 @@ public class PlaybackStartInfo {
 
         // add `CanSeek` to the URL query string
         if (getCanSeek() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanSeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSeek()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanSeek%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanSeek()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Item` to the URL query string
@@ -741,104 +646,190 @@ public class PlaybackStartInfo {
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SessionId` to the URL query string
         if (getSessionId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSessionId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSessionId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSessionId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MediaSourceId` to the URL query string
         if (getMediaSourceId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMediaSourceId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMediaSourceId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMediaSourceId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AudioStreamIndex` to the URL query string
         if (getAudioStreamIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioStreamIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioStreamIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioStreamIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SubtitleStreamIndex` to the URL query string
         if (getSubtitleStreamIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleStreamIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleStreamIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubtitleStreamIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsPaused` to the URL query string
         if (getIsPaused() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsPaused%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsPaused()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsPaused%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsPaused()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsMuted` to the URL query string
         if (getIsMuted() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsMuted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMuted()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsMuted%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsMuted()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PositionTicks` to the URL query string
         if (getPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaybackStartTimeTicks` to the URL query string
         if (getPlaybackStartTimeTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaybackStartTimeTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackStartTimeTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaybackStartTimeTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaybackStartTimeTicks()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VolumeLevel` to the URL query string
         if (getVolumeLevel() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVolumeLevel%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVolumeLevel()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVolumeLevel%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVolumeLevel()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Brightness` to the URL query string
         if (getBrightness() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBrightness%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBrightness()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBrightness%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBrightness()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AspectRatio` to the URL query string
         if (getAspectRatio() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAspectRatio()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAspectRatio%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAspectRatio()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlayMethod` to the URL query string
         if (getPlayMethod() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayMethod()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayMethod%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayMethod()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LiveStreamId` to the URL query string
         if (getLiveStreamId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLiveStreamId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLiveStreamId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLiveStreamId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaySessionId` to the URL query string
         if (getPlaySessionId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaySessionId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaySessionId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaySessionId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RepeatMode` to the URL query string
         if (getRepeatMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepeatMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRepeatMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRepeatMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaybackOrder` to the URL query string
         if (getPlaybackOrder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaybackOrder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackOrder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaybackOrder%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaybackOrder()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `NowPlayingQueue` to the URL query string
@@ -856,8 +847,13 @@ public class PlaybackStartInfo {
 
         // add `PlaylistItemId` to the URL query string
         if (getPlaylistItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaylistItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlaylistItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlaylistItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

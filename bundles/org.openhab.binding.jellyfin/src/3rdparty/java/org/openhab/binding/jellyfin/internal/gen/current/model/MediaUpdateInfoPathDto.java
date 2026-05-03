@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The media update info path.
  */
-@JsonPropertyOrder({ MediaUpdateInfoPathDto.JSON_PROPERTY_PATH, MediaUpdateInfoPathDto.JSON_PROPERTY_UPDATE_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaUpdateInfoPathDto {
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_UPDATE_TYPE = "UpdateType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String updateType;
+    private @org.eclipse.jdt.annotation.Nullable String updateType;
 
     public MediaUpdateInfoPathDto() {
     }
@@ -49,10 +42,8 @@ public class MediaUpdateInfoPathDto {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -71,10 +62,8 @@ public class MediaUpdateInfoPathDto {
      * 
      * @return updateType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_UPDATE_TYPE)
-    public String getUpdateType() {
+    public @org.eclipse.jdt.annotation.Nullable String getUpdateType() {
         return updateType;
     }
 
@@ -83,9 +72,6 @@ public class MediaUpdateInfoPathDto {
         this.updateType = updateType;
     }
 
-    /**
-     * Return true if this MediaUpdateInfoPathDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class MediaUpdateInfoPathDto {
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UpdateType` to the URL query string
         if (getUpdateType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUpdateType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUpdateType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUpdateType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUpdateType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

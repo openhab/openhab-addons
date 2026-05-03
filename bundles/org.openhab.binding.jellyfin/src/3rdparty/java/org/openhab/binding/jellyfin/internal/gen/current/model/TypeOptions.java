@@ -12,53 +12,36 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * TypeOptions
  */
-@JsonPropertyOrder({ TypeOptions.JSON_PROPERTY_TYPE, TypeOptions.JSON_PROPERTY_METADATA_FETCHERS,
-        TypeOptions.JSON_PROPERTY_METADATA_FETCHER_ORDER, TypeOptions.JSON_PROPERTY_IMAGE_FETCHERS,
-        TypeOptions.JSON_PROPERTY_IMAGE_FETCHER_ORDER, TypeOptions.JSON_PROPERTY_IMAGE_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TypeOptions {
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> metadataFetchers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> metadataFetchers;
 
     public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> metadataFetcherOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> metadataFetcherOrder;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> imageFetchers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> imageFetchers;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> imageFetcherOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> imageFetcherOrder;
 
     public static final String JSON_PROPERTY_IMAGE_OPTIONS = "ImageOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ImageOption> imageOptions;
+    private @org.eclipse.jdt.annotation.Nullable List<ImageOption> imageOptions;
 
     public TypeOptions() {
     }
@@ -73,10 +56,8 @@ public class TypeOptions {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -103,10 +84,8 @@ public class TypeOptions {
      * 
      * @return metadataFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
-    public List<String> getMetadataFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMetadataFetchers() {
         return metadataFetchers;
     }
 
@@ -133,10 +112,8 @@ public class TypeOptions {
      * 
      * @return metadataFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER)
-    public List<String> getMetadataFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMetadataFetcherOrder() {
         return metadataFetcherOrder;
     }
 
@@ -163,10 +140,8 @@ public class TypeOptions {
      * 
      * @return imageFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
-    public List<String> getImageFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getImageFetchers() {
         return imageFetchers;
     }
 
@@ -193,10 +168,8 @@ public class TypeOptions {
      * 
      * @return imageFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER)
-    public List<String> getImageFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getImageFetcherOrder() {
         return imageFetcherOrder;
     }
 
@@ -223,10 +196,8 @@ public class TypeOptions {
      * 
      * @return imageOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_OPTIONS)
-    public List<ImageOption> getImageOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<ImageOption> getImageOptions() {
         return imageOptions;
     }
 
@@ -235,9 +206,6 @@ public class TypeOptions {
         this.imageOptions = imageOptions;
     }
 
-    /**
-     * Return true if this TypeOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -317,47 +285,80 @@ public class TypeOptions {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataFetchers` to the URL query string
         if (getMetadataFetchers() != null) {
             for (int i = 0; i < getMetadataFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMetadataFetchers().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `MetadataFetcherOrder` to the URL query string
         if (getMetadataFetcherOrder() != null) {
             for (int i = 0; i < getMetadataFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMetadataFetcherOrder().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ImageFetchers` to the URL query string
         if (getImageFetchers() != null) {
             for (int i = 0; i < getImageFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getImageFetchers().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ImageFetcherOrder` to the URL query string
         if (getImageFetcherOrder() != null) {
             for (int i = 0; i < getImageFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getImageFetcherOrder().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

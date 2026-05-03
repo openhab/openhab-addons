@@ -12,36 +12,26 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * MessageCommand
  */
-@JsonPropertyOrder({ MessageCommand.JSON_PROPERTY_HEADER, MessageCommand.JSON_PROPERTY_TEXT,
-        MessageCommand.JSON_PROPERTY_TIMEOUT_MS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MessageCommand {
     public static final String JSON_PROPERTY_HEADER = "Header";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String header;
+    private @org.eclipse.jdt.annotation.Nullable String header;
 
     public static final String JSON_PROPERTY_TEXT = "Text";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String text;
+    private @org.eclipse.jdt.annotation.NonNull String text;
 
     public static final String JSON_PROPERTY_TIMEOUT_MS = "TimeoutMs";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long timeoutMs;
+    private @org.eclipse.jdt.annotation.Nullable Long timeoutMs;
 
     public MessageCommand() {
     }
@@ -56,10 +46,8 @@ public class MessageCommand {
      * 
      * @return header
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEADER)
-    public String getHeader() {
+    public @org.eclipse.jdt.annotation.Nullable String getHeader() {
         return header;
     }
 
@@ -78,11 +66,9 @@ public class MessageCommand {
      * 
      * @return text
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TEXT, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public String getText() {
+    public @org.eclipse.jdt.annotation.NonNull String getText() {
         return text;
     }
 
@@ -102,10 +88,8 @@ public class MessageCommand {
      * 
      * @return timeoutMs
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TIMEOUT_MS)
-    public Long getTimeoutMs() {
+    public @org.eclipse.jdt.annotation.Nullable Long getTimeoutMs() {
         return timeoutMs;
     }
 
@@ -114,9 +98,6 @@ public class MessageCommand {
         this.timeoutMs = timeoutMs;
     }
 
-    /**
-     * Return true if this MessageCommand object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -188,20 +169,35 @@ public class MessageCommand {
 
         // add `Header` to the URL query string
         if (getHeader() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHeader%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHeader()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHeader%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHeader()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Text` to the URL query string
         if (getText() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sText%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getText()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sText%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getText()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TimeoutMs` to the URL query string
         if (getTimeoutMs() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTimeoutMs%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimeoutMs()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTimeoutMs%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTimeoutMs()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

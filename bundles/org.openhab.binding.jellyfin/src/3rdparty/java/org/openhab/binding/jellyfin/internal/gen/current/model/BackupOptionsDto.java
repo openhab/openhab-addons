@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the optional contents of the backup archive.
  */
-@JsonPropertyOrder({ BackupOptionsDto.JSON_PROPERTY_METADATA, BackupOptionsDto.JSON_PROPERTY_TRICKPLAY,
-        BackupOptionsDto.JSON_PROPERTY_SUBTITLES, BackupOptionsDto.JSON_PROPERTY_DATABASE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BackupOptionsDto {
     public static final String JSON_PROPERTY_METADATA = "Metadata";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean metadata;
+    private @org.eclipse.jdt.annotation.Nullable Boolean metadata;
 
     public static final String JSON_PROPERTY_TRICKPLAY = "Trickplay";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean trickplay;
+    private @org.eclipse.jdt.annotation.Nullable Boolean trickplay;
 
     public static final String JSON_PROPERTY_SUBTITLES = "Subtitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean subtitles;
+    private @org.eclipse.jdt.annotation.Nullable Boolean subtitles;
 
     public static final String JSON_PROPERTY_DATABASE = "Database";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean database;
+    private @org.eclipse.jdt.annotation.Nullable Boolean database;
 
     public BackupOptionsDto() {
     }
@@ -60,10 +48,8 @@ public class BackupOptionsDto {
      * 
      * @return metadata
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA)
-    public Boolean getMetadata() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getMetadata() {
         return metadata;
     }
 
@@ -82,10 +68,8 @@ public class BackupOptionsDto {
      * 
      * @return trickplay
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRICKPLAY)
-    public Boolean getTrickplay() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getTrickplay() {
         return trickplay;
     }
 
@@ -104,10 +88,8 @@ public class BackupOptionsDto {
      * 
      * @return subtitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLES)
-    public Boolean getSubtitles() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSubtitles() {
         return subtitles;
     }
 
@@ -126,10 +108,8 @@ public class BackupOptionsDto {
      * 
      * @return database
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATABASE)
-    public Boolean getDatabase() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDatabase() {
         return database;
     }
 
@@ -138,9 +118,6 @@ public class BackupOptionsDto {
         this.database = database;
     }
 
-    /**
-     * Return true if this BackupOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class BackupOptionsDto {
 
         // add `Metadata` to the URL query string
         if (getMetadata() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMetadata%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadata()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadata%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMetadata()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Trickplay` to the URL query string
         if (getTrickplay() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTrickplay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrickplay()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTrickplay%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTrickplay()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Subtitles` to the URL query string
         if (getSubtitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitles()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitles%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubtitles()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Database` to the URL query string
         if (getDatabase() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDatabase%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDatabase()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDatabase%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDatabase()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

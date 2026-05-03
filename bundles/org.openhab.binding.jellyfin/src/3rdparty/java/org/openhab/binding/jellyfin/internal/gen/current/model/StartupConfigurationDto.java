@@ -12,41 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The startup configuration DTO.
  */
-@JsonPropertyOrder({ StartupConfigurationDto.JSON_PROPERTY_SERVER_NAME,
-        StartupConfigurationDto.JSON_PROPERTY_UI_CULTURE, StartupConfigurationDto.JSON_PROPERTY_METADATA_COUNTRY_CODE,
-        StartupConfigurationDto.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupConfigurationDto {
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverName;
+    private @org.eclipse.jdt.annotation.Nullable String serverName;
 
     public static final String JSON_PROPERTY_UI_CULTURE = "UICulture";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String uiCulture;
+    private @org.eclipse.jdt.annotation.Nullable String uiCulture;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String metadataCountryCode;
+    private @org.eclipse.jdt.annotation.Nullable String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String preferredMetadataLanguage;
+    private @org.eclipse.jdt.annotation.Nullable String preferredMetadataLanguage;
 
     public StartupConfigurationDto() {
     }
@@ -61,10 +48,8 @@ public class StartupConfigurationDto {
      * 
      * @return serverName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
-    public String getServerName() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerName() {
         return serverName;
     }
 
@@ -83,10 +68,8 @@ public class StartupConfigurationDto {
      * 
      * @return uiCulture
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_UI_CULTURE)
-    public String getUiCulture() {
+    public @org.eclipse.jdt.annotation.Nullable String getUiCulture() {
         return uiCulture;
     }
 
@@ -106,10 +89,8 @@ public class StartupConfigurationDto {
      * 
      * @return metadataCountryCode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public String getMetadataCountryCode() {
+    public @org.eclipse.jdt.annotation.Nullable String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
@@ -129,10 +110,8 @@ public class StartupConfigurationDto {
      * 
      * @return preferredMetadataLanguage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    public String getPreferredMetadataLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
@@ -141,9 +120,6 @@ public class StartupConfigurationDto {
         this.preferredMetadataLanguage = preferredMetadataLanguage;
     }
 
-    /**
-     * Return true if this StartupConfigurationDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -218,26 +194,47 @@ public class StartupConfigurationDto {
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UICulture` to the URL query string
         if (getUiCulture() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUICulture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUiCulture()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUICulture%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUiCulture()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMetadataCountryCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PreferredMetadataLanguage` to the URL query string
         if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPreferredMetadataLanguage()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

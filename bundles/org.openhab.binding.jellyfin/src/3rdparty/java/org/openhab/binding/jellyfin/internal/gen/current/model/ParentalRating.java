@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class ParentalRating.
  */
-@JsonPropertyOrder({ ParentalRating.JSON_PROPERTY_NAME, ParentalRating.JSON_PROPERTY_VALUE,
-        ParentalRating.JSON_PROPERTY_RATING_SCORE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ParentalRating {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer value;
+    private @org.eclipse.jdt.annotation.Nullable Integer value;
 
     public static final String JSON_PROPERTY_RATING_SCORE = "RatingScore";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ParentalRatingScore ratingScore;
+    private @org.eclipse.jdt.annotation.Nullable ParentalRatingScore ratingScore;
 
     public ParentalRating() {
     }
@@ -55,10 +45,8 @@ public class ParentalRating {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -77,10 +65,8 @@ public class ParentalRating {
      * 
      * @return value
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VALUE)
-    public Integer getValue() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getValue() {
         return value;
     }
 
@@ -99,10 +85,8 @@ public class ParentalRating {
      * 
      * @return ratingScore
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RATING_SCORE)
-    public ParentalRatingScore getRatingScore() {
+    public @org.eclipse.jdt.annotation.Nullable ParentalRatingScore getRatingScore() {
         return ratingScore;
     }
 
@@ -111,9 +95,6 @@ public class ParentalRating {
         this.ratingScore = ratingScore;
     }
 
-    /**
-     * Return true if this ParentalRating object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -185,14 +166,24 @@ public class ParentalRating {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Value` to the URL query string
         if (getValue() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getValue()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RatingScore` to the URL query string

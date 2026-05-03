@@ -12,61 +12,39 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Client capabilities dto.
  */
-@JsonPropertyOrder({ ClientCapabilitiesDto.JSON_PROPERTY_PLAYABLE_MEDIA_TYPES,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTED_COMMANDS,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL,
-        ClientCapabilitiesDto.JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER,
-        ClientCapabilitiesDto.JSON_PROPERTY_DEVICE_PROFILE, ClientCapabilitiesDto.JSON_PROPERTY_APP_STORE_URL,
-        ClientCapabilitiesDto.JSON_PROPERTY_ICON_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ClientCapabilitiesDto {
     public static final String JSON_PROPERTY_PLAYABLE_MEDIA_TYPES = "PlayableMediaTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaType> playableMediaTypes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaType> playableMediaTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTED_COMMANDS = "SupportedCommands";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<GeneralCommandType> supportedCommands = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<GeneralCommandType> supportedCommands = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL = "SupportsMediaControl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsMediaControl;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsMediaControl;
 
     public static final String JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER = "SupportsPersistentIdentifier";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsPersistentIdentifier;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsPersistentIdentifier;
 
     public static final String JSON_PROPERTY_DEVICE_PROFILE = "DeviceProfile";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DeviceProfile deviceProfile;
+    private @org.eclipse.jdt.annotation.Nullable DeviceProfile deviceProfile;
 
     public static final String JSON_PROPERTY_APP_STORE_URL = "AppStoreUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String appStoreUrl;
+    private @org.eclipse.jdt.annotation.Nullable String appStoreUrl;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String iconUrl;
+    private @org.eclipse.jdt.annotation.Nullable String iconUrl;
 
     public ClientCapabilitiesDto() {
     }
@@ -90,10 +68,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return playableMediaTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYABLE_MEDIA_TYPES)
-    public List<MediaType> getPlayableMediaTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaType> getPlayableMediaTypes() {
         return playableMediaTypes;
     }
 
@@ -121,10 +97,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return supportedCommands
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTED_COMMANDS)
-    public List<GeneralCommandType> getSupportedCommands() {
+    public @org.eclipse.jdt.annotation.Nullable List<GeneralCommandType> getSupportedCommands() {
         return supportedCommands;
     }
 
@@ -144,10 +118,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return supportsMediaControl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_MEDIA_CONTROL)
-    public Boolean getSupportsMediaControl() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsMediaControl() {
         return supportsMediaControl;
     }
 
@@ -167,10 +139,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return supportsPersistentIdentifier
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_PERSISTENT_IDENTIFIER)
-    public Boolean getSupportsPersistentIdentifier() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsPersistentIdentifier() {
         return supportsPersistentIdentifier;
     }
 
@@ -190,10 +160,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return deviceProfile
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_PROFILE)
-    public DeviceProfile getDeviceProfile() {
+    public @org.eclipse.jdt.annotation.Nullable DeviceProfile getDeviceProfile() {
         return deviceProfile;
     }
 
@@ -212,10 +180,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return appStoreUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APP_STORE_URL)
-    public String getAppStoreUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getAppStoreUrl() {
         return appStoreUrl;
     }
 
@@ -234,10 +200,8 @@ public class ClientCapabilitiesDto {
      * 
      * @return iconUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ICON_URL)
-    public String getIconUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getIconUrl() {
         return iconUrl;
     }
 
@@ -246,9 +210,6 @@ public class ClientCapabilitiesDto {
         this.iconUrl = iconUrl;
     }
 
-    /**
-     * Return true if this ClientCapabilitiesDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -333,11 +294,17 @@ public class ClientCapabilitiesDto {
         if (getPlayableMediaTypes() != null) {
             for (int i = 0; i < getPlayableMediaTypes().size(); i++) {
                 if (getPlayableMediaTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getPlayableMediaTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sPlayableMediaTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getPlayableMediaTypes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -346,25 +313,43 @@ public class ClientCapabilitiesDto {
         if (getSupportedCommands() != null) {
             for (int i = 0; i < getSupportedCommands().size(); i++) {
                 if (getSupportedCommands().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedCommands().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedCommands%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getSupportedCommands().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `SupportsMediaControl` to the URL query string
         if (getSupportsMediaControl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsMediaControl()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sSupportsMediaControl%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getSupportsMediaControl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsPersistentIdentifier` to the URL query string
         if (getSupportsPersistentIdentifier() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsPersistentIdentifier()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsPersistentIdentifier%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsPersistentIdentifier()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceProfile` to the URL query string
@@ -374,14 +359,24 @@ public class ClientCapabilitiesDto {
 
         // add `AppStoreUrl` to the URL query string
         if (getAppStoreUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAppStoreUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppStoreUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAppStoreUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAppStoreUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IconUrl` to the URL query string
         if (getIconUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIconUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

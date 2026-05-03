@@ -12,63 +12,41 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This is a serializable stub class that is used by the api to provide information about installed plugins.
  */
-@JsonPropertyOrder({ PluginInfo.JSON_PROPERTY_NAME, PluginInfo.JSON_PROPERTY_VERSION,
-        PluginInfo.JSON_PROPERTY_CONFIGURATION_FILE_NAME, PluginInfo.JSON_PROPERTY_DESCRIPTION,
-        PluginInfo.JSON_PROPERTY_ID, PluginInfo.JSON_PROPERTY_CAN_UNINSTALL, PluginInfo.JSON_PROPERTY_HAS_IMAGE,
-        PluginInfo.JSON_PROPERTY_STATUS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PluginInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_CONFIGURATION_FILE_NAME = "ConfigurationFileName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String configurationFileName;
+    private @org.eclipse.jdt.annotation.Nullable String configurationFileName;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String description;
+    private @org.eclipse.jdt.annotation.Nullable String description;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_CAN_UNINSTALL = "CanUninstall";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canUninstall;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canUninstall;
 
     public static final String JSON_PROPERTY_HAS_IMAGE = "HasImage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasImage;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasImage;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PluginStatus status;
+    private @org.eclipse.jdt.annotation.Nullable PluginStatus status;
 
     public PluginInfo() {
     }
@@ -83,10 +61,8 @@ public class PluginInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -105,10 +81,8 @@ public class PluginInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -127,10 +101,8 @@ public class PluginInfo {
      * 
      * @return configurationFileName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONFIGURATION_FILE_NAME)
-    public String getConfigurationFileName() {
+    public @org.eclipse.jdt.annotation.Nullable String getConfigurationFileName() {
         return configurationFileName;
     }
 
@@ -149,10 +121,8 @@ public class PluginInfo {
      * 
      * @return description
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
-    public String getDescription() {
+    public @org.eclipse.jdt.annotation.Nullable String getDescription() {
         return description;
     }
 
@@ -171,10 +141,8 @@ public class PluginInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -193,10 +161,8 @@ public class PluginInfo {
      * 
      * @return canUninstall
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_UNINSTALL)
-    public Boolean getCanUninstall() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanUninstall() {
         return canUninstall;
     }
 
@@ -215,10 +181,8 @@ public class PluginInfo {
      * 
      * @return hasImage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_IMAGE)
-    public Boolean getHasImage() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasImage() {
         return hasImage;
     }
 
@@ -237,10 +201,8 @@ public class PluginInfo {
      * 
      * @return status
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS)
-    public PluginStatus getStatus() {
+    public @org.eclipse.jdt.annotation.Nullable PluginStatus getStatus() {
         return status;
     }
 
@@ -249,9 +211,6 @@ public class PluginInfo {
         this.status = status;
     }
 
-    /**
-     * Return true if this PluginInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -331,50 +290,91 @@ public class PluginInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ConfigurationFileName` to the URL query string
         if (getConfigurationFileName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sConfigurationFileName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getConfigurationFileName()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sConfigurationFileName%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getConfigurationFileName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDescription()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CanUninstall` to the URL query string
         if (getCanUninstall() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanUninstall()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanUninstall%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanUninstall()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasImage` to the URL query string
         if (getHasImage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasImage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasImage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasImage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasImage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

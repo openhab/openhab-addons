@@ -12,54 +12,42 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * An entity representing a user&#39;s access schedule.
  */
-@JsonPropertyOrder({ AccessSchedule.JSON_PROPERTY_ID, AccessSchedule.JSON_PROPERTY_USER_ID,
-        AccessSchedule.JSON_PROPERTY_DAY_OF_WEEK, AccessSchedule.JSON_PROPERTY_START_HOUR,
-        AccessSchedule.JSON_PROPERTY_END_HOUR })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AccessSchedule {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer id;
+    private @org.eclipse.jdt.annotation.Nullable Integer id;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_DAY_OF_WEEK = "DayOfWeek";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DynamicDayOfWeek dayOfWeek;
+    private @org.eclipse.jdt.annotation.Nullable DynamicDayOfWeek dayOfWeek;
 
     public static final String JSON_PROPERTY_START_HOUR = "StartHour";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double startHour;
+    private @org.eclipse.jdt.annotation.Nullable Double startHour;
 
     public static final String JSON_PROPERTY_END_HOUR = "EndHour";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double endHour;
+    private @org.eclipse.jdt.annotation.Nullable Double endHour;
 
     public AccessSchedule() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public AccessSchedule(@JsonProperty(JSON_PROPERTY_ID) Integer id) {
+    public AccessSchedule(@JsonProperty(value = JSON_PROPERTY_ID) Integer id) {
         this();
         this.id = id;
     }
@@ -69,10 +57,8 @@ public class AccessSchedule {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public Integer getId() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getId() {
         return id;
     }
 
@@ -86,10 +72,8 @@ public class AccessSchedule {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -108,10 +92,8 @@ public class AccessSchedule {
      * 
      * @return dayOfWeek
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DAY_OF_WEEK)
-    public DynamicDayOfWeek getDayOfWeek() {
+    public @org.eclipse.jdt.annotation.Nullable DynamicDayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
 
@@ -130,10 +112,8 @@ public class AccessSchedule {
      * 
      * @return startHour
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_HOUR)
-    public Double getStartHour() {
+    public @org.eclipse.jdt.annotation.Nullable Double getStartHour() {
         return startHour;
     }
 
@@ -152,10 +132,8 @@ public class AccessSchedule {
      * 
      * @return endHour
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_HOUR)
-    public Double getEndHour() {
+    public @org.eclipse.jdt.annotation.Nullable Double getEndHour() {
         return endHour;
     }
 
@@ -164,9 +142,6 @@ public class AccessSchedule {
         this.endHour = endHour;
     }
 
-    /**
-     * Return true if this AccessSchedule object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -242,32 +217,57 @@ public class AccessSchedule {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DayOfWeek` to the URL query string
         if (getDayOfWeek() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDayOfWeek()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDayOfWeek%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDayOfWeek()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartHour` to the URL query string
         if (getStartHour() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartHour%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartHour()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartHour%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartHour()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndHour` to the URL query string
         if (getEndHour() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndHour%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndHour()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndHour%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndHour()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

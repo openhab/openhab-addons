@@ -12,63 +12,41 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class TaskExecutionInfo.
  */
-@JsonPropertyOrder({ TaskResult.JSON_PROPERTY_START_TIME_UTC, TaskResult.JSON_PROPERTY_END_TIME_UTC,
-        TaskResult.JSON_PROPERTY_STATUS, TaskResult.JSON_PROPERTY_NAME, TaskResult.JSON_PROPERTY_KEY,
-        TaskResult.JSON_PROPERTY_ID, TaskResult.JSON_PROPERTY_ERROR_MESSAGE,
-        TaskResult.JSON_PROPERTY_LONG_ERROR_MESSAGE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TaskResult {
     public static final String JSON_PROPERTY_START_TIME_UTC = "StartTimeUtc";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime startTimeUtc;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime startTimeUtc;
 
     public static final String JSON_PROPERTY_END_TIME_UTC = "EndTimeUtc";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime endTimeUtc;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime endTimeUtc;
 
     public static final String JSON_PROPERTY_STATUS = "Status";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TaskCompletionStatus status;
+    private @org.eclipse.jdt.annotation.Nullable TaskCompletionStatus status;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_KEY = "Key";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String key;
+    private @org.eclipse.jdt.annotation.Nullable String key;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_ERROR_MESSAGE = "ErrorMessage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String errorMessage;
+    private @org.eclipse.jdt.annotation.Nullable String errorMessage;
 
     public static final String JSON_PROPERTY_LONG_ERROR_MESSAGE = "LongErrorMessage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String longErrorMessage;
+    private @org.eclipse.jdt.annotation.Nullable String longErrorMessage;
 
     public TaskResult() {
     }
@@ -83,10 +61,8 @@ public class TaskResult {
      * 
      * @return startTimeUtc
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_TIME_UTC)
-    public OffsetDateTime getStartTimeUtc() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getStartTimeUtc() {
         return startTimeUtc;
     }
 
@@ -105,10 +81,8 @@ public class TaskResult {
      * 
      * @return endTimeUtc
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_TIME_UTC)
-    public OffsetDateTime getEndTimeUtc() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getEndTimeUtc() {
         return endTimeUtc;
     }
 
@@ -127,10 +101,8 @@ public class TaskResult {
      * 
      * @return status
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS)
-    public TaskCompletionStatus getStatus() {
+    public @org.eclipse.jdt.annotation.Nullable TaskCompletionStatus getStatus() {
         return status;
     }
 
@@ -149,10 +121,8 @@ public class TaskResult {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -171,10 +141,8 @@ public class TaskResult {
      * 
      * @return key
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEY)
-    public String getKey() {
+    public @org.eclipse.jdt.annotation.Nullable String getKey() {
         return key;
     }
 
@@ -193,10 +161,8 @@ public class TaskResult {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -215,10 +181,8 @@ public class TaskResult {
      * 
      * @return errorMessage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ERROR_MESSAGE)
-    public String getErrorMessage() {
+    public @org.eclipse.jdt.annotation.Nullable String getErrorMessage() {
         return errorMessage;
     }
 
@@ -237,10 +201,8 @@ public class TaskResult {
      * 
      * @return longErrorMessage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LONG_ERROR_MESSAGE)
-    public String getLongErrorMessage() {
+    public @org.eclipse.jdt.annotation.Nullable String getLongErrorMessage() {
         return longErrorMessage;
     }
 
@@ -249,9 +211,6 @@ public class TaskResult {
         this.longErrorMessage = longErrorMessage;
     }
 
-    /**
-     * Return true if this TaskResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -332,50 +291,90 @@ public class TaskResult {
 
         // add `StartTimeUtc` to the URL query string
         if (getStartTimeUtc() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTimeUtc()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartTimeUtc%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartTimeUtc()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndTimeUtc` to the URL query string
         if (getEndTimeUtc() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndTimeUtc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTimeUtc()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndTimeUtc%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndTimeUtc()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKey()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ErrorMessage` to the URL query string
         if (getErrorMessage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getErrorMessage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sErrorMessage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getErrorMessage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LongErrorMessage` to the URL query string
         if (getLongErrorMessage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLongErrorMessage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLongErrorMessage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLongErrorMessage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLongErrorMessage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

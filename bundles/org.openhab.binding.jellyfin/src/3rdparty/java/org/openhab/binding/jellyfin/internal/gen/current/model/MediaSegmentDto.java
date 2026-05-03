@@ -12,47 +12,32 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Api model for MediaSegment&#39;s.
  */
-@JsonPropertyOrder({ MediaSegmentDto.JSON_PROPERTY_ID, MediaSegmentDto.JSON_PROPERTY_ITEM_ID,
-        MediaSegmentDto.JSON_PROPERTY_TYPE, MediaSegmentDto.JSON_PROPERTY_START_TICKS,
-        MediaSegmentDto.JSON_PROPERTY_END_TICKS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaSegmentDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID itemId;
+    private @org.eclipse.jdt.annotation.Nullable UUID itemId;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaSegmentType type = MediaSegmentType.UNKNOWN;
+    private @org.eclipse.jdt.annotation.Nullable MediaSegmentType type = MediaSegmentType.UNKNOWN;
 
     public static final String JSON_PROPERTY_START_TICKS = "StartTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long startTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long startTicks;
 
     public static final String JSON_PROPERTY_END_TICKS = "EndTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long endTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long endTicks;
 
     public MediaSegmentDto() {
     }
@@ -67,10 +52,8 @@ public class MediaSegmentDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -89,10 +72,8 @@ public class MediaSegmentDto {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public UUID getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getItemId() {
         return itemId;
     }
 
@@ -111,10 +92,8 @@ public class MediaSegmentDto {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public MediaSegmentType getType() {
+    public @org.eclipse.jdt.annotation.Nullable MediaSegmentType getType() {
         return type;
     }
 
@@ -133,10 +112,8 @@ public class MediaSegmentDto {
      * 
      * @return startTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_TICKS)
-    public Long getStartTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getStartTicks() {
         return startTicks;
     }
 
@@ -155,10 +132,8 @@ public class MediaSegmentDto {
      * 
      * @return endTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_TICKS)
-    public Long getEndTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getEndTicks() {
         return endTicks;
     }
 
@@ -167,9 +142,6 @@ public class MediaSegmentDto {
         this.endTicks = endTicks;
     }
 
-    /**
-     * Return true if this MediaSegmentDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -245,32 +217,57 @@ public class MediaSegmentDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartTicks` to the URL query string
         if (getStartTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndTicks` to the URL query string
         if (getEndTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

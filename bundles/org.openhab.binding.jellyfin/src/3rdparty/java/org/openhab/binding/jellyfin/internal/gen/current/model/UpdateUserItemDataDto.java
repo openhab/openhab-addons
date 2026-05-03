@@ -12,80 +12,50 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This is used by the api to get information about a item user data.
  */
-@JsonPropertyOrder({ UpdateUserItemDataDto.JSON_PROPERTY_RATING, UpdateUserItemDataDto.JSON_PROPERTY_PLAYED_PERCENTAGE,
-        UpdateUserItemDataDto.JSON_PROPERTY_UNPLAYED_ITEM_COUNT,
-        UpdateUserItemDataDto.JSON_PROPERTY_PLAYBACK_POSITION_TICKS, UpdateUserItemDataDto.JSON_PROPERTY_PLAY_COUNT,
-        UpdateUserItemDataDto.JSON_PROPERTY_IS_FAVORITE, UpdateUserItemDataDto.JSON_PROPERTY_LIKES,
-        UpdateUserItemDataDto.JSON_PROPERTY_LAST_PLAYED_DATE, UpdateUserItemDataDto.JSON_PROPERTY_PLAYED,
-        UpdateUserItemDataDto.JSON_PROPERTY_KEY, UpdateUserItemDataDto.JSON_PROPERTY_ITEM_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UpdateUserItemDataDto {
     public static final String JSON_PROPERTY_RATING = "Rating";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double rating;
+    private @org.eclipse.jdt.annotation.Nullable Double rating;
 
     public static final String JSON_PROPERTY_PLAYED_PERCENTAGE = "PlayedPercentage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double playedPercentage;
+    private @org.eclipse.jdt.annotation.Nullable Double playedPercentage;
 
     public static final String JSON_PROPERTY_UNPLAYED_ITEM_COUNT = "UnplayedItemCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer unplayedItemCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer unplayedItemCount;
 
     public static final String JSON_PROPERTY_PLAYBACK_POSITION_TICKS = "PlaybackPositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long playbackPositionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long playbackPositionTicks;
 
     public static final String JSON_PROPERTY_PLAY_COUNT = "PlayCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer playCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer playCount;
 
     public static final String JSON_PROPERTY_IS_FAVORITE = "IsFavorite";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isFavorite;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isFavorite;
 
     public static final String JSON_PROPERTY_LIKES = "Likes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean likes;
+    private @org.eclipse.jdt.annotation.Nullable Boolean likes;
 
     public static final String JSON_PROPERTY_LAST_PLAYED_DATE = "LastPlayedDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime lastPlayedDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime lastPlayedDate;
 
     public static final String JSON_PROPERTY_PLAYED = "Played";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean played;
+    private @org.eclipse.jdt.annotation.Nullable Boolean played;
 
     public static final String JSON_PROPERTY_KEY = "Key";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String key;
+    private @org.eclipse.jdt.annotation.Nullable String key;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String itemId;
+    private @org.eclipse.jdt.annotation.Nullable String itemId;
 
     public UpdateUserItemDataDto() {
     }
@@ -100,10 +70,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return rating
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_RATING)
-    public Double getRating() {
+    public @org.eclipse.jdt.annotation.Nullable Double getRating() {
         return rating;
     }
 
@@ -122,10 +90,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return playedPercentage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYED_PERCENTAGE)
-    public Double getPlayedPercentage() {
+    public @org.eclipse.jdt.annotation.Nullable Double getPlayedPercentage() {
         return playedPercentage;
     }
 
@@ -144,10 +110,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return unplayedItemCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_UNPLAYED_ITEM_COUNT)
-    public Integer getUnplayedItemCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getUnplayedItemCount() {
         return unplayedItemCount;
     }
 
@@ -167,10 +131,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return playbackPositionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYBACK_POSITION_TICKS)
-    public Long getPlaybackPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getPlaybackPositionTicks() {
         return playbackPositionTicks;
     }
 
@@ -189,10 +151,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return playCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_COUNT)
-    public Integer getPlayCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPlayCount() {
         return playCount;
     }
 
@@ -211,10 +171,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return isFavorite
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_FAVORITE)
-    public Boolean getIsFavorite() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsFavorite() {
         return isFavorite;
     }
 
@@ -233,10 +191,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return likes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIKES)
-    public Boolean getLikes() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getLikes() {
         return likes;
     }
 
@@ -255,10 +211,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return lastPlayedDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_PLAYED_DATE)
-    public OffsetDateTime getLastPlayedDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getLastPlayedDate() {
         return lastPlayedDate;
     }
 
@@ -277,10 +231,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return played
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAYED)
-    public Boolean getPlayed() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getPlayed() {
         return played;
     }
 
@@ -299,10 +251,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return key
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEY)
-    public String getKey() {
+    public @org.eclipse.jdt.annotation.Nullable String getKey() {
         return key;
     }
 
@@ -321,10 +271,8 @@ public class UpdateUserItemDataDto {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public String getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getItemId() {
         return itemId;
     }
 
@@ -333,9 +281,6 @@ public class UpdateUserItemDataDto {
         this.itemId = itemId;
     }
 
-    /**
-     * Return true if this UpdateUserItemDataDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -425,68 +370,124 @@ public class UpdateUserItemDataDto {
 
         // add `Rating` to the URL query string
         if (getRating() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRating()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRating%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRating()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlayedPercentage` to the URL query string
         if (getPlayedPercentage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayedPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayedPercentage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayedPercentage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayedPercentage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UnplayedItemCount` to the URL query string
         if (getUnplayedItemCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUnplayedItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUnplayedItemCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUnplayedItemCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUnplayedItemCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlaybackPositionTicks` to the URL query string
         if (getPlaybackPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlaybackPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlaybackPositionTicks()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sPlaybackPositionTicks%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getPlaybackPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlayCount` to the URL query string
         if (getPlayCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsFavorite` to the URL query string
         if (getIsFavorite() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsFavorite%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsFavorite()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsFavorite%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsFavorite()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Likes` to the URL query string
         if (getLikes() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLikes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLikes()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLikes%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLikes()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastPlayedDate` to the URL query string
         if (getLastPlayedDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastPlayedDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastPlayedDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastPlayedDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastPlayedDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Played` to the URL query string
         if (getPlayed() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayed%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayed()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPlayed%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPlayed()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKey()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

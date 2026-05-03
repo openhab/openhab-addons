@@ -12,43 +12,30 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Channel mapping options dto.
  */
-@JsonPropertyOrder({ ChannelMappingOptionsDto.JSON_PROPERTY_TUNER_CHANNELS,
-        ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_CHANNELS, ChannelMappingOptionsDto.JSON_PROPERTY_MAPPINGS,
-        ChannelMappingOptionsDto.JSON_PROPERTY_PROVIDER_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ChannelMappingOptionsDto {
     public static final String JSON_PROPERTY_TUNER_CHANNELS = "TunerChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<TunerChannelMapping> tunerChannels = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<TunerChannelMapping> tunerChannels = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PROVIDER_CHANNELS = "ProviderChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<NameIdPair> providerChannels = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<NameIdPair> providerChannels = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MAPPINGS = "Mappings";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<NameValuePair> mappings = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<NameValuePair> mappings = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerName;
+    private @org.eclipse.jdt.annotation.Nullable String providerName;
 
     public ChannelMappingOptionsDto() {
     }
@@ -72,10 +59,8 @@ public class ChannelMappingOptionsDto {
      * 
      * @return tunerChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TUNER_CHANNELS)
-    public List<TunerChannelMapping> getTunerChannels() {
+    public @org.eclipse.jdt.annotation.Nullable List<TunerChannelMapping> getTunerChannels() {
         return tunerChannels;
     }
 
@@ -103,10 +88,8 @@ public class ChannelMappingOptionsDto {
      * 
      * @return providerChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_CHANNELS)
-    public List<NameIdPair> getProviderChannels() {
+    public @org.eclipse.jdt.annotation.Nullable List<NameIdPair> getProviderChannels() {
         return providerChannels;
     }
 
@@ -133,10 +116,8 @@ public class ChannelMappingOptionsDto {
      * 
      * @return mappings
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAPPINGS)
-    public List<NameValuePair> getMappings() {
+    public @org.eclipse.jdt.annotation.Nullable List<NameValuePair> getMappings() {
         return mappings;
     }
 
@@ -155,10 +136,8 @@ public class ChannelMappingOptionsDto {
      * 
      * @return providerName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
-    public String getProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderName() {
         return providerName;
     }
 
@@ -167,9 +146,6 @@ public class ChannelMappingOptionsDto {
         this.providerName = providerName;
     }
 
-    /**
-     * Return true if this ChannelMappingOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -283,8 +259,13 @@ public class ChannelMappingOptionsDto {
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

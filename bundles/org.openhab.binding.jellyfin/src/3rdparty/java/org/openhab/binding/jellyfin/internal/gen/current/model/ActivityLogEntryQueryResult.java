@@ -12,38 +12,27 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Query result container.
  */
-@JsonPropertyOrder({ ActivityLogEntryQueryResult.JSON_PROPERTY_ITEMS,
-        ActivityLogEntryQueryResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-        ActivityLogEntryQueryResult.JSON_PROPERTY_START_INDEX })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ActivityLogEntryQueryResult {
     public static final String JSON_PROPERTY_ITEMS = "Items";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ActivityLogEntry> items = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ActivityLogEntry> items = new ArrayList<>();
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer totalRecordCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer startIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer startIndex;
 
     public ActivityLogEntryQueryResult() {
     }
@@ -66,10 +55,8 @@ public class ActivityLogEntryQueryResult {
      * 
      * @return items
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS)
-    public List<ActivityLogEntry> getItems() {
+    public @org.eclipse.jdt.annotation.Nullable List<ActivityLogEntry> getItems() {
         return items;
     }
 
@@ -88,10 +75,8 @@ public class ActivityLogEntryQueryResult {
      * 
      * @return totalRecordCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    public Integer getTotalRecordCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
@@ -110,10 +95,8 @@ public class ActivityLogEntryQueryResult {
      * 
      * @return startIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_INDEX)
-    public Integer getStartIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getStartIndex() {
         return startIndex;
     }
 
@@ -122,9 +105,6 @@ public class ActivityLogEntryQueryResult {
         this.startIndex = startIndex;
     }
 
-    /**
-     * Return true if this ActivityLogEntryQueryResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -210,14 +190,24 @@ public class ActivityLogEntryQueryResult {
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTotalRecordCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

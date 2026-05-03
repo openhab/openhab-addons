@@ -12,36 +12,26 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The branding options DTO for API use. This DTO excludes SplashscreenLocation to prevent it from being updated via
  * API.
  */
-@JsonPropertyOrder({ BrandingOptionsDto.JSON_PROPERTY_LOGIN_DISCLAIMER, BrandingOptionsDto.JSON_PROPERTY_CUSTOM_CSS,
-        BrandingOptionsDto.JSON_PROPERTY_SPLASHSCREEN_ENABLED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BrandingOptionsDto {
     public static final String JSON_PROPERTY_LOGIN_DISCLAIMER = "LoginDisclaimer";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String loginDisclaimer;
+    private @org.eclipse.jdt.annotation.Nullable String loginDisclaimer;
 
     public static final String JSON_PROPERTY_CUSTOM_CSS = "CustomCss";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String customCss;
+    private @org.eclipse.jdt.annotation.Nullable String customCss;
 
     public static final String JSON_PROPERTY_SPLASHSCREEN_ENABLED = "SplashscreenEnabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean splashscreenEnabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean splashscreenEnabled;
 
     public BrandingOptionsDto() {
     }
@@ -56,10 +46,8 @@ public class BrandingOptionsDto {
      * 
      * @return loginDisclaimer
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOGIN_DISCLAIMER)
-    public String getLoginDisclaimer() {
+    public @org.eclipse.jdt.annotation.Nullable String getLoginDisclaimer() {
         return loginDisclaimer;
     }
 
@@ -78,10 +66,8 @@ public class BrandingOptionsDto {
      * 
      * @return customCss
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_CSS)
-    public String getCustomCss() {
+    public @org.eclipse.jdt.annotation.Nullable String getCustomCss() {
         return customCss;
     }
 
@@ -100,10 +86,8 @@ public class BrandingOptionsDto {
      * 
      * @return splashscreenEnabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SPLASHSCREEN_ENABLED)
-    public Boolean getSplashscreenEnabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSplashscreenEnabled() {
         return splashscreenEnabled;
     }
 
@@ -112,9 +96,6 @@ public class BrandingOptionsDto {
         this.splashscreenEnabled = splashscreenEnabled;
     }
 
-    /**
-     * Return true if this BrandingOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -187,20 +168,35 @@ public class BrandingOptionsDto {
 
         // add `LoginDisclaimer` to the URL query string
         if (getLoginDisclaimer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLoginDisclaimer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLoginDisclaimer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLoginDisclaimer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLoginDisclaimer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomCss` to the URL query string
         if (getCustomCss() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCustomCss%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomCss()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCustomCss%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCustomCss()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SplashscreenEnabled` to the URL query string
         if (getSplashscreenEnabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSplashscreenEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSplashscreenEnabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSplashscreenEnabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSplashscreenEnabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

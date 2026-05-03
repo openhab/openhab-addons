@@ -12,50 +12,36 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ProblemDetails
  */
-@JsonPropertyOrder({ ProblemDetails.JSON_PROPERTY_TYPE, ProblemDetails.JSON_PROPERTY_TITLE,
-        ProblemDetails.JSON_PROPERTY_STATUS, ProblemDetails.JSON_PROPERTY_DETAIL,
-        ProblemDetails.JSON_PROPERTY_INSTANCE })
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_TITLE = "title";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String title;
+    private @org.eclipse.jdt.annotation.Nullable String title;
 
     public static final String JSON_PROPERTY_STATUS = "status";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer status;
+    private @org.eclipse.jdt.annotation.Nullable Integer status;
 
     public static final String JSON_PROPERTY_DETAIL = "detail";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String detail;
+    private @org.eclipse.jdt.annotation.Nullable String detail;
 
     public static final String JSON_PROPERTY_INSTANCE = "instance";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String instance;
+    private @org.eclipse.jdt.annotation.Nullable String instance;
 
     public ProblemDetails() {
     }
@@ -70,10 +56,8 @@ public class ProblemDetails {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -92,10 +76,8 @@ public class ProblemDetails {
      * 
      * @return title
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TITLE)
-    public String getTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getTitle() {
         return title;
     }
 
@@ -114,10 +96,8 @@ public class ProblemDetails {
      * 
      * @return status
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATUS)
-    public Integer getStatus() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getStatus() {
         return status;
     }
 
@@ -136,10 +116,8 @@ public class ProblemDetails {
      * 
      * @return detail
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DETAIL)
-    public String getDetail() {
+    public @org.eclipse.jdt.annotation.Nullable String getDetail() {
         return detail;
     }
 
@@ -158,10 +136,8 @@ public class ProblemDetails {
      * 
      * @return instance
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INSTANCE)
-    public String getInstance() {
+    public @org.eclipse.jdt.annotation.Nullable String getInstance() {
         return instance;
     }
 
@@ -217,9 +193,6 @@ public class ProblemDetails {
         return this.additionalProperties.get(key);
     }
 
-    /**
-     * Return true if this ProblemDetails object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -232,13 +205,12 @@ public class ProblemDetails {
         return Objects.equals(this.type, problemDetails.type) && Objects.equals(this.title, problemDetails.title)
                 && Objects.equals(this.status, problemDetails.status)
                 && Objects.equals(this.detail, problemDetails.detail)
-                && Objects.equals(this.instance, problemDetails.instance)
-                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties);
+                && Objects.equals(this.instance, problemDetails.instance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, title, status, detail, instance, additionalProperties);
+        return Objects.hash(type, title, status, detail, instance);
     }
 
     @Override
@@ -250,7 +222,6 @@ public class ProblemDetails {
         sb.append("    status: ").append(toIndentedString(status)).append("\n");
         sb.append("    detail: ").append(toIndentedString(detail)).append("\n");
         sb.append("    instance: ").append(toIndentedString(instance)).append("\n");
-        sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n");
         sb.append("}");
         return sb.toString();
     }
@@ -297,32 +268,57 @@ public class ProblemDetails {
 
         // add `type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `title` to the URL query string
         if (getTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%stitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%stitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `status` to the URL query string
         if (getStatus() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sstatus%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sstatus%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStatus()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `detail` to the URL query string
         if (getDetail() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sdetail%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDetail()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sdetail%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDetail()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `instance` to the URL query string
         if (getInstance() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sinstance%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInstance()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sinstance%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getInstance()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

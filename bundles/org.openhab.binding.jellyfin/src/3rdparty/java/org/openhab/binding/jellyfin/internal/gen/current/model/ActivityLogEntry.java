@@ -12,75 +12,48 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * An activity log entry.
  */
-@JsonPropertyOrder({ ActivityLogEntry.JSON_PROPERTY_ID, ActivityLogEntry.JSON_PROPERTY_NAME,
-        ActivityLogEntry.JSON_PROPERTY_OVERVIEW, ActivityLogEntry.JSON_PROPERTY_SHORT_OVERVIEW,
-        ActivityLogEntry.JSON_PROPERTY_TYPE, ActivityLogEntry.JSON_PROPERTY_ITEM_ID,
-        ActivityLogEntry.JSON_PROPERTY_DATE, ActivityLogEntry.JSON_PROPERTY_USER_ID,
-        ActivityLogEntry.JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG, ActivityLogEntry.JSON_PROPERTY_SEVERITY })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ActivityLogEntry {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long id;
+    private @org.eclipse.jdt.annotation.Nullable Long id;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String overview;
+    private @org.eclipse.jdt.annotation.Nullable String overview;
 
     public static final String JSON_PROPERTY_SHORT_OVERVIEW = "ShortOverview";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String shortOverview;
+    private @org.eclipse.jdt.annotation.Nullable String shortOverview;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_ITEM_ID = "ItemId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String itemId;
+    private @org.eclipse.jdt.annotation.Nullable String itemId;
 
     public static final String JSON_PROPERTY_DATE = "Date";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime date;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime date;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG = "UserPrimaryImageTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userPrimaryImageTag;
+    private @org.eclipse.jdt.annotation.Nullable String userPrimaryImageTag;
 
     public static final String JSON_PROPERTY_SEVERITY = "Severity";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private LogLevel severity;
+    private @org.eclipse.jdt.annotation.Nullable LogLevel severity;
 
     public ActivityLogEntry() {
     }
@@ -95,10 +68,8 @@ public class ActivityLogEntry {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public Long getId() {
+    public @org.eclipse.jdt.annotation.Nullable Long getId() {
         return id;
     }
 
@@ -117,10 +88,8 @@ public class ActivityLogEntry {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -139,10 +108,8 @@ public class ActivityLogEntry {
      * 
      * @return overview
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
-    public String getOverview() {
+    public @org.eclipse.jdt.annotation.Nullable String getOverview() {
         return overview;
     }
 
@@ -161,10 +128,8 @@ public class ActivityLogEntry {
      * 
      * @return shortOverview
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SHORT_OVERVIEW)
-    public String getShortOverview() {
+    public @org.eclipse.jdt.annotation.Nullable String getShortOverview() {
         return shortOverview;
     }
 
@@ -183,10 +148,8 @@ public class ActivityLogEntry {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -205,10 +168,8 @@ public class ActivityLogEntry {
      * 
      * @return itemId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_ID)
-    public String getItemId() {
+    public @org.eclipse.jdt.annotation.Nullable String getItemId() {
         return itemId;
     }
 
@@ -227,10 +188,8 @@ public class ActivityLogEntry {
      * 
      * @return date
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE)
-    public OffsetDateTime getDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDate() {
         return date;
     }
 
@@ -249,10 +208,8 @@ public class ActivityLogEntry {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -273,10 +230,8 @@ public class ActivityLogEntry {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_PRIMARY_IMAGE_TAG)
-    public String getUserPrimaryImageTag() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserPrimaryImageTag() {
         return userPrimaryImageTag;
     }
 
@@ -295,10 +250,8 @@ public class ActivityLogEntry {
      * 
      * @return severity
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEVERITY)
-    public LogLevel getSeverity() {
+    public @org.eclipse.jdt.annotation.Nullable LogLevel getSeverity() {
         return severity;
     }
 
@@ -307,9 +260,6 @@ public class ActivityLogEntry {
         this.severity = severity;
     }
 
-    /**
-     * Return true if this ActivityLogEntry object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -396,62 +346,112 @@ public class ActivityLogEntry {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOverview()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ShortOverview` to the URL query string
         if (getShortOverview() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sShortOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShortOverview()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sShortOverview%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getShortOverview()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemId` to the URL query string
         if (getItemId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Date` to the URL query string
         if (getDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserPrimaryImageTag` to the URL query string
         if (getUserPrimaryImageTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserPrimaryImageTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserPrimaryImageTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserPrimaryImageTag()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Severity` to the URL query string
         if (getSeverity() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeverity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeverity()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeverity%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeverity()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

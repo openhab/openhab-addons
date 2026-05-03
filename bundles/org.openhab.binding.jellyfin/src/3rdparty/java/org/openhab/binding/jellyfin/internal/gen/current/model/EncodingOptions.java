@@ -12,285 +12,159 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class EncodingOptions.
  */
-@JsonPropertyOrder({ EncodingOptions.JSON_PROPERTY_ENCODING_THREAD_COUNT,
-        EncodingOptions.JSON_PROPERTY_TRANSCODING_TEMP_PATH, EncodingOptions.JSON_PROPERTY_FALLBACK_FONT_PATH,
-        EncodingOptions.JSON_PROPERTY_ENABLE_FALLBACK_FONT, EncodingOptions.JSON_PROPERTY_ENABLE_AUDIO_VBR,
-        EncodingOptions.JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST, EncodingOptions.JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM,
-        EncodingOptions.JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE, EncodingOptions.JSON_PROPERTY_ENABLE_THROTTLING,
-        EncodingOptions.JSON_PROPERTY_THROTTLE_DELAY_SECONDS, EncodingOptions.JSON_PROPERTY_ENABLE_SEGMENT_DELETION,
-        EncodingOptions.JSON_PROPERTY_SEGMENT_KEEP_SECONDS, EncodingOptions.JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE,
-        EncodingOptions.JSON_PROPERTY_ENCODER_APP_PATH, EncodingOptions.JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY,
-        EncodingOptions.JSON_PROPERTY_VAAPI_DEVICE, EncodingOptions.JSON_PROPERTY_QSV_DEVICE,
-        EncodingOptions.JSON_PROPERTY_ENABLE_TONEMAPPING, EncodingOptions.JSON_PROPERTY_ENABLE_VPP_TONEMAPPING,
-        EncodingOptions.JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING,
-        EncodingOptions.JSON_PROPERTY_TONEMAPPING_ALGORITHM, EncodingOptions.JSON_PROPERTY_TONEMAPPING_MODE,
-        EncodingOptions.JSON_PROPERTY_TONEMAPPING_RANGE, EncodingOptions.JSON_PROPERTY_TONEMAPPING_DESAT,
-        EncodingOptions.JSON_PROPERTY_TONEMAPPING_PEAK, EncodingOptions.JSON_PROPERTY_TONEMAPPING_PARAM,
-        EncodingOptions.JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS,
-        EncodingOptions.JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST, EncodingOptions.JSON_PROPERTY_H264_CRF,
-        EncodingOptions.JSON_PROPERTY_H265_CRF, EncodingOptions.JSON_PROPERTY_ENCODER_PRESET,
-        EncodingOptions.JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE, EncodingOptions.JSON_PROPERTY_DEINTERLACE_METHOD,
-        EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC,
-        EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9,
-        EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT,
-        EncodingOptions.JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT,
-        EncodingOptions.JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER,
-        EncodingOptions.JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER,
-        EncodingOptions.JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER,
-        EncodingOptions.JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER,
-        EncodingOptions.JSON_PROPERTY_ENABLE_HARDWARE_ENCODING, EncodingOptions.JSON_PROPERTY_ALLOW_HEVC_ENCODING,
-        EncodingOptions.JSON_PROPERTY_ALLOW_AV1_ENCODING, EncodingOptions.JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION,
-        EncodingOptions.JSON_PROPERTY_HARDWARE_DECODING_CODECS,
-        EncodingOptions.JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class EncodingOptions {
     public static final String JSON_PROPERTY_ENCODING_THREAD_COUNT = "EncodingThreadCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer encodingThreadCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer encodingThreadCount;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String transcodingTempPath;
+    private @org.eclipse.jdt.annotation.Nullable String transcodingTempPath;
 
     public static final String JSON_PROPERTY_FALLBACK_FONT_PATH = "FallbackFontPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String fallbackFontPath;
+    private @org.eclipse.jdt.annotation.Nullable String fallbackFontPath;
 
     public static final String JSON_PROPERTY_ENABLE_FALLBACK_FONT = "EnableFallbackFont";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableFallbackFont;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableFallbackFont;
 
     public static final String JSON_PROPERTY_ENABLE_AUDIO_VBR = "EnableAudioVbr";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAudioVbr;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAudioVbr;
 
     public static final String JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST = "DownMixAudioBoost";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double downMixAudioBoost;
+    private @org.eclipse.jdt.annotation.Nullable Double downMixAudioBoost;
 
     public static final String JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM = "DownMixStereoAlgorithm";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DownMixStereoAlgorithms downMixStereoAlgorithm;
+    private @org.eclipse.jdt.annotation.Nullable DownMixStereoAlgorithms downMixStereoAlgorithm;
 
     public static final String JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE = "MaxMuxingQueueSize";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxMuxingQueueSize;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxMuxingQueueSize;
 
     public static final String JSON_PROPERTY_ENABLE_THROTTLING = "EnableThrottling";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableThrottling;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableThrottling;
 
     public static final String JSON_PROPERTY_THROTTLE_DELAY_SECONDS = "ThrottleDelaySeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer throttleDelaySeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer throttleDelaySeconds;
 
     public static final String JSON_PROPERTY_ENABLE_SEGMENT_DELETION = "EnableSegmentDeletion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSegmentDeletion;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSegmentDeletion;
 
     public static final String JSON_PROPERTY_SEGMENT_KEEP_SECONDS = "SegmentKeepSeconds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer segmentKeepSeconds;
+    private @org.eclipse.jdt.annotation.Nullable Integer segmentKeepSeconds;
 
     public static final String JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE = "HardwareAccelerationType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private HardwareAccelerationType hardwareAccelerationType;
+    private @org.eclipse.jdt.annotation.Nullable HardwareAccelerationType hardwareAccelerationType;
 
     public static final String JSON_PROPERTY_ENCODER_APP_PATH = "EncoderAppPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String encoderAppPath;
+    private @org.eclipse.jdt.annotation.Nullable String encoderAppPath;
 
     public static final String JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY = "EncoderAppPathDisplay";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String encoderAppPathDisplay;
+    private @org.eclipse.jdt.annotation.Nullable String encoderAppPathDisplay;
 
     public static final String JSON_PROPERTY_VAAPI_DEVICE = "VaapiDevice";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String vaapiDevice;
+    private @org.eclipse.jdt.annotation.Nullable String vaapiDevice;
 
     public static final String JSON_PROPERTY_QSV_DEVICE = "QsvDevice";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String qsvDevice;
+    private @org.eclipse.jdt.annotation.Nullable String qsvDevice;
 
     public static final String JSON_PROPERTY_ENABLE_TONEMAPPING = "EnableTonemapping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableTonemapping;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableTonemapping;
 
     public static final String JSON_PROPERTY_ENABLE_VPP_TONEMAPPING = "EnableVppTonemapping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableVppTonemapping;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableVppTonemapping;
 
     public static final String JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING = "EnableVideoToolboxTonemapping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableVideoToolboxTonemapping;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableVideoToolboxTonemapping;
 
     public static final String JSON_PROPERTY_TONEMAPPING_ALGORITHM = "TonemappingAlgorithm";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TonemappingAlgorithm tonemappingAlgorithm;
+    private @org.eclipse.jdt.annotation.Nullable TonemappingAlgorithm tonemappingAlgorithm;
 
     public static final String JSON_PROPERTY_TONEMAPPING_MODE = "TonemappingMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TonemappingMode tonemappingMode;
+    private @org.eclipse.jdt.annotation.Nullable TonemappingMode tonemappingMode;
 
     public static final String JSON_PROPERTY_TONEMAPPING_RANGE = "TonemappingRange";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TonemappingRange tonemappingRange;
+    private @org.eclipse.jdt.annotation.Nullable TonemappingRange tonemappingRange;
 
     public static final String JSON_PROPERTY_TONEMAPPING_DESAT = "TonemappingDesat";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double tonemappingDesat;
+    private @org.eclipse.jdt.annotation.Nullable Double tonemappingDesat;
 
     public static final String JSON_PROPERTY_TONEMAPPING_PEAK = "TonemappingPeak";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double tonemappingPeak;
+    private @org.eclipse.jdt.annotation.Nullable Double tonemappingPeak;
 
     public static final String JSON_PROPERTY_TONEMAPPING_PARAM = "TonemappingParam";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double tonemappingParam;
+    private @org.eclipse.jdt.annotation.Nullable Double tonemappingParam;
 
     public static final String JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS = "VppTonemappingBrightness";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double vppTonemappingBrightness;
+    private @org.eclipse.jdt.annotation.Nullable Double vppTonemappingBrightness;
 
     public static final String JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST = "VppTonemappingContrast";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double vppTonemappingContrast;
+    private @org.eclipse.jdt.annotation.Nullable Double vppTonemappingContrast;
 
     public static final String JSON_PROPERTY_H264_CRF = "H264Crf";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer h264Crf;
+    private @org.eclipse.jdt.annotation.Nullable Integer h264Crf;
 
     public static final String JSON_PROPERTY_H265_CRF = "H265Crf";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer h265Crf;
+    private @org.eclipse.jdt.annotation.Nullable Integer h265Crf;
 
     public static final String JSON_PROPERTY_ENCODER_PRESET = "EncoderPreset";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private EncoderPreset encoderPreset;
+    private @org.eclipse.jdt.annotation.Nullable EncoderPreset encoderPreset;
 
     public static final String JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE = "DeinterlaceDoubleRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean deinterlaceDoubleRate;
+    private @org.eclipse.jdt.annotation.Nullable Boolean deinterlaceDoubleRate;
 
     public static final String JSON_PROPERTY_DEINTERLACE_METHOD = "DeinterlaceMethod";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DeinterlaceMethod deinterlaceMethod;
+    private @org.eclipse.jdt.annotation.Nullable DeinterlaceMethod deinterlaceMethod;
 
     public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC = "EnableDecodingColorDepth10Hevc";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDecodingColorDepth10Hevc;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDecodingColorDepth10Hevc;
 
     public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9 = "EnableDecodingColorDepth10Vp9";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDecodingColorDepth10Vp9;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDecodingColorDepth10Vp9;
 
     public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT = "EnableDecodingColorDepth10HevcRext";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDecodingColorDepth10HevcRext;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDecodingColorDepth10HevcRext;
 
     public static final String JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT = "EnableDecodingColorDepth12HevcRext";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableDecodingColorDepth12HevcRext;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableDecodingColorDepth12HevcRext;
 
     public static final String JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER = "EnableEnhancedNvdecDecoder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableEnhancedNvdecDecoder;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableEnhancedNvdecDecoder;
 
     public static final String JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER = "PreferSystemNativeHwDecoder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean preferSystemNativeHwDecoder;
+    private @org.eclipse.jdt.annotation.Nullable Boolean preferSystemNativeHwDecoder;
 
     public static final String JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER = "EnableIntelLowPowerH264HwEncoder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableIntelLowPowerH264HwEncoder;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableIntelLowPowerH264HwEncoder;
 
     public static final String JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER = "EnableIntelLowPowerHevcHwEncoder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableIntelLowPowerHevcHwEncoder;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableIntelLowPowerHevcHwEncoder;
 
     public static final String JSON_PROPERTY_ENABLE_HARDWARE_ENCODING = "EnableHardwareEncoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableHardwareEncoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableHardwareEncoding;
 
     public static final String JSON_PROPERTY_ALLOW_HEVC_ENCODING = "AllowHevcEncoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean allowHevcEncoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean allowHevcEncoding;
 
     public static final String JSON_PROPERTY_ALLOW_AV1_ENCODING = "AllowAv1Encoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean allowAv1Encoding;
+    private @org.eclipse.jdt.annotation.Nullable Boolean allowAv1Encoding;
 
     public static final String JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION = "EnableSubtitleExtraction";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSubtitleExtraction;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSubtitleExtraction;
 
     public static final String JSON_PROPERTY_HARDWARE_DECODING_CODECS = "HardwareDecodingCodecs";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> hardwareDecodingCodecs;
+    private @org.eclipse.jdt.annotation.Nullable List<String> hardwareDecodingCodecs;
 
     public static final String JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS = "AllowOnDemandMetadataBasedKeyframeExtractionForExtensions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
+    private @org.eclipse.jdt.annotation.Nullable List<String> allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
 
     public EncodingOptions() {
     }
@@ -305,10 +179,8 @@ public class EncodingOptions {
      * 
      * @return encodingThreadCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENCODING_THREAD_COUNT)
-    public Integer getEncodingThreadCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getEncodingThreadCount() {
         return encodingThreadCount;
     }
 
@@ -327,10 +199,8 @@ public class EncodingOptions {
      * 
      * @return transcodingTempPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH)
-    public String getTranscodingTempPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getTranscodingTempPath() {
         return transcodingTempPath;
     }
 
@@ -349,10 +219,8 @@ public class EncodingOptions {
      * 
      * @return fallbackFontPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FALLBACK_FONT_PATH)
-    public String getFallbackFontPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getFallbackFontPath() {
         return fallbackFontPath;
     }
 
@@ -371,10 +239,8 @@ public class EncodingOptions {
      * 
      * @return enableFallbackFont
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_FALLBACK_FONT)
-    public Boolean getEnableFallbackFont() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableFallbackFont() {
         return enableFallbackFont;
     }
 
@@ -393,10 +259,8 @@ public class EncodingOptions {
      * 
      * @return enableAudioVbr
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR)
-    public Boolean getEnableAudioVbr() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAudioVbr() {
         return enableAudioVbr;
     }
 
@@ -415,10 +279,8 @@ public class EncodingOptions {
      * 
      * @return downMixAudioBoost
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_AUDIO_BOOST)
-    public Double getDownMixAudioBoost() {
+    public @org.eclipse.jdt.annotation.Nullable Double getDownMixAudioBoost() {
         return downMixAudioBoost;
     }
 
@@ -438,10 +300,8 @@ public class EncodingOptions {
      * 
      * @return downMixStereoAlgorithm
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWN_MIX_STEREO_ALGORITHM)
-    public DownMixStereoAlgorithms getDownMixStereoAlgorithm() {
+    public @org.eclipse.jdt.annotation.Nullable DownMixStereoAlgorithms getDownMixStereoAlgorithm() {
         return downMixStereoAlgorithm;
     }
 
@@ -461,10 +321,8 @@ public class EncodingOptions {
      * 
      * @return maxMuxingQueueSize
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_MUXING_QUEUE_SIZE)
-    public Integer getMaxMuxingQueueSize() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxMuxingQueueSize() {
         return maxMuxingQueueSize;
     }
 
@@ -483,10 +341,8 @@ public class EncodingOptions {
      * 
      * @return enableThrottling
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_THROTTLING)
-    public Boolean getEnableThrottling() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableThrottling() {
         return enableThrottling;
     }
 
@@ -505,10 +361,8 @@ public class EncodingOptions {
      * 
      * @return throttleDelaySeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THROTTLE_DELAY_SECONDS)
-    public Integer getThrottleDelaySeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getThrottleDelaySeconds() {
         return throttleDelaySeconds;
     }
 
@@ -527,10 +381,8 @@ public class EncodingOptions {
      * 
      * @return enableSegmentDeletion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SEGMENT_DELETION)
-    public Boolean getEnableSegmentDeletion() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSegmentDeletion() {
         return enableSegmentDeletion;
     }
 
@@ -549,10 +401,8 @@ public class EncodingOptions {
      * 
      * @return segmentKeepSeconds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEGMENT_KEEP_SECONDS)
-    public Integer getSegmentKeepSeconds() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSegmentKeepSeconds() {
         return segmentKeepSeconds;
     }
 
@@ -572,10 +422,8 @@ public class EncodingOptions {
      * 
      * @return hardwareAccelerationType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HARDWARE_ACCELERATION_TYPE)
-    public HardwareAccelerationType getHardwareAccelerationType() {
+    public @org.eclipse.jdt.annotation.Nullable HardwareAccelerationType getHardwareAccelerationType() {
         return hardwareAccelerationType;
     }
 
@@ -595,10 +443,8 @@ public class EncodingOptions {
      * 
      * @return encoderAppPath
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH)
-    public String getEncoderAppPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getEncoderAppPath() {
         return encoderAppPath;
     }
 
@@ -617,10 +463,8 @@ public class EncodingOptions {
      * 
      * @return encoderAppPathDisplay
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENCODER_APP_PATH_DISPLAY)
-    public String getEncoderAppPathDisplay() {
+    public @org.eclipse.jdt.annotation.Nullable String getEncoderAppPathDisplay() {
         return encoderAppPathDisplay;
     }
 
@@ -639,10 +483,8 @@ public class EncodingOptions {
      * 
      * @return vaapiDevice
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VAAPI_DEVICE)
-    public String getVaapiDevice() {
+    public @org.eclipse.jdt.annotation.Nullable String getVaapiDevice() {
         return vaapiDevice;
     }
 
@@ -661,10 +503,8 @@ public class EncodingOptions {
      * 
      * @return qsvDevice
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_QSV_DEVICE)
-    public String getQsvDevice() {
+    public @org.eclipse.jdt.annotation.Nullable String getQsvDevice() {
         return qsvDevice;
     }
 
@@ -683,10 +523,8 @@ public class EncodingOptions {
      * 
      * @return enableTonemapping
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_TONEMAPPING)
-    public Boolean getEnableTonemapping() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableTonemapping() {
         return enableTonemapping;
     }
 
@@ -705,10 +543,8 @@ public class EncodingOptions {
      * 
      * @return enableVppTonemapping
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_VPP_TONEMAPPING)
-    public Boolean getEnableVppTonemapping() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableVppTonemapping() {
         return enableVppTonemapping;
     }
 
@@ -728,10 +564,8 @@ public class EncodingOptions {
      * 
      * @return enableVideoToolboxTonemapping
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_VIDEO_TOOLBOX_TONEMAPPING)
-    public Boolean getEnableVideoToolboxTonemapping() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableVideoToolboxTonemapping() {
         return enableVideoToolboxTonemapping;
     }
 
@@ -752,10 +586,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingAlgorithm
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_ALGORITHM)
-    public TonemappingAlgorithm getTonemappingAlgorithm() {
+    public @org.eclipse.jdt.annotation.Nullable TonemappingAlgorithm getTonemappingAlgorithm() {
         return tonemappingAlgorithm;
     }
 
@@ -775,10 +607,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_MODE)
-    public TonemappingMode getTonemappingMode() {
+    public @org.eclipse.jdt.annotation.Nullable TonemappingMode getTonemappingMode() {
         return tonemappingMode;
     }
 
@@ -797,10 +627,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingRange
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_RANGE)
-    public TonemappingRange getTonemappingRange() {
+    public @org.eclipse.jdt.annotation.Nullable TonemappingRange getTonemappingRange() {
         return tonemappingRange;
     }
 
@@ -819,10 +647,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingDesat
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_DESAT)
-    public Double getTonemappingDesat() {
+    public @org.eclipse.jdt.annotation.Nullable Double getTonemappingDesat() {
         return tonemappingDesat;
     }
 
@@ -841,10 +667,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingPeak
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PEAK)
-    public Double getTonemappingPeak() {
+    public @org.eclipse.jdt.annotation.Nullable Double getTonemappingPeak() {
         return tonemappingPeak;
     }
 
@@ -863,10 +687,8 @@ public class EncodingOptions {
      * 
      * @return tonemappingParam
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TONEMAPPING_PARAM)
-    public Double getTonemappingParam() {
+    public @org.eclipse.jdt.annotation.Nullable Double getTonemappingParam() {
         return tonemappingParam;
     }
 
@@ -886,10 +708,8 @@ public class EncodingOptions {
      * 
      * @return vppTonemappingBrightness
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_BRIGHTNESS)
-    public Double getVppTonemappingBrightness() {
+    public @org.eclipse.jdt.annotation.Nullable Double getVppTonemappingBrightness() {
         return vppTonemappingBrightness;
     }
 
@@ -908,10 +728,8 @@ public class EncodingOptions {
      * 
      * @return vppTonemappingContrast
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VPP_TONEMAPPING_CONTRAST)
-    public Double getVppTonemappingContrast() {
+    public @org.eclipse.jdt.annotation.Nullable Double getVppTonemappingContrast() {
         return vppTonemappingContrast;
     }
 
@@ -930,10 +748,8 @@ public class EncodingOptions {
      * 
      * @return h264Crf
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_H264_CRF)
-    public Integer getH264Crf() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getH264Crf() {
         return h264Crf;
     }
 
@@ -952,10 +768,8 @@ public class EncodingOptions {
      * 
      * @return h265Crf
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_H265_CRF)
-    public Integer getH265Crf() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getH265Crf() {
         return h265Crf;
     }
 
@@ -974,10 +788,8 @@ public class EncodingOptions {
      * 
      * @return encoderPreset
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENCODER_PRESET)
-    public EncoderPreset getEncoderPreset() {
+    public @org.eclipse.jdt.annotation.Nullable EncoderPreset getEncoderPreset() {
         return encoderPreset;
     }
 
@@ -996,10 +808,8 @@ public class EncodingOptions {
      * 
      * @return deinterlaceDoubleRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_DOUBLE_RATE)
-    public Boolean getDeinterlaceDoubleRate() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDeinterlaceDoubleRate() {
         return deinterlaceDoubleRate;
     }
 
@@ -1018,10 +828,8 @@ public class EncodingOptions {
      * 
      * @return deinterlaceMethod
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEINTERLACE_METHOD)
-    public DeinterlaceMethod getDeinterlaceMethod() {
+    public @org.eclipse.jdt.annotation.Nullable DeinterlaceMethod getDeinterlaceMethod() {
         return deinterlaceMethod;
     }
 
@@ -1041,10 +849,8 @@ public class EncodingOptions {
      * 
      * @return enableDecodingColorDepth10Hevc
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC)
-    public Boolean getEnableDecodingColorDepth10Hevc() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDecodingColorDepth10Hevc() {
         return enableDecodingColorDepth10Hevc;
     }
 
@@ -1065,10 +871,8 @@ public class EncodingOptions {
      * 
      * @return enableDecodingColorDepth10Vp9
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_VP9)
-    public Boolean getEnableDecodingColorDepth10Vp9() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDecodingColorDepth10Vp9() {
         return enableDecodingColorDepth10Vp9;
     }
 
@@ -1089,10 +893,8 @@ public class EncodingOptions {
      * 
      * @return enableDecodingColorDepth10HevcRext
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH10_HEVC_REXT)
-    public Boolean getEnableDecodingColorDepth10HevcRext() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDecodingColorDepth10HevcRext() {
         return enableDecodingColorDepth10HevcRext;
     }
 
@@ -1113,10 +915,8 @@ public class EncodingOptions {
      * 
      * @return enableDecodingColorDepth12HevcRext
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_DECODING_COLOR_DEPTH12_HEVC_REXT)
-    public Boolean getEnableDecodingColorDepth12HevcRext() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableDecodingColorDepth12HevcRext() {
         return enableDecodingColorDepth12HevcRext;
     }
 
@@ -1137,10 +937,8 @@ public class EncodingOptions {
      * 
      * @return enableEnhancedNvdecDecoder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_ENHANCED_NVDEC_DECODER)
-    public Boolean getEnableEnhancedNvdecDecoder() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableEnhancedNvdecDecoder() {
         return enableEnhancedNvdecDecoder;
     }
 
@@ -1160,10 +958,8 @@ public class EncodingOptions {
      * 
      * @return preferSystemNativeHwDecoder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREFER_SYSTEM_NATIVE_HW_DECODER)
-    public Boolean getPreferSystemNativeHwDecoder() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getPreferSystemNativeHwDecoder() {
         return preferSystemNativeHwDecoder;
     }
 
@@ -1184,10 +980,8 @@ public class EncodingOptions {
      * 
      * @return enableIntelLowPowerH264HwEncoder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_H264_HW_ENCODER)
-    public Boolean getEnableIntelLowPowerH264HwEncoder() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableIntelLowPowerH264HwEncoder() {
         return enableIntelLowPowerH264HwEncoder;
     }
 
@@ -1208,10 +1002,8 @@ public class EncodingOptions {
      * 
      * @return enableIntelLowPowerHevcHwEncoder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_INTEL_LOW_POWER_HEVC_HW_ENCODER)
-    public Boolean getEnableIntelLowPowerHevcHwEncoder() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableIntelLowPowerHevcHwEncoder() {
         return enableIntelLowPowerHevcHwEncoder;
     }
 
@@ -1231,10 +1023,8 @@ public class EncodingOptions {
      * 
      * @return enableHardwareEncoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_HARDWARE_ENCODING)
-    public Boolean getEnableHardwareEncoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableHardwareEncoding() {
         return enableHardwareEncoding;
     }
 
@@ -1253,10 +1043,8 @@ public class EncodingOptions {
      * 
      * @return allowHevcEncoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALLOW_HEVC_ENCODING)
-    public Boolean getAllowHevcEncoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAllowHevcEncoding() {
         return allowHevcEncoding;
     }
 
@@ -1275,10 +1063,8 @@ public class EncodingOptions {
      * 
      * @return allowAv1Encoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALLOW_AV1_ENCODING)
-    public Boolean getAllowAv1Encoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAllowAv1Encoding() {
         return allowAv1Encoding;
     }
 
@@ -1298,10 +1084,8 @@ public class EncodingOptions {
      * 
      * @return enableSubtitleExtraction
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLE_EXTRACTION)
-    public Boolean getEnableSubtitleExtraction() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSubtitleExtraction() {
         return enableSubtitleExtraction;
     }
 
@@ -1329,10 +1113,8 @@ public class EncodingOptions {
      * 
      * @return hardwareDecodingCodecs
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HARDWARE_DECODING_CODECS)
-    public List<String> getHardwareDecodingCodecs() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getHardwareDecodingCodecs() {
         return hardwareDecodingCodecs;
     }
 
@@ -1362,10 +1144,8 @@ public class EncodingOptions {
      * 
      * @return allowOnDemandMetadataBasedKeyframeExtractionForExtensions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALLOW_ON_DEMAND_METADATA_BASED_KEYFRAME_EXTRACTION_FOR_EXTENSIONS)
-    public List<String> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() {
         return allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
     }
 
@@ -1375,9 +1155,6 @@ public class EncodingOptions {
         this.allowOnDemandMetadataBasedKeyframeExtractionForExtensions = allowOnDemandMetadataBasedKeyframeExtractionForExtensions;
     }
 
-    /**
-     * Return true if this EncodingOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1563,293 +1340,554 @@ public class EncodingOptions {
 
         // add `EncodingThreadCount` to the URL query string
         if (getEncodingThreadCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEncodingThreadCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncodingThreadCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEncodingThreadCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEncodingThreadCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TranscodingTempPath` to the URL query string
         if (getTranscodingTempPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTranscodingTempPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `FallbackFontPath` to the URL query string
         if (getFallbackFontPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFallbackFontPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFallbackFontPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFallbackFontPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFallbackFontPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableFallbackFont` to the URL query string
         if (getEnableFallbackFont() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableFallbackFont%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableFallbackFont()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableFallbackFont%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableFallbackFont()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableAudioVbr` to the URL query string
         if (getEnableAudioVbr() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioVbr%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioVbr()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioVbr%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAudioVbr()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DownMixAudioBoost` to the URL query string
         if (getDownMixAudioBoost() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDownMixAudioBoost%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownMixAudioBoost()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDownMixAudioBoost%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDownMixAudioBoost()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DownMixStereoAlgorithm` to the URL query string
         if (getDownMixStereoAlgorithm() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDownMixStereoAlgorithm%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownMixStereoAlgorithm()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDownMixStereoAlgorithm%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDownMixStereoAlgorithm()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxMuxingQueueSize` to the URL query string
         if (getMaxMuxingQueueSize() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxMuxingQueueSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxMuxingQueueSize()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxMuxingQueueSize%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxMuxingQueueSize()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableThrottling` to the URL query string
         if (getEnableThrottling() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableThrottling%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableThrottling()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableThrottling%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableThrottling()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ThrottleDelaySeconds` to the URL query string
         if (getThrottleDelaySeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThrottleDelaySeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThrottleDelaySeconds()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sThrottleDelaySeconds%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getThrottleDelaySeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSegmentDeletion` to the URL query string
         if (getEnableSegmentDeletion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSegmentDeletion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSegmentDeletion()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableSegmentDeletion%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableSegmentDeletion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SegmentKeepSeconds` to the URL query string
         if (getSegmentKeepSeconds() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSegmentKeepSeconds%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSegmentKeepSeconds()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSegmentKeepSeconds%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSegmentKeepSeconds()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HardwareAccelerationType` to the URL query string
         if (getHardwareAccelerationType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHardwareAccelerationType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHardwareAccelerationType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHardwareAccelerationType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHardwareAccelerationType()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EncoderAppPath` to the URL query string
         if (getEncoderAppPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderAppPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderAppPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEncoderAppPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EncoderAppPathDisplay` to the URL query string
         if (getEncoderAppPathDisplay() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderAppPathDisplay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderAppPathDisplay()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEncoderAppPathDisplay%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEncoderAppPathDisplay()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VaapiDevice` to the URL query string
         if (getVaapiDevice() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVaapiDevice%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVaapiDevice()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVaapiDevice%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVaapiDevice()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `QsvDevice` to the URL query string
         if (getQsvDevice() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sQsvDevice%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getQsvDevice()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sQsvDevice%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getQsvDevice()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableTonemapping` to the URL query string
         if (getEnableTonemapping() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTonemapping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableTonemapping()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTonemapping%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableTonemapping()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableVppTonemapping` to the URL query string
         if (getEnableVppTonemapping() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableVppTonemapping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableVppTonemapping()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableVppTonemapping%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableVppTonemapping()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableVideoToolboxTonemapping` to the URL query string
         if (getEnableVideoToolboxTonemapping() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableVideoToolboxTonemapping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableVideoToolboxTonemapping()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableVideoToolboxTonemapping%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableVideoToolboxTonemapping()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingAlgorithm` to the URL query string
         if (getTonemappingAlgorithm() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingAlgorithm%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingAlgorithm()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sTonemappingAlgorithm%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getTonemappingAlgorithm()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingMode` to the URL query string
         if (getTonemappingMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTonemappingMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingRange` to the URL query string
         if (getTonemappingRange() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingRange%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingRange()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingRange%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTonemappingRange()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingDesat` to the URL query string
         if (getTonemappingDesat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingDesat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingDesat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingDesat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTonemappingDesat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingPeak` to the URL query string
         if (getTonemappingPeak() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingPeak%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingPeak()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingPeak%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTonemappingPeak()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TonemappingParam` to the URL query string
         if (getTonemappingParam() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingParam%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTonemappingParam()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTonemappingParam%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTonemappingParam()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VppTonemappingBrightness` to the URL query string
         if (getVppTonemappingBrightness() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVppTonemappingBrightness%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingBrightness()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVppTonemappingBrightness%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVppTonemappingBrightness()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VppTonemappingContrast` to the URL query string
         if (getVppTonemappingContrast() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVppTonemappingContrast%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVppTonemappingContrast()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVppTonemappingContrast%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVppTonemappingContrast()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `H264Crf` to the URL query string
         if (getH264Crf() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sH264Crf%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getH264Crf()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sH264Crf%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getH264Crf()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `H265Crf` to the URL query string
         if (getH265Crf() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sH265Crf%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getH265Crf()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sH265Crf%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getH265Crf()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EncoderPreset` to the URL query string
         if (getEncoderPreset() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderPreset%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderPreset()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderPreset%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEncoderPreset()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeinterlaceDoubleRate` to the URL query string
         if (getDeinterlaceDoubleRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeinterlaceDoubleRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceDoubleRate()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sDeinterlaceDoubleRate%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getDeinterlaceDoubleRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeinterlaceMethod` to the URL query string
         if (getDeinterlaceMethod() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeinterlaceMethod%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeinterlaceMethod()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeinterlaceMethod%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeinterlaceMethod()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDecodingColorDepth10Hevc` to the URL query string
         if (getEnableDecodingColorDepth10Hevc() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10Hevc%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Hevc()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10Hevc%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableDecodingColorDepth10Hevc()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDecodingColorDepth10Vp9` to the URL query string
         if (getEnableDecodingColorDepth10Vp9() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10Vp9%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10Vp9()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10Vp9%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableDecodingColorDepth10Vp9()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDecodingColorDepth10HevcRext` to the URL query string
         if (getEnableDecodingColorDepth10HevcRext() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10HevcRext%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth10HevcRext()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth10HevcRext%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnableDecodingColorDepth10HevcRext()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableDecodingColorDepth12HevcRext` to the URL query string
         if (getEnableDecodingColorDepth12HevcRext() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth12HevcRext%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableDecodingColorDepth12HevcRext()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableDecodingColorDepth12HevcRext%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnableDecodingColorDepth12HevcRext()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableEnhancedNvdecDecoder` to the URL query string
         if (getEnableEnhancedNvdecDecoder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEnhancedNvdecDecoder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEnhancedNvdecDecoder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEnhancedNvdecDecoder%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableEnhancedNvdecDecoder()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PreferSystemNativeHwDecoder` to the URL query string
         if (getPreferSystemNativeHwDecoder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPreferSystemNativeHwDecoder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferSystemNativeHwDecoder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPreferSystemNativeHwDecoder%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPreferSystemNativeHwDecoder()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableIntelLowPowerH264HwEncoder` to the URL query string
         if (getEnableIntelLowPowerH264HwEncoder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIntelLowPowerH264HwEncoder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerH264HwEncoder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIntelLowPowerH264HwEncoder%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnableIntelLowPowerH264HwEncoder()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableIntelLowPowerHevcHwEncoder` to the URL query string
         if (getEnableIntelLowPowerHevcHwEncoder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIntelLowPowerHevcHwEncoder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableIntelLowPowerHevcHwEncoder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableIntelLowPowerHevcHwEncoder%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getEnableIntelLowPowerHevcHwEncoder()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableHardwareEncoding` to the URL query string
         if (getEnableHardwareEncoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHardwareEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableHardwareEncoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableHardwareEncoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableHardwareEncoding()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AllowHevcEncoding` to the URL query string
         if (getAllowHevcEncoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAllowHevcEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowHevcEncoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAllowHevcEncoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAllowHevcEncoding()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AllowAv1Encoding` to the URL query string
         if (getAllowAv1Encoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAllowAv1Encoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowAv1Encoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAllowAv1Encoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAllowAv1Encoding()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSubtitleExtraction` to the URL query string
         if (getEnableSubtitleExtraction() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitleExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitleExtraction()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitleExtraction%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableSubtitleExtraction()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HardwareDecodingCodecs` to the URL query string
         if (getHardwareDecodingCodecs() != null) {
             for (int i = 0; i < getHardwareDecodingCodecs().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sHardwareDecodingCodecs%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getHardwareDecodingCodecs().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sHardwareDecodingCodecs%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getHardwareDecodingCodecs().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `AllowOnDemandMetadataBasedKeyframeExtractionForExtensions` to the URL query string
         if (getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions() != null) {
             for (int i = 0; i < getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT,
-                        "%sAllowOnDemandMetadataBasedKeyframeExtractionForExtensions%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(
-                                getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT,
+                            "%sAllowOnDemandMetadataBasedKeyframeExtractionForExtensions%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(
+                                    String.valueOf(
+                                            getAllowOnDemandMetadataBasedKeyframeExtractionForExtensions().get(i)),
+                                    "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

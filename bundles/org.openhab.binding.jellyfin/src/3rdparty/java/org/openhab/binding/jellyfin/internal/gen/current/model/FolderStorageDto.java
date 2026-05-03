@@ -12,46 +12,31 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Contains information about a specific folder.
  */
-@JsonPropertyOrder({ FolderStorageDto.JSON_PROPERTY_PATH, FolderStorageDto.JSON_PROPERTY_FREE_SPACE,
-        FolderStorageDto.JSON_PROPERTY_USED_SPACE, FolderStorageDto.JSON_PROPERTY_STORAGE_TYPE,
-        FolderStorageDto.JSON_PROPERTY_DEVICE_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class FolderStorageDto {
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_FREE_SPACE = "FreeSpace";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long freeSpace;
+    private @org.eclipse.jdt.annotation.Nullable Long freeSpace;
 
     public static final String JSON_PROPERTY_USED_SPACE = "UsedSpace";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long usedSpace;
+    private @org.eclipse.jdt.annotation.Nullable Long usedSpace;
 
     public static final String JSON_PROPERTY_STORAGE_TYPE = "StorageType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String storageType;
+    private @org.eclipse.jdt.annotation.Nullable String storageType;
 
     public static final String JSON_PROPERTY_DEVICE_ID = "DeviceId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String deviceId;
+    private @org.eclipse.jdt.annotation.Nullable String deviceId;
 
     public FolderStorageDto() {
     }
@@ -66,10 +51,8 @@ public class FolderStorageDto {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -89,10 +72,8 @@ public class FolderStorageDto {
      * 
      * @return freeSpace
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FREE_SPACE)
-    public Long getFreeSpace() {
+    public @org.eclipse.jdt.annotation.Nullable Long getFreeSpace() {
         return freeSpace;
     }
 
@@ -112,10 +93,8 @@ public class FolderStorageDto {
      * 
      * @return usedSpace
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USED_SPACE)
-    public Long getUsedSpace() {
+    public @org.eclipse.jdt.annotation.Nullable Long getUsedSpace() {
         return usedSpace;
     }
 
@@ -134,10 +113,8 @@ public class FolderStorageDto {
      * 
      * @return storageType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STORAGE_TYPE)
-    public String getStorageType() {
+    public @org.eclipse.jdt.annotation.Nullable String getStorageType() {
         return storageType;
     }
 
@@ -156,10 +133,8 @@ public class FolderStorageDto {
      * 
      * @return deviceId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEVICE_ID)
-    public String getDeviceId() {
+    public @org.eclipse.jdt.annotation.Nullable String getDeviceId() {
         return deviceId;
     }
 
@@ -168,9 +143,6 @@ public class FolderStorageDto {
         this.deviceId = deviceId;
     }
 
-    /**
-     * Return true if this FolderStorageDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -247,32 +219,57 @@ public class FolderStorageDto {
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `FreeSpace` to the URL query string
         if (getFreeSpace() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFreeSpace%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFreeSpace()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFreeSpace%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFreeSpace()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UsedSpace` to the URL query string
         if (getUsedSpace() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUsedSpace%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUsedSpace()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUsedSpace%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUsedSpace()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StorageType` to the URL query string
         if (getStorageType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStorageType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStorageType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStorageType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStorageType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DeviceId` to the URL query string
         if (getDeviceId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDeviceId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDeviceId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDeviceId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

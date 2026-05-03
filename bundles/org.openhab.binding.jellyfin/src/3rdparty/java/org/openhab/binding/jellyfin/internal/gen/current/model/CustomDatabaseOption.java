@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The custom value option for custom database providers.
  */
-@JsonPropertyOrder({ CustomDatabaseOption.JSON_PROPERTY_KEY, CustomDatabaseOption.JSON_PROPERTY_VALUE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CustomDatabaseOption {
     public static final String JSON_PROPERTY_KEY = "Key";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String key;
+    private @org.eclipse.jdt.annotation.Nullable String key;
 
     public static final String JSON_PROPERTY_VALUE = "Value";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String value;
+    private @org.eclipse.jdt.annotation.Nullable String value;
 
     public CustomDatabaseOption() {
     }
@@ -49,10 +42,8 @@ public class CustomDatabaseOption {
      * 
      * @return key
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEY)
-    public String getKey() {
+    public @org.eclipse.jdt.annotation.Nullable String getKey() {
         return key;
     }
 
@@ -71,10 +62,8 @@ public class CustomDatabaseOption {
      * 
      * @return value
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VALUE)
-    public String getValue() {
+    public @org.eclipse.jdt.annotation.Nullable String getValue() {
         return value;
     }
 
@@ -83,9 +72,6 @@ public class CustomDatabaseOption {
         this.value = value;
     }
 
-    /**
-     * Return true if this CustomDatabaseOption object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class CustomDatabaseOption {
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKey()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Value` to the URL query string
         if (getValue() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getValue()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sValue%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getValue()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

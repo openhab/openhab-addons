@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * PlaystateRequest
  */
-@JsonPropertyOrder({ PlaystateRequest.JSON_PROPERTY_COMMAND, PlaystateRequest.JSON_PROPERTY_SEEK_POSITION_TICKS,
-        PlaystateRequest.JSON_PROPERTY_CONTROLLING_USER_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaystateRequest {
     public static final String JSON_PROPERTY_COMMAND = "Command";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PlaystateCommand command;
+    private @org.eclipse.jdt.annotation.Nullable PlaystateCommand command;
 
     public static final String JSON_PROPERTY_SEEK_POSITION_TICKS = "SeekPositionTicks";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long seekPositionTicks;
+    private @org.eclipse.jdt.annotation.Nullable Long seekPositionTicks;
 
     public static final String JSON_PROPERTY_CONTROLLING_USER_ID = "ControllingUserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String controllingUserId;
+    private @org.eclipse.jdt.annotation.Nullable String controllingUserId;
 
     public PlaystateRequest() {
     }
@@ -55,10 +45,8 @@ public class PlaystateRequest {
      * 
      * @return command
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMAND)
-    public PlaystateCommand getCommand() {
+    public @org.eclipse.jdt.annotation.Nullable PlaystateCommand getCommand() {
         return command;
     }
 
@@ -77,10 +65,8 @@ public class PlaystateRequest {
      * 
      * @return seekPositionTicks
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEEK_POSITION_TICKS)
-    public Long getSeekPositionTicks() {
+    public @org.eclipse.jdt.annotation.Nullable Long getSeekPositionTicks() {
         return seekPositionTicks;
     }
 
@@ -99,10 +85,8 @@ public class PlaystateRequest {
      * 
      * @return controllingUserId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTROLLING_USER_ID)
-    public String getControllingUserId() {
+    public @org.eclipse.jdt.annotation.Nullable String getControllingUserId() {
         return controllingUserId;
     }
 
@@ -111,9 +95,6 @@ public class PlaystateRequest {
         this.controllingUserId = controllingUserId;
     }
 
-    /**
-     * Return true if this PlaystateRequest object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -186,20 +167,35 @@ public class PlaystateRequest {
 
         // add `Command` to the URL query string
         if (getCommand() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommand()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCommand%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCommand()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeekPositionTicks` to the URL query string
         if (getSeekPositionTicks() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeekPositionTicks%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeekPositionTicks()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeekPositionTicks%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeekPositionTicks()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ControllingUserId` to the URL query string
         if (getControllingUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getControllingUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sControllingUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getControllingUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

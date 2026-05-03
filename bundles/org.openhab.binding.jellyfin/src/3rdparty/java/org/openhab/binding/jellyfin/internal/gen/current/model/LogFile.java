@@ -12,41 +12,29 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LogFile
  */
-@JsonPropertyOrder({ LogFile.JSON_PROPERTY_DATE_CREATED, LogFile.JSON_PROPERTY_DATE_MODIFIED,
-        LogFile.JSON_PROPERTY_SIZE, LogFile.JSON_PROPERTY_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LogFile {
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateCreated;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_DATE_MODIFIED = "DateModified";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateModified;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateModified;
 
     public static final String JSON_PROPERTY_SIZE = "Size";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Long size;
+    private @org.eclipse.jdt.annotation.Nullable Long size;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public LogFile() {
     }
@@ -61,10 +49,8 @@ public class LogFile {
      * 
      * @return dateCreated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
-    public OffsetDateTime getDateCreated() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -83,10 +69,8 @@ public class LogFile {
      * 
      * @return dateModified
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_MODIFIED)
-    public OffsetDateTime getDateModified() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateModified() {
         return dateModified;
     }
 
@@ -105,10 +89,8 @@ public class LogFile {
      * 
      * @return size
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SIZE)
-    public Long getSize() {
+    public @org.eclipse.jdt.annotation.Nullable Long getSize() {
         return size;
     }
 
@@ -127,10 +109,8 @@ public class LogFile {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -139,9 +119,6 @@ public class LogFile {
         this.name = name;
     }
 
-    /**
-     * Return true if this LogFile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class LogFile {
 
         // add `DateCreated` to the URL query string
         if (getDateCreated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateCreated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DateModified` to the URL query string
         if (getDateModified() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateModified%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateModified()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateModified%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateModified()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Size` to the URL query string
         if (getSize() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSize()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSize%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSize()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

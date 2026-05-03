@@ -12,72 +12,45 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * SubtitleOptions
  */
-@JsonPropertyOrder({ SubtitleOptions.JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT,
-        SubtitleOptions.JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES, SubtitleOptions.JSON_PROPERTY_DOWNLOAD_LANGUAGES,
-        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES,
-        SubtitleOptions.JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES, SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_USERNAME,
-        SubtitleOptions.JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH,
-        SubtitleOptions.JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT,
-        SubtitleOptions.JSON_PROPERTY_REQUIRE_PERFECT_MATCH })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SubtitleOptions {
     public static final String JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipIfEmbeddedSubtitlesPresent";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean skipIfEmbeddedSubtitlesPresent;
+    private @org.eclipse.jdt.annotation.Nullable Boolean skipIfEmbeddedSubtitlesPresent;
 
     public static final String JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES = "SkipIfAudioTrackMatches";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean skipIfAudioTrackMatches;
+    private @org.eclipse.jdt.annotation.Nullable Boolean skipIfAudioTrackMatches;
 
     public static final String JSON_PROPERTY_DOWNLOAD_LANGUAGES = "DownloadLanguages";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> downloadLanguages;
+    private @org.eclipse.jdt.annotation.Nullable List<String> downloadLanguages;
 
     public static final String JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES = "DownloadMovieSubtitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean downloadMovieSubtitles;
+    private @org.eclipse.jdt.annotation.Nullable Boolean downloadMovieSubtitles;
 
     public static final String JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES = "DownloadEpisodeSubtitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean downloadEpisodeSubtitles;
+    private @org.eclipse.jdt.annotation.Nullable Boolean downloadEpisodeSubtitles;
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_USERNAME = "OpenSubtitlesUsername";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String openSubtitlesUsername;
+    private @org.eclipse.jdt.annotation.Nullable String openSubtitlesUsername;
 
     public static final String JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH = "OpenSubtitlesPasswordHash";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String openSubtitlesPasswordHash;
+    private @org.eclipse.jdt.annotation.Nullable String openSubtitlesPasswordHash;
 
     public static final String JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT = "IsOpenSubtitleVipAccount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isOpenSubtitleVipAccount;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isOpenSubtitleVipAccount;
 
     public static final String JSON_PROPERTY_REQUIRE_PERFECT_MATCH = "RequirePerfectMatch";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean requirePerfectMatch;
+    private @org.eclipse.jdt.annotation.Nullable Boolean requirePerfectMatch;
 
     public SubtitleOptions() {
     }
@@ -93,10 +66,8 @@ public class SubtitleOptions {
      * 
      * @return skipIfEmbeddedSubtitlesPresent
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SKIP_IF_EMBEDDED_SUBTITLES_PRESENT)
-    public Boolean getSkipIfEmbeddedSubtitlesPresent() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSkipIfEmbeddedSubtitlesPresent() {
         return skipIfEmbeddedSubtitlesPresent;
     }
 
@@ -117,10 +88,8 @@ public class SubtitleOptions {
      * 
      * @return skipIfAudioTrackMatches
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SKIP_IF_AUDIO_TRACK_MATCHES)
-    public Boolean getSkipIfAudioTrackMatches() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSkipIfAudioTrackMatches() {
         return skipIfAudioTrackMatches;
     }
 
@@ -147,10 +116,8 @@ public class SubtitleOptions {
      * 
      * @return downloadLanguages
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_LANGUAGES)
-    public List<String> getDownloadLanguages() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDownloadLanguages() {
         return downloadLanguages;
     }
 
@@ -169,10 +136,8 @@ public class SubtitleOptions {
      * 
      * @return downloadMovieSubtitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_MOVIE_SUBTITLES)
-    public Boolean getDownloadMovieSubtitles() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDownloadMovieSubtitles() {
         return downloadMovieSubtitles;
     }
 
@@ -192,10 +157,8 @@ public class SubtitleOptions {
      * 
      * @return downloadEpisodeSubtitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_EPISODE_SUBTITLES)
-    public Boolean getDownloadEpisodeSubtitles() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDownloadEpisodeSubtitles() {
         return downloadEpisodeSubtitles;
     }
 
@@ -214,10 +177,8 @@ public class SubtitleOptions {
      * 
      * @return openSubtitlesUsername
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPEN_SUBTITLES_USERNAME)
-    public String getOpenSubtitlesUsername() {
+    public @org.eclipse.jdt.annotation.Nullable String getOpenSubtitlesUsername() {
         return openSubtitlesUsername;
     }
 
@@ -237,10 +198,8 @@ public class SubtitleOptions {
      * 
      * @return openSubtitlesPasswordHash
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPEN_SUBTITLES_PASSWORD_HASH)
-    public String getOpenSubtitlesPasswordHash() {
+    public @org.eclipse.jdt.annotation.Nullable String getOpenSubtitlesPasswordHash() {
         return openSubtitlesPasswordHash;
     }
 
@@ -260,10 +219,8 @@ public class SubtitleOptions {
      * 
      * @return isOpenSubtitleVipAccount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_OPEN_SUBTITLE_VIP_ACCOUNT)
-    public Boolean getIsOpenSubtitleVipAccount() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsOpenSubtitleVipAccount() {
         return isOpenSubtitleVipAccount;
     }
 
@@ -282,10 +239,8 @@ public class SubtitleOptions {
      * 
      * @return requirePerfectMatch
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_MATCH)
-    public Boolean getRequirePerfectMatch() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRequirePerfectMatch() {
         return requirePerfectMatch;
     }
 
@@ -294,9 +249,6 @@ public class SubtitleOptions {
         this.requirePerfectMatch = requirePerfectMatch;
     }
 
-    /**
-     * Return true if this SubtitleOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -384,60 +336,114 @@ public class SubtitleOptions {
 
         // add `SkipIfEmbeddedSubtitlesPresent` to the URL query string
         if (getSkipIfEmbeddedSubtitlesPresent() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSkipIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipIfEmbeddedSubtitlesPresent()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSkipIfEmbeddedSubtitlesPresent%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSkipIfEmbeddedSubtitlesPresent()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SkipIfAudioTrackMatches` to the URL query string
         if (getSkipIfAudioTrackMatches() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSkipIfAudioTrackMatches%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipIfAudioTrackMatches()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSkipIfAudioTrackMatches%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSkipIfAudioTrackMatches()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DownloadLanguages` to the URL query string
         if (getDownloadLanguages() != null) {
             for (int i = 0; i < getDownloadLanguages().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadLanguages%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDownloadLanguages().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadLanguages%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDownloadLanguages().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DownloadMovieSubtitles` to the URL query string
         if (getDownloadMovieSubtitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadMovieSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadMovieSubtitles()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadMovieSubtitles%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDownloadMovieSubtitles()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DownloadEpisodeSubtitles` to the URL query string
         if (getDownloadEpisodeSubtitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadEpisodeSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadEpisodeSubtitles()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadEpisodeSubtitles%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDownloadEpisodeSubtitles()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OpenSubtitlesUsername` to the URL query string
         if (getOpenSubtitlesUsername() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOpenSubtitlesUsername%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesUsername()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sOpenSubtitlesUsername%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getOpenSubtitlesUsername()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OpenSubtitlesPasswordHash` to the URL query string
         if (getOpenSubtitlesPasswordHash() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOpenSubtitlesPasswordHash%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOpenSubtitlesPasswordHash()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOpenSubtitlesPasswordHash%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOpenSubtitlesPasswordHash()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsOpenSubtitleVipAccount` to the URL query string
         if (getIsOpenSubtitleVipAccount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsOpenSubtitleVipAccount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsOpenSubtitleVipAccount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsOpenSubtitleVipAccount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsOpenSubtitleVipAccount()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RequirePerfectMatch` to the URL query string
         if (getRequirePerfectMatch() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRequirePerfectMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectMatch()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRequirePerfectMatch%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRequirePerfectMatch()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,113 +12,67 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class UserConfiguration.
  */
-@JsonPropertyOrder({ UserConfiguration.JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE,
-        UserConfiguration.JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK,
-        UserConfiguration.JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE,
-        UserConfiguration.JSON_PROPERTY_DISPLAY_MISSING_EPISODES, UserConfiguration.JSON_PROPERTY_GROUPED_FOLDERS,
-        UserConfiguration.JSON_PROPERTY_SUBTITLE_MODE, UserConfiguration.JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW,
-        UserConfiguration.JSON_PROPERTY_ENABLE_LOCAL_PASSWORD, UserConfiguration.JSON_PROPERTY_ORDERED_VIEWS,
-        UserConfiguration.JSON_PROPERTY_LATEST_ITEMS_EXCLUDES, UserConfiguration.JSON_PROPERTY_MY_MEDIA_EXCLUDES,
-        UserConfiguration.JSON_PROPERTY_HIDE_PLAYED_IN_LATEST,
-        UserConfiguration.JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS,
-        UserConfiguration.JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS,
-        UserConfiguration.JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY,
-        UserConfiguration.JSON_PROPERTY_CAST_RECEIVER_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserConfiguration {
     public static final String JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE = "AudioLanguagePreference";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String audioLanguagePreference;
+    private @org.eclipse.jdt.annotation.Nullable String audioLanguagePreference;
 
     public static final String JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK = "PlayDefaultAudioTrack";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean playDefaultAudioTrack;
+    private @org.eclipse.jdt.annotation.Nullable Boolean playDefaultAudioTrack;
 
     public static final String JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE = "SubtitleLanguagePreference";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String subtitleLanguagePreference;
+    private @org.eclipse.jdt.annotation.Nullable String subtitleLanguagePreference;
 
     public static final String JSON_PROPERTY_DISPLAY_MISSING_EPISODES = "DisplayMissingEpisodes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean displayMissingEpisodes;
+    private @org.eclipse.jdt.annotation.Nullable Boolean displayMissingEpisodes;
 
     public static final String JSON_PROPERTY_GROUPED_FOLDERS = "GroupedFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> groupedFolders = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> groupedFolders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_MODE = "SubtitleMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SubtitlePlaybackMode subtitleMode;
+    private @org.eclipse.jdt.annotation.Nullable SubtitlePlaybackMode subtitleMode;
 
     public static final String JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW = "DisplayCollectionsView";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean displayCollectionsView;
+    private @org.eclipse.jdt.annotation.Nullable Boolean displayCollectionsView;
 
     public static final String JSON_PROPERTY_ENABLE_LOCAL_PASSWORD = "EnableLocalPassword";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableLocalPassword;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableLocalPassword;
 
     public static final String JSON_PROPERTY_ORDERED_VIEWS = "OrderedViews";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> orderedViews = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> orderedViews = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LATEST_ITEMS_EXCLUDES = "LatestItemsExcludes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> latestItemsExcludes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> latestItemsExcludes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MY_MEDIA_EXCLUDES = "MyMediaExcludes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> myMediaExcludes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> myMediaExcludes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_HIDE_PLAYED_IN_LATEST = "HidePlayedInLatest";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hidePlayedInLatest;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hidePlayedInLatest;
 
     public static final String JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS = "RememberAudioSelections";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean rememberAudioSelections;
+    private @org.eclipse.jdt.annotation.Nullable Boolean rememberAudioSelections;
 
     public static final String JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS = "RememberSubtitleSelections";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean rememberSubtitleSelections;
+    private @org.eclipse.jdt.annotation.Nullable Boolean rememberSubtitleSelections;
 
     public static final String JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY = "EnableNextEpisodeAutoPlay";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableNextEpisodeAutoPlay;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableNextEpisodeAutoPlay;
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_ID = "CastReceiverId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String castReceiverId;
+    private @org.eclipse.jdt.annotation.Nullable String castReceiverId;
 
     public UserConfiguration() {
     }
@@ -134,10 +88,8 @@ public class UserConfiguration {
      * 
      * @return audioLanguagePreference
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_LANGUAGE_PREFERENCE)
-    public String getAudioLanguagePreference() {
+    public @org.eclipse.jdt.annotation.Nullable String getAudioLanguagePreference() {
         return audioLanguagePreference;
     }
 
@@ -156,10 +108,8 @@ public class UserConfiguration {
      * 
      * @return playDefaultAudioTrack
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PLAY_DEFAULT_AUDIO_TRACK)
-    public Boolean getPlayDefaultAudioTrack() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getPlayDefaultAudioTrack() {
         return playDefaultAudioTrack;
     }
 
@@ -179,10 +129,8 @@ public class UserConfiguration {
      * 
      * @return subtitleLanguagePreference
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_LANGUAGE_PREFERENCE)
-    public String getSubtitleLanguagePreference() {
+    public @org.eclipse.jdt.annotation.Nullable String getSubtitleLanguagePreference() {
         return subtitleLanguagePreference;
     }
 
@@ -202,10 +150,8 @@ public class UserConfiguration {
      * 
      * @return displayMissingEpisodes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_MISSING_EPISODES)
-    public Boolean getDisplayMissingEpisodes() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDisplayMissingEpisodes() {
         return displayMissingEpisodes;
     }
 
@@ -232,10 +178,8 @@ public class UserConfiguration {
      * 
      * @return groupedFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GROUPED_FOLDERS)
-    public List<UUID> getGroupedFolders() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getGroupedFolders() {
         return groupedFolders;
     }
 
@@ -254,10 +198,8 @@ public class UserConfiguration {
      * 
      * @return subtitleMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_MODE)
-    public SubtitlePlaybackMode getSubtitleMode() {
+    public @org.eclipse.jdt.annotation.Nullable SubtitlePlaybackMode getSubtitleMode() {
         return subtitleMode;
     }
 
@@ -277,10 +219,8 @@ public class UserConfiguration {
      * 
      * @return displayCollectionsView
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISPLAY_COLLECTIONS_VIEW)
-    public Boolean getDisplayCollectionsView() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getDisplayCollectionsView() {
         return displayCollectionsView;
     }
 
@@ -299,10 +239,8 @@ public class UserConfiguration {
      * 
      * @return enableLocalPassword
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_LOCAL_PASSWORD)
-    public Boolean getEnableLocalPassword() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableLocalPassword() {
         return enableLocalPassword;
     }
 
@@ -329,10 +267,8 @@ public class UserConfiguration {
      * 
      * @return orderedViews
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ORDERED_VIEWS)
-    public List<UUID> getOrderedViews() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getOrderedViews() {
         return orderedViews;
     }
 
@@ -359,10 +295,8 @@ public class UserConfiguration {
      * 
      * @return latestItemsExcludes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LATEST_ITEMS_EXCLUDES)
-    public List<UUID> getLatestItemsExcludes() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getLatestItemsExcludes() {
         return latestItemsExcludes;
     }
 
@@ -389,10 +323,8 @@ public class UserConfiguration {
      * 
      * @return myMediaExcludes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MY_MEDIA_EXCLUDES)
-    public List<UUID> getMyMediaExcludes() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getMyMediaExcludes() {
         return myMediaExcludes;
     }
 
@@ -411,10 +343,8 @@ public class UserConfiguration {
      * 
      * @return hidePlayedInLatest
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HIDE_PLAYED_IN_LATEST)
-    public Boolean getHidePlayedInLatest() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHidePlayedInLatest() {
         return hidePlayedInLatest;
     }
 
@@ -434,10 +364,8 @@ public class UserConfiguration {
      * 
      * @return rememberAudioSelections
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_AUDIO_SELECTIONS)
-    public Boolean getRememberAudioSelections() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRememberAudioSelections() {
         return rememberAudioSelections;
     }
 
@@ -457,10 +385,8 @@ public class UserConfiguration {
      * 
      * @return rememberSubtitleSelections
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_SUBTITLE_SELECTIONS)
-    public Boolean getRememberSubtitleSelections() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRememberSubtitleSelections() {
         return rememberSubtitleSelections;
     }
 
@@ -480,10 +406,8 @@ public class UserConfiguration {
      * 
      * @return enableNextEpisodeAutoPlay
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_NEXT_EPISODE_AUTO_PLAY)
-    public Boolean getEnableNextEpisodeAutoPlay() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableNextEpisodeAutoPlay() {
         return enableNextEpisodeAutoPlay;
     }
 
@@ -502,10 +426,8 @@ public class UserConfiguration {
      * 
      * @return castReceiverId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_ID)
-    public String getCastReceiverId() {
+    public @org.eclipse.jdt.annotation.Nullable String getCastReceiverId() {
         return castReceiverId;
     }
 
@@ -514,9 +436,6 @@ public class UserConfiguration {
         this.castReceiverId = castReceiverId;
     }
 
-    /**
-     * Return true if this UserConfiguration object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -618,68 +537,120 @@ public class UserConfiguration {
 
         // add `AudioLanguagePreference` to the URL query string
         if (getAudioLanguagePreference() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioLanguagePreference%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioLanguagePreference()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioLanguagePreference%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioLanguagePreference()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PlayDefaultAudioTrack` to the URL query string
         if (getPlayDefaultAudioTrack() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPlayDefaultAudioTrack%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPlayDefaultAudioTrack()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sPlayDefaultAudioTrack%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getPlayDefaultAudioTrack()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SubtitleLanguagePreference` to the URL query string
         if (getSubtitleLanguagePreference() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleLanguagePreference%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleLanguagePreference()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleLanguagePreference%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubtitleLanguagePreference()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayMissingEpisodes` to the URL query string
         if (getDisplayMissingEpisodes() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayMissingEpisodes%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayMissingEpisodes()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayMissingEpisodes%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayMissingEpisodes()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `GroupedFolders` to the URL query string
         if (getGroupedFolders() != null) {
             for (int i = 0; i < getGroupedFolders().size(); i++) {
                 if (getGroupedFolders().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sGroupedFolders%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getGroupedFolders().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sGroupedFolders%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getGroupedFolders().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `SubtitleMode` to the URL query string
         if (getSubtitleMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSubtitleMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSubtitleMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisplayCollectionsView` to the URL query string
         if (getDisplayCollectionsView() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayCollectionsView%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDisplayCollectionsView()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDisplayCollectionsView%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDisplayCollectionsView()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableLocalPassword` to the URL query string
         if (getEnableLocalPassword() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLocalPassword%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLocalPassword()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLocalPassword%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableLocalPassword()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OrderedViews` to the URL query string
         if (getOrderedViews() != null) {
             for (int i = 0; i < getOrderedViews().size(); i++) {
                 if (getOrderedViews().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sOrderedViews%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getOrderedViews().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sOrderedViews%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getOrderedViews().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -688,11 +659,17 @@ public class UserConfiguration {
         if (getLatestItemsExcludes() != null) {
             for (int i = 0; i < getLatestItemsExcludes().size(); i++) {
                 if (getLatestItemsExcludes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sLatestItemsExcludes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getLatestItemsExcludes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sLatestItemsExcludes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getLatestItemsExcludes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -701,43 +678,77 @@ public class UserConfiguration {
         if (getMyMediaExcludes() != null) {
             for (int i = 0; i < getMyMediaExcludes().size(); i++) {
                 if (getMyMediaExcludes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sMyMediaExcludes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getMyMediaExcludes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sMyMediaExcludes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getMyMediaExcludes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `HidePlayedInLatest` to the URL query string
         if (getHidePlayedInLatest() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHidePlayedInLatest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHidePlayedInLatest()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHidePlayedInLatest%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHidePlayedInLatest()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RememberAudioSelections` to the URL query string
         if (getRememberAudioSelections() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRememberAudioSelections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberAudioSelections()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRememberAudioSelections%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRememberAudioSelections()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RememberSubtitleSelections` to the URL query string
         if (getRememberSubtitleSelections() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRememberSubtitleSelections%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberSubtitleSelections()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRememberSubtitleSelections%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRememberSubtitleSelections()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableNextEpisodeAutoPlay` to the URL query string
         if (getEnableNextEpisodeAutoPlay() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableNextEpisodeAutoPlay%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableNextEpisodeAutoPlay()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableNextEpisodeAutoPlay%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableNextEpisodeAutoPlay()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CastReceiverId` to the URL query string
         if (getCastReceiverId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCastReceiverId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCastReceiverId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCastReceiverId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCastReceiverId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

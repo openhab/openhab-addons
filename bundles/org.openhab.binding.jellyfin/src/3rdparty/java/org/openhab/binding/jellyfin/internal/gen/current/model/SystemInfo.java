@@ -12,169 +12,99 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SystemInfo.
  */
-@JsonPropertyOrder({ SystemInfo.JSON_PROPERTY_LOCAL_ADDRESS, SystemInfo.JSON_PROPERTY_SERVER_NAME,
-        SystemInfo.JSON_PROPERTY_VERSION, SystemInfo.JSON_PROPERTY_PRODUCT_NAME,
-        SystemInfo.JSON_PROPERTY_OPERATING_SYSTEM, SystemInfo.JSON_PROPERTY_ID,
-        SystemInfo.JSON_PROPERTY_STARTUP_WIZARD_COMPLETED, SystemInfo.JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME,
-        SystemInfo.JSON_PROPERTY_PACKAGE_NAME, SystemInfo.JSON_PROPERTY_HAS_PENDING_RESTART,
-        SystemInfo.JSON_PROPERTY_IS_SHUTTING_DOWN, SystemInfo.JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR,
-        SystemInfo.JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER, SystemInfo.JSON_PROPERTY_COMPLETED_INSTALLATIONS,
-        SystemInfo.JSON_PROPERTY_CAN_SELF_RESTART, SystemInfo.JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER,
-        SystemInfo.JSON_PROPERTY_PROGRAM_DATA_PATH, SystemInfo.JSON_PROPERTY_WEB_PATH,
-        SystemInfo.JSON_PROPERTY_ITEMS_BY_NAME_PATH, SystemInfo.JSON_PROPERTY_CACHE_PATH,
-        SystemInfo.JSON_PROPERTY_LOG_PATH, SystemInfo.JSON_PROPERTY_INTERNAL_METADATA_PATH,
-        SystemInfo.JSON_PROPERTY_TRANSCODING_TEMP_PATH, SystemInfo.JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS,
-        SystemInfo.JSON_PROPERTY_HAS_UPDATE_AVAILABLE, SystemInfo.JSON_PROPERTY_ENCODER_LOCATION,
-        SystemInfo.JSON_PROPERTY_SYSTEM_ARCHITECTURE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SystemInfo {
     public static final String JSON_PROPERTY_LOCAL_ADDRESS = "LocalAddress";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String localAddress;
+    private @org.eclipse.jdt.annotation.Nullable String localAddress;
 
     public static final String JSON_PROPERTY_SERVER_NAME = "ServerName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverName;
+    private @org.eclipse.jdt.annotation.Nullable String serverName;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_PRODUCT_NAME = "ProductName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String productName;
+    private @org.eclipse.jdt.annotation.Nullable String productName;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM = "OperatingSystem";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String operatingSystem;
+    private @org.eclipse.jdt.annotation.Nullable String operatingSystem;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_STARTUP_WIZARD_COMPLETED = "StartupWizardCompleted";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean startupWizardCompleted;
+    private @org.eclipse.jdt.annotation.Nullable Boolean startupWizardCompleted;
 
     public static final String JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME = "OperatingSystemDisplayName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String operatingSystemDisplayName;
+    private @org.eclipse.jdt.annotation.Nullable String operatingSystemDisplayName;
 
     public static final String JSON_PROPERTY_PACKAGE_NAME = "PackageName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String packageName;
+    private @org.eclipse.jdt.annotation.Nullable String packageName;
 
     public static final String JSON_PROPERTY_HAS_PENDING_RESTART = "HasPendingRestart";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasPendingRestart;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasPendingRestart;
 
     public static final String JSON_PROPERTY_IS_SHUTTING_DOWN = "IsShuttingDown";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isShuttingDown;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isShuttingDown;
 
     public static final String JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR = "SupportsLibraryMonitor";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsLibraryMonitor;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsLibraryMonitor;
 
     public static final String JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER = "WebSocketPortNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer webSocketPortNumber;
+    private @org.eclipse.jdt.annotation.Nullable Integer webSocketPortNumber;
 
     public static final String JSON_PROPERTY_COMPLETED_INSTALLATIONS = "CompletedInstallations";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<InstallationInfo> completedInstallations;
+    private @org.eclipse.jdt.annotation.Nullable List<InstallationInfo> completedInstallations;
 
     public static final String JSON_PROPERTY_CAN_SELF_RESTART = "CanSelfRestart";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canSelfRestart = true;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canSelfRestart = true;
 
     public static final String JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER = "CanLaunchWebBrowser";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canLaunchWebBrowser = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canLaunchWebBrowser = false;
 
     public static final String JSON_PROPERTY_PROGRAM_DATA_PATH = "ProgramDataPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String programDataPath;
+    private @org.eclipse.jdt.annotation.Nullable String programDataPath;
 
     public static final String JSON_PROPERTY_WEB_PATH = "WebPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String webPath;
+    private @org.eclipse.jdt.annotation.Nullable String webPath;
 
     public static final String JSON_PROPERTY_ITEMS_BY_NAME_PATH = "ItemsByNamePath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String itemsByNamePath;
+    private @org.eclipse.jdt.annotation.Nullable String itemsByNamePath;
 
     public static final String JSON_PROPERTY_CACHE_PATH = "CachePath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String cachePath;
+    private @org.eclipse.jdt.annotation.Nullable String cachePath;
 
     public static final String JSON_PROPERTY_LOG_PATH = "LogPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String logPath;
+    private @org.eclipse.jdt.annotation.Nullable String logPath;
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_PATH = "InternalMetadataPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String internalMetadataPath;
+    private @org.eclipse.jdt.annotation.Nullable String internalMetadataPath;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_PATH = "TranscodingTempPath";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String transcodingTempPath;
+    private @org.eclipse.jdt.annotation.Nullable String transcodingTempPath;
 
     public static final String JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS = "CastReceiverApplications";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<CastReceiverApplication> castReceiverApplications;
+    private @org.eclipse.jdt.annotation.Nullable List<CastReceiverApplication> castReceiverApplications;
 
     public static final String JSON_PROPERTY_HAS_UPDATE_AVAILABLE = "HasUpdateAvailable";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasUpdateAvailable = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasUpdateAvailable = false;
 
     public static final String JSON_PROPERTY_ENCODER_LOCATION = "EncoderLocation";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String encoderLocation = "System";
+    private @org.eclipse.jdt.annotation.Nullable String encoderLocation = "System";
 
     public static final String JSON_PROPERTY_SYSTEM_ARCHITECTURE = "SystemArchitecture";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String systemArchitecture = "X64";
+    private @org.eclipse.jdt.annotation.Nullable String systemArchitecture = "X64";
 
     public SystemInfo() {
     }
@@ -189,10 +119,8 @@ public class SystemInfo {
      * 
      * @return localAddress
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_ADDRESS)
-    public String getLocalAddress() {
+    public @org.eclipse.jdt.annotation.Nullable String getLocalAddress() {
         return localAddress;
     }
 
@@ -211,10 +139,8 @@ public class SystemInfo {
      * 
      * @return serverName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_NAME)
-    public String getServerName() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerName() {
         return serverName;
     }
 
@@ -233,10 +159,8 @@ public class SystemInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -255,10 +179,8 @@ public class SystemInfo {
      * 
      * @return productName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRODUCT_NAME)
-    public String getProductName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProductName() {
         return productName;
     }
 
@@ -279,10 +201,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM)
-    public String getOperatingSystem() {
+    public @org.eclipse.jdt.annotation.Nullable String getOperatingSystem() {
         return operatingSystem;
     }
 
@@ -301,10 +221,8 @@ public class SystemInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -323,10 +241,8 @@ public class SystemInfo {
      * 
      * @return startupWizardCompleted
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STARTUP_WIZARD_COMPLETED)
-    public Boolean getStartupWizardCompleted() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getStartupWizardCompleted() {
         return startupWizardCompleted;
     }
 
@@ -348,10 +264,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OPERATING_SYSTEM_DISPLAY_NAME)
-    public String getOperatingSystemDisplayName() {
+    public @org.eclipse.jdt.annotation.Nullable String getOperatingSystemDisplayName() {
         return operatingSystemDisplayName;
     }
 
@@ -370,10 +284,8 @@ public class SystemInfo {
      * 
      * @return packageName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PACKAGE_NAME)
-    public String getPackageName() {
+    public @org.eclipse.jdt.annotation.Nullable String getPackageName() {
         return packageName;
     }
 
@@ -392,10 +304,8 @@ public class SystemInfo {
      * 
      * @return hasPendingRestart
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_PENDING_RESTART)
-    public Boolean getHasPendingRestart() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasPendingRestart() {
         return hasPendingRestart;
     }
 
@@ -414,10 +324,8 @@ public class SystemInfo {
      * 
      * @return isShuttingDown
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_SHUTTING_DOWN)
-    public Boolean getIsShuttingDown() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsShuttingDown() {
         return isShuttingDown;
     }
 
@@ -436,10 +344,8 @@ public class SystemInfo {
      * 
      * @return supportsLibraryMonitor
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LIBRARY_MONITOR)
-    public Boolean getSupportsLibraryMonitor() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsLibraryMonitor() {
         return supportsLibraryMonitor;
     }
 
@@ -458,10 +364,8 @@ public class SystemInfo {
      * 
      * @return webSocketPortNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WEB_SOCKET_PORT_NUMBER)
-    public Integer getWebSocketPortNumber() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getWebSocketPortNumber() {
         return webSocketPortNumber;
     }
 
@@ -489,10 +393,8 @@ public class SystemInfo {
      * 
      * @return completedInstallations
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMPLETED_INSTALLATIONS)
-    public List<InstallationInfo> getCompletedInstallations() {
+    public @org.eclipse.jdt.annotation.Nullable List<InstallationInfo> getCompletedInstallations() {
         return completedInstallations;
     }
 
@@ -514,10 +416,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_SELF_RESTART)
-    public Boolean getCanSelfRestart() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanSelfRestart() {
         return canSelfRestart;
     }
 
@@ -538,10 +438,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_LAUNCH_WEB_BROWSER)
-    public Boolean getCanLaunchWebBrowser() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanLaunchWebBrowser() {
         return canLaunchWebBrowser;
     }
 
@@ -562,10 +460,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_PATH)
-    public String getProgramDataPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getProgramDataPath() {
         return programDataPath;
     }
 
@@ -586,10 +482,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WEB_PATH)
-    public String getWebPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getWebPath() {
         return webPath;
     }
 
@@ -610,10 +504,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS_BY_NAME_PATH)
-    public String getItemsByNamePath() {
+    public @org.eclipse.jdt.annotation.Nullable String getItemsByNamePath() {
         return itemsByNamePath;
     }
 
@@ -634,10 +526,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CACHE_PATH)
-    public String getCachePath() {
+    public @org.eclipse.jdt.annotation.Nullable String getCachePath() {
         return cachePath;
     }
 
@@ -658,10 +548,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOG_PATH)
-    public String getLogPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getLogPath() {
         return logPath;
     }
 
@@ -682,10 +570,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_PATH)
-    public String getInternalMetadataPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getInternalMetadataPath() {
         return internalMetadataPath;
     }
 
@@ -706,10 +592,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_PATH)
-    public String getTranscodingTempPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getTranscodingTempPath() {
         return transcodingTempPath;
     }
 
@@ -737,10 +621,8 @@ public class SystemInfo {
      * 
      * @return castReceiverApplications
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAST_RECEIVER_APPLICATIONS)
-    public List<CastReceiverApplication> getCastReceiverApplications() {
+    public @org.eclipse.jdt.annotation.Nullable List<CastReceiverApplication> getCastReceiverApplications() {
         return castReceiverApplications;
     }
 
@@ -762,10 +644,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_UPDATE_AVAILABLE)
-    public Boolean getHasUpdateAvailable() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasUpdateAvailable() {
         return hasUpdateAvailable;
     }
 
@@ -786,10 +666,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENCODER_LOCATION)
-    public String getEncoderLocation() {
+    public @org.eclipse.jdt.annotation.Nullable String getEncoderLocation() {
         return encoderLocation;
     }
 
@@ -810,10 +688,8 @@ public class SystemInfo {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SYSTEM_ARCHITECTURE)
-    public String getSystemArchitecture() {
+    public @org.eclipse.jdt.annotation.Nullable String getSystemArchitecture() {
         return systemArchitecture;
     }
 
@@ -822,9 +698,6 @@ public class SystemInfo {
         this.systemArchitecture = systemArchitecture;
     }
 
-    /**
-     * Return true if this SystemInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -949,80 +822,148 @@ public class SystemInfo {
 
         // add `LocalAddress` to the URL query string
         if (getLocalAddress() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLocalAddress()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalAddress%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLocalAddress()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerName` to the URL query string
         if (getServerName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProductName` to the URL query string
         if (getProductName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProductName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProductName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OperatingSystem` to the URL query string
         if (getOperatingSystem() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystem()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystem%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOperatingSystem()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartupWizardCompleted` to the URL query string
         if (getStartupWizardCompleted() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartupWizardCompleted()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartupWizardCompleted%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartupWizardCompleted()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OperatingSystemDisplayName` to the URL query string
         if (getOperatingSystemDisplayName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystemDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOperatingSystemDisplayName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOperatingSystemDisplayName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOperatingSystemDisplayName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PackageName` to the URL query string
         if (getPackageName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPackageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPackageName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPackageName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPackageName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasPendingRestart` to the URL query string
         if (getHasPendingRestart() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasPendingRestart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasPendingRestart()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasPendingRestart%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasPendingRestart()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsShuttingDown` to the URL query string
         if (getIsShuttingDown() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsShuttingDown%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsShuttingDown()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsShuttingDown%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsShuttingDown()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsLibraryMonitor` to the URL query string
         if (getSupportsLibraryMonitor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsLibraryMonitor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsLibraryMonitor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsLibraryMonitor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsLibraryMonitor()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `WebSocketPortNumber` to the URL query string
         if (getWebSocketPortNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWebSocketPortNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWebSocketPortNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWebSocketPortNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWebSocketPortNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CompletedInstallations` to the URL query string
@@ -1040,56 +981,102 @@ public class SystemInfo {
 
         // add `CanSelfRestart` to the URL query string
         if (getCanSelfRestart() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanSelfRestart%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSelfRestart()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanSelfRestart%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanSelfRestart()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CanLaunchWebBrowser` to the URL query string
         if (getCanLaunchWebBrowser() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanLaunchWebBrowser%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanLaunchWebBrowser()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanLaunchWebBrowser%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanLaunchWebBrowser()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProgramDataPath` to the URL query string
         if (getProgramDataPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProgramDataPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramDataPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProgramDataPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProgramDataPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `WebPath` to the URL query string
         if (getWebPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sWebPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getWebPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sWebPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getWebPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemsByNamePath` to the URL query string
         if (getItemsByNamePath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemsByNamePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemsByNamePath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemsByNamePath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemsByNamePath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CachePath` to the URL query string
         if (getCachePath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCachePath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCachePath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCachePath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCachePath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LogPath` to the URL query string
         if (getLogPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLogPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLogPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLogPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLogPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `InternalMetadataPath` to the URL query string
         if (getInternalMetadataPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sInternalMetadataPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getInternalMetadataPath()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sInternalMetadataPath%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getInternalMetadataPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TranscodingTempPath` to the URL query string
         if (getTranscodingTempPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodingTempPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodingTempPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTranscodingTempPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CastReceiverApplications` to the URL query string
@@ -1108,20 +1095,35 @@ public class SystemInfo {
 
         // add `HasUpdateAvailable` to the URL query string
         if (getHasUpdateAvailable() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasUpdateAvailable()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasUpdateAvailable%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasUpdateAvailable()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EncoderLocation` to the URL query string
         if (getEncoderLocation() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderLocation%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEncoderLocation()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEncoderLocation%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEncoderLocation()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SystemArchitecture` to the URL query string
         if (getSystemArchitecture() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSystemArchitecture%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSystemArchitecture()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSystemArchitecture%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSystemArchitecture()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

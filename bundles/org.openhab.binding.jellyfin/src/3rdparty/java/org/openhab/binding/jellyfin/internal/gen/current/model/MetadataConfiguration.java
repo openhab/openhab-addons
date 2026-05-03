@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * MetadataConfiguration
  */
-@JsonPropertyOrder({ MetadataConfiguration.JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MetadataConfiguration {
     public static final String JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED = "UseFileCreationTimeForDateAdded";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean useFileCreationTimeForDateAdded;
+    private @org.eclipse.jdt.annotation.Nullable Boolean useFileCreationTimeForDateAdded;
 
     public MetadataConfiguration() {
     }
@@ -45,10 +40,8 @@ public class MetadataConfiguration {
      * 
      * @return useFileCreationTimeForDateAdded
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USE_FILE_CREATION_TIME_FOR_DATE_ADDED)
-    public Boolean getUseFileCreationTimeForDateAdded() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getUseFileCreationTimeForDateAdded() {
         return useFileCreationTimeForDateAdded;
     }
 
@@ -58,9 +51,6 @@ public class MetadataConfiguration {
         this.useFileCreationTimeForDateAdded = useFileCreationTimeForDateAdded;
     }
 
-    /**
-     * Return true if this MetadataConfiguration object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -131,8 +121,14 @@ public class MetadataConfiguration {
 
         // add `UseFileCreationTimeForDateAdded` to the URL query string
         if (getUseFileCreationTimeForDateAdded() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUseFileCreationTimeForDateAdded%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUseFileCreationTimeForDateAdded()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUseFileCreationTimeForDateAdded%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getUseFileCreationTimeForDateAdded()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,31 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Startup remote access dto.
  */
-@JsonPropertyOrder({ StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_REMOTE_ACCESS,
-        StartupRemoteAccessDto.JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupRemoteAccessDto {
     public static final String JSON_PROPERTY_ENABLE_REMOTE_ACCESS = "EnableRemoteAccess";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRemoteAccess;
+    private @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteAccess;
 
     public static final String JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING = "EnableAutomaticPortMapping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAutomaticPortMapping;
+    private @org.eclipse.jdt.annotation.NonNull Boolean enableAutomaticPortMapping;
 
     public StartupRemoteAccessDto() {
     }
@@ -51,11 +43,9 @@ public class StartupRemoteAccessDto {
      * 
      * @return enableRemoteAccess
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REMOTE_ACCESS, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public Boolean getEnableRemoteAccess() {
+    public @org.eclipse.jdt.annotation.NonNull Boolean getEnableRemoteAccess() {
         return enableRemoteAccess;
     }
 
@@ -78,11 +68,9 @@ public class StartupRemoteAccessDto {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_PORT_MAPPING, required = true)
     @JsonInclude(value = JsonInclude.Include.ALWAYS)
-    public Boolean getEnableAutomaticPortMapping() {
+    public @org.eclipse.jdt.annotation.NonNull Boolean getEnableAutomaticPortMapping() {
         return enableAutomaticPortMapping;
     }
 
@@ -92,9 +80,6 @@ public class StartupRemoteAccessDto {
         this.enableAutomaticPortMapping = enableAutomaticPortMapping;
     }
 
-    /**
-     * Return true if this StartupRemoteAccessDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -165,14 +150,25 @@ public class StartupRemoteAccessDto {
 
         // add `EnableRemoteAccess` to the URL query string
         if (getEnableRemoteAccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRemoteAccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRemoteAccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableRemoteAccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableAutomaticPortMapping` to the URL query string
         if (getEnableAutomaticPortMapping() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutomaticPortMapping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticPortMapping()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutomaticPortMapping%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAutomaticPortMapping()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

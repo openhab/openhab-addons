@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ExternalUrl
  */
-@JsonPropertyOrder({ ExternalUrl.JSON_PROPERTY_NAME, ExternalUrl.JSON_PROPERTY_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ExternalUrl {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_URL = "Url";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String url;
+    private @org.eclipse.jdt.annotation.Nullable String url;
 
     public ExternalUrl() {
     }
@@ -49,10 +42,8 @@ public class ExternalUrl {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -71,10 +62,8 @@ public class ExternalUrl {
      * 
      * @return url
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_URL)
-    public String getUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getUrl() {
         return url;
     }
 
@@ -83,9 +72,6 @@ public class ExternalUrl {
         this.url = url;
     }
 
-    /**
-     * Return true if this ExternalUrl object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -155,14 +141,24 @@ public class ExternalUrl {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

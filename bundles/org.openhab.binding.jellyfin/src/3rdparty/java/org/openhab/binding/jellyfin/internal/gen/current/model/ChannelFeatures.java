@@ -12,87 +12,55 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * ChannelFeatures
  */
-@JsonPropertyOrder({ ChannelFeatures.JSON_PROPERTY_NAME, ChannelFeatures.JSON_PROPERTY_ID,
-        ChannelFeatures.JSON_PROPERTY_CAN_SEARCH, ChannelFeatures.JSON_PROPERTY_MEDIA_TYPES,
-        ChannelFeatures.JSON_PROPERTY_CONTENT_TYPES, ChannelFeatures.JSON_PROPERTY_MAX_PAGE_SIZE,
-        ChannelFeatures.JSON_PROPERTY_AUTO_REFRESH_LEVELS, ChannelFeatures.JSON_PROPERTY_DEFAULT_SORT_FIELDS,
-        ChannelFeatures.JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE, ChannelFeatures.JSON_PROPERTY_SUPPORTS_LATEST_MEDIA,
-        ChannelFeatures.JSON_PROPERTY_CAN_FILTER, ChannelFeatures.JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ChannelFeatures {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID id;
+    private @org.eclipse.jdt.annotation.Nullable UUID id;
 
     public static final String JSON_PROPERTY_CAN_SEARCH = "CanSearch";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canSearch;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canSearch;
 
     public static final String JSON_PROPERTY_MEDIA_TYPES = "MediaTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ChannelMediaType> mediaTypes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ChannelMediaType> mediaTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_CONTENT_TYPES = "ContentTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ChannelMediaContentType> contentTypes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ChannelMediaContentType> contentTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MAX_PAGE_SIZE = "MaxPageSize";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer maxPageSize;
+    private @org.eclipse.jdt.annotation.Nullable Integer maxPageSize;
 
     public static final String JSON_PROPERTY_AUTO_REFRESH_LEVELS = "AutoRefreshLevels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer autoRefreshLevels;
+    private @org.eclipse.jdt.annotation.Nullable Integer autoRefreshLevels;
 
     public static final String JSON_PROPERTY_DEFAULT_SORT_FIELDS = "DefaultSortFields";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ChannelItemSortField> defaultSortFields = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ChannelItemSortField> defaultSortFields = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE = "SupportsSortOrderToggle";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsSortOrderToggle;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsSortOrderToggle;
 
     public static final String JSON_PROPERTY_SUPPORTS_LATEST_MEDIA = "SupportsLatestMedia";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsLatestMedia;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsLatestMedia;
 
     public static final String JSON_PROPERTY_CAN_FILTER = "CanFilter";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean canFilter;
+    private @org.eclipse.jdt.annotation.Nullable Boolean canFilter;
 
     public static final String JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING = "SupportsContentDownloading";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean supportsContentDownloading;
+    private @org.eclipse.jdt.annotation.Nullable Boolean supportsContentDownloading;
 
     public ChannelFeatures() {
     }
@@ -107,10 +75,8 @@ public class ChannelFeatures {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -129,10 +95,8 @@ public class ChannelFeatures {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public UUID getId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getId() {
         return id;
     }
 
@@ -151,10 +115,8 @@ public class ChannelFeatures {
      * 
      * @return canSearch
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_SEARCH)
-    public Boolean getCanSearch() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanSearch() {
         return canSearch;
     }
 
@@ -181,10 +143,8 @@ public class ChannelFeatures {
      * 
      * @return mediaTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_TYPES)
-    public List<ChannelMediaType> getMediaTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<ChannelMediaType> getMediaTypes() {
         return mediaTypes;
     }
 
@@ -212,10 +172,8 @@ public class ChannelFeatures {
      * 
      * @return contentTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTENT_TYPES)
-    public List<ChannelMediaContentType> getContentTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<ChannelMediaContentType> getContentTypes() {
         return contentTypes;
     }
 
@@ -234,10 +192,8 @@ public class ChannelFeatures {
      * 
      * @return maxPageSize
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_PAGE_SIZE)
-    public Integer getMaxPageSize() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMaxPageSize() {
         return maxPageSize;
     }
 
@@ -256,10 +212,8 @@ public class ChannelFeatures {
      * 
      * @return autoRefreshLevels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTO_REFRESH_LEVELS)
-    public Integer getAutoRefreshLevels() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getAutoRefreshLevels() {
         return autoRefreshLevels;
     }
 
@@ -287,10 +241,8 @@ public class ChannelFeatures {
      * 
      * @return defaultSortFields
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_SORT_FIELDS)
-    public List<ChannelItemSortField> getDefaultSortFields() {
+    public @org.eclipse.jdt.annotation.Nullable List<ChannelItemSortField> getDefaultSortFields() {
         return defaultSortFields;
     }
 
@@ -311,10 +263,8 @@ public class ChannelFeatures {
      * 
      * @return supportsSortOrderToggle
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_SORT_ORDER_TOGGLE)
-    public Boolean getSupportsSortOrderToggle() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsSortOrderToggle() {
         return supportsSortOrderToggle;
     }
 
@@ -333,10 +283,8 @@ public class ChannelFeatures {
      * 
      * @return supportsLatestMedia
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_LATEST_MEDIA)
-    public Boolean getSupportsLatestMedia() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsLatestMedia() {
         return supportsLatestMedia;
     }
 
@@ -355,10 +303,8 @@ public class ChannelFeatures {
      * 
      * @return canFilter
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAN_FILTER)
-    public Boolean getCanFilter() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCanFilter() {
         return canFilter;
     }
 
@@ -378,10 +324,8 @@ public class ChannelFeatures {
      * 
      * @return supportsContentDownloading
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTS_CONTENT_DOWNLOADING)
-    public Boolean getSupportsContentDownloading() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSupportsContentDownloading() {
         return supportsContentDownloading;
     }
 
@@ -390,9 +334,6 @@ public class ChannelFeatures {
         this.supportsContentDownloading = supportsContentDownloading;
     }
 
-    /**
-     * Return true if this ChannelFeatures object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -483,31 +424,52 @@ public class ChannelFeatures {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CanSearch` to the URL query string
         if (getCanSearch() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanSearch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanSearch()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanSearch%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanSearch()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MediaTypes` to the URL query string
         if (getMediaTypes() != null) {
             for (int i = 0; i < getMediaTypes().size(); i++) {
                 if (getMediaTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sMediaTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getMediaTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sMediaTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getMediaTypes().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -516,62 +478,106 @@ public class ChannelFeatures {
         if (getContentTypes() != null) {
             for (int i = 0; i < getContentTypes().size(); i++) {
                 if (getContentTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sContentTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getContentTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sContentTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getContentTypes().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `MaxPageSize` to the URL query string
         if (getMaxPageSize() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxPageSize%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxPageSize()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxPageSize%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxPageSize()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AutoRefreshLevels` to the URL query string
         if (getAutoRefreshLevels() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAutoRefreshLevels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutoRefreshLevels()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAutoRefreshLevels%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAutoRefreshLevels()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DefaultSortFields` to the URL query string
         if (getDefaultSortFields() != null) {
             for (int i = 0; i < getDefaultSortFields().size(); i++) {
                 if (getDefaultSortFields().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sDefaultSortFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getDefaultSortFields().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sDefaultSortFields%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getDefaultSortFields().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `SupportsSortOrderToggle` to the URL query string
         if (getSupportsSortOrderToggle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsSortOrderToggle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsSortOrderToggle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsSortOrderToggle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsSortOrderToggle()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsLatestMedia` to the URL query string
         if (getSupportsLatestMedia() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsLatestMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsLatestMedia()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsLatestMedia%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsLatestMedia()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CanFilter` to the URL query string
         if (getCanFilter() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCanFilter%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCanFilter()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCanFilter%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCanFilter()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SupportsContentDownloading` to the URL query string
         if (getSupportsContentDownloading() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsContentDownloading%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSupportsContentDownloading()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSupportsContentDownloading%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSupportsContentDownloading()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

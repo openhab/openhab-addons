@@ -12,259 +12,144 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * LibraryOptions
  */
-@JsonPropertyOrder({ LibraryOptions.JSON_PROPERTY_ENABLED, LibraryOptions.JSON_PROPERTY_ENABLE_PHOTOS,
-        LibraryOptions.JSON_PROPERTY_ENABLE_REALTIME_MONITOR, LibraryOptions.JSON_PROPERTY_ENABLE_L_U_F_S_SCAN,
-        LibraryOptions.JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION,
-        LibraryOptions.JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN,
-        LibraryOptions.JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION,
-        LibraryOptions.JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN,
-        LibraryOptions.JSON_PROPERTY_PATH_INFOS, LibraryOptions.JSON_PROPERTY_SAVE_LOCAL_METADATA,
-        LibraryOptions.JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS,
-        LibraryOptions.JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING,
-        LibraryOptions.JSON_PROPERTY_ENABLE_EMBEDDED_TITLES, LibraryOptions.JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES,
-        LibraryOptions.JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS,
-        LibraryOptions.JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS,
-        LibraryOptions.JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE, LibraryOptions.JSON_PROPERTY_METADATA_COUNTRY_CODE,
-        LibraryOptions.JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME, LibraryOptions.JSON_PROPERTY_METADATA_SAVERS,
-        LibraryOptions.JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS,
-        LibraryOptions.JSON_PROPERTY_LOCAL_METADATA_READER_ORDER,
-        LibraryOptions.JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS, LibraryOptions.JSON_PROPERTY_SUBTITLE_FETCHER_ORDER,
-        LibraryOptions.JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS,
-        LibraryOptions.JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER,
-        LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT,
-        LibraryOptions.JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES,
-        LibraryOptions.JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES,
-        LibraryOptions.JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH,
-        LibraryOptions.JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA, LibraryOptions.JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA,
-        LibraryOptions.JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA, LibraryOptions.JSON_PROPERTY_DISABLED_LYRIC_FETCHERS,
-        LibraryOptions.JSON_PROPERTY_LYRIC_FETCHER_ORDER, LibraryOptions.JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG,
-        LibraryOptions.JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS, LibraryOptions.JSON_PROPERTY_CUSTOM_TAG_DELIMITERS,
-        LibraryOptions.JSON_PROPERTY_DELIMITER_WHITELIST, LibraryOptions.JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION,
-        LibraryOptions.JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES, LibraryOptions.JSON_PROPERTY_TYPE_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryOptions {
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enabled;
 
     public static final String JSON_PROPERTY_ENABLE_PHOTOS = "EnablePhotos";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enablePhotos;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enablePhotos;
 
     public static final String JSON_PROPERTY_ENABLE_REALTIME_MONITOR = "EnableRealtimeMonitor";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableRealtimeMonitor;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableRealtimeMonitor;
 
     public static final String JSON_PROPERTY_ENABLE_L_U_F_S_SCAN = "EnableLUFSScan";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableLUFSScan;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableLUFSScan;
 
     public static final String JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION = "EnableChapterImageExtraction";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableChapterImageExtraction;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableChapterImageExtraction;
 
     public static final String JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN = "ExtractChapterImagesDuringLibraryScan";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean extractChapterImagesDuringLibraryScan;
+    private @org.eclipse.jdt.annotation.Nullable Boolean extractChapterImagesDuringLibraryScan;
 
     public static final String JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION = "EnableTrickplayImageExtraction";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableTrickplayImageExtraction;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableTrickplayImageExtraction;
 
     public static final String JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN = "ExtractTrickplayImagesDuringLibraryScan";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean extractTrickplayImagesDuringLibraryScan;
+    private @org.eclipse.jdt.annotation.Nullable Boolean extractTrickplayImagesDuringLibraryScan;
 
     public static final String JSON_PROPERTY_PATH_INFOS = "PathInfos";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<MediaPathInfo> pathInfos = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<MediaPathInfo> pathInfos = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SAVE_LOCAL_METADATA = "SaveLocalMetadata";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveLocalMetadata;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveLocalMetadata;
 
     public static final String JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS = "EnableInternetProviders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableInternetProviders;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableInternetProviders;
 
     public static final String JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING = "EnableAutomaticSeriesGrouping";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAutomaticSeriesGrouping;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAutomaticSeriesGrouping;
 
     public static final String JSON_PROPERTY_ENABLE_EMBEDDED_TITLES = "EnableEmbeddedTitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableEmbeddedTitles;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableEmbeddedTitles;
 
     public static final String JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES = "EnableEmbeddedExtrasTitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableEmbeddedExtrasTitles;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableEmbeddedExtrasTitles;
 
     public static final String JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS = "EnableEmbeddedEpisodeInfos";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableEmbeddedEpisodeInfos;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableEmbeddedEpisodeInfos;
 
     public static final String JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS = "AutomaticRefreshIntervalDays";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer automaticRefreshIntervalDays;
+    private @org.eclipse.jdt.annotation.Nullable Integer automaticRefreshIntervalDays;
 
     public static final String JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE = "PreferredMetadataLanguage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String preferredMetadataLanguage;
+    private @org.eclipse.jdt.annotation.Nullable String preferredMetadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String metadataCountryCode;
+    private @org.eclipse.jdt.annotation.Nullable String metadataCountryCode;
 
     public static final String JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME = "SeasonZeroDisplayName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String seasonZeroDisplayName;
+    private @org.eclipse.jdt.annotation.Nullable String seasonZeroDisplayName;
 
     public static final String JSON_PROPERTY_METADATA_SAVERS = "MetadataSavers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> metadataSavers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> metadataSavers;
 
     public static final String JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS = "DisabledLocalMetadataReaders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledLocalMetadataReaders = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledLocalMetadataReaders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> localMetadataReaderOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> localMetadataReaderOrder;
 
     public static final String JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS = "DisabledSubtitleFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledSubtitleFetchers = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledSubtitleFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUBTITLE_FETCHER_ORDER = "SubtitleFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> subtitleFetcherOrder = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> subtitleFetcherOrder = new ArrayList<>();
 
     public static final String JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS = "DisabledMediaSegmentProviders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledMediaSegmentProviders = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledMediaSegmentProviders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER = "MediaSegmentProviderOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> mediaSegmentProviderOrder = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> mediaSegmentProviderOrder = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT = "SkipSubtitlesIfEmbeddedSubtitlesPresent";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean skipSubtitlesIfEmbeddedSubtitlesPresent;
+    private @org.eclipse.jdt.annotation.Nullable Boolean skipSubtitlesIfEmbeddedSubtitlesPresent;
 
     public static final String JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES = "SkipSubtitlesIfAudioTrackMatches";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean skipSubtitlesIfAudioTrackMatches;
+    private @org.eclipse.jdt.annotation.Nullable Boolean skipSubtitlesIfAudioTrackMatches;
 
     public static final String JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES = "SubtitleDownloadLanguages";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> subtitleDownloadLanguages;
+    private @org.eclipse.jdt.annotation.Nullable List<String> subtitleDownloadLanguages;
 
     public static final String JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH = "RequirePerfectSubtitleMatch";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean requirePerfectSubtitleMatch;
+    private @org.eclipse.jdt.annotation.Nullable Boolean requirePerfectSubtitleMatch;
 
     public static final String JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA = "SaveSubtitlesWithMedia";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveSubtitlesWithMedia;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveSubtitlesWithMedia;
 
     public static final String JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA = "SaveLyricsWithMedia";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveLyricsWithMedia = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveLyricsWithMedia = false;
 
     public static final String JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA = "SaveTrickplayWithMedia";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean saveTrickplayWithMedia = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean saveTrickplayWithMedia = false;
 
     public static final String JSON_PROPERTY_DISABLED_LYRIC_FETCHERS = "DisabledLyricFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledLyricFetchers = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledLyricFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_LYRIC_FETCHER_ORDER = "LyricFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> lyricFetcherOrder = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> lyricFetcherOrder = new ArrayList<>();
 
     public static final String JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG = "PreferNonstandardArtistsTag";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean preferNonstandardArtistsTag = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean preferNonstandardArtistsTag = false;
 
     public static final String JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS = "UseCustomTagDelimiters";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean useCustomTagDelimiters = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean useCustomTagDelimiters = false;
 
     public static final String JSON_PROPERTY_CUSTOM_TAG_DELIMITERS = "CustomTagDelimiters";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> customTagDelimiters = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> customTagDelimiters = new ArrayList<>();
 
     public static final String JSON_PROPERTY_DELIMITER_WHITELIST = "DelimiterWhitelist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> delimiterWhitelist = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> delimiterWhitelist = new ArrayList<>();
 
     public static final String JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION = "AutomaticallyAddToCollection";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean automaticallyAddToCollection;
+    private @org.eclipse.jdt.annotation.Nullable Boolean automaticallyAddToCollection;
 
     public static final String JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES = "AllowEmbeddedSubtitles";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private EmbeddedSubtitleOptions allowEmbeddedSubtitles;
+    private @org.eclipse.jdt.annotation.Nullable EmbeddedSubtitleOptions allowEmbeddedSubtitles;
 
     public static final String JSON_PROPERTY_TYPE_OPTIONS = "TypeOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<TypeOptions> typeOptions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<TypeOptions> typeOptions = new ArrayList<>();
 
     public LibraryOptions() {
     }
@@ -279,10 +164,8 @@ public class LibraryOptions {
      * 
      * @return enabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED)
-    public Boolean getEnabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnabled() {
         return enabled;
     }
 
@@ -301,10 +184,8 @@ public class LibraryOptions {
      * 
      * @return enablePhotos
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_PHOTOS)
-    public Boolean getEnablePhotos() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnablePhotos() {
         return enablePhotos;
     }
 
@@ -323,10 +204,8 @@ public class LibraryOptions {
      * 
      * @return enableRealtimeMonitor
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_REALTIME_MONITOR)
-    public Boolean getEnableRealtimeMonitor() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableRealtimeMonitor() {
         return enableRealtimeMonitor;
     }
 
@@ -345,10 +224,8 @@ public class LibraryOptions {
      * 
      * @return enableLUFSScan
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_L_U_F_S_SCAN)
-    public Boolean getEnableLUFSScan() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableLUFSScan() {
         return enableLUFSScan;
     }
 
@@ -368,10 +245,8 @@ public class LibraryOptions {
      * 
      * @return enableChapterImageExtraction
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_CHAPTER_IMAGE_EXTRACTION)
-    public Boolean getEnableChapterImageExtraction() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableChapterImageExtraction() {
         return enableChapterImageExtraction;
     }
 
@@ -392,10 +267,8 @@ public class LibraryOptions {
      * 
      * @return extractChapterImagesDuringLibraryScan
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTRACT_CHAPTER_IMAGES_DURING_LIBRARY_SCAN)
-    public Boolean getExtractChapterImagesDuringLibraryScan() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getExtractChapterImagesDuringLibraryScan() {
         return extractChapterImagesDuringLibraryScan;
     }
 
@@ -416,10 +289,8 @@ public class LibraryOptions {
      * 
      * @return enableTrickplayImageExtraction
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_TRICKPLAY_IMAGE_EXTRACTION)
-    public Boolean getEnableTrickplayImageExtraction() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableTrickplayImageExtraction() {
         return enableTrickplayImageExtraction;
     }
 
@@ -440,10 +311,8 @@ public class LibraryOptions {
      * 
      * @return extractTrickplayImagesDuringLibraryScan
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EXTRACT_TRICKPLAY_IMAGES_DURING_LIBRARY_SCAN)
-    public Boolean getExtractTrickplayImagesDuringLibraryScan() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getExtractTrickplayImagesDuringLibraryScan() {
         return extractTrickplayImagesDuringLibraryScan;
     }
 
@@ -471,10 +340,8 @@ public class LibraryOptions {
      * 
      * @return pathInfos
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH_INFOS)
-    public List<MediaPathInfo> getPathInfos() {
+    public @org.eclipse.jdt.annotation.Nullable List<MediaPathInfo> getPathInfos() {
         return pathInfos;
     }
 
@@ -493,10 +360,8 @@ public class LibraryOptions {
      * 
      * @return saveLocalMetadata
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_LOCAL_METADATA)
-    public Boolean getSaveLocalMetadata() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveLocalMetadata() {
         return saveLocalMetadata;
     }
 
@@ -518,10 +383,8 @@ public class LibraryOptions {
      * @deprecated
      */
     @Deprecated
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_INTERNET_PROVIDERS)
-    public Boolean getEnableInternetProviders() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableInternetProviders() {
         return enableInternetProviders;
     }
 
@@ -541,10 +404,8 @@ public class LibraryOptions {
      * 
      * @return enableAutomaticSeriesGrouping
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUTOMATIC_SERIES_GROUPING)
-    public Boolean getEnableAutomaticSeriesGrouping() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAutomaticSeriesGrouping() {
         return enableAutomaticSeriesGrouping;
     }
 
@@ -564,10 +425,8 @@ public class LibraryOptions {
      * 
      * @return enableEmbeddedTitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_TITLES)
-    public Boolean getEnableEmbeddedTitles() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableEmbeddedTitles() {
         return enableEmbeddedTitles;
     }
 
@@ -587,10 +446,8 @@ public class LibraryOptions {
      * 
      * @return enableEmbeddedExtrasTitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EXTRAS_TITLES)
-    public Boolean getEnableEmbeddedExtrasTitles() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableEmbeddedExtrasTitles() {
         return enableEmbeddedExtrasTitles;
     }
 
@@ -610,10 +467,8 @@ public class LibraryOptions {
      * 
      * @return enableEmbeddedEpisodeInfos
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_EMBEDDED_EPISODE_INFOS)
-    public Boolean getEnableEmbeddedEpisodeInfos() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableEmbeddedEpisodeInfos() {
         return enableEmbeddedEpisodeInfos;
     }
 
@@ -633,10 +488,8 @@ public class LibraryOptions {
      * 
      * @return automaticRefreshIntervalDays
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTOMATIC_REFRESH_INTERVAL_DAYS)
-    public Integer getAutomaticRefreshIntervalDays() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getAutomaticRefreshIntervalDays() {
         return automaticRefreshIntervalDays;
     }
 
@@ -657,10 +510,8 @@ public class LibraryOptions {
      * 
      * @return preferredMetadataLanguage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREFERRED_METADATA_LANGUAGE)
-    public String getPreferredMetadataLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getPreferredMetadataLanguage() {
         return preferredMetadataLanguage;
     }
 
@@ -679,10 +530,8 @@ public class LibraryOptions {
      * 
      * @return metadataCountryCode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public String getMetadataCountryCode() {
+    public @org.eclipse.jdt.annotation.Nullable String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
@@ -701,10 +550,8 @@ public class LibraryOptions {
      * 
      * @return seasonZeroDisplayName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEASON_ZERO_DISPLAY_NAME)
-    public String getSeasonZeroDisplayName() {
+    public @org.eclipse.jdt.annotation.Nullable String getSeasonZeroDisplayName() {
         return seasonZeroDisplayName;
     }
 
@@ -731,10 +578,8 @@ public class LibraryOptions {
      * 
      * @return metadataSavers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_SAVERS)
-    public List<String> getMetadataSavers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMetadataSavers() {
         return metadataSavers;
     }
 
@@ -762,10 +607,8 @@ public class LibraryOptions {
      * 
      * @return disabledLocalMetadataReaders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_LOCAL_METADATA_READERS)
-    public List<String> getDisabledLocalMetadataReaders() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledLocalMetadataReaders() {
         return disabledLocalMetadataReaders;
     }
 
@@ -794,10 +637,8 @@ public class LibraryOptions {
      * 
      * @return localMetadataReaderOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
-    public List<String> getLocalMetadataReaderOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder;
     }
 
@@ -826,10 +667,8 @@ public class LibraryOptions {
      * 
      * @return disabledSubtitleFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_SUBTITLE_FETCHERS)
-    public List<String> getDisabledSubtitleFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledSubtitleFetchers() {
         return disabledSubtitleFetchers;
     }
 
@@ -857,10 +696,8 @@ public class LibraryOptions {
      * 
      * @return subtitleFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_FETCHER_ORDER)
-    public List<String> getSubtitleFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getSubtitleFetcherOrder() {
         return subtitleFetcherOrder;
     }
 
@@ -888,10 +725,8 @@ public class LibraryOptions {
      * 
      * @return disabledMediaSegmentProviders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_MEDIA_SEGMENT_PROVIDERS)
-    public List<String> getDisabledMediaSegmentProviders() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledMediaSegmentProviders() {
         return disabledMediaSegmentProviders;
     }
 
@@ -920,10 +755,8 @@ public class LibraryOptions {
      * 
      * @return mediaSegmentProviderOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MEDIA_SEGMENT_PROVIDER_ORDER)
-    public List<String> getMediaSegmentProviderOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMediaSegmentProviderOrder() {
         return mediaSegmentProviderOrder;
     }
 
@@ -944,10 +777,8 @@ public class LibraryOptions {
      * 
      * @return skipSubtitlesIfEmbeddedSubtitlesPresent
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_EMBEDDED_SUBTITLES_PRESENT)
-    public Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSkipSubtitlesIfEmbeddedSubtitlesPresent() {
         return skipSubtitlesIfEmbeddedSubtitlesPresent;
     }
 
@@ -968,10 +799,8 @@ public class LibraryOptions {
      * 
      * @return skipSubtitlesIfAudioTrackMatches
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SKIP_SUBTITLES_IF_AUDIO_TRACK_MATCHES)
-    public Boolean getSkipSubtitlesIfAudioTrackMatches() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSkipSubtitlesIfAudioTrackMatches() {
         return skipSubtitlesIfAudioTrackMatches;
     }
 
@@ -1000,10 +829,8 @@ public class LibraryOptions {
      * 
      * @return subtitleDownloadLanguages
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUBTITLE_DOWNLOAD_LANGUAGES)
-    public List<String> getSubtitleDownloadLanguages() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getSubtitleDownloadLanguages() {
         return subtitleDownloadLanguages;
     }
 
@@ -1024,10 +851,8 @@ public class LibraryOptions {
      * 
      * @return requirePerfectSubtitleMatch
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REQUIRE_PERFECT_SUBTITLE_MATCH)
-    public Boolean getRequirePerfectSubtitleMatch() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRequirePerfectSubtitleMatch() {
         return requirePerfectSubtitleMatch;
     }
 
@@ -1047,10 +872,8 @@ public class LibraryOptions {
      * 
      * @return saveSubtitlesWithMedia
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_SUBTITLES_WITH_MEDIA)
-    public Boolean getSaveSubtitlesWithMedia() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveSubtitlesWithMedia() {
         return saveSubtitlesWithMedia;
     }
 
@@ -1069,10 +892,8 @@ public class LibraryOptions {
      * 
      * @return saveLyricsWithMedia
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_LYRICS_WITH_MEDIA)
-    public Boolean getSaveLyricsWithMedia() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveLyricsWithMedia() {
         return saveLyricsWithMedia;
     }
 
@@ -1091,10 +912,8 @@ public class LibraryOptions {
      * 
      * @return saveTrickplayWithMedia
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SAVE_TRICKPLAY_WITH_MEDIA)
-    public Boolean getSaveTrickplayWithMedia() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSaveTrickplayWithMedia() {
         return saveTrickplayWithMedia;
     }
 
@@ -1122,10 +941,8 @@ public class LibraryOptions {
      * 
      * @return disabledLyricFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_LYRIC_FETCHERS)
-    public List<String> getDisabledLyricFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledLyricFetchers() {
         return disabledLyricFetchers;
     }
 
@@ -1152,10 +969,8 @@ public class LibraryOptions {
      * 
      * @return lyricFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LYRIC_FETCHER_ORDER)
-    public List<String> getLyricFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLyricFetcherOrder() {
         return lyricFetcherOrder;
     }
 
@@ -1175,10 +990,8 @@ public class LibraryOptions {
      * 
      * @return preferNonstandardArtistsTag
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREFER_NONSTANDARD_ARTISTS_TAG)
-    public Boolean getPreferNonstandardArtistsTag() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getPreferNonstandardArtistsTag() {
         return preferNonstandardArtistsTag;
     }
 
@@ -1198,10 +1011,8 @@ public class LibraryOptions {
      * 
      * @return useCustomTagDelimiters
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USE_CUSTOM_TAG_DELIMITERS)
-    public Boolean getUseCustomTagDelimiters() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getUseCustomTagDelimiters() {
         return useCustomTagDelimiters;
     }
 
@@ -1228,10 +1039,8 @@ public class LibraryOptions {
      * 
      * @return customTagDelimiters
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_TAG_DELIMITERS)
-    public List<String> getCustomTagDelimiters() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getCustomTagDelimiters() {
         return customTagDelimiters;
     }
 
@@ -1258,10 +1067,8 @@ public class LibraryOptions {
      * 
      * @return delimiterWhitelist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DELIMITER_WHITELIST)
-    public List<String> getDelimiterWhitelist() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDelimiterWhitelist() {
         return delimiterWhitelist;
     }
 
@@ -1281,10 +1088,8 @@ public class LibraryOptions {
      * 
      * @return automaticallyAddToCollection
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTOMATICALLY_ADD_TO_COLLECTION)
-    public Boolean getAutomaticallyAddToCollection() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAutomaticallyAddToCollection() {
         return automaticallyAddToCollection;
     }
 
@@ -1305,10 +1110,8 @@ public class LibraryOptions {
      * 
      * @return allowEmbeddedSubtitles
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALLOW_EMBEDDED_SUBTITLES)
-    public EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
+    public @org.eclipse.jdt.annotation.Nullable EmbeddedSubtitleOptions getAllowEmbeddedSubtitles() {
         return allowEmbeddedSubtitles;
     }
 
@@ -1336,10 +1139,8 @@ public class LibraryOptions {
      * 
      * @return typeOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE_OPTIONS)
-    public List<TypeOptions> getTypeOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<TypeOptions> getTypeOptions() {
         return typeOptions;
     }
 
@@ -1348,9 +1149,6 @@ public class LibraryOptions {
         this.typeOptions = typeOptions;
     }
 
-    /**
-     * Return true if this LibraryOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -1529,51 +1327,96 @@ public class LibraryOptions {
 
         // add `Enabled` to the URL query string
         if (getEnabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnablePhotos` to the URL query string
         if (getEnablePhotos() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePhotos%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnablePhotos()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnablePhotos%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnablePhotos()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableRealtimeMonitor` to the URL query string
         if (getEnableRealtimeMonitor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableRealtimeMonitor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableRealtimeMonitor()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableRealtimeMonitor%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableRealtimeMonitor()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableLUFSScan` to the URL query string
         if (getEnableLUFSScan() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLUFSScan%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableLUFSScan()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableLUFSScan%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableLUFSScan()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableChapterImageExtraction` to the URL query string
         if (getEnableChapterImageExtraction() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableChapterImageExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableChapterImageExtraction()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableChapterImageExtraction%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableChapterImageExtraction()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExtractChapterImagesDuringLibraryScan` to the URL query string
         if (getExtractChapterImagesDuringLibraryScan() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExtractChapterImagesDuringLibraryScan%s=%s", prefix,
-                    suffix, ApiClient.urlEncode(ApiClient.valueToString(getExtractChapterImagesDuringLibraryScan()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sExtractChapterImagesDuringLibraryScan%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getExtractChapterImagesDuringLibraryScan()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableTrickplayImageExtraction` to the URL query string
         if (getEnableTrickplayImageExtraction() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTrickplayImageExtraction%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableTrickplayImageExtraction()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTrickplayImageExtraction%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableTrickplayImageExtraction()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ExtractTrickplayImagesDuringLibraryScan` to the URL query string
         if (getExtractTrickplayImagesDuringLibraryScan() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sExtractTrickplayImagesDuringLibraryScan%s=%s", prefix,
-                    suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getExtractTrickplayImagesDuringLibraryScan()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sExtractTrickplayImagesDuringLibraryScan%s=%s",
+                        prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getExtractTrickplayImagesDuringLibraryScan()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PathInfos` to the URL query string
@@ -1591,244 +1434,448 @@ public class LibraryOptions {
 
         // add `SaveLocalMetadata` to the URL query string
         if (getSaveLocalMetadata() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveLocalMetadata%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveLocalMetadata()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveLocalMetadata%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveLocalMetadata()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableInternetProviders` to the URL query string
         if (getEnableInternetProviders() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableInternetProviders%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableInternetProviders()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableInternetProviders%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableInternetProviders()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableAutomaticSeriesGrouping` to the URL query string
         if (getEnableAutomaticSeriesGrouping() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAutomaticSeriesGrouping()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAutomaticSeriesGrouping%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAutomaticSeriesGrouping()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableEmbeddedTitles` to the URL query string
         if (getEnableEmbeddedTitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEmbeddedTitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedTitles()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableEmbeddedTitles%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableEmbeddedTitles()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableEmbeddedExtrasTitles` to the URL query string
         if (getEnableEmbeddedExtrasTitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEmbeddedExtrasTitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedExtrasTitles()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEmbeddedExtrasTitles%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableEmbeddedExtrasTitles()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableEmbeddedEpisodeInfos` to the URL query string
         if (getEnableEmbeddedEpisodeInfos() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableEmbeddedEpisodeInfos()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableEmbeddedEpisodeInfos%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableEmbeddedEpisodeInfos()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AutomaticRefreshIntervalDays` to the URL query string
         if (getAutomaticRefreshIntervalDays() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutomaticRefreshIntervalDays()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAutomaticRefreshIntervalDays%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAutomaticRefreshIntervalDays()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PreferredMetadataLanguage` to the URL query string
         if (getPreferredMetadataLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferredMetadataLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPreferredMetadataLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPreferredMetadataLanguage()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMetadataCountryCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeasonZeroDisplayName` to the URL query string
         if (getSeasonZeroDisplayName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeasonZeroDisplayName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeasonZeroDisplayName()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sSeasonZeroDisplayName%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getSeasonZeroDisplayName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataSavers` to the URL query string
         if (getMetadataSavers() != null) {
             for (int i = 0; i < getMetadataSavers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataSavers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataSavers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataSavers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMetadataSavers().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DisabledLocalMetadataReaders` to the URL query string
         if (getDisabledLocalMetadataReaders() != null) {
             for (int i = 0; i < getDisabledLocalMetadataReaders().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledLocalMetadataReaders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledLocalMetadataReaders().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledLocalMetadataReaders%s%s=%s", prefix,
+                            suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledLocalMetadataReaders().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `LocalMetadataReaderOrder` to the URL query string
         if (getLocalMetadataReaderOrder() != null) {
             for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLocalMetadataReaderOrder().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DisabledSubtitleFetchers` to the URL query string
         if (getDisabledSubtitleFetchers() != null) {
             for (int i = 0; i < getDisabledSubtitleFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledSubtitleFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledSubtitleFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledSubtitleFetchers().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `SubtitleFetcherOrder` to the URL query string
         if (getSubtitleFetcherOrder() != null) {
             for (int i = 0; i < getSubtitleFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSubtitleFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getSubtitleFetcherOrder().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DisabledMediaSegmentProviders` to the URL query string
         if (getDisabledMediaSegmentProviders() != null) {
             for (int i = 0; i < getDisabledMediaSegmentProviders().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMediaSegmentProviders%s%s=%s", prefix,
-                        suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMediaSegmentProviders().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMediaSegmentProviders%s%s=%s", prefix,
+                            suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledMediaSegmentProviders().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `MediaSegmentProviderOrder` to the URL query string
         if (getMediaSegmentProviderOrder() != null) {
             for (int i = 0; i < getMediaSegmentProviderOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMediaSegmentProviderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMediaSegmentProviderOrder().get(i)))));
+                try {
+                    joiner.add(
+                            String.format(java.util.Locale.ROOT, "%sMediaSegmentProviderOrder%s%s=%s", prefix, suffix,
+                                    "".equals(suffix) ? ""
+                                            : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                    containerSuffix),
+                                    URLEncoder.encode(String.valueOf(getMediaSegmentProviderOrder().get(i)), "UTF-8")
+                                            .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `SkipSubtitlesIfEmbeddedSubtitlesPresent` to the URL query string
         if (getSkipSubtitlesIfEmbeddedSubtitlesPresent() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s", prefix,
-                    suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfEmbeddedSubtitlesPresent()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSkipSubtitlesIfEmbeddedSubtitlesPresent%s=%s",
+                        prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSkipSubtitlesIfEmbeddedSubtitlesPresent()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SkipSubtitlesIfAudioTrackMatches` to the URL query string
         if (getSkipSubtitlesIfAudioTrackMatches() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSkipSubtitlesIfAudioTrackMatches()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSkipSubtitlesIfAudioTrackMatches%s=%s", prefix,
+                        suffix, URLEncoder.encode(String.valueOf(getSkipSubtitlesIfAudioTrackMatches()), "UTF-8")
+                                .replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SubtitleDownloadLanguages` to the URL query string
         if (getSubtitleDownloadLanguages() != null) {
             for (int i = 0; i < getSubtitleDownloadLanguages().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getSubtitleDownloadLanguages().get(i)))));
+                try {
+                    joiner.add(
+                            String.format(java.util.Locale.ROOT, "%sSubtitleDownloadLanguages%s%s=%s", prefix, suffix,
+                                    "".equals(suffix) ? ""
+                                            : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                    containerSuffix),
+                                    URLEncoder.encode(String.valueOf(getSubtitleDownloadLanguages().get(i)), "UTF-8")
+                                            .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `RequirePerfectSubtitleMatch` to the URL query string
         if (getRequirePerfectSubtitleMatch() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRequirePerfectSubtitleMatch()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRequirePerfectSubtitleMatch%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRequirePerfectSubtitleMatch()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveSubtitlesWithMedia` to the URL query string
         if (getSaveSubtitlesWithMedia() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveSubtitlesWithMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveSubtitlesWithMedia()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveSubtitlesWithMedia%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveSubtitlesWithMedia()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveLyricsWithMedia` to the URL query string
         if (getSaveLyricsWithMedia() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveLyricsWithMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveLyricsWithMedia()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveLyricsWithMedia%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveLyricsWithMedia()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SaveTrickplayWithMedia` to the URL query string
         if (getSaveTrickplayWithMedia() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSaveTrickplayWithMedia%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSaveTrickplayWithMedia()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSaveTrickplayWithMedia%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSaveTrickplayWithMedia()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisabledLyricFetchers` to the URL query string
         if (getDisabledLyricFetchers() != null) {
             for (int i = 0; i < getDisabledLyricFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledLyricFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledLyricFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledLyricFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledLyricFetchers().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `LyricFetcherOrder` to the URL query string
         if (getLyricFetcherOrder() != null) {
             for (int i = 0; i < getLyricFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLyricFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLyricFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLyricFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLyricFetcherOrder().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `PreferNonstandardArtistsTag` to the URL query string
         if (getPreferNonstandardArtistsTag() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPreferNonstandardArtistsTag%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPreferNonstandardArtistsTag()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPreferNonstandardArtistsTag%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPreferNonstandardArtistsTag()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UseCustomTagDelimiters` to the URL query string
         if (getUseCustomTagDelimiters() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUseCustomTagDelimiters%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUseCustomTagDelimiters()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUseCustomTagDelimiters%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUseCustomTagDelimiters()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomTagDelimiters` to the URL query string
         if (getCustomTagDelimiters() != null) {
             for (int i = 0; i < getCustomTagDelimiters().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sCustomTagDelimiters%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCustomTagDelimiters().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sCustomTagDelimiters%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getCustomTagDelimiters().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DelimiterWhitelist` to the URL query string
         if (getDelimiterWhitelist() != null) {
             for (int i = 0; i < getDelimiterWhitelist().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDelimiterWhitelist%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDelimiterWhitelist().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDelimiterWhitelist%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDelimiterWhitelist().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `AutomaticallyAddToCollection` to the URL query string
         if (getAutomaticallyAddToCollection() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAutomaticallyAddToCollection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAutomaticallyAddToCollection()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAutomaticallyAddToCollection%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAutomaticallyAddToCollection()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AllowEmbeddedSubtitles` to the URL query string
         if (getAllowEmbeddedSubtitles() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAllowEmbeddedSubtitles%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAllowEmbeddedSubtitles()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAllowEmbeddedSubtitles%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAllowEmbeddedSubtitles()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TypeOptions` to the URL query string

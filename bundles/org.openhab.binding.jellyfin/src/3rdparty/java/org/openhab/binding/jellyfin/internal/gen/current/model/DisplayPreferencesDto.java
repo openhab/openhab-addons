@@ -12,98 +12,61 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the display preferences for any item that supports them (usually Folders).
  */
-@JsonPropertyOrder({ DisplayPreferencesDto.JSON_PROPERTY_ID, DisplayPreferencesDto.JSON_PROPERTY_VIEW_TYPE,
-        DisplayPreferencesDto.JSON_PROPERTY_SORT_BY, DisplayPreferencesDto.JSON_PROPERTY_INDEX_BY,
-        DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_INDEXING, DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT,
-        DisplayPreferencesDto.JSON_PROPERTY_PRIMARY_IMAGE_WIDTH, DisplayPreferencesDto.JSON_PROPERTY_CUSTOM_PREFS,
-        DisplayPreferencesDto.JSON_PROPERTY_SCROLL_DIRECTION, DisplayPreferencesDto.JSON_PROPERTY_SHOW_BACKDROP,
-        DisplayPreferencesDto.JSON_PROPERTY_REMEMBER_SORTING, DisplayPreferencesDto.JSON_PROPERTY_SORT_ORDER,
-        DisplayPreferencesDto.JSON_PROPERTY_SHOW_SIDEBAR, DisplayPreferencesDto.JSON_PROPERTY_CLIENT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DisplayPreferencesDto {
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_VIEW_TYPE = "ViewType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String viewType;
+    private @org.eclipse.jdt.annotation.Nullable String viewType;
 
     public static final String JSON_PROPERTY_SORT_BY = "SortBy";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String sortBy;
+    private @org.eclipse.jdt.annotation.Nullable String sortBy;
 
     public static final String JSON_PROPERTY_INDEX_BY = "IndexBy";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String indexBy;
+    private @org.eclipse.jdt.annotation.Nullable String indexBy;
 
     public static final String JSON_PROPERTY_REMEMBER_INDEXING = "RememberIndexing";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean rememberIndexing;
+    private @org.eclipse.jdt.annotation.Nullable Boolean rememberIndexing;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT = "PrimaryImageHeight";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer primaryImageHeight;
+    private @org.eclipse.jdt.annotation.Nullable Integer primaryImageHeight;
 
     public static final String JSON_PROPERTY_PRIMARY_IMAGE_WIDTH = "PrimaryImageWidth";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer primaryImageWidth;
+    private @org.eclipse.jdt.annotation.Nullable Integer primaryImageWidth;
 
     public static final String JSON_PROPERTY_CUSTOM_PREFS = "CustomPrefs";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> customPrefs = new HashMap<>();
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> customPrefs = new HashMap<>();
 
     public static final String JSON_PROPERTY_SCROLL_DIRECTION = "ScrollDirection";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ScrollDirection scrollDirection;
+    private @org.eclipse.jdt.annotation.Nullable ScrollDirection scrollDirection;
 
     public static final String JSON_PROPERTY_SHOW_BACKDROP = "ShowBackdrop";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean showBackdrop;
+    private @org.eclipse.jdt.annotation.Nullable Boolean showBackdrop;
 
     public static final String JSON_PROPERTY_REMEMBER_SORTING = "RememberSorting";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean rememberSorting;
+    private @org.eclipse.jdt.annotation.Nullable Boolean rememberSorting;
 
     public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SortOrder sortOrder;
+    private @org.eclipse.jdt.annotation.Nullable SortOrder sortOrder;
 
     public static final String JSON_PROPERTY_SHOW_SIDEBAR = "ShowSidebar";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean showSidebar;
+    private @org.eclipse.jdt.annotation.Nullable Boolean showSidebar;
 
     public static final String JSON_PROPERTY_CLIENT = "Client";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String client;
+    private @org.eclipse.jdt.annotation.Nullable String client;
 
     public DisplayPreferencesDto() {
     }
@@ -118,10 +81,8 @@ public class DisplayPreferencesDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -140,10 +101,8 @@ public class DisplayPreferencesDto {
      * 
      * @return viewType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIEW_TYPE)
-    public String getViewType() {
+    public @org.eclipse.jdt.annotation.Nullable String getViewType() {
         return viewType;
     }
 
@@ -162,10 +121,8 @@ public class DisplayPreferencesDto {
      * 
      * @return sortBy
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SORT_BY)
-    public String getSortBy() {
+    public @org.eclipse.jdt.annotation.Nullable String getSortBy() {
         return sortBy;
     }
 
@@ -184,10 +141,8 @@ public class DisplayPreferencesDto {
      * 
      * @return indexBy
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX_BY)
-    public String getIndexBy() {
+    public @org.eclipse.jdt.annotation.Nullable String getIndexBy() {
         return indexBy;
     }
 
@@ -206,10 +161,8 @@ public class DisplayPreferencesDto {
      * 
      * @return rememberIndexing
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_INDEXING)
-    public Boolean getRememberIndexing() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRememberIndexing() {
         return rememberIndexing;
     }
 
@@ -228,10 +181,8 @@ public class DisplayPreferencesDto {
      * 
      * @return primaryImageHeight
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_HEIGHT)
-    public Integer getPrimaryImageHeight() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPrimaryImageHeight() {
         return primaryImageHeight;
     }
 
@@ -250,10 +201,8 @@ public class DisplayPreferencesDto {
      * 
      * @return primaryImageWidth
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRIMARY_IMAGE_WIDTH)
-    public Integer getPrimaryImageWidth() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getPrimaryImageWidth() {
         return primaryImageWidth;
     }
 
@@ -280,16 +229,14 @@ public class DisplayPreferencesDto {
      * 
      * @return customPrefs
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public Map<String, String> getCustomPrefs() {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getCustomPrefs() {
         return customPrefs;
     }
 
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_PREFS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
     public void setCustomPrefs(@org.eclipse.jdt.annotation.Nullable Map<String, String> customPrefs) {
         this.customPrefs = customPrefs;
     }
@@ -304,10 +251,8 @@ public class DisplayPreferencesDto {
      * 
      * @return scrollDirection
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SCROLL_DIRECTION)
-    public ScrollDirection getScrollDirection() {
+    public @org.eclipse.jdt.annotation.Nullable ScrollDirection getScrollDirection() {
         return scrollDirection;
     }
 
@@ -326,10 +271,8 @@ public class DisplayPreferencesDto {
      * 
      * @return showBackdrop
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SHOW_BACKDROP)
-    public Boolean getShowBackdrop() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getShowBackdrop() {
         return showBackdrop;
     }
 
@@ -348,10 +291,8 @@ public class DisplayPreferencesDto {
      * 
      * @return rememberSorting
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REMEMBER_SORTING)
-    public Boolean getRememberSorting() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getRememberSorting() {
         return rememberSorting;
     }
 
@@ -370,10 +311,8 @@ public class DisplayPreferencesDto {
      * 
      * @return sortOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
-    public SortOrder getSortOrder() {
+    public @org.eclipse.jdt.annotation.Nullable SortOrder getSortOrder() {
         return sortOrder;
     }
 
@@ -392,10 +331,8 @@ public class DisplayPreferencesDto {
      * 
      * @return showSidebar
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SHOW_SIDEBAR)
-    public Boolean getShowSidebar() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getShowSidebar() {
         return showSidebar;
     }
 
@@ -414,10 +351,8 @@ public class DisplayPreferencesDto {
      * 
      * @return client
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CLIENT)
-    public String getClient() {
+    public @org.eclipse.jdt.annotation.Nullable String getClient() {
         return client;
     }
 
@@ -426,9 +361,6 @@ public class DisplayPreferencesDto {
         this.client = client;
     }
 
-    /**
-     * Return true if this DisplayPreferencesDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -524,92 +456,163 @@ public class DisplayPreferencesDto {
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ViewType` to the URL query string
         if (getViewType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sViewType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getViewType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sViewType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getViewType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SortBy` to the URL query string
         if (getSortBy() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSortBy%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSortBy()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSortBy%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSortBy()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IndexBy` to the URL query string
         if (getIndexBy() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndexBy%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexBy()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndexBy%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndexBy()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RememberIndexing` to the URL query string
         if (getRememberIndexing() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRememberIndexing%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberIndexing()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRememberIndexing%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRememberIndexing()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrimaryImageHeight` to the URL query string
         if (getPrimaryImageHeight() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageHeight%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageHeight()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageHeight%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageHeight()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PrimaryImageWidth` to the URL query string
         if (getPrimaryImageWidth() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageWidth%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPrimaryImageWidth()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPrimaryImageWidth%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPrimaryImageWidth()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomPrefs` to the URL query string
         if (getCustomPrefs() != null) {
             for (String _key : getCustomPrefs().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sCustomPrefs%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getCustomPrefs().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCustomPrefs().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sCustomPrefs%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getCustomPrefs().get(_key),
+                            URLEncoder.encode(String.valueOf(getCustomPrefs().get(_key)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ScrollDirection` to the URL query string
         if (getScrollDirection() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sScrollDirection%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getScrollDirection()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sScrollDirection%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getScrollDirection()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ShowBackdrop` to the URL query string
         if (getShowBackdrop() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sShowBackdrop%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShowBackdrop()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sShowBackdrop%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getShowBackdrop()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `RememberSorting` to the URL query string
         if (getRememberSorting() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sRememberSorting%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRememberSorting()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sRememberSorting%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRememberSorting()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SortOrder` to the URL query string
         if (getSortOrder() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSortOrder%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSortOrder()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSortOrder%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSortOrder()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ShowSidebar` to the URL query string
         if (getShowSidebar() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sShowSidebar%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getShowSidebar()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sShowSidebar%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getShowSidebar()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Client` to the URL query string
         if (getClient() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sClient%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getClient()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sClient%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getClient()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

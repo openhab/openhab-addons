@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,82 +21,49 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * RemoteSearchResult
  */
-@JsonPropertyOrder({ RemoteSearchResult.JSON_PROPERTY_NAME, RemoteSearchResult.JSON_PROPERTY_PROVIDER_IDS,
-        RemoteSearchResult.JSON_PROPERTY_PRODUCTION_YEAR, RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER,
-        RemoteSearchResult.JSON_PROPERTY_INDEX_NUMBER_END, RemoteSearchResult.JSON_PROPERTY_PARENT_INDEX_NUMBER,
-        RemoteSearchResult.JSON_PROPERTY_PREMIERE_DATE, RemoteSearchResult.JSON_PROPERTY_IMAGE_URL,
-        RemoteSearchResult.JSON_PROPERTY_SEARCH_PROVIDER_NAME, RemoteSearchResult.JSON_PROPERTY_OVERVIEW,
-        RemoteSearchResult.JSON_PROPERTY_ALBUM_ARTIST, RemoteSearchResult.JSON_PROPERTY_ARTISTS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoteSearchResult {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> providerIds;
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_PRODUCTION_YEAR = "ProductionYear";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer productionYear;
+    private @org.eclipse.jdt.annotation.Nullable Integer productionYear;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer indexNumber;
+    private @org.eclipse.jdt.annotation.Nullable Integer indexNumber;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER_END = "IndexNumberEnd";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer indexNumberEnd;
+    private @org.eclipse.jdt.annotation.Nullable Integer indexNumberEnd;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer parentIndexNumber;
+    private @org.eclipse.jdt.annotation.Nullable Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime premiereDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IMAGE_URL = "ImageUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String imageUrl;
+    private @org.eclipse.jdt.annotation.Nullable String imageUrl;
 
     public static final String JSON_PROPERTY_SEARCH_PROVIDER_NAME = "SearchProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String searchProviderName;
+    private @org.eclipse.jdt.annotation.Nullable String searchProviderName;
 
     public static final String JSON_PROPERTY_OVERVIEW = "Overview";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String overview;
+    private @org.eclipse.jdt.annotation.Nullable String overview;
 
     public static final String JSON_PROPERTY_ALBUM_ARTIST = "AlbumArtist";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private RemoteSearchResult albumArtist;
+    private @org.eclipse.jdt.annotation.Nullable RemoteSearchResult albumArtist;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<RemoteSearchResult> artists;
+    private @org.eclipse.jdt.annotation.Nullable List<RemoteSearchResult> artists;
 
     public RemoteSearchResult() {
     }
@@ -110,10 +78,8 @@ public class RemoteSearchResult {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -140,16 +106,14 @@ public class RemoteSearchResult {
      * 
      * @return providerIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public Map<String, String> getProviderIds() {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getProviderIds() {
         return providerIds;
     }
 
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
     public void setProviderIds(@org.eclipse.jdt.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = providerIds;
     }
@@ -164,10 +128,8 @@ public class RemoteSearchResult {
      * 
      * @return productionYear
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PRODUCTION_YEAR)
-    public Integer getProductionYear() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getProductionYear() {
         return productionYear;
     }
 
@@ -186,10 +148,8 @@ public class RemoteSearchResult {
      * 
      * @return indexNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
-    public Integer getIndexNumber() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getIndexNumber() {
         return indexNumber;
     }
 
@@ -208,10 +168,8 @@ public class RemoteSearchResult {
      * 
      * @return indexNumberEnd
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER_END)
-    public Integer getIndexNumberEnd() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getIndexNumberEnd() {
         return indexNumberEnd;
     }
 
@@ -230,10 +188,8 @@ public class RemoteSearchResult {
      * 
      * @return parentIndexNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public Integer getParentIndexNumber() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
@@ -252,10 +208,8 @@ public class RemoteSearchResult {
      * 
      * @return premiereDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
-    public OffsetDateTime getPremiereDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
@@ -274,10 +228,8 @@ public class RemoteSearchResult {
      * 
      * @return imageUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
-    public String getImageUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getImageUrl() {
         return imageUrl;
     }
 
@@ -296,10 +248,8 @@ public class RemoteSearchResult {
      * 
      * @return searchProviderName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEARCH_PROVIDER_NAME)
-    public String getSearchProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getSearchProviderName() {
         return searchProviderName;
     }
 
@@ -318,10 +268,8 @@ public class RemoteSearchResult {
      * 
      * @return overview
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
-    public String getOverview() {
+    public @org.eclipse.jdt.annotation.Nullable String getOverview() {
         return overview;
     }
 
@@ -340,10 +288,8 @@ public class RemoteSearchResult {
      * 
      * @return albumArtist
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTIST)
-    public RemoteSearchResult getAlbumArtist() {
+    public @org.eclipse.jdt.annotation.Nullable RemoteSearchResult getAlbumArtist() {
         return albumArtist;
     }
 
@@ -370,10 +316,8 @@ public class RemoteSearchResult {
      * 
      * @return artists
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARTISTS)
-    public List<RemoteSearchResult> getArtists() {
+    public @org.eclipse.jdt.annotation.Nullable List<RemoteSearchResult> getArtists() {
         return artists;
     }
 
@@ -382,9 +326,6 @@ public class RemoteSearchResult {
         this.artists = artists;
     }
 
-    /**
-     * Return true if this RemoteSearchResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -476,68 +417,119 @@ public class RemoteSearchResult {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProviderIds` to the URL query string
         if (getProviderIds() != null) {
             for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getProviderIds().get(_key),
+                            URLEncoder.encode(String.valueOf(getProviderIds().get(_key)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ProductionYear` to the URL query string
         if (getProductionYear() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProductionYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProductionYear()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProductionYear%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProductionYear()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IndexNumber` to the URL query string
         if (getIndexNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndexNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IndexNumberEnd` to the URL query string
         if (getIndexNumberEnd() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumberEnd%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumberEnd()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumberEnd%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndexNumberEnd()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ParentIndexNumber` to the URL query string
         if (getParentIndexNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getParentIndexNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PremiereDate` to the URL query string
         if (getPremiereDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPremiereDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageUrl` to the URL query string
         if (getImageUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SearchProviderName` to the URL query string
         if (getSearchProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSearchProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSearchProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSearchProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOverview%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOverview()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AlbumArtist` to the URL query string

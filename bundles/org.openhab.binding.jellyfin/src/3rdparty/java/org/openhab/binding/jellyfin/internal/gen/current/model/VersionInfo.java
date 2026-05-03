@@ -12,74 +12,53 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Model.Updates.VersionInfo class.
  */
-@JsonPropertyOrder({ VersionInfo.JSON_PROPERTY_VERSION, VersionInfo.JSON_PROPERTY_VERSION_NUMBER,
-        VersionInfo.JSON_PROPERTY_CHANGELOG, VersionInfo.JSON_PROPERTY_TARGET_ABI, VersionInfo.JSON_PROPERTY_SOURCE_URL,
-        VersionInfo.JSON_PROPERTY_CHECKSUM, VersionInfo.JSON_PROPERTY_TIMESTAMP,
-        VersionInfo.JSON_PROPERTY_REPOSITORY_NAME, VersionInfo.JSON_PROPERTY_REPOSITORY_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class VersionInfo {
     public static final String JSON_PROPERTY_VERSION = "version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_VERSION_NUMBER = "VersionNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String versionNumber;
+    private @org.eclipse.jdt.annotation.Nullable String versionNumber;
 
     public static final String JSON_PROPERTY_CHANGELOG = "changelog";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String changelog;
+    private @org.eclipse.jdt.annotation.Nullable String changelog;
 
     public static final String JSON_PROPERTY_TARGET_ABI = "targetAbi";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String targetAbi;
+    private @org.eclipse.jdt.annotation.Nullable String targetAbi;
 
     public static final String JSON_PROPERTY_SOURCE_URL = "sourceUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String sourceUrl;
+    private @org.eclipse.jdt.annotation.Nullable String sourceUrl;
 
     public static final String JSON_PROPERTY_CHECKSUM = "checksum";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String checksum;
+    private @org.eclipse.jdt.annotation.Nullable String checksum;
 
     public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String timestamp;
+    private @org.eclipse.jdt.annotation.Nullable String timestamp;
 
     public static final String JSON_PROPERTY_REPOSITORY_NAME = "repositoryName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String repositoryName;
+    private @org.eclipse.jdt.annotation.Nullable String repositoryName;
 
     public static final String JSON_PROPERTY_REPOSITORY_URL = "repositoryUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String repositoryUrl;
+    private @org.eclipse.jdt.annotation.Nullable String repositoryUrl;
 
     public VersionInfo() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public VersionInfo(@JsonProperty(JSON_PROPERTY_VERSION_NUMBER) String versionNumber) {
+    public VersionInfo(@JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER) String versionNumber) {
         this();
         this.versionNumber = versionNumber;
     }
@@ -94,10 +73,8 @@ public class VersionInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -111,10 +88,8 @@ public class VersionInfo {
      * 
      * @return versionNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION_NUMBER)
-    public String getVersionNumber() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersionNumber() {
         return versionNumber;
     }
 
@@ -128,10 +103,8 @@ public class VersionInfo {
      * 
      * @return changelog
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
-    public String getChangelog() {
+    public @org.eclipse.jdt.annotation.Nullable String getChangelog() {
         return changelog;
     }
 
@@ -150,10 +123,8 @@ public class VersionInfo {
      * 
      * @return targetAbi
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TARGET_ABI)
-    public String getTargetAbi() {
+    public @org.eclipse.jdt.annotation.Nullable String getTargetAbi() {
         return targetAbi;
     }
 
@@ -172,10 +143,8 @@ public class VersionInfo {
      * 
      * @return sourceUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
-    public String getSourceUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getSourceUrl() {
         return sourceUrl;
     }
 
@@ -194,10 +163,8 @@ public class VersionInfo {
      * 
      * @return checksum
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
-    public String getChecksum() {
+    public @org.eclipse.jdt.annotation.Nullable String getChecksum() {
         return checksum;
     }
 
@@ -216,10 +183,8 @@ public class VersionInfo {
      * 
      * @return timestamp
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TIMESTAMP)
-    public String getTimestamp() {
+    public @org.eclipse.jdt.annotation.Nullable String getTimestamp() {
         return timestamp;
     }
 
@@ -238,10 +203,8 @@ public class VersionInfo {
      * 
      * @return repositoryName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REPOSITORY_NAME)
-    public String getRepositoryName() {
+    public @org.eclipse.jdt.annotation.Nullable String getRepositoryName() {
         return repositoryName;
     }
 
@@ -260,10 +223,8 @@ public class VersionInfo {
      * 
      * @return repositoryUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_REPOSITORY_URL)
-    public String getRepositoryUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getRepositoryUrl() {
         return repositoryUrl;
     }
 
@@ -272,9 +233,6 @@ public class VersionInfo {
         this.repositoryUrl = repositoryUrl;
     }
 
-    /**
-     * Return true if this VersionInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -360,56 +318,101 @@ public class VersionInfo {
 
         // add `version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sversion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sversion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VersionNumber` to the URL query string
         if (getVersionNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersionNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersionNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersionNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersionNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `changelog` to the URL query string
         if (getChangelog() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%schangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%schangelog%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChangelog()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `targetAbi` to the URL query string
         if (getTargetAbi() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%stargetAbi%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTargetAbi()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%stargetAbi%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTargetAbi()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `sourceUrl` to the URL query string
         if (getSourceUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%ssourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%ssourceUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSourceUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `checksum` to the URL query string
         if (getChecksum() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%schecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%schecksum%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChecksum()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `timestamp` to the URL query string
         if (getTimestamp() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%stimestamp%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%stimestamp%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTimestamp()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `repositoryName` to the URL query string
         if (getRepositoryName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%srepositoryName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%srepositoryName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRepositoryName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `repositoryUrl` to the URL query string
         if (getRepositoryUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%srepositoryUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getRepositoryUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%srepositoryUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getRepositoryUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,48 +12,33 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Library type options dto.
  */
-@JsonPropertyOrder({ LibraryTypeOptionsDto.JSON_PROPERTY_TYPE, LibraryTypeOptionsDto.JSON_PROPERTY_METADATA_FETCHERS,
-        LibraryTypeOptionsDto.JSON_PROPERTY_IMAGE_FETCHERS, LibraryTypeOptionsDto.JSON_PROPERTY_SUPPORTED_IMAGE_TYPES,
-        LibraryTypeOptionsDto.JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryTypeOptionsDto {
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String type;
+    private @org.eclipse.jdt.annotation.Nullable String type;
 
     public static final String JSON_PROPERTY_METADATA_FETCHERS = "MetadataFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LibraryOptionInfoDto> metadataFetchers = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<LibraryOptionInfoDto> metadataFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IMAGE_FETCHERS = "ImageFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LibraryOptionInfoDto> imageFetchers = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<LibraryOptionInfoDto> imageFetchers = new ArrayList<>();
 
     public static final String JSON_PROPERTY_SUPPORTED_IMAGE_TYPES = "SupportedImageTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ImageType> supportedImageTypes = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ImageType> supportedImageTypes = new ArrayList<>();
 
     public static final String JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS = "DefaultImageOptions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ImageOption> defaultImageOptions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ImageOption> defaultImageOptions = new ArrayList<>();
 
     public LibraryTypeOptionsDto() {
     }
@@ -68,10 +53,8 @@ public class LibraryTypeOptionsDto {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public String getType() {
+    public @org.eclipse.jdt.annotation.Nullable String getType() {
         return type;
     }
 
@@ -99,10 +82,8 @@ public class LibraryTypeOptionsDto {
      * 
      * @return metadataFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHERS)
-    public List<LibraryOptionInfoDto> getMetadataFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<LibraryOptionInfoDto> getMetadataFetchers() {
         return metadataFetchers;
     }
 
@@ -130,10 +111,8 @@ public class LibraryTypeOptionsDto {
      * 
      * @return imageFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHERS)
-    public List<LibraryOptionInfoDto> getImageFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<LibraryOptionInfoDto> getImageFetchers() {
         return imageFetchers;
     }
 
@@ -161,10 +140,8 @@ public class LibraryTypeOptionsDto {
      * 
      * @return supportedImageTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUPPORTED_IMAGE_TYPES)
-    public List<ImageType> getSupportedImageTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<ImageType> getSupportedImageTypes() {
         return supportedImageTypes;
     }
 
@@ -192,10 +169,8 @@ public class LibraryTypeOptionsDto {
      * 
      * @return defaultImageOptions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DEFAULT_IMAGE_OPTIONS)
-    public List<ImageOption> getDefaultImageOptions() {
+    public @org.eclipse.jdt.annotation.Nullable List<ImageOption> getDefaultImageOptions() {
         return defaultImageOptions;
     }
 
@@ -204,9 +179,6 @@ public class LibraryTypeOptionsDto {
         this.defaultImageOptions = defaultImageOptions;
     }
 
-    /**
-     * Return true if this LibraryTypeOptionsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -283,8 +255,13 @@ public class LibraryTypeOptionsDto {
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataFetchers` to the URL query string
@@ -317,11 +294,17 @@ public class LibraryTypeOptionsDto {
         if (getSupportedImageTypes() != null) {
             for (int i = 0; i < getSupportedImageTypes().size(); i++) {
                 if (getSupportedImageTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSupportedImageTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sSupportedImageTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getSupportedImageTypes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

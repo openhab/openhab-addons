@@ -12,108 +12,65 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * RemoteSubtitleInfo
  */
-@JsonPropertyOrder({ RemoteSubtitleInfo.JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME,
-        RemoteSubtitleInfo.JSON_PROPERTY_ID, RemoteSubtitleInfo.JSON_PROPERTY_PROVIDER_NAME,
-        RemoteSubtitleInfo.JSON_PROPERTY_NAME, RemoteSubtitleInfo.JSON_PROPERTY_FORMAT,
-        RemoteSubtitleInfo.JSON_PROPERTY_AUTHOR, RemoteSubtitleInfo.JSON_PROPERTY_COMMENT,
-        RemoteSubtitleInfo.JSON_PROPERTY_DATE_CREATED, RemoteSubtitleInfo.JSON_PROPERTY_COMMUNITY_RATING,
-        RemoteSubtitleInfo.JSON_PROPERTY_FRAME_RATE, RemoteSubtitleInfo.JSON_PROPERTY_DOWNLOAD_COUNT,
-        RemoteSubtitleInfo.JSON_PROPERTY_IS_HASH_MATCH, RemoteSubtitleInfo.JSON_PROPERTY_AI_TRANSLATED,
-        RemoteSubtitleInfo.JSON_PROPERTY_MACHINE_TRANSLATED, RemoteSubtitleInfo.JSON_PROPERTY_FORCED,
-        RemoteSubtitleInfo.JSON_PROPERTY_HEARING_IMPAIRED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoteSubtitleInfo {
     public static final String JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME = "ThreeLetterISOLanguageName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String threeLetterISOLanguageName;
+    private @org.eclipse.jdt.annotation.Nullable String threeLetterISOLanguageName;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_PROVIDER_NAME = "ProviderName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String providerName;
+    private @org.eclipse.jdt.annotation.Nullable String providerName;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_FORMAT = "Format";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String format;
+    private @org.eclipse.jdt.annotation.Nullable String format;
 
     public static final String JSON_PROPERTY_AUTHOR = "Author";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String author;
+    private @org.eclipse.jdt.annotation.Nullable String author;
 
     public static final String JSON_PROPERTY_COMMENT = "Comment";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String comment;
+    private @org.eclipse.jdt.annotation.Nullable String comment;
 
     public static final String JSON_PROPERTY_DATE_CREATED = "DateCreated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateCreated;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateCreated;
 
     public static final String JSON_PROPERTY_COMMUNITY_RATING = "CommunityRating";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Float communityRating;
+    private @org.eclipse.jdt.annotation.Nullable Float communityRating;
 
     public static final String JSON_PROPERTY_FRAME_RATE = "FrameRate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Float frameRate;
+    private @org.eclipse.jdt.annotation.Nullable Float frameRate;
 
     public static final String JSON_PROPERTY_DOWNLOAD_COUNT = "DownloadCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer downloadCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer downloadCount;
 
     public static final String JSON_PROPERTY_IS_HASH_MATCH = "IsHashMatch";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isHashMatch;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isHashMatch;
 
     public static final String JSON_PROPERTY_AI_TRANSLATED = "AiTranslated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean aiTranslated;
+    private @org.eclipse.jdt.annotation.Nullable Boolean aiTranslated;
 
     public static final String JSON_PROPERTY_MACHINE_TRANSLATED = "MachineTranslated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean machineTranslated;
+    private @org.eclipse.jdt.annotation.Nullable Boolean machineTranslated;
 
     public static final String JSON_PROPERTY_FORCED = "Forced";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean forced;
+    private @org.eclipse.jdt.annotation.Nullable Boolean forced;
 
     public static final String JSON_PROPERTY_HEARING_IMPAIRED = "HearingImpaired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hearingImpaired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hearingImpaired;
 
     public RemoteSubtitleInfo() {
     }
@@ -129,10 +86,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return threeLetterISOLanguageName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_THREE_LETTER_I_S_O_LANGUAGE_NAME)
-    public String getThreeLetterISOLanguageName() {
+    public @org.eclipse.jdt.annotation.Nullable String getThreeLetterISOLanguageName() {
         return threeLetterISOLanguageName;
     }
 
@@ -151,10 +106,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -173,10 +126,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return providerName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_NAME)
-    public String getProviderName() {
+    public @org.eclipse.jdt.annotation.Nullable String getProviderName() {
         return providerName;
     }
 
@@ -195,10 +146,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -217,10 +166,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return format
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FORMAT)
-    public String getFormat() {
+    public @org.eclipse.jdt.annotation.Nullable String getFormat() {
         return format;
     }
 
@@ -239,10 +186,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return author
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUTHOR)
-    public String getAuthor() {
+    public @org.eclipse.jdt.annotation.Nullable String getAuthor() {
         return author;
     }
 
@@ -261,10 +206,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return comment
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMENT)
-    public String getComment() {
+    public @org.eclipse.jdt.annotation.Nullable String getComment() {
         return comment;
     }
 
@@ -283,10 +226,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return dateCreated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_CREATED)
-    public OffsetDateTime getDateCreated() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateCreated() {
         return dateCreated;
     }
 
@@ -305,10 +246,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return communityRating
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COMMUNITY_RATING)
-    public Float getCommunityRating() {
+    public @org.eclipse.jdt.annotation.Nullable Float getCommunityRating() {
         return communityRating;
     }
 
@@ -327,10 +266,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return frameRate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FRAME_RATE)
-    public Float getFrameRate() {
+    public @org.eclipse.jdt.annotation.Nullable Float getFrameRate() {
         return frameRate;
     }
 
@@ -349,10 +286,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return downloadCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DOWNLOAD_COUNT)
-    public Integer getDownloadCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getDownloadCount() {
         return downloadCount;
     }
 
@@ -371,10 +306,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return isHashMatch
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_HASH_MATCH)
-    public Boolean getIsHashMatch() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsHashMatch() {
         return isHashMatch;
     }
 
@@ -393,10 +326,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return aiTranslated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AI_TRANSLATED)
-    public Boolean getAiTranslated() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getAiTranslated() {
         return aiTranslated;
     }
 
@@ -415,10 +346,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return machineTranslated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MACHINE_TRANSLATED)
-    public Boolean getMachineTranslated() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getMachineTranslated() {
         return machineTranslated;
     }
 
@@ -437,10 +366,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return forced
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FORCED)
-    public Boolean getForced() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getForced() {
         return forced;
     }
 
@@ -459,10 +386,8 @@ public class RemoteSubtitleInfo {
      * 
      * @return hearingImpaired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HEARING_IMPAIRED)
-    public Boolean getHearingImpaired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHearingImpaired() {
         return hearingImpaired;
     }
 
@@ -471,9 +396,6 @@ public class RemoteSubtitleInfo {
         this.hearingImpaired = hearingImpaired;
     }
 
-    /**
-     * Return true if this RemoteSubtitleInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -574,98 +496,179 @@ public class RemoteSubtitleInfo {
 
         // add `ThreeLetterISOLanguageName` to the URL query string
         if (getThreeLetterISOLanguageName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getThreeLetterISOLanguageName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sThreeLetterISOLanguageName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getThreeLetterISOLanguageName()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProviderName` to the URL query string
         if (getProviderName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProviderName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProviderName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Format` to the URL query string
         if (getFormat() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFormat()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFormat%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFormat()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Author` to the URL query string
         if (getAuthor() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAuthor()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAuthor%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAuthor()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Comment` to the URL query string
         if (getComment() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getComment()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sComment%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getComment()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DateCreated` to the URL query string
         if (getDateCreated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateCreated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateCreated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateCreated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CommunityRating` to the URL query string
         if (getCommunityRating() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCommunityRating()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCommunityRating%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCommunityRating()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `FrameRate` to the URL query string
         if (getFrameRate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sFrameRate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getFrameRate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sFrameRate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getFrameRate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DownloadCount` to the URL query string
         if (getDownloadCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDownloadCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDownloadCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDownloadCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsHashMatch` to the URL query string
         if (getIsHashMatch() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsHashMatch%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHashMatch()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsHashMatch%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsHashMatch()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AiTranslated` to the URL query string
         if (getAiTranslated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAiTranslated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAiTranslated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAiTranslated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAiTranslated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MachineTranslated` to the URL query string
         if (getMachineTranslated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMachineTranslated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMachineTranslated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMachineTranslated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMachineTranslated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Forced` to the URL query string
         if (getForced() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sForced%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getForced()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sForced%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getForced()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HearingImpaired` to the URL query string
         if (getHearingImpaired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHearingImpaired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHearingImpaired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHearingImpaired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHearingImpaired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

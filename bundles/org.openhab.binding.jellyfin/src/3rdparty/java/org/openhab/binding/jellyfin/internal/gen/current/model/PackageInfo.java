@@ -12,64 +12,43 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class PackageInfo.
  */
-@JsonPropertyOrder({ PackageInfo.JSON_PROPERTY_NAME, PackageInfo.JSON_PROPERTY_DESCRIPTION,
-        PackageInfo.JSON_PROPERTY_OVERVIEW, PackageInfo.JSON_PROPERTY_OWNER, PackageInfo.JSON_PROPERTY_CATEGORY,
-        PackageInfo.JSON_PROPERTY_GUID, PackageInfo.JSON_PROPERTY_VERSIONS, PackageInfo.JSON_PROPERTY_IMAGE_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PackageInfo {
     public static final String JSON_PROPERTY_NAME = "name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "description";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String description;
+    private @org.eclipse.jdt.annotation.Nullable String description;
 
     public static final String JSON_PROPERTY_OVERVIEW = "overview";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String overview;
+    private @org.eclipse.jdt.annotation.Nullable String overview;
 
     public static final String JSON_PROPERTY_OWNER = "owner";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String owner;
+    private @org.eclipse.jdt.annotation.Nullable String owner;
 
     public static final String JSON_PROPERTY_CATEGORY = "category";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String category;
+    private @org.eclipse.jdt.annotation.Nullable String category;
 
     public static final String JSON_PROPERTY_GUID = "guid";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID guid;
+    private @org.eclipse.jdt.annotation.Nullable UUID guid;
 
     public static final String JSON_PROPERTY_VERSIONS = "versions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<VersionInfo> versions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<VersionInfo> versions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IMAGE_URL = "imageUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String imageUrl;
+    private @org.eclipse.jdt.annotation.Nullable String imageUrl;
 
     public PackageInfo() {
     }
@@ -84,10 +63,8 @@ public class PackageInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -106,10 +83,8 @@ public class PackageInfo {
      * 
      * @return description
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
-    public String getDescription() {
+    public @org.eclipse.jdt.annotation.Nullable String getDescription() {
         return description;
     }
 
@@ -128,10 +103,8 @@ public class PackageInfo {
      * 
      * @return overview
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OVERVIEW)
-    public String getOverview() {
+    public @org.eclipse.jdt.annotation.Nullable String getOverview() {
         return overview;
     }
 
@@ -150,10 +123,8 @@ public class PackageInfo {
      * 
      * @return owner
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_OWNER)
-    public String getOwner() {
+    public @org.eclipse.jdt.annotation.Nullable String getOwner() {
         return owner;
     }
 
@@ -172,10 +143,8 @@ public class PackageInfo {
      * 
      * @return category
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CATEGORY)
-    public String getCategory() {
+    public @org.eclipse.jdt.annotation.Nullable String getCategory() {
         return category;
     }
 
@@ -195,10 +164,8 @@ public class PackageInfo {
      * 
      * @return guid
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GUID)
-    public UUID getGuid() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGuid() {
         return guid;
     }
 
@@ -225,10 +192,8 @@ public class PackageInfo {
      * 
      * @return versions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSIONS)
-    public List<VersionInfo> getVersions() {
+    public @org.eclipse.jdt.annotation.Nullable List<VersionInfo> getVersions() {
         return versions;
     }
 
@@ -247,10 +212,8 @@ public class PackageInfo {
      * 
      * @return imageUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_URL)
-    public String getImageUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getImageUrl() {
         return imageUrl;
     }
 
@@ -259,9 +222,6 @@ public class PackageInfo {
         this.imageUrl = imageUrl;
     }
 
-    /**
-     * Return true if this PackageInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -341,38 +301,68 @@ public class PackageInfo {
 
         // add `name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sdescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sdescription%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDescription()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `overview` to the URL query string
         if (getOverview() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%soverview%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOverview()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%soverview%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOverview()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `owner` to the URL query string
         if (getOwner() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sowner%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOwner()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sowner%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOwner()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `category` to the URL query string
         if (getCategory() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%scategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%scategory%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCategory()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `guid` to the URL query string
         if (getGuid() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sguid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sguid%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGuid()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `versions` to the URL query string
@@ -390,8 +380,13 @@ public class PackageInfo {
 
         // add `imageUrl` to the URL query string
         if (getImageUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%simageUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%simageUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

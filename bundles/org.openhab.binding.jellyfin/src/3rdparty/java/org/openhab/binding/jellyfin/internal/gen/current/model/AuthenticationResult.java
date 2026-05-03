@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A class representing an authentication result.
  */
-@JsonPropertyOrder({ AuthenticationResult.JSON_PROPERTY_USER, AuthenticationResult.JSON_PROPERTY_SESSION_INFO,
-        AuthenticationResult.JSON_PROPERTY_ACCESS_TOKEN, AuthenticationResult.JSON_PROPERTY_SERVER_ID })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class AuthenticationResult {
     public static final String JSON_PROPERTY_USER = "User";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UserDto user;
+    private @org.eclipse.jdt.annotation.Nullable UserDto user;
 
     public static final String JSON_PROPERTY_SESSION_INFO = "SessionInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private SessionInfoDto sessionInfo;
+    private @org.eclipse.jdt.annotation.Nullable SessionInfoDto sessionInfo;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String accessToken;
+    private @org.eclipse.jdt.annotation.Nullable String accessToken;
 
     public static final String JSON_PROPERTY_SERVER_ID = "ServerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String serverId;
+    private @org.eclipse.jdt.annotation.Nullable String serverId;
 
     public AuthenticationResult() {
     }
@@ -60,10 +48,8 @@ public class AuthenticationResult {
      * 
      * @return user
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER)
-    public UserDto getUser() {
+    public @org.eclipse.jdt.annotation.Nullable UserDto getUser() {
         return user;
     }
 
@@ -82,10 +68,8 @@ public class AuthenticationResult {
      * 
      * @return sessionInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SESSION_INFO)
-    public SessionInfoDto getSessionInfo() {
+    public @org.eclipse.jdt.annotation.Nullable SessionInfoDto getSessionInfo() {
         return sessionInfo;
     }
 
@@ -104,10 +88,8 @@ public class AuthenticationResult {
      * 
      * @return accessToken
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
-    public String getAccessToken() {
+    public @org.eclipse.jdt.annotation.Nullable String getAccessToken() {
         return accessToken;
     }
 
@@ -126,10 +108,8 @@ public class AuthenticationResult {
      * 
      * @return serverId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERVER_ID)
-    public String getServerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getServerId() {
         return serverId;
     }
 
@@ -138,9 +118,6 @@ public class AuthenticationResult {
         this.serverId = serverId;
     }
 
-    /**
-     * Return true if this AuthenticationResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -225,14 +202,24 @@ public class AuthenticationResult {
 
         // add `AccessToken` to the URL query string
         if (getAccessToken() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAccessToken()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ServerId` to the URL query string
         if (getServerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getServerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sServerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getServerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

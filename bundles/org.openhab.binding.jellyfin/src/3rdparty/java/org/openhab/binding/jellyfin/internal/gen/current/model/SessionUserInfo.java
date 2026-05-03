@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SessionUserInfo.
  */
-@JsonPropertyOrder({ SessionUserInfo.JSON_PROPERTY_USER_ID, SessionUserInfo.JSON_PROPERTY_USER_NAME })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionUserInfo {
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_USER_NAME = "UserName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String userName;
+    private @org.eclipse.jdt.annotation.Nullable String userName;
 
     public SessionUserInfo() {
     }
@@ -50,10 +43,8 @@ public class SessionUserInfo {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -72,10 +63,8 @@ public class SessionUserInfo {
      * 
      * @return userName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_NAME)
-    public String getUserName() {
+    public @org.eclipse.jdt.annotation.Nullable String getUserName() {
         return userName;
     }
 
@@ -84,9 +73,6 @@ public class SessionUserInfo {
         this.userName = userName;
     }
 
-    /**
-     * Return true if this SessionUserInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -157,14 +143,24 @@ public class SessionUserInfo {
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UserName` to the URL query string
         if (getUserName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

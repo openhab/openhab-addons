@@ -12,29 +12,22 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * EndPointInfo
  */
-@JsonPropertyOrder({ EndPointInfo.JSON_PROPERTY_IS_LOCAL, EndPointInfo.JSON_PROPERTY_IS_IN_NETWORK })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class EndPointInfo {
     public static final String JSON_PROPERTY_IS_LOCAL = "IsLocal";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isLocal;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isLocal;
 
     public static final String JSON_PROPERTY_IS_IN_NETWORK = "IsInNetwork";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isInNetwork;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isInNetwork;
 
     public EndPointInfo() {
     }
@@ -49,10 +42,8 @@ public class EndPointInfo {
      * 
      * @return isLocal
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_LOCAL)
-    public Boolean getIsLocal() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsLocal() {
         return isLocal;
     }
 
@@ -71,10 +62,8 @@ public class EndPointInfo {
      * 
      * @return isInNetwork
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_IN_NETWORK)
-    public Boolean getIsInNetwork() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsInNetwork() {
         return isInNetwork;
     }
 
@@ -83,9 +72,6 @@ public class EndPointInfo {
         this.isInNetwork = isInNetwork;
     }
 
-    /**
-     * Return true if this EndPointInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class EndPointInfo {
 
         // add `IsLocal` to the URL query string
         if (getIsLocal() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsLocal%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsLocal()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsLocal%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsLocal()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsInNetwork` to the URL query string
         if (getIsInNetwork() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsInNetwork%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsInNetwork()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsInNetwork%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsInNetwork()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

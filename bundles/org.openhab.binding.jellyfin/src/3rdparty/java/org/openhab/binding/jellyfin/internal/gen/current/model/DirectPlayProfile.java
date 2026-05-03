@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Defines the MediaBrowser.Model.Dlna.DirectPlayProfile.
  */
-@JsonPropertyOrder({ DirectPlayProfile.JSON_PROPERTY_CONTAINER, DirectPlayProfile.JSON_PROPERTY_AUDIO_CODEC,
-        DirectPlayProfile.JSON_PROPERTY_VIDEO_CODEC, DirectPlayProfile.JSON_PROPERTY_TYPE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DirectPlayProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String container;
+    private @org.eclipse.jdt.annotation.Nullable String container;
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String audioCodec;
+    private @org.eclipse.jdt.annotation.Nullable String audioCodec;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String videoCodec;
+    private @org.eclipse.jdt.annotation.Nullable String videoCodec;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DlnaProfileType type;
+    private @org.eclipse.jdt.annotation.Nullable DlnaProfileType type;
 
     public DirectPlayProfile() {
     }
@@ -60,10 +48,8 @@ public class DirectPlayProfile {
      * 
      * @return container
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTAINER)
-    public String getContainer() {
+    public @org.eclipse.jdt.annotation.Nullable String getContainer() {
         return container;
     }
 
@@ -82,10 +68,8 @@ public class DirectPlayProfile {
      * 
      * @return audioCodec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC)
-    public String getAudioCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getAudioCodec() {
         return audioCodec;
     }
 
@@ -104,10 +88,8 @@ public class DirectPlayProfile {
      * 
      * @return videoCodec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC)
-    public String getVideoCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getVideoCodec() {
         return videoCodec;
     }
 
@@ -126,10 +108,8 @@ public class DirectPlayProfile {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public DlnaProfileType getType() {
+    public @org.eclipse.jdt.annotation.Nullable DlnaProfileType getType() {
         return type;
     }
 
@@ -138,9 +118,6 @@ public class DirectPlayProfile {
         this.type = type;
     }
 
-    /**
-     * Return true if this DirectPlayProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class DirectPlayProfile {
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContainer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AudioCodec` to the URL query string
         if (getAudioCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VideoCodec` to the URL query string
         if (getVideoCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVideoCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

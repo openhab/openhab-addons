@@ -12,115 +12,70 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A class for transcoding profile information. Note for client developers: Conditions defined in
  * MediaBrowser.Model.Dlna.CodecProfile has higher priority and can override values defined here.
  */
-@JsonPropertyOrder({ TranscodingProfile.JSON_PROPERTY_CONTAINER, TranscodingProfile.JSON_PROPERTY_TYPE,
-        TranscodingProfile.JSON_PROPERTY_VIDEO_CODEC, TranscodingProfile.JSON_PROPERTY_AUDIO_CODEC,
-        TranscodingProfile.JSON_PROPERTY_PROTOCOL, TranscodingProfile.JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH,
-        TranscodingProfile.JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE, TranscodingProfile.JSON_PROPERTY_TRANSCODE_SEEK_INFO,
-        TranscodingProfile.JSON_PROPERTY_COPY_TIMESTAMPS, TranscodingProfile.JSON_PROPERTY_CONTEXT,
-        TranscodingProfile.JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST,
-        TranscodingProfile.JSON_PROPERTY_MAX_AUDIO_CHANNELS, TranscodingProfile.JSON_PROPERTY_MIN_SEGMENTS,
-        TranscodingProfile.JSON_PROPERTY_SEGMENT_LENGTH, TranscodingProfile.JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES,
-        TranscodingProfile.JSON_PROPERTY_CONDITIONS, TranscodingProfile.JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TranscodingProfile {
     public static final String JSON_PROPERTY_CONTAINER = "Container";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String container;
+    private @org.eclipse.jdt.annotation.Nullable String container;
 
     public static final String JSON_PROPERTY_TYPE = "Type";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private DlnaProfileType type;
+    private @org.eclipse.jdt.annotation.Nullable DlnaProfileType type;
 
     public static final String JSON_PROPERTY_VIDEO_CODEC = "VideoCodec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String videoCodec;
+    private @org.eclipse.jdt.annotation.Nullable String videoCodec;
 
     public static final String JSON_PROPERTY_AUDIO_CODEC = "AudioCodec";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String audioCodec;
+    private @org.eclipse.jdt.annotation.Nullable String audioCodec;
 
     public static final String JSON_PROPERTY_PROTOCOL = "Protocol";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private MediaStreamProtocol protocol;
+    private @org.eclipse.jdt.annotation.Nullable MediaStreamProtocol protocol;
 
     public static final String JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH = "EstimateContentLength";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean estimateContentLength = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean estimateContentLength = false;
 
     public static final String JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE = "EnableMpegtsM2TsMode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableMpegtsM2TsMode = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableMpegtsM2TsMode = false;
 
     public static final String JSON_PROPERTY_TRANSCODE_SEEK_INFO = "TranscodeSeekInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
+    private @org.eclipse.jdt.annotation.Nullable TranscodeSeekInfo transcodeSeekInfo = TranscodeSeekInfo.AUTO;
 
     public static final String JSON_PROPERTY_COPY_TIMESTAMPS = "CopyTimestamps";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean copyTimestamps = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean copyTimestamps = false;
 
     public static final String JSON_PROPERTY_CONTEXT = "Context";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private EncodingContext context = EncodingContext.STREAMING;
+    private @org.eclipse.jdt.annotation.Nullable EncodingContext context = EncodingContext.STREAMING;
 
     public static final String JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST = "EnableSubtitlesInManifest";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableSubtitlesInManifest = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableSubtitlesInManifest = false;
 
     public static final String JSON_PROPERTY_MAX_AUDIO_CHANNELS = "MaxAudioChannels";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String maxAudioChannels;
+    private @org.eclipse.jdt.annotation.Nullable String maxAudioChannels;
 
     public static final String JSON_PROPERTY_MIN_SEGMENTS = "MinSegments";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer minSegments = 0;
+    private @org.eclipse.jdt.annotation.Nullable Integer minSegments = 0;
 
     public static final String JSON_PROPERTY_SEGMENT_LENGTH = "SegmentLength";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer segmentLength = 0;
+    private @org.eclipse.jdt.annotation.Nullable Integer segmentLength = 0;
 
     public static final String JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES = "BreakOnNonKeyFrames";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean breakOnNonKeyFrames = false;
+    private @org.eclipse.jdt.annotation.Nullable Boolean breakOnNonKeyFrames = false;
 
     public static final String JSON_PROPERTY_CONDITIONS = "Conditions";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ProfileCondition> conditions = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<ProfileCondition> conditions = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING = "EnableAudioVbrEncoding";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableAudioVbrEncoding = true;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableAudioVbrEncoding = true;
 
     public TranscodingProfile() {
     }
@@ -135,10 +90,8 @@ public class TranscodingProfile {
      * 
      * @return container
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTAINER)
-    public String getContainer() {
+    public @org.eclipse.jdt.annotation.Nullable String getContainer() {
         return container;
     }
 
@@ -157,10 +110,8 @@ public class TranscodingProfile {
      * 
      * @return type
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TYPE)
-    public DlnaProfileType getType() {
+    public @org.eclipse.jdt.annotation.Nullable DlnaProfileType getType() {
         return type;
     }
 
@@ -179,10 +130,8 @@ public class TranscodingProfile {
      * 
      * @return videoCodec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VIDEO_CODEC)
-    public String getVideoCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getVideoCodec() {
         return videoCodec;
     }
 
@@ -201,10 +150,8 @@ public class TranscodingProfile {
      * 
      * @return audioCodec
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_AUDIO_CODEC)
-    public String getAudioCodec() {
+    public @org.eclipse.jdt.annotation.Nullable String getAudioCodec() {
         return audioCodec;
     }
 
@@ -223,10 +170,8 @@ public class TranscodingProfile {
      * 
      * @return protocol
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROTOCOL)
-    public MediaStreamProtocol getProtocol() {
+    public @org.eclipse.jdt.annotation.Nullable MediaStreamProtocol getProtocol() {
         return protocol;
     }
 
@@ -246,10 +191,8 @@ public class TranscodingProfile {
      * 
      * @return estimateContentLength
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ESTIMATE_CONTENT_LENGTH)
-    public Boolean getEstimateContentLength() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEstimateContentLength() {
         return estimateContentLength;
     }
 
@@ -268,10 +211,8 @@ public class TranscodingProfile {
      * 
      * @return enableMpegtsM2TsMode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_MPEGTS_M2_TS_MODE)
-    public Boolean getEnableMpegtsM2TsMode() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableMpegtsM2TsMode() {
         return enableMpegtsM2TsMode;
     }
 
@@ -291,10 +232,8 @@ public class TranscodingProfile {
      * 
      * @return transcodeSeekInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODE_SEEK_INFO)
-    public TranscodeSeekInfo getTranscodeSeekInfo() {
+    public @org.eclipse.jdt.annotation.Nullable TranscodeSeekInfo getTranscodeSeekInfo() {
         return transcodeSeekInfo;
     }
 
@@ -313,10 +252,8 @@ public class TranscodingProfile {
      * 
      * @return copyTimestamps
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COPY_TIMESTAMPS)
-    public Boolean getCopyTimestamps() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getCopyTimestamps() {
         return copyTimestamps;
     }
 
@@ -335,10 +272,8 @@ public class TranscodingProfile {
      * 
      * @return context
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONTEXT)
-    public EncodingContext getContext() {
+    public @org.eclipse.jdt.annotation.Nullable EncodingContext getContext() {
         return context;
     }
 
@@ -358,10 +293,8 @@ public class TranscodingProfile {
      * 
      * @return enableSubtitlesInManifest
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_SUBTITLES_IN_MANIFEST)
-    public Boolean getEnableSubtitlesInManifest() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableSubtitlesInManifest() {
         return enableSubtitlesInManifest;
     }
 
@@ -380,10 +313,8 @@ public class TranscodingProfile {
      * 
      * @return maxAudioChannels
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_AUDIO_CHANNELS)
-    public String getMaxAudioChannels() {
+    public @org.eclipse.jdt.annotation.Nullable String getMaxAudioChannels() {
         return maxAudioChannels;
     }
 
@@ -402,10 +333,8 @@ public class TranscodingProfile {
      * 
      * @return minSegments
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MIN_SEGMENTS)
-    public Integer getMinSegments() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMinSegments() {
         return minSegments;
     }
 
@@ -424,10 +353,8 @@ public class TranscodingProfile {
      * 
      * @return segmentLength
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SEGMENT_LENGTH)
-    public Integer getSegmentLength() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSegmentLength() {
         return segmentLength;
     }
 
@@ -446,10 +373,8 @@ public class TranscodingProfile {
      * 
      * @return breakOnNonKeyFrames
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BREAK_ON_NON_KEY_FRAMES)
-    public Boolean getBreakOnNonKeyFrames() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getBreakOnNonKeyFrames() {
         return breakOnNonKeyFrames;
     }
 
@@ -476,10 +401,8 @@ public class TranscodingProfile {
      * 
      * @return conditions
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CONDITIONS)
-    public List<ProfileCondition> getConditions() {
+    public @org.eclipse.jdt.annotation.Nullable List<ProfileCondition> getConditions() {
         return conditions;
     }
 
@@ -499,10 +422,8 @@ public class TranscodingProfile {
      * 
      * @return enableAudioVbrEncoding
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_AUDIO_VBR_ENCODING)
-    public Boolean getEnableAudioVbrEncoding() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableAudioVbrEncoding() {
         return enableAudioVbrEncoding;
     }
 
@@ -511,9 +432,6 @@ public class TranscodingProfile {
         this.enableAudioVbrEncoding = enableAudioVbrEncoding;
     }
 
-    /**
-     * Return true if this TranscodingProfile object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -616,92 +534,170 @@ public class TranscodingProfile {
 
         // add `Container` to the URL query string
         if (getContainer() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContainer()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContainer%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContainer()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Type` to the URL query string
         if (getType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `VideoCodec` to the URL query string
         if (getVideoCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVideoCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVideoCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVideoCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AudioCodec` to the URL query string
         if (getAudioCodec() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAudioCodec()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAudioCodec%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAudioCodec()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Protocol` to the URL query string
         if (getProtocol() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProtocol%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProtocol()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProtocol%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProtocol()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EstimateContentLength` to the URL query string
         if (getEstimateContentLength() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEstimateContentLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEstimateContentLength()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEstimateContentLength%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEstimateContentLength()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableMpegtsM2TsMode` to the URL query string
         if (getEnableMpegtsM2TsMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableMpegtsM2TsMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableMpegtsM2TsMode()))));
+            try {
+                joiner.add(
+                        String.format(java.util.Locale.ROOT, "%sEnableMpegtsM2TsMode%s=%s", prefix, suffix, URLEncoder
+                                .encode(String.valueOf(getEnableMpegtsM2TsMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TranscodeSeekInfo` to the URL query string
         if (getTranscodeSeekInfo() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodeSeekInfo%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTranscodeSeekInfo()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTranscodeSeekInfo%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTranscodeSeekInfo()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CopyTimestamps` to the URL query string
         if (getCopyTimestamps() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCopyTimestamps%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCopyTimestamps()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCopyTimestamps%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCopyTimestamps()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Context` to the URL query string
         if (getContext() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sContext%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getContext()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sContext%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getContext()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableSubtitlesInManifest` to the URL query string
         if (getEnableSubtitlesInManifest() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitlesInManifest%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableSubtitlesInManifest()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableSubtitlesInManifest%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableSubtitlesInManifest()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxAudioChannels` to the URL query string
         if (getMaxAudioChannels() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxAudioChannels()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxAudioChannels%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxAudioChannels()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MinSegments` to the URL query string
         if (getMinSegments() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMinSegments%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinSegments()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMinSegments%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMinSegments()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SegmentLength` to the URL query string
         if (getSegmentLength() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSegmentLength%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSegmentLength()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSegmentLength%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSegmentLength()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BreakOnNonKeyFrames` to the URL query string
         if (getBreakOnNonKeyFrames() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBreakOnNonKeyFrames%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBreakOnNonKeyFrames()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBreakOnNonKeyFrames%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBreakOnNonKeyFrames()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Conditions` to the URL query string
@@ -719,8 +715,14 @@ public class TranscodingProfile {
 
         // add `EnableAudioVbrEncoding` to the URL query string
         if (getEnableAudioVbrEncoding() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioVbrEncoding%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableAudioVbrEncoding()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableAudioVbrEncoding%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableAudioVbrEncoding()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,92 +21,55 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * SongInfo
  */
-@JsonPropertyOrder({ SongInfo.JSON_PROPERTY_NAME, SongInfo.JSON_PROPERTY_ORIGINAL_TITLE, SongInfo.JSON_PROPERTY_PATH,
-        SongInfo.JSON_PROPERTY_METADATA_LANGUAGE, SongInfo.JSON_PROPERTY_METADATA_COUNTRY_CODE,
-        SongInfo.JSON_PROPERTY_PROVIDER_IDS, SongInfo.JSON_PROPERTY_YEAR, SongInfo.JSON_PROPERTY_INDEX_NUMBER,
-        SongInfo.JSON_PROPERTY_PARENT_INDEX_NUMBER, SongInfo.JSON_PROPERTY_PREMIERE_DATE,
-        SongInfo.JSON_PROPERTY_IS_AUTOMATED, SongInfo.JSON_PROPERTY_ALBUM_ARTISTS, SongInfo.JSON_PROPERTY_ALBUM,
-        SongInfo.JSON_PROPERTY_ARTISTS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SongInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ORIGINAL_TITLE = "OriginalTitle";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String originalTitle;
+    private @org.eclipse.jdt.annotation.Nullable String originalTitle;
 
     public static final String JSON_PROPERTY_PATH = "Path";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String path;
+    private @org.eclipse.jdt.annotation.Nullable String path;
 
     public static final String JSON_PROPERTY_METADATA_LANGUAGE = "MetadataLanguage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String metadataLanguage;
+    private @org.eclipse.jdt.annotation.Nullable String metadataLanguage;
 
     public static final String JSON_PROPERTY_METADATA_COUNTRY_CODE = "MetadataCountryCode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String metadataCountryCode;
+    private @org.eclipse.jdt.annotation.Nullable String metadataCountryCode;
 
     public static final String JSON_PROPERTY_PROVIDER_IDS = "ProviderIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Map<String, String> providerIds;
+    private @org.eclipse.jdt.annotation.Nullable Map<String, String> providerIds;
 
     public static final String JSON_PROPERTY_YEAR = "Year";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer year;
+    private @org.eclipse.jdt.annotation.Nullable Integer year;
 
     public static final String JSON_PROPERTY_INDEX_NUMBER = "IndexNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer indexNumber;
+    private @org.eclipse.jdt.annotation.Nullable Integer indexNumber;
 
     public static final String JSON_PROPERTY_PARENT_INDEX_NUMBER = "ParentIndexNumber";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer parentIndexNumber;
+    private @org.eclipse.jdt.annotation.Nullable Integer parentIndexNumber;
 
     public static final String JSON_PROPERTY_PREMIERE_DATE = "PremiereDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime premiereDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime premiereDate;
 
     public static final String JSON_PROPERTY_IS_AUTOMATED = "IsAutomated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isAutomated;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isAutomated;
 
     public static final String JSON_PROPERTY_ALBUM_ARTISTS = "AlbumArtists";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> albumArtists;
+    private @org.eclipse.jdt.annotation.Nullable List<String> albumArtists;
 
     public static final String JSON_PROPERTY_ALBUM = "Album";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String album;
+    private @org.eclipse.jdt.annotation.Nullable String album;
 
     public static final String JSON_PROPERTY_ARTISTS = "Artists";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> artists;
+    private @org.eclipse.jdt.annotation.Nullable List<String> artists;
 
     public SongInfo() {
     }
@@ -120,10 +84,8 @@ public class SongInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -142,10 +104,8 @@ public class SongInfo {
      * 
      * @return originalTitle
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ORIGINAL_TITLE)
-    public String getOriginalTitle() {
+    public @org.eclipse.jdt.annotation.Nullable String getOriginalTitle() {
         return originalTitle;
     }
 
@@ -164,10 +124,8 @@ public class SongInfo {
      * 
      * @return path
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PATH)
-    public String getPath() {
+    public @org.eclipse.jdt.annotation.Nullable String getPath() {
         return path;
     }
 
@@ -186,10 +144,8 @@ public class SongInfo {
      * 
      * @return metadataLanguage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_LANGUAGE)
-    public String getMetadataLanguage() {
+    public @org.eclipse.jdt.annotation.Nullable String getMetadataLanguage() {
         return metadataLanguage;
     }
 
@@ -208,10 +164,8 @@ public class SongInfo {
      * 
      * @return metadataCountryCode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_COUNTRY_CODE)
-    public String getMetadataCountryCode() {
+    public @org.eclipse.jdt.annotation.Nullable String getMetadataCountryCode() {
         return metadataCountryCode;
     }
 
@@ -238,16 +192,14 @@ public class SongInfo {
      * 
      * @return providerIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-    public Map<String, String> getProviderIds() {
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
+    public @org.eclipse.jdt.annotation.Nullable Map<String, String> getProviderIds() {
         return providerIds;
     }
 
     @JsonProperty(value = JSON_PROPERTY_PROVIDER_IDS)
-    @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+    @JsonInclude(content = JsonInclude.Include.ALWAYS)
     public void setProviderIds(@org.eclipse.jdt.annotation.Nullable Map<String, String> providerIds) {
         this.providerIds = providerIds;
     }
@@ -262,10 +214,8 @@ public class SongInfo {
      * 
      * @return year
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_YEAR)
-    public Integer getYear() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getYear() {
         return year;
     }
 
@@ -284,10 +234,8 @@ public class SongInfo {
      * 
      * @return indexNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INDEX_NUMBER)
-    public Integer getIndexNumber() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getIndexNumber() {
         return indexNumber;
     }
 
@@ -306,10 +254,8 @@ public class SongInfo {
      * 
      * @return parentIndexNumber
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PARENT_INDEX_NUMBER)
-    public Integer getParentIndexNumber() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getParentIndexNumber() {
         return parentIndexNumber;
     }
 
@@ -328,10 +274,8 @@ public class SongInfo {
      * 
      * @return premiereDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PREMIERE_DATE)
-    public OffsetDateTime getPremiereDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getPremiereDate() {
         return premiereDate;
     }
 
@@ -350,10 +294,8 @@ public class SongInfo {
      * 
      * @return isAutomated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_AUTOMATED)
-    public Boolean getIsAutomated() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsAutomated() {
         return isAutomated;
     }
 
@@ -380,10 +322,8 @@ public class SongInfo {
      * 
      * @return albumArtists
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALBUM_ARTISTS)
-    public List<String> getAlbumArtists() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getAlbumArtists() {
         return albumArtists;
     }
 
@@ -402,10 +342,8 @@ public class SongInfo {
      * 
      * @return album
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALBUM)
-    public String getAlbum() {
+    public @org.eclipse.jdt.annotation.Nullable String getAlbum() {
         return album;
     }
 
@@ -432,10 +370,8 @@ public class SongInfo {
      * 
      * @return artists
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARTISTS)
-    public List<String> getArtists() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getArtists() {
         return artists;
     }
 
@@ -444,9 +380,6 @@ public class SongInfo {
         this.artists = artists;
     }
 
-    /**
-     * Return true if this SongInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -539,99 +472,173 @@ public class SongInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `OriginalTitle` to the URL query string
         if (getOriginalTitle() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sOriginalTitle%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getOriginalTitle()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sOriginalTitle%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getOriginalTitle()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Path` to the URL query string
         if (getPath() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPath()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPath%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPath()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataLanguage` to the URL query string
         if (getMetadataLanguage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataLanguage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataLanguage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataLanguage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMetadataLanguage()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MetadataCountryCode` to the URL query string
         if (getMetadataCountryCode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMetadataCountryCode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataCountryCode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMetadataCountryCode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProviderIds` to the URL query string
         if (getProviderIds() != null) {
             for (String _key : getProviderIds().keySet()) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
-                                        containerSuffix),
-                        getProviderIds().get(_key),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviderIds().get(_key)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sProviderIds%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key,
+                                            containerSuffix),
+                            getProviderIds().get(_key),
+                            URLEncoder.encode(String.valueOf(getProviderIds().get(_key)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Year` to the URL query string
         if (getYear() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sYear%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getYear()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sYear%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getYear()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IndexNumber` to the URL query string
         if (getIndexNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIndexNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIndexNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIndexNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ParentIndexNumber` to the URL query string
         if (getParentIndexNumber() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getParentIndexNumber()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sParentIndexNumber%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getParentIndexNumber()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PremiereDate` to the URL query string
         if (getPremiereDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getPremiereDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sPremiereDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getPremiereDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsAutomated` to the URL query string
         if (getIsAutomated() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsAutomated%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAutomated()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsAutomated%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsAutomated()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AlbumArtists` to the URL query string
         if (getAlbumArtists() != null) {
             for (int i = 0; i < getAlbumArtists().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sAlbumArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getAlbumArtists().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sAlbumArtists%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getAlbumArtists().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `Album` to the URL query string
         if (getAlbum() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbum()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAlbum%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAlbum()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Artists` to the URL query string
         if (getArtists() != null) {
             for (int i = 0; i < getArtists().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sArtists%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getArtists().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sArtists%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getArtists().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

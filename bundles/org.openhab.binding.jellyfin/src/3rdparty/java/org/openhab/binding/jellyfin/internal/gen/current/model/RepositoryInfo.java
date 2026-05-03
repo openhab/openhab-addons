@@ -12,35 +12,25 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class RepositoryInfo.
  */
-@JsonPropertyOrder({ RepositoryInfo.JSON_PROPERTY_NAME, RepositoryInfo.JSON_PROPERTY_URL,
-        RepositoryInfo.JSON_PROPERTY_ENABLED })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RepositoryInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_URL = "Url";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String url;
+    private @org.eclipse.jdt.annotation.Nullable String url;
 
     public static final String JSON_PROPERTY_ENABLED = "Enabled";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enabled;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enabled;
 
     public RepositoryInfo() {
     }
@@ -55,10 +45,8 @@ public class RepositoryInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -77,10 +65,8 @@ public class RepositoryInfo {
      * 
      * @return url
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_URL)
-    public String getUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getUrl() {
         return url;
     }
 
@@ -99,10 +85,8 @@ public class RepositoryInfo {
      * 
      * @return enabled
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLED)
-    public Boolean getEnabled() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnabled() {
         return enabled;
     }
 
@@ -111,9 +95,6 @@ public class RepositoryInfo {
         this.enabled = enabled;
     }
 
-    /**
-     * Return true if this RepositoryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -185,20 +166,35 @@ public class RepositoryInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Url` to the URL query string
         if (getUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Enabled` to the URL query string
         if (getEnabled() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnabled%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnabled()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnabled%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnabled()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

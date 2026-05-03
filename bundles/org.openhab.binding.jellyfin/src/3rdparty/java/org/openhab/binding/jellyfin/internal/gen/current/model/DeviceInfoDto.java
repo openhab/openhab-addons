@@ -12,81 +12,51 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * A DTO representing device information.
  */
-@JsonPropertyOrder({ DeviceInfoDto.JSON_PROPERTY_NAME, DeviceInfoDto.JSON_PROPERTY_CUSTOM_NAME,
-        DeviceInfoDto.JSON_PROPERTY_ACCESS_TOKEN, DeviceInfoDto.JSON_PROPERTY_ID,
-        DeviceInfoDto.JSON_PROPERTY_LAST_USER_NAME, DeviceInfoDto.JSON_PROPERTY_APP_NAME,
-        DeviceInfoDto.JSON_PROPERTY_APP_VERSION, DeviceInfoDto.JSON_PROPERTY_LAST_USER_ID,
-        DeviceInfoDto.JSON_PROPERTY_DATE_LAST_ACTIVITY, DeviceInfoDto.JSON_PROPERTY_CAPABILITIES,
-        DeviceInfoDto.JSON_PROPERTY_ICON_URL })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DeviceInfoDto {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_CUSTOM_NAME = "CustomName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String customName;
+    private @org.eclipse.jdt.annotation.Nullable String customName;
 
     public static final String JSON_PROPERTY_ACCESS_TOKEN = "AccessToken";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String accessToken;
+    private @org.eclipse.jdt.annotation.Nullable String accessToken;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_LAST_USER_NAME = "LastUserName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String lastUserName;
+    private @org.eclipse.jdt.annotation.Nullable String lastUserName;
 
     public static final String JSON_PROPERTY_APP_NAME = "AppName";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String appName;
+    private @org.eclipse.jdt.annotation.Nullable String appName;
 
     public static final String JSON_PROPERTY_APP_VERSION = "AppVersion";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String appVersion;
+    private @org.eclipse.jdt.annotation.Nullable String appVersion;
 
     public static final String JSON_PROPERTY_LAST_USER_ID = "LastUserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID lastUserId;
+    private @org.eclipse.jdt.annotation.Nullable UUID lastUserId;
 
     public static final String JSON_PROPERTY_DATE_LAST_ACTIVITY = "DateLastActivity";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime dateLastActivity;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime dateLastActivity;
 
     public static final String JSON_PROPERTY_CAPABILITIES = "Capabilities";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private ClientCapabilitiesDto capabilities;
+    private @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto capabilities;
 
     public static final String JSON_PROPERTY_ICON_URL = "IconUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String iconUrl;
+    private @org.eclipse.jdt.annotation.Nullable String iconUrl;
 
     public DeviceInfoDto() {
     }
@@ -101,10 +71,8 @@ public class DeviceInfoDto {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -123,10 +91,8 @@ public class DeviceInfoDto {
      * 
      * @return customName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CUSTOM_NAME)
-    public String getCustomName() {
+    public @org.eclipse.jdt.annotation.Nullable String getCustomName() {
         return customName;
     }
 
@@ -145,10 +111,8 @@ public class DeviceInfoDto {
      * 
      * @return accessToken
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ACCESS_TOKEN)
-    public String getAccessToken() {
+    public @org.eclipse.jdt.annotation.Nullable String getAccessToken() {
         return accessToken;
     }
 
@@ -167,10 +131,8 @@ public class DeviceInfoDto {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -189,10 +151,8 @@ public class DeviceInfoDto {
      * 
      * @return lastUserName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_USER_NAME)
-    public String getLastUserName() {
+    public @org.eclipse.jdt.annotation.Nullable String getLastUserName() {
         return lastUserName;
     }
 
@@ -211,10 +171,8 @@ public class DeviceInfoDto {
      * 
      * @return appName
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APP_NAME)
-    public String getAppName() {
+    public @org.eclipse.jdt.annotation.Nullable String getAppName() {
         return appName;
     }
 
@@ -233,10 +191,8 @@ public class DeviceInfoDto {
      * 
      * @return appVersion
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_APP_VERSION)
-    public String getAppVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getAppVersion() {
         return appVersion;
     }
 
@@ -255,10 +211,8 @@ public class DeviceInfoDto {
      * 
      * @return lastUserId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_USER_ID)
-    public UUID getLastUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getLastUserId() {
         return lastUserId;
     }
 
@@ -277,10 +231,8 @@ public class DeviceInfoDto {
      * 
      * @return dateLastActivity
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DATE_LAST_ACTIVITY)
-    public OffsetDateTime getDateLastActivity() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getDateLastActivity() {
         return dateLastActivity;
     }
 
@@ -299,10 +251,8 @@ public class DeviceInfoDto {
      * 
      * @return capabilities
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CAPABILITIES)
-    public ClientCapabilitiesDto getCapabilities() {
+    public @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto getCapabilities() {
         return capabilities;
     }
 
@@ -321,10 +271,8 @@ public class DeviceInfoDto {
      * 
      * @return iconUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ICON_URL)
-    public String getIconUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getIconUrl() {
         return iconUrl;
     }
 
@@ -333,9 +281,6 @@ public class DeviceInfoDto {
         this.iconUrl = iconUrl;
     }
 
-    /**
-     * Return true if this DeviceInfoDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -425,56 +370,101 @@ public class DeviceInfoDto {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CustomName` to the URL query string
         if (getCustomName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCustomName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCustomName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCustomName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AccessToken` to the URL query string
         if (getAccessToken() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAccessToken()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAccessToken%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAccessToken()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastUserName` to the URL query string
         if (getLastUserName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastUserName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastUserName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastUserName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AppName` to the URL query string
         if (getAppName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAppName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAppName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AppVersion` to the URL query string
         if (getAppVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAppVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAppVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAppVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastUserId` to the URL query string
         if (getLastUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLastUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLastUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLastUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLastUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DateLastActivity` to the URL query string
         if (getDateLastActivity() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDateLastActivity%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDateLastActivity()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDateLastActivity%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDateLastActivity()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Capabilities` to the URL query string
@@ -484,8 +474,13 @@ public class DeviceInfoDto {
 
         // add `IconUrl` to the URL query string
         if (getIconUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIconUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIconUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIconUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

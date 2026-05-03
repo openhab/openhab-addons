@@ -12,30 +12,23 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * GuideInfo
  */
-@JsonPropertyOrder({ GuideInfo.JSON_PROPERTY_START_DATE, GuideInfo.JSON_PROPERTY_END_DATE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class GuideInfo {
     public static final String JSON_PROPERTY_START_DATE = "StartDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime startDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime startDate;
 
     public static final String JSON_PROPERTY_END_DATE = "EndDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime endDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime endDate;
 
     public GuideInfo() {
     }
@@ -50,10 +43,8 @@ public class GuideInfo {
      * 
      * @return startDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_DATE)
-    public OffsetDateTime getStartDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getStartDate() {
         return startDate;
     }
 
@@ -72,10 +63,8 @@ public class GuideInfo {
      * 
      * @return endDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_END_DATE)
-    public OffsetDateTime getEndDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getEndDate() {
         return endDate;
     }
 
@@ -84,9 +73,6 @@ public class GuideInfo {
         this.endDate = endDate;
     }
 
-    /**
-     * Return true if this GuideInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -156,14 +142,24 @@ public class GuideInfo {
 
         // add `StartDate` to the URL query string
         if (getStartDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndDate` to the URL query string
         if (getEndDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

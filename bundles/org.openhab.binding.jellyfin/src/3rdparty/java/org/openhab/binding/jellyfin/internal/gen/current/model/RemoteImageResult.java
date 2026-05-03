@@ -12,37 +12,27 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class RemoteImageResult.
  */
-@JsonPropertyOrder({ RemoteImageResult.JSON_PROPERTY_IMAGES, RemoteImageResult.JSON_PROPERTY_TOTAL_RECORD_COUNT,
-        RemoteImageResult.JSON_PROPERTY_PROVIDERS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class RemoteImageResult {
     public static final String JSON_PROPERTY_IMAGES = "Images";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<RemoteImageInfo> images;
+    private @org.eclipse.jdt.annotation.Nullable List<RemoteImageInfo> images;
 
     public static final String JSON_PROPERTY_TOTAL_RECORD_COUNT = "TotalRecordCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer totalRecordCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer totalRecordCount;
 
     public static final String JSON_PROPERTY_PROVIDERS = "Providers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> providers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> providers;
 
     public RemoteImageResult() {
     }
@@ -65,10 +55,8 @@ public class RemoteImageResult {
      * 
      * @return images
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGES)
-    public List<RemoteImageInfo> getImages() {
+    public @org.eclipse.jdt.annotation.Nullable List<RemoteImageInfo> getImages() {
         return images;
     }
 
@@ -87,10 +75,8 @@ public class RemoteImageResult {
      * 
      * @return totalRecordCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TOTAL_RECORD_COUNT)
-    public Integer getTotalRecordCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTotalRecordCount() {
         return totalRecordCount;
     }
 
@@ -117,10 +103,8 @@ public class RemoteImageResult {
      * 
      * @return providers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROVIDERS)
-    public List<String> getProviders() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getProviders() {
         return providers;
     }
 
@@ -129,9 +113,6 @@ public class RemoteImageResult {
         this.providers = providers;
     }
 
-    /**
-     * Return true if this RemoteImageResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -217,17 +198,29 @@ public class RemoteImageResult {
 
         // add `TotalRecordCount` to the URL query string
         if (getTotalRecordCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTotalRecordCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTotalRecordCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTotalRecordCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Providers` to the URL query string
         if (getProviders() != null) {
             for (int i = 0; i < getProviders().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sProviders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getProviders().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sProviders%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getProviders().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

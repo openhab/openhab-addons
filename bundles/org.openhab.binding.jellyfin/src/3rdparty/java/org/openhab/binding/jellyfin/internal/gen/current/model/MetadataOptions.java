@@ -12,59 +12,39 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class MetadataOptions.
  */
-@JsonPropertyOrder({ MetadataOptions.JSON_PROPERTY_ITEM_TYPE, MetadataOptions.JSON_PROPERTY_DISABLED_METADATA_SAVERS,
-        MetadataOptions.JSON_PROPERTY_LOCAL_METADATA_READER_ORDER,
-        MetadataOptions.JSON_PROPERTY_DISABLED_METADATA_FETCHERS, MetadataOptions.JSON_PROPERTY_METADATA_FETCHER_ORDER,
-        MetadataOptions.JSON_PROPERTY_DISABLED_IMAGE_FETCHERS, MetadataOptions.JSON_PROPERTY_IMAGE_FETCHER_ORDER })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MetadataOptions {
     public static final String JSON_PROPERTY_ITEM_TYPE = "ItemType";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String itemType;
+    private @org.eclipse.jdt.annotation.Nullable String itemType;
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_SAVERS = "DisabledMetadataSavers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledMetadataSavers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledMetadataSavers;
 
     public static final String JSON_PROPERTY_LOCAL_METADATA_READER_ORDER = "LocalMetadataReaderOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> localMetadataReaderOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> localMetadataReaderOrder;
 
     public static final String JSON_PROPERTY_DISABLED_METADATA_FETCHERS = "DisabledMetadataFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledMetadataFetchers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledMetadataFetchers;
 
     public static final String JSON_PROPERTY_METADATA_FETCHER_ORDER = "MetadataFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> metadataFetcherOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> metadataFetcherOrder;
 
     public static final String JSON_PROPERTY_DISABLED_IMAGE_FETCHERS = "DisabledImageFetchers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> disabledImageFetchers;
+    private @org.eclipse.jdt.annotation.Nullable List<String> disabledImageFetchers;
 
     public static final String JSON_PROPERTY_IMAGE_FETCHER_ORDER = "ImageFetcherOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> imageFetcherOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<String> imageFetcherOrder;
 
     public MetadataOptions() {
     }
@@ -79,10 +59,8 @@ public class MetadataOptions {
      * 
      * @return itemType
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_TYPE)
-    public String getItemType() {
+    public @org.eclipse.jdt.annotation.Nullable String getItemType() {
         return itemType;
     }
 
@@ -110,10 +88,8 @@ public class MetadataOptions {
      * 
      * @return disabledMetadataSavers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_SAVERS)
-    public List<String> getDisabledMetadataSavers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledMetadataSavers() {
         return disabledMetadataSavers;
     }
 
@@ -141,10 +117,8 @@ public class MetadataOptions {
      * 
      * @return localMetadataReaderOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOCAL_METADATA_READER_ORDER)
-    public List<String> getLocalMetadataReaderOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getLocalMetadataReaderOrder() {
         return localMetadataReaderOrder;
     }
 
@@ -173,10 +147,8 @@ public class MetadataOptions {
      * 
      * @return disabledMetadataFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_METADATA_FETCHERS)
-    public List<String> getDisabledMetadataFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledMetadataFetchers() {
         return disabledMetadataFetchers;
     }
 
@@ -205,10 +177,8 @@ public class MetadataOptions {
      * 
      * @return metadataFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_METADATA_FETCHER_ORDER)
-    public List<String> getMetadataFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getMetadataFetcherOrder() {
         return metadataFetcherOrder;
     }
 
@@ -236,10 +206,8 @@ public class MetadataOptions {
      * 
      * @return disabledImageFetchers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DISABLED_IMAGE_FETCHERS)
-    public List<String> getDisabledImageFetchers() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getDisabledImageFetchers() {
         return disabledImageFetchers;
     }
 
@@ -266,10 +234,8 @@ public class MetadataOptions {
      * 
      * @return imageFetcherOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_FETCHER_ORDER)
-    public List<String> getImageFetcherOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getImageFetcherOrder() {
         return imageFetcherOrder;
     }
 
@@ -278,9 +244,6 @@ public class MetadataOptions {
         this.imageFetcherOrder = imageFetcherOrder;
     }
 
-    /**
-     * Return true if this MetadataOptions object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -362,67 +325,114 @@ public class MetadataOptions {
 
         // add `ItemType` to the URL query string
         if (getItemType() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemType%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemType()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemType%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemType()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `DisabledMetadataSavers` to the URL query string
         if (getDisabledMetadataSavers() != null) {
             for (int i = 0; i < getDisabledMetadataSavers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMetadataSavers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMetadataSavers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMetadataSavers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledMetadataSavers().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `LocalMetadataReaderOrder` to the URL query string
         if (getLocalMetadataReaderOrder() != null) {
             for (int i = 0; i < getLocalMetadataReaderOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getLocalMetadataReaderOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sLocalMetadataReaderOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getLocalMetadataReaderOrder().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DisabledMetadataFetchers` to the URL query string
         if (getDisabledMetadataFetchers() != null) {
             for (int i = 0; i < getDisabledMetadataFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMetadataFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledMetadataFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledMetadataFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledMetadataFetchers().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `MetadataFetcherOrder` to the URL query string
         if (getMetadataFetcherOrder() != null) {
             for (int i = 0; i < getMetadataFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getMetadataFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sMetadataFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getMetadataFetcherOrder().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `DisabledImageFetchers` to the URL query string
         if (getDisabledImageFetchers() != null) {
             for (int i = 0; i < getDisabledImageFetchers().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledImageFetchers%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getDisabledImageFetchers().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sDisabledImageFetchers%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getDisabledImageFetchers().get(i)), "UTF-8")
+                                    .replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ImageFetcherOrder` to the URL query string
         if (getImageFetcherOrder() != null) {
             for (int i = 0; i < getImageFetcherOrder().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetcherOrder%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getImageFetcherOrder().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sImageFetcherOrder%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getImageFetcherOrder().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

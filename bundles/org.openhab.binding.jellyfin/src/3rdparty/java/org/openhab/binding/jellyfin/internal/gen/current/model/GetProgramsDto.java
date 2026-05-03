@@ -12,6 +12,7 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,164 +20,93 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Get programs dto.
  */
-@JsonPropertyOrder({ GetProgramsDto.JSON_PROPERTY_CHANNEL_IDS, GetProgramsDto.JSON_PROPERTY_USER_ID,
-        GetProgramsDto.JSON_PROPERTY_MIN_START_DATE, GetProgramsDto.JSON_PROPERTY_HAS_AIRED,
-        GetProgramsDto.JSON_PROPERTY_IS_AIRING, GetProgramsDto.JSON_PROPERTY_MAX_START_DATE,
-        GetProgramsDto.JSON_PROPERTY_MIN_END_DATE, GetProgramsDto.JSON_PROPERTY_MAX_END_DATE,
-        GetProgramsDto.JSON_PROPERTY_IS_MOVIE, GetProgramsDto.JSON_PROPERTY_IS_SERIES,
-        GetProgramsDto.JSON_PROPERTY_IS_NEWS, GetProgramsDto.JSON_PROPERTY_IS_KIDS,
-        GetProgramsDto.JSON_PROPERTY_IS_SPORTS, GetProgramsDto.JSON_PROPERTY_START_INDEX,
-        GetProgramsDto.JSON_PROPERTY_LIMIT, GetProgramsDto.JSON_PROPERTY_SORT_BY,
-        GetProgramsDto.JSON_PROPERTY_SORT_ORDER, GetProgramsDto.JSON_PROPERTY_GENRES,
-        GetProgramsDto.JSON_PROPERTY_GENRE_IDS, GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGES,
-        GetProgramsDto.JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT, GetProgramsDto.JSON_PROPERTY_IMAGE_TYPE_LIMIT,
-        GetProgramsDto.JSON_PROPERTY_ENABLE_IMAGE_TYPES, GetProgramsDto.JSON_PROPERTY_ENABLE_USER_DATA,
-        GetProgramsDto.JSON_PROPERTY_SERIES_TIMER_ID, GetProgramsDto.JSON_PROPERTY_LIBRARY_SERIES_ID,
-        GetProgramsDto.JSON_PROPERTY_FIELDS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class GetProgramsDto {
     public static final String JSON_PROPERTY_CHANNEL_IDS = "ChannelIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> channelIds;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> channelIds;
 
     public static final String JSON_PROPERTY_USER_ID = "UserId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID userId;
+    private @org.eclipse.jdt.annotation.Nullable UUID userId;
 
     public static final String JSON_PROPERTY_MIN_START_DATE = "MinStartDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime minStartDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime minStartDate;
 
     public static final String JSON_PROPERTY_HAS_AIRED = "HasAired";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean hasAired;
+    private @org.eclipse.jdt.annotation.Nullable Boolean hasAired;
 
     public static final String JSON_PROPERTY_IS_AIRING = "IsAiring";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isAiring;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isAiring;
 
     public static final String JSON_PROPERTY_MAX_START_DATE = "MaxStartDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime maxStartDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime maxStartDate;
 
     public static final String JSON_PROPERTY_MIN_END_DATE = "MinEndDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime minEndDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime minEndDate;
 
     public static final String JSON_PROPERTY_MAX_END_DATE = "MaxEndDate";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private OffsetDateTime maxEndDate;
+    private @org.eclipse.jdt.annotation.Nullable OffsetDateTime maxEndDate;
 
     public static final String JSON_PROPERTY_IS_MOVIE = "IsMovie";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isMovie;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isMovie;
 
     public static final String JSON_PROPERTY_IS_SERIES = "IsSeries";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isSeries;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isSeries;
 
     public static final String JSON_PROPERTY_IS_NEWS = "IsNews";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isNews;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isNews;
 
     public static final String JSON_PROPERTY_IS_KIDS = "IsKids";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isKids;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isKids;
 
     public static final String JSON_PROPERTY_IS_SPORTS = "IsSports";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isSports;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isSports;
 
     public static final String JSON_PROPERTY_START_INDEX = "StartIndex";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer startIndex;
+    private @org.eclipse.jdt.annotation.Nullable Integer startIndex;
 
     public static final String JSON_PROPERTY_LIMIT = "Limit";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer limit;
+    private @org.eclipse.jdt.annotation.Nullable Integer limit;
 
     public static final String JSON_PROPERTY_SORT_BY = "SortBy";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ItemSortBy> sortBy;
+    private @org.eclipse.jdt.annotation.Nullable List<ItemSortBy> sortBy;
 
     public static final String JSON_PROPERTY_SORT_ORDER = "SortOrder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<SortOrder> sortOrder;
+    private @org.eclipse.jdt.annotation.Nullable List<SortOrder> sortOrder;
 
     public static final String JSON_PROPERTY_GENRES = "Genres";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> genres;
+    private @org.eclipse.jdt.annotation.Nullable List<String> genres;
 
     public static final String JSON_PROPERTY_GENRE_IDS = "GenreIds";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<UUID> genreIds;
+    private @org.eclipse.jdt.annotation.Nullable List<UUID> genreIds;
 
     public static final String JSON_PROPERTY_ENABLE_IMAGES = "EnableImages";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableImages;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableImages;
 
     public static final String JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT = "EnableTotalRecordCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableTotalRecordCount = true;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableTotalRecordCount = true;
 
     public static final String JSON_PROPERTY_IMAGE_TYPE_LIMIT = "ImageTypeLimit";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer imageTypeLimit;
+    private @org.eclipse.jdt.annotation.Nullable Integer imageTypeLimit;
 
     public static final String JSON_PROPERTY_ENABLE_IMAGE_TYPES = "EnableImageTypes";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ImageType> enableImageTypes;
+    private @org.eclipse.jdt.annotation.Nullable List<ImageType> enableImageTypes;
 
     public static final String JSON_PROPERTY_ENABLE_USER_DATA = "EnableUserData";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean enableUserData;
+    private @org.eclipse.jdt.annotation.Nullable Boolean enableUserData;
 
     public static final String JSON_PROPERTY_SERIES_TIMER_ID = "SeriesTimerId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String seriesTimerId;
+    private @org.eclipse.jdt.annotation.Nullable String seriesTimerId;
 
     public static final String JSON_PROPERTY_LIBRARY_SERIES_ID = "LibrarySeriesId";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID librarySeriesId;
+    private @org.eclipse.jdt.annotation.Nullable UUID librarySeriesId;
 
     public static final String JSON_PROPERTY_FIELDS = "Fields";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<ItemFields> fields;
+    private @org.eclipse.jdt.annotation.Nullable List<ItemFields> fields;
 
     public GetProgramsDto() {
     }
@@ -199,10 +129,8 @@ public class GetProgramsDto {
      * 
      * @return channelIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANNEL_IDS)
-    public List<UUID> getChannelIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getChannelIds() {
         return channelIds;
     }
 
@@ -221,10 +149,8 @@ public class GetProgramsDto {
      * 
      * @return userId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USER_ID)
-    public UUID getUserId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getUserId() {
         return userId;
     }
 
@@ -243,10 +169,8 @@ public class GetProgramsDto {
      * 
      * @return minStartDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MIN_START_DATE)
-    public OffsetDateTime getMinStartDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getMinStartDate() {
         return minStartDate;
     }
 
@@ -265,10 +189,8 @@ public class GetProgramsDto {
      * 
      * @return hasAired
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_HAS_AIRED)
-    public Boolean getHasAired() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getHasAired() {
         return hasAired;
     }
 
@@ -287,10 +209,8 @@ public class GetProgramsDto {
      * 
      * @return isAiring
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_AIRING)
-    public Boolean getIsAiring() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsAiring() {
         return isAiring;
     }
 
@@ -309,10 +229,8 @@ public class GetProgramsDto {
      * 
      * @return maxStartDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_START_DATE)
-    public OffsetDateTime getMaxStartDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getMaxStartDate() {
         return maxStartDate;
     }
 
@@ -331,10 +249,8 @@ public class GetProgramsDto {
      * 
      * @return minEndDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MIN_END_DATE)
-    public OffsetDateTime getMinEndDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getMinEndDate() {
         return minEndDate;
     }
 
@@ -353,10 +269,8 @@ public class GetProgramsDto {
      * 
      * @return maxEndDate
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MAX_END_DATE)
-    public OffsetDateTime getMaxEndDate() {
+    public @org.eclipse.jdt.annotation.Nullable OffsetDateTime getMaxEndDate() {
         return maxEndDate;
     }
 
@@ -375,10 +289,8 @@ public class GetProgramsDto {
      * 
      * @return isMovie
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_MOVIE)
-    public Boolean getIsMovie() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsMovie() {
         return isMovie;
     }
 
@@ -397,10 +309,8 @@ public class GetProgramsDto {
      * 
      * @return isSeries
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_SERIES)
-    public Boolean getIsSeries() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsSeries() {
         return isSeries;
     }
 
@@ -419,10 +329,8 @@ public class GetProgramsDto {
      * 
      * @return isNews
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_NEWS)
-    public Boolean getIsNews() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsNews() {
         return isNews;
     }
 
@@ -441,10 +349,8 @@ public class GetProgramsDto {
      * 
      * @return isKids
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_KIDS)
-    public Boolean getIsKids() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsKids() {
         return isKids;
     }
 
@@ -463,10 +369,8 @@ public class GetProgramsDto {
      * 
      * @return isSports
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_SPORTS)
-    public Boolean getIsSports() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsSports() {
         return isSports;
     }
 
@@ -485,10 +389,8 @@ public class GetProgramsDto {
      * 
      * @return startIndex
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_START_INDEX)
-    public Integer getStartIndex() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getStartIndex() {
         return startIndex;
     }
 
@@ -507,10 +409,8 @@ public class GetProgramsDto {
      * 
      * @return limit
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIMIT)
-    public Integer getLimit() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getLimit() {
         return limit;
     }
 
@@ -537,10 +437,8 @@ public class GetProgramsDto {
      * 
      * @return sortBy
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SORT_BY)
-    public List<ItemSortBy> getSortBy() {
+    public @org.eclipse.jdt.annotation.Nullable List<ItemSortBy> getSortBy() {
         return sortBy;
     }
 
@@ -567,10 +465,8 @@ public class GetProgramsDto {
      * 
      * @return sortOrder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SORT_ORDER)
-    public List<SortOrder> getSortOrder() {
+    public @org.eclipse.jdt.annotation.Nullable List<SortOrder> getSortOrder() {
         return sortOrder;
     }
 
@@ -597,10 +493,8 @@ public class GetProgramsDto {
      * 
      * @return genres
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GENRES)
-    public List<String> getGenres() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getGenres() {
         return genres;
     }
 
@@ -627,10 +521,8 @@ public class GetProgramsDto {
      * 
      * @return genreIds
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GENRE_IDS)
-    public List<UUID> getGenreIds() {
+    public @org.eclipse.jdt.annotation.Nullable List<UUID> getGenreIds() {
         return genreIds;
     }
 
@@ -649,10 +541,8 @@ public class GetProgramsDto {
      * 
      * @return enableImages
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGES)
-    public Boolean getEnableImages() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableImages() {
         return enableImages;
     }
 
@@ -671,10 +561,8 @@ public class GetProgramsDto {
      * 
      * @return enableTotalRecordCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_TOTAL_RECORD_COUNT)
-    public Boolean getEnableTotalRecordCount() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableTotalRecordCount() {
         return enableTotalRecordCount;
     }
 
@@ -693,10 +581,8 @@ public class GetProgramsDto {
      * 
      * @return imageTypeLimit
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_TYPE_LIMIT)
-    public Integer getImageTypeLimit() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getImageTypeLimit() {
         return imageTypeLimit;
     }
 
@@ -723,10 +609,8 @@ public class GetProgramsDto {
      * 
      * @return enableImageTypes
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_IMAGE_TYPES)
-    public List<ImageType> getEnableImageTypes() {
+    public @org.eclipse.jdt.annotation.Nullable List<ImageType> getEnableImageTypes() {
         return enableImageTypes;
     }
 
@@ -745,10 +629,8 @@ public class GetProgramsDto {
      * 
      * @return enableUserData
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENABLE_USER_DATA)
-    public Boolean getEnableUserData() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getEnableUserData() {
         return enableUserData;
     }
 
@@ -767,10 +649,8 @@ public class GetProgramsDto {
      * 
      * @return seriesTimerId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERIES_TIMER_ID)
-    public String getSeriesTimerId() {
+    public @org.eclipse.jdt.annotation.Nullable String getSeriesTimerId() {
         return seriesTimerId;
     }
 
@@ -789,10 +669,8 @@ public class GetProgramsDto {
      * 
      * @return librarySeriesId
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIBRARY_SERIES_ID)
-    public UUID getLibrarySeriesId() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getLibrarySeriesId() {
         return librarySeriesId;
     }
 
@@ -819,10 +697,8 @@ public class GetProgramsDto {
      * 
      * @return fields
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FIELDS)
-    public List<ItemFields> getFields() {
+    public @org.eclipse.jdt.annotation.Nullable List<ItemFields> getFields() {
         return fields;
     }
 
@@ -831,9 +707,6 @@ public class GetProgramsDto {
         this.fields = fields;
     }
 
-    /**
-     * Return true if this GetProgramsDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -959,108 +832,190 @@ public class GetProgramsDto {
         if (getChannelIds() != null) {
             for (int i = 0; i < getChannelIds().size(); i++) {
                 if (getChannelIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sChannelIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getChannelIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sChannelIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getChannelIds().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `UserId` to the URL query string
         if (getUserId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getUserId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sUserId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getUserId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MinStartDate` to the URL query string
         if (getMinStartDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMinStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinStartDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMinStartDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMinStartDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `HasAired` to the URL query string
         if (getHasAired() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sHasAired%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getHasAired()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sHasAired%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getHasAired()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsAiring` to the URL query string
         if (getIsAiring() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsAiring%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsAiring()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsAiring%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsAiring()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxStartDate` to the URL query string
         if (getMaxStartDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStartDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxStartDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxStartDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxStartDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MinEndDate` to the URL query string
         if (getMinEndDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMinEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMinEndDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMinEndDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMinEndDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MaxEndDate` to the URL query string
         if (getMaxEndDate() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMaxEndDate%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMaxEndDate()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMaxEndDate%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMaxEndDate()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsMovie` to the URL query string
         if (getIsMovie() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsMovie%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsMovie()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsMovie%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsMovie()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsSeries` to the URL query string
         if (getIsSeries() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsSeries%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSeries()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsSeries%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsSeries()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsNews` to the URL query string
         if (getIsNews() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsNews%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsNews()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsNews%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsNews()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsKids` to the URL query string
         if (getIsKids() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsKids%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsKids()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsKids%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsKids()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsSports` to the URL query string
         if (getIsSports() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsSports%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsSports()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsSports%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsSports()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `StartIndex` to the URL query string
         if (getStartIndex() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getStartIndex()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sStartIndex%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getStartIndex()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Limit` to the URL query string
         if (getLimit() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLimit()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLimit%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLimit()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SortBy` to the URL query string
         if (getSortBy() != null) {
             for (int i = 0; i < getSortBy().size(); i++) {
                 if (getSortBy().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sSortBy%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSortBy().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sSortBy%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getSortBy().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -1069,11 +1024,17 @@ public class GetProgramsDto {
         if (getSortOrder() != null) {
             for (int i = 0; i < getSortOrder().size(); i++) {
                 if (getSortOrder().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sSortOrder%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getSortOrder().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sSortOrder%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getSortOrder().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -1081,10 +1042,16 @@ public class GetProgramsDto {
         // add `Genres` to the URL query string
         if (getGenres() != null) {
             for (int i = 0; i < getGenres().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sGenres%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getGenres().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sGenres%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getGenres().get(i)), "UTF-8").replaceAll("\\+", "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
@@ -1092,73 +1059,122 @@ public class GetProgramsDto {
         if (getGenreIds() != null) {
             for (int i = 0; i < getGenreIds().size(); i++) {
                 if (getGenreIds().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sGenreIds%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getGenreIds().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sGenreIds%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getGenreIds().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `EnableImages` to the URL query string
         if (getEnableImages() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableImages%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableImages()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableImages%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableImages()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableTotalRecordCount` to the URL query string
         if (getEnableTotalRecordCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTotalRecordCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableTotalRecordCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableTotalRecordCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableTotalRecordCount()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ImageTypeLimit` to the URL query string
         if (getImageTypeLimit() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sImageTypeLimit%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getImageTypeLimit()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sImageTypeLimit%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getImageTypeLimit()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EnableImageTypes` to the URL query string
         if (getEnableImageTypes() != null) {
             for (int i = 0; i < getEnableImageTypes().size(); i++) {
                 if (getEnableImageTypes().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sEnableImageTypes%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getEnableImageTypes().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sEnableImageTypes%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getEnableImageTypes().get(i)), "UTF-8")
+                                        .replaceAll("\\+", "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
         // add `EnableUserData` to the URL query string
         if (getEnableUserData() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUserData%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEnableUserData()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEnableUserData%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEnableUserData()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeriesTimerId` to the URL query string
         if (getSeriesTimerId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesTimerId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesTimerId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeriesTimerId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LibrarySeriesId` to the URL query string
         if (getLibrarySeriesId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sLibrarySeriesId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getLibrarySeriesId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sLibrarySeriesId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getLibrarySeriesId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Fields` to the URL query string
         if (getFields() != null) {
             for (int i = 0; i < getFields().size(); i++) {
                 if (getFields().get(i) != null) {
-                    joiner.add(String.format(java.util.Locale.ROOT, "%sFields%s%s=%s", prefix, suffix,
-                            "".equals(suffix) ? ""
-                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
-                                            containerSuffix),
-                            ApiClient.urlEncode(ApiClient.valueToString(getFields().get(i)))));
+                    try {
+                        joiner.add(String.format(java.util.Locale.ROOT, "%sFields%s%s=%s", prefix, suffix,
+                                "".equals(suffix) ? ""
+                                        : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                                containerSuffix),
+                                URLEncoder.encode(String.valueOf(getFields().get(i)), "UTF-8").replaceAll("\\+",
+                                        "%20")));
+                    } catch (UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 is always supported
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }

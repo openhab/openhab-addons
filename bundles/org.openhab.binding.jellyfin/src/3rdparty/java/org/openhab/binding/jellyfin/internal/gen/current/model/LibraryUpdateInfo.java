@@ -12,66 +12,49 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class LibraryUpdateInfo.
  */
-@JsonPropertyOrder({ LibraryUpdateInfo.JSON_PROPERTY_FOLDERS_ADDED_TO,
-        LibraryUpdateInfo.JSON_PROPERTY_FOLDERS_REMOVED_FROM, LibraryUpdateInfo.JSON_PROPERTY_ITEMS_ADDED,
-        LibraryUpdateInfo.JSON_PROPERTY_ITEMS_REMOVED, LibraryUpdateInfo.JSON_PROPERTY_ITEMS_UPDATED,
-        LibraryUpdateInfo.JSON_PROPERTY_COLLECTION_FOLDERS, LibraryUpdateInfo.JSON_PROPERTY_IS_EMPTY })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryUpdateInfo {
     public static final String JSON_PROPERTY_FOLDERS_ADDED_TO = "FoldersAddedTo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> foldersAddedTo = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> foldersAddedTo = new ArrayList<>();
 
     public static final String JSON_PROPERTY_FOLDERS_REMOVED_FROM = "FoldersRemovedFrom";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> foldersRemovedFrom = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> foldersRemovedFrom = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_ADDED = "ItemsAdded";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> itemsAdded = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> itemsAdded = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_REMOVED = "ItemsRemoved";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> itemsRemoved = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> itemsRemoved = new ArrayList<>();
 
     public static final String JSON_PROPERTY_ITEMS_UPDATED = "ItemsUpdated";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> itemsUpdated = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> itemsUpdated = new ArrayList<>();
 
     public static final String JSON_PROPERTY_COLLECTION_FOLDERS = "CollectionFolders";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> collectionFolders = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> collectionFolders = new ArrayList<>();
 
     public static final String JSON_PROPERTY_IS_EMPTY = "IsEmpty";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isEmpty;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isEmpty;
 
     public LibraryUpdateInfo() {
     }
 
+    /**
+     * Constructor with only readonly parameters
+     */
     @JsonCreator
-    public LibraryUpdateInfo(@JsonProperty(JSON_PROPERTY_IS_EMPTY) Boolean isEmpty) {
+    public LibraryUpdateInfo(@JsonProperty(value = JSON_PROPERTY_IS_EMPTY) Boolean isEmpty) {
         this();
         this.isEmpty = isEmpty;
     }
@@ -94,10 +77,8 @@ public class LibraryUpdateInfo {
      * 
      * @return foldersAddedTo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FOLDERS_ADDED_TO)
-    public List<String> getFoldersAddedTo() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getFoldersAddedTo() {
         return foldersAddedTo;
     }
 
@@ -124,10 +105,8 @@ public class LibraryUpdateInfo {
      * 
      * @return foldersRemovedFrom
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_FOLDERS_REMOVED_FROM)
-    public List<String> getFoldersRemovedFrom() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getFoldersRemovedFrom() {
         return foldersRemovedFrom;
     }
 
@@ -154,10 +133,8 @@ public class LibraryUpdateInfo {
      * 
      * @return itemsAdded
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS_ADDED)
-    public List<String> getItemsAdded() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getItemsAdded() {
         return itemsAdded;
     }
 
@@ -184,10 +161,8 @@ public class LibraryUpdateInfo {
      * 
      * @return itemsRemoved
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS_REMOVED)
-    public List<String> getItemsRemoved() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getItemsRemoved() {
         return itemsRemoved;
     }
 
@@ -214,10 +189,8 @@ public class LibraryUpdateInfo {
      * 
      * @return itemsUpdated
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEMS_UPDATED)
-    public List<String> getItemsUpdated() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getItemsUpdated() {
         return itemsUpdated;
     }
 
@@ -244,10 +217,8 @@ public class LibraryUpdateInfo {
      * 
      * @return collectionFolders
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_COLLECTION_FOLDERS)
-    public List<String> getCollectionFolders() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getCollectionFolders() {
         return collectionFolders;
     }
 
@@ -261,16 +232,11 @@ public class LibraryUpdateInfo {
      * 
      * @return isEmpty
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_EMPTY)
-    public Boolean getIsEmpty() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsEmpty() {
         return isEmpty;
     }
 
-    /**
-     * Return true if this LibraryUpdateInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -353,67 +319,114 @@ public class LibraryUpdateInfo {
         // add `FoldersAddedTo` to the URL query string
         if (getFoldersAddedTo() != null) {
             for (int i = 0; i < getFoldersAddedTo().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sFoldersAddedTo%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getFoldersAddedTo().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sFoldersAddedTo%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getFoldersAddedTo().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `FoldersRemovedFrom` to the URL query string
         if (getFoldersRemovedFrom() != null) {
             for (int i = 0; i < getFoldersRemovedFrom().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getFoldersRemovedFrom().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sFoldersRemovedFrom%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getFoldersRemovedFrom().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ItemsAdded` to the URL query string
         if (getItemsAdded() != null) {
             for (int i = 0; i < getItemsAdded().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sItemsAdded%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsAdded().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sItemsAdded%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getItemsAdded().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ItemsRemoved` to the URL query string
         if (getItemsRemoved() != null) {
             for (int i = 0; i < getItemsRemoved().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sItemsRemoved%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsRemoved().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sItemsRemoved%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getItemsRemoved().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `ItemsUpdated` to the URL query string
         if (getItemsUpdated() != null) {
             for (int i = 0; i < getItemsUpdated().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sItemsUpdated%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getItemsUpdated().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sItemsUpdated%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getItemsUpdated().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `CollectionFolders` to the URL query string
         if (getCollectionFolders() != null) {
             for (int i = 0; i < getCollectionFolders().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sCollectionFolders%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getCollectionFolders().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sCollectionFolders%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getCollectionFolders().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         // add `IsEmpty` to the URL query string
         if (getIsEmpty() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsEmpty%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsEmpty()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsEmpty%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsEmpty()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

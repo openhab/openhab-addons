@@ -18,56 +18,35 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Contains informations about the systems storage.
  */
-@JsonPropertyOrder({ SystemStorageDto.JSON_PROPERTY_PROGRAM_DATA_FOLDER, SystemStorageDto.JSON_PROPERTY_WEB_FOLDER,
-        SystemStorageDto.JSON_PROPERTY_IMAGE_CACHE_FOLDER, SystemStorageDto.JSON_PROPERTY_CACHE_FOLDER,
-        SystemStorageDto.JSON_PROPERTY_LOG_FOLDER, SystemStorageDto.JSON_PROPERTY_INTERNAL_METADATA_FOLDER,
-        SystemStorageDto.JSON_PROPERTY_TRANSCODING_TEMP_FOLDER, SystemStorageDto.JSON_PROPERTY_LIBRARIES })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SystemStorageDto {
     public static final String JSON_PROPERTY_PROGRAM_DATA_FOLDER = "ProgramDataFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto programDataFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto programDataFolder;
 
     public static final String JSON_PROPERTY_WEB_FOLDER = "WebFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto webFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto webFolder;
 
     public static final String JSON_PROPERTY_IMAGE_CACHE_FOLDER = "ImageCacheFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto imageCacheFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto imageCacheFolder;
 
     public static final String JSON_PROPERTY_CACHE_FOLDER = "CacheFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto cacheFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto cacheFolder;
 
     public static final String JSON_PROPERTY_LOG_FOLDER = "LogFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto logFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto logFolder;
 
     public static final String JSON_PROPERTY_INTERNAL_METADATA_FOLDER = "InternalMetadataFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto internalMetadataFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto internalMetadataFolder;
 
     public static final String JSON_PROPERTY_TRANSCODING_TEMP_FOLDER = "TranscodingTempFolder";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private FolderStorageDto transcodingTempFolder;
+    private @org.eclipse.jdt.annotation.Nullable FolderStorageDto transcodingTempFolder;
 
     public static final String JSON_PROPERTY_LIBRARIES = "Libraries";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<LibraryStorageDto> libraries = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<LibraryStorageDto> libraries = new ArrayList<>();
 
     public SystemStorageDto() {
     }
@@ -82,10 +61,8 @@ public class SystemStorageDto {
      * 
      * @return programDataFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_DATA_FOLDER)
-    public FolderStorageDto getProgramDataFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getProgramDataFolder() {
         return programDataFolder;
     }
 
@@ -104,10 +81,8 @@ public class SystemStorageDto {
      * 
      * @return webFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_WEB_FOLDER)
-    public FolderStorageDto getWebFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getWebFolder() {
         return webFolder;
     }
 
@@ -126,10 +101,8 @@ public class SystemStorageDto {
      * 
      * @return imageCacheFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IMAGE_CACHE_FOLDER)
-    public FolderStorageDto getImageCacheFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getImageCacheFolder() {
         return imageCacheFolder;
     }
 
@@ -148,10 +121,8 @@ public class SystemStorageDto {
      * 
      * @return cacheFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CACHE_FOLDER)
-    public FolderStorageDto getCacheFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getCacheFolder() {
         return cacheFolder;
     }
 
@@ -170,10 +141,8 @@ public class SystemStorageDto {
      * 
      * @return logFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LOG_FOLDER)
-    public FolderStorageDto getLogFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getLogFolder() {
         return logFolder;
     }
 
@@ -193,10 +162,8 @@ public class SystemStorageDto {
      * 
      * @return internalMetadataFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_INTERNAL_METADATA_FOLDER)
-    public FolderStorageDto getInternalMetadataFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getInternalMetadataFolder() {
         return internalMetadataFolder;
     }
 
@@ -217,10 +184,8 @@ public class SystemStorageDto {
      * 
      * @return transcodingTempFolder
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRANSCODING_TEMP_FOLDER)
-    public FolderStorageDto getTranscodingTempFolder() {
+    public @org.eclipse.jdt.annotation.Nullable FolderStorageDto getTranscodingTempFolder() {
         return transcodingTempFolder;
     }
 
@@ -247,10 +212,8 @@ public class SystemStorageDto {
      * 
      * @return libraries
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LIBRARIES)
-    public List<LibraryStorageDto> getLibraries() {
+    public @org.eclipse.jdt.annotation.Nullable List<LibraryStorageDto> getLibraries() {
         return libraries;
     }
 
@@ -259,9 +222,6 @@ public class SystemStorageDto {
         this.libraries = libraries;
     }
 
-    /**
-     * Return true if this SystemStorageDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

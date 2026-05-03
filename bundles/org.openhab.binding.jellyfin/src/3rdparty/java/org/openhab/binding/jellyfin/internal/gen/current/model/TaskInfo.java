@@ -12,75 +12,48 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class TaskInfo.
  */
-@JsonPropertyOrder({ TaskInfo.JSON_PROPERTY_NAME, TaskInfo.JSON_PROPERTY_STATE,
-        TaskInfo.JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE, TaskInfo.JSON_PROPERTY_ID,
-        TaskInfo.JSON_PROPERTY_LAST_EXECUTION_RESULT, TaskInfo.JSON_PROPERTY_TRIGGERS,
-        TaskInfo.JSON_PROPERTY_DESCRIPTION, TaskInfo.JSON_PROPERTY_CATEGORY, TaskInfo.JSON_PROPERTY_IS_HIDDEN,
-        TaskInfo.JSON_PROPERTY_KEY })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TaskInfo {
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_STATE = "State";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TaskState state;
+    private @org.eclipse.jdt.annotation.Nullable TaskState state;
 
     public static final String JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE = "CurrentProgressPercentage";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Double currentProgressPercentage;
+    private @org.eclipse.jdt.annotation.Nullable Double currentProgressPercentage;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_LAST_EXECUTION_RESULT = "LastExecutionResult";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private TaskResult lastExecutionResult;
+    private @org.eclipse.jdt.annotation.Nullable TaskResult lastExecutionResult;
 
     public static final String JSON_PROPERTY_TRIGGERS = "Triggers";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<TaskTriggerInfo> triggers;
+    private @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> triggers;
 
     public static final String JSON_PROPERTY_DESCRIPTION = "Description";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String description;
+    private @org.eclipse.jdt.annotation.Nullable String description;
 
     public static final String JSON_PROPERTY_CATEGORY = "Category";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String category;
+    private @org.eclipse.jdt.annotation.Nullable String category;
 
     public static final String JSON_PROPERTY_IS_HIDDEN = "IsHidden";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean isHidden;
+    private @org.eclipse.jdt.annotation.Nullable Boolean isHidden;
 
     public static final String JSON_PROPERTY_KEY = "Key";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String key;
+    private @org.eclipse.jdt.annotation.Nullable String key;
 
     public TaskInfo() {
     }
@@ -95,10 +68,8 @@ public class TaskInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -117,10 +88,8 @@ public class TaskInfo {
      * 
      * @return state
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_STATE)
-    public TaskState getState() {
+    public @org.eclipse.jdt.annotation.Nullable TaskState getState() {
         return state;
     }
 
@@ -139,10 +108,8 @@ public class TaskInfo {
      * 
      * @return currentProgressPercentage
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CURRENT_PROGRESS_PERCENTAGE)
-    public Double getCurrentProgressPercentage() {
+    public @org.eclipse.jdt.annotation.Nullable Double getCurrentProgressPercentage() {
         return currentProgressPercentage;
     }
 
@@ -161,10 +128,8 @@ public class TaskInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -183,10 +148,8 @@ public class TaskInfo {
      * 
      * @return lastExecutionResult
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_LAST_EXECUTION_RESULT)
-    public TaskResult getLastExecutionResult() {
+    public @org.eclipse.jdt.annotation.Nullable TaskResult getLastExecutionResult() {
         return lastExecutionResult;
     }
 
@@ -213,10 +176,8 @@ public class TaskInfo {
      * 
      * @return triggers
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRIGGERS)
-    public List<TaskTriggerInfo> getTriggers() {
+    public @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> getTriggers() {
         return triggers;
     }
 
@@ -235,10 +196,8 @@ public class TaskInfo {
      * 
      * @return description
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_DESCRIPTION)
-    public String getDescription() {
+    public @org.eclipse.jdt.annotation.Nullable String getDescription() {
         return description;
     }
 
@@ -257,10 +216,8 @@ public class TaskInfo {
      * 
      * @return category
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CATEGORY)
-    public String getCategory() {
+    public @org.eclipse.jdt.annotation.Nullable String getCategory() {
         return category;
     }
 
@@ -279,10 +236,8 @@ public class TaskInfo {
      * 
      * @return isHidden
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_IS_HIDDEN)
-    public Boolean getIsHidden() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getIsHidden() {
         return isHidden;
     }
 
@@ -301,10 +256,8 @@ public class TaskInfo {
      * 
      * @return key
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_KEY)
-    public String getKey() {
+    public @org.eclipse.jdt.annotation.Nullable String getKey() {
         return key;
     }
 
@@ -313,9 +266,6 @@ public class TaskInfo {
         this.key = key;
     }
 
-    /**
-     * Return true if this TaskInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -401,26 +351,47 @@ public class TaskInfo {
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `State` to the URL query string
         if (getState() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getState()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sState%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getState()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `CurrentProgressPercentage` to the URL query string
         if (getCurrentProgressPercentage() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentProgressPercentage%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCurrentProgressPercentage()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCurrentProgressPercentage%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCurrentProgressPercentage()), "UTF-8").replaceAll("\\+",
+                                "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `LastExecutionResult` to the URL query string
@@ -443,26 +414,46 @@ public class TaskInfo {
 
         // add `Description` to the URL query string
         if (getDescription() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sDescription%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getDescription()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Category` to the URL query string
         if (getCategory() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sCategory%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getCategory()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sCategory%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getCategory()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `IsHidden` to the URL query string
         if (getIsHidden() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sIsHidden%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getIsHidden()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sIsHidden%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getIsHidden()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Key` to the URL query string
         if (getKey() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getKey()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sKey%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getKey()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

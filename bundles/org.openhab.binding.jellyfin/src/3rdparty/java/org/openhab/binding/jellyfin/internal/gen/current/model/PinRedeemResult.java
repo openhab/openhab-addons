@@ -12,31 +12,24 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * PinRedeemResult
  */
-@JsonPropertyOrder({ PinRedeemResult.JSON_PROPERTY_SUCCESS, PinRedeemResult.JSON_PROPERTY_USERS_RESET })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PinRedeemResult {
     public static final String JSON_PROPERTY_SUCCESS = "Success";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Boolean success;
+    private @org.eclipse.jdt.annotation.Nullable Boolean success;
 
     public static final String JSON_PROPERTY_USERS_RESET = "UsersReset";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private List<String> usersReset = new ArrayList<>();
+    private @org.eclipse.jdt.annotation.Nullable List<String> usersReset = new ArrayList<>();
 
     public PinRedeemResult() {
     }
@@ -51,10 +44,8 @@ public class PinRedeemResult {
      * 
      * @return success
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SUCCESS)
-    public Boolean getSuccess() {
+    public @org.eclipse.jdt.annotation.Nullable Boolean getSuccess() {
         return success;
     }
 
@@ -81,10 +72,8 @@ public class PinRedeemResult {
      * 
      * @return usersReset
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_USERS_RESET)
-    public List<String> getUsersReset() {
+    public @org.eclipse.jdt.annotation.Nullable List<String> getUsersReset() {
         return usersReset;
     }
 
@@ -93,9 +82,6 @@ public class PinRedeemResult {
         this.usersReset = usersReset;
     }
 
-    /**
-     * Return true if this PinRedeemResult object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -166,17 +152,29 @@ public class PinRedeemResult {
 
         // add `Success` to the URL query string
         if (getSuccess() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSuccess%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSuccess()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSuccess%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSuccess()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `UsersReset` to the URL query string
         if (getUsersReset() != null) {
             for (int i = 0; i < getUsersReset().size(); i++) {
-                joiner.add(String.format(java.util.Locale.ROOT, "%sUsersReset%s%s=%s", prefix, suffix,
-                        "".equals(suffix) ? ""
-                                : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
-                        ApiClient.urlEncode(ApiClient.valueToString(getUsersReset().get(i)))));
+                try {
+                    joiner.add(String.format(java.util.Locale.ROOT, "%sUsersReset%s%s=%s", prefix, suffix,
+                            "".equals(suffix) ? ""
+                                    : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i,
+                                            containerSuffix),
+                            URLEncoder.encode(String.valueOf(getUsersReset().get(i)), "UTF-8").replaceAll("\\+",
+                                    "%20")));
+                } catch (UnsupportedEncodingException e) {
+                    // Should never happen, UTF-8 is always supported
+                    throw new RuntimeException(e);
+                }
             }
         }
 

@@ -12,40 +12,28 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * The server discovery info model.
  */
-@JsonPropertyOrder({ ServerDiscoveryInfo.JSON_PROPERTY_ADDRESS, ServerDiscoveryInfo.JSON_PROPERTY_ID,
-        ServerDiscoveryInfo.JSON_PROPERTY_NAME, ServerDiscoveryInfo.JSON_PROPERTY_ENDPOINT_ADDRESS })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ServerDiscoveryInfo {
     public static final String JSON_PROPERTY_ADDRESS = "Address";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String address;
+    private @org.eclipse.jdt.annotation.Nullable String address;
 
     public static final String JSON_PROPERTY_ID = "Id";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String id;
+    private @org.eclipse.jdt.annotation.Nullable String id;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_ENDPOINT_ADDRESS = "EndpointAddress";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String endpointAddress;
+    private @org.eclipse.jdt.annotation.Nullable String endpointAddress;
 
     public ServerDiscoveryInfo() {
     }
@@ -60,10 +48,8 @@ public class ServerDiscoveryInfo {
      * 
      * @return address
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ADDRESS)
-    public String getAddress() {
+    public @org.eclipse.jdt.annotation.Nullable String getAddress() {
         return address;
     }
 
@@ -82,10 +68,8 @@ public class ServerDiscoveryInfo {
      * 
      * @return id
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ID)
-    public String getId() {
+    public @org.eclipse.jdt.annotation.Nullable String getId() {
         return id;
     }
 
@@ -104,10 +88,8 @@ public class ServerDiscoveryInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -126,10 +108,8 @@ public class ServerDiscoveryInfo {
      * 
      * @return endpointAddress
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ENDPOINT_ADDRESS)
-    public String getEndpointAddress() {
+    public @org.eclipse.jdt.annotation.Nullable String getEndpointAddress() {
         return endpointAddress;
     }
 
@@ -138,9 +118,6 @@ public class ServerDiscoveryInfo {
         this.endpointAddress = endpointAddress;
     }
 
-    /**
-     * Return true if this ServerDiscoveryInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -215,26 +192,46 @@ public class ServerDiscoveryInfo {
 
         // add `Address` to the URL query string
         if (getAddress() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAddress%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAddress()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Id` to the URL query string
         if (getId() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sId%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getId()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EndpointAddress` to the URL query string
         if (getEndpointAddress() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEndpointAddress%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEndpointAddress()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEndpointAddress%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEndpointAddress()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

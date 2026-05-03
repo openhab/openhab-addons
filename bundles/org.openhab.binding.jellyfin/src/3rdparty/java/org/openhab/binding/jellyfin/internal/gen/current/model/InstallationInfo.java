@@ -12,58 +12,38 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class InstallationInfo.
  */
-@JsonPropertyOrder({ InstallationInfo.JSON_PROPERTY_GUID, InstallationInfo.JSON_PROPERTY_NAME,
-        InstallationInfo.JSON_PROPERTY_VERSION, InstallationInfo.JSON_PROPERTY_CHANGELOG,
-        InstallationInfo.JSON_PROPERTY_SOURCE_URL, InstallationInfo.JSON_PROPERTY_CHECKSUM,
-        InstallationInfo.JSON_PROPERTY_PACKAGE_INFO })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class InstallationInfo {
     public static final String JSON_PROPERTY_GUID = "Guid";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private UUID guid;
+    private @org.eclipse.jdt.annotation.Nullable UUID guid;
 
     public static final String JSON_PROPERTY_NAME = "Name";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String name;
+    private @org.eclipse.jdt.annotation.Nullable String name;
 
     public static final String JSON_PROPERTY_VERSION = "Version";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String version;
+    private @org.eclipse.jdt.annotation.Nullable String version;
 
     public static final String JSON_PROPERTY_CHANGELOG = "Changelog";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String changelog;
+    private @org.eclipse.jdt.annotation.Nullable String changelog;
 
     public static final String JSON_PROPERTY_SOURCE_URL = "SourceUrl";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String sourceUrl;
+    private @org.eclipse.jdt.annotation.Nullable String sourceUrl;
 
     public static final String JSON_PROPERTY_CHECKSUM = "Checksum";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private String checksum;
+    private @org.eclipse.jdt.annotation.Nullable String checksum;
 
     public static final String JSON_PROPERTY_PACKAGE_INFO = "PackageInfo";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private PackageInfo packageInfo;
+    private @org.eclipse.jdt.annotation.Nullable PackageInfo packageInfo;
 
     public InstallationInfo() {
     }
@@ -78,10 +58,8 @@ public class InstallationInfo {
      * 
      * @return guid
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_GUID)
-    public UUID getGuid() {
+    public @org.eclipse.jdt.annotation.Nullable UUID getGuid() {
         return guid;
     }
 
@@ -100,10 +78,8 @@ public class InstallationInfo {
      * 
      * @return name
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_NAME)
-    public String getName() {
+    public @org.eclipse.jdt.annotation.Nullable String getName() {
         return name;
     }
 
@@ -122,10 +98,8 @@ public class InstallationInfo {
      * 
      * @return version
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_VERSION)
-    public String getVersion() {
+    public @org.eclipse.jdt.annotation.Nullable String getVersion() {
         return version;
     }
 
@@ -144,10 +118,8 @@ public class InstallationInfo {
      * 
      * @return changelog
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHANGELOG)
-    public String getChangelog() {
+    public @org.eclipse.jdt.annotation.Nullable String getChangelog() {
         return changelog;
     }
 
@@ -166,10 +138,8 @@ public class InstallationInfo {
      * 
      * @return sourceUrl
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SOURCE_URL)
-    public String getSourceUrl() {
+    public @org.eclipse.jdt.annotation.Nullable String getSourceUrl() {
         return sourceUrl;
     }
 
@@ -188,10 +158,8 @@ public class InstallationInfo {
      * 
      * @return checksum
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_CHECKSUM)
-    public String getChecksum() {
+    public @org.eclipse.jdt.annotation.Nullable String getChecksum() {
         return checksum;
     }
 
@@ -210,10 +178,8 @@ public class InstallationInfo {
      * 
      * @return packageInfo
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PACKAGE_INFO)
-    public PackageInfo getPackageInfo() {
+    public @org.eclipse.jdt.annotation.Nullable PackageInfo getPackageInfo() {
         return packageInfo;
     }
 
@@ -222,9 +188,6 @@ public class InstallationInfo {
         this.packageInfo = packageInfo;
     }
 
-    /**
-     * Return true if this InstallationInfo object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -304,38 +267,68 @@ public class InstallationInfo {
 
         // add `Guid` to the URL query string
         if (getGuid() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sGuid%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getGuid()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sGuid%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getGuid()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Name` to the URL query string
         if (getName() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sName%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getName()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Version` to the URL query string
         if (getVersion() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sVersion%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getVersion()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Changelog` to the URL query string
         if (getChangelog() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChangelog%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChangelog()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChangelog%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChangelog()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SourceUrl` to the URL query string
         if (getSourceUrl() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSourceUrl%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSourceUrl()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSourceUrl%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSourceUrl()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `Checksum` to the URL query string
         if (getChecksum() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sChecksum%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getChecksum()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sChecksum%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getChecksum()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `PackageInfo` to the URL query string

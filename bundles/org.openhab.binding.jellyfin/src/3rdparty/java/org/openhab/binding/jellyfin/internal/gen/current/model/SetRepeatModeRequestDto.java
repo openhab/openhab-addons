@@ -12,24 +12,19 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class SetRepeatModeRequestDto.
  */
-@JsonPropertyOrder({ SetRepeatModeRequestDto.JSON_PROPERTY_MODE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SetRepeatModeRequestDto {
     public static final String JSON_PROPERTY_MODE = "Mode";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private GroupRepeatMode mode;
+    private @org.eclipse.jdt.annotation.Nullable GroupRepeatMode mode;
 
     public SetRepeatModeRequestDto() {
     }
@@ -44,10 +39,8 @@ public class SetRepeatModeRequestDto {
      * 
      * @return mode
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MODE)
-    public GroupRepeatMode getMode() {
+    public @org.eclipse.jdt.annotation.Nullable GroupRepeatMode getMode() {
         return mode;
     }
 
@@ -56,9 +49,6 @@ public class SetRepeatModeRequestDto {
         this.mode = mode;
     }
 
-    /**
-     * Return true if this SetRepeatModeRequestDto object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,8 +117,13 @@ public class SetRepeatModeRequestDto {
 
         // add `Mode` to the URL query string
         if (getMode() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMode%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMode()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMode%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMode()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();

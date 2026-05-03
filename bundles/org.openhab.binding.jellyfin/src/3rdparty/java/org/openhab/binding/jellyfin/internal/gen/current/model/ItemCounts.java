@@ -12,84 +12,52 @@
 
 package org.openhab.binding.jellyfin.internal.gen.current.model;
 
+import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.openhab.binding.jellyfin.internal.gen.ApiClient;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Class LibrarySummary.
  */
-@JsonPropertyOrder({ ItemCounts.JSON_PROPERTY_MOVIE_COUNT, ItemCounts.JSON_PROPERTY_SERIES_COUNT,
-        ItemCounts.JSON_PROPERTY_EPISODE_COUNT, ItemCounts.JSON_PROPERTY_ARTIST_COUNT,
-        ItemCounts.JSON_PROPERTY_PROGRAM_COUNT, ItemCounts.JSON_PROPERTY_TRAILER_COUNT,
-        ItemCounts.JSON_PROPERTY_SONG_COUNT, ItemCounts.JSON_PROPERTY_ALBUM_COUNT,
-        ItemCounts.JSON_PROPERTY_MUSIC_VIDEO_COUNT, ItemCounts.JSON_PROPERTY_BOX_SET_COUNT,
-        ItemCounts.JSON_PROPERTY_BOOK_COUNT, ItemCounts.JSON_PROPERTY_ITEM_COUNT })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ItemCounts {
     public static final String JSON_PROPERTY_MOVIE_COUNT = "MovieCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer movieCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer movieCount;
 
     public static final String JSON_PROPERTY_SERIES_COUNT = "SeriesCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer seriesCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer seriesCount;
 
     public static final String JSON_PROPERTY_EPISODE_COUNT = "EpisodeCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer episodeCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer episodeCount;
 
     public static final String JSON_PROPERTY_ARTIST_COUNT = "ArtistCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer artistCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer artistCount;
 
     public static final String JSON_PROPERTY_PROGRAM_COUNT = "ProgramCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer programCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer programCount;
 
     public static final String JSON_PROPERTY_TRAILER_COUNT = "TrailerCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer trailerCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer trailerCount;
 
     public static final String JSON_PROPERTY_SONG_COUNT = "SongCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer songCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer songCount;
 
     public static final String JSON_PROPERTY_ALBUM_COUNT = "AlbumCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer albumCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer albumCount;
 
     public static final String JSON_PROPERTY_MUSIC_VIDEO_COUNT = "MusicVideoCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer musicVideoCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer musicVideoCount;
 
     public static final String JSON_PROPERTY_BOX_SET_COUNT = "BoxSetCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer boxSetCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer boxSetCount;
 
     public static final String JSON_PROPERTY_BOOK_COUNT = "BookCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer bookCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer bookCount;
 
     public static final String JSON_PROPERTY_ITEM_COUNT = "ItemCount";
-    @org.eclipse.jdt.annotation.Nullable
-
-    private Integer itemCount;
+    private @org.eclipse.jdt.annotation.Nullable Integer itemCount;
 
     public ItemCounts() {
     }
@@ -104,10 +72,8 @@ public class ItemCounts {
      * 
      * @return movieCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MOVIE_COUNT)
-    public Integer getMovieCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMovieCount() {
         return movieCount;
     }
 
@@ -126,10 +92,8 @@ public class ItemCounts {
      * 
      * @return seriesCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SERIES_COUNT)
-    public Integer getSeriesCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSeriesCount() {
         return seriesCount;
     }
 
@@ -148,10 +112,8 @@ public class ItemCounts {
      * 
      * @return episodeCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_EPISODE_COUNT)
-    public Integer getEpisodeCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getEpisodeCount() {
         return episodeCount;
     }
 
@@ -170,10 +132,8 @@ public class ItemCounts {
      * 
      * @return artistCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ARTIST_COUNT)
-    public Integer getArtistCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getArtistCount() {
         return artistCount;
     }
 
@@ -192,10 +152,8 @@ public class ItemCounts {
      * 
      * @return programCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_PROGRAM_COUNT)
-    public Integer getProgramCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getProgramCount() {
         return programCount;
     }
 
@@ -214,10 +172,8 @@ public class ItemCounts {
      * 
      * @return trailerCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_TRAILER_COUNT)
-    public Integer getTrailerCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getTrailerCount() {
         return trailerCount;
     }
 
@@ -236,10 +192,8 @@ public class ItemCounts {
      * 
      * @return songCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_SONG_COUNT)
-    public Integer getSongCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getSongCount() {
         return songCount;
     }
 
@@ -258,10 +212,8 @@ public class ItemCounts {
      * 
      * @return albumCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ALBUM_COUNT)
-    public Integer getAlbumCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getAlbumCount() {
         return albumCount;
     }
 
@@ -280,10 +232,8 @@ public class ItemCounts {
      * 
      * @return musicVideoCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_MUSIC_VIDEO_COUNT)
-    public Integer getMusicVideoCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getMusicVideoCount() {
         return musicVideoCount;
     }
 
@@ -302,10 +252,8 @@ public class ItemCounts {
      * 
      * @return boxSetCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BOX_SET_COUNT)
-    public Integer getBoxSetCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBoxSetCount() {
         return boxSetCount;
     }
 
@@ -324,10 +272,8 @@ public class ItemCounts {
      * 
      * @return bookCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_BOOK_COUNT)
-    public Integer getBookCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getBookCount() {
         return bookCount;
     }
 
@@ -346,10 +292,8 @@ public class ItemCounts {
      * 
      * @return itemCount
      */
-    @org.eclipse.jdt.annotation.Nullable
-
     @JsonProperty(value = JSON_PROPERTY_ITEM_COUNT)
-    public Integer getItemCount() {
+    public @org.eclipse.jdt.annotation.Nullable Integer getItemCount() {
         return itemCount;
     }
 
@@ -358,9 +302,6 @@ public class ItemCounts {
         this.itemCount = itemCount;
     }
 
-    /**
-     * Return true if this ItemCounts object is equal to o.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -452,74 +393,134 @@ public class ItemCounts {
 
         // add `MovieCount` to the URL query string
         if (getMovieCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMovieCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMovieCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMovieCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMovieCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SeriesCount` to the URL query string
         if (getSeriesCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSeriesCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSeriesCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSeriesCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `EpisodeCount` to the URL query string
         if (getEpisodeCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sEpisodeCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getEpisodeCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sEpisodeCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getEpisodeCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ArtistCount` to the URL query string
         if (getArtistCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sArtistCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getArtistCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sArtistCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getArtistCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ProgramCount` to the URL query string
         if (getProgramCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sProgramCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getProgramCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sProgramCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getProgramCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `TrailerCount` to the URL query string
         if (getTrailerCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sTrailerCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getTrailerCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sTrailerCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getTrailerCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `SongCount` to the URL query string
         if (getSongCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sSongCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getSongCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sSongCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getSongCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `AlbumCount` to the URL query string
         if (getAlbumCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sAlbumCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getAlbumCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sAlbumCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getAlbumCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `MusicVideoCount` to the URL query string
         if (getMusicVideoCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sMusicVideoCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getMusicVideoCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sMusicVideoCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getMusicVideoCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BoxSetCount` to the URL query string
         if (getBoxSetCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBoxSetCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBoxSetCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBoxSetCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBoxSetCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `BookCount` to the URL query string
         if (getBookCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sBookCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getBookCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sBookCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getBookCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         // add `ItemCount` to the URL query string
         if (getItemCount() != null) {
-            joiner.add(String.format(java.util.Locale.ROOT, "%sItemCount%s=%s", prefix, suffix,
-                    ApiClient.urlEncode(ApiClient.valueToString(getItemCount()))));
+            try {
+                joiner.add(String.format(java.util.Locale.ROOT, "%sItemCount%s=%s", prefix, suffix,
+                        URLEncoder.encode(String.valueOf(getItemCount()), "UTF-8").replaceAll("\\+", "%20")));
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen, UTF-8 is always supported
+                throw new RuntimeException(e);
+            }
         }
 
         return joiner.toString();
