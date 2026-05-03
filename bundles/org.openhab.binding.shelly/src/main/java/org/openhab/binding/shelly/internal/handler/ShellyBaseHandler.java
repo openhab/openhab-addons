@@ -103,7 +103,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private final ShellyBindingRuntimeConfig bindingConfig;
     protected volatile ShellyThingConfiguration config;
-    protected volatile ShellyApiConfiguration apiConfig;
+    protected final ShellyApiConfiguration apiConfig;
     private final ShellyTranslationProvider messages;
     private final ShellyChannelCache cache;
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
@@ -180,10 +180,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         coap = apiConfig.getEnableCoIOT() ? new Shelly1CoapHandler(this, thingName, apiConfig, coapServer) : null;
     }
 
-    private ShellyApiConfiguration buildApiConfig() {
+    private void updateApiConfig() {
         Map<String, String> properties = getThing().getProperties();
-        String realm = getString(properties.get(PROPERTY_SERVICE_NAME));
-        return new ShellyApiConfiguration(config, bindingConfig, realm, gen2);
+        apiConfig.setRealm(getString(properties.get(PROPERTY_SERVICE_NAME)));
     }
 
     @Override
@@ -350,7 +349,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (apiConfig.getRealm().isEmpty()) {
             apiConfig.setRealm(getString(device.hostname).toLowerCase(Locale.ROOT));
-            api.setRealm(apiConfig.getRealm()); // update config
         }
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
@@ -1045,11 +1043,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Refresh config from the current thing configuration so that changes made via
         // handleConfigurationUpdate() are picked up on every re-initialization cycle.
         config = getConfigAs(ShellyThingConfiguration.class);
-        apiConfig = buildApiConfig();
-        Shelly1CoapHandler coap = this.coap;
-        if (coap != null) {
-            coap.setConfig(apiConfig);
-        }
+        updateApiConfig();
 
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
@@ -1154,7 +1148,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (autoCoIoT) {
             logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
             apiConfig.setEnableCoIOT(true);
-            api.setEnableCoIOT(apiConfig.getEnableCoIOT());
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.isAutoCoIoT(), autoCoIoT);

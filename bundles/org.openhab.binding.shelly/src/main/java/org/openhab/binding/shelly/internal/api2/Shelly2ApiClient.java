@@ -123,7 +123,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
+    public void initialize() {
     }
 
     protected static final Map<String, String> MAP_INMODE_BTNTYPE = Map.of(//

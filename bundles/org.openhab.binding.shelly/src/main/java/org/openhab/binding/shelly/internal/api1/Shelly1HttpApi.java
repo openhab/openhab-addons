@@ -81,7 +81,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
+    public void initialize() {
     }
 
     @Override
