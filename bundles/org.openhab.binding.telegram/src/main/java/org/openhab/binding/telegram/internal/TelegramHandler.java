@@ -23,10 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +70,11 @@ import okhttp3.OkHttpClient;
  * The {@link TelegramHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
+ * <p>
+ * Message IDs and callback IDs are now persisted via {@link TelegramMessageStore}
+ * so that inline-keyboard messages can still be edited or deleted after an
+ * openHAB restart.
+ *
  * @author Jens Runge - Initial contribution
  * @author Alexander Krasnogolowy - using Telegram library from pengrad
  * @author Jan N. Klug - handle file attachments
@@ -81,59 +83,38 @@ import okhttp3.OkHttpClient;
 @NonNullByDefault
 public class TelegramHandler extends BaseThingHandler {
 
-    private class ReplyKey {
-        final Long chatId;
-        final String replyId;
-
-        public ReplyKey(Long chatId, String replyId) {
-            this.chatId = chatId;
-            this.replyId = replyId;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(chatId, replyId);
-        }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            ReplyKey other = (ReplyKey) obj;
-            return Objects.equals(chatId, other.chatId) && Objects.equals(replyId, other.replyId);
-        }
-    }
-
     private static Gson gson = new Gson();
     private final List<Long> authorizedSenderChatId = new ArrayList<>();
     private final List<Long> receiverChatId = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
     private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
-    // Keep track of the callback id created by Telegram. This must be sent back in
-    // the answerCallbackQuery
-    // to stop the progress bar in the Telegram client
-    private final Map<ReplyKey, String> replyIdToCallbackId = new HashMap<>();
-    // Keep track of message id sent with reply markup because we want to remove the
-    // markup after the user provided an
-    // answer and need the id of the original message
-    private final Map<ReplyKey, Integer> replyIdToMessageId = new HashMap<>();
+    /**
+     * Persistent store for (chatId, replyId) → message-ID and callback-ID mappings.
+     *
+     * <p>
+     * Previously these were plain in-memory {@code HashMap}s ({@code replyIdToMessageId}
+     * and {@code replyIdToCallbackId}). They are now backed by openHAB's
+     * {@link org.openhab.core.storage.StorageService} so entries survive restarts.
+     */
+    private final TelegramMessageStore messageStore;
 
     private @Nullable TelegramBot bot;
     private @Nullable OkHttpClient botLibClient;
     private @Nullable HttpClient downloadDataClient;
     private @Nullable ParseMode parseMode;
 
-    public TelegramHandler(Thing thing, @Nullable HttpClient httpClient) {
+    /**
+     * Creates a new handler.
+     *
+     * @param thing the Thing this handler belongs to
+     * @param httpClient shared Jetty {@link HttpClient} for file downloads
+     * @param messageStore persistent store for message and callback IDs
+     */
+    public TelegramHandler(Thing thing, @Nullable HttpClient httpClient, TelegramMessageStore messageStore) {
         super(thing);
-        downloadDataClient = httpClient;
+        this.downloadDataClient = httpClient;
+        this.messageStore = messageStore;
     }
 
     @Override
@@ -413,7 +394,9 @@ public class TelegramHandler extends BaseThingHandler {
                     lastMessageLastName = callbackQuery.from().lastName();
                     lastMessageUsername = callbackQuery.from().username();
                     chatId = cbMessage.chat().id();
-                    replyIdToCallbackId.put(new ReplyKey(chatId, replyId), callbackQuery.id());
+
+                    // Persist callback ID so it can be answered (acknowledged) after a restart.
+                    messageStore.putCallbackId(chatId, replyId, callbackQuery.id());
 
                     // build and publish callbackEvent trigger channel payload
                     JsonObject callbackRaw = JsonParser.parseString(gson.toJson(callbackQuery)).getAsJsonObject();
@@ -499,7 +482,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     /**
-     * get the list of all authorized senders
+     * Returns the list of all authorized sender chat IDs.
      *
      * @return list of chatIds
      */
@@ -508,7 +491,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     /**
-     * get the list of all receivers
+     * Returns the list of all receiver chat IDs.
      *
      * @return list of chatIds
      */
@@ -516,17 +499,52 @@ public class TelegramHandler extends BaseThingHandler {
         return receiverChatId;
     }
 
+    /**
+     * Persists the Telegram message ID for the given (chatId, replyId) pair.
+     * Called by {@link TelegramActions} after successfully sending a query with
+     * an inline keyboard.
+     *
+     * @param chatId Telegram chat ID
+     * @param replyId application-level reply identifier
+     * @param messageId Telegram message ID returned by the send API
+     */
     public void addMessageId(Long chatId, String replyId, Integer messageId) {
-        replyIdToMessageId.put(new ReplyKey(chatId, replyId), messageId);
+        messageStore.putMessageId(chatId, replyId, messageId);
     }
 
+    /**
+     * Retrieves the persisted Telegram callback ID for (chatId, replyId).
+     * Returns {@code null} if none is stored.
+     *
+     * @param chatId Telegram chat ID
+     * @param replyId application-level reply identifier
+     * @return Telegram callback ID or {@code null}
+     */
     @Nullable
     public String getCallbackId(Long chatId, String replyId) {
-        return replyIdToCallbackId.get(new ReplyKey(chatId, replyId));
+        return messageStore.getCallbackId(chatId, replyId);
     }
 
+    /**
+     * Removes the persisted Telegram callback ID for (chatId, replyId).
+     *
+     * @param chatId Telegram chat ID
+     * @param replyId application-level reply identifier
+     */
+    public void removeCallbackId(Long chatId, String replyId) {
+        messageStore.removeCallbackId(chatId, replyId);
+    }
+
+    /**
+     * Retrieves and removes the persisted Telegram message ID for (chatId, replyId).
+     * Returns {@code null} if none is stored.
+     *
+     * @param chatId Telegram chat ID
+     * @param replyId application-level reply identifier
+     * @return Telegram message ID or {@code null}
+     */
     public @Nullable Integer removeMessageId(Long chatId, String replyId) {
-        return replyIdToMessageId.remove(new ReplyKey(chatId, replyId));
+        return messageStore.removeMessageId(chatId, replyId);
     }
 
     @Nullable
