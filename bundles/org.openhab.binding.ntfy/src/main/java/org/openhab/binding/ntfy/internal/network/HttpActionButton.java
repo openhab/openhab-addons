@@ -61,7 +61,7 @@ public class HttpActionButton extends ActionButtonBase {
         final String body = this.body;
         return "http, " + label + ", " + url.toString()
                 + (method != null && !method.isBlank() ? ", method=" + method : "")
-                + (headers != null && !headers.isBlank() ? ", headers=" + headers : "")
+                + (headers != null && !headers.isBlank() ? ", " + headers : "")
                 + (body != null && !body.isBlank() ? ", body=" + body : "") + (clearNotification ? ", clear=true" : "");
     }
 }

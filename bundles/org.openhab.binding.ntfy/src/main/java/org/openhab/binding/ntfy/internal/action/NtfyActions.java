@@ -447,7 +447,9 @@ public class NtfyActions implements ThingActions {
                     "Cannot send message without content. Please set a message via withMessage() before sending.");
         }
 
-        return handler.sendMessage(ntfyMessage);
+        String messageId = handler.sendMessage(ntfyMessage);
+        resetNtfyMessage();
+        return messageId;
     }
 
     /**

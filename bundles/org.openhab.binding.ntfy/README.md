@@ -19,14 +19,14 @@ This binding provides the following Thing types. The Thing type IDs match the de
 
 ### `ntfyConnection` Bridge Configuration
 
-| Name              | Type    | Description                             | Default                            | Required | Advanced |
-|-------------------|---------|-----------------------------------------|------------------------------------|----------|----------|
-| hostname          | text    | Base URL of the ntfy server             | [https://ntfy.sh](https://ntfy.sh) | yes      | no       |
-| username          | text    | Optional username for basic auth        | N/A                                | no       | no       |
-| password          | text    | Optional password for basic auth        | N/A                                | no       | no       |
-| connectionTimeout | integer | WebSocket / HTTP connection timeout ms  | 60000                              | no       | yes      |
+| Name              | Type    | Description                                                                              | Default                            | Required | Advanced |
+|-------------------|---------|------------------------------------------------------------------------------------------|------------------------------------|----------|----------|
+| hostname          | text    | Base URL of the ntfy server                                                              | [https://ntfy.sh](https://ntfy.sh) | yes      | no       |
+| username          | text    | Optional username for basic auth                                                         | N/A                                | no       | no       |
+| password          | text    | Optional password - if username is provided basic auth is used else Bearer token is used | N/A                                | no       | no       |
+| connectionTimeout | integer | WebSocket / HTTP connection timeout ms                                                   | 60000                              | no       | yes      |
 
-Configure the `ntfyConnection` as a bridge to hold shared server and authentication settings. Topic Things reference the bridge to reuse these settings.
+Configure the `ntfyConnection` as a bridge to hold shared server and authentication settings. Topic Things reference the bridge to reuse these settings. For authentication with access token only set the password and leave the username empty.
 
 ### `ntfyTopic` Thing Configuration
 
@@ -93,23 +93,24 @@ Important: Always check that the returned actions object is not null (the Thing 
 
 Below is a quick reference of the builder-style methods provided by the binding actions. Use these to construct messages before calling `send()`.
 
-| Method              | Parameters                                                                                        | Description                                                          | Ntfy docs                                                                    |
-|---------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|------------------------------------------------------------------------------|
-| withMessage         | (String message)                                                                                  | Set the main message text.                                           | [publish](https://docs.ntfy.sh/publish)                                      |
-| withPriority        | (int priority)                                                                                    | Set message priority (1-5).                                          | [priority](https://ntfy.sh/docs/publish/#priority)                           |
-| withTitle           | (String title)                                                                                    | Set title.                                                           | [title](https://docs.ntfy.sh/publish/#message-title)                         |
-| withTag             | (String tag)                                                                                      | Add a tag to the message.                                            | [tags](https://ntfy.sh/docs/publish/#tags)                                   |
-| withIcon            | (String url)                                                                                      | Set an icon URL for the notification.                                | [icons](https://ntfy.sh/docs/publish/#icons)                                 |
-| withAttachment      | (String url, String filename)                                                                     | Attach a file or resource URL with optional filename.                | [attachments](https://docs.ntfy.sh/publish/#attach-file-from-a-url)          |
-| withViewAction      | (String label, Boolean clearNotification, String url)                                             | Add a view action (opens URL) with optional clear flag.              | [actions](https://docs.ntfy.sh/publish/#open-websiteapp)                     |
-| withCopyAction      | (String label, Boolean clearNotification, String value)                                           | Add an action that copies text to clipboard on the client.           | [actions](https://docs.ntfy.sh/publish/#copy-to-clipboard)                   |
-| withHttpAction      | (String label, Boolean clearNotification, String url, String method, String headers, String body) | Add an HTTP action with optional method, headers and body.           | [actions](https://docs.ntfy.sh/publish/#send-http-request)                   |
-| withBroadcastAction | (String label, Boolean clearNotification, String params)                                          | Add a broadcast action to trigger local apps/handlers.               | [actions](https://docs.ntfy.sh/publish/#send-android-broadcast)              |
-| withDelay           | (String delay)                                                                                    | Assign a delay.                                                      | [delay](https://docs.ntfy.sh/publish/#scheduled-delivery)                    |
-| withSequenceId      | (String sequenceId)                                                                               | Assign a sequence id for later reference (useful for delete/update). | [sequence id](https://docs.ntfy.sh/publish/#updating-deleting-notifications) |
-| send                | ()                                                                                                | Send the built message; returns a message ID string.                 | [publish](https://ntfy.sh/docs/publish/)                                     |
-| send                | (String file, String filename, String sequenceId)                                                 | Send a file; returns a message ID string.                            | [publish_local_file](https://docs.ntfy.sh/publish/#attach-local-file)        |
-| delete              | (String sequenceId)                                                                               | Delete a message previously sent with the given sequence id.         | [delete](https://ntfy.sh/docs/publish/#deleting-notifications)               |
+| Method                  | Parameters                                                                                        | Description                                                          | Ntfy docs                                                                    |
+|-------------------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|------------------------------------------------------------------------------|
+| withMessage             | (String message)                                                                                  | Set the main message text.                                           | [publish](https://docs.ntfy.sh/publish)                                      |
+| withPriority            | (int priority)                                                                                    | Set message priority (1-5).                                          | [priority](https://ntfy.sh/docs/publish/#priority)                           |
+| withTitle               | (String title)                                                                                    | Set title.                                                           | [title](https://docs.ntfy.sh/publish/#message-title)                         |
+| withTag                 | (String tag)                                                                                      | Add a tag to the message.                                            | [tags](https://ntfy.sh/docs/publish/#tags)                                   |
+| withIcon                | (String url)                                                                                      | Set an icon URL for the notification.                                | [icons](https://ntfy.sh/docs/publish/#icons)                                 |
+| withAttachment          | (String url, String filename)                                                                     | Attach a file or resource URL with optional filename.                | [attachments](https://docs.ntfy.sh/publish/#attach-file-from-a-url)          |
+| withViewAction          | (String label, Boolean clearNotification, String url)                                             | Add a view action (opens URL) with optional clear flag.              | [actions](https://docs.ntfy.sh/publish/#open-websiteapp)                     |
+| withCopyAction          | (String label, Boolean clearNotification, String value)                                           | Add an action that copies text to clipboard on the client.           | [actions](https://docs.ntfy.sh/publish/#copy-to-clipboard)                   |
+| withHttpAction          | (String label, Boolean clearNotification, String url, String method, String headers, String body) | Add an HTTP action with optional method, headers and body.           | [actions](https://docs.ntfy.sh/publish/#send-http-request)                   |
+| withBroadcastAction     | (String label, Boolean clearNotification, String params)                                          | Add a broadcast action to trigger local apps/handlers.               | [actions](https://docs.ntfy.sh/publish/#send-android-broadcast)              |
+| withDelay               | (String delay)                                                                                    | Assign a delay.                                                      | [delay](https://docs.ntfy.sh/publish/#scheduled-delivery)                    |
+| withSequenceId          | (String sequenceId)                                                                               | Assign a sequence id for later reference (useful for delete/update). | [sequence id](https://docs.ntfy.sh/publish/#updating-deleting-notifications) |
+| send                    | ()                                                                                                | Send the built message; returns a message ID string.                 | [publish](https://ntfy.sh/docs/publish/)                                     |
+| send                    | (String file, String filename, String sequenceId)                                                 | Send a file; returns a message ID string.                            | [publish_local_file](https://docs.ntfy.sh/publish/#attach-local-file)        |
+| delete                  | (String sequenceId)                                                                               | Delete a message previously sent with the given sequence id.         | [delete](https://ntfy.sh/docs/publish/#deleting-notifications)               |
+| clearNtfyMessageBuilder | ()                                                                                                | Reset the message build explicitly                                   |                                                                              |
 
 For more information about ntfy features and the notification format, see the ntfy project documentation: [https://ntfy.sh/docs/](https://ntfy.sh/docs/)
 

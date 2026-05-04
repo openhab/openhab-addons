@@ -89,6 +89,13 @@ public class NtfySender {
             if (HttpStatus.isSuccess(response.getStatus())) {
                 return GsonDeserializer.deserialize(response.getContentAsString(), MessageEvent.class);
             }
+            if (response.getStatus() == HttpStatus.BAD_REQUEST_400) {
+                logger.warn(
+                        "Failed to send message due to bad request - check if message content and headers are valid - error from server: {}",
+                        response.getContentAsString());
+            } else {
+                logger.warn("Failed to send message - received HTTP status {}", response.getStatus());
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Failed to send message: {}", e.getMessage());
