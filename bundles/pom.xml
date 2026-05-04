@@ -455,9 +455,10 @@
     <module>org.openhab.binding.tuya</module>
     <module>org.openhab.binding.twilio</module>
     <module>org.openhab.binding.unifi</module>
-    <module>org.openhab.binding.unifiaccess</module>
+    <module>org.openhab.binding.unifi.network</module>
+    <module>org.openhab.binding.unifi.access</module>
     <module>org.openhab.binding.unifiedremote</module>
-    <module>org.openhab.binding.unifiprotect</module>
+    <module>org.openhab.binding.unifi.protect</module>
     <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.upb</module>
     <module>org.openhab.binding.urtsi</module>

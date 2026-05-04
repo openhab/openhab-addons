@@ -49,6 +49,8 @@
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.unifi/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.unifi.*/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
@@ -74,6 +76,7 @@
                 <feature>openhab-binding-homeassistant</feature>
                 <feature>openhab-binding-modbus</feature>
                 <feature>openhab-binding-mqtt</feature>
+                <feature>openhab-binding-unifi</feature>
               </features>
             </configuration>
           </execution>
