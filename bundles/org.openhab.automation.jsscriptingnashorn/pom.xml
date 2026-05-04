@@ -16,7 +16,6 @@
 
   <properties>
     <bnd.importpackage>jdk.dynalink.*;resolution:=optional</bnd.importpackage>
-    <asm.version>9.9</asm.version>
   </properties>
 
   <dependencies>
@@ -30,26 +29,31 @@
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-analysis</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-commons</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-tree</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-util</artifactId>
       <version>${asm.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
