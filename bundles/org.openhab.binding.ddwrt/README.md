@@ -7,7 +7,7 @@ Features include:
 
 - **Device telemetry** — CPU load, CPU temperature, uptime, WAN IP, interface traffic counters
 - **Wireless radio monitoring** — SSID, channel, mode, associated client list
-- **Wireless client tracking** — associated/present state, signal strength, roaming between APs, MAC randomization support
+- **Client tracking** — wireless, wired, and VPN client presence, signal strength, roaming between APs, MAC randomization support
 - **Syslog monitoring** — real-time DHCP, wireless association, warning, and error events via `logread -f` or `tail -F`
 - **Firewall rule control** — enable/disable DD-WRT GUI-configured filter rules via nvram
 - **Device reboot** — remote reboot via SSH
@@ -19,7 +19,7 @@ Features include:
 | `network`         | DD-WRT Network  | Bridge representing the network of managed devices                    |
 | `device`          | DD-WRT Device   | A DD-WRT, OpenWrt, Tomato, or compatible Linux device managed via SSH |
 | `radio`           | Wireless Radio  | A wireless radio interface on a device (e.g. `wl0`, `wlan0`)          |
-| `wireless-client` | Wireless Client | A wireless client associated with the network                         |
+| `client`          | Client          | A client endpoint on the network (wireless, wired, or VPN)            |
 | `firewall-rule`   | Firewall Rule   | A GUI-configured firewall filter rule from DD-WRT nvram               |
 
 The binding auto-detects the chipset and firmware variant during the first SSH connection.
@@ -31,7 +31,7 @@ After adding and configuring the `network` bridge, the binding automatically dis
 
 - **Devices** — from the hostnames list configured on the bridge
 - **Radios** — by probing wireless interfaces on each device
-- **Wireless clients** — from the association lists and DHCP lease tables on each device
+- **Clients** — from radio association lists, DHCP lease tables, and ARP/neighbor caches on each device
 - **Firewall rules** — from DD-WRT nvram `filter_rule` entries (DD-WRT gateway devices only)
 
 Discovery results appear in the openHAB inbox after each device refresh cycle.
@@ -208,7 +208,7 @@ Each firmware has its own way to enable SSH and install public keys:
 | interfaceId     | text    | Wireless interface identifier (e.g. `wl0`, `wlan0`)   | N/A     | yes      | no       |
 | parentDeviceMac | text    | MAC address of the parent device                      | N/A     | no       | yes      |
 
-### `wireless-client` Thing Configuration
+### `client` Thing Configuration
 
 | Name | Type | Description                                                       | Default | Required | Advanced |
 |------|------|-------------------------------------------------------------------|---------|----------|----------|
@@ -275,21 +275,22 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 | client-count | Number | RO         | Number of clients associated with this radio       |
 | assoclist    | String | RO         | Comma-separated MACs of associated clients         |
 
-### Wireless Client Channels
+### Client Channels
 
-| Channel     | Type     | Read/Write | Description                                          |
-|-------------|----------|------------|------------------------------------------------------|
-| online      | Switch   | RO         | Whether the client is currently connected            |
-| mac-address | String   | RO         | Current MAC address of the client                    |
-| hostname    | String   | RO         | Hostname from DHCP lease                             |
-| ip-address  | String   | RO         | IP address from DHCP lease                           |
-| ap          | String   | RO         | Name of the radio the client is associated with      |
-| ap-mac      | String   | RO         | MAC address of the access point                      |
-| ssid        | String   | RO         | SSID the client is connected to                      |
-| snr         | Number   | RO         | Signal-to-noise ratio in dB                          |
-| rx-rate     | Number   | RO         | Receive rate in Mbit/s                               |
-| tx-rate     | Number   | RO         | Transmit rate in Mbit/s                              |
-| last-seen   | DateTime | RO         | Timestamp when the client was last seen online       |
+| Channel         | Type     | Read/Write | Description                                          |
+|-----------------|----------|------------|------------------------------------------------------|
+| online          | Switch   | RO         | Whether the client is currently connected            |
+| mac-address     | String   | RO         | Current MAC address of the client                    |
+| hostname        | String   | RO         | Hostname from DHCP lease                             |
+| ip-address      | String   | RO         | IP address from DHCP lease                           |
+| connection-type | String   | RO         | How the client is connected: wireless, wired, or vpn |
+| ap              | String   | RO         | Name of the radio the client is associated with      |
+| ap-mac          | String   | RO         | MAC address of the access point                      |
+| ssid            | String   | RO         | SSID the client is connected to                      |
+| snr             | Number   | RO         | Signal-to-noise ratio in dB                          |
+| rx-rate         | Number   | RO         | Receive rate in Mbit/s                               |
+| tx-rate         | Number   | RO         | Transmit rate in Mbit/s                              |
+| last-seen       | DateTime | RO         | Timestamp when the client was last seen online       |
 
 ### Firewall Rule Channels
 
@@ -324,8 +325,8 @@ Bridge ddwrt:network:home "Home Network"  [ hostnames="router,office-ap,garage-a
     Thing radio officeap_wlan0 "Office 2.4GHz"  [ interfaceId="wlan0" ]
     Thing radio officeap_wlan1 "Office 5GHz"    [ interfaceId="wlan1" ]
 
-    Thing wireless-client joesphone     "Joe's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
-    Thing wireless-client livingroomtv  "Living Room TV"   [ mac="b0:8b:a8:7f:99:2c" ]
+    Thing client joesphone     "Joe's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
+    Thing client livingroomtv  "Living Room TV"   [ mac="b0:8b:a8:7f:99:2c" ]
 
     Thing firewall-rule bedtime10 "Bedtime 10-12" [ ruleId="filter_rule3" ]
     Thing firewall-rule bedtime12 "Bedtime 12-6"  [ ruleId="filter_rule4" ]
@@ -352,12 +353,13 @@ String             Router24Ssid    "2.4GHz SSID [%s]"             { channel="ddw
 Number             Router24Channel "2.4GHz Channel [%d]"          { channel="ddwrt:radio:home:router_wl0:channel" }
 Number             Router24Clients "2.4GHz Clients [%d]"          { channel="ddwrt:radio:home:router_wl0:client-count" }
 
-// Wireless client
-Switch             PhoneOnline    "Phone Online [%s]"             { channel="ddwrt:wireless-client:home:joesphone:online" }
-String             PhoneAp        "Phone AP [%s]"                 { channel="ddwrt:wireless-client:home:joesphone:ap" }
-String             PhoneSsid      "Phone SSID [%s]"               { channel="ddwrt:wireless-client:home:joesphone:ssid" }
-Number             PhoneSnr       "Phone SNR [%d dB]"             { channel="ddwrt:wireless-client:home:joesphone:snr" }
-DateTime           PhoneLastSeen  "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:wireless-client:home:joesphone:last-seen" }
+// Client
+Switch             PhoneOnline    "Phone Online [%s]"             { channel="ddwrt:client:home:joesphone:online" }
+String             PhoneConnType  "Phone Connection [%s]"         { channel="ddwrt:client:home:joesphone:connection-type" }
+String             PhoneAp        "Phone AP [%s]"                 { channel="ddwrt:client:home:joesphone:ap" }
+String             PhoneSsid      "Phone SSID [%s]"               { channel="ddwrt:client:home:joesphone:ssid" }
+Number             PhoneSnr       "Phone SNR [%d dB]"             { channel="ddwrt:client:home:joesphone:snr" }
+DateTime           PhoneLastSeen  "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:client:home:joesphone:last-seen" }
 
 // Firewall
 Switch             Bedtime10      "Bedtime 10-12 [%s]"            { channel="ddwrt:firewall-rule:home:bedtime10:enabled" }
@@ -381,8 +383,9 @@ sitemap home label="Home Network" {
         Text item=Router24Channel
         Text item=Router24Clients
     }
-    Frame label="Devices" {
+    Frame label="Clients" {
         Switch item=PhoneOnline
+        Text   item=PhoneConnType
         Text   item=PhoneAp
         Text   item=PhoneSsid
         Text   item=PhoneSnr
@@ -413,8 +416,8 @@ DHCP and wireless events are always captured regardless of this setting.
 
 Current client presence uses the following precedence:
 
-- **Wireless clients** are considered present while they are associated with an AP, even if they are not currently generating IP traffic.
-- **Wired clients** are inferred from the authoritative ARP/neighbor table when they have a recent entry and are not present in any wireless association list.
+- **Wireless clients** are considered present while they are associated with an AP, even if they are not currently generating IP traffic. Their `connection-type` channel reads `wireless`.
+- **Wired clients** are inferred from the DHCP lease table and ARP/neighbor cache when they are not present in any wireless radio association list. Their `connection-type` channel reads `wired`.
 - **Gateway ARP/neighbor data** is preferred when a managed gateway is present. The local openHAB host ARP cache is only used as a fallback when no gateway is available.
 - **Static hostname mapping files** and inline `hostnameMappings` are treated as static hints only; dynamic neighbor data is authoritative for current IP presence.
 

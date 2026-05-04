@@ -62,19 +62,19 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
+    protected List<DDWRTClient> getAssociatedClients(SshRunner runner, String iface) {
         String output = runner.execStdout("wl -i " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
 
-        List<DDWRTWirelessClient> clients = new ArrayList<>();
+        List<DDWRTClient> clients = new ArrayList<>();
         for (String line : output.split("\n")) {
             String trimmed = line.trim();
             // Format: "assoclist XX:XX:XX:XX:XX:XX"
             if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
                 String clientMac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase(Locale.ROOT));
-                DDWRTWirelessClient client = new DDWRTWirelessClient(clientMac);
+                DDWRTClient client = new DDWRTClient(clientMac);
                 client.setApMac(Objects.requireNonNull(mac));
                 client.setIface(iface);
                 client.setOnline(true);

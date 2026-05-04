@@ -13,10 +13,10 @@
 package org.openhab.binding.ddwrt.internal;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_CLIENT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_FIREWALL_RULE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,7 +79,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             }
             discoverDevices(net);
             discoverRadios(net);
-            discoverWirelessClients(net);
+            discoverClients(net);
             discoverFirewallRules(net);
         } catch (Exception e) {
             logger.warn("Error during DD-WRT discovery scan: {}", e.getMessage(), e);
@@ -191,20 +191,20 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         });
     }
 
-    private void discoverWirelessClients(DDWRTNetwork net) {
+    private void discoverClients(DDWRTNetwork net) {
         final ThingUID bridgeUID = thingHandler.getThing().getUID();
         final DDWRTNetworkCache cache = net.getCache();
 
         cache.getWirelessClients().forEach(client -> {
             if (client.getHostname().isEmpty()) {
-                // Skip clients without a hostname — hostname is required for wireless client things
-                logger.debug("Skipping wireless client without hostname: MAC={}", client.getMac());
+                // Skip clients without a hostname — hostname is required for client things
+                logger.debug("Skipping client without hostname: MAC={}", client.getMac());
                 return;
             }
             final String thingId = client.getHostname().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
-            final ThingUID thingUID = new ThingUID(THING_TYPE_WIRELESS_CLIENT, bridgeUID, thingId);
+            final ThingUID thingUID = new ThingUID(THING_TYPE_CLIENT, bridgeUID, thingId);
 
-            logger.debug("Discovered wireless client: '{}'", thingUID);
+            logger.debug("Discovered client: '{}'", thingUID);
 
             final Map<String, Object> props = new java.util.HashMap<>();
             props.put("hostname", client.getHostname());
@@ -212,29 +212,29 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(client.getHostname()).withProperties(props)
-                    // Keep hostname as the representation property. Some wireless clients use
+                    // Keep hostname as the representation property. Some clients use
                     // MAC randomization, so the MAC is not stable enough to be the primary
                     // representation key in the inbox/UI.
                     .withRepresentationProperty("hostname").build();
 
             logger.debug(
-                    "Submitting discovery result for wireless client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
+                    "Submitting discovery result for client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
                     thingUID, client.getHostname(), client.getApMac(), client.getSsid(), client.getChannel(),
                     client.getSignalDbm(), client.getSnr());
 
-            // If this wireless client is already sitting in the discovery inbox under an
+            // If this client is already sitting in the discovery inbox under an
             // older placeholder hostname (for example an OUI-generated TPLink-e916b1) or an
             // earlier MAC, replace the pending inbox entry before submitting the new result.
             // Matching is intentionally by hostname OR MAC. Hostname remains the preferred
             // representation property because MAC randomization can cause the MAC to change
-            // for some wireless devices.
-            replacePendingWirelessClientInboxDuplicates(thingUID, client.getHostname(), client.getMac());
+            // for some devices.
+            replacePendingClientInboxDuplicates(thingUID, client.getHostname(), client.getMac());
 
             thingDiscovered(result);
         });
     }
 
-    private void replacePendingWirelessClientInboxDuplicates(ThingUID newThingUID, String hostname, String mac) {
+    private void replacePendingClientInboxDuplicates(ThingUID newThingUID, String hostname, String mac) {
         String normalizedHostname = normalizeHostname(hostname);
         String normalizedMac = normalizeMac(mac);
 
@@ -253,8 +253,8 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
                 continue;
             }
 
-            // Only operate on pending wireless-client inbox entries
-            if (!existingUID.getId().startsWith("wireless-client")) {
+            // Only operate on pending client inbox entries
+            if (!existingUID.getId().startsWith("client")) {
                 continue;
             }
 
@@ -273,7 +273,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             if (sameHostname || sameMac) {
                 logger.debug(
-                        "Removing stale wireless client inbox entry {} before adding replacement {} (hostname match={}, mac match={})",
+                        "Removing stale client inbox entry {} before adding replacement {} (hostname match={}, mac match={})",
                         existingUID, newThingUID, sameHostname, sameMac);
                 inbox.remove(existingUID);
             }

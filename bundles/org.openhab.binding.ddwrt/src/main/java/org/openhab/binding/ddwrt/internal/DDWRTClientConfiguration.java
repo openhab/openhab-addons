@@ -15,12 +15,12 @@ package org.openhab.binding.ddwrt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for a DD-WRT wireless client thing.
+ * Configuration for a DD-WRT client thing.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTWirelessClientConfiguration {
+public class DDWRTClientConfiguration {
 
     public String hostname = "";
     public String mac = "";

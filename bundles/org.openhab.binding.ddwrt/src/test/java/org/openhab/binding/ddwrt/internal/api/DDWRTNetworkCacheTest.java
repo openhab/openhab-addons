@@ -43,18 +43,18 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testPutAndGetWirelessClient() {
-        DDWRTWirelessClient client = new DDWRTWirelessClient("AA:BB:CC:DD:EE:FF");
+        DDWRTClient client = new DDWRTClient("AA:BB:CC:DD:EE:FF");
         client.setHostname("TestPhone");
         cache.putWirelessClient("AA:BB:CC:DD:EE:FF", client);
 
-        DDWRTWirelessClient result = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient result = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
         assertThat(result, is(notNullValue()));
         assertThat(result.getHostname(), is(equalTo("TestPhone")));
     }
 
     @Test
     void testGetWirelessClientNormalizesCase() {
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         cache.putWirelessClient("AA:BB:CC:DD:EE:FF", client);
 
         assertThat(cache.getWirelessClient("aa:bb:cc:dd:ee:ff"), is(notNullValue()));
@@ -63,23 +63,23 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testGetWirelessClientByHostname() {
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         client.setHostname("Lee-Pixel-8a");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", client);
 
-        DDWRTWirelessClient result = cache.getWirelessClientByHostname("Lee-Pixel-8a");
+        DDWRTClient result = cache.getWirelessClientByHostname("Lee-Pixel-8a");
         assertThat(result, is(notNullValue()));
         assertThat(result.getMac(), is(equalTo("aa:bb:cc:dd:ee:ff")));
     }
 
     @Test
     void testGetWirelessClientByHostnameSanitizedForm() {
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         client.setHostname("Lee-Pixel-8a");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", client);
 
         // Sanitized form matches thing ID
-        DDWRTWirelessClient result = cache.getWirelessClientByHostname("leepixel8a");
+        DDWRTClient result = cache.getWirelessClientByHostname("leepixel8a");
         assertThat(result, is(notNullValue()));
         assertThat(result.getMac(), is(equalTo("aa:bb:cc:dd:ee:ff")));
     }
@@ -98,7 +98,7 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testComputeWirelessClientCreatesNew() {
-        DDWRTWirelessClient result = cache.computeWirelessClient("aa:bb:cc:dd:ee:ff", client -> {
+        DDWRTClient result = cache.computeWirelessClient("aa:bb:cc:dd:ee:ff", client -> {
             client.setHostname("NewClient");
             client.setOnline(true);
             return client;
@@ -111,7 +111,7 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testComputeWirelessClientUpdatesExisting() {
-        DDWRTWirelessClient original = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient original = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         original.setHostname("Phone");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", original);
 
@@ -120,7 +120,7 @@ class DDWRTNetworkCacheTest {
             return client;
         });
 
-        DDWRTWirelessClient updated = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient updated = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
         assertThat(updated, is(notNullValue()));
         assertThat(updated.getHostname(), is(equalTo("Phone")));
         assertThat(updated.getIpAddress(), is(equalTo("192.168.1.50")));
@@ -130,14 +130,14 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testMergeRandomizedMac() {
-        DDWRTWirelessClient oldClient = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient oldClient = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         oldClient.setHostname("Phone");
         oldClient.setApMac("11:22:33:44:55:66");
         oldClient.setSsid("MyWiFi");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", oldClient);
 
         // New MAC appears without hostname (hostname comes from DHCP ACK which triggers merge)
-        DDWRTWirelessClient newClient = new DDWRTWirelessClient("11:22:33:44:55:00");
+        DDWRTClient newClient = new DDWRTClient("11:22:33:44:55:00");
         cache.putWirelessClient("11:22:33:44:55:00", newClient);
 
         String oldMac = cache.mergeRandomizedMac("11:22:33:44:55:00", "Phone");
@@ -147,7 +147,7 @@ class DDWRTNetworkCacheTest {
         assertThat(cache.getWirelessClient("aa:bb:cc:dd:ee:ff"), is(nullValue()));
 
         // New entry has AP info carried over
-        DDWRTWirelessClient merged = cache.getWirelessClient("11:22:33:44:55:00");
+        DDWRTClient merged = cache.getWirelessClient("11:22:33:44:55:00");
         assertThat(merged, is(notNullValue()));
         assertThat(merged.getApMac(), is(equalTo("11:22:33:44:55:66")));
         assertThat(merged.getSsid(), is(equalTo("MyWiFi")));
@@ -155,7 +155,7 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testMergeRandomizedMacNoMergeNeeded() {
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         client.setHostname("Phone");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", client);
 
@@ -171,12 +171,12 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testIsMergedAwayMac() {
-        DDWRTWirelessClient oldClient = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient oldClient = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         oldClient.setHostname("Phone");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", oldClient);
 
         // New MAC appears without hostname yet
-        DDWRTWirelessClient newClient = new DDWRTWirelessClient("11:22:33:44:55:00");
+        DDWRTClient newClient = new DDWRTClient("11:22:33:44:55:00");
         cache.putWirelessClient("11:22:33:44:55:00", newClient);
 
         cache.mergeRandomizedMac("11:22:33:44:55:00", "Phone");
@@ -192,7 +192,7 @@ class DDWRTNetworkCacheTest {
         AtomicInteger callCount = new AtomicInteger(0);
         cache.addChangeListener("aa:bb:cc:dd:ee:ff", callCount::incrementAndGet);
 
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", client);
 
         assertThat(callCount.get(), is(equalTo(1)));
@@ -220,7 +220,7 @@ class DDWRTNetworkCacheTest {
         cache.addChangeListener("aa:bb:cc:dd:ee:ff", listener);
         cache.addChangeListener("phone", listener);
 
-        DDWRTWirelessClient client = new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff");
+        DDWRTClient client = new DDWRTClient("aa:bb:cc:dd:ee:ff");
         client.setHostname("Phone");
         cache.putWirelessClient("aa:bb:cc:dd:ee:ff", client);
 
@@ -236,7 +236,7 @@ class DDWRTNetworkCacheTest {
         cache.addChangeListener("aa:bb:cc:dd:ee:ff", listener);
         cache.removeChangeListener("aa:bb:cc:dd:ee:ff", listener);
 
-        cache.putWirelessClient("aa:bb:cc:dd:ee:ff", new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff"));
+        cache.putWirelessClient("aa:bb:cc:dd:ee:ff", new DDWRTClient("aa:bb:cc:dd:ee:ff"));
 
         assertThat(callCount.get(), is(equalTo(0)));
     }
@@ -316,11 +316,11 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testTotalWirelessClientsCountsOnline() {
-        DDWRTWirelessClient online = new DDWRTWirelessClient("aa:bb:cc:00:00:01");
+        DDWRTClient online = new DDWRTClient("aa:bb:cc:00:00:01");
         online.setOnline(true);
         cache.putWirelessClient("aa:bb:cc:00:00:01", online);
 
-        DDWRTWirelessClient offline = new DDWRTWirelessClient("aa:bb:cc:00:00:02");
+        DDWRTClient offline = new DDWRTClient("aa:bb:cc:00:00:02");
         offline.setOnline(false);
         cache.putWirelessClient("aa:bb:cc:00:00:02", offline);
 
@@ -331,7 +331,7 @@ class DDWRTNetworkCacheTest {
 
     @Test
     void testClearAll() {
-        cache.putWirelessClient("aa:bb:cc:dd:ee:ff", new DDWRTWirelessClient("aa:bb:cc:dd:ee:ff"));
+        cache.putWirelessClient("aa:bb:cc:dd:ee:ff", new DDWRTClient("aa:bb:cc:dd:ee:ff"));
         cache.putRadio("aa:bb:cc:dd:ee:ff:wl0", new DDWRTRadio("aa:bb:cc:dd:ee:ff", "wl0"));
         cache.putFirewallRule("rule1", new DDWRTFirewallRule("rule1", "rule1", "aa:bb:cc:dd:ee:ff"));
         cache.putDhcpLease("aa:bb:cc:dd:ee:ff", new DDWRTDhcpLease("aa:bb:cc:dd:ee:ff"));

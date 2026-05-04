@@ -63,15 +63,14 @@ public final class IwinfoParser {
     /**
      * Parse {@code iwinfo <iface> assoclist} output into wireless client objects.
      */
-    public static List<DDWRTWirelessClient> parseAssoclist(Logger logger, SshRunner runner, String iface,
-            String apMac) {
+    public static List<DDWRTClient> parseAssoclist(Logger logger, SshRunner runner, String iface, String apMac) {
         String output = runner.execStdout("iwinfo " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
 
-        List<DDWRTWirelessClient> clients = new ArrayList<>();
-        DDWRTWirelessClient current = null;
+        List<DDWRTClient> clients = new ArrayList<>();
+        DDWRTClient current = null;
 
         for (String line : output.split("\n")) {
             Matcher macMatcher = MAC_LINE.matcher(line.trim());
@@ -79,7 +78,7 @@ public final class IwinfoParser {
                 if (current != null) {
                     clients.add(current);
                 }
-                current = new DDWRTWirelessClient(Objects.requireNonNull(macMatcher.group(1)));
+                current = new DDWRTClient(Objects.requireNonNull(macMatcher.group(1)));
                 current.setApMac(apMac);
                 current.setIface(iface);
                 current.setOnline(true);
