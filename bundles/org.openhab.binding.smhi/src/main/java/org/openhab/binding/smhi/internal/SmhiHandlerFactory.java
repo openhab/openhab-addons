@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.smhi.internal;
 
-import static org.openhab.binding.smhi.internal.SmhiBindingConstants.THING_TYPE_FORECAST;
+import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.smhi.provider.SmhiChannelTypeProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,10 +44,16 @@ public class SmhiHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FORECAST);
 
     private final HttpClient httpClient;
+    private final SmhiChannelTypeProvider channelTypeProvider;
+    private final ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
-    public SmhiHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+    public SmhiHandlerFactory(@Reference final HttpClientFactory httpClientFactory,
+            @Reference final SmhiChannelTypeProvider channelTypeProvider,
+            @Reference ChannelTypeRegistry channelTypeRegistry) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.channelTypeProvider = channelTypeProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class SmhiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_FORECAST.equals(thingTypeUID)) {
-            return new SmhiHandler(thing, httpClient);
+            return new SmhiHandler(thing, httpClient, channelTypeProvider, channelTypeRegistry);
         }
 
         return null;
