@@ -37,11 +37,11 @@ public class DDWRTBindingConstants {
     public static final ThingTypeUID BRIDGE_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_RADIO = new ThingTypeUID(BINDING_ID, "radio");
-    public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wireless-client");
+    public static final ThingTypeUID THING_TYPE_CLIENT = new ThingTypeUID(BINDING_ID, "client");
     public static final ThingTypeUID THING_TYPE_FIREWALL_RULE = new ThingTypeUID(BINDING_ID, "firewall-rule");
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Objects.requireNonNull(
-            Set.of(THING_TYPE_DEVICE, THING_TYPE_RADIO, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_FIREWALL_RULE));
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Objects
+            .requireNonNull(Set.of(THING_TYPE_DEVICE, THING_TYPE_RADIO, THING_TYPE_CLIENT, THING_TYPE_FIREWALL_RULE));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(DISCOVERABLE_THING_TYPES_UIDS);
     static {
@@ -76,7 +76,7 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_CLIENT_COUNT = "client-count";
     public static final String CHANNEL_ASSOCLIST = "assoc-list";
 
-    // List of wireless client channel ids
+    // List of client channel ids
     public static final String CHANNEL_MAC_ADDRESS = "mac-address";
     public static final String CHANNEL_HOSTNAME = "hostname";
     public static final String CHANNEL_IP_ADDRESS = "ip-address";
@@ -86,6 +86,7 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_RX_RATE = "rx-rate";
     public static final String CHANNEL_TX_RATE = "tx-rate";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
+    public static final String CHANNEL_CONNECTION_TYPE = "connection-type";
 
     // List of firewall rule channel ids
     public static final String CHANNEL_DESCRIPTION = "description";

@@ -20,12 +20,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Data object representing a wireless client associated with a DD-WRT network device.
+ * Data object representing a client endpoint on a DD-WRT network. A client may be wireless,
+ * wired, or connected via VPN. The hostname is the stable identity across MAC changes and
+ * transport changes.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTWirelessClient {
+public class DDWRTClient {
 
     private String mac;
     private String hostname = "";
@@ -40,10 +42,11 @@ public class DDWRTWirelessClient {
     private String rxRate = "";
     private String txRate = "";
     private int channel = 0;
+    private String connectionType = "";
     private boolean online = false;
     private @Nullable Instant lastSeen;
 
-    public DDWRTWirelessClient(String mac) {
+    public DDWRTClient(String mac) {
         this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }
 
@@ -99,6 +102,10 @@ public class DDWRTWirelessClient {
 
     public int getChannel() {
         return channel;
+    }
+
+    public String getConnectionType() {
+        return connectionType;
     }
 
     public boolean isOnline() {
@@ -163,6 +170,10 @@ public class DDWRTWirelessClient {
         this.channel = channel;
     }
 
+    public void setConnectionType(String connectionType) {
+        this.connectionType = connectionType;
+    }
+
     public void setOnline(boolean online) {
         this.online = online;
         if (online) {
@@ -176,7 +187,7 @@ public class DDWRTWirelessClient {
 
     @Override
     public String toString() {
-        return "DDWRTWirelessClient{mac='" + mac + "', hostname='" + hostname + "', ip='" + ipAddress + "', ap='"
-                + apMac + "', snr=" + snr + ", online=" + online + "}";
+        return "DDWRTClient{mac='" + mac + "', hostname='" + hostname + "', ip='" + ipAddress + "', ap='" + apMac
+                + "', snr=" + snr + ", online=" + online + "}";
     }
 }

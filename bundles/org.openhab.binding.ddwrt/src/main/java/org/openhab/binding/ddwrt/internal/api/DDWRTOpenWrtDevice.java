@@ -40,7 +40,7 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
+    protected List<DDWRTClient> getAssociatedClients(SshRunner runner, String iface) {
         return IwinfoParser.parseAssoclist(logger, runner, iface, mac);
     }
 

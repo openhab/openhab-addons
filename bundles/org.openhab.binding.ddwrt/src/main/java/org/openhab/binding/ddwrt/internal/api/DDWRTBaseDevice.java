@@ -899,6 +899,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                         if (radioChannel > 0) {
                             client.setChannel(radioChannel);
                         }
+                        client.setConnectionType("wireless");
                         client.setOnline(true);
                         client.setLastSeen(Instant.now());
                         return client;
@@ -906,7 +907,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     logger.debug("[AP-CONNECT] {} connected on {} ssid={} ap={}", clientMac, radioName, ssid, hostname);
                 } else {
                     // DISCONNECTED — mark client offline
-                    DDWRTWirelessClient existing = cache.getWirelessClient(clientMac);
+                    DDWRTClient existing = cache.getWirelessClient(clientMac);
                     if (existing != null && mac.equals(existing.getApMac())) {
                         cache.computeWirelessClient(clientMac, client -> {
                             client.setOnline(false);
@@ -948,6 +949,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                         if (radioChannel > 0) {
                             client.setChannel(radioChannel);
                         }
+                        client.setConnectionType("wireless");
                         client.setOnline(true);
                         client.setLastSeen(Instant.now());
                         return client;
@@ -955,7 +957,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     logger.debug("[AP-CONNECT] {} connected on {} ssid={} ap={} (MLME)", clientMac, radioName, ssid,
                             hostname);
                 } else if (isDisconnect) {
-                    DDWRTWirelessClient existing = cache.getWirelessClient(clientMac);
+                    DDWRTClient existing = cache.getWirelessClient(clientMac);
                     if (existing != null && mac.equals(existing.getApMac())) {
                         cache.computeWirelessClient(clientMac, client -> {
                             client.setOnline(false);
@@ -1106,6 +1108,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         refreshRadios(runner);
         refreshWirelessClients(runner);
+        classifyWiredClients();
         performReverseDnsLookups();
         // Firewall rules only apply to gateway devices; APs have firewall disabled
         if (isGateway()) {
@@ -1485,7 +1488,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      */
     private void identifyWiredClients(DDWRTNetworkCache cache) {
         java.util.Set<String> wirelessMacs = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
-        for (DDWRTWirelessClient client : cache.getWirelessClients()) {
+        for (DDWRTClient client : cache.getWirelessClients()) {
             wirelessMacs.add(client.getMac().toLowerCase(Locale.ROOT));
         }
 
@@ -1514,16 +1517,19 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         }
 
         // For each wireless client that has an IP but no hostname, try reverse DNS
-        for (DDWRTWirelessClient client : cache.getWirelessClients()) {
+        for (DDWRTClient client : cache.getWirelessClients()) {
             if (!client.getIpAddress().isEmpty() && client.getHostname().isEmpty()) {
                 String ip = client.getIpAddress();
                 try {
                     InetAddress addr = InetAddress.getByName(ip);
                     String fqdn = addr.getHostName();
+                    // If getHostName() returned the IP itself, no PTR record exists — skip
+                    if (fqdn.equals(ip)) {
+                        continue;
+                    }
                     // Use short hostname only (strip domain suffix)
                     String hostname = fqdn.contains(".") ? fqdn.substring(0, fqdn.indexOf('.')) : fqdn;
-                    // Only set if the reverse lookup returned something different from the IP
-                    if (!hostname.isEmpty() && !hostname.equals(ip)) {
+                    if (!hostname.isEmpty()) {
                         logger.debug("Reverse DNS lookup for {}: {}", ip, hostname);
                         client.setHostname(hostname);
                         // Cache hostname index is maintained by putWirelessClient
@@ -1566,6 +1572,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     client.setRadioName(radioName);
                     client.setSsid(radio.getSsid());
                     client.setChannel(radio.getChannel());
+                    client.setConnectionType("wireless");
                     client.setOnline(true);
                     client.setLastSeen(Instant.now());
 
@@ -1631,7 +1638,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 });
 
                 // Handle MAC randomization: merge old entry if hostname matches a different MAC
-                DDWRTWirelessClient updated = cache.getWirelessClient(clientMac);
+                DDWRTClient updated = cache.getWirelessClient(clientMac);
                 if (updated != null && !updated.getHostname().isEmpty()) {
                     cache.mergeRandomizedMac(clientMac, updated.getHostname());
                 }
@@ -1640,6 +1647,28 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             }
         }
         logger.debug("Refreshed wireless clients: {} total", totalClients);
+    }
+
+    /**
+     * Classify clients that have no AP association as wired. These are clients that
+     * appeared in DHCP leases or ARP cache but were not found in any radio assoclist.
+     * Only runs on gateway devices since only they have authoritative DHCP/ARP data.
+     */
+    protected void classifyWiredClients() {
+        if (!isGateway()) {
+            return;
+        }
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+        for (DDWRTClient client : cache.getWirelessClients()) {
+            if (client.getApMac().isEmpty() && client.getConnectionType().isEmpty()) {
+                client.setConnectionType("wired");
+                logger.debug("Classified client {} ({}) as wired — no AP association", client.getMac(),
+                        client.getHostname());
+            }
+        }
     }
 
     /**
@@ -1844,7 +1873,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     /**
      * Get associated wireless clients for a given interface (detailed info).
      */
-    protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
+    protected List<DDWRTClient> getAssociatedClients(SshRunner runner, String iface) {
         return Objects.requireNonNull(Collections.emptyList());
     }
 

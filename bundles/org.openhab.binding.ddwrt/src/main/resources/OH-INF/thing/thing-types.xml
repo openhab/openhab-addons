@@ -219,15 +219,15 @@
 
 	</thing-type>
 
-	<!-- ==================== Wireless Client ==================== -->
+	<!-- ==================== Client ==================== -->
 
-	<thing-type id="wireless-client">
+	<thing-type id="client">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
 
-		<label>Wireless Client</label>
-		<description>A wireless client associated with a DD-WRT network device</description>
+		<label>Client</label>
+		<description>A client endpoint on a DD-WRT network (wireless, wired, or VPN)</description>
 		<category>Network</category>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
@@ -244,6 +244,7 @@
 			<channel id="rx-rate" typeId="rx-rate"/>
 			<channel id="tx-rate" typeId="tx-rate"/>
 			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="connection-type" typeId="connection-type"/>
 		</channels>
 
 		<representation-property>hostname</representation-property>
@@ -251,11 +252,11 @@
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
-				<description>Hostname of the wireless client (stable identifier even with MAC randomization)</description>
+				<description>Hostname of the client (stable identifier even with MAC randomization)</description>
 			</parameter>
 			<parameter name="mac" type="text" required="false">
 				<label>MAC Address</label>
-				<description>MAC address of the wireless client (may change due to MAC randomization)</description>
+				<description>MAC address of the client (may change due to MAC randomization)</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -508,6 +509,20 @@
 		<label>MAC Address</label>
 		<description>MAC address of the wireless client</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connection-type">
+		<item-type>String</item-type>
+		<label>Connection Type</label>
+		<description>How the client is connected: wireless, wired, or vpn</description>
+		<category>Network</category>
+		<state readOnly="true">
+			<options>
+				<option value="wireless">Wireless</option>
+				<option value="wired">Wired</option>
+				<option value="vpn">VPN</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="client-hostname">

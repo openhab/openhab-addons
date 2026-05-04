@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.handler;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP_MAC;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CONNECTION_TYPE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_HOSTNAME;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IP_ADDRESS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_LAST_SEEN;
@@ -34,10 +35,10 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ddwrt.internal.DDWRTWirelessClientConfiguration;
+import org.openhab.binding.ddwrt.internal.DDWRTClientConfiguration;
+import org.openhab.binding.ddwrt.internal.api.DDWRTClient;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
-import org.openhab.binding.ddwrt.internal.api.DDWRTWirelessClient;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,40 +52,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for a DD-WRT Wireless Client thing.
+ * Handler for a DD-WRT Client thing.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTWirelessClientHandler
-        extends DDWRTBaseHandler<DDWRTWirelessClient, DDWRTWirelessClientConfiguration> {
+public class DDWRTClientHandler extends DDWRTBaseHandler<DDWRTClient, DDWRTClientConfiguration> {
 
-    private final Logger logger = LoggerFactory.getLogger(DDWRTWirelessClientHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DDWRTClientHandler.class);
 
-    private DDWRTWirelessClientConfiguration config = new DDWRTWirelessClientConfiguration();
+    private DDWRTClientConfiguration config = new DDWRTClientConfiguration();
 
-    public DDWRTWirelessClientHandler(Thing thing) {
+    public DDWRTClientHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    protected boolean initialize(DDWRTWirelessClientConfiguration config) {
+    protected boolean initialize(DDWRTClientConfiguration config) {
         this.config = config;
         if (config.hostname.isEmpty()) {
-            logger.warn("Hostname is required for wireless client thing");
+            logger.warn("Hostname is required for client thing");
             return false;
         }
         return true;
     }
 
     @Override
-    protected @Nullable DDWRTWirelessClient getEntity(DDWRTNetworkCache cache) {
+    protected @Nullable DDWRTClient getEntity(DDWRTNetworkCache cache) {
         String hostname = config.hostname;
-        logger.debug("Looking up wireless client for hostname: {}, config MAC: {}", hostname, config.mac);
+        logger.debug("Looking up client for hostname: {}, config MAC: {}", hostname, config.mac);
 
         // Try MAC first if available
         if (!config.mac.isEmpty()) {
-            DDWRTWirelessClient client = cache.getWirelessClient(config.mac);
+            DDWRTClient client = cache.getWirelessClient(config.mac);
             if (client != null) {
                 logger.debug("Found client by MAC: {}", config.mac);
                 return client;
@@ -93,7 +93,7 @@ public class DDWRTWirelessClientHandler
         }
 
         // Try hostname lookup (primary identifier, stable across MAC randomization)
-        DDWRTWirelessClient client = cache.getWirelessClientByHostname(hostname);
+        DDWRTClient client = cache.getWirelessClientByHostname(hostname);
         if (client != null) {
             logger.debug("Found client by hostname: {}", hostname);
         } else {
@@ -103,7 +103,7 @@ public class DDWRTWirelessClientHandler
     }
 
     @Override
-    protected State getChannelState(DDWRTWirelessClient client, String channelId) {
+    protected State getChannelState(DDWRTClient client, String channelId) {
         return switch (channelId) {
             case CHANNEL_ONLINE -> OnOffType.from(client.isOnline());
             case CHANNEL_MAC_ADDRESS -> StringType.valueOf(client.getMac());
@@ -121,6 +121,8 @@ public class DDWRTWirelessClientHandler
                 client.getRxRate().isEmpty() ? UnDefType.UNDEF : new DecimalType(parseRate(client.getRxRate()));
             case CHANNEL_TX_RATE ->
                 client.getTxRate().isEmpty() ? UnDefType.UNDEF : new DecimalType(parseRate(client.getTxRate()));
+            case CHANNEL_CONNECTION_TYPE ->
+                client.getConnectionType().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(client.getConnectionType());
             case CHANNEL_LAST_SEEN -> {
                 Instant lastSeen = client.getLastSeen();
                 yield lastSeen != null
@@ -133,9 +135,8 @@ public class DDWRTWirelessClientHandler
     }
 
     @Override
-    protected boolean handleCommand(DDWRTNetwork network, DDWRTWirelessClient client, ChannelUID channelUID,
-            Command command) {
-        // Wireless clients are read-only
+    protected boolean handleCommand(DDWRTNetwork network, DDWRTClient client, ChannelUID channelUID, Command command) {
+        // Clients are read-only
         return false;
     }
 

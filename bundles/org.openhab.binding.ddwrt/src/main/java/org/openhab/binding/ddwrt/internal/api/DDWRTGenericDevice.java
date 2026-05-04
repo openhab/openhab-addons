@@ -62,14 +62,14 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
+    protected List<DDWRTClient> getAssociatedClients(SshRunner runner, String iface) {
         String output = runner.execStdout("iw dev " + iface + " station dump");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
 
-        List<DDWRTWirelessClient> clients = new ArrayList<>();
-        DDWRTWirelessClient current = null;
+        List<DDWRTClient> clients = new ArrayList<>();
+        DDWRTClient current = null;
 
         for (String line : output.split("\n")) {
             Matcher stationMatcher = STATION_MAC_PATTERN.matcher(line.trim());
@@ -77,7 +77,7 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
                 if (current != null) {
                     clients.add(current);
                 }
-                current = new DDWRTWirelessClient(Objects.requireNonNull(stationMatcher.group(1)));
+                current = new DDWRTClient(Objects.requireNonNull(stationMatcher.group(1)));
                 current.setApMac(Objects.requireNonNull(mac));
                 current.setIface(iface);
                 current.setOnline(true);
