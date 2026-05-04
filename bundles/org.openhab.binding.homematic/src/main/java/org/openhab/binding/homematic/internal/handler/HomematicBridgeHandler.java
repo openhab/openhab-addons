@@ -23,7 +23,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayAdapter {
 
     protected ScheduledExecutorService executorService = scheduler;
@@ -67,26 +68,26 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     private static final int DUTY_CYCLE_RATIO_LIMIT = 99;
     private static final int DUTY_CYCLE_DISCONNECTED = -1;
-    private static final SimplePortPool portPool = new SimplePortPool();
+    private static final SimplePortPool PORT_POOL = new SimplePortPool();
 
     private final Object dutyCycleRatioUpdateLock = new Object();
     private final Object initDisposeLock = new Object();
 
-    private Future<?> initializeFuture;
-    private boolean isDisposed;
+    private @Nullable Future<?> initializeFuture;
+    private boolean isDisposed = false;
 
-    private HomematicConfig config;
-    private HomematicGateway gateway;
+    private @Nullable HomematicConfig config;
+    private @Nullable HomematicGateway gateway;
     private final HomematicTypeGenerator typeGenerator;
     private final HttpClient httpClient;
 
-    private HomematicDeviceDiscoveryService discoveryService;
+    private @Nullable HomematicDeviceDiscoveryService discoveryService;
 
-    private final String ipv4Address;
+    private final @Nullable String ipv4Address;
     private boolean isInDutyCycle = false;
     private int dutyCycleRatio = 0;
 
-    public HomematicBridgeHandler(@NonNull Bridge bridge, HomematicTypeGenerator typeGenerator, String ipv4Address,
+    public HomematicBridgeHandler(Bridge bridge, HomematicTypeGenerator typeGenerator, @Nullable String ipv4Address,
             HttpClient httpClient) {
         super(bridge);
         this.typeGenerator = typeGenerator;
@@ -108,7 +109,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     private void initializeInternal() {
         synchronized (initDisposeLock) {
-            config = createHomematicConfig();
+            HomematicConfig config = this.config = createHomematicConfig();
 
             try {
                 this.checkForConfigurationErrors();
@@ -124,7 +125,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 discoveryService.waitForScanFinishing();
 
                 updateStatus(ThingStatus.ONLINE);
-                if (!config.getGatewayInfo().isHomegear()) {
+                HmGatewayInfo gatewayInfo = config.getGatewayInfo();
+                if (gatewayInfo != null && !gatewayInfo.isHomegear()) {
                     try {
                         gateway.loadRssiValues();
                     } catch (IOException ex) {
@@ -161,13 +163,13 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         final Map<String, String> properties = getThing().getProperties();
 
         if (!properties.containsKey(PROPERTY_FIRMWARE_VERSION)) {
-            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info.getFirmware());
+            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info != null ? info.getFirmware() : null);
         }
         if (!properties.containsKey(PROPERTY_SERIAL_NUMBER)) {
-            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info.getAddress());
+            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info != null ? info.getAddress() : null);
         }
         if (!properties.containsKey(PROPERTY_MODEL_ID)) {
-            getThing().setProperty(PROPERTY_MODEL_ID, info.getType());
+            getThing().setProperty(PROPERTY_MODEL_ID, info != null ? info.getType() : null);
         }
     }
 
@@ -204,8 +206,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             gateway.dispose();
         }
         if (config != null) {
-            portPool.release(config.getXmlCallbackPort());
-            portPool.release(config.getBinCallbackPort());
+            PORT_POOL.release(config.getXmlCallbackPort());
+            PORT_POOL.release(config.getBinCallbackPort());
         }
     }
 
@@ -234,14 +236,14 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             homematicConfig.setCallbackHost(this.ipv4Address);
         }
         if (homematicConfig.getXmlCallbackPort() == 0) {
-            homematicConfig.setXmlCallbackPort(portPool.getNextPort());
+            homematicConfig.setXmlCallbackPort(PORT_POOL.getNextPort());
         } else {
-            portPool.setInUse(homematicConfig.getXmlCallbackPort());
+            PORT_POOL.setInUse(homematicConfig.getXmlCallbackPort());
         }
         if (homematicConfig.getBinCallbackPort() == 0) {
-            homematicConfig.setBinCallbackPort(portPool.getNextPort());
+            homematicConfig.setBinCallbackPort(PORT_POOL.getNextPort());
         } else {
-            portPool.setInUse(homematicConfig.getBinCallbackPort());
+            PORT_POOL.setInUse(homematicConfig.getBinCallbackPort());
         }
         logger.debug("{}", homematicConfig);
         return homematicConfig;
@@ -417,6 +419,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void reloadAllDeviceValues() {
+        HomematicGateway gateway = this.gateway;
+        if (gateway == null) {
+            logger.debug("Homematic Gateway is null, unable to reload device values");
+            return;
+        }
         for (Thing hmThing : getThing().getThings()) {
             try {
                 HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(hmThing));

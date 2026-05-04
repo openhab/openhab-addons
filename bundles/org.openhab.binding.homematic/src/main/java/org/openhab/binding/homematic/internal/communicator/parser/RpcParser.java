@@ -14,11 +14,14 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for all message parsers.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface RpcParser<M, R> {
 
     /**

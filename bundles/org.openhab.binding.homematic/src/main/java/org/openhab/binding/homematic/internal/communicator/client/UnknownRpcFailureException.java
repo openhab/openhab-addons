@@ -14,12 +14,14 @@ package org.openhab.binding.homematic.internal.communicator.client;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if the RPC call returns a unknown -1 Failure.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class UnknownRpcFailureException extends IOException {
     private static final long serialVersionUID = -5695414238422364040L;
 

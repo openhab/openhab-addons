@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -23,16 +25,17 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @XStreamAlias("list")
 public class TclScriptDataList {
 
     @XStreamImplicit(itemFieldName = "entry")
-    private List<TclScriptDataEntry> entries = new ArrayList<>();
+    private @Nullable List<TclScriptDataEntry> entries;
 
     /**
      * Returns all entries.
      */
-    public List<TclScriptDataEntry> getEntries() {
+    public @Nullable List<TclScriptDataEntry> getEntries() {
         return entries;
     }
 }

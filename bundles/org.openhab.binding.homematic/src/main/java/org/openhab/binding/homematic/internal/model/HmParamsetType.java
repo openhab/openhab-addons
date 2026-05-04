@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Definition of the Homematic paramset types.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmParamsetType {
     VALUES,
     MASTER;
@@ -24,7 +28,7 @@ public enum HmParamsetType {
     /**
      * Parses the string and returns the HmParamsetType object.
      */
-    public static HmParamsetType parse(String type) {
+    public static HmParamsetType parse(@Nullable String type) {
         if (type != null) {
             if (type.equals(VALUES.toString()) || type.equals(VALUES.getId())) {
                 return VALUES;

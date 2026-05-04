@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.homematic.test.util.BridgeHelper.createHomematicBridge;
 import static org.openhab.binding.homematic.test.util.DimmerHelper.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -36,6 +37,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * @author Florian Stolte - Initial Contribution
  *
  */
+@NonNullByDefault
 public class UidUtilsTest {
 
     @Test

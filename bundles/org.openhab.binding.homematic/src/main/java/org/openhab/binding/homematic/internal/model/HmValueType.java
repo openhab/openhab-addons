@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Definition of the Homematic types.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public enum HmValueType {
     BOOL,
     ACTION,
@@ -30,7 +34,7 @@ public enum HmValueType {
     /**
      * Parses the string and returns the HmType object.
      */
-    public static HmValueType parse(String type) {
+    public static HmValueType parse(@Nullable String type) {
         if (type == null) {
             return UNKNOWN;
         } else if (BOOL.toString().equals(type)) {

@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -24,6 +27,7 @@ import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 /**
  * @author Florian Stolte - Initial contribution
  */
+@NonNullByDefault
 public class RpcClientMockImpl extends RpcClient<String> {
 
     public static final String GET_PARAMSET_DESCRIPTION_NAME = "getParamsetDescription";
@@ -43,7 +47,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     @Override
     protected Object[] sendMessage(int port, RpcRequest<String> request) throws IOException {
-        String methodName = request.getMethodName();
+        String methodName = Objects.requireNonNull(request.getMethodName());
 
         increaseNumberOfCalls(methodName);
 
@@ -75,11 +79,11 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
             @Override
             public String createMessage() {
-                return null;
+                return "MockMessage";
             }
 
             @Override
-            public String getMethodName() {
+            public @Nullable String getMethodName() {
                 return methodName;
             }
         };
@@ -91,6 +95,6 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     @Override
     protected String getRpcCallbackUrl() {
-        return null;
+        return "mock://callback";
     }
 }

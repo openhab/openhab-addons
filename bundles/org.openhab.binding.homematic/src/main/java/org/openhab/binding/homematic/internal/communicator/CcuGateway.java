@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -35,6 +35,7 @@ import org.openhab.binding.homematic.internal.communicator.parser.CcuLoadDeviceN
 import org.openhab.binding.homematic.internal.communicator.parser.CcuParamsetDescriptionParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuValueParser;
 import org.openhab.binding.homematic.internal.communicator.parser.CcuVariablesAndScriptsParser;
+import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -57,13 +58,14 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class CcuGateway extends AbstractHomematicGateway {
     private final Logger logger = LoggerFactory.getLogger(CcuGateway.class);
 
-    private Map<String, String> tclregaScripts;
+    private @Nullable Map<String, @Nullable String> tclregaScripts;
     private XStream xStream = new XStream(new StaxDriver());
 
-    private @NonNull AuthenticationHandler authenticationHandler;
+    private AuthenticationHandler authenticationHandler;
 
     protected CcuGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,
             HttpClient httpClient) throws IOException, ConfigurationException {
@@ -150,7 +152,7 @@ public class CcuGateway extends AbstractHomematicGateway {
 
             TclScriptDataList resultList = sendScriptByName("getParamsetDescription", TclScriptDataList.class,
                     new String[] { "device_address", "channel_number" },
-                    new String[] { channel.getDevice().getAddress(), channel.getNumber().toString() });
+                    new String[] { channel.getDevice().getAddress(), String.valueOf(channel.getNumber()) });
             new CcuParamsetDescriptionParser(channel, paramsetType).parse(resultList);
         }
     }
@@ -161,7 +163,7 @@ public class CcuGateway extends AbstractHomematicGateway {
         if (value instanceof Double) {
             strValue = new BigDecimal((Double) value).stripTrailingZeros().toPlainString();
         } else {
-            strValue = Objects.toString(value, "").replace("\"", "\\\"");
+            strValue = MiscUtils.toStringOrEmptyIfNull(value).replace("\"", "\\\"");
         }
         if (dp.isStringType()) {
             strValue = "\"" + strValue + "\"";
@@ -186,7 +188,7 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Sends a TclRega script to the CCU.
      */
     private <T> T sendScriptByName(String scriptName, Class<T> clazz) throws IOException {
-        return sendScriptByName(scriptName, clazz, new String[] {}, null);
+        return sendScriptByName(scriptName, clazz, new String[] {}, new String[] {});
     }
 
     /**
@@ -194,7 +196,8 @@ public class CcuGateway extends AbstractHomematicGateway {
      */
     private <T> T sendScriptByName(String scriptName, Class<T> clazz, String[] variableNames, String[] values)
             throws IOException {
-        String script = tclregaScripts.get(scriptName);
+        Map<String, @Nullable String> scripts = this.tclregaScripts;
+        String script = scripts != null ? scripts.get(scriptName) : null;
         if (script != null) {
             for (int i = 0; i < variableNames.length; i++) {
                 script = script.replace("{" + variableNames[i] + "}", values[i]);
@@ -207,16 +210,15 @@ public class CcuGateway extends AbstractHomematicGateway {
      * Main method for sending a TclRega script and parsing the XML result.
      */
     @SuppressWarnings("unchecked")
-    private synchronized <T> T sendScript(String script, Class<T> clazz) throws IOException {
+    private synchronized <T> T sendScript(@Nullable String script, Class<T> clazz) throws IOException {
+        script = script == null ? null : script.trim();
+        if (script == null || script.isEmpty()) {
+            throw new IOException("Homematic TclRegaScript is empty!");
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("TclRegaScript: {}", script);
+        }
         try {
-            script = script == null ? null : script.trim();
-            if (script == null || script.isEmpty()) {
-                throw new RuntimeException("Homematic TclRegaScript is empty!");
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("TclRegaScript: {}", script);
-            }
-
             StringContentProvider content = new StringContentProvider(script, config.getEncoding());
             ContentResponse response = authenticationHandler.updateAuthenticationInformation(httpClient
                     .POST(config.getTclRegaUrl()).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
@@ -240,11 +242,11 @@ public class CcuGateway extends AbstractHomematicGateway {
     /**
      * Load predefined scripts from an XML file.
      */
-    private Map<String, String> loadTclRegaScripts() throws IOException {
+    private Map<String, @Nullable String> loadTclRegaScripts() throws IOException {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         try (InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream()) {
             TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
-            Map<String, String> result = new HashMap<>();
+            Map<String, @Nullable String> result = new HashMap<>();
             if (scriptList.getScripts() != null) {
                 for (TclScript script : scriptList.getScripts()) {
                     String value = script.data.trim();

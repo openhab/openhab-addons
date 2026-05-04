@@ -13,40 +13,45 @@
 package org.openhab.binding.homematic.internal.model;
 
 import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
+
+import ch.qos.logback.classic.Logger;
 
 /**
  * Object that holds the metadata and values for a datapoint.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HmDatapoint implements Cloneable {
 
-    private HmChannel channel;
-    private String name;
-    private String description;
-    private Object value;
-    private Object previousValue;
-    private Object defaultValue;
-    private HmValueType type;
-    private HmParamsetType paramsetType;
-    private Number minValue;
-    private Number maxValue;
-    private Map<String, Number> specialValues;
-    private String[] options;
+    private @NonNullByDefault({}) HmChannel channel;
+    private @NonNullByDefault({}) String name;
+    private @NonNullByDefault({}) String description;
+    private @Nullable Object value;
+    private @Nullable Object previousValue;
+    private @Nullable Object defaultValue;
+    private @NonNullByDefault({}) HmValueType type;
+    private @NonNullByDefault({}) HmParamsetType paramsetType;
+    private @Nullable Number minValue;
+    private @Nullable Number maxValue;
+    private @NonNullByDefault({}) Map<String, Number> specialValues;
+    private String @Nullable [] options;
     private boolean readOnly;
     private boolean readable;
-    private String info;
-    private String unit;
+    private String info = "";
+    private @Nullable String unit;
     private boolean virtual;
     private boolean trigger;
 
     public HmDatapoint() {
     }
 
-    public HmDatapoint(String name, String description, HmValueType type, Object value, boolean readOnly,
+    public HmDatapoint(String name, String description, HmValueType type, @Nullable Object value, boolean readOnly,
             HmParamsetType paramsetType) {
         this.description = description;
         this.type = type;
@@ -73,7 +78,7 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the description.
      */
-    public String getDescription() {
+    public @Nullable String getDescription() {
         return description;
     }
 
@@ -101,21 +106,21 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the value.
      */
-    public Object getValue() {
+    public @Nullable Object getValue() {
         return value;
     }
 
     /**
      * Returns the previous value.
      */
-    public Object getPreviousValue() {
+    public @Nullable Object getPreviousValue() {
         return previousValue;
     }
 
     /**
      * Sets the value.
      */
-    public void setValue(Object value) {
+    public void setValue(@Nullable Object value) {
         previousValue = this.value;
         this.value = value;
     }
@@ -123,21 +128,22 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the option list.
      */
-    public String[] getOptions() {
+    public String @Nullable [] getOptions() {
         return options;
     }
 
     /**
      * Sets the option list.
      */
-    public void setOptions(String[] options) {
+    public void setOptions(String @Nullable [] options) {
         this.options = options;
     }
 
     /**
      * Returns the index of the value in an option list.
      */
-    public int getOptionIndex(String option) {
+    public int getOptionIndex(@Nullable String option) {
+        String[] options = this.options;
         if (options != null && option != null) {
             for (int i = 0; i < options.length; i++) {
                 String value = options[i];
@@ -154,7 +160,23 @@ public class HmDatapoint implements Cloneable {
      */
     public @Nullable String getOptionValue() {
         Integer idx = getIntegerValue();
-        if (options != null && idx != null && idx < options.length) {
+        String[] options = this.options;
+        if (options != null && idx != null && idx >= 0 && idx < options.length) {
+            return options[idx];
+        }
+        return null;
+    }
+
+    /**
+     * Returns the value of an option list.
+     */
+    public static @Nullable String getOptionValue(@Nullable HmDatapoint dp) {
+        if (dp == null) {
+            return null;
+        }
+        Integer idx = dp.getIntegerValue();
+        String[] options = dp.getOptions();
+        if (options != null && idx != null && idx >= 0 && idx < options.length) {
             return options[idx];
         }
         return null;
@@ -171,50 +193,66 @@ public class HmDatapoint implements Cloneable {
     }
 
     public @Nullable Integer getIntegerValue() {
+        Object value = this.value;
         if (value instanceof Integer intValue) {
             return intValue;
-        } else if (value != null) {
-            return Integer.parseInt(value.toString());
-        } else {
-            return null;
         }
+        if (value instanceof Number numberValue) {
+            return numberValue.intValue();
+        }
+        if (value != null) {
+            String stringValue = value.toString();
+            try {
+                return Integer.parseInt(stringValue);
+            } catch (NumberFormatException e1) {
+                try {
+                    return Double.valueOf(stringValue.replace(',', '.')).intValue();
+                } catch (NumberFormatException e2) {
+                }
+            }
+        }
+        return null;
     }
 
     public @Nullable Double getDoubleValue() {
+        Object value = this.value;
         if (value instanceof Double doubleValue) {
             return doubleValue;
-        } else if (value != null) {
-            return Double.parseDouble(value.toString());
-        } else {
-            return null;
         }
+        if (value != null) {
+            try {
+                return Double.parseDouble(value.toString());
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
     }
 
     /**
      * Returns the max value.
      */
-    public Number getMaxValue() {
+    public @Nullable Number getMaxValue() {
         return maxValue;
     }
 
     /**
      * Sets the max value.
      */
-    public void setMaxValue(Number maxValue) {
+    public void setMaxValue(@Nullable Number maxValue) {
         this.maxValue = maxValue;
     }
 
     /**
      * Returns the min value.
      */
-    public Number getMinValue() {
+    public @Nullable Number getMinValue() {
         return minValue;
     }
 
     /**
      * Sets the min value.
      */
-    public void setMinValue(Number minValue) {
+    public void setMinValue(@Nullable Number minValue) {
         this.minValue = minValue;
     }
 
@@ -263,14 +301,14 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the unit.
      */
-    public String getUnit() {
+    public @Nullable String getUnit() {
         return unit;
     }
 
     /**
      * Sets the unit.
      */
-    public void setUnit(String unit) {
+    public void setUnit(@Nullable String unit) {
         this.unit = unit;
     }
 
@@ -305,14 +343,14 @@ public class HmDatapoint implements Cloneable {
     /**
      * Returns the default value.
      */
-    public Object getDefaultValue() {
+    public @Nullable Object getDefaultValue() {
         return defaultValue;
     }
 
     /**
      * Sets the default value.
      */
-    public void setDefaultValue(Object defaultValue) {
+    public void setDefaultValue(@Nullable Object defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -451,11 +489,11 @@ public class HmDatapoint implements Cloneable {
 
     @Override
     public String toString() {
+        String[] options = Objects.requireNonNullElse(this.options, new String[0]);
         return String.format("""
                 %s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,specialValues=%s,options=%s,\
                 readOnly=%b,readable=%b,unit=%s,description=%s,info=%s,paramsetType=%s,virtual=%b,trigger=%b]\
                 """, getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue, specialValues,
-                (options == null ? null : String.join(";", options)), readOnly, readable, unit, description, info,
-                paramsetType, virtual, trigger);
+                String.join(";", options), readOnly, readable, unit, description, info, paramsetType, virtual, trigger);
     }
 }
