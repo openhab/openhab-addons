@@ -15,6 +15,7 @@ package org.openhab.binding.energidataservice.internal.provider;
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,11 +24,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -125,7 +130,29 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
     public void unsubscribe(ElectricityPriceListener listener, Subscription subscription) {
         boolean isLastDistinctSubscription = unsubscribeInternal(listener, subscription);
         if (isLastDistinctSubscription) {
-            subscriptionDataCaches.remove(subscription);
+            boolean hasOtherSubscription = false;
+            if (subscription instanceof SpotPriceSubscription spotPriceSubscription
+                    && !spotPriceSubscription.isHourlyAverage()
+                    && subscriptionToListeners.containsKey(SpotPriceSubscription
+                            .of(spotPriceSubscription.getPriceArea(), spotPriceSubscription.getCurrency(), true))) {
+                hasOtherSubscription = true;
+                logger.trace("Not removing cache for {}, another subscription depends on it.", subscription);
+            }
+
+            if (!hasOtherSubscription) {
+                logger.trace("Removing cache for {}, no remaining subscriptions depend on it.", subscription);
+                subscriptionDataCaches.remove(subscription);
+            }
+
+            if (subscription instanceof SpotPriceSubscription spotPriceSubscription
+                    && spotPriceSubscription.isHourlyAverage()) {
+                Subscription rawSubscription = SpotPriceSubscription.of(spotPriceSubscription.getPriceArea(),
+                        spotPriceSubscription.getCurrency(), false);
+                if (!subscriptionToListeners.containsKey(rawSubscription)) {
+                    logger.trace("Removing cache for {}, no remaining subscriptions depend on it.", rawSubscription);
+                    subscriptionDataCaches.remove(rawSubscription);
+                }
+            }
         }
 
         if (subscriptionToListeners.isEmpty()) {
@@ -282,8 +309,19 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         SpotPriceSubscriptionCache cache = getSpotPriceSubscriptionDataCache(subscription);
 
         if (cache.arePricesFullyCached()) {
-            logger.debug("Cached spot prices still valid, skipping download.");
+            logger.debug("Cached spot prices still valid for {}, skipping download.", subscription);
             return false;
+        }
+
+        if (subscription.isHourlyAverage()) {
+            SpotPriceSubscription rawSubscription = SpotPriceSubscription.of(subscription.getPriceArea(),
+                    subscription.getCurrency(), false);
+            SpotPriceSubscriptionCache rawCache = getSpotPriceSubscriptionDataCache(rawSubscription);
+            if (rawCache.arePricesFullyCached()) {
+                logger.debug("Recalculating cached spot prices for {}, skipping download.", subscription);
+                cache.put(calculateHourlyAverages(rawCache.get()));
+                return false;
+            }
         }
 
         DateQueryParameter start;
@@ -309,14 +347,52 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
                         subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
                 isUpdated = cache.put(spotPriceRecords);
             } else {
+                SpotPriceSubscription rawSubscription = SpotPriceSubscription.of(subscription.getPriceArea(),
+                        subscription.getCurrency(), false);
+                SpotPriceSubscriptionCache rawCache = getSpotPriceSubscriptionDataCache(rawSubscription);
                 DayAheadPriceRecord[] dayAheadRecords = apiController.getDayAheadPrices(subscription.getPriceArea(),
                         subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
-                isUpdated = cache.put(dayAheadRecords);
+                isUpdated = rawCache.put(dayAheadRecords);
+                if (subscription.isHourlyAverage()) {
+                    logger.debug("Recalculating spot prices for {}, after downloading day-ahead prices.", subscription);
+                    isUpdated = cache.put(calculateHourlyAverages(rawCache.get()));
+                }
             }
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
         }
         return isUpdated;
+    }
+
+    private static Map<Instant, BigDecimal> calculateHourlyAverages(Map<Instant, BigDecimal> quarterHourlyPrices) {
+        Map<Instant, List<BigDecimal>> groupedByHour = quarterHourlyPrices.entrySet().stream()
+                .collect(Collectors.groupingBy(e -> e.getKey().truncatedTo(ChronoUnit.HOURS), TreeMap::new,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
+        Map<Instant, BigDecimal> hourlyAverages = new TreeMap<>();
+
+        for (Map.Entry<Instant, List<BigDecimal>> entry : groupedByHour.entrySet()) {
+            List<BigDecimal> prices = entry.getValue();
+
+            // Expect exactly 4 quarter-hour values
+            if (prices.size() == 4) {
+                BigDecimal avg = average(prices);
+                if (avg != null) {
+                    hourlyAverages.put(entry.getKey(), avg);
+                }
+            }
+        }
+
+        return hourlyAverages;
+    }
+
+    private static @Nullable BigDecimal average(List<@Nullable BigDecimal> values) {
+        List<BigDecimal> nonNulls = values.stream().filter(Objects::nonNull).toList();
+        if (nonNulls.size() != 4) {
+            return null;
+        }
+        BigDecimal sum = nonNulls.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        return sum.divide(BigDecimal.valueOf(nonNulls.size()), RoundingMode.HALF_UP);
     }
 
     private boolean downloadTariffsIfNotCached(DatahubPriceSubscription subscription)
