@@ -12,6 +12,8 @@
  */
 package org.openhab.automation.pythonscripting.internal.context;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,79 +27,41 @@ import org.slf4j.event.Level;
  */
 @NonNullByDefault
 public class ContextOutputLogger extends OutputStream {
-    private static final int DEFAULT_BUFFER_LENGTH = 2048;
-    private static final String LINE_SEPARATOR = System.lineSeparator();
-    private static final int LINE_SEPARATOR_SIZE = LINE_SEPARATOR.length();
-
-    private int bufLength;
-    private byte[] buf;
-    private int count;
-
-    private Logger logger;
-    private Level level;
+    private final Logger logger;
+    private final Level level;
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     public ContextOutputLogger(Logger logger, Level level) {
         this.logger = logger;
         this.level = level;
+    }
 
-        bufLength = DEFAULT_BUFFER_LENGTH;
-        buf = new byte[DEFAULT_BUFFER_LENGTH];
-        count = 0;
+    protected ByteArrayOutputStream getBuffer() {
+        return buffer;
     }
 
     @Override
     public void write(int b) {
-        // don't log nulls
-        if (b == 0) {
-            return;
+        if (b == '\n') {
+            flush();
+        } else {
+            getBuffer().write(b);
         }
-
-        if (count == bufLength) {
-            growBuffer();
-        }
-
-        buf[count] = (byte) b;
-        count++;
     }
 
     @Override
     public void flush() {
-        if (count == 0) {
-            return;
+        var buffer = getBuffer();
+        if (buffer.size() > 0) {
+            logger.atLevel(level).log(buffer.toString());
+            buffer.reset();
         }
-
-        // don't print out blank lines;
-        if (count == LINE_SEPARATOR_SIZE) {
-            if (((char) buf[0]) == LINE_SEPARATOR.charAt(0)
-                    && ((count == 1) || ((count == 2) && ((char) buf[1]) == LINE_SEPARATOR.charAt(1)))) {
-                reset();
-                return;
-            }
-        } else if (count > LINE_SEPARATOR_SIZE) {
-            // remove linebreaks at the end
-            if (((char) buf[count - 1]) == LINE_SEPARATOR.charAt(LINE_SEPARATOR_SIZE - 1)
-                    && ((LINE_SEPARATOR_SIZE == 1) || ((LINE_SEPARATOR_SIZE == 2)
-                            && ((char) buf[count - 1]) == LINE_SEPARATOR.charAt(LINE_SEPARATOR_SIZE - 2)))) {
-                count -= LINE_SEPARATOR_SIZE;
-            }
-        }
-
-        final byte[] line = new byte[count];
-        System.arraycopy(buf, 0, line, 0, count);
-        logger.atLevel(level).log(new String(line));
-        reset();
     }
 
-    private void growBuffer() {
-        final int newBufLength = bufLength + DEFAULT_BUFFER_LENGTH;
-        final byte[] newBuf = new byte[newBufLength];
-        System.arraycopy(buf, 0, newBuf, 0, bufLength);
-        buf = newBuf;
-        bufLength = newBufLength;
-    }
-
-    private void reset() {
-        // don't shrink buffer. assuming that if it grew that it will likely grow similarly again
-        count = 0;
+    @Override
+    public void close() throws IOException {
+        flush();
+        getBuffer().close();
+        super.close();
     }
 }
