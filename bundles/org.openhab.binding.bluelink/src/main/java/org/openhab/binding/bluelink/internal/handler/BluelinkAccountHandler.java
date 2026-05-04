@@ -261,4 +261,14 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         final var api = this.api;
         return api != null && api.getVehicleStatus(vehicle, forceRefresh, cb);
     }
+
+    public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
+        final var api = this.api;
+        return api != null && api.setChargeLimitDC(vehicle, limit);
+    }
+
+    public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
+        final var api = this.api;
+        return api != null && api.setChargeLimitAC(vehicle, limit);
+    }
 }

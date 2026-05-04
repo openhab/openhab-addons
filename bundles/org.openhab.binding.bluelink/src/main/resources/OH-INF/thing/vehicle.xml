@@ -401,7 +401,8 @@
 			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.0f %%" readOnly="false" min="50" max="100" step="10"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="charge-limit-ac">
 		<item-type>Number:Dimensionless</item-type>
@@ -412,7 +413,8 @@
 			<tag>Status</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.0f %%" readOnly="false" min="50" max="100" step="10"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="charge-time-current">
