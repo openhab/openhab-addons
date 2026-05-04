@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
+import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.CHANNEL_ENABLED;
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.GONE;
 
@@ -30,10 +31,13 @@ import org.openhab.binding.mikrotik.internal.model.RouterosL2TPSrvInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosLTEInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosPPPCliInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosPPPoECliInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosVethInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosVlanInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosWifiInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosWlanInterface;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -202,6 +206,10 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                         newState = getL2TPCliChannelState(channelID);
                     } else if (iface instanceof RouterosLTEInterface) {
                         newState = getLTEChannelState(channelID);
+                    } else if (iface instanceof RouterosVlanInterface) {
+                        newState = getEtherIterfaceChannelState(channelID);
+                    } else if (iface instanceof RouterosVethInterface) {
+                        newState = getVethIterfaceChannelState(channelID);
                     }
             }
         }
@@ -209,6 +217,24 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         if (!newState.equals(oldState)) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);
+        }
+    }
+
+    protected State getVethIterfaceChannelState(String channelID) {
+        RouterosEthernetInterface etherIface = (RouterosEthernetInterface) this.iface;
+        if (etherIface == null) {
+            return UnDefType.UNDEF;
+        }
+
+        switch (channelID) {
+            case MikrotikBindingConstants.CHANNEL_DEFAULT_NAME:
+                return StateUtil.stringOrNull(etherIface.getDefaultName());
+            case MikrotikBindingConstants.CHANNEL_STATE:
+                return StateUtil.stringOrNull(etherIface.getState());
+            case MikrotikBindingConstants.CHANNEL_RATE:
+                return StateUtil.stringOrNull(etherIface.getRate());
+            default:
+                return UnDefType.UNDEF;
         }
     }
 
@@ -378,24 +404,31 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
+        RouterosDevice routeros = getRouterOs();
+        RouterosInterfaceBase iface = this.iface;
+        InterfaceThingConfig cfg = this.config;
+        if (routeros == null || iface == null || cfg == null) {
+            return;
+        }
+
         switch (channelUID.getId()) {
             case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
-                RouterosInterfaceBase iface = this.iface;
                 if (!(iface instanceof RouterosEthernetInterface routerOsIface)) {
                     logger.warn("Cannot set POE Out State: interface is null or not an Ethernet interface");
                     return;
                 }
-
-                RouterosDevice routeros = getRouterOs();
-                if (routeros == null || !routeros.isConnected()) {
-                    return;
-                }
-
                 try {
                     routeros.setPOEOutState(routerOsIface, command.toString());
                 } catch (MikrotikApiException e) {
                     logger.warn("RouterOS command execution failed in {} due to Mikrotik API error:{}",
                             getThing().getUID(), e.getMessage());
+                }
+                break;
+            case CHANNEL_ENABLED:
+                if (command == OnOffType.ON) {
+                    routeros.setEnabledState(iface, "no");
+                } else if (command == OnOffType.OFF) {
+                    routeros.setEnabledState(iface, "yes");
                 }
                 break;
             default:

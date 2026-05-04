@@ -43,16 +43,17 @@ The RouterOS Bridge configuration parameters are:
 
 ### Bridge Channels
 
-| Channel     | Type                 | Description                                          | Comment |
-|-------------|----------------------|------------------------------------------------------|---------|
-| freeSpace   | Number:DataAmount    | Amount of free storage left on device in bytes       |         |
-| totalSpace  | Number:DataAmount    | Amount of total storage available on device in bytes |         |
-| usedSpace   | Number:Dimensionless | Percentage of used device storage space              |         |
-| freeMemory  | Number:DataAmount    | Amount of free memory left on device in bytes        |         |
-| totalMemory | Number:DataAmount    | Amount of total memory available on device in bytes  |         |
-| usedMemory  | Number:Dimensionless | Percentage of used device memory                     |         |
-| cpuLoad     | Number:Dimensionless | CPU load percentage                                  |         |
-| upSince     | DateTime             | Time when Thing got up                               |         |
+| Channel         | Type                 | Description                                                              | Comment |
+|-----------------|----------------------|--------------------------------------------------------------------------|---------|
+| freeSpace       | Number:DataAmount    | Amount of free storage left on device in bytes                           |         |
+| totalSpace      | Number:DataAmount    | Amount of total storage available on device in bytes                     |         |
+| usedSpace       | Number:Dimensionless | Percentage of used device storage space                                  |         |
+| freeMemory      | Number:DataAmount    | Amount of free memory left on device in bytes                            |         |
+| totalMemory     | Number:DataAmount    | Amount of total memory available on device in bytes                      |         |
+| usedMemory      | Number:Dimensionless | Percentage of used device memory                                         |         |
+| cpuLoad         | Number:Dimensionless | CPU load percentage                                                      |         |
+| upSince         | DateTime             | Time when Thing got up                                                   |         |
+| updateAvailable | String               | Changes from "System is already up to date" to "New version is available"|         |
 
 ## WiFi Client Thing Configuration
 
@@ -100,6 +101,9 @@ At the moment the binding supports the following RouterOS interface types:
 - `ether`
 - `bridge`
 - `wlan`
+- `wifi`
+- `vlan`
+- `veth`
 - `cap`
 - `pppoe-out`
 - `ppp-out`

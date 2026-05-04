@@ -18,25 +18,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link RouterosEthernetInterface} is a model class for `ether` interface models having casting accessors for
+ * The {@link RouterosVlanInterface} is a model class for `vlan` interface models having casting accessors for
  * data that is specific to this network interface kind. Is a subclass of {@link RouterosInterfaceBase}.
  *
- * @author Oleg Vivtash - Initial contribution
+ * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class RouterosEthernetInterface extends RouterosInterfaceBase {
-    public RouterosEthernetInterface(Map<String, String> props) {
+public class RouterosVlanInterface extends RouterosInterfaceBase {
+    public RouterosVlanInterface(Map<String, String> props) {
         super(props);
     }
 
     @Override
     public RouterosInterfaceType getDesignedType() {
-        return RouterosInterfaceType.ETHERNET;
+        return RouterosInterfaceType.VLAN;
     }
 
     @Override
     public String getApiType() {
-        return "ethernet";
+        return "vlan";
     }
 
     @Override
@@ -46,9 +46,13 @@ public class RouterosEthernetInterface extends RouterosInterfaceBase {
 
     @Override
     public boolean hasMonitor() {
-        // PowerLine interfaces are of ether type too
         String name = getDefaultName();
-        return name != null && !name.startsWith("pwr");
+        return name != null;
+    }
+
+    @Override
+    public @Nullable String getMacAddress() {
+        return null;
     }
 
     public @Nullable String getDefaultName() {
