@@ -60,7 +60,12 @@ import org.slf4j.LoggerFactory;
  *   Body: base64(SDP answer)
  * </pre>
  *
- * @author Sven Schad - Initial contribution
+ * <p>
+ * Based on the WebRTC servlet in the UniFi Protect binding.
+ * </p>
+ *
+ * @author Dan Cunningham - Initial contribution
+ * @author Sven Schad - Adapted for DahuaDoor binding
  */
 @NonNullByDefault
 public class PlayStreamServlet extends HttpServlet {

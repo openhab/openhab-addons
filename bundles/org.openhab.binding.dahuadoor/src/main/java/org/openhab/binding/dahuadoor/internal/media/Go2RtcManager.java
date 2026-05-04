@@ -42,7 +42,12 @@ import org.slf4j.LoggerFactory;
  * configuration parameter.
  * </p>
  *
- * @author Sven Schad - Initial contribution
+ * <p>
+ * Based on the go2rtc integration in the UniFi Protect binding.
+ * </p>
+ *
+ * @author Dan Cunningham - Initial contribution
+ * @author Sven Schad - Adapted for DahuaDoor binding
  */
 @NonNullByDefault
 public class Go2RtcManager {
