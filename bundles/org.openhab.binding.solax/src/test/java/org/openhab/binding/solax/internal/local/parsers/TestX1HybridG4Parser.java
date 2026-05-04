@@ -73,6 +73,15 @@ public class TestX1HybridG4Parser extends AbstractParserTest {
         assertEquals(99, data.getBatteryLevel()); // [18]
 
         assertEquals(12, data.getFeedInPower()); // [32]
+
+        assertEquals(7.0, data.getTodayEnergy()); // [13]
+        assertEquals(5978.1, data.getTotalPVEnergy()); // packU16(12,11) / 10
+        assertEquals(448, data.getPowerUsage()); // [38]
+        assertEquals(132.4, data.getTotalFeedInEnergy()); // packU16(35,34) / 100
+        assertEquals(1944.2, data.getTotalConsumption()); // packU16(37,36) / 100
+        assertEquals(4.3, data.getTodayFeedInEnergy()); // [39]
+        assertEquals(5.7, data.getTodayBatteryDischargeEnergy()); // [87]
+        assertEquals(11.6, data.getTodayBatteryChargeEnergy()); // [85]
     }
 
     @Override
