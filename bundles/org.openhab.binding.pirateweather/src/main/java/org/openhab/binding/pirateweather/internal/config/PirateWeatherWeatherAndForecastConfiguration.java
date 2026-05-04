@@ -26,4 +26,5 @@ public class PirateWeatherWeatherAndForecastConfiguration {
     public int forecastHours;
     public int forecastDays;
     public int numberOfAlerts;
+    public String location = "";
 }
