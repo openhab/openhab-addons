@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,10 @@ public class ShellyThingTable {
             }
         }
         return null;
+    }
+
+    public ShellyThingInterface getThing(InetAddress deviceIp) {
+        return getThing(deviceIp.getHostAddress());
     }
 
     public ShellyThingInterface getThing(String key) {

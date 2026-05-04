@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
@@ -33,7 +35,6 @@ import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.net.HttpServiceUtil;
@@ -66,7 +67,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private volatile ShellyBindingRuntimeConfig bindingConfig;
 
     /**
      * Activate the bundle: save properties
@@ -92,23 +93,21 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
 
-        bindingConfig.updateFromProperties(configProperties);
-        String localIP = bindingConfig.localIP;
-        if (localIP.isEmpty()) {
-            localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
-        }
-        if (localIP.isEmpty()) {
-            logger.warn("{}", messages.get("message.init.noipaddress"));
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration.fromProperties(configProperties);
+        ShellyBindingRuntimeConfig runtimeConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
+        if (runtimeConfig.getLocalIP().isEmpty()) {
+            // Intentionally hard-fail: without a local IP the binding cannot build callback
+            // URLs, register CoIoT listeners, or handle WebSocket events. Starting in a
+            // degraded state would silently break all Gen1 event handling and Gen2 battery
+            // devices, so we fail fast here rather than logging a warning.
+            logger.error("{}", messages.get("message.init.noipaddress"));
+            throw new ComponentException("Failed to activate: Local IP can't be detected");
         }
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-        if (httpPort == -1) {
-            httpPort = 8080;
-        }
-        logger.debug("Using OH HTTP port {}", httpPort);
-        bindingConfig.localIP = localIP;
-        bindingConfig.httpPort = httpPort;
+        logger.debug("Using OH HTTP port {}", httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT);
+        bindingConfig = runtimeConfig.withHttpPort(httpPort);
 
         this.coapServer = new Shelly1CoapServer();
         this.thingTable.startDiscoveryService(bundleContext);
@@ -197,7 +196,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    public ShellyBindingConfiguration getBindingConfig() {
+    public ShellyBindingRuntimeConfig getBindingConfig() {
         return bindingConfig;
     }
 
