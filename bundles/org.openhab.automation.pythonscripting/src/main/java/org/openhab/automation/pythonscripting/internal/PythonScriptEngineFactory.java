@@ -98,7 +98,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
             Engine engine;
             try {
                 engine = engineBuilder.build();
-                logger.info("Debugger support is enabled for Python Scripting.");
+                logger.info("Debugger support is enabled for Python Scripting on port {}",
+                        configuration.getDebuggerPort());
             } catch (RuntimeException e) {
                 logger.error(
                         "Failed to initialize Graal Python engine with debugger support. Continuing without debugger support.",
