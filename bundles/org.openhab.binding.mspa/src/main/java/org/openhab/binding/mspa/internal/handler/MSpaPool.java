@@ -227,57 +227,43 @@ public class MSpaPool extends BaseThingHandler {
     }
 
     private boolean checkOnline() {
-        Request deviceListRequest = account.get().getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
-        try {
-            ContentResponse cr = deviceListRequest.timeout(10, TimeUnit.SECONDS).send();
-            int status = cr.getStatus();
-            String response = cr.getContentAsString();
-            if (status == 200) {
-                JSONObject devices = new JSONObject(response);
-                if (devices.has("data")) {
-                    JSONObject data = devices.getJSONObject("data");
-                    if (data.has("list")) {
-                        JSONArray list = data.getJSONArray("list");
-                        for (Iterator<Object> iter = list.iterator(); iter.hasNext();) {
-                            Object entry = iter.next();
-                            if (entry instanceof JSONObject jsonEntry) {
-                                if (jsonEntry.has("device_id")) {
-                                    if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
-                                        if (deviceProperties.isEmpty()) {
-                                            // update device properties one time after initialization
-                                            Map<String, String> devicePropertiesMap = MSpaUtils
-                                                    .getDeviceProperties(jsonEntry.toMap());
-                                            thing.setProperties(devicePropertiesMap);
-                                            deviceProperties = Optional.of(devicePropertiesMap);
-                                        }
-                                        if (jsonEntry.has("is_online")) {
-                                            boolean online = jsonEntry.getBoolean("is_online");
-                                            if (online) {
-                                                updateStatus(ThingStatus.ONLINE);
-                                            } else {
-                                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                                        "@text/status.mspa.pool.offline");
-                                            }
-                                            return online;
-                                        }
-                                    }
+        Optional<JSONArray> deviceListOpt = account.get().getDeviceList();
+        if (deviceListOpt.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-no-devices" + "\"]");
+            return false;
+        } else {
+            JSONArray deviceList = deviceListOpt.get();
+            for (Iterator<Object> iter = deviceList.iterator(); iter.hasNext();) {
+                Object entry = iter.next();
+                if (entry instanceof JSONObject jsonEntry) {
+                    if (jsonEntry.has("device_id")) {
+                        if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
+                            if (deviceProperties.isEmpty()) {
+                                // update device properties one time after initialization
+                                Map<String, String> devicePropertiesMap = MSpaUtils
+                                        .getDeviceProperties(jsonEntry.toMap());
+                                thing.setProperties(devicePropertiesMap);
+                                deviceProperties = Optional.of(devicePropertiesMap);
+                            }
+                            if (jsonEntry.has("is_online")) {
+                                boolean online = jsonEntry.getBoolean("is_online");
+                                if (online) {
+                                    updateStatus(ThingStatus.ONLINE);
+                                } else {
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                            "@text/status.mspa.pool.offline");
                                 }
+                                return online;
                             }
                         }
                     }
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-missing" + "\"]");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/status.mspa.pool.request-failed [\"" + status + "\"]");
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.mspa.pool.request-failed [\"" + e.toString() + "\"]");
-            handlePossibleInterrupt(e);
+                    "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-missing" + "\"]");
+            return false;
         }
-        return false;
     }
 
     public void distributeData(String response) {

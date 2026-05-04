@@ -115,4 +115,12 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
             updateStatus(ThingStatus.ONLINE);
         }
     }
+
+    @Override
+    public void clearToken() {
+        String persistenceId = ownerConfig.get().email;
+        JSONObject persistence = getStorage(persistenceId);
+        persistence.remove(TOKEN);
+        persist(persistenceId, persistence);
+    }
 }
