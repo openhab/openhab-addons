@@ -1,0 +1,62 @@
+{
+	"name": "Hue Bridge 2",
+	"zigbeechannel": 25,
+	"bridgeid": "C42996FFFEC5EBFC",
+	"mac": "c4:29:96:b5:eb:fc",
+	"dhcp": true,
+	"ipaddress": "192.168.1.95",
+	"netmask": "255.255.255.0",
+	"gateway": "192.168.1.1",
+	"proxyaddress": "none",
+	"proxyport": 0,
+	"UTC": "2026-03-30T16:10:52",
+	"localtime": "2026-03-30T17:10:52",
+	"timezone": "Europe/London",
+	"modelid": "BSB003",
+	"datastoreversion": "185",
+	"swversion": "2071280000",
+	"apiversion": "1.76.0",
+	"swupdate2": {
+		"checkforupdate": false,
+		"lastchange": "2026-03-26T11:49:16",
+		"bridge": {
+			"state": "noupdates",
+			"lastinstall": "2026-03-26T11:49:16"
+		},
+		"state": "noupdates",
+		"autoinstall": {
+			"updatetime": "T14:05:00",
+			"on": true
+		}
+	},
+	"linkbutton": false,
+	"portalservices": true,
+	"analyticsconsent": true,
+	"portalconnection": "disconnected",
+	"portalstate": {
+		"signedon": false,
+		"incoming": false,
+		"outgoing": false,
+		"communication": "disconnected"
+	},
+	"internetservices": {
+		"internet": "connected",
+		"remoteaccess": "connected",
+		"time": "connected",
+		"swupdate": "connected"
+	},
+	"factorynew": false,
+	"replacesbridgeid": null,
+	"starterkitid": "",
+	"backup": {
+		"status": "idle",
+		"errorcode": 0
+	},
+	"whitelist": {
+		"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee": {
+			"last use date": "2026-03-26T12:35:04",
+			"create date": "2025-10-03T13:20:13",
+			"name": "Hue#SM-G990B"
+		}
+	}
+}

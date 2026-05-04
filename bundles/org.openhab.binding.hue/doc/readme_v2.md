@@ -66,9 +66,10 @@ The configuration of all things (as described above) is the same regardless of w
 
 Bridge Things support the following channels:
 
-| Channel ID                                      | Item Type          | Description                                 |
-|-------------------------------------------------|--------------------|---------------------------------------------|
-| automation#11111111-2222-3333-4444-555555555555 | Switch             | Enable / disable the respective automation. |
+| Channel ID                                      | Item Type          | Description                                                      |
+|-------------------------------------------------|--------------------|------------------------------------------------------------------|
+| automation#11111111-2222-3333-4444-555555555555 | Switch             | Enable / disable the respective automation.                      |
+| software#update-ready                           | Trigger            | Sends an event when there is a software update ready to install. |
 
 The Bridge dynamically creates `automation` channels corresponding to the automations in the Hue App;
 the '11111111-2222-3333-4444-555555555555' is the unique id of the respective automation.
@@ -242,6 +243,23 @@ openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 ```
 
 ## Rule Actions
+
+### Software Update
+
+The Bridge has a `software#update-ready` channel which is triggered if a software update is ready to install.
+This channel can be used in a rule to initiate a software update of the bridge or its connected `device` things.
+
+```java
+rule "Install Software Update"
+when
+  Channel 'hue:bridge-api2:g24:software#update-ready' triggered
+then
+  val hueActions = getActions("hue","hue:bridge-api2:g24")
+  hueActions.installUpdate()
+end
+```
+
+### Dynamics
 
 This binding includes a rule action, which implements dynamic (i.e. gradual) transitions to a new scene or light(s) state.
 Each thing has a separate action instance, which can be retrieved as follows.

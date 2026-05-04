@@ -188,6 +188,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_MOTION_AREA_ENABLED = "motion-area-enabled";
     public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
+    public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = "update-ready";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,

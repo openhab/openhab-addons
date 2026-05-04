@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.HueBridgeModel;
+import org.openhab.binding.hue.internal.action.SoftwareUpdateActions;
+import org.openhab.binding.hue.internal.api.dto.clip1.BridgeConfig;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -41,6 +43,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
@@ -63,6 +66,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -93,6 +97,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
     private static final int RECONNECT_DELAY_SECONDS = 10;
     private static final int RECONNECT_MAX_TRIES = 5;
+    private static final int POLL_INTERVAL_LOW = 5;
+    private static final int POLL_INTERVAL_HIGH = 60;
+    private static final int UPDATE_DURATION_SECONDS = 60;
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
     private static final ResourceReference ROOM = new ResourceReference().setType(ResourceType.ROOM);
@@ -130,10 +137,16 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final ThingRegistry thingRegistry;
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
-    private final TranslationProvider translationProvider;
+    private final TranslationProvider i18nProvider;
     private final Map<String, Resource> automationsCache = new ConcurrentHashMap<>();
     private final Set<String> automationScriptIds = ConcurrentHashMap.newKeySet();
     private final ChannelGroupUID automationChannelGroupUID;
+
+    /*
+     * Map of software update resource id's and status. Used to track the update status of child device
+     * things during update operations.
+     */
+    private final Map<String, UpdateStatusV2> softwareStatusMap = new ConcurrentHashMap<>();
 
     private @Nullable Clip2Bridge clip2Bridge;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
@@ -143,6 +156,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable Future<?> checkConnectionTask;
     private @Nullable Future<?> updateOnlineStateTask;
     private @Nullable ScheduledFuture<?> scheduledUpdateTask;
+    private @Nullable Future<?> pollSoftwareStatusTask;
+    private @Nullable Future<?> afterUpdateTask;
+
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
@@ -150,20 +166,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private int connectRetriesRemaining;
 
     /**
-     * The generation of the bridge model, as returned by the DEVICE resource, used to determine if certain features are
-     * supported.
-     * For example, the motion aware feature is only supported on v3+ models.
+     * The generation of the bridge model, as returned by the DEVICE resource, used to determine if certain
+     * features are supported. For example, the motion aware feature is only supported on v3+ models.
      */
     private int bridgeGeneration;
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
-            LocaleProvider localeProvider, TranslationProvider translationProvider) {
+            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.thingRegistry = thingRegistry;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
+        this.i18nProvider = i18nProvider;
         this.automationChannelGroupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_AUTOMATION);
     }
 
@@ -237,8 +252,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         "@text/offline.api2.conf-error.not-authorized");
             }
         } catch (ApiException e) {
-            logger.debug("checkConnection() {}", e.getMessage(), e);
-            setStatusOfflineWithCommunicationError(e);
+            if (isUpdatingOwnFirmware()) {
+                // suppress stack trace and thing error status if offline due to a firmware update
+                logger.debug("checkConnection() {}", e.getMessage());
+            } else {
+                logger.debug("checkConnection() {}", e.getMessage(), e);
+                setStatusOfflineWithCommunicationError(e);
+            }
             retryConnection = connectRetriesRemaining > 0;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
@@ -253,6 +273,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             // short delay used during attempts to create or validate an application key
             milliSeconds = FAST_SCHEDULE_MILLI_SECONDS;
             applKeyRetriesRemaining--;
+        } else if (isUpdatingOwnFirmware()) {
+            // medium delay if already offline due to a firmware update which can take a few minutes
+            milliSeconds = UPDATE_DURATION_SECONDS * 1000;
         } else {
             // default delay, set via configuration parameter, used as heart-beat 'just-in-case'
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
@@ -310,10 +333,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             cancelTask(checkConnectionTask, true);
             cancelTask(updateOnlineStateTask, true);
             cancelTask(scheduledUpdateTask, true);
+            cancelTask(pollSoftwareStatusTask, true);
+            cancelTask(afterUpdateTask, true);
             updateAutomationChannelsTask = null;
             checkConnectionTask = null;
             updateOnlineStateTask = null;
             scheduledUpdateTask = null;
+            pollSoftwareStatusTask = null;
+            afterUpdateTask = null;
             synchronized (resourcesEventTasks) {
                 resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
                 resourcesEventTasks.clear();
@@ -332,6 +359,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             if (Objects.nonNull(disco)) {
                 disco.abortScan();
             }
+            softwareStatusMap.clear();
         }
     }
 
@@ -424,7 +452,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * @return the localized text.
      */
     public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
-        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
         return Objects.nonNull(result) ? result : key;
     }
 
@@ -456,7 +484,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(Clip2ThingDiscoveryService.class);
+        return Set.of(Clip2ThingDiscoveryService.class, SoftwareUpdateActions.class);
     }
 
     @Override
@@ -524,7 +552,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
+            HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress,
                     config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
@@ -557,6 +585,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes offline. Schedule a reconnection.
      */
     public void onConnectionOffline() {
+        cancelTask(pollSoftwareStatusTask, false);
+        pollSoftwareStatusTask = null;
         if (assetsLoaded) {
             cancelTask(checkConnectionTask, false);
             checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
@@ -568,6 +598,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes online. Schedule a general state update.
      */
     public void onConnectionOnline() {
+        cancelTask(pollSoftwareStatusTask, false);
+        // use an initial pollSoftwareStatusTask delay of 30 seconds
+        pollSoftwareStatusTask = scheduler.schedule(() -> pollSoftwareStatus(), 30, TimeUnit.SECONDS);
         cancelTask(updateOnlineStateTask, false);
         updateOnlineStateTask = scheduler.schedule(() -> updateOnlineState(), 0, TimeUnit.MILLISECONDS);
     }
@@ -686,9 +719,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("updateProperties()");
         Map<String, String> properties = new HashMap<>(thing.getProperties());
 
-        for (Resource device : getClip2Bridge().getResources(BRIDGE).getResources()) {
+        for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
             // set the serial number
-            String bridgeId = device.getBridgeId();
+            String bridgeId = bridge.getBridgeId();
             if (Objects.nonNull(bridgeId)) {
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
             }
@@ -849,6 +882,96 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Task called periodically on a scheduler thread to make a bridge v1 API call (which continues to be
+     * supported on BSB002 and BSB003 models) to read and update the software update status. The task
+     * reschedules itself with a short delay if an update is currently installing or the status is unknown
+     * (to optimise responsiveness), and otherwise with a long delay (to reduce unnecessary calls to the
+     * bridge).
+     */
+    private void pollSoftwareStatus() {
+        @Nullable
+        UpdateStatusV2 combinedStatus = getCombinedSoftwareStatus();
+        Future<?> task = pollSoftwareStatusTask;
+        if (task != null && !task.isCancelled()) {
+            int delay = (combinedStatus == null || UpdateStatusV2.INSTALLING == combinedStatus) ? POLL_INTERVAL_LOW
+                    : POLL_INTERVAL_HIGH;
+            pollSoftwareStatusTask = scheduler.schedule(() -> pollSoftwareStatus(), delay, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * Read the update status of the bridge and its devices, update the map of all device software update statuses,
+     * and update the bridge's firmware update status to the maximum of all device software update statuses (including
+     * itself). Returns the overall maximum update enum value of the bridge and all devices, or null if it cannot
+     * be read.
+     * 
+     * @return the overall maximum update enum value of the bridge and all devices, or null if it cannot be read.
+     */
+    private @Nullable UpdateStatusV2 getCombinedSoftwareStatus() {
+        try {
+            Map<String, @Nullable UpdateStatusV2> statusMap = getClip2Bridge().getUpdateStatusMap();
+            statusMap.entrySet().forEach(e -> putSoftwareStatus(e.getKey(), e.getValue()));
+            return refreshSoftwareStatusUI(); // call this anyway to refresh the UI even if the map is empty
+        } catch (AssetNotLoadedException e) {
+            logger.debug("getCombinedSoftwareStatus() error: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Add or remove the given device software update status entry to/from the map of all device software
+     * update statuses.
+     */
+    private void putSoftwareStatus(String id, @Nullable UpdateStatusV2 status) {
+        if (status == null || status == UpdateStatusV2.NO_UPDATE) {
+            softwareStatusMap.remove(id);
+        } else {
+            softwareStatusMap.put(id, status);
+        }
+    }
+
+    /**
+     * Refresh the bridge's UI firmware update status to the maximum of all device software update statuses
+     * (including itself). Updates the firmware update state property and the status info description.
+     * 
+     * @return the overall maximum update enum value of the bridge and all devices.
+     */
+    private UpdateStatusV2 refreshSoftwareStatusUI() {
+        UpdateStatusV2 status = softwareStatusMap.values().stream().max(UpdateStatusV2::compareTo)
+                .orElseGet(() -> UpdateStatusV2.NO_UPDATE);
+
+        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
+
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.ONLINE) {
+            switch (status) {
+                case INSTALLING:
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    break;
+                case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
+                    /*
+                     * Set the thing status to ThingStatus.ONLINE + ThingStatusDetail.NONE and if the status detail
+                     * had previously been FIRMWARE_UPDATING then clear its respective prior status description now,
+                     * or otherwise keep any status description that may have been set elsewhere.
+                     */
+                    String description = (statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) ? null
+                            : statusInfo.getDescription();
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+                    break;
+                case READY_TO_INSTALL:
+                    triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
+                    // note: fall through to set Thing status, status detail, and status description
+                case INSTALL_FAILED:
+                default:
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                    break;
+            }
+        }
+
+        return status;
+    }
+
+    /**
      * Load the set of automation script ids.
      */
     private void loadAutomationScriptIds() {
@@ -914,14 +1037,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create an automation channel from an automation resource
      */
     private Channel createAutomationChannel(Resource automation) {
-        String label = Objects.requireNonNullElse(translationProvider.getText(bundle, AUTOMATION_CHANNEL_LABEL_KEY,
+        String label = Objects.requireNonNullElse(i18nProvider.getText(bundle, AUTOMATION_CHANNEL_LABEL_KEY,
                 AUTOMATION_CHANNEL_LABEL_KEY, localeProvider.getLocale(), automation.getName()),
                 AUTOMATION_CHANNEL_LABEL_KEY);
 
-        String description = Objects.requireNonNullElse(
-                translationProvider.getText(bundle, AUTOMATION_CHANNEL_DESCRIPTION_KEY,
-                        AUTOMATION_CHANNEL_DESCRIPTION_KEY, localeProvider.getLocale(), automation.getName()),
-                AUTOMATION_CHANNEL_DESCRIPTION_KEY);
+        String description = Objects
+                .requireNonNullElse(
+                        i18nProvider.getText(bundle, AUTOMATION_CHANNEL_DESCRIPTION_KEY,
+                                AUTOMATION_CHANNEL_DESCRIPTION_KEY, localeProvider.getLocale(), automation.getName()),
+                        AUTOMATION_CHANNEL_DESCRIPTION_KEY);
 
         return ChannelBuilder
                 .create(new ChannelUID(automationChannelGroupUID, automation.getId()), CoreItemFactory.SWITCH)
@@ -935,34 +1059,51 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public boolean onResources(List<Resource> resources) {
         boolean requireUpdateChannels = false;
+        boolean refreshSoftwareStatusUI = false;
         for (Resource resource : resources) {
-            if (ResourceType.BEHAVIOR_INSTANCE != resource.getType()) {
-                continue;
-            }
-            String resourceId = resource.getId();
-            switch (resource.getContentType()) {
-                case ADD:
-                    requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
+            switch (resource.getType()) {
+
+                case DEVICE_SOFTWARE_UPDATE:
+                    putSoftwareStatus(resource.getId(), resource.getUpdateStatus());
+                    refreshSoftwareStatusUI = true;
                     break;
-                case DELETE:
-                    requireUpdateChannels |= automationsCache.containsKey(resourceId);
-                    break;
-                case UPDATE:
-                case FULL_STATE:
-                    Resource cachedAutomation = automationsCache.get(resourceId);
-                    if (Objects.isNull(cachedAutomation)) {
-                        requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
-                    } else {
-                        if (resource.hasName() && !resource.getName().equals(cachedAutomation.getName())) {
-                            requireUpdateChannels = true;
-                        } else if (Objects.nonNull(resource.getEnabled())) {
-                            updateState(new ChannelUID(automationChannelGroupUID, resourceId),
-                                    resource.getEnabledState());
-                        }
+
+                case BEHAVIOR_INSTANCE:
+                    String resourceId = resource.getId();
+                    switch (resource.getContentType()) {
+                        case ADD:
+                            requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
+                            break;
+                        case DELETE:
+                            requireUpdateChannels |= automationsCache.containsKey(resourceId);
+                            break;
+                        case UPDATE:
+                        case FULL_STATE:
+                            Resource cachedAutomation = automationsCache.get(resourceId);
+                            if (Objects.isNull(cachedAutomation)) {
+                                if (resource.getScriptId() instanceof String scriptId
+                                        && automationScriptIds.contains(scriptId)) {
+                                    requireUpdateChannels = true;
+                                }
+                            } else {
+                                if (resource.hasName() && !resource.getName().equals(cachedAutomation.getName())) {
+                                    requireUpdateChannels = true;
+                                } else if (Objects.nonNull(resource.getEnabled())) {
+                                    updateState(new ChannelUID(automationChannelGroupUID, resourceId),
+                                            resource.getEnabledState());
+                                }
+                            }
+                            break;
+                        default:
                     }
                     break;
+
                 default:
+                    break;
             }
+        }
+        if (refreshSoftwareStatusUI) {
+            refreshSoftwareStatusUI();
         }
         return requireUpdateChannels;
     }
@@ -974,5 +1115,98 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     public int getBridgeGeneration() {
         return bridgeGeneration;
+    }
+
+    /**
+     * Send a command to install a software update. The command will only be sent if the bridge is online and the update
+     * status is READY_TO_INSTALL.
+     * 
+     * @return a either an error message or a message of successful start of the update process.
+     */
+    public String installUpdate() {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            logger.warn("installUpdate() cannot be executed: offline");
+            return getText("install.update.error.offline");
+        }
+        UpdateStatusV2 status = getCombinedSoftwareStatus();
+        if (status == null) {
+            logger.warn("installUpdate() cannot be executed: state unknown");
+            return getText("install.update.error.state-unknown");
+        }
+        if (status != UpdateStatusV2.READY_TO_INSTALL) {
+            logger.warn("installUpdate() cannot be executed: not ready");
+            return getText("install.update.error.not-ready");
+        }
+
+        // bridge goes offline if it is updating itself; whereas if ONLY updating devices it stays online
+        UpdateStatusV2 installingStatus = UpdateStatusV2.INSTALLING;
+        String installingKey = installingStatus.i18nKey();
+        boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
+        if (doBridge) {
+            putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+        }
+
+        boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
+        if (doDevices) {
+            putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
+            if (!doBridge) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            }
+        }
+
+        // update the UI to give feedback to the user that an update is starting
+        refreshSoftwareStatusUI();
+
+        try {
+            getClip2Bridge().installUpdate();
+        } catch (IOException | AssetNotLoadedException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("installUpdate() error: {}", e.getMessage(), e);
+            } else {
+                logger.warn("installUpdate() error: {}", e.getMessage());
+            }
+            return getText("install.update.error.install-failed");
+        }
+
+        cancelTask(afterUpdateTask, false);
+        if (doBridge) {
+            afterUpdateTask = scheduler.schedule(() -> {
+                /*
+                 * Schedule a first check after a delay to give the bridge time to go offline and update itself.
+                 * Note: checkConnection() loops every minute thereafter until the bridge comes back online
+                 */
+                checkConnection();
+            }, UPDATE_DURATION_SECONDS, TimeUnit.SECONDS);
+        } else if (doDevices) {
+            afterUpdateTask = scheduler.schedule(() -> {
+                /*
+                 * Schedule a task to clear the v1 'any' device update status after a delay to give actual devices
+                 * time to notify their own update status via v2 SSE events and thus quickly update the UI.
+                 */
+                putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, null);
+                refreshSoftwareStatusUI();
+            }, 5, TimeUnit.SECONDS);
+        }
+        return getText("install.update.success");
+    }
+
+    /**
+     * Helper method to get the translated text for a given key.
+     * 
+     * @param key the key to be translated.
+     * @return the translated text or a default text if no translation is found.
+     */
+    private String getText(String key) {
+        String result = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
+        return result == null ? key : result;
+    }
+
+    /**
+     * Returns true if the bridge is in process of updating its own firmware (self update).
+     */
+    public boolean isUpdatingOwnFirmware() {
+        return thing.getStatus() == ThingStatus.OFFLINE
+                && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING;
     }
 }
