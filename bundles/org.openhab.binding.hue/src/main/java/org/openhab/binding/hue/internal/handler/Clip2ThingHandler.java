@@ -61,6 +61,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
@@ -621,6 +622,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         thing.getUID(), channelUID, e.getMessage());
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -664,6 +666,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             } catch (ApiException | AssetNotLoadedException e) {
                 logger.debug("{} -> handleCommand() error {}", resourceId, e.getMessage(), e);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }, 3, TimeUnit.SECONDS);
     }
@@ -806,13 +809,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResourceToCache(resource);
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
-                        State softwareUpdateState = resource.getSoftwareUpdateState();
-                        if (softwareUpdateState != UnDefType.NULL) {
-                            String fwState = softwareUpdateState.toString().replaceAll("_", " ");
-                            fwState = fwState.isEmpty() ? "?"
-                                    : Character.toUpperCase(fwState.charAt(0)) + fwState.substring(1).toLowerCase();
-                            thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, fwState);
-                        }
+                        refreshSoftwareStatusUI(resource);
                         break;
                     case LIGHT:
                         if (!updateLightPropertiesDone) {
@@ -1208,7 +1205,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
                             "@text/offline.api2.comm-error.zigbee-connectivity-issue");
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
-            } else if (thing.getStatus() != ThingStatus.ONLINE) {
+                return;
+            }
+            String fwState = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+            if (UpdateStatusV2.INSTALLING.toString().equals(fwState)) {
+                // firmware update still in progress; remain OFFLINE(FIRMWARE_UPDATING)
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                return;
+            }
+            if (thing.getStatus() != ThingStatus.ONLINE) {
+                // the updateStatus() override below takes care of setting the status detail and description
                 updateStatus(ThingStatus.ONLINE);
                 refreshAllChannels();
             }
@@ -1248,6 +1254,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -1654,5 +1661,52 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
             }
         }
+    }
+
+    /**
+     * Read the update status of the thing from the given resource and update its property and status accordingly.
+     */
+    private void refreshSoftwareStatusUI(Resource resource) {
+        UpdateStatusV2 status = resource.getUpdateStatus();
+        if (status != null) {
+            thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, status.toString());
+            if (hasConnectivityIssue) {
+                return;
+            }
+            if (status == UpdateStatusV2.INSTALLING) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+            } else {
+                // the updateStatus() override below takes care of setting the status detail and description
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+
+    /**
+     * Override method: Updates the thing status based on the given status, status detail, and description. If the
+     * status is ONLINE and the firmware property indicates that an update is available, then the description is
+     * overridden with the respective update state's translatable text. If the status detail is FIRMWARE_UPDATING,
+     * then the description is overridden with the translatable 'installing update' text. In all other cases,
+     * the given status, status detail, and description are used unchanged.
+     */
+    @Override
+    protected void updateStatus(ThingStatus thingStatus, ThingStatusDetail detail, @Nullable String description) {
+        if (thingStatus == ThingStatus.ONLINE || detail == ThingStatusDetail.FIRMWARE_UPDATING) {
+            String firmware = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
+            UpdateStatusV2 status = UpdateStatusV2.reverseLookup(firmware);
+            if (status != null) {
+                switch (status) {
+                    case INSTALLING:
+                        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                        return;
+                    case READY_TO_INSTALL:
+                        super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                        return;
+                    default:
+                }
+            }
+            // if there is no software update status preserve the caller-provided status information
+        }
+        super.updateStatus(thingStatus, detail, description);
     }
 }
