@@ -60,6 +60,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     private @Nullable RouterosThingConfig config;
     private @Nullable volatile RouterosDevice routeros;
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> dailyJob;
     private Map<String, State> currentState = new HashMap<>();
 
     public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -121,6 +122,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
 
     private void scheduleRefreshJob() {
         synchronized (this) {
+            if (dailyJob == null) {
+                dailyJob = scheduler.scheduleWithFixedDelay(this::dailyRun, 1, 1440, TimeUnit.MINUTES);
+            }
             var cfg = this.config;
             if (refreshJob == null) {
                 int refreshPeriod = 10;
@@ -143,7 +147,20 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 job.cancel(true);
                 this.refreshJob = null;
             }
+            job = this.dailyJob;
+            if (job != null) {
+                job.cancel(true);
+                this.refreshJob = null;
+            }
         }
+    }
+
+    private void dailyRun() {
+        RouterosDevice routerOs = getRouteros();
+        if (routerOs == null) {
+            return;
+        }
+        updateState(CHANNEL_UPDATE_AVAILABLE, StateUtil.stringOrNull(routerOs.firmwareCheck()));
     }
 
     private void scheduledRun() {
@@ -284,7 +301,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                     newState = StateUtil.qtyPercentOrNull(rbRes.getCpuLoad());
                     break;
                 case CHANNEL_UPDATE_AVAILABLE:
-                    newState = StateUtil.stringOrNull(routerOs.firmwareCheck());
                     break;
                 default:
                     logger.warn("Unimplemented channel:{}", channelID);

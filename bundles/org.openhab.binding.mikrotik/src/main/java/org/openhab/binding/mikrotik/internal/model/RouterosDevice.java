@@ -424,15 +424,35 @@ public class RouterosDevice {
     public @Nullable String firmwareCheck() {
         ApiConnection conn = this.connection;
         if (conn == null) {
-            return null;
+            return "Firmware check failed";
         }
         List<Map<String, String>> response = null;
         try {
             response = conn.execute(CMD_UPDATE_CHECK);
         } catch (MikrotikApiException e) {
-            logger.warn("Can not determine if the firmware is the latest version");
+            logger.debug("Failed to determine if the firmware is the latest version");
         }
-        return response.get(response.size() - 1).get("status");
+        if (response == null) {
+            return "Firmware check failed";
+        }
+        String finalStatus = "";
+        String newVersion = "Unknown";
+        for (Map<String, String> map : response) {
+            // Keep the very last status
+            if (map.containsKey("status")) {
+                finalStatus = map.get("status");
+            }
+            if (map.containsKey("latest-version")) {
+                newVersion = map.get("latest-version");
+            }
+        }
+        if (finalStatus == null) {
+            return "Firmware check failed";
+        }
+        if ("New version is available".equalsIgnoreCase(finalStatus)) {
+            return "New version " + newVersion + " is available";
+        }
+        return finalStatus.isEmpty() ? "Firmware check failed" : finalStatus;
     }
 
     private void updateRouterboardInfo() throws MikrotikApiException {
