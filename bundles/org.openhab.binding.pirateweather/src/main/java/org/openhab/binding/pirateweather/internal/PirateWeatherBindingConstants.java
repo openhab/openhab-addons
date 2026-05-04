@@ -40,7 +40,7 @@ public class PirateWeatherBindingConstants {
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_LANGUAGE = "language";
     public static final String CONFIG_LOCATION = "location";
-	public static final String DEFAULT_LANGUAGE = "en";
+    public static final String DEFAULT_LANGUAGE = "en";
 
     // Channel group types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_HOURLY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
