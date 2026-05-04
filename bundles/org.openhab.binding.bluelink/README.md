@@ -70,10 +70,10 @@ Vehicle things support the following actions.
 | climateStop()      | -                                                          | Stop climate control                                       |
 | lock()             | -                                                          | Lock the vehicle                                           |
 | unlock()           | -                                                          | Unlock the vehicle                                         |
-| startCharging()    | -                                                          | Start charging the vehicle                                 |
-| stopCharging()     | -                                                          | Stop charging the verhicle                                 |
-| setChargeLimitDC() | limit (integer)                                            | Set the target DC charge limit (%)                         |
-| setChargeLimitAC() | limit (integer)                                            | Set the target AC charge limit (%)                         |
+| startCharging()    | -                                                          | Start charging the vehicle (EV only)                       |
+| stopCharging()     | -                                                          | Stop charging the vehicle (EV only)                        |
+| setChargeLimitDC() | limit (integer)                                            | Set the target DC charge limit (50-100%) (EV only)         |
+| setChargeLimitAC() | limit (integer)                                            | Set the target AC charge limit (50-100%) (EV only)         |
 
 ## Channels
 

@@ -173,28 +173,28 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         final String channelId = channelUID.getIdWithoutGroup();
         try {
             if (CHANNEL_CHARGE_LIMIT_DC.equals(channelId)) {
-                if (command instanceof DecimalType decimal) {
-                    setChargeLimitDC(decimal.intValue());
-                } else if (command instanceof QuantityType<?> qt) {
+                if (command instanceof QuantityType<?> qt) {
                     qt = qt.toUnit(Units.PERCENT);
                     if (qt != null) {
                         setChargeLimitDC(qt.intValue());
                     } else {
                         logger.debug("Failed to convert QuantityType to PERCENT!");
                     }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitDC(decimal.intValue());
                 } else {
                     logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                 }
             } else if (CHANNEL_CHARGE_LIMIT_AC.equals(channelId)) {
-                if (command instanceof DecimalType decimal) {
-                    setChargeLimitAC(decimal.intValue());
-                } else if (command instanceof QuantityType<?> qt) {
+                if (command instanceof QuantityType<?> qt) {
                     qt = qt.toUnit(Units.PERCENT);
                     if (qt != null) {
                         setChargeLimitAC(qt.intValue());
                     } else {
                         logger.debug("Failed to convert QuantityType to PERCENT!");
                     }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitAC(decimal.intValue());
                 } else {
                     logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                 }
@@ -257,6 +257,10 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     }
 
     public boolean setChargeLimitDC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid DC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
         final var bridgeHnd = getBridgeHandler();
         final var vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
@@ -270,6 +274,10 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     }
 
     public boolean setChargeLimitAC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid AC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
         final var bridgeHnd = getBridgeHandler();
         final var vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
