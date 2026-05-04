@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>MideaAC Binding</name>
-	<description>This is the binding for MideaAC.</description>
+	<description>This is the binding for a Midea AC (type AC) and Dehumidifier.</description>
 	<connection>local</connection>
 	<discovery-methods>
 		<discovery-method>
