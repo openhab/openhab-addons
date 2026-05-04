@@ -14,6 +14,7 @@ package org.openhab.binding.ntfy.internal;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,31 +48,29 @@ public class NtfyConnectionConfiguration {
     public long connectionTimeout = 60000;
 
     /**
-     * Checks whether a Basic Authorization header should be provided based on the configured
-     * username and password values.
+     * Checks whether a Basic Authorization header should be provided based on the configured password value.
      *
-     * @return {@code true} when both username and password are non-null and non-blank,
+     * @return {@code true} when password are non-null and non-blank,
      *         {@code false} otherwise
      */
     public boolean isAuthHeaderNeeded() {
-        final @Nullable String username = this.username;
         final @Nullable String password = this.password;
-        return username != null && !username.isBlank() && password != null && !password.isBlank();
+        return password != null && !password.isBlank();
     }
 
     /**
-     * Builds the HTTP Basic Authorization header value from the configured username and password.
-     *
-     * <p>
-     * The credentials are combined as "username:password" and Base64-encoded using UTF-8.
-     * The returned value is prefixed with "Basic ".
+     * If both username and password are provided, a Basic Authorization header is created. If only password is
+     * provided, a Bearer Authorization header is created. Otherwise, an empty string is returned.
      *
      * @return the full value for the HTTP Authorization header
      */
     public String buildAuthHeader() {
-        String auth = username + ":" + password;
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-        String authHeader = "Basic " + encodedAuth;
-        return authHeader;
+        final @Nullable String username = this.username;
+        final String password = Objects.requireNonNull(this.password);
+        if (username == null || username.isBlank()) {
+            return "Bearer " + Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
+        }
+        return "Basic "
+                + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -19,14 +19,14 @@ This binding provides the following Thing types. The Thing type IDs match the de
 
 ### `ntfyConnection` Bridge Configuration
 
-| Name              | Type    | Description                             | Default                            | Required | Advanced |
-|-------------------|---------|-----------------------------------------|------------------------------------|----------|----------|
-| hostname          | text    | Base URL of the ntfy server             | [https://ntfy.sh](https://ntfy.sh) | yes      | no       |
-| username          | text    | Optional username for basic auth        | N/A                                | no       | no       |
-| password          | text    | Optional password for basic auth        | N/A                                | no       | no       |
-| connectionTimeout | integer | WebSocket / HTTP connection timeout ms  | 60000                              | no       | yes      |
+| Name              | Type    | Description                                                                              | Default                            | Required | Advanced |
+|-------------------|---------|------------------------------------------------------------------------------------------|------------------------------------|----------|----------|
+| hostname          | text    | Base URL of the ntfy server                                                              | [https://ntfy.sh](https://ntfy.sh) | yes      | no       |
+| username          | text    | Optional username for basic auth                                                         | N/A                                | no       | no       |
+| password          | text    | Optional password - if username is provided basic auth is used else Bearer token is used | N/A                                | no       | no       |
+| connectionTimeout | integer | WebSocket / HTTP connection timeout ms                                                   | 60000                              | no       | yes      |
 
-Configure the `ntfyConnection` as a bridge to hold shared server and authentication settings. Topic Things reference the bridge to reuse these settings.
+Configure the `ntfyConnection` as a bridge to hold shared server and authentication settings. Topic Things reference the bridge to reuse these settings. For authentication with access token only set the password and leave the username empty.
 
 ### `ntfyTopic` Thing Configuration
 
