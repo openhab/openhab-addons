@@ -48,7 +48,7 @@ public class PythonScriptEngineConfiguration {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineConfiguration.class);
 
     private static final String SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE = "polyglot.engine.userResourceCache";
-
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
     private static final String SYSTEM_PROPERTY_JAVA_IO_TMPDIR = "java.io.tmpdir";
 
     public static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
@@ -98,6 +98,11 @@ public class PythonScriptEngineConfiguration {
         return Version.parse(version != null && version.startsWith("v") ? version.substring(1) : version);
     }
 
+    static {
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
+    }
+
     @Activate
     public PythonScriptEngineConfiguration(Map<String, Object> config) {
         Path userdataDir = Paths.get(OpenHAB.getUserDataFolder());
@@ -127,6 +132,7 @@ public class PythonScriptEngineConfiguration {
         Properties props = System.getProperties();
         props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
                 userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
 
         String packageName = PythonScriptEngineConfiguration.class.getPackageName();
         packageName = packageName.substring(0, packageName.lastIndexOf("."));

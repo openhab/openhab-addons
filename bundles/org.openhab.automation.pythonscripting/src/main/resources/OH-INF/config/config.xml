@@ -80,7 +80,7 @@
 		<parameter name="debuggerEnabled" type="boolean" required="true" groupName="debugger">
 			<label>Enable Debugger</label>
 			<description><![CDATA[
-			Enables Chrome Debugger support for Python Script. This allows to attach any debugger compatible with the <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
+			Enables Chrome Debugger support for Python Scripting. This allows you to attach any debugger compatible with the <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
 			]]>
 			</description>
 			<default>false</default>

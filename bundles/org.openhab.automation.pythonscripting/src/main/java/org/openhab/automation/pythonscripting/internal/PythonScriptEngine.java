@@ -82,8 +82,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     public static final String CONTEXT_KEY_ENGINE_LOGGER_INPUT = "ctx.engine-logger-input";
     private static final String CONTEXT_KEY_SCRIPT_FILENAME = "javax.script.filename";
 
-    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
-
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
@@ -102,11 +100,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final int STACK_TRACE_LENGTH = 5;
 
     private static final String LOGGER_INIT_NAME = "__logger_init__";
-
-    static {
-        // disable warning about missing TruffleAttach library (is only available in graalvm)
-        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
-    }
 
     // private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 

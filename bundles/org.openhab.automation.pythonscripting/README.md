@@ -120,7 +120,7 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 
 # Enable debugger
 #
-# Enables Chrome Debugger support for Python Script. This allows to attach any debugger compatible with the 
+# Enables Chrome Debugger support for Python Scripting. This allows you to attach any debugger compatible with the 
 # <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
 #
 #org.openhab.automation.pythonscripting:debuggerEnabled = false
