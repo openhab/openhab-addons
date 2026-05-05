@@ -40,7 +40,7 @@ public class ChromecastBindingConstants {
             Stream.of(THING_TYPE_AUDIO, THING_TYPE_AUDIOGROUP, THING_TYPE_CHROMECAST).collect(Collectors.toSet()));
 
     // Config Parameters
-    public static final String HOST = "ipAddress";
+    public static final String HOST = "host";
     public static final String PORT = "port";
     public static final String DEVICE_ID = "deviceId";
 
