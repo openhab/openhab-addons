@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home Connect Direct Console</title>
+    <link rel="stylesheet" href="${assetPath}/css/pico.blue.min.css">
+    <link rel="stylesheet" href="${assetPath}/css/homeconnectdirect.css">
+    <script defer src="${assetPath}/js/alpinejs.min.js"></script>
+    <script src="${assetPath}/js/homeconnectdirect.js"></script>
+    <script>
+        globalThis.servletPath = '${servletPath}';
+        globalThis.loginEnabled = ${loginEnabled};
+        globalThis.messageQueueSize = ${messageQueueSize};
+        globalThis.bindingDeviceId = '${bindingDeviceId}';
+        globalThis.apiAppliancesPath = '${apiAppliancesPath}';
+        globalThis.apiProfilesPath = '${apiProfilesPath}';
+        globalThis.apiMessagesPath = '${apiMessagesPath}';
+        globalThis.apiLogsPath = '${apiLogsPath}';
+    </script>
+    <link rel="icon" href="${assetPath}/favicon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="${assetPath}/favicon/128x128.png" type="image/png" sizes="128x128">
+</head>
+<body x-data="app()">
+
+<header class="container">
+    <nav>
+        <ul>
+            <li>
+                <a href="${servletPath}" class="link-no-decoration">
+                    <hgroup>
+                        <h3 class="binding-header">Home Connect Direct</h3>
+                        <p class="binding-subheader">Console</p>
+                    </hgroup>
+                </a>
+            </li>
+        </ul>
+        <ul>
+            <li><a href="#" @click.prevent="navigateToAppliances()" :aria-current="view === 'appliances' ? 'page' : false">Home Appliances</a></li>
+            <li><a href="#" @click.prevent="navigateToProfiles()" :aria-current="view === 'profiles' ? 'page' : false">Profiles</a></li>
+            <li><a href="#" @click.prevent="navigateToLogs()" :aria-current="view === 'logs' ? 'page' : false">Logs</a></li>
+            <li x-show="loginEnabled"><a class="secondary" href="#" @click.prevent="logout()">Logout</a></li>
+        </ul>
+    </nav>
+    <template x-if="view === 'appliance' && currentAppliance">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="#" @click.prevent="navigateToAppliances()">Home Appliances</a></li>
+                <li x-text="currentAppliance.label"></li>
+            </ul>
+        </nav>
+    </template>
+    <template x-if="view === 'log-details' && currentLog">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="#" @click.prevent="navigateToLogs()">Logs</a></li>
+                <li x-text="logs.find(l => l.id === currentLog.id)?.fileName || currentLog.id"></li>
+            </ul>
+        </nav>
+    </template>
+    <template x-if="view === 'appliances'">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="#" @click.prevent="navigateToAppliances()">Home Appliances</a></li>
+            </ul>
+        </nav>
+    </template>
+    <template x-if="view === 'profiles'">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="#" @click.prevent="navigateToProfiles()">Profiles</a></li>
+            </ul>
+        </nav>
+    </template>
+    <template x-if="view === 'logs'">
+        <nav aria-label="breadcrumb">
+            <ul>
+                <li><a href="#" @click.prevent="navigateToLogs()">Logs</a></li>
+            </ul>
+        </nav>
+    </template>
+</header>
+
+<main class="container">
+    <template x-if="view === 'profiles'">
+        <article>
+            <header class="profile-card-header">
+                <button @click="showUploadModal = true; uploadError = null" data-placement="left" data-tooltip="Upload a new appliance profile. If an appliance with the same ID already exists, it will be overwritten.">Upload Profile</button>
+            </header>
+
+            <figure>
+                <table class="striped">
+                    <thead>
+                    <tr>
+                        <th scope="col" class="hide-on-mobile">Brand</th>
+                        <th scope="col" class="hide-on-mobile">Type</th>
+                        <th scope="col" class="hide-on-mobile">VIB</th>
+                        <th scope="col">ID</th>
+                        <th scope="col" class="hide-on-mobile">Created</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="p in profiles" :key="p.haId">
+                        <tr>
+                            <td x-text="p.brand" class="hide-on-mobile"></td>
+                            <td x-text="p.type" class="hide-on-mobile"></td>
+                            <td x-text="p.vib" class="hide-on-mobile"></td>
+                            <td x-text="p.haId"></td>
+                            <td x-text="formatDateTime(p.created)" class="hide-on-mobile"></td>
+                            <td class="profile-actions">
+                                <a href="#" @click.prevent="downloadProfile(p.haId)" role="button" class="outline" data-tooltip="Download the profile as a compressed zip file.">Download</a>
+                                <a href="#" @click.prevent="askDeleteProfile(p.haId)" role="button" class="outline contrast" data-tooltip="Delete the profile">Delete</a>
+                            </td>
+                        </tr>
+                    </template>
+                    <tr x-show="profiles.length === 0">
+                        <td colspan="6" class="empty-info">No profiles available.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </figure>
+        </article>
+    </template>
+
+    <template x-if="view === 'logs'">
+        <article>
+            <header class="profile-card-header">
+                <div class="header-actions">
+                    <button class="outline secondary" @click="showImportProxyLogModal = true; importProxyLogError = null" data-placement="left" data-tooltip="Import logs from Home Appliance Proxy.">Import HA Proxy Log</button>
+                    <button class="outline" @click="showImportLogModal = true; importLogError = null" data-placement="left" data-tooltip="Import a log zip (.zip or .zip.log) file.">Import Log</button>
+                </div>
+            </header>
+            <figure>
+                <table class="striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">File Name</th>
+                        <th scope="col">Size</th>
+                        <th scope="col">Created</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="file in logs" :key="file.id">
+                        <tr>
+                            <td x-text="file.fileName"></td>
+                            <td x-text="formatFileSize(file.fileSize)"></td>
+                            <td x-text="formatDateTime(file.createdAt)"></td>
+                            <td class="logs-actions">
+                                <a href="#" @click.prevent="askDeleteLog(file.id)" role="button" class="outline contrast" data-tooltip="Delete the log file.">Delete</a>
+                                <a href="#" @click.prevent="downloadLogs(file.id)" role="button" class="outline" data-tooltip="Download the logs file.">Download</a>
+                                <a href="#" @click.prevent="openLog(file)" role="button">View</a>
+                            </td>
+                        </tr>
+                    </template>
+                    <tr x-show="logs.length === 0">
+                        <td colspan="4" class="empty-info">No log files available.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </figure>
+        </article>
+    </template>
+
+    <template x-if="view === 'appliances'">
+        <div>
+            <div class="grid appliances-grid">
+                <template x-for="app in appliances" :key="app.uid">
+                    <article class="appliance-card">
+                        <header class="appliance-card-header">
+                            <strong x-text="app.label"></strong>
+                            <span class="badge" :class="statusClass(app.status)" x-text="app.status"></span>
+                        </header>
+                        <div><small><strong class="card-info-label">Thing ID:</strong> <span x-text="app.uid"></span></small></div>
+                        <div><small><strong class="card-info-label">Home Appliance ID:</strong> <span x-text="app.haId"></span></small></div>
+                        <template x-if="getProfile(app.haId)">
+                            <div>
+                                <small>
+                                    <strong class="card-info-label">Type:</strong>
+                                    <span x-text="getProfile(app.haId).brand"></span>
+                                    <span x-text="getProfile(app.haId).type"></span>
+                                    (<span x-text="getProfile(app.haId).vib"></span>)
+                                </small>
+                            </div>
+                        </template>
+                        <template x-if="!getProfile(app.haId)">
+                            <div>
+                                <small>
+                                    <strong class="card-info-label">Type:</strong>
+                                    <span>
+                                        <em class="error">Profile not found! Please <a href="#" @click.prevent="navigateToProfiles()">upload</a> a profile.</em>
+                                    </span>
+                                </small>
+                            </div>
+                        </template>
+                        <template x-if="getProfile(app.haId)">
+                            <div>
+                                <small><strong class="card-info-label">Connection Type:</strong> <span x-text="getProfile(app.haId).connectionType == 'WSS' ? 'WebSocket Secure' : 'WebSocket (AES payload encryption)'"></span></small>
+                            </div>
+                        </template>
+                        <div><small><strong class="card-info-label">Address:</strong> <span x-text="app.address"></span></small></div>
+                        <template x-if="getProfile(app.haId)">
+                            <footer class="appliance-card-footer">
+                                <a href="#" x-show="isOnline(app) || app.messageCount > 0" role="button" @click.prevent="selectAppliance(app)">Monitor and Control</a>
+                            </footer>
+                        </template>
+                    </article>
+                </template>
+            </div>
+
+            <article x-show="appliances.length === 0">
+                <p class="empty-info">No appliances found.</p>
+            </article>
+        </div>
+    </template>
+
+    <template x-if="(view === 'appliance' && currentAppliance) || (view === 'log-details' && currentLog)">
+        <div class="sidebar-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar hide-on-mobile" x-show="showSidebar">
+                <article>
+                    <header>
+                        <strong>Message Filter</strong>
+                        <button aria-label="Close" class="close-sidebar close-button" @click="showSidebar = false">✕</button>
+                    </header>
+                    <div>
+                        <fieldset>
+                            <legend><span class="blue-400">Value and Description Keys (OR-connected)</span></legend>
+                            <div class="autocomplete-container" @click.outside="showValueKeySuggestions = false">
+                                <label @click="$refs.valueKeyInput.focus()">
+                                    <small>Value Key</small>
+                                    <span data-tooltip="Appliances communicate changes, such as status messages, as values.&#10;This option allows value messages to be filtered using a key.&#10;Filters are linked with the “OR” operator and are not case-sensitive." data-placement="right" class="help-icon"><small>ⓘ</small></span>
+                                </label>
+                                <div class="tag-input-container" @click="$refs.valueKeyInput.focus()">
+                                    <template x-for="(tag, index) in filter.valueKeys" :key="index">
+                                        <span class="tag tag-value" :title="tag">
+                                            <span class="tag-text" x-text="tag"></span>
+                                            <span class="tag-close" @click.stop="removeTag('valueKeys', index)">×</span>
+                                        </span>
+                                    </template>
+                                    <input type="text" class="tag-input-field" x-model="inputValueKey" placeholder="e.g. Power"
+                                           x-ref="valueKeyInput"
+                                           @focus="fetchValueKeys(currentAppliance ? currentAppliance.uid : currentLog.id); showValueKeySuggestions = true; updateSuggestions('valueKeys', inputValueKey)"
+                                           @input="showValueKeySuggestions = true; updateSuggestions('valueKeys', inputValueKey)"
+                                           @keydown.enter.prevent="addTag('valueKeys', inputValueKey)"
+                                           @keydown.backspace="removeLastTag('valueKeys')"
+                                           @keydown.escape="showValueKeySuggestions = false"
+                                           autocomplete="off">
+                                </div>
+                                <ul class="autocomplete-dropdown" :class="{'show': showValueKeySuggestions && valueKeySuggestions.length > 0}">
+                                    <template x-for="key in valueKeySuggestions" :key="key">
+                                        <li x-text="key" @click="selectSuggestion('valueKeys', key)"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                            <div class="autocomplete-container" @click.outside="showDescriptionChangeKeySuggestions = false">
+                                <label @click="$refs.descriptionChangeKeyInput.focus()">
+                                    <small>Description Key</small>
+                                    <span data-tooltip="This option allows messages describing the household appliance to be filtered using a description key.&#10;Filters are linked using the “OR” operator and are not case-sensitive." data-placement="right" class="help-icon"><small>ⓘ</small></span>
+                                </label>
+                                <div class="tag-input-container" @click="$refs.descriptionChangeKeyInput.focus()">
+                                    <template x-for="(tag, index) in filter.descriptionChangeKeys" :key="index">
+                                        <span class="tag tag-description" :title="tag">
+                                            <span class="tag-text" x-text="tag"></span>
+                                            <span class="tag-close" @click.stop="removeTag('descriptionChangeKeys', index)">×</span>
+                                        </span>
+                                    </template>
+                                    <input type="text" class="tag-input-field" x-model="inputDescriptionChangeKey" placeholder="e.g. Temperature"
+                                           x-ref="descriptionChangeKeyInput"
+                                           @focus="fetchDescriptionChangeKeys(currentAppliance ? currentAppliance.uid : currentLog.id); showDescriptionChangeKeySuggestions = true; updateSuggestions('descriptionChangeKeys', inputDescriptionChangeKey)"
+                                           @input="showDescriptionChangeKeySuggestions = true; updateSuggestions('descriptionChangeKeys', inputDescriptionChangeKey)"
+                                           @keydown.enter.prevent="addTag('descriptionChangeKeys', inputDescriptionChangeKey)"
+                                           @keydown.backspace="removeLastTag('descriptionChangeKeys')"
+                                           @keydown.escape="showDescriptionChangeKeySuggestions = false"
+                                           autocomplete="off">
+                                </div>
+                                <ul class="autocomplete-dropdown" :class="{'show': showDescriptionChangeKeySuggestions && descriptionChangeKeySuggestions.length > 0}">
+                                    <template x-for="key in descriptionChangeKeySuggestions" :key="key">
+                                        <li x-text="key" @click="selectSuggestion('descriptionChangeKeys', key)"></li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </fieldset>
+                        <hr />
+                        <div class="autocomplete-container" @click.outside="showResourceSuggestions = false">
+                            <label class="blue-400" @click="$refs.resourceInput.focus()">
+                                Resource
+                                <span data-tooltip="Values are OR-connected. Case-insensitive." data-placement="right" class="help-icon">ⓘ</span>
+                            </label>
+                            <div class="tag-input-container" @click="$refs.resourceInput.focus()">
+                                <template x-for="(tag, index) in filter.resources" :key="index">
+                                    <span class="tag" :title="tag">
+                                        <span class="tag-text" x-text="tag"></span>
+                                        <span class="tag-close" @click.stop="removeTag('resources', index)">×</span>
+                                    </span>
+                                </template>
+                                <input type="text" class="tag-input-field" x-model="inputResource" placeholder="e.g. /ro/values"
+                                       x-ref="resourceInput"
+                                       @focus="fetchResources(currentAppliance ? currentAppliance.uid : currentLog.id); showResourceSuggestions = true; updateSuggestions('resources', inputResource)"
+                                       @input="showResourceSuggestions = true; updateSuggestions('resources', inputResource)"
+                                       @keydown.enter.prevent="addTag('resources', inputResource)"
+                                       @keydown.backspace="removeLastTag('resources')"
+                                       @keydown.escape="showResourceSuggestions = false"
+                                       autocomplete="off">
+                            </div>
+                            <ul class="autocomplete-dropdown" :class="{'show': showResourceSuggestions && resourceSuggestions.length > 0}">
+                                <template x-for="resource in resourceSuggestions" :key="resource">
+                                    <li x-text="resource" @click="selectSuggestion('resources', resource)"></li>
+                                </template>
+                            </ul>
+                        </div>
+                        <hr />
+                        <fieldset>
+                            <legend><span class="blue-400">Time</span></legend>
+                            <div class="small-margin-bottom">
+                                <small>Presets</small>
+                                <div class="filter-datetime-presets">
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(1)">1m</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(5)">5m</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(15)">15m</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(60)">1h</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(180)">3h</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(480)">8h</button>
+                                </div>
+                            </div>
+                            <div class="small-margin-bottom">
+                                <div class="filter-datetime-presets">
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(1440)">1d</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="setFilterRange(2880)">2d</button>
+                                    <button type="button" class="outline secondary filter-datetime-preset-button" @click="resetFilterRange()">Reset</button>
+                                </div>
+                            </div>
+                            <label><small>Start</small>
+                                <input type="datetime-local" x-model="filter.start">
+                            </label>
+                            <label><small>End</small>
+                                <input type="datetime-local" x-model="filter.end">
+                            </label>
+                        </fieldset>
+                        <hr />
+                        <fieldset>
+                            <legend><span class="blue-400">Options</span></legend>
+                            <label>
+                                <input role="switch" type="checkbox" x-model="inputHideUnchangedDescriptions">
+                                Hide unchanged descriptions
+                            </label>
+                        </fieldset>
+                        <fieldset>
+                            <legend><span class="blue-400">Actions</span></legend>
+                            <div class="checkbox-group">
+                                <template x-for="action in allActions" :key="action">
+                                    <label>
+                                        <input role="switch" type="checkbox" :value="action" x-model="filter.actions">
+                                        <span x-text="action" class="badge" :class="actionClass(action)"></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend><span class="blue-400">Type</span></legend>
+                            <div class="checkbox-group">
+                                <template x-for="type in allTypes" :key="type">
+                                    <label>
+                                        <input role="switch" type="checkbox" :value="type" x-model="filter.type">
+                                        <span x-text="typeIcon(type)" :title="type"></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </fieldset>
+                        <button @click="applyFilter()" class="filter-apply-button">Apply Filter</button>
+                    </div>
+                </article>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <article>
+                    <template x-if="view === 'appliance' && currentAppliance && getProfile(currentAppliance.haId)">
+                        <header class="appliance-card-header">
+                            <div>
+                                <div>
+                                    <strong>
+                                        <span x-text="getProfile(currentAppliance.haId).brand"></span>
+                                        <span x-text="getProfile(currentAppliance.haId).type"></span>
+                                        (<span x-text="getProfile(currentAppliance.haId).vib"></span>)
+                                    </strong>
+                                    <span class="badge" :class="statusClass(currentAppliance.status)" x-text="currentAppliance.status"></span>
+                                </div>
+                                <div><small x-text="currentAppliance.uid"></small></div>
+                            </div>
+                            <div class="header-actions">
+                                <button class="secondary hide-on-mobile" @click="showSidebar = !showSidebar">
+                                    <span x-text="showSidebar ? 'Hide Filters' : 'Show Filters'"></span>
+                                </button>
+                                <button @click="openSendMessageModal()" data-tooltip="Send a raw message to the appliance.">Send Message</button>
+                                <button class="primary outline" @click="fetchFullDeviceDescription()" data-tooltip="View the full device description JSON.">Device Description</button>
+                                <button class="secondary outline" @click="downloadLog(currentAppliance.uid, true)" data-tooltip="Saves the current message logs on the server for later analysis.">Save Log</button>
+                                <button class="secondary outline" @click="downloadLog(currentAppliance.uid, false)" data-placement="left" data-tooltip="Downloads the current logs as a zip file.">Download Log</button>
+                            </div>
+                        </header>
+                    </template>
+                    <template x-if="view === 'log-details' && currentLog">
+                        <header class="appliance-card-header">
+                            <div>
+                                <div><strong>Messages</strong></div>
+                                <div><small x-text="logs.find(l => l.id === currentLog.id) ? ('Created: ' + formatDateTime(logs.find(l => l.id === currentLog.id).createdAt)) : ''"></small></div>
+                            </div>
+                            <div class="header-actions">
+                                <button class="secondary hide-on-mobile" @click="showSidebar = !showSidebar">
+                                    <span x-text="showSidebar ? 'Hide Filters' : 'Show Filters'"></span>
+                                </button>
+                                <button class="primary outline" @click="fetchFullDeviceDescription()" data-tooltip="View the full device description JSON.">Device Description</button>
+                            </div>
+                        </header>
+                    </template>
+
+                    <div class="value-table-container">
+                        <table role="grid">
+                            <thead>
+                            <tr>
+                                <th class="io-column-header hide-on-mobile">I/O</th>
+                                <th class="time-column-header hide-on-mobile">Time</th>
+                                <th class="session-column-header hide-on-mobile">Session</th>
+                                <th class="action-column-header hide-on-mobile">Action</th>
+                                <th class="resource-column-header">Resource</th>
+                                <th>Details</th>
+                                <th class="actions-column-header"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <template x-for="msg in getPaginatedMessages()" :key="`${msg.messageId}-${msg.type}`">
+                                <tr class="value-log-row" :class="{ 'outgoing': msg.type === 'OUTGOING', 'new-message': msg.isNew }">
+                                    <td class="hide-on-mobile io-cell" :title="msg.type" x-text="typeIcon(msg.type)"></td>
+                                    <td class="hide-on-mobile column-no-wrap time-cell" x-text="formatDateTime(msg.dateTime)"></td>
+                                    <td class="hide-on-mobile session-cell"><span class="badge" :style="sessionColor(msg.sessionId)" x-text="msg.sessionId"></span></td>
+                                    <td class="hide-on-mobile action-cell"><span class="badge" :class="actionClass(msg.action)" x-text="msg.action"></span></td>
+                                    <td class="resource-cell" x-text="msg.resource"></td>
+                                    <td class="details-cell">
+                                        <template x-if="msg.resource === '/ci/registeredDevices' && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="registered-device-list">
+                                                <template x-for="device in msg.rawPayload" :key="device.deviceID">
+                                                    <div class="registered-device" :class="{ 'current-device': device.deviceID === bindingDeviceId, 'device-online': device.connected }" :data-tooltip="device.deviceID === bindingDeviceId ? 'Our client (Home Connect Binding)' : null">
+                                                        <span class="registered-device-status" :class="{ 'connected': device.connected }" :title="device.connected ? 'Connected' : 'Disconnected'"></span>
+                                                        <div class="registered-device-info">
+                                                            <div class="registered-device-name" x-text="device.deviceName"></div>
+                                                            <div class="registered-device-id" x-text="device.deviceID"></div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="msg.resource === '/ci/tzInfo' && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="detail-list">
+                                                <template x-for="info in msg.rawPayload">
+                                                    <div class="detail-entry">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key">Timezone</span>:
+                                                        </span>
+                                                        <span class="detail-value" x-text="info.tzName ? (info.tzName + ' (' + (info.tz || 'default') + ')') : (info.tz || 'default')"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="(msg.resource === '/ni/config' || msg.resource === '/ci/info' || msg.resource === '/iz/info') && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="detail-list">
+                                                <template x-for="info in msg.rawPayload">
+                                                    <div>
+                                                        <template x-for="[key, value] in Object.entries(info)">
+                                                            <div class="detail-entry">
+                                                                <span class="detail-key-wrapper">
+                                                                    <span class="detail-key" x-text="key"></span>:
+                                                                </span>
+                                                                <span class="detail-value" x-text="value" :title="value"></span>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="msg.resource === '/ci/services' && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="detail-list">
+                                                <div class="services-header">Services</div>
+                                                <template x-for="service in msg.rawPayload" :key="service.service">
+                                                    <div class="detail-entry">
+                                                                                                <span class="detail-key-wrapper">
+                                                                                                    <span class="detail-key" x-text="service.service"></span>:
+                                                                                                </span>
+                                                        <span class="detail-value" x-text="'v' + service.version"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="msg.resource === '/ni/info' && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="detail-list">
+                                                <template x-for="(iface, index) in msg.rawPayload">
+                                                    <div>
+                                                        <div x-show="index > 0" class="separator"></div>
+                                                        <div class="detail-entry">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">Type</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="iface.type"></span>
+                                                        </div>
+                                                        <div class="detail-entry" x-show="iface.ssid">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">SSID</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="iface.ssid"></span>
+                                                        </div>
+                                                        <div class="detail-entry" x-show="iface.rssi">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">RSSI</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="`${iface.rssi} dBm`"></span>
+                                                        </div>
+                                                        <div class="detail-entry">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">Status</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="iface.status"></span>
+                                                        </div>
+                                                        <div class="detail-entry" x-show="iface.ipV4 && iface.ipV4.ipAddress">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">IPv4</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="iface.ipV4 ? iface.ipV4.ipAddress : ''"></span>
+                                                        </div>
+                                                        <div class="detail-entry" x-show="iface.ipV6 && iface.ipV6.ipAddress">
+                                                            <span class="detail-key-wrapper">
+                                                                <span class="detail-key">IPv6</span>:
+                                                            </span>
+                                                            <span class="detail-value" x-text="iface.ipV6 ? iface.ipV6.ipAddress : ''"></span>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="msg.resource === '/ei/initialValues' && msg.rawPayload && msg.type === 'INCOMING'">
+                                            <div class="detail-list">
+                                                <div class="detail-entry">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key">Session ID</span>:
+                                                        </span>
+                                                    <span class="detail-value" x-text="msg.sessionId"></span>
+                                                </div>
+                                                <div class="detail-entry">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key">Appliance start message ID</span>:
+                                                        </span>
+                                                    <span class="detail-value" x-text="msg.messageId"></span>
+                                                </div>
+                                                <template x-for="d in msg.rawPayload">
+                                                    <div class="detail-entry">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key">Client start message ID</span>:
+                                                        </span>
+                                                        <span class="detail-value" x-text="d.edMsgID"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        <template x-if="!specialResources.includes(msg.resource)">
+                                            <div class="detail-list">
+                                                <template x-for="value in msg.values" :key="value.key">
+                                                    <div class="detail-entry type-value">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key" x-html="highlightMatch(value.key, 'valueKeys')"></span>
+                                                            <span class="badge badge-value" x-text="value.type" x-show="value.type"></span>
+                                                        <span class="filter-toolbox">
+                                                            <button class="filter-action-btn btn-copy"
+                                                                    @click="copyToClipboard(value.key)"
+                                                                    title="Copy key to clipboard"><img src="${assetPath}/img/clipboard-document-list.svg" alt="Copy"></button>
+                                                            <button class="filter-action-btn btn-yaml"
+                                                                    @click="openConfigurationModal(value.key, value.value, value.contentType, value.type, value.uid, value.enumerationType)"
+                                                                    title="Generate openHAB configuration (YAML, DSL)"><img src="${assetPath}/favicon/favicon.svg" alt="YAML"></button>
+                                                            <button class="filter-action-btn btn-add"
+                                                                    x-show="!filter.valueKeys.includes(value.key)"
+                                                                    @click="addTag('valueKeys', value.key, true)"
+                                                                    title="Add to filter"><img src="${assetPath}/img/funnel.svg" alt="Add"></button>
+                                                            <button class="filter-action-btn btn-remove"
+                                                                    x-show="filter.valueKeys.includes(value.key)"
+                                                                    @click="removeTagByValue('valueKeys', value.key, true)"
+                                                                    title="Remove from filter"><img src="${assetPath}/img/minus-circle.svg" alt="Remove"></button>
+                                                            <button class="filter-action-btn btn-view"
+                                                                    @click="openValueModal(value)"
+                                                                    title="View Value Details"><img src="${assetPath}/img/eye.svg" alt="View Value Details"></button>
+                                                        </span>
+                                                        </span>
+                                                        <span class="detail-value" :class="{ 'object-placeholder': typeof value.value === 'object' && value.value !== null }" x-text="typeof value.value === 'object' && value.value !== null ? '{ Object }' : truncateStart(value.value)" :title="typeof value.value === 'object' && value.value !== null ? null : value.value"></span>
+                                                    </div>
+                                                </template>
+                                                <template x-for="(description, index) in msg.descriptionChanges" :key="`${description.parentUid || 0}-${description.uid}`">
+                                                    <div class="detail-entry type-description" x-show="!hideUnchangedDescriptions || (description.changes && Object.keys(description.changes).length > 0) || description.type === 'UNKNOWN'">
+                                                        <span class="detail-key-wrapper">
+                                                            <span class="detail-key" x-html="highlightMatch(description.key, 'descriptionChangeKeys')" :title="description.key"></span>
+                                                            <span class="badge badge-description" x-text="description.type" x-show="description.type"></span>
+                                                        <span class="filter-toolbox">
+                                                            <button class="filter-action-btn btn-copy"
+                                                                    @click="copyToClipboard(description.key)"
+                                                                    title="Copy key to clipboard"><img src="${assetPath}/img/clipboard-document-list.svg" alt="Copy"></button>
+                                                            <button class="filter-action-btn btn-yaml"
+                                                                    @click="openDescriptionAttributeSelectionModal(description)"
+                                                                    title="Generate openHAB configuration (YAML, DSL)"><img src="${assetPath}/favicon/favicon.svg" alt="YAML"></button>
+                                                            <button class="filter-action-btn btn-add"
+                                                                    x-show="!filter.descriptionChangeKeys.includes(description.key)"
+                                                                    @click="addTag('descriptionChangeKeys', description.key, true)"
+                                                                    title="Add to filter"><img src="${assetPath}/img/funnel.svg" alt="Add"></button>
+                                                            <button class="filter-action-btn btn-remove"
+                                                                    x-show="filter.descriptionChangeKeys.includes(description.key)"
+                                                                    @click="removeTagByValue('descriptionChangeKeys', description.key, true)"
+                                                                    title="Remove from filter"><img src="${assetPath}/img/minus-circle.svg" alt="Remove"></button>
+                                                            <button class="filter-action-btn btn-view"
+                                                                    @click="openDeviceDescriptionModal(description)"
+                                                                    title="View Device Description Object"><img src="${assetPath}/img/eye.svg" alt="View Device Description"></button>
+                                                        </span>
+                                                        </span>
+                                                        <span class="detail-value" :title="formatDescriptionDetails(description, false)">
+                                                            <template x-if="description.type !== 'UNKNOWN'">
+                                                                <span>
+                                                                    <template x-for="([key, value], idx, collection) in getFilteredDescriptionEntries(description)" :key="key">
+                                                                        <span class="description-pair">
+                                                                            <span class="description-inline-key" x-text="key"></span>: <span x-text="value"></span><span x-show="idx !== collection.length - 1 || (description.changes && Object.keys(description.changes).length > 0)">,&nbsp;</span>
+                                                                        </span>
+                                                                    </template>
+                                                                    <template x-if="description.changes">
+                                                                        <span>
+                                                                            <template x-for="([key, change], idx, collection) in Object.entries(description.changes)" :key="key">
+                                                                                <span class="description-pair change-pair">
+                                                                                    <span class="description-inline-key" x-text="key"></span>: <span x-text="change.from"></span> &rarr; <span class="change-new-value" x-text="change.to"></span><span x-show="idx !== collection.length - 1">,&nbsp;</span>
+                                                                                </span>
+                                                                            </template>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                            <template x-if="description.type === 'UNKNOWN' && msg.rawPayload && msg.rawPayload[index]">
+                                                                <span>
+                                                                    <template x-for="([key, value], idx, collection) in getFilteredRawPayloadEntries(msg.rawPayload[index])" :key="key">
+                                                                        <span class="description-pair">
+                                                                            <span class="description-inline-key" x-text="key"></span>: <span x-text="value"></span><span x-show="idx !== collection.length - 1">,&nbsp;</span>
+                                                                        </span>
+                                                                    </template>
+                                                                </span>
+                                                            </template>
+                                                        </span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </td>
+                                    <td class="actions-cell">
+                                        <button class="outline secondary btn-small" @click="openSourceModal(msg)">Source</button>
+                                    </td>
+                                </tr>
+                            </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer" x-show="messages.length > 0">
+                        <div class="pagination-info">
+                            <select x-model.number="pageSize" class="page-size-select">
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                            </select>
+                            <span>Showing <span x-text="(currentPage - 1) * pageSize + 1"></span> to <span x-text="Math.min(currentPage * pageSize, messages.length)"></span> of <span x-text="messages.length"></span> entries</span>
+                        </div>
+                        <div class="pagination-controls" x-show="totalPages() > 1">
+                            <button class="outline secondary btn-small" @click="currentPage = 1" :disabled="currentPage === 1">Newest</button>
+                            <button class="outline secondary btn-small" @click="prevPage()" :disabled="currentPage === 1">Previous</button>
+                            <span x-text="currentPage"></span> / <span x-text="totalPages()"></span>
+                            <button class="outline secondary btn-small" @click="nextPage()" :disabled="currentPage === totalPages()">Next</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </template>
+
+    <dialog :open="showUploadModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showUploadModal = false"></button>
+                Upload Profile
+            </header>
+            <p>Select a .zip file containing the appliance profile.</p>
+            <form @submit.prevent="uploadProfile">
+                <input type="file" x-ref="fileInput" accept=".zip" required>
+                <small class="error" x-show="uploadError" x-text="uploadError"></small>
+                <footer>
+                    <button type="submit" :aria-busy="uploading">Upload</button>
+                </footer>
+            </form>
+        </article>
+    </dialog>
+
+    <dialog :open="showSendMessageModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showSendMessageModal = false"></button>
+                Send Message
+            </header>
+            <form @submit.prevent="sendMessage">
+                <label>
+                    Action
+                    <select x-model="sendMessageForm.action" required>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="NOTIFY">NOTIFY</option>
+                        <option value="RESPONSE">RESPONSE</option>
+                    </select>
+                </label>
+                <label>
+                    Resource
+                    <input type="text" x-model="sendMessageForm.resource" list="resource-suggestions" required autocomplete="off">
+                    <datalist id="resource-suggestions">
+                        <template x-for="resource in availableResources" :key="resource">
+                            <option :value="resource"></option>
+                        </template>
+                    </datalist>
+                </label>
+                <label>
+                    Version
+                    <input type="number" x-model.number="sendMessageForm.version" placeholder="Auto">
+                </label>
+                <label>
+                    Data (JSON)
+                    <textarea x-model="sendMessageForm.data" rows="5" placeholder='e.g. {"key": "value"}' class="code-input"></textarea>
+                </label>
+                <small class="error" x-show="sendMessageError" x-text="sendMessageError"></small>
+                <footer>
+                    <button type="submit" :aria-busy="sendingMessage">Send</button>
+                </footer>
+            </form>
+        </article>
+    </dialog>
+
+    <dialog :open="showDeleteModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showDeleteModal = false"></button>
+                Delete Profile
+            </header>
+            <p>
+                Are you sure you want to delete the profile with the Home Appliance ID: <strong x-text="profileToDelete"></strong>?
+            </p>
+            <footer>
+                <a href="#" role="button" class="secondary" @click.prevent="showDeleteModal = false">Cancel</a>
+                <button class="contrast" @click="deleteProfile()">Delete</button>
+            </footer>
+        </article>
+    </dialog>
+
+    <dialog :open="showImportLogModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showImportLogModal = false"></button>
+                Import Log
+            </header>
+            <p>Select a .zip or .zip.log file containing the logs.</p>
+            <form @submit.prevent="importLog">
+                <input type="file" x-ref="logFileInput" accept=".zip,.zip.log" required>
+                <small class="error" x-show="importLogError" x-text="importLogError"></small>
+                <footer>
+                    <button type="submit" :aria-busy="importingLog">Import</button>
+                </footer>
+            </form>
+        </article>
+    </dialog>
+
+    <dialog :open="showImportProxyLogModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showImportProxyLogModal = false"></button>
+                Import Home Appliance Proxy Log
+            </header>
+            <p>
+                Select the log files generated by the <a href="https://github.com/bruestel/homeconnect-appliance-proxy" target="_blank">Home Connect Appliance Proxy</a>.
+                <br>
+                Required files: <code>*.json</code>, <code>*_DeviceDescription.xml</code>, <code>*_FeatureMapping.xml</code>.
+            </p>
+            <form @submit.prevent="importProxyLog">
+                <label>
+                    <small>Messages (*.json)</small>
+                    <input type="file" x-ref="proxyJsonFile" accept=".json" required>
+                </label>
+                <label>
+                    <small>Device Description (*_DeviceDescription.xml)</small>
+                    <input type="file" x-ref="proxyDeviceDescFile" accept=".xml" required>
+                </label>
+                <label>
+                    <small>Feature Mapping (*_FeatureMapping.xml)</small>
+                    <input type="file" x-ref="proxyFeatureMapFile" accept=".xml" required>
+                </label>
+                <small class="error" x-show="importProxyLogError" x-text="importProxyLogError"></small>
+                <footer>
+                    <button type="submit" :aria-busy="importingProxyLog">Import</button>
+                </footer>
+            </form>
+        </article>
+    </dialog>
+
+    <dialog :open="showDeleteLogModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showDeleteLogModal = false"></button>
+                Delete Log File
+            </header>
+            <p>
+                Are you sure you want to delete the log file <strong x-text="logs.find(l => l.id === logToDelete)?.fileName"></strong>?
+            </p>
+            <footer>
+                <a href="#" role="button" class="secondary" @click.prevent="showDeleteLogModal = false">Cancel</a>
+                <button class="contrast" @click="deleteLog()">Delete</button>
+            </footer>
+        </article>
+    </dialog>
+
+    <dialog :open="showDescriptionAttributeModal">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showDescriptionAttributeModal = false"></button>
+                Select Attribute
+            </header>
+            <p>Select the attribute you want to configure for <strong x-text="selectedDescriptionKey"></strong>:</p>
+            <div class="grid">
+                <template x-for="attr in descriptionAttributes" :key="attr">
+                    <button class="outline" @click="selectDescriptionAttribute(attr)" x-text="attr"></button>
+                </template>
+            </div>
+        </article>
+    </dialog>
+
+    <dialog :open="showConfigurationModal">
+        <article class="configuration-modal">
+            <header>
+                <button aria-label="Close" rel="prev" @click.prevent="showConfigurationModal = false"></button>
+                <span>openHAB Configuration Generator</span>
+            </header>
+            <div class="small-margin-bottom configuration-controls">
+                <div role="group">
+                    <button class="btn-small" :class="configMode === 'YAML' ? '' : 'outline secondary'" @click="configMode = 'YAML'; updateConfigurationCode()">YAML</button>
+                    <button class="btn-small" :class="configMode === 'DSL' ? '' : 'outline secondary'" @click="configMode = 'DSL'; updateConfigurationCode()">DSL</button>
+                </div>
+            </div>
+            <div class="grid">
+                <label>
+                    Channel ID
+                    <input type="text" x-model="configurationChannelId" @input="updateConfigurationCode()">
+                </label>
+                <label>
+                    Label
+                    <input type="text" x-model="configurationLabel" @input="updateConfigurationCode()">
+                </label>
+            </div>
+            <div class="grid">
+                <label>
+                    Type
+                    <select x-model="configurationType" @change="updateConfigurationCode()">
+                        <option value="string">String</option>
+                        <option value="number">Number</option>
+                        <option value="switch">Switch</option>
+                        <option value="enum-switch" x-show="!configurationAttribute && configurationEnumValues.length > 0">Switch (Enum Mapping, read-only)</option>
+                        <option value="trigger" x-show="!configurationAttribute">Trigger (String)</option>
+                    </select>
+                </label>
+                <label x-show="configurationType === 'number' && !configurationAttribute">
+                    Unit (of appliance value)
+                    <input type="text" x-model="configurationUnit" @input="updateConfigurationCode()" list="unit-suggestions" placeholder="e.g. °C">
+                    <datalist id="unit-suggestions">
+                        <option value="°C">Celsius</option>
+                        <option value="°F">Fahrenheit</option>
+                        <option value="%%">Percent</option>
+                        <option value="s">Second</option>
+                        <option value="min">Minute</option>
+                        <option value="g">Gram</option>
+                        <option value="ml">Milliliter</option>
+                    </datalist>
+                </label>
+            </div>
+            <div x-show="configurationType === 'enum-switch'" class="small-margin-bottom">
+                <small><strong>Enum Value Mapping</strong></small>
+                <p class="small-margin-bottom"><small>Select the enum values that should be mapped to the 'ON' state in openHAB.</small></p>
+                <table role="grid" class="striped small-margin-bottom">
+                    <thead>
+                    <tr>
+                        <th scope="col">Enum Value</th>
+                        <th scope="col">ON</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template x-for="enumVal in configurationEnumValues" :key="enumVal">
+                        <tr>
+                            <td x-text="enumVal"></td>
+                            <td>
+                                <input type="checkbox" role="switch"
+                                       :checked="configurationOnValues.includes(enumVal)"
+                                       @change="toggleEnumOnValue(enumVal)"
+                                       :disabled="configurationOnValues.includes(enumVal) && configurationOnValues.length === 1">
+                            </td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </div>
+            <details x-show="applianceYaml && configMode === 'YAML'" class="small-margin-bottom">
+                <summary><small><strong>Current Thing Configuration</strong></small></summary>
+                <div class="code-container">
+                    <button class="copy-overlay-btn" @click="copySource(applianceYaml)">Copy</button>
+                    <pre x-html="yamlSyntaxHighlight(applianceYaml)" class="source-code yaml-preview"></pre>
+                </div>
+            </details>
+            <details x-show="applianceDsl && configMode === 'DSL'" class="small-margin-bottom">
+                <summary><small><strong>Current Thing Configuration</strong></small></summary>
+                <div class="code-container">
+                    <button class="copy-overlay-btn" @click="copySource(applianceDsl)">Copy</button>
+                    <pre x-html="dslSyntaxHighlight(applianceDsl)" class="source-code yaml-preview"></pre>
+                </div>
+            </details>
+            <small><strong>New Thing Channel Snippet</strong></small>
+            <div class="code-container">
+                <button class="copy-overlay-btn" @click="copySource(currentConfigurationCode)">Copy</button>
+                <pre x-html="configMode === 'YAML' ? yamlSyntaxHighlight(currentConfigurationCode) : dslSyntaxHighlight(currentConfigurationCode)" class="source-code"></pre>
+            </div>
+        </article>
+    </dialog>
+
+    <dialog :open="showDeviceDescriptionModal" @click="if ($event.target === $el) showDeviceDescriptionModal = false">
+        <article class="source-modal full-width-modal">
+            <header>
+                <button aria-label="Close" rel="prev" class="modal-close" @click.prevent="showDeviceDescriptionModal = false"></button>
+                <strong>
+                    <template x-if="currentDeviceDescriptionMeta">
+                        <span>
+                            <span class="modal-header-key" x-text="currentDeviceDescriptionMeta.key"></span>
+                            <span class="badge badge-description" x-text="currentDeviceDescriptionMeta.type" x-show="currentDeviceDescriptionMeta.type"></span>
+                        </span>
+                    </template>
+                    <template x-if="!currentDeviceDescriptionMeta">
+                        <span>Current Device Description</span>
+                    </template>
+                </strong>
+                <template x-if="currentDeviceDescriptionMeta">
+                    <div class="modal-header-meta">
+                        <div x-show="currentDeviceDescriptionMeta.parentUid">
+                            <span class="source-modal-meta-label blue-300">Parent UID:</span>
+                            <span x-text="currentDeviceDescriptionMeta.parentUid"></span>
+                        </div>
+                        <div x-show="currentDeviceDescriptionMeta.parentKey">
+                            <span class="source-modal-meta-label blue-300">Parent Key:</span>
+                            <span x-text="currentDeviceDescriptionMeta.parentKey"></span>
+                        </div>
+                        <div x-show="currentDeviceDescriptionMeta.parentType">
+                            <span class="source-modal-meta-label blue-300">Parent Type:</span>
+                            <span x-text="currentDeviceDescriptionMeta.parentType"></span>
+                        </div>
+                    </div>
+                </template>
+                <template x-if="!currentDeviceDescriptionMeta && currentDeviceDescription">
+                    <nav class="modal-tabs">
+                        <template x-for="key in ['statusList', 'settingList', 'eventList', 'commandList', 'optionList', 'programGroup', 'activeProgram', 'selectedProgram', 'protectionPort', 'enumerationTypeList']">
+                            <a href="#" x-show="currentDeviceDescription[key]" @click.prevent="activeDeviceDescriptionTab = key" :aria-current="activeDeviceDescriptionTab === key ? 'page' : false" x-text="formatCamelCase(key)"></a>
+                        </template>
+                    </nav>
+                </template>
+                <template x-if="!currentDeviceDescriptionMeta && currentDeviceDescription">
+                    <div class="modal-search-bar">
+                        <input type="search" x-model.debounce.250ms="deviceDescriptionSearch" placeholder="Search in description..." aria-label="Search">
+                        <div x-show="totalSearchMatches > 0" class="search-counter">
+                            <span x-text="currentSearchMatchIndex"></span> / <span x-text="totalSearchMatches"></span>
+                        </div>
+                        <button class="outline secondary btn-small" @click="prevSearchMatch()" :disabled="totalSearchMatches === 0" x-show="totalSearchMatches > 0" title="Previous match">↑</button>
+                        <button class="outline secondary btn-small" @click="nextSearchMatch()" :disabled="totalSearchMatches === 0" x-show="totalSearchMatches > 0" title="Next match">↓</button>
+                    </div>
+                </template>
+            </header>
+            <template x-if="currentDeviceDescriptionMeta && currentDeviceDescriptionMeta.changes">
+                <div class="small-margin-bottom">
+                    <strong class="modal-section-header">Changes</strong>
+                    <div class="code-container">
+                        <button class="copy-overlay-btn" @click="copySource(currentDeviceDescriptionMeta.changes)">Copy</button>
+                        <pre x-html="getHighlightedSourceContent(currentDeviceDescriptionMeta.changes)" class="source-code"></pre>
+                    </div>
+                </div>
+            </template>
+            <template x-if="currentDeviceDescription">
+                <div>
+                    <template x-if="currentDeviceDescriptionMeta">
+                        <div>
+                            <strong class="modal-section-header">Device Description Object</strong>
+                            <div class="code-container">
+                                <button class="copy-overlay-btn" @click="copySource(currentDeviceDescription)">Copy</button>
+                                <pre x-html="getHighlightedSourceContent(currentDeviceDescription)" class="source-code"></pre>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="!currentDeviceDescriptionMeta">
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentDeviceDescription[activeDeviceDescriptionTab])">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentDeviceDescription[activeDeviceDescriptionTab], deviceDescriptionSearch)" class="source-code"></pre>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template x-if="currentEnumerationType">
+                <div>
+                    <strong class="modal-section-header">Enumeration Values</strong>
+                    <div class="value-table-container">
+                        <table role="grid" class="striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">Value</th>
+                                <th scope="col">Key</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <template x-for="enumVal in currentEnumerationType.enumerations" :key="enumVal.value">
+                                <tr>
+                                    <td x-text="enumVal.value"></td>
+                                    <td x-text="enumVal.valueKey"></td>
+                                </tr>
+                            </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+        </article>
+    </dialog>
+
+    <dialog :open="showValueModal" @click="if ($event.target === $el) showValueModal = false">
+        <article class="source-modal">
+            <header>
+                <button aria-label="Close" rel="prev" class="modal-close" @click.prevent="showValueModal = false"></button>
+                <strong>
+                    <span class="modal-header-value-key" x-text="currentValueMeta?.key"></span>
+                    <span class="badge badge-value" x-text="currentValueMeta?.type" x-show="currentValueMeta?.type"></span>
+                </strong>
+                <template x-if="currentValueMeta">
+                    <div class="modal-header-meta">
+                        <div x-show="currentValueMeta.uid">
+                            <span class="source-modal-meta-label blue-300">UID:</span>
+                            <span x-text="currentValueMeta.uid"></span>
+                        </div>
+                        <div x-show="currentValueMeta.contentType">
+                            <span class="source-modal-meta-label blue-300">Content Type:</span>
+                            <span x-text="currentValueMeta.contentType"></span>
+                        </div>
+                    </div>
+                </template>
+            </header>
+            <template x-if="currentValueMeta">
+                <div>
+                    <div class="small-margin-bottom">
+                        <strong class="modal-section-header">Value</strong>
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentValueMeta.value)">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentValueMeta.value)" class="source-code"></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <strong class="modal-section-header">Raw Value</strong>
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentValueMeta.rawValue)">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentValueMeta.rawValue)" class="source-code"></pre>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </article>
+    </dialog>
+
+    <dialog x-ref="sourceModal" x-init="$watch('showSourceModal', value => animateModal($el, value))" @click="if ($event.target === $el) showSourceModal = false" @close="showSourceModal = false; currentMessage = null">
+        <article class="source-modal">
+            <header>
+                <button aria-label="Close" rel="prev" class="modal-close" @click.prevent="showSourceModal = false"></button>
+                <strong>Message Details</strong>
+                <template x-if="currentMessage">
+                    <div>
+                        <div><span class="source-modal-meta-label blue-300">Time:</span> <span x-text="formatDateTime(currentMessage.dateTime)"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Type:</span> <span :title="currentMessage.type" x-text="typeIcon(currentMessage.type)"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Action:</span> <span class="badge" :class="actionClass(currentMessage.action)" x-text="currentMessage.action"></span></div>
+                        <div x-show="currentMessage.code != null"><span class="source-modal-meta-label blue-300">Code:</span> <span x-text="currentMessage.code"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Resource:</span> <span x-text="currentMessage.resource"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Message ID:</span> <span x-text="currentMessage.messageId"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Session ID:</span> <span x-text="currentMessage.sessionId"></span></div>
+                        <div><span class="source-modal-meta-label blue-300">Version:</span> <span x-text="currentMessage.version"></span></div>
+                    </div>
+                </template>
+            </header>
+            <template x-if="currentMessage">
+                <div>
+                    <details x-show="currentMessage.values && currentMessage.values.length > 0" open>
+                        <summary>Value(s)</summary>
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentMessage.values)">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentMessage.values)" class="source-code"></pre>
+                        </div>
+                    </details>
+                    <details x-show="currentMessage.descriptionChanges && currentMessage.descriptionChanges.length > 0" :open="!(currentMessage.values && currentMessage.values.length > 0)">
+                        <summary>Description Change(s)</summary>
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentMessage.descriptionChanges)">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentMessage.descriptionChanges)" class="source-code"></pre>
+                        </div>
+                    </details>
+                    <details x-show="currentMessage.rawPayload && currentMessage.rawPayload.length > 0" :open="!((currentMessage.values && currentMessage.values.length > 0) || (currentMessage.descriptionChanges && currentMessage.descriptionChanges.length > 0))">
+                        <summary>Raw Payload</summary>
+                        <div class="code-container">
+                            <button class="copy-overlay-btn" @click="copySource(currentMessage.rawPayload)">Copy</button>
+                            <pre x-html="getHighlightedSourceContent(currentMessage.rawPayload)" class="source-code"></pre>
+                        </div>
+                    </details>
+                </div>
+            </template>
+        </article>
+    </dialog>
+</main>
+
+<div class="toast-container">
+    <template x-for="toast in toasts" :key="toast.id">
+        <div class="toast" :class="`toast-${toast.type}`" x-text="toast.message" @click="removeToast(toast.id)"></div>
+    </template>
+</div>
+
+</body>
+</html>
