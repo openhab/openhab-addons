@@ -1,0 +1,5 @@
+{{!
+Template for field-level nullable annotations in generated model classes.
+This template ensures fields are marked @Nullable when they may not be initialized.
+}}{{! For required fields that are not nullable in the schema, mark as @Nullable anyway
+    because they use builder pattern and aren't initialized in default constructor }}{{#required}}@org.eclipse.jdt.annotation.Nullable{{/required}}{{! For optional fields, always mark as @Nullable }}{{^required}}@org.eclipse.jdt.annotation.Nullable{{/required}}
