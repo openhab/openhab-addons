@@ -15,7 +15,6 @@ package org.openhab.binding.mspa.internal.handler;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +70,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                     "@text/status.mspa.visitor-account.config-parameter-missing");
             return;
         }
-        visitorConfig = Optional.of(config);
+        visitorConfig = config;
         // restore token from storage
         JSONObject storage = getStorage(config.visitorId);
         if (storage.has(TOKEN)) {
@@ -89,13 +88,17 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
     }
 
     private void grantDevices() {
-        String persistenceId = visitorConfig.get().visitorId;
+        MSpaVisitorAccountConfiguration cfg = visitorConfig;
+        if (cfg == null) {
+            return;
+        }
+        String persistenceId = cfg.visitorId;
         JSONObject persistence = getStorage(persistenceId);
         JSONObject storedGrants = new JSONObject();
         if (persistence.has(GRANTS)) {
             storedGrants = persistence.getJSONObject(GRANTS);
         }
-        String[] configuredGrants = visitorConfig.get().grantCode.split(",");
+        String[] configuredGrants = cfg.grantCode.split(",");
         JSONObject validGrants = new JSONObject();
 
         for (int i = 0; i < configuredGrants.length; i++) {
@@ -133,10 +136,14 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
 
     @Override
     public void requestToken() {
+        MSpaVisitorAccountConfiguration cfg = visitorConfig;
+        if (cfg == null) {
+            return;
+        }
         Request tokenRequest = getRequest(HttpMethod.POST, ENDPOINT_VISITOR);
         JSONObject body = new JSONObject();
-        body.put("visitor_id", visitorConfig.get().visitorId);
-        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(visitorConfig.get().region)));
+        body.put("visitor_id", cfg.visitorId);
+        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(cfg.region)));
         body.put("registration_id", "");
         body.put("push_type", "android");
         body.put("lan_code", "EN");
@@ -150,7 +157,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                 token = MSpaUtils.decodeNewToken(response);
                 if (MSpaUtils.isTokenValid(token)) {
                     JSONObject tokenStore = MSpaUtils.token2Json(token);
-                    String persistenceId = visitorConfig.get().visitorId;
+                    String persistenceId = cfg.visitorId;
                     JSONObject persistence = getStorage(persistenceId);
                     persistence.put(TOKEN, tokenStore);
                     persist(persistenceId, persistence);
