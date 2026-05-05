@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * Task to handle device registration.
  * 
  * @author Patrik Gfeller - Initial contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class HueSyncRegistrationTask implements Runnable {
