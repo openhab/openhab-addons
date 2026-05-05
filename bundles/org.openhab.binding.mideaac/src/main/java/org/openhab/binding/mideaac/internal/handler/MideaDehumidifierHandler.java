@@ -74,21 +74,6 @@ public class MideaDehumidifierHandler extends AbstractMideaHandler implements Hu
                 A1CommandSet initializationCommand = new A1CommandSet();
                 initializationCommand.getCapabilities();
                 this.connectionManager.sendCommand(initializationCommand, this);
-
-                // Check if additional capabilities are available and fetch them if so
-                CapabilityParser parser = new CapabilityParser();
-                logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
-                if (parser.hasAdditionalCapabilities()) {
-                    scheduler.schedule(() -> {
-                        try {
-                            A1CommandSet additionalCommand = new A1CommandSet();
-                            additionalCommand.getAdditionalCapabilities();
-                            this.connectionManager.sendCommand(additionalCommand, this);
-                        } catch (Exception ex) {
-                            logger.debug("Humidifier additional capabilities not returned {}", ex.getMessage());
-                        }
-                    }, 2, TimeUnit.SECONDS);
-                }
             } catch (Exception ex) {
                 // Will not affect dehumidifier readiness, just log the issue
                 logger.debug("Dehumidifier capabilities not returned {}", ex.getMessage());
@@ -98,7 +83,7 @@ public class MideaDehumidifierHandler extends AbstractMideaHandler implements Hu
 
     @Override
     protected void refreshDeviceStateAll() {
-        // no-op for dehumidifier
+        refreshDeviceState(); // No extra energy or humidity polls for dehumidifier
     }
 
     @Override
@@ -212,6 +197,20 @@ public class MideaDehumidifierHandler extends AbstractMideaHandler implements Hu
         }
 
         updateProperties(properties);
+
+        // Check if additional capabilities are available and fetch them if so
+        logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+        if (parser.hasAdditionalCapabilities()) {
+            scheduler.schedule(() -> {
+                try {
+                    A1CommandSet additionalCommand = new A1CommandSet();
+                    additionalCommand.getAdditionalCapabilities();
+                    this.connectionManager.sendCommand(additionalCommand, this);
+                } catch (Exception ex) {
+                    logger.debug("Humidifier additional capabilities not returned {}", ex.getMessage());
+                }
+            }, 2, TimeUnit.SECONDS);
+        }
 
         logger.debug("Capabilities and temperature settings parsed and stored in properties: {}", properties);
     }

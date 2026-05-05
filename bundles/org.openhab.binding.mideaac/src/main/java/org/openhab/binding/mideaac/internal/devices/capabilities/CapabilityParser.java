@@ -62,10 +62,8 @@ public class CapabilityParser {
             int rawId = ByteBuffer.wrap(payload, offset, 2).order(ByteOrder.LITTLE_ENDIAN).getShort() & 0xFFFF;
 
             // Map the ID to a CapabilityId enum
-            CapabilityId capabilityId;
-            try {
-                capabilityId = CapabilityId.fromId(rawId);
-            } catch (IllegalArgumentException e) {
+            CapabilityId capabilityId = CapabilityId.fromId(rawId);
+            if (capabilityId == CapabilityId.UNMAPPED) {
                 logger.debug("Unknown capability ID: {}, Size: {}", rawId, size);
                 offset += 3 + size; // Skip unknown capability
                 continue;
@@ -162,7 +160,8 @@ public class CapabilityParser {
         SUP_HORIZONTAL_GUIDE_STRIP(0x0231), // ??
         TWINS_MACHINE(0x0232), // ??
         GUIDE_STRIP_TYPE(0x0233), // ??
-        BODY_CHECK(0x0234); // ??
+        BODY_CHECK(0x0234), // ??
+        UNMAPPED(-1);
 
         private final int id;
 
@@ -191,7 +190,7 @@ public class CapabilityParser {
                     return capability;
                 }
             }
-            return _UNKNOWN;
+            return UNMAPPED;
         }
     }
 }

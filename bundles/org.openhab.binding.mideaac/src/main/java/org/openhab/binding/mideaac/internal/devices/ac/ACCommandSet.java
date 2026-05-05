@@ -474,7 +474,7 @@ public class ACCommandSet extends CommandBase {
     public void energyPoll() {
         modifyBytesForEnergyPoll();
         removeExtraEnergyPollBytes();
-        logger.debug("Set Energy Bytes before encrypt {}", HexUtils.bytesToHex(data));
+        logger.trace("Set Energy Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForEnergyPoll() {
@@ -508,7 +508,7 @@ public class ACCommandSet extends CommandBase {
     public void humidityPoll() {
         modifyBytesForHumidityPoll();
         removeExtraHumidityPollBytes();
-        logger.debug("Set Humidity Poll Bytes before encrypt {}", HexUtils.bytesToHex(data));
+        logger.trace("Set Humidity Poll Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForHumidityPoll() {

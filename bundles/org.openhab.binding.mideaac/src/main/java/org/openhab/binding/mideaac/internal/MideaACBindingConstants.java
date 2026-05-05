@@ -56,7 +56,7 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_ON_TIMER = "on-timer";
     public static final String CHANNEL_OFF_TIMER = "off-timer";
     public static final String CHANNEL_SWING_MODE = "swing-mode";
-    public static final String CHANNEL_SWING_ANGLE_HORIZONAL = "swing-angle-horizontal";
+    public static final String CHANNEL_SWING_ANGLE_HORIZONTAL = "swing-angle-horizontal";
     public static final String CHANNEL_SWING_ANGLE_VERTICAL = "swing-angle-vertical";
     public static final String CHANNEL_DEHUMIDIFIER_SWING = "dehumidifier-swing";
     public static final String CHANNEL_AUXILIARY_HEAT = "auxiliary-heat";

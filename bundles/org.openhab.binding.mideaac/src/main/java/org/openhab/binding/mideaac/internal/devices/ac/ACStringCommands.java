@@ -15,7 +15,7 @@ package org.openhab.binding.mideaac.internal.devices.ac;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ACStringCommands handles the String Commands for ACs
+ * The {@link ACStringCommands} handles the String Commands for ACs
  *
  * @author Bob Eckhoff - Initial contribution
  */

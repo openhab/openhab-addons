@@ -321,7 +321,7 @@
 	</channel-type>
 	<channel-type id="dehumidifier-mode" advanced="true">
 		<item-type>String</item-type>
-		<label>Dehumidifer Mode</label>
+		<label>Dehumidifier Mode</label>
 		<description>Operational modes: AUTO, MANUAL, CONTINUOUS, CLOTHES DRY, SHOE DRY.</description>
 		<tags>
 			<tag>Control</tag>
@@ -333,7 +333,7 @@
 				<option value="MANUAL">MANUAL</option>
 				<option value="CONTINUOUS">CONTINUOUS</option>
 				<option value="CLOTHES_DRY">CLOTHES DRY</option>
-				<option value="SHOE_DRY">SHOE DRY</option>
+				<option value="SHOES_DRY">SHOES DRY</option>
 			</options>
 		</state>
 	</channel-type>
@@ -364,7 +364,7 @@
 	</channel-type>
 	<channel-type id="dehumidifier-swing">
 		<item-type>Switch</item-type>
-		<label>Dehumidifer Swing</label>
+		<label>Dehumidifier Swing</label>
 		<description>Louver Movement.</description>
 		<category>Switch</category>
 		<tags>
@@ -401,7 +401,6 @@
 			<tag>Switch</tag>
 			<tag>Enabled</tag>
 		</tags>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="maximum-humidity">
 		<item-type>Number</item-type>

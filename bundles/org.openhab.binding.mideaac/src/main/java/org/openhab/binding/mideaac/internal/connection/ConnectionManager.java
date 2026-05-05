@@ -516,7 +516,7 @@ public class ConnectionManager {
                             callback.updateChannels(lastA1Response);
                         }
                     } catch (Exception ex) {
-                        logger.debug("Dehumidifer Poll response exception: {}", ex.getMessage());
+                        logger.debug("Dehumidifier Poll response exception: {}", ex.getMessage());
                         throw new MideaException(ex);
                     }
                     return;
@@ -566,7 +566,7 @@ public class ConnectionManager {
                         callback.updateChannels(lastA1Response);
                     }
                 } catch (Exception ex) {
-                    logger.debug("Dehumidifer Poll response exception: {}", ex.getMessage());
+                    logger.debug("Dehumidifier Poll response exception: {}", ex.getMessage());
                     throw new MideaException(ex);
                 }
                 return;
@@ -591,7 +591,7 @@ public class ConnectionManager {
             inputStream.close();
             socket.close();
         } catch (IOException e) {
-            logger.warn("IOException closing connection to device at {}: {}", ipAddress, e.getMessage());
+            logger.warn("IOException closing connection to device at {}", ipAddress, e);
         }
         socket = null;
         inputStream = null;

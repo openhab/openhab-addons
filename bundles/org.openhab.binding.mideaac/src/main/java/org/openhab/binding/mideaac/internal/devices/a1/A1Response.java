@@ -225,7 +225,7 @@ public class A1Response {
     }
 
     /**
-     * Swing for Dehumidifer is boolean
+     * Swing for Dehumidifier is boolean
      *
      * @return swing true or false
      */

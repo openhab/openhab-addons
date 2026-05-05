@@ -214,21 +214,6 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
                 ACCommandSet initializationCommand = new ACCommandSet();
                 initializationCommand.getCapabilities();
                 this.connectionManager.sendCommand(initializationCommand, this);
-
-                // Check if additional capabilities are available and fetch them if so
-                CapabilityParser parser = new CapabilityParser();
-                logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
-                if (parser.hasAdditionalCapabilities()) {
-                    scheduler.schedule(() -> {
-                        try {
-                            ACCommandSet additionalCommand = new ACCommandSet();
-                            additionalCommand.getAdditionalCapabilities();
-                            this.connectionManager.sendCommand(additionalCommand, this);
-                        } catch (Exception ex) {
-                            logger.debug("AC additional capabilities not returned {}", ex.getMessage());
-                        }
-                    }, 2, TimeUnit.SECONDS);
-                }
             } catch (Exception ex) {
                 // Will not affect AC device readiness, just log the issue
                 logger.debug("AC capabilities not returned {}", ex.getMessage());
@@ -322,6 +307,20 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
         }
 
         updateProperties(properties);
+
+        // Check if additional capabilities are available and fetch them if so
+        logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+        if (parser.hasAdditionalCapabilities()) {
+            scheduler.schedule(() -> {
+                try {
+                    ACCommandSet additionalCommand = new ACCommandSet();
+                    additionalCommand.getAdditionalCapabilities();
+                    this.connectionManager.sendCommand(additionalCommand, this);
+                } catch (Exception ex) {
+                    logger.debug("AC additional capabilities not returned {}", ex.getMessage());
+                }
+            }, 2, TimeUnit.SECONDS);
+        }
 
         logger.debug("Capabilities and temperature settings parsed and stored in properties: {}", properties);
     }

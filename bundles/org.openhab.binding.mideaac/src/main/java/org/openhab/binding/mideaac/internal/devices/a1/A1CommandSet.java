@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This {@link A1CommandSet} class handles the allowed changes originating from
- * the items linked to the Midea dehumidifer channels. Not all devices
+ * the items linked to the Midea dehumidifier channels. Not all devices
  * support all commands. The general process is to clear the
  * bit(s) the set them to the command value and change message type to command.
  *
@@ -153,7 +153,7 @@ public class A1CommandSet extends A1CommandBase {
     }
 
     /**
-     * Set the ON timer for Dehumidifer device start.
+     * Set the ON timer for Dehumidifier device start.
      * 
      * @param timerData status (On or Off), hours, minutes
      */

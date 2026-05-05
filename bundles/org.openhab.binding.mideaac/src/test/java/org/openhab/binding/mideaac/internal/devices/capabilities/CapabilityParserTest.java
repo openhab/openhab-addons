@@ -94,6 +94,28 @@ public class CapabilityParserTest {
     }
 
     @Test
+    void testFromIdDistinguishesUnknownValues() {
+        assertEquals(CapabilityId._UNKNOWN, CapabilityId.fromId(0x0040));
+        assertEquals(CapabilityId.UNMAPPED, CapabilityId.fromId(0xFFFF));
+    }
+
+    @Test
+    void testParseSkipsUnmappedCapability() {
+        byte[] payload = new byte[] { (byte) 0xB5, 0x02, // Header and count (2 capabilities)
+                0x34, 0x12, 0x01, 0x01, // Unmapped capability (0x1234)
+                0x20, 0x02, 0x01, 0x01, // Capability 2 (0x0220 = CHILD_LOCK, value = 1)
+                (byte) 0xDE, (byte) 0xDF // CRC Check (trailing bytes)
+        };
+
+        CapabilityParser parser = new CapabilityParser();
+
+        parser.parse(payload);
+
+        assertFalse(parser.getCapabilities().containsKey(CapabilityId.UNMAPPED));
+        assertTrue(parser.getCapabilities().containsKey(CapabilityId.CHILD_LOCK));
+    }
+
+    @Test
     void testParseWithInvalidSize() {
         // Arrange: Create a payload with an invalid size
         byte[] payload = new byte[] { (byte) 0xB5, 0x01, // Header and count (1 capability)

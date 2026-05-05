@@ -82,8 +82,8 @@ Note:  After discovery, the thing properties dropdown on the Thing UI page will 
 | appliance-error     | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |  X |    |
 | filter-status       | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |  X |    |
 | auxiliary-heat      | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |  X |    |
-| dh-child-lock       | Switch             | If device supports, Child Lock (On or Off)                                                             | Yes       | Yes      |    |  X |
-| dh-anion            | Switch             | If device supports, Anion (On or Off)                                                                  | Yes       | Yes      |    |  X |
+| child-lock          | Switch             | If device supports, Child Lock (On or Off)                                                             | Yes       | Yes      |    |  X |
+| anion               | Switch             | If device supports, Anion (On or Off)                                                                  | Yes       | Yes      |    |  X |
 
 ## Examples
 
@@ -108,7 +108,7 @@ Switch power "Power"                                                        { ch
 Number:Temperature target_temperature "Target Temperature [%.1f °F]"        { channel="mideaac:ac:air_conditioner:target-temperature" }
 String operational_mode "Operational Mode"                                  { channel="mideaac:ac:air_conditioner:operational-mode" }
 String fan_speed "Fan Speed"                                                { channel="mideaac:ac:air_conditioner:fan-speed" }
-String swing_mode "Swing Mode"                                              { channel="mideaac:ac:air_conditioner:dehumidifier-swing" }
+String swing_mode "Swing Mode"                                              { channel="mideaac:ac:air_conditioner:swing-mode" }
 Number:Temperature indoor_temperature "Indoor Temperature [%.1f °F]"        { channel="mideaac:ac:air_conditioner:indoor-temperature" }
 Switch eco_mode "Eco Mode"                                                  { channel="mideaac:ac:air_conditioner:eco-mode" }
 Switch turbo_mode "Turbo Mode"                                              { channel="mideaac:ac:air_conditioner:turbo-mode" }
