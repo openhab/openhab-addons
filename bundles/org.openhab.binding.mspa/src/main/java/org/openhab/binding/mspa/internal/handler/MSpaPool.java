@@ -200,6 +200,8 @@ public class MSpaPool extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
+        refreshJob = null;
+        account = null;
         deviceProperties = null;
     }
 
