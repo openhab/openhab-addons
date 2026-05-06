@@ -576,7 +576,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         if (job != null) {
             job.cancel(false);
         }
-        final Duration forceRefreshInterval = this.forceRefreshInterval;
+        final @Nullable Duration forceRefreshInterval = this.forceRefreshInterval;
         if (forceRefreshInterval != null) {
             // schedule a periodic job according to forceRefreshInterval
             forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 10,
