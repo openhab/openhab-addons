@@ -67,15 +67,16 @@
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
     <ohc.version>5.2.0-SNAPSHOT</ohc.version>
-    <bnd.version>7.2.1</bnd.version>
+    <asm.version>9.9.1</asm.version>
+    <bnd.version>7.2.3</bnd.version>
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.21</jackson.annotations.version>
-    <jackson.version>2.21.1</jackson.version>
+    <jackson.version>2.21.2</jackson.version>
     <jna.version>5.18.1</jna.version>
     <json.version>20251224</json.version>
-    <karaf.version>4.4.10</karaf.version>
+    <karaf.version>4.4.11</karaf.version>
     <mockito.version>5.21.0</mockito.version>
     <netty.version>4.1.130.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
