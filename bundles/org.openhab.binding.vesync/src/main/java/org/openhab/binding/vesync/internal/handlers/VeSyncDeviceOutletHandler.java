@@ -25,7 +25,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.GetEnergyHistory;
 import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.SetSwitch;
 import org.openhab.binding.vesync.internal.dto.responses.devices.v2.rev2.outlet.EnergyHistoryInfoSnapshot;

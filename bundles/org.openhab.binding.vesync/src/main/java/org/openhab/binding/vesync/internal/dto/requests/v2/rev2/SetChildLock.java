@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests.v2.rev2;
 
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
+
 import com.google.gson.annotations.SerializedName;
 
 /**

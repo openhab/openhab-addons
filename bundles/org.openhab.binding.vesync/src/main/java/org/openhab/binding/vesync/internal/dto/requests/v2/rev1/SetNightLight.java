@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests.v2.rev1;
 
-import org.openhab.binding.vesync.internal.dto.requests.v2.rev2.EmptyPayload;
+import org.openhab.binding.vesync.internal.dto.requests.v2.EmptyPayload;
 
 import com.google.gson.annotations.SerializedName;
 
