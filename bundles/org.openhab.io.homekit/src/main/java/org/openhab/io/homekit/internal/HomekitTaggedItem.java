@@ -387,7 +387,6 @@ public class HomekitTaggedItem {
                     return (T) value.toString();
                 }
             }
-
         }
         return defaultValue;
     }

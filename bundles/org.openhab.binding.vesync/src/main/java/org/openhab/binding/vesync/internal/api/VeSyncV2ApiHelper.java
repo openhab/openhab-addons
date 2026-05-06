@@ -255,7 +255,6 @@ public class VeSyncV2ApiHelper {
                 throw new AuthenticationException("Invalid username or password");
             }
             return loginHelper.getUserSession();
-
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException(e);
         }

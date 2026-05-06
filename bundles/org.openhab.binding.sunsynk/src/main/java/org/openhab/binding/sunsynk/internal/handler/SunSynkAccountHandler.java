@@ -144,7 +144,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             long expiresFromNow = this.sunAccount.checkExpireTime();
             if (expiresFromNow < EXPIRY_SECONDS) {
                 logger.debug("Account configuration token about to expire - logging in.");
-                if (configAccount() != true) {
+                if (!configAccount()) {
                     throw new SunSynkTokenException("failed to config account");
                 }
             } else {

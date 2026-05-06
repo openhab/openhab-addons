@@ -206,8 +206,9 @@ public class SmhiHandler extends BaseThingHandler {
         tsChannels.forEach(c -> {
             String id = c.getUID().getIdWithoutGroup();
             ParameterMetadata metadata = channelTypeProvider.getParameterMetadata(id);
-            if (metadata == null)
+            if (metadata == null) {
                 return;
+            }
 
             sendTimeSeries(c.getUID(), timeSeries.getTimeSeries(metadata));
         });

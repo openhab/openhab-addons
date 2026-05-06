@@ -90,7 +90,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
                         localSockets.connect();
                     }
                 }
-
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }

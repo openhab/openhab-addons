@@ -228,7 +228,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             // Simple fallback: just send the URL as a message.
             // If you want true out-of-band metadata, build an OOB extension stanza instead.
             sendMessage(to, url.toString());
-
         } catch (XMPPException.XMPPErrorException e) {
             logger.warn("XMPP HTTP upload rejected by server: {}", e.getMessage(), e);
         } catch (SmackException.NoResponseException e) {

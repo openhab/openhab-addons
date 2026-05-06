@@ -166,7 +166,6 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
      * Configures this thing
      */
     private void configure() {
-
         try {
             disconnect();
         } catch (ExecutionException | InterruptedException e) {

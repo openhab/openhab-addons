@@ -35,7 +35,7 @@ import jakarta.persistence.EntityTransaction;
 /**
  * Tests for {@link JpaPersistenceService}.
  *
- * @author Cody Cutrer
+ * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
 class JpaPersistenceServiceTest {

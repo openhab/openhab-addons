@@ -60,7 +60,7 @@ public class SrpAuthentication {
                     + "7050807005509320424799678417036867928316761272274230314067548291"
                     + "1335824795830614395775593471019617714061736843785227034834953370"
                     + "37655006751328447510550299250924469288819");
-    private final static BigInteger g = BigInteger.valueOf(2L);
+    private static final BigInteger g = BigInteger.valueOf(2L);
 
     // Username
     private String I;

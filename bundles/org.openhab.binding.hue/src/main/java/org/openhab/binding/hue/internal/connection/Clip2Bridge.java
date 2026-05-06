@@ -652,8 +652,9 @@ public class Clip2Bridge implements Closeable {
         } catch (URISyntaxException e) {
             throw new IOException("Invalid URL %s".formatted(url), e);
         } finally {
-            if (connection != null)
+            if (connection != null) {
                 connection.disconnect();
+            }
         }
     }
 

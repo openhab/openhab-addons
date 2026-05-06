@@ -130,7 +130,6 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
     private final PropertyStorage propertyStorage;
 
     public CompletableFuture<PublishResult> publishUpdate(String deviceId, String msg) {
-
         String topic = String.format(TOPIC_THINGS_SHADOW + TOPIC_SUFFIX_UPDATE, deviceId);
 
         logger.trace("MQTT message published on {}: {}", topic, msg);
@@ -159,7 +158,6 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
      * Initial login to service
      */
     private AccountInfo login() throws IOException, NotAuthorizedException {
-
         String signIn = gson.toJson(new SignIn(apiKey, username, password));
         try {
             ContentResponse response = httpClient.newRequest(AUTH_URL).method(HttpMethod.POST)
@@ -192,7 +190,6 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
     }
 
     private AccountInfo loadAccountInfo(boolean relogin) throws IOException, NotAuthorizedException {
-
         AccountInfo accountInfo = null;
         if (!relogin) {
             // first check cache
@@ -327,23 +324,19 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
                 if (listener != null) { // keep compiler happy
                     listener.onGetAccepted(deviceId, payload);
                 }
-
             } else if (parts[4].equals(TOPIC_SUFFIX_UPDATE.substring(1))) {
                 if (parts[5].equals(TOPIC_SUFFIX_ACCEPTED.substring(1))) {
                     logger.debug("Received update accepted message: {}", payload);
                     if (listener != null) { // keep compiler happy
                         listener.onUpdateAccepted(deviceId, payload);
                     }
-
                 } else if (parts[5].equals(TOPIC_SUFFIX_REJECTED.substring(1))) {
                     logger.debug("Received update rejected message: {}", payload);
                     if (listener != null) { // keep compiler happy
                         listener.onUpdateRejected(deviceId, payload);
                     }
-
                 } else {
                     logger.error("MQTT message received on unknown topic [3]: {}", topic);
-
                 }
             } else {
                 logger.error("MQTT message received on unknown topic [4]: {}", topic);
@@ -395,7 +388,6 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
     }
 
     public CompletableFuture<Void> subscribe(Device device, IAqualinkDeviceListener listener) {
-
         listeners.put(device.getSerialNumber(), listener);
 
         SubscribePacket subscribePacket = new SubscribePacket.SubscribePacketBuilder()
