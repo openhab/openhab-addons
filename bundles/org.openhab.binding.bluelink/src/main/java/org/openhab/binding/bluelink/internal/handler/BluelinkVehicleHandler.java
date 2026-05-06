@@ -304,7 +304,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return false;
         }
 
-        return bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        final boolean res = bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public boolean climateStop() throws BluelinkApiException {
@@ -314,7 +318,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return false;
         }
 
-        return bridgeHnd.climateStop(vehicle);
+        final boolean res = bridgeHnd.climateStop(vehicle);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public void refreshVehicleStatus(boolean forceRefresh) {
