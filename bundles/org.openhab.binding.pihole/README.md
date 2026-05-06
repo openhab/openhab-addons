@@ -30,6 +30,7 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 ### Generating a token
 
 The procedure for generating a token in version 5 is different from generating one in version 6:
+
 - Version 5: Go to `settings` > `API` > `Show API token`
 - Version 6: Go to `settings` > `Web Interface - API Settings` > `Expert` > `Configure app password` > Copy the `app password` > `Enable new app password`
 
