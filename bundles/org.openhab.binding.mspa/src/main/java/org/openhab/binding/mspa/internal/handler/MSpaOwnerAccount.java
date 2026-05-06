@@ -14,7 +14,6 @@ package org.openhab.binding.mspa.internal.handler;
 
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -60,7 +59,7 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
                     "@text/status.mspa.owner-account.config-parameter-missing");
             return;
         }
-        ownerConfig = Optional.of(config);
+        ownerConfig = config;
         // restore token from storage
         JSONObject storage = getStorage(config.email);
         if (storage.has(TOKEN)) {
@@ -74,11 +73,15 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
 
     @Override
     public void requestToken() {
+        MSpaOwnerAccountConfiguration cfg = ownerConfig;
+        if (cfg == null) {
+            return;
+        }
         Request tokenRequest = getRequest(HttpMethod.POST, ENDPOINT_TOKEN);
         JSONObject body = new JSONObject();
-        body.put("account", ownerConfig.get().email);
-        body.put("password", MSpaUtils.getPasswordHash(ownerConfig.get().password));
-        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(ownerConfig.get().region)));
+        body.put("account", cfg.email);
+        body.put("password", MSpaUtils.getPasswordHash(cfg.password));
+        body.put("app_id", APP_IDS.get(ServiceRegion.valueOf(cfg.region)));
         body.put("registration_id", EMPTY);
         body.put("push_type", "android");
         tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));
@@ -91,7 +94,7 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
                 token = MSpaUtils.decodeNewToken(response);
                 if (MSpaUtils.isTokenValid(token)) {
                     JSONObject tokenStore = MSpaUtils.token2Json(token);
-                    String persistenceId = ownerConfig.get().email;
+                    String persistenceId = cfg.email;
                     JSONObject persistence = getStorage(persistenceId);
                     persistence.put(TOKEN, tokenStore);
                     persist(persistenceId, persistence);

@@ -17,13 +17,13 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -61,8 +61,8 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     protected static final String TOKEN = "accesstoken";
     protected static final String GRANTS = "grants";
-    protected Optional<MSpaOwnerAccountConfiguration> ownerConfig = Optional.empty();
-    protected Optional<MSpaVisitorAccountConfiguration> visitorConfig = Optional.empty();
+    protected @Nullable MSpaOwnerAccountConfiguration ownerConfig = null;
+    protected @Nullable MSpaVisitorAccountConfiguration visitorConfig = null;
     protected AccessTokenResponse token;
     protected Storage<String> store;
 
@@ -137,12 +137,14 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     @Override
     public void handleRemoval() {
-        ownerConfig.ifPresent(config -> {
-            store.remove(config.email);
-        });
-        visitorConfig.ifPresent(config -> {
-            store.remove(config.visitorId);
-        });
+        MSpaOwnerAccountConfiguration ownerCfg = ownerConfig;
+        if (ownerCfg != null) {
+            store.remove(ownerCfg.email);
+        }
+        MSpaVisitorAccountConfiguration visitorCfg = visitorConfig;
+        if (visitorCfg != null) {
+            store.remove(visitorCfg.visitorId);
+        }
     }
 
     /**
@@ -166,10 +168,12 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
 
     public Request getRequest(HttpMethod method, String endPoint) {
         ServiceRegion region = ServiceRegion.ROW; // default region;
-        if (ownerConfig.isPresent()) {
-            region = ServiceRegion.valueOf(ownerConfig.get().region);
-        } else if (visitorConfig.isPresent()) {
-            region = ServiceRegion.valueOf(visitorConfig.get().region);
+        MSpaOwnerAccountConfiguration ownerCfg = ownerConfig;
+        MSpaVisitorAccountConfiguration visitorCfg = visitorConfig;
+        if (ownerCfg != null) {
+            region = ServiceRegion.valueOf(ownerCfg.region);
+        } else if (visitorCfg != null) {
+            region = ServiceRegion.valueOf(visitorCfg.region);
         }
         long timestamp = Instant.now().getEpochSecond();
         String nonce = UUID.randomUUID().toString().replace("-", EMPTY);

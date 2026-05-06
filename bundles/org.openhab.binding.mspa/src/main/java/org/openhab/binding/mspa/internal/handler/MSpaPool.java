@@ -28,6 +28,7 @@ import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -69,9 +70,9 @@ public class MSpaPool extends BaseThingHandler {
     private final UnitProvider unitProvider;
 
     private MSpaPoolConfiguration config = new MSpaPoolConfiguration();
-    private Optional<Map<String, String>> deviceProperties = Optional.empty();
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<MSpaBaseAccount> account = Optional.empty();
+    private @Nullable Map<String, String> deviceProperties = null;
+    private @Nullable ScheduledFuture<?> refreshJob = null;
+    private @Nullable MSpaBaseAccount account = null;
     private String dataCache = (new JSONObject()).toString();
 
     public MSpaPool(Thing thing, UnitProvider unitProvider, MSpaCommandOptionProvider commandProvider) {
@@ -129,8 +130,9 @@ public class MSpaPool extends BaseThingHandler {
         if (command instanceof RefreshType) {
             distributeData(dataCache);
         } else {
+            MSpaBaseAccount acc = account;
             createCommandBody(channelId, command).ifPresent(commandBody -> {
-                account.ifPresent(acc -> {
+                if (acc != null) {
                     commandBody.put("device_id", config.deviceId);
                     commandBody.put("product_id", config.productId);
                     Request commandRequest = acc.getRequest(HttpMethod.POST, ENDPOINT_COMMAND);
@@ -148,7 +150,7 @@ public class MSpaPool extends BaseThingHandler {
                         logger.warn("Error sending command {} - {}", commandBody.toString(), e.toString());
                         handlePossibleInterrupt(e);
                     }
-                });
+                }
             });
         }
     }
@@ -171,12 +173,12 @@ public class MSpaPool extends BaseThingHandler {
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler instanceof MSpaBaseAccount accountHandler) {
-                account = Optional.of(accountHandler);
+                account = accountHandler;
                 String token = accountHandler.getToken();
                 if (!UNKNOWN.equals(token)) {
                     updateStatus(ThingStatus.UNKNOWN);
-                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateData, 2,
-                            config.refreshInterval * 60, TimeUnit.SECONDS));
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, 2, config.refreshInterval * 60,
+                            TimeUnit.SECONDS);
                     setCommandOptions();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -194,18 +196,22 @@ public class MSpaPool extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> {
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
             job.cancel(true);
-        });
-        deviceProperties = Optional.empty();
+        }
+        refreshJob = null;
+        account = null;
+        deviceProperties = null;
     }
 
     private void updateData() {
-        if (account.isPresent()) {
+        MSpaBaseAccount acc = account;
+        if (acc != null) {
             if (!checkOnline()) {
                 return;
             }
-            Request dataRequest = account.get().getRequest(HttpMethod.POST, ENDPOINT_DEVICE_SHADOW);
+            Request dataRequest = acc.getRequest(HttpMethod.POST, ENDPOINT_DEVICE_SHADOW);
             JSONObject body = new JSONObject();
             body.put("device_id", config.deviceId);
             body.put("product_id", config.productId);
@@ -227,7 +233,11 @@ public class MSpaPool extends BaseThingHandler {
     }
 
     private boolean checkOnline() {
-        Request deviceListRequest = account.get().getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
+        MSpaBaseAccount acc = account;
+        if (acc == null) {
+            return false;
+        }
+        Request deviceListRequest = acc.getRequest(HttpMethod.GET, ENDPOINT_DEVICE_LIST);
         try {
             ContentResponse cr = deviceListRequest.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
@@ -243,12 +253,12 @@ public class MSpaPool extends BaseThingHandler {
                             if (entry instanceof JSONObject jsonEntry) {
                                 if (jsonEntry.has("device_id")) {
                                     if (config.deviceId.equals(jsonEntry.getString("device_id"))) {
-                                        if (deviceProperties.isEmpty()) {
+                                        if (deviceProperties == null) {
                                             // update device properties one time after initialization
                                             Map<String, String> devicePropertiesMap = MSpaUtils
                                                     .getDeviceProperties(jsonEntry.toMap());
                                             thing.setProperties(devicePropertiesMap);
-                                            deviceProperties = Optional.of(devicePropertiesMap);
+                                            deviceProperties = devicePropertiesMap;
                                         }
                                         if (jsonEntry.has("is_online")) {
                                             boolean online = jsonEntry.getBoolean("is_online");
