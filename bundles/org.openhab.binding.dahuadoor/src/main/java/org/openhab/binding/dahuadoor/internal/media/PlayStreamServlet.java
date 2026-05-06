@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBaseHandler;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorHandlerFactory;
+import org.openhab.binding.dahuadoor.internal.sip.SipClient;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -84,6 +85,10 @@ public class PlayStreamServlet extends HttpServlet {
     private static final String SESSION_STREAM_PATH = "session";
     /** Correlation id generator for WebRTC proxy requests. */
     private static final AtomicLong REQUEST_SEQUENCE = new AtomicLong();
+    /** How long a request may stay in CONNECTING before the lock is treated as stale. */
+    private static final long CONNECTING_STALE_MS = 30_000L;
+    /** Fallback timeout for ACTIVE locks if SIP state callbacks are not observed. */
+    private static final long ACTIVE_STALE_MS = 30 * 60_000L;
 
     private final HttpService httpService;
     private final DahuaDoorHandlerFactory handlerFactory;
@@ -93,6 +98,20 @@ public class PlayStreamServlet extends HttpServlet {
      * Modified from multiple threads → ConcurrentHashMap.
      */
     private final Map<String, Integer> streamApiPorts = new ConcurrentHashMap<>();
+
+    /** Map from stream name to handler for SIP state lookup. */
+    private final Map<String, DahuaDoorBaseHandler> streamHandlers = new ConcurrentHashMap<>();
+
+    /**
+     * Per stream+client request guard.
+     *
+     * Key format: {@code <streamName>|<clientKey>} where clientKey is either explicit clientId
+     * query parameter or HTTP session id.
+     */
+    private final Map<String, OfferGateState> offerGateByStreamAndClient = new ConcurrentHashMap<>();
+
+    /** Last logged mapping per stream+HTTP session to avoid repeated log spam. */
+    private final Map<String, String> lastLoggedSessionClientMapping = new ConcurrentHashMap<>();
 
     /** Number of currently registered streams; used to decide when to unregister the servlet. */
     private volatile int registrationCount = 0;
@@ -111,12 +130,15 @@ public class PlayStreamServlet extends HttpServlet {
      *
      * @param streamName go2rtc stream name
      * @param apiPort go2rtc API port for that stream
+     * @param handler owning thing handler used to resolve SIP session state for this stream
      */
-    public synchronized void registerStream(String streamName, int apiPort) {
+    public synchronized void registerStream(String streamName, int apiPort, DahuaDoorBaseHandler handler) {
         Integer previous = streamApiPorts.put(streamName, apiPort);
+        streamHandlers.put(streamName, handler);
         if (previous == null && registrationCount == 0) {
             if (!activate()) {
                 streamApiPorts.remove(streamName);
+                streamHandlers.remove(streamName);
                 LOGGER.warn("Could not register stream '{}' because servlet activation failed", streamName);
                 return;
             }
@@ -134,17 +156,23 @@ public class PlayStreamServlet extends HttpServlet {
      */
     public synchronized void unregisterStream(String streamName) {
         Integer removed = streamApiPorts.remove(streamName);
+        streamHandlers.remove(streamName);
         if (removed != null) {
             registrationCount = Math.max(0, registrationCount - 1);
             if (registrationCount == 0) {
                 deactivate();
             }
         }
+        offerGateByStreamAndClient.keySet().removeIf(key -> key.startsWith(streamName + "|"));
+        lastLoggedSessionClientMapping.keySet().removeIf(key -> key.startsWith(streamName + "|"));
         LOGGER.debug("Unregistered WebRTC stream '{}'", streamName);
     }
 
     public synchronized void deactivateAll() {
         streamApiPorts.clear();
+        streamHandlers.clear();
+        offerGateByStreamAndClient.clear();
+        lastLoggedSessionClientMapping.clear();
         registrationCount = 0;
         deactivate();
     }
@@ -176,8 +204,23 @@ public class PlayStreamServlet extends HttpServlet {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
         long startedAtNanos = System.nanoTime();
 
+        String clientIdParam = req.getParameter("clientId");
+        String sessionId = req.getSession().getId();
+        String clientKey = clientIdParam != null && !clientIdParam.isBlank() ? clientIdParam : sessionId;
+        String streamClientKey = buildStreamClientKey(streamName, clientKey);
+
+        logSessionToDahuaClientMapping(streamName, sessionId, clientIdParam);
+
+        if (!tryAcquireOfferGate(streamName, streamClientKey, sessionId)) {
+            sendBase64Message(resp, HttpServletResponse.SC_CONFLICT,
+                    "Duplicate WebRTC request rejected for same client while setup/connection is active.");
+            LOGGER.warn("Rejected duplicate WebRTC offer for stream '{}' (clientKey={})", streamName, clientKey);
+            return;
+        }
+
         Integer apiPort = streamApiPorts.get(streamName);
         if (apiPort == null) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
                     "Unknown stream: " + streamName + ". Is the thing online with WebRTC enabled?");
             LOGGER.warn("WebRTC proxy [{}] rejected: unknown stream '{}'", requestId, streamName);
@@ -188,6 +231,7 @@ public class PlayStreamServlet extends HttpServlet {
         try (InputStream in = req.getInputStream()) {
             requestBody = new String(readLimitedBytes(in, MAX_REQUEST_BODY_BYTES), StandardCharsets.UTF_8);
         } catch (RequestTooLargeException e) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE,
                     "Request body too large. Maximum supported size is " + MAX_REQUEST_BODY_BYTES + " bytes.");
             LOGGER.warn("Rejected request for stream '{}': request body exceeded {} bytes", streamName,
@@ -195,18 +239,21 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
         if (requestBody.isBlank()) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Empty request body");
             LOGGER.warn("Rejected request for stream '{}': empty body", streamName);
             return;
         }
 
         if (!requestBody.startsWith("data=")) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST,
                     "Unsupported request format. Expected form body: data=<base64(sdp)>.");
             LOGGER.warn("Rejected request for stream '{}': unsupported input mode", streamName);
             return;
         }
         if (requestBody.indexOf('&') >= 0) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST,
                     "Unsupported request format. Only one form field is allowed: data=<base64(sdp)>.");
             LOGGER.warn("Rejected request for stream '{}': additional form fields present", streamName);
@@ -215,6 +262,7 @@ public class PlayStreamServlet extends HttpServlet {
 
         String decodedFormValue = URLDecoder.decode(requestBody.substring(5), StandardCharsets.UTF_8);
         if (decodedFormValue.isBlank()) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing SDP payload in form field 'data'.");
             LOGGER.warn("Rejected request for stream '{}': empty data field", streamName);
             return;
@@ -224,11 +272,13 @@ public class PlayStreamServlet extends HttpServlet {
         try {
             sdpOffer = new String(Base64.getDecoder().decode(decodedFormValue), StandardCharsets.UTF_8);
         } catch (IllegalArgumentException e) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid Base64 payload in form field 'data'.");
             LOGGER.warn("Rejected request for stream '{}': invalid base64 payload", streamName);
             return;
         }
         if (sdpOffer.isBlank()) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_REQUEST, "Decoded SDP offer is empty.");
             LOGGER.warn("Rejected request for stream '{}': decoded SDP is empty", streamName);
             return;
@@ -281,6 +331,7 @@ public class PlayStreamServlet extends HttpServlet {
                 }
                 String message = errorBody.isEmpty() ? "go2rtc API returned HTTP " + status
                         : "go2rtc API returned HTTP " + status + ": " + errorBody;
+                releaseOfferGate(streamClientKey);
                 sendBase64Message(resp, HttpServletResponse.SC_BAD_GATEWAY, message);
                 LOGGER.warn(
                         "WebRTC proxy [{}] upstream error stream='{}' status={} bodyBytes={} durationMs={} body='{}'",
@@ -304,7 +355,9 @@ public class PlayStreamServlet extends HttpServlet {
 
             byte[] encoded = Base64.getEncoder().encode(sdpAnswer);
             sendEncodedAnswer(resp, encoded);
+            markOfferGateActive(streamClientKey);
         } catch (IOException e) {
+            releaseOfferGate(streamClientKey);
             sendBase64Message(resp, HttpServletResponse.SC_BAD_GATEWAY,
                     "Failed to reach go2rtc API: " + e.getMessage());
             LOGGER.warn("WebRTC proxy [{}] upstream communication failure stream='{}' after {} ms: {}", requestId,
@@ -428,6 +481,89 @@ public class PlayStreamServlet extends HttpServlet {
         resp.setContentType("text/plain");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.getOutputStream().write(encoded);
+    }
+
+    private static String buildStreamClientKey(String streamName, String clientKey) {
+        return streamName + "|" + clientKey;
+    }
+
+    private boolean tryAcquireOfferGate(String streamName, String streamClientKey, String sessionId) {
+        // Primary release signal: SIP call control transitioned to a terminal state.
+        if (isSipTerminalState(streamName, sessionId)) {
+            releaseOfferGate(streamClientKey);
+        }
+
+        long now = System.currentTimeMillis();
+        OfferGateState state = offerGateByStreamAndClient.compute(streamClientKey, (key, current) -> {
+            if (current == null) {
+                return new OfferGateState(OfferGatePhase.CONNECTING, now);
+            }
+            long ageMs = now - current.lastUpdateMs;
+            if (current.phase == OfferGatePhase.CONNECTING && ageMs > CONNECTING_STALE_MS) {
+                return new OfferGateState(OfferGatePhase.CONNECTING, now);
+            }
+            if (current.phase == OfferGatePhase.ACTIVE && ageMs > ACTIVE_STALE_MS) {
+                return new OfferGateState(OfferGatePhase.CONNECTING, now);
+            }
+            return current;
+        });
+        return state != null && state.phase == OfferGatePhase.CONNECTING && state.lastUpdateMs == now;
+    }
+
+    private void markOfferGateActive(String streamClientKey) {
+        long now = System.currentTimeMillis();
+        offerGateByStreamAndClient.computeIfPresent(streamClientKey,
+                (key, current) -> new OfferGateState(OfferGatePhase.ACTIVE, now));
+    }
+
+    private void releaseOfferGate(String streamClientKey) {
+        offerGateByStreamAndClient.remove(streamClientKey);
+    }
+
+    private boolean isSipTerminalState(String streamName, String sessionId) {
+        DahuaDoorBaseHandler handler = streamHandlers.get(streamName);
+        if (handler == null) {
+            return false;
+        }
+
+        @Nullable
+        String callState = handler.getSipCallStateForSession(sessionId);
+        return SipClient.SipCallState.IDLE.name().equals(callState)
+                || SipClient.SipCallState.HUNGUP.name().equals(callState)
+                || SipClient.SipCallState.TERMINATING.name().equals(callState);
+    }
+
+    private void logSessionToDahuaClientMapping(String streamName, String sessionId,
+            @Nullable String requestedClientId) {
+        DahuaDoorBaseHandler handler = streamHandlers.get(streamName);
+        if (handler == null) {
+            return;
+        }
+
+        String dahuaClientId = handler.assignClientForSession(sessionId);
+        String mappingKey = buildStreamClientKey(streamName, sessionId);
+        String mappingValue = dahuaClientId + "|" + (requestedClientId != null ? requestedClientId : "");
+        String previous = lastLoggedSessionClientMapping.put(mappingKey, mappingValue);
+
+        if (!mappingValue.equals(previous)) {
+            LOGGER.info("WebRTC session mapping: stream='{}' sessionId='{}' dahuaClientId='{}' requestedClientId='{}'",
+                    streamName, sessionId, dahuaClientId, requestedClientId != null ? requestedClientId : "");
+        }
+    }
+
+    private enum OfferGatePhase {
+        CONNECTING,
+        ACTIVE
+    }
+
+    private static final class OfferGateState {
+        private final OfferGatePhase phase;
+        private final long lastUpdateMs;
+
+        private OfferGateState(OfferGatePhase phase, long lastUpdateMs) {
+            this.phase = phase;
+            this.lastUpdateMs = lastUpdateMs;
+        }
     }
 
     private static String summarizeAudioSdpDirection(String sdp) {

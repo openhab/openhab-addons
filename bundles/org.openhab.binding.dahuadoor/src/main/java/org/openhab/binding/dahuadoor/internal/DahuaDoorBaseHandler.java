@@ -279,7 +279,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 }
 
                 for (Go2RtcManager.StreamEntry streamEntry : streamEntries) {
-                    playStreamServlet.registerStream(streamEntry.streamName(), cfg.go2rtcApiPort);
+                    playStreamServlet.registerStream(streamEntry.streamName(), cfg.go2rtcApiPort, this);
                 }
                 logger.info("WebRTC streaming active for {} at {}", mainStreamName, proxyPath);
             } catch (InterruptedException e) {
