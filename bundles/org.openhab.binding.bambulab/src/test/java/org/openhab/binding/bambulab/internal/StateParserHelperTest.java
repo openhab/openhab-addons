@@ -115,6 +115,19 @@ class StateParserHelperTest {
     }
 
     @Test
+    @DisplayName("Given PLA-S, when parseTrayType is called, then it returns PLA-S")
+    void testParseTrayTypeSupportsPlaS() {
+        // Given
+        var trayType = "PLA-S";
+
+        // When
+        var result = StateParserHelper.parseTrayType(trayType);
+
+        // Then
+        assertThat(result).contains(StringType.valueOf("PLA-S"));
+    }
+
+    @Test
     @DisplayName("Given a valid dBm pattern string, when parseWifiChannel is called, then it returns QuantityType with DECIBEL_MILLIWATTS unit")
     void testParseWifiChannelConvertsValidDbmPatternToQuantityType() {
         // Given

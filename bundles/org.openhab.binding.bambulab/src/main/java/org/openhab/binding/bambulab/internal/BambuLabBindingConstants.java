@@ -211,6 +211,7 @@ public class BambuLabBindingConstants {
 
         public static enum TrayType {
             PLA("PLA"),
+            PLA_S("PLA-S"),
             PETG("PETG"),
             ABS("ABS"),
             TPU("TPU"),
