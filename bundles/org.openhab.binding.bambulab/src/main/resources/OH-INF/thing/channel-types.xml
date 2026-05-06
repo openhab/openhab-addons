@@ -143,6 +143,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="PLA">PLA</option>
+				<option value="PLA_S">PLA-S</option>
 				<option value="PETG">PETG</option>
 				<option value="ABS">ABS</option>
 				<option value="TPU">TPU</option>
