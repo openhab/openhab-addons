@@ -39,7 +39,7 @@
 			</parameter>
 			<parameter name="forceRefreshInterval" type="integer" min="0" unit="min" required="false">
 				<label>Refresh Interval</label>
-				<description>Interval in minutes to refresh data from the vehicle</description>
+				<description>Interval in minutes to refresh data from the vehicle. Set to 0 to disable periodic forced refresh.</description>
 				<default>240</default>
 				<advanced>true</advanced>
 			</parameter>
