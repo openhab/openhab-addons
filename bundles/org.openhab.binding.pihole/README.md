@@ -23,9 +23,15 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 | Name            | Type    | Description                                                                                                                                                                                  | Default | Required | Advanced |
 | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
-| hostname        | text    | URL (hostname or IP address) of the pihole web server                                                                                                                                        | N/A     | yes      | no       |
-| token           | text    | Token to access the device. To generate token, go to `settings` > `Web Interface - API Settings` > `Expert` > `Configure app password` > Copy the `app password` > `Enable new app password` | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec                                                                                                                                                         | 600     | no       | yes      |
+| hostname        | text    | URL (hostname or IP address) of the pihole web server | N/A     | yes      | no       |
+| token           | text    | Token to access the device (see below)                | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec                  | 600     | no       | yes      |
+
+### Generating a token
+
+The procedure for generating a token in version 5 is different from generating one in version 6:
+- Version 5: Go to `settings` > `API` > `Show API token`
+- Version 6: Go to `settings` > `Web Interface - API Settings` > `Expert` > `Configure app password` > Copy the `app password` > `Enable new app password`
 
 ## Channels
 
