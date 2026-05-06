@@ -13,6 +13,7 @@
 package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
 import static org.openhab.binding.kostalinverter.internal.thirdgeneration.ThirdGenerationBindingConstants.*;
+import static org.openhab.core.thing.ThingStatusDetail.OFFLINE;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -21,9 +22,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +44,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -56,6 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ThirdGenerationHandler} is responsible for handling commands, which are
@@ -89,9 +94,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshScheduler;
 
-    private @Nullable HttpClient httpClient;
-
-    private ThirdGenerationInverterTypes inverterType;
+    private final HttpClient httpClient;
+    private final ThirdGenerationInverterTypes inverterType;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -115,9 +119,10 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
         if (refreshScheduler != null) {
             refreshScheduler.cancel(true);
-            refreshScheduler = null;
+            this.refreshScheduler = null;
         }
         super.dispose();
     }
@@ -147,6 +152,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
     private void updateChannelValues() {
         Map<String, List<ThirdGenerationChannelMappingToWebApi>> channelList = ThirdGenerationMappingInverterToChannel
                 .getModuleToChannelsMappingForInverter(inverterType);
+        Map<String, ThirdGenerationChannelMappingToWebApi> channelLookup = buildChannelLookup(channelList);
         JsonArray updateMessageJsonArray = getUpdateChannelMessage(channelList);
 
         // Send the API request to get values for all channels
@@ -154,55 +160,94 @@ public class ThirdGenerationHandler extends BaseThingHandler {
         try {
             updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                     PROCESSDATA, updateMessageJsonArray, sessionId);
-            if (updateMessageContentResponse.getStatus() == 404) {
-                // Module not found
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE);
-                return;
-            }
-            if (updateMessageContentResponse.getStatus() == 503) {
-                // Communication error (e.g. during initial boot of the SCB)
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        COMMUNICATION_ERROR_HTTP);
-                return;
-            }
-            if (updateMessageContentResponse.getStatus() == 401) {
+            int statusCode = updateMessageContentResponse.getStatus();
+            if (statusCode == HttpStatus.UNAUTHORIZED_401) {
                 // session not valid (timed out? device rebooted?)
                 logger.info("Session expired - performing retry");
-                authenticate();
+                try {
+                    authenticate();
+                } catch (RuntimeException e) {
+                    logger.debug("Re-authentication failed", e);
+                    setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+                    return;
+                }
                 // Retry
                 updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                         PROCESSDATA, updateMessageJsonArray, sessionId);
+                statusCode = updateMessageContentResponse.getStatus();
+            }
+
+            if (statusCode == HttpStatus.NOT_FOUND_404) {
+                // Module not found
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE);
+                return;
+            }
+            if (statusCode == HttpStatus.SERVICE_UNAVAILABLE_503) {
+                // Communication error (e.g. during initial boot of the SCB)
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+                return;
+            }
+            if (statusCode != HttpStatus.OK_200) {
+                logger.debug("Could not update values. Device returned status {}", statusCode);
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP_UNEXPECTED);
+                return;
             }
         } catch (TimeoutException | ExecutionException e) {
             // Communication problem
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         }
-        JsonArray updateMessageResultsJsonArray = ThirdGenerationHttpHelper
-                .getJsonArrayFromResponse(updateMessageContentResponse);
 
-        // Map the returned values back to the channels and update them
-        for (int i = 0; i < updateMessageResultsJsonArray.size(); i++) {
-            JsonObject moduleAnswer = updateMessageResultsJsonArray.get(i).getAsJsonObject();
-            String moduleName = moduleAnswer.get("moduleid").getAsString();
-            JsonArray processdata = moduleAnswer.get("processdata").getAsJsonArray();
-            for (int j = 0; j < processdata.size(); j++) {
-                // Update the channels with their new value
-                JsonObject newValueObject = processdata.get(j).getAsJsonObject();
-                String valueId = newValueObject.get("id").getAsString();
-                double valueAsDouble = newValueObject.get("value").getAsDouble();
-                ThirdGenerationChannelMappingToWebApi channel = channelList.get(moduleName).stream()
-                        .filter(c -> c.moduleId.equals(moduleName) && c.processdataId.equals(valueId)).findFirst()
-                        .get();
-                updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
+        try {
+            JsonArray updateMessageResultsJsonArray = ThirdGenerationHttpHelper
+                    .getJsonArrayFromResponse(updateMessageContentResponse);
+
+            if (updateMessageResultsJsonArray == null) {
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+                return;
+            }
+
+            // Map the returned values back to the channels and update them
+            for (int i = 0; i < updateMessageResultsJsonArray.size(); i++) {
+                JsonObject moduleAnswer = updateMessageResultsJsonArray.get(i).getAsJsonObject();
+                String moduleName = moduleAnswer.get("moduleid").getAsString();
+                JsonArray processdata = moduleAnswer.get("processdata").getAsJsonArray();
+                for (int j = 0; j < processdata.size(); j++) {
+                    // Update the channels with their new value
+                    JsonObject newValueObject = processdata.get(j).getAsJsonObject();
+                    String valueId = Objects.requireNonNull(newValueObject.get("id")).getAsString();
+                    double valueAsDouble = newValueObject.get("value").getAsDouble();
+                    ThirdGenerationChannelMappingToWebApi channel = Objects
+                            .requireNonNull(channelLookup.get(getChannelLookupKey(moduleName, valueId)));
+                    updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
+                }
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Could not parse or map update response", e);
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private Map<String, ThirdGenerationChannelMappingToWebApi> buildChannelLookup(
+            Map<String, List<ThirdGenerationChannelMappingToWebApi>> channelList) {
+        Map<String, ThirdGenerationChannelMappingToWebApi> channelLookup = new HashMap<>();
+        for (List<ThirdGenerationChannelMappingToWebApi> mappings : channelList.values()) {
+            for (ThirdGenerationChannelMappingToWebApi mapping : mappings) {
+                channelLookup.put(getChannelLookupKey(mapping.moduleId, mapping.processdataId), mapping);
             }
         }
-        updateStatus(ThingStatus.ONLINE);
+        return channelLookup;
+    }
+
+    private String getChannelLookupKey(String moduleId, String processdataId) {
+        return moduleId + "#" + processdataId;
     }
 
     /**
@@ -277,13 +322,64 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             moduleJsonObject.addProperty("moduleid", moduleId.getKey());
 
             JsonArray processdataNames = new JsonArray();
-            for (ThirdGenerationChannelMappingToWebApi processdata : channelList.get(moduleId.getKey())) {
+            for (ThirdGenerationChannelMappingToWebApi processdata : Objects
+                    .requireNonNull(channelList.get(moduleId.getKey()))) {
                 processdataNames.add(processdata.processdataId);
             }
             moduleJsonObject.add("processdataids", processdataNames);
             updateMessageJsonArray.add(moduleJsonObject);
         }
         return updateMessageJsonArray;
+    }
+
+    private void setOffline(ThingStatusDetail detail, String message) {
+        updateStatus(ThingStatus.OFFLINE, detail, message);
+    }
+
+    private void setOffline(ThingStatusDetail detail) {
+        updateStatus(ThingStatus.OFFLINE, detail);
+    }
+
+    private @Nullable JsonObject getJsonObjectOrOffline(ContentResponse response) {
+        JsonObject jsonObject;
+        try {
+            jsonObject = ThirdGenerationHttpHelper.getJsonObjectFromResponse(response);
+        } catch (JsonSyntaxException e) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return null;
+        }
+        if (jsonObject == null) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return null;
+        }
+        return jsonObject;
+    }
+
+    private @Nullable String getRequiredStringOrOffline(JsonObject jsonObject, String fieldName) {
+        try {
+            return jsonObject.get(fieldName).getAsString();
+        } catch (RuntimeException e) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return null;
+        }
+    }
+
+    private @Nullable Integer getRequiredIntOrOffline(JsonObject jsonObject, String fieldName) {
+        try {
+            return jsonObject.get(fieldName).getAsInt();
+        } catch (RuntimeException e) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return null;
+        }
+    }
+
+    private byte[] getRequiredBase64OrOffline(JsonObject jsonObject, String fieldName) {
+        try {
+            return Base64.getDecoder().decode(jsonObject.get(fieldName).getAsString());
+        } catch (RuntimeException e) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return new byte[0];
+        }
     }
 
     /**
@@ -293,9 +389,29 @@ public class ThirdGenerationHandler extends BaseThingHandler {
      * for fix)
      */
     private final void authenticate() {
-        // Create random numbers
         String clientNonce = ThirdGenerationEncryptionHelper.createClientNonce();
-        // Perform first step of authentication
+
+        AuthenticationStartResult startResult = startAuthentication(clientNonce);
+        if (startResult == null) {
+            return;
+        }
+
+        AuthenticationFinishResult finishResult = finishAuthentication(startResult);
+        if (finishResult == null) {
+            return;
+        }
+
+        String createdSessionId = createSession(startResult.transactionId, finishResult.protocolKeyHmac,
+                finishResult.token);
+        if (createdSessionId == null) {
+            return;
+        }
+
+        sessionId = createdSessionId;
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private @Nullable AuthenticationStartResult startAuthentication(String clientNonce) {
         JsonObject authMeJsonObject = new JsonObject();
         authMeJsonObject.addProperty("username", USER_TYPE);
         authMeJsonObject.addProperty("nonce", clientNonce);
@@ -305,45 +421,38 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             authStartResponseContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                     AUTH_START, authMeJsonObject);
 
-            // 200 is the desired status code
             int statusCode = authStartResponseContentResponse.getStatus();
-
-            if (statusCode == 400) {
-                // Invalid user (which is hard coded and therefore can not be wrong until the api is changed by the
-                // manufacturer
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        COMMUNICATION_ERROR_API_CHANGED);
-                return;
+            if (statusCode == HttpStatus.BAD_REQUEST_400) {
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_API_CHANGED);
+                return null;
             }
-            if (statusCode == 403) {
-                // User is logged
-                // This can happen, if the user had to many bad attempts of entering the password in the web
-                // front end
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        COMMUNICATION_ERROR_USER_ACCOUNT_LOCKED);
-                return;
+            if (statusCode == HttpStatus.FORBIDDEN_403) {
+                setOffline(OFFLINE.CONFIGURATION_ERROR, COMMUNICATION_ERROR_USER_ACCOUNT_LOCKED);
+                return null;
             }
-
-            if (statusCode == 503) {
-                // internal communication error
-                // This can happen if the device is not ready yet for communication
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-                return;
+            if (statusCode == HttpStatus.SERVICE_UNAVAILABLE_503) {
+                setOffline(OFFLINE.COMMUNICATION_ERROR);
+                return null;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
-            return;
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            return null;
         }
-        JsonObject authMeResponseJsonObject = ThirdGenerationHttpHelper
-                .getJsonObjectFromResponse(authStartResponseContentResponse);
 
-        // Extract information from the response
-        String salt = authMeResponseJsonObject.get("salt").getAsString();
-        String serverNonce = authMeResponseJsonObject.get("nonce").getAsString();
-        int rounds = authMeResponseJsonObject.get("rounds").getAsInt();
-        String transactionId = authMeResponseJsonObject.get("transactionId").getAsString();
+        JsonObject authMeResponseJsonObject = getJsonObjectOrOffline(authStartResponseContentResponse);
+        if (authMeResponseJsonObject == null) {
+            return null;
+        }
 
-        // Do the cryptography stuff (magic happens here)
+        String salt = getRequiredStringOrOffline(authMeResponseJsonObject, "salt");
+        String serverNonce = getRequiredStringOrOffline(authMeResponseJsonObject, "nonce");
+        Integer roundsObject = getRequiredIntOrOffline(authMeResponseJsonObject, "rounds");
+        String transactionId = getRequiredStringOrOffline(authMeResponseJsonObject, "transactionId");
+        if (salt == null || serverNonce == null || roundsObject == null || transactionId == null) {
+            return null;
+        }
+        int rounds = roundsObject;
+
         byte[] saltedPasswort;
         byte[] clientKey;
         byte[] serverKey;
@@ -361,75 +470,76 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                     salt, rounds, serverNonce);
             clientSignature = ThirdGenerationEncryptionHelper.getHMACSha256(storedKey, authMessage);
             serverSignature = ThirdGenerationEncryptionHelper.getHMACSha256(serverKey, authMessage);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | IllegalStateException e2) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    COMMUNICATION_ERROR_AUTHENTICATION);
-            return;
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | IllegalStateException
+                | IllegalArgumentException e) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+            return null;
         }
+
         String clientProof = ThirdGenerationEncryptionHelper.createClientProof(clientSignature, clientKey);
-        // Perform step 2 of the authentication
+        return new AuthenticationStartResult(transactionId, clientProof, serverSignature, storedKey, clientKey,
+                authMessage);
+    }
+
+    private @Nullable AuthenticationFinishResult finishAuthentication(AuthenticationStartResult startResult) {
         JsonObject authFinishJsonObject = new JsonObject();
-        authFinishJsonObject.addProperty("transactionId", transactionId);
-        authFinishJsonObject.addProperty("proof", clientProof);
+        authFinishJsonObject.addProperty("transactionId", startResult.transactionId);
+        authFinishJsonObject.addProperty("proof", startResult.clientProof);
 
         ContentResponse authFinishResponseContentResponse;
-        JsonObject authFinishResponseJsonObject;
         try {
             authFinishResponseContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                     AUTH_FINISH, authFinishJsonObject);
-            authFinishResponseJsonObject = ThirdGenerationHttpHelper
-                    .getJsonObjectFromResponse(authFinishResponseContentResponse);
-            // 200 is the desired status code
-            if (authFinishResponseContentResponse.getStatus() == 400) {
-                // Authentication failed
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        CONFIGURATION_ERROR_PASSWORD);
-                return;
+            if (authFinishResponseContentResponse.getStatus() == HttpStatus.BAD_REQUEST_400) {
+                setOffline(OFFLINE.COMMUNICATION_ERROR, CONFIGURATION_ERROR_PASSWORD);
+                return null;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e3) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
-            return;
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            return null;
         }
 
-        // Extract information from the response
-        byte[] signature = Base64.getDecoder().decode(authFinishResponseJsonObject.get("signature").getAsString());
-        String token = authFinishResponseJsonObject.get("token").getAsString();
-
-        // Validate provided signature against calculated signature
-        if (!java.util.Arrays.equals(serverSignature, signature)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    COMMUNICATION_ERROR_AUTHENTICATION);
-            return;
+        JsonObject authFinishResponseJsonObject = getJsonObjectOrOffline(authFinishResponseContentResponse);
+        if (authFinishResponseJsonObject == null) {
+            return null;
         }
 
-        // Calculate protocol key
-        SecretKeySpec signingKey = new SecretKeySpec(storedKey, HMAC_SHA256_ALGORITHM);
+        byte[] signature = getRequiredBase64OrOffline(authFinishResponseJsonObject, "signature");
+        String token = getRequiredStringOrOffline(authFinishResponseJsonObject, "token");
+        if (signature.length == 0 || token == null) {
+            return null;
+        }
+
+        if (!java.util.Arrays.equals(startResult.serverSignature, signature)) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+            return null;
+        }
+
+        SecretKeySpec signingKey = new SecretKeySpec(startResult.storedKey, HMAC_SHA256_ALGORITHM);
         Mac mac;
-        byte[] protocolKeyHMAC;
+        byte[] protocolKeyHmac;
         try {
             mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
             mac.init(signingKey);
             mac.update("Session Key".getBytes());
-            mac.update(authMessage.getBytes());
-            mac.update(clientKey);
-            protocolKeyHMAC = mac.doFinal();
+            mac.update(startResult.authMessage.getBytes());
+            mac.update(startResult.clientKey);
+            protocolKeyHmac = mac.doFinal();
         } catch (NoSuchAlgorithmException | InvalidKeyException e1) {
-            // Since the necessary libraries are provided, this should not happen
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    COMMUNICATION_ERROR_AUTHENTICATION);
-            return;
+            setOffline(OFFLINE.CONFIGURATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+            return null;
         }
 
-        byte[] data;
-        byte[] iv;
+        return new AuthenticationFinishResult(token, protocolKeyHmac);
+    }
 
-        // AES GCM stuff
-        iv = new byte[16];
-
+    private @Nullable String createSession(String transactionId, byte[] protocolKeyHmac, String token) {
+        byte[] iv = new byte[16];
         new SecureRandom().nextBytes(iv);
 
-        SecretKeySpec skeySpec = new SecretKeySpec(protocolKeyHMAC, "AES");
-        GCMParameterSpec param = new GCMParameterSpec(protocolKeyHMAC.length * 8 - AES_GCM_TAG_LENGTH, iv);
+        byte[] data;
+        SecretKeySpec skeySpec = new SecretKeySpec(protocolKeyHmac, "AES");
+        GCMParameterSpec param = new GCMParameterSpec(protocolKeyHmac.length * 8 - AES_GCM_TAG_LENGTH, iv);
 
         Cipher cipher;
         try {
@@ -437,17 +547,14 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, param);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | InvalidAlgorithmParameterException e1) {
-            // The java installation does not support AES encryption in GCM mode
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    COMMUNICATION_ERROR_AUTHENTICATION);
-            return;
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+            return null;
         }
         try {
             data = cipher.doFinal(token.getBytes(StandardCharsets.UTF_8));
         } catch (IllegalBlockSizeException | BadPaddingException e1) {
-            // No JSON answer received
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
-            return;
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return null;
         }
 
         byte[] ciphertext = new byte[data.length - AES_GCM_TAG_LENGTH / 8];
@@ -461,29 +568,54 @@ public class ThirdGenerationHandler extends BaseThingHandler {
         createSessionJsonObject.addProperty("tag", Base64.getEncoder().encodeToString(gcmTag));
         createSessionJsonObject.addProperty("payload", Base64.getEncoder().encodeToString(ciphertext));
 
-        // finally create the session for further communication
         ContentResponse createSessionResponseContentResponse;
-        JsonObject createSessionResponseJsonObject;
         try {
             createSessionResponseContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                     AUTH_CREATE_SESSION, createSessionJsonObject);
-            createSessionResponseJsonObject = ThirdGenerationHttpHelper
-                    .getJsonObjectFromResponse(createSessionResponseContentResponse);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    COMMUNICATION_ERROR_AUTHENTICATION);
-            return;
-        }
-        // 200 is the desired status code
-        if (createSessionResponseContentResponse.getStatus() == 400) {
-            // Authentication failed
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    CONFIGURATION_ERROR_PASSWORD);
-            return;
+            setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_AUTHENTICATION);
+            return null;
         }
 
-        sessionId = createSessionResponseJsonObject.get("sessionId").getAsString();
+        if (createSessionResponseContentResponse.getStatus() == HttpStatus.BAD_REQUEST_400) {
+            setOffline(OFFLINE.COMMUNICATION_ERROR, CONFIGURATION_ERROR_PASSWORD);
+            return null;
+        }
 
-        updateStatus(ThingStatus.ONLINE);
+        JsonObject createSessionResponseJsonObject = getJsonObjectOrOffline(createSessionResponseContentResponse);
+        if (createSessionResponseJsonObject == null) {
+            return null;
+        }
+
+        return getRequiredStringOrOffline(createSessionResponseJsonObject, "sessionId");
+    }
+
+    private static final class AuthenticationStartResult {
+        private final String transactionId;
+        private final String clientProof;
+        private final byte[] serverSignature;
+        private final byte[] storedKey;
+        private final byte[] clientKey;
+        private final String authMessage;
+
+        private AuthenticationStartResult(String transactionId, String clientProof, byte[] serverSignature,
+                byte[] storedKey, byte[] clientKey, String authMessage) {
+            this.transactionId = transactionId;
+            this.clientProof = clientProof;
+            this.serverSignature = serverSignature;
+            this.storedKey = storedKey;
+            this.clientKey = clientKey;
+            this.authMessage = authMessage;
+        }
+    }
+
+    private static final class AuthenticationFinishResult {
+        private final String token;
+        private final byte[] protocolKeyHmac;
+
+        private AuthenticationFinishResult(String token, byte[] protocolKeyHmac) {
+            this.token = token;
+            this.protocolKeyHmac = protocolKeyHmac;
+        }
     }
 }
