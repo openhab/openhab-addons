@@ -879,7 +879,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 String iface = Objects.requireNonNull(m.group(1));
                 String action = Objects.requireNonNull(m.group(2));
                 String clientMac = Objects.requireNonNull(m.group(3)).toLowerCase(Locale.ROOT);
-                String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + iface;
+                String radioName = (hostname.isEmpty() ? mac : hostname) + " " + iface;
 
                 if ("CONNECTED".equalsIgnoreCase(action)) {
                     // Look up the radio to get its SSID and channel
@@ -928,7 +928,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 String iface = Objects.requireNonNull(mlme.group(1));
                 String clientMac = Objects.requireNonNull(mlme.group(2)).toLowerCase(Locale.ROOT);
                 String action = Objects.requireNonNull(mlme.group(3)).toLowerCase(Locale.ROOT);
-                String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + iface;
+                String radioName = (hostname.isEmpty() ? mac : hostname) + " " + iface;
 
                 boolean isConnect = "assoc".equals(action) || "authenticated".equals(action);
                 boolean isDisconnect = "disassoc".equals(action) || "deauthenticated".equals(action);
@@ -1562,7 +1562,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (!radio.getParentDeviceMac().equals(mac)) {
                 continue;
             }
-            String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + radio.getIfaceName();
+            String radioName = (hostname.isEmpty() ? mac : hostname) + " " + radio.getIfaceName();
             for (String clientMac : radio.getAssoclist()) {
                 // Thread-safe update of wireless client (computeWirelessClient handles null case)
                 cache.computeWirelessClient(clientMac, client -> {

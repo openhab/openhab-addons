@@ -65,6 +65,12 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
                     "@text/offline.conf-error-no-interfaceid");
             return false;
         }
+        // If interfaceId is just the iface name (e.g. "wl0") and parentDeviceMac is set,
+        // build the full cache key "mac:iface" so cache lookups work for manual configs.
+        if (!config.interfaceId.contains(":") && !config.parentDeviceMac.isEmpty()) {
+            config.interfaceId = config.parentDeviceMac.toLowerCase(Locale.ROOT) + ":" + config.interfaceId;
+            logger.debug("Normalized interfaceId to {}", config.interfaceId);
+        }
         return true;
     }
 
@@ -96,7 +102,7 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
             boolean enabled = onOff == OnOffType.ON;
             logger.debug("{} radio {}", enabled ? "Enabling" : "Disabling", radio.getInterfaceId());
 
-            boolean success = network.setRadioEnabled(radio.getParentDeviceMac(), radio.getInterfaceId(), enabled);
+            boolean success = network.setRadioEnabled(radio.getParentDeviceMac(), radio.getIfaceName(), enabled);
             if (success) {
                 logger.debug("Radio {} command sent successfully", radio.getInterfaceId());
                 // State will be updated on next network refresh cycle

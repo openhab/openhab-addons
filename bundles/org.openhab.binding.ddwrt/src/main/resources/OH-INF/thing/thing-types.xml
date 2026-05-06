@@ -208,7 +208,8 @@
 		<config-description>
 			<parameter name="interfaceId" type="text" required="true">
 				<label>Interface ID</label>
-				<description>Wireless interface identifier (e.g. wl0, ath0, wlan0)</description>
+				<description>Wireless interface identifier. Discovery sets this to deviceMAC:iface (e.g. aa:bb:cc:dd:ee:ff:wl0). For
+					manual configuration, use just the interface name (e.g. wl0) together with parentDeviceMac.</description>
 			</parameter>
 			<parameter name="parentDeviceMac" type="text" required="false">
 				<label>Parent Device MAC</label>

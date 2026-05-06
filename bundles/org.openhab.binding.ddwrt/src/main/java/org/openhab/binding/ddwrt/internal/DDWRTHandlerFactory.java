@@ -21,6 +21,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYP
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.api.SshClientManager;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTClientHandler;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTDeviceThingHandler;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTFirewallRuleHandler;
@@ -32,7 +33,9 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * The {@link DDWRTHandlerFactory} is responsible for creating things and thing
@@ -43,6 +46,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.ddwrt", service = ThingHandlerFactory.class)
 public class DDWRTHandlerFactory extends BaseThingHandlerFactory {
+
+    @Override
+    @Deactivate
+    protected void deactivate(ComponentContext componentContext) {
+        SshClientManager.getInstance().shutdown();
+        super.deactivate(componentContext);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

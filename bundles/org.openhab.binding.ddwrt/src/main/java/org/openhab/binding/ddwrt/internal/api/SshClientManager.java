@@ -57,6 +57,19 @@ public class SshClientManager {
         return INSTANCE;
     }
 
+    /**
+     * Stop the SSH client and release resources. Called from the handler factory
+     * deactivate to ensure clean shutdown during OSGi bundle restarts.
+     */
+    public void shutdown() {
+        try {
+            client.stop();
+            logger.debug("SSH client stopped");
+        } catch (Exception e) {
+            logger.debug("Error stopping SSH client: {}", e.getMessage());
+        }
+    }
+
     private final SshClient client;
     private final String ohPrivateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
 

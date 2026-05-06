@@ -94,7 +94,7 @@ public class SshRunner {
                 ByteArrayOutputStream err = new ByteArrayOutputStream();
                 ch.setOut(out);
                 ch.setErr(err);
-                ch.open().verify();
+                ch.open().verify(timeout.toMillis());
                 Set<ClientChannelEvent> events = ch.waitFor(
                         EnumSet.of(ClientChannelEvent.CLOSED, ClientChannelEvent.EXIT_STATUS), timeout.toMillis());
                 Integer rc = ch.getExitStatus();

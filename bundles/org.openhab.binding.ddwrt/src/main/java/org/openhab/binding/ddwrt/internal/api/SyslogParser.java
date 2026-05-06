@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,8 @@ import com.google.gson.JsonObject;
 public class SyslogParser {
 
     private final Logger logger;
+
+    private static final Gson GSON = new Gson();
 
     private static final Pattern ANSI_ESCAPE = Pattern.compile("\u001B\\[[;?0-9]*[ -/]*[@-~]");
     private static final Pattern OSC_SEQUENCE = Pattern.compile("\u001B\\].*?(\u0007|\u001B\\\\)");
@@ -289,7 +292,7 @@ public class SyslogParser {
                 // Normalize single-digit days (e.g., "Mar 4" -> "Mar 4") by removing extra space
                 String normalizedTimestamp = timestampStr.replaceFirst("^(\\w{3})  (\\d{1,2})", "$1 $2");
                 LocalDateTime dt = LocalDateTime.parse(currentYear + " " + normalizedTimestamp,
-                        DateTimeFormatter.ofPattern("yyyy MMM d HH:mm:ss"));
+                        DateTimeFormatter.ofPattern("yyyy MMM d HH:mm:ss", Locale.ENGLISH));
                 return dt.atZone(ZoneId.systemDefault()).toInstant();
             }
         } catch (Exception e) {
@@ -304,8 +307,7 @@ public class SyslogParser {
      */
     private @Nullable SyslogEvent parseUbusLine(String jsonLine) {
         try {
-            Gson gson = new Gson();
-            JsonObject root = gson.fromJson(jsonLine, JsonObject.class);
+            JsonObject root = GSON.fromJson(jsonLine, JsonObject.class);
             if (root == null) {
                 return null;
             }
