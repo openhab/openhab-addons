@@ -15,6 +15,7 @@ package org.openhab.binding.mspa.internal.handler;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class MSpaPool extends BaseThingHandler {
     private final UnitProvider unitProvider;
 
     private MSpaPoolConfiguration config = new MSpaPoolConfiguration();
-    private @Nullable Map<String, String> deviceProperties = null;
+    private Map<String, String> deviceProperties = new HashMap<>();
     private @Nullable ScheduledFuture<?> refreshJob = null;
     private @Nullable MSpaBaseAccount account = null;
     private String dataCache = (new JSONObject()).toString();
@@ -202,7 +203,7 @@ public class MSpaPool extends BaseThingHandler {
         }
         refreshJob = null;
         account = null;
-        deviceProperties = null;
+        deviceProperties.clear();
     }
 
     private void updateData() {
@@ -233,7 +234,11 @@ public class MSpaPool extends BaseThingHandler {
     }
 
     private boolean checkOnline() {
-        Optional<JSONArray> deviceListOpt = account.get().getDeviceList();
+        MSpaBaseAccount acc = account;
+        if (acc == null) {
+            return false;
+        }
+        Optional<JSONArray> deviceListOpt = acc.getDeviceList();
         if (deviceListOpt.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-no-devices" + "\"]");
@@ -250,7 +255,7 @@ public class MSpaPool extends BaseThingHandler {
                                 Map<String, String> devicePropertiesMap = MSpaUtils
                                         .getDeviceProperties(jsonEntry.toMap());
                                 thing.setProperties(devicePropertiesMap);
-                                deviceProperties = Optional.of(devicePropertiesMap);
+                                deviceProperties = devicePropertiesMap;
                             }
                             if (jsonEntry.has("is_online")) {
                                 boolean online = jsonEntry.getBoolean("is_online");
@@ -266,8 +271,7 @@ public class MSpaPool extends BaseThingHandler {
                     }
                 }
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-missing" + "\"]");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.pool-missing");
             return false;
         }
     }

@@ -107,9 +107,8 @@ public class MSpaBaseAccountTest {
 
     @ParameterizedTest
     @MethodSource("responsesProvider")
-    public void testGetDeviceList_statusBehavior(List<String> responses, boolean expectPresent,
-            ThingStatus expectedStatus, ThingStatusDetail expectedDetail, @Nullable String expectedMessageSubstring)
-            throws Exception {
+    public void testStatusBehavior(List<String> responses, boolean expectPresent, ThingStatus expectedStatus,
+            ThingStatusDetail expectedDetail, @Nullable String expectedMessage) throws Exception {
         HttpClient httpClient = mock(HttpClient.class);
         Request request = mock(Request.class);
         when(httpClient.newRequest(any(String.class))).thenReturn(request);
@@ -134,6 +133,6 @@ public class MSpaBaseAccountTest {
         assertEquals(expectPresent, opt.isPresent(), "Device list delivered");
         assertEquals(expectedStatus, account.lastStatus, "Status should match");
         assertEquals(expectedDetail, account.lastDetail, "Status detail should match");
-        assertEquals(expectedMessageSubstring, account.lastMessage, "Status detail should match");
+        assertEquals(expectedMessage, account.lastMessage, "Status detail should match");
     }
 }

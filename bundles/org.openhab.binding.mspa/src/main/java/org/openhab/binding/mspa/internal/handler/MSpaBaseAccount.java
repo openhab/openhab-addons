@@ -17,6 +17,7 @@ import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -178,8 +179,8 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
     /**
      * Helper method to extract device list from device list response.
      *
-     * @param responseJson JSON response from device list request
-     * @return JSON array with device information, empty array in case of error or no devices
+     * @return an {@link Optional} containing the JSON array with device information when the response contains
+     *         {@code data.list}; {@link Optional#empty()} if {@code data} or {@code list} is missing
      */
     public Optional<JSONArray> extractList(JSONObject responseJson) {
         JSONObject dataJson = responseJson.optJSONObject("data");

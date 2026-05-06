@@ -184,7 +184,11 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
 
     @Override
     public void clearToken() {
-        String persistenceId = visitorConfig.get().visitorId;
+        MSpaVisitorAccountConfiguration cfg = visitorConfig;
+        if (cfg == null) {
+            return;
+        }
+        String persistenceId = cfg.visitorId;
         JSONObject persistence = getStorage(persistenceId);
         persistence.remove(TOKEN);
         persist(persistenceId, persistence);

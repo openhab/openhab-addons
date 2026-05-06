@@ -104,7 +104,7 @@ class TestMessages {
                 storageService.getStorage(BINDING_ID));
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             Optional<JSONArray> deviceList = account.extractList(new JSONObject(content));
             assertTrue(deviceList.isPresent(), "Device list present");
             account.discovery(deviceList.get());

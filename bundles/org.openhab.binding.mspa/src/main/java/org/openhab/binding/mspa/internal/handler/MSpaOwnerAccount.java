@@ -121,7 +121,11 @@ public class MSpaOwnerAccount extends MSpaBaseAccount {
 
     @Override
     public void clearToken() {
-        String persistenceId = ownerConfig.get().email;
+        MSpaOwnerAccountConfiguration cfg = ownerConfig;
+        if (cfg == null) {
+            return;
+        }
+        String persistenceId = cfg.email;
         JSONObject persistence = getStorage(persistenceId);
         persistence.remove(TOKEN);
         persist(persistenceId, persistence);
