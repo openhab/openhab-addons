@@ -29,6 +29,4 @@
     <suppress files=".+[\\/]mail[\\/].+[\\/]MailBuilderTest\.java" checks="ForbiddenPackageUsageCheck"/>
     <suppress files=".+[\\/]mail[\\/].+[\\/]SMTPHandler\.java" checks="ForbiddenPackageUsageCheck"/>
     <suppress files=".+[\\/]mail[\\/].+[\\/]SendMailActions\.java" checks="ForbiddenPackageUsageCheck"/>
-    <!--- vesync dto names -->
-    <suppress files=".+[\\/]vesync[\\/]internal[\\/]dto[\\/].+\.java" checks="PackageNameCheck"/>
 </suppressions>
