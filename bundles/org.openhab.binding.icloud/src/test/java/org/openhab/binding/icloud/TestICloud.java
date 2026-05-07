@@ -79,7 +79,7 @@ public class TestICloud {
     public void setUp() {
         final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         if (logger instanceof ch.qos.logback.classic.Logger qLogger) {
-            qLogger.setLevel(ch.qos.logback.classic.Level.TRACE);
+            qLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
         }
     }
 
