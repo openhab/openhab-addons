@@ -164,7 +164,7 @@ public class ShellyApiConfigurationTest {
         setField(thing, "deviceAddress", "BC:02:6E:C3:A6:C7");
         ShellyApiConfiguration config = new ShellyApiConfiguration(thing, bindingConfig(), "", false);
         // MAC address must be lowercased and colons stripped; deviceIp must be empty for BLU devices
-        assertThat(config.getBluMac(), is("bc026ec3a6c7"));
+        assertThat(config.getBdAddr(), is("bc026ec3a6c7"));
         assertThat(config.getDeviceHostAddress(), is(""));
     }
 
