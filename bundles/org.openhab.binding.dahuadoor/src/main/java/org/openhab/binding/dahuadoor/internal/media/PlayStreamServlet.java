@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -193,6 +194,7 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
         String streamName = pathInfo.substring(1); // strip leading /
+        boolean sessionEndpointRequest = SESSION_STREAM_PATH.equals(streamName);
         if (SESSION_STREAM_PATH.equals(streamName)) {
             @Nullable
             String resolvedStreamName = resolveSessionStreamName(req, resp);
@@ -204,18 +206,32 @@ public class PlayStreamServlet extends HttpServlet {
         long requestId = REQUEST_SEQUENCE.incrementAndGet();
         long startedAtNanos = System.nanoTime();
 
-        String clientIdParam = req.getParameter("clientId");
-        String sessionId = req.getSession().getId();
+        @Nullable
+        String clientIdParam = getQueryParameter(req, "clientId");
+        @Nullable
+        String sessionId = resolveSessionId(req);
+        if (sessionId == null || sessionId.isBlank()) {
+            sendBase64Message(resp, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "No usable HTTP session id available for WebRTC request.");
+            LOGGER.warn("WebRTC proxy [{}] rejected: missing session id for stream '{}'", requestId, streamName);
+            return;
+        }
         String clientKey = clientIdParam != null && !clientIdParam.isBlank() ? clientIdParam : sessionId;
         String streamClientKey = buildStreamClientKey(streamName, clientKey);
 
         logSessionToDahuaClientMapping(streamName, sessionId, clientIdParam);
 
         if (!tryAcquireOfferGate(streamName, streamClientKey, sessionId)) {
-            sendBase64Message(resp, HttpServletResponse.SC_CONFLICT,
-                    "Duplicate WebRTC request rejected for same client while setup/connection is active.");
-            LOGGER.warn("Rejected duplicate WebRTC offer for stream '{}' (clientKey={})", streamName, clientKey);
-            return;
+            if (sessionEndpointRequest) {
+                // Accept /webrtc/session requests instead of returning a hard 409.
+                LOGGER.trace("/webrtc/session accepted stream='{}' clientKey='{}' sessionId='{}'", streamName,
+                        clientKey, sessionId);
+            } else {
+                sendBase64Message(resp, HttpServletResponse.SC_CONFLICT,
+                        "Duplicate WebRTC request rejected for same client while setup/connection is active.");
+                LOGGER.warn("Rejected duplicate WebRTC offer for stream '{}' (clientKey={})", streamName, clientKey);
+                return;
+            }
         }
 
         Integer apiPort = streamApiPorts.get(streamName);
@@ -485,6 +501,16 @@ public class PlayStreamServlet extends HttpServlet {
 
     private static String buildStreamClientKey(String streamName, String clientKey) {
         return streamName + "|" + clientKey;
+    }
+
+    private static @Nullable String resolveSessionId(HttpServletRequest req) {
+        try {
+            HttpSession session = req.getSession();
+            return session.getId();
+        } catch (IllegalStateException e) {
+            LOGGER.warn("WebRTC request failed to access session id: {}", e.getMessage());
+            return null;
+        }
     }
 
     private boolean tryAcquireOfferGate(String streamName, String streamClientKey, String sessionId) {
