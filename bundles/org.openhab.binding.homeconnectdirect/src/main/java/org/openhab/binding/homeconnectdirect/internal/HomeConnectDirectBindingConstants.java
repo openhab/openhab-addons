@@ -168,6 +168,7 @@ public class HomeConnectDirectBindingConstants {
     public static final String WASHER_STAINS_KEY = "LaundryCare.Washer.Option.Stains";
     public static final String LAUNDRY_CARE_PROCESS_PHASE_KEY = "LaundryCare.Common.Option.ProcessPhase";
     public static final String LAUNDRY_LOAD_INFORMATION_KEY = "LaundryCare.Common.Status.LoadInformation";
+    public static final String LAUNDRY_LOAD_KEY = "LaundryCare.Washer.Status.ProcessingData.LaundryLoad";
     public static final String LAUNDRY_LOAD_RECOMMENDATION_KEY = "LaundryCare.Common.Option.LoadRecommendation";
     public static final String LAUNDRY_DRUM_CLEAN_REMINDER_KEY = "LaundryCare.Washer.Event.DrumCleanReminder";
     public static final String DRYER_PROCESS_PHASE_KEY = "LaundryCare.Dryer.Option.ProcessPhase";

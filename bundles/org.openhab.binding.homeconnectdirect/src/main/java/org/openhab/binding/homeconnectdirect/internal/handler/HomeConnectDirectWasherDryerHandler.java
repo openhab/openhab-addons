@@ -44,6 +44,7 @@ import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBi
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LAUNDRY_CARE_PROCESS_PHASE_KEY;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LAUNDRY_DRUM_CLEAN_REMINDER_KEY;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LAUNDRY_LOAD_INFORMATION_KEY;
+import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LAUNDRY_LOAD_KEY;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.LAUNDRY_LOAD_RECOMMENDATION_KEY;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.ROOT_OPTION_LIST_KEY;
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.STATE_CONFIRMED;
@@ -211,7 +212,7 @@ public class HomeConnectDirectWasherDryerHandler extends BaseHomeConnectDirectHa
                 getKeyValueStore().put(WASHER_STAINS_KEY, value.getValueAsString());
                 updateState(channel.getUID(), new StringType(value.getValueAsString()));
             });
-            case LAUNDRY_LOAD_INFORMATION_KEY -> updateStateIfLinked(CHANNEL_LAUNDRY_LOAD_INFORMATION,
+            case LAUNDRY_LOAD_INFORMATION_KEY, LAUNDRY_LOAD_KEY -> updateStateIfLinked(CHANNEL_LAUNDRY_LOAD_INFORMATION,
                     () -> new QuantityType<>(value.getValueAsInt(), GRAM));
             case LAUNDRY_LOAD_RECOMMENDATION_KEY -> updateStateIfLinked(CHANNEL_LAUNDRY_LOAD_RECOMMENDATION,
                     () -> new QuantityType<>(value.getValueAsInt(), GRAM));
