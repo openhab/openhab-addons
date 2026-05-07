@@ -93,7 +93,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         info.hostname = config.getRealm();
         info.fw = "";
         info.type = "BLU";
-        info.mac = config.getBdAddr() instanceof String bdAddr ? bdAddr : "";
+        info.mac = config.getBluMac() instanceof String bluMac ? bluMac : "";
         info.auth = false;
         info.gen = 2;
         return info;

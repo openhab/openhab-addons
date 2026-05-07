@@ -89,8 +89,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(deviceType, mode, version,
-                            connection.equals(CONNECTION_TYPE_LOCAL));
+                    : getFirmwareUrl(deviceType, mode, version, connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target
                 // - contains "update=xx" then use -> ?update=true for release and ?beta=true for beta

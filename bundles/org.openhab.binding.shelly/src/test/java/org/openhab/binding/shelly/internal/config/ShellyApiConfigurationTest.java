@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -79,7 +80,7 @@ public class ShellyApiConfigurationTest {
         ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig("myUser", "myPass"), "my-shelly",
                 DEVICE_IP);
         assertThat(config.getRealm(), is("my-shelly"));
-        assertThat(config.getDeviceHostname(), is(DEVICE_IP));
+        assertThat(config.getDeviceHostAddress(), is(DEVICE_IP));
         assertThat(config.getUserId(), is("myUser"));
         assertThat(config.getPassword(), is("myPass"));
     }
@@ -118,16 +119,31 @@ public class ShellyApiConfigurationTest {
         ShellyThingConfiguration thing = new ShellyThingConfiguration();
         setField(thing, "deviceIp", DEVICE_IP);
         setField(thing, "eventsButton", true);
-        setField(thing, "eventsSwitch", false);
+        setField(thing, "eventsSwitch", true);
         setField(thing, "eventsPush", false);
         setField(thing, "eventsRoller", false);
         setField(thing, "eventsSensorReport", false);
         ShellyApiConfiguration config = new ShellyApiConfiguration(thing, bindingConfig(), "", false);
         assertThat(config.getEventsButton(), is(true));
-        assertThat(config.getEventsSwitch(), is(false));
+        assertThat(config.getEventsSwitch(), is(true));
         assertThat(config.getEventsPush(), is(false));
         assertThat(config.getEventsRoller(), is(false));
         assertThat(config.getEventsSensorReport(), is(false));
+    }
+
+    @Test
+    void thingConstructorPropagatesRangeExtender() throws Exception {
+        ShellyThingConfiguration thing = new ShellyThingConfiguration();
+        setField(thing, "deviceIp", DEVICE_IP + ":10000");
+        setField(thing, "enableRangeExtender", true);
+        ShellyApiConfiguration config = new ShellyApiConfiguration(thing, bindingConfig(), "shelly-range", false);
+        assertThat(config.getRealm(), is("shelly-range"));
+        assertThat(config.getEnableRangeExtender(), is(true));
+        InetSocketAddress address = config.getDeviceSocketAddress();
+        String deviceIp = address != null && address.getAddress() != null ? address.getAddress().getHostAddress() : "";
+        assertThat(deviceIp, is(DEVICE_IP));
+        int port = address != null ? address.getPort() : -1;
+        assertThat(port, is(10000));
     }
 
     @Test
@@ -148,8 +164,8 @@ public class ShellyApiConfigurationTest {
         setField(thing, "deviceAddress", "BC:02:6E:C3:A6:C7");
         ShellyApiConfiguration config = new ShellyApiConfiguration(thing, bindingConfig(), "", false);
         // MAC address must be lowercased and colons stripped; deviceIp must be empty for BLU devices
-        assertThat(config.getBdAddr(), is("bc026ec3a6c7"));
-        assertThat(config.getDeviceHostname(), is(""));
+        assertThat(config.getBluMac(), is("bc026ec3a6c7"));
+        assertThat(config.getDeviceHostAddress(), is(""));
     }
 
     // ── Mutable state ─────────────────────────────────────────────────────────

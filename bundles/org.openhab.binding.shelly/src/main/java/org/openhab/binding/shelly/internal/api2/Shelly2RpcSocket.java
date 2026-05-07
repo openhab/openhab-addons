@@ -72,7 +72,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     private final Gson gson = new Gson();
 
     private volatile String thingName = "";
-    private volatile @Nullable InetSocketAddress deviceSocketAddr; // TODO: (Nad) Is port relevant here? If not, use InetAddress instead
+    private volatile @Nullable InetSocketAddress deviceSocketAddr;
     private final boolean inbound;
     private final ShellyThingTable thingTable;
 

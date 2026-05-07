@@ -125,7 +125,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
             InetAddress deviceAddr = config.getDeviceIpAddress();
             if (deviceAddr == null) {
-                throw new ShellyApiException("Unknown/invalid device hostname: " + config.getDeviceHostname());
+                throw new ShellyApiException("Unknown/invalid host: " + config.getDeviceHostAddress());
             }
 
             logger.debug("{}: Starting CoAP Listener", thingName);
@@ -153,7 +153,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             throw new ShellyApiException("Network error", e);
         } catch (UnknownHostException e) {
             logger.info("{}: CoAP Exception (Unknown Host)", thingName, e);
-            throw new ShellyApiException("Unknown Host: " + config.getDeviceHostname(), e);
+            throw new ShellyApiException("Unknown Host: " + config.getDeviceHostAddress(), e);
         }
     }
 

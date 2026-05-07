@@ -149,8 +149,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.warn("{}: Failed to initialize because the IP address is unknown", thingName);
                 return;
             }
-            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client,
-                    scheduler);
+            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client, scheduler);
             rpcSocket.addMessageHandler(this);
             this.rpcSocket = rpcSocket;
         }
@@ -253,10 +252,25 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.numMeters = 0;
+        // handle special cases, because there is no indicator for a meter in GetConfig
+        // Pro 3EM has 3 meters
+        // Pro 2 has 2 relays, but no meters
+        // Mini PM has 1 meter, but no relay
+        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
+        if (numMeters != null) {
+            profile.numMeters = numMeters;
+        } else if (dc.pm10 != null) {
+            profile.numMeters = 1;
+        } else if (dc.em0 != null) {
+            profile.numMeters = 3;
+        } else if (dc.em10 != null) {
+            profile.numMeters = 2;
+        } else {
+            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
+        }
         if (profile.hasRelays) {
             profile.status.relays = new ArrayList<>();
             relayStatus.relays = new ArrayList<>();
-            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
             for (int i = 0; i < profile.numRelays; i++) {
                 profile.status.relays.add(new ShellySettingsRelay());
                 relayStatus.relays.add(new ShellyShortStatusRelay());
@@ -271,21 +285,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 profile.status.inputs.add(input);
                 relayStatus.inputs.add(input);
             }
-        }
-
-        // handle special cases, because there is no indicator for a meter in GetConfig
-        // Pro 3EM has 3 meters
-        // Pro 2 has 2 relays, but no meters
-        // Mini PM has 1 meter, but no relay
-        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
-        if (numMeters != null) {
-            profile.numMeters = numMeters;
-        } else if (dc.pm10 != null) {
-            profile.numMeters = 1;
-        } else if (dc.em0 != null) {
-            profile.numMeters = 3;
-        } else if (dc.em10 != null) {
-            profile.numMeters = 2;
         }
 
         if (profile.numMeters > 0) {

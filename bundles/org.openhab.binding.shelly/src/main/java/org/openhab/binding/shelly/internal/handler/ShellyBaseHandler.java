@@ -190,9 +190,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         InetAddress ipAddr;
-        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
+        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBluMac())
                 || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))
-                || key.equalsIgnoreCase(apiConfig.getDeviceHostname()) || key.equalsIgnoreCase(apiConfig.getRealm())
+                || key.equalsIgnoreCase(apiConfig.getDeviceHostAddress()) || key.equalsIgnoreCase(apiConfig.getRealm())
                 || key.equalsIgnoreCase(getThingName());
     }
 
@@ -321,17 +321,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             InetAddress ipAddr = socketAddr == null ? null : socketAddr.getAddress();
             String ipAddrStr = ipAddr == null ? "none" : ipAddr.getHostAddress();
             int port = socketAddr == null ? 0 : socketAddr.getPort();
-            String bdAddr = apiConfig.getBdAddr();
-            bdAddr = bdAddr == null ? "none" : bdAddr.toLowerCase(Locale.ROOT);
+            String bluMac = apiConfig.getBluMac();
+            bluMac = bluMac == null ? "none" : bluMac.toLowerCase(Locale.ROOT);
             logger.debug(
                     "{}: Start initializing for thing {}, type {}, Device IP address {}, Device port {}, Bluetooth device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
-                    thingName, getThing().getLabel(), thingType, ipAddrStr, port == 0 ? "none" : port, bdAddr,
-                    gen2, profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
-        }
-        if (apiConfig.getBdAddr() == null) {
-            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "config-status.error.missing-device-address");
-            return false;
+                    thingName, getThing().getLabel(), thingType, ipAddrStr, port == 0 ? "none" : port, bluMac, gen2,
+                    profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
 
         if (profile.alwaysOn || !profile.isInitialized() && !isThingOnline()) {
@@ -928,7 +923,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
-        if (thingName.equalsIgnoreCase(deviceName) || address.equals(apiConfig.getBdAddr())
+        if (thingName.equalsIgnoreCase(deviceName) || address.equals(apiConfig.getBluMac())
                 || apiConfig.getRealm().equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
@@ -1070,22 +1065,25 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         if (blu) { // TODO: (Nad) Check if the logic is correct
-            String bdAddr = apiConfig.getBdAddr();
-            if (bdAddr == null || bdAddr.isBlank()) {
+            String bluMac = apiConfig.getBluMac();
+            if (bluMac == null || bluMac.isBlank()) {
                 // may not be set in .things file
-                logger.debug("{}: Bluetooth device address for the device must not be empty", thingName);
+                setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "config-status.error.missing-device-address");
                 return false;
+
             }
         } else {
             if (!apiConfig.resolveIp()) {
                 // may not be set in .things file
-                logger.debug("{}: Unable to resolve IP address for the device from configured value '{}'", thingName, apiConfig.getDeviceHostname());
+                setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.revole-failed",
+                        apiConfig.getDeviceHostAddress());
                 return false;
             }
         }
 
         if (apiConfig.getLocalIp().startsWith("169.254")) {
-            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.network-config",
                     apiConfig.getLocalIp());
             return false;
         }
