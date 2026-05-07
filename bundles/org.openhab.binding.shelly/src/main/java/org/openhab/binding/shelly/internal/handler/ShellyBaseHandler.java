@@ -190,7 +190,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         InetAddress ipAddr;
-        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBluMac())
+        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
                 || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))
                 || key.equalsIgnoreCase(apiConfig.getDeviceHostAddress()) || key.equalsIgnoreCase(apiConfig.getRealm())
                 || key.equalsIgnoreCase(getThingName());
@@ -321,11 +321,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             InetAddress ipAddr = socketAddr == null ? null : socketAddr.getAddress();
             String ipAddrStr = ipAddr == null ? "none" : ipAddr.getHostAddress();
             int port = socketAddr == null ? 0 : socketAddr.getPort();
-            String bluMac = apiConfig.getBluMac();
-            bluMac = bluMac == null ? "none" : bluMac.toLowerCase(Locale.ROOT);
+            String bdAdr = apiConfig.getBdAddr();
+            bdAdr = bdAdr == null ? "none" : bdAdr.toLowerCase(Locale.ROOT);
             logger.debug(
                     "{}: Start initializing for thing {}, type {}, Device IP address {}, Device port {}, Bluetooth device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
-                    thingName, getThing().getLabel(), thingType, ipAddrStr, port == 0 ? "none" : port, bluMac, gen2,
+                    thingName, getThing().getLabel(), thingType, ipAddrStr, port == 0 ? "none" : port, bdAdr, gen2,
                     profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
 
@@ -923,7 +923,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
-        if (thingName.equalsIgnoreCase(deviceName) || address.equals(apiConfig.getBluMac())
+        if (thingName.equalsIgnoreCase(deviceName) || address.equals(apiConfig.getBdAddr())
                 || apiConfig.getRealm().equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
@@ -1065,8 +1065,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         if (blu) { // TODO: (Nad) Check if the logic is correct
-            String bluMac = apiConfig.getBluMac();
-            if (bluMac == null || bluMac.isBlank()) {
+            String bdAddr = apiConfig.getBdAddr();
+            if (bdAddr == null || bdAddr.isBlank()) {
                 // may not be set in .things file
                 setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
                         "config-status.error.missing-device-address");

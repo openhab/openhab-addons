@@ -73,7 +73,7 @@ public class ShellyApiConfiguration {
     private final AtomicReference<@Nullable InetSocketAddress> deviceSocketAddr = new AtomicReference<>();
 
     /** Bluetooth device address, a unique 48-bit identifier, similar to a MAC address */
-    private final @Nullable String deviceBluMac;
+    private final @Nullable String deviceBdAddr;
     private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
             new ShellyAuthCredentials("", "", "", "")); // auth credentials
     private final ShellyApiUrls urls;
@@ -141,13 +141,13 @@ public class ShellyApiConfiguration {
 
         // deviceIP can be an IP address, IP address:port or a FQDN, which needs to be resolved
         // deviceAddress is the MAC address for BLU device or the resolved IP address
-        String bluMac = thingConfig.getDeviceAddress();
-        if (!bluMac.isBlank()) {
+        String bdAddr = thingConfig.getDeviceAddress();
+        if (!bdAddr.isBlank()) {
             // BLU: remove : from MAC address and convert to lower case
-            this.deviceBluMac = bluMac.toLowerCase(Locale.ROOT).replace(":", "");
+            this.deviceBdAddr = bdAddr.toLowerCase(Locale.ROOT).replace(":", "");
             this.deviceHostAddress = "";
         } else {
-            this.deviceBluMac = null;
+            this.deviceBdAddr = null;
             this.deviceHostAddress = thingConfig.getDeviceIp();
             if (resolveHostname) {
                 this.deviceSocketAddr.set(resolveSocketAddr(this.deviceHostAddress));
@@ -175,13 +175,13 @@ public class ShellyApiConfiguration {
      *
      * @param bindingConfig Binding configuration
      * @param realm Realm, which is used for authentication (usually hostname / mDNS service name)
-     * @param address Device host name
+     * @param host Device IP address/hostname
      */
-    public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String address) {
+    public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String host) {
         this.realm.set(realm); // mDNS service name or hostname provided by /shelly
-        this.deviceHostAddress = address;
-        this.deviceSocketAddr.set(resolveSocketAddr(address));
-        this.deviceBluMac = null;
+        this.deviceHostAddress = host;
+        this.deviceSocketAddr.set(resolveSocketAddr(host));
+        this.deviceBdAddr = null;
 
         localIp = bindingConfig.getLocalIP();
         localPort = String.valueOf(bindingConfig.getHttpPort());
@@ -193,7 +193,7 @@ public class ShellyApiConfiguration {
         eventsButton = eventsSwitch = eventsPush = eventsRoller = eventsSensorReport = false;
         enableBluGateway = enableRangeExtender = false;
 
-        urls = new ShellyApiUrls(localIp, localPort, address);
+        urls = new ShellyApiUrls(localIp, localPort, host);
     }
 
     private @Nullable InetSocketAddress resolveSocketAddr(String hostname) {
@@ -265,8 +265,8 @@ public class ShellyApiConfiguration {
      *
      * @return The Bluetooth device addres or {@code null}.
      */
-    public @Nullable String getBluMac() {
-        return deviceBluMac;
+    public @Nullable String getBdAddr() {
+        return deviceBdAddr;
     }
 
     public String getUserId() {
@@ -369,7 +369,7 @@ public class ShellyApiConfiguration {
     @Override
     public String toString() {
         ShellyAuthCredentials credentials = this.credentials.get();
-        return (deviceBluMac != null ? "Bluetooth device address=" + deviceBluMac + ", " : "") + "HTTP user/password="
+        return (deviceBdAddr != null ? "Bluetooth device address=" + deviceBdAddr + ", " : "") + "HTTP user/password="
                 + getUserId() + "/" + (credentials.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: "
                 + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush + ", Roller: "
                 + eventsRoller + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n"
