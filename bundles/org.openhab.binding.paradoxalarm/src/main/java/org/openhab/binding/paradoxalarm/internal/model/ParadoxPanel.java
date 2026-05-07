@@ -46,6 +46,10 @@ public class ParadoxPanel implements IDataUpdateListener {
     private double batteryLevel;
     private double dcLevel;
     private ZonedDateTime panelTime;
+    private boolean acTrouble;
+    private boolean batteryTrouble;
+    private boolean moduleSupervisionTrouble;
+    private boolean communicationTrouble;
 
     public ParadoxPanel() {
         this.parser = new EvoParser();
@@ -97,6 +101,12 @@ public class ParadoxPanel implements IDataUpdateListener {
         vdcLevel = Math.max(0, (firstRamPage[25] & 0xFF) * (20.3 - 1.4) / 255.0 + 1.4);
         dcLevel = Math.max(0, (firstRamPage[27] & 0xFF) * 22.8 / 255);
         batteryLevel = Math.max(0, (firstRamPage[26] & 0xFF) * 22.8 / 255);
+
+        byte[] secondRamPage = communicator.getMemoryMap().getElement(1);
+        moduleSupervisionTrouble = (secondRamPage[16] & 0x10) != 0;
+        batteryTrouble = (secondRamPage[17] & 0x40) != 0;
+        acTrouble = (secondRamPage[17] & 0x80) != 0;
+        communicationTrouble = (secondRamPage[18] & 0x04) != 0;
     }
 
     protected ZonedDateTime constructPanelTime(byte[] firstPage) {
@@ -184,6 +194,22 @@ public class ParadoxPanel implements IDataUpdateListener {
 
     public ZonedDateTime getPanelTime() {
         return panelTime;
+    }
+
+    public boolean isAcTrouble() {
+        return acTrouble;
+    }
+
+    public boolean isBatteryTrouble() {
+        return batteryTrouble;
+    }
+
+    public boolean isModuleSupervisionTrouble() {
+        return moduleSupervisionTrouble;
+    }
+
+    public boolean isCommunicationTrouble() {
+        return communicationTrouble;
     }
 
     public void setCommunicator(IParadoxCommunicator communicator) {
