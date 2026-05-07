@@ -209,7 +209,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 } catch (InterruptedException e) {
                     Thread.interrupted();
                 }
-            } while (!success && retryCount < 3);
+            } while (retryCount < 3);
             throw new RetryException(lastException);
         }
     }
