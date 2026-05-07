@@ -205,6 +205,7 @@ public class TuyaDecoder extends ByteToMessageDecoder {
             byte[] decodedMessage = switch (protocol) {
                 case V3_5 -> CryptoUtil.decryptAesGcm(payload, sessionKey, header, null);
                 case V3_4 -> CryptoUtil.decryptAesEcb(payload, sessionKey, true);
+                case V3_1 -> payload;
                 default -> CryptoUtil.decryptAesEcb(payload, sessionKey, false);
             };
             if (decodedMessage == null) {
