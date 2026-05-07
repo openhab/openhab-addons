@@ -252,6 +252,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.numMeters = 0;
+        if (profile.hasRelays) {
+            profile.status.relays = new ArrayList<>();
+            relayStatus.relays = new ArrayList<>();
+            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
+            for (int i = 0; i < profile.numRelays; i++) {
+                profile.status.relays.add(new ShellySettingsRelay());
+                relayStatus.relays.add(new ShellyShortStatusRelay());
+            }
+        }
+
+        if (profile.numInputs > 0) {
+            profile.status.inputs = new ArrayList<>();
+            relayStatus.inputs = new ArrayList<>();
+            for (int i = 0; i < profile.numInputs; i++) {
+                ShellyInputState input = new ShellyInputState(i);
+                profile.status.inputs.add(input);
+                relayStatus.inputs.add(input);
+            }
+        }
+
         // handle special cases, because there is no indicator for a meter in GetConfig
         // Pro 3EM has 3 meters
         // Pro 2 has 2 relays, but no meters
@@ -267,24 +287,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.numMeters = 2;
         } else {
             profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
-        }
-        if (profile.hasRelays) {
-            profile.status.relays = new ArrayList<>();
-            relayStatus.relays = new ArrayList<>();
-            for (int i = 0; i < profile.numRelays; i++) {
-                profile.status.relays.add(new ShellySettingsRelay());
-                relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-        }
-
-        if (profile.numInputs > 0) {
-            profile.status.inputs = new ArrayList<>();
-            relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                ShellyInputState input = new ShellyInputState(i);
-                profile.status.inputs.add(input);
-                relayStatus.inputs.add(input);
-            }
         }
 
         if (profile.numMeters > 0) {
