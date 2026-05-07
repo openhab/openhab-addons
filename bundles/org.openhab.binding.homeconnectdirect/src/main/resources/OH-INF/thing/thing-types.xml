@@ -72,6 +72,7 @@
 		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<!-- general -->
+			<channel id="power-state" typeId="system.power"/>
 			<channel id="remote-control-start-allowed" typeId="remote-control-start-allowed-channel"/>
 			<channel id="operation-state" typeId="operation-state-channel"/>
 			<channel id="child-lock" typeId="child-lock-channel"/>
@@ -116,6 +117,7 @@
 		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<!-- general -->
+			<channel id="power-state" typeId="system.power"/>
 			<channel id="remote-control-start-allowed" typeId="remote-control-start-allowed-channel"/>
 			<channel id="operation-state" typeId="operation-state-channel"/>
 			<channel id="child-lock" typeId="child-lock-channel"/>
@@ -162,6 +164,7 @@
 		<semantic-equipment-tag>Dryer</semantic-equipment-tag>
 		<channels>
 			<!-- general -->
+			<channel id="power-state" typeId="system.power"/>
 			<channel id="remote-control-start-allowed" typeId="remote-control-start-allowed-channel"/>
 			<channel id="operation-state" typeId="operation-state-channel"/>
 			<channel id="child-lock" typeId="child-lock-channel"/>
