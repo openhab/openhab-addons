@@ -396,6 +396,7 @@ public class ICloudService {
             final Map<String, Object> phonePayload = cachedSmsPhoneNumber;
             if (phonePayload == null) {
                 logger.warn("No cached phone number available for SMS code validation");
+                smsCodeRequested = false; // Reset flag to allow new SMS code request
                 return false;
             }
 
