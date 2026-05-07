@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * {@link DirigeraAPIImpl} provides easy access towards REST API
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @WebSocket
 @NonNullByDefault
@@ -129,6 +130,34 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         JSONObject data = new JSONObject();
         data.put(JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
+    }
+
+    @Override
+    public int sendSetAttributes(String setId, JSONObject attributes) {
+        String url = String.format(DEVICE_SET_URL, gateway.getIpAddress(), setId);
+        JSONObject data = new JSONObject();
+        data.put(JSON_KEY_ATTRIBUTES, attributes);
+        JSONArray dataArray = new JSONArray();
+        dataArray.put(data);
+        StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
+                StandardCharsets.UTF_8);
+        Request deviceRequest = httpClient.newRequest(url).method("PATCH")
+                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+
+        int responseStatus = 500;
+        try {
+            ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
+            responseStatus = response.getStatus();
+            if (responseStatus == 200 || responseStatus == 202) {
+                logger.debug("DIRIGERA API send set finished {} with {} {}", url, dataArray, responseStatus);
+            } else {
+                logger.warn("DIRIGERA API send set failed {} with {} {}", url, dataArray, responseStatus);
+            }
+            return responseStatus;
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("DIRIGERA API send set failed {} failed {} {}", url, dataArray, e.getMessage());
+            return responseStatus;
+        }
     }
 
     @Override

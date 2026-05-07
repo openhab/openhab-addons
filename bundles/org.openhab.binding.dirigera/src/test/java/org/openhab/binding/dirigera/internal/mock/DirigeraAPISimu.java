@@ -43,6 +43,7 @@ import org.openhab.core.types.UnDefType;
  * The {@link DirigeraAPISimu} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
@@ -89,6 +90,13 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
+        JSONObject data = new JSONObject();
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
+        return sendPatch(id, data);
+    }
+
+    @Override
+    public int sendSetAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
         data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
