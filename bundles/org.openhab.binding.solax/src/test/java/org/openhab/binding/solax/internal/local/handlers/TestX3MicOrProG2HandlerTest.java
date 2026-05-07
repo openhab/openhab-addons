@@ -14,6 +14,7 @@ package org.openhab.binding.solax.internal.local.handlers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.SolaxBindingConstants;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
 /**
@@ -79,5 +80,8 @@ public class TestX3MicOrProG2HandlerTest extends AbstractInverterHandlerTest {
 
         assertQuantityChannel(SolaxBindingConstants.CHANNEL_TOTAL_ENERGY, 1903.5, Units.KILOWATT_HOUR);
         assertQuantityChannel(SolaxBindingConstants.CHANNEL_TODAY_ENERGY, 5.0, Units.KILOWATT_HOUR);
+
+        assertQuantityChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE1, 5, SIUnits.CELSIUS);
+        assertQuantityChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE2, 9, SIUnits.CELSIUS);
     }
 }
