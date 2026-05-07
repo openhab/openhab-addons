@@ -181,4 +181,16 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
             updateStatus(ThingStatus.ONLINE);
         }
     }
+
+    @Override
+    public void clearToken() {
+        MSpaVisitorAccountConfiguration cfg = visitorConfig;
+        if (cfg == null) {
+            return;
+        }
+        String persistenceId = cfg.visitorId;
+        JSONObject persistence = getStorage(persistenceId);
+        persistence.remove(TOKEN);
+        persist(persistenceId, persistence);
+    }
 }

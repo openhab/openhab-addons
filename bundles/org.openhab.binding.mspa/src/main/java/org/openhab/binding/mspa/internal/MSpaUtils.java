@@ -22,8 +22,10 @@ import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -221,5 +223,14 @@ public class MSpaUtils {
             return responseJson.getString("message");
         }
         return UNKNOWN;
+    }
+
+    public static Optional<JSONObject> toJson(String response) {
+        try {
+            return Optional.of(new JSONObject(response));
+        } catch (JSONException e) {
+            LOGGER.warn("Failed to parse response to JSON: {}. Exception: {}", response, e.getMessage());
+            return Optional.empty();
+        }
     }
 }
