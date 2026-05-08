@@ -24,28 +24,28 @@ Devices in a different subnet or VLAN will not be found automatically and must b
 
 VTO2202 is a single-button outdoor station; VTO3211 is a dual-button outdoor station.
 
-| Parameter     | Type    | Required | Default                 | Description                                                                                                                                                              |
-| ------------- | ------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| hostname      | text    | Yes      |                         | Hostname or IP address of the device (e.g., 192.168.1.100)                                                                                                               |
-| username      | text    | Yes      |                         | Username to access the device                                                                                                                                            |
-| password      | text    | Yes      |                         | Password to access the device                                                                                                                                            |
-| snapshotPath  | text    | Yes      |                         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                             |
-| useHttps      | boolean | No       | false                   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used. |
-| enableWebRTC  | boolean | No       | false                   | Enables local go2rtc sidecar management and publishes a `webrtc-url` channel.                                                                                            |
-| go2rtcPath    | text    | No       |                         | Absolute path to the go2rtc binary (required when `enableWebRTC=true`).                                                                                                  |
-| go2rtcApiPort | integer | No       | 1984                    | HTTP API port used by go2rtc for SDP exchange.                                                                                                                           |
-| webRtcPort    | integer | No       | 8555                    | Port used by go2rtc for WebRTC media transport.                                                                                                                          |
-| stunServer    | text    | No       | stun.l.google.com:19302 | STUN server in `host:port` format used by go2rtc.                                                                                                                        |
-| rtspChannel   | integer | No       | 1                       | RTSP channel index on the Dahua device.                                                                                                                                  |
-| rtspSubtype   | integer | No       | 0                       | RTSP stream subtype (`0` main stream, `1` sub stream).                                                                                                                   |
-| enableSip     | boolean | No       | false                   | Enables local SIP client registration for call/doorbell signaling.                                                                                                       |
-| sipExtension  | text    | No       |                         | SIP extension (also used as SIP username), e.g. `9901#2`.                                                                                                                |
-| sipPassword   | text    | No       |                         | SIP password; if empty, the binding falls back to `password`.                                                                                                            |
-| localSipPort  | integer | No       | 5060                    | Local UDP SIP listening port.                                                                                                                                            |
-| sipRealm      | text    | No       | VDP                     | SIP authentication realm (default for Dahua VTO devices).                                                                                                                |
+| Parameter     | Type    | Required | Default                 | Description                                                                                                                                                                                  |
+| ------------- | ------- | -------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostname      | text    | Yes      |                         | Hostname or IP address of the device (e.g., 192.168.1.100)                                                                                                                                   |
+| username      | text    | Yes      |                         | Username to access the device                                                                                                                                                                |
+| password      | text    | Yes      |                         | Password to access the device                                                                                                                                                                |
+| snapshotPath  | text    | Yes      |                         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                                                 |
+| useHttps      | boolean | No       | false                   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used.                     |
+| enableWebRTC  | boolean | No       | false                   | Enables local go2rtc sidecar management and publishes a `webrtc-url` channel.                                                                                                                |
+| go2rtcPath    | text    | No       |                         | Absolute path to the go2rtc binary (required when `enableWebRTC=true`).                                                                                                                      |
+| go2rtcApiPort | integer | No       | 1984                    | HTTP API port used by go2rtc for SDP exchange.                                                                                                                                               |
+| webRtcPort    | integer | No       | 8555                    | Port used by go2rtc for WebRTC media transport.                                                                                                                                              |
+| stunServer    | text    | No       | stun.l.google.com:19302 | STUN server in `host:port` format used by go2rtc.                                                                                                                                            |
+| rtspChannel   | integer | No       | 1                       | RTSP channel index on the Dahua device.                                                                                                                                                      |
+| rtspSubtype   | integer | No       | 0                       | RTSP stream subtype (`0` main stream, `1` sub stream).                                                                                                                                       |
+| enableSip     | boolean | No       | false                   | Enables local SIP client registration for call/doorbell signaling.                                                                                                                           |
+| sipExtension  | text    | No       |                         | Comma-separated list of SIP extensions, e.g. `9901#2,9901#3`. A single value is also allowed. Each extension is used as its own SIP username and can handle one parallel SIP/WebRTC session. |
+| sipPassword   | text    | No       |                         | SIP password; if empty, the binding falls back to `password`.                                                                                                                                |
+| localSipPort  | integer | No       | 5060                    | Local UDP SIP listening port.                                                                                                                                                                |
+| sipRealm      | text    | No       | VDP                     | SIP authentication realm (default for Dahua VTO devices).                                                                                                                                    |
 
 **Note on SIP configuration:**
-To enable SIP call signaling, set `enableSip=true` and configure at least `sipExtension`.
+To enable SIP call signaling, set `enableSip=true` and configure at least one value in `sipExtension`.
 If your VTO requires a dedicated SIP password, set `sipPassword`; otherwise the binding uses `password`.
 `localSipPort` and `sipRealm` usually work with their defaults (`5060` and `VDP`).
 
@@ -185,7 +185,7 @@ end
 Intercom operation is implemented with WebRTC via the `go2rtc` binary.
 It converts the Dahua RTP audio/video stream into browser-compatible WebRTC. The audio stream is transcoded using `ffmpeg`. Hence both tools are needed.
 When `enableWebRTC=true`, the binding starts everything automatically when a call is received.
-The binding registers itself at the VTO. Define a new terminal (for example `9901#2`, type `public`) and use that account as `sipExtension` plus the corresponding `sipPassword`.
+The binding registers itself at the VTO. Define one or more terminals (for example `9901#2` or `9901#2,9901#3`, type `public`) and list those accounts in `sipExtension` as a comma-separated list. Use the matching `sipPassword` (single password for all accounts).
 You can try Dahua's default password for initial testing, but do not use it in production. Consult your VTO manual for setup details.
 
 ### Tool installation
@@ -222,7 +222,7 @@ Intercom operation provides these channels:
 
 SIP parameters used in the example below:
 
-- `enableSip=true` and `sipExtension` are required to register the local SIP client.
+- `enableSip=true` and at least one value in `sipExtension` are required to register the local SIP clients.
 - `sipPassword` is optional; when empty, the binding uses `password` from the thing.
 - `localSipPort=5060` and `sipRealm="VDP"` are the typical defaults for Dahua VTO setups.
 
@@ -242,7 +242,7 @@ Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
   webRtcPort=8555,
   stunServer="stun.l.google.com:19302",
   enableSip=true,
-  sipExtension="9901#2",
+  sipExtension="9901#2,9901#3",
   sipPassword="123456",
   localSipPort=5060,
   sipRealm="VDP"

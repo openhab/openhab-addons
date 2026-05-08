@@ -25,6 +25,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,6 +54,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Go2RtcManager {
 
+    public record StreamEntry(String streamName, int backchannelRtpPort) {
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Go2RtcManager.class);
 
     /** Health-check timeout in milliseconds. */
@@ -72,12 +77,12 @@ public class Go2RtcManager {
     private final String password;
     private final int rtspChannel;
     private final int rtspSubtype;
-    private final int backchannelRtpPort;
-    private final String streamName;
+    private final List<StreamEntry> streams;
 
     private @Nullable Process process;
     private @Nullable File configFile;
     private @Nullable Thread logThread;
+    private @Nullable Thread exitWatcherThread;
 
     /**
      * Creates a new Go2RtcManager.
@@ -95,17 +100,22 @@ public class Go2RtcManager {
      */
     public Go2RtcManager(String go2rtcBinary, int apiPort, int webRtcPort, String stunServer, String streamName,
             String hostname, String username, String password, int rtspChannel, int rtspSubtype) {
+        this(go2rtcBinary, apiPort, webRtcPort, stunServer, hostname, username, password, rtspChannel, rtspSubtype,
+                List.of(new StreamEntry(streamName, apiPort + 20000)));
+    }
+
+    public Go2RtcManager(String go2rtcBinary, int apiPort, int webRtcPort, String stunServer, String hostname,
+            String username, String password, int rtspChannel, int rtspSubtype, List<StreamEntry> streams) {
         this.go2rtcBinary = go2rtcBinary;
         this.apiPort = apiPort;
         this.webRtcPort = webRtcPort;
         this.stunServer = stunServer;
-        this.streamName = streamName;
         this.hostname = hostname;
         this.username = username;
         this.password = password;
         this.rtspChannel = rtspChannel;
         this.rtspSubtype = rtspSubtype;
-        this.backchannelRtpPort = apiPort + 20000;
+        this.streams = List.copyOf(streams);
     }
 
     /**
@@ -114,7 +124,11 @@ public class Go2RtcManager {
      * @return stream name string
      */
     public String getStreamName() {
-        return streamName;
+        return streams.getFirst().streamName();
+    }
+
+    public List<String> getStreamNames() {
+        return streams.stream().map(StreamEntry::streamName).toList();
     }
 
     /**
@@ -153,9 +167,11 @@ public class Go2RtcManager {
 
         ProcessBuilder pb = new ProcessBuilder(go2rtcBinary, "-config", localConfigFile.getAbsolutePath());
         pb.redirectErrorStream(true);
+        LOGGER.debug("Starting go2rtc for streams {} with API port {}, WebRTC port {}, backchannel RTP ports {}",
+                getStreamNames(), apiPort, webRtcPort, getBackchannelPortsSummary());
         Process startedProcess = pb.start();
         process = startedProcess;
-        LOGGER.info("go2rtc started (stream={}, apiPort={}, PID={})", streamName, apiPort, startedProcess.pid());
+        LOGGER.info("go2rtc started (streams={}, apiPort={}, PID={})", getStreamNames(), apiPort, startedProcess.pid());
 
         // Pipe go2rtc stdout+stderr into the openHAB log at DEBUG level so problems are visible.
         Thread logTh = new Thread(() -> {
@@ -163,15 +179,28 @@ public class Go2RtcManager {
                     new InputStreamReader(startedProcess.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    LOGGER.debug("go2rtc [{}]: {}", streamName, line);
+                    LOGGER.debug("go2rtc [{}]: {}", getLogContext(line), line);
                 }
             } catch (IOException e) {
-                LOGGER.trace("go2rtc [{}] output reader closed: {}", streamName, e.getMessage());
+                LOGGER.trace("go2rtc [{}] output reader closed: {}", getDefaultLogContext(), e.getMessage());
             }
-        }, "go2rtc-log-" + streamName);
+        }, "go2rtc-log-" + getLogThreadNameSuffix());
         logTh.setDaemon(true);
         logTh.start();
         logThread = logTh;
+
+        Thread exitWatcher = new Thread(() -> {
+            try {
+                int exitCode = startedProcess.waitFor();
+                LOGGER.debug("go2rtc process exited (streams={}, PID={}, exitCode={})", getStreamNames(),
+                        startedProcess.pid(), exitCode);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, "go2rtc-exit-" + getLogThreadNameSuffix());
+        exitWatcher.setDaemon(true);
+        exitWatcher.start();
+        exitWatcherThread = exitWatcher;
 
         waitForHealthy();
     }
@@ -182,12 +211,12 @@ public class Go2RtcManager {
     public void stop() {
         Process localProcess = process;
         if (localProcess != null) {
-            LOGGER.info("Stopping go2rtc (stream={}, PID={})", streamName, localProcess.pid());
+            LOGGER.info("Stopping go2rtc (streams={}, PID={})", getStreamNames(), localProcess.pid());
             localProcess.destroy();
             try {
                 if (!localProcess.waitFor(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                    LOGGER.warn("go2rtc did not terminate in {}s, forcing shutdown (stream={})", STOP_TIMEOUT_SECONDS,
-                            streamName);
+                    LOGGER.warn("go2rtc did not terminate in {}s, forcing shutdown (streams={})", STOP_TIMEOUT_SECONDS,
+                            getStreamNames());
                     localProcess.destroyForcibly();
                 }
             } catch (InterruptedException e) {
@@ -199,6 +228,11 @@ public class Go2RtcManager {
         if (localLogThread != null) {
             localLogThread.interrupt();
             logThread = null;
+        }
+        Thread localExitWatcherThread = exitWatcherThread;
+        if (localExitWatcherThread != null) {
+            localExitWatcherThread.interrupt();
+            exitWatcherThread = null;
         }
         File localConfig = configFile;
         if (localConfig != null && localConfig.exists()) {
@@ -235,15 +269,6 @@ public class Go2RtcManager {
     private String buildYaml() {
         String userInfo = URLEncoder.encode(username, StandardCharsets.UTF_8) + ":"
                 + URLEncoder.encode(password, StandardCharsets.UTF_8);
-        String rtspUrl = "rtsp://" + userInfo + "@" + hostname + ":554/cam/realmonitor?channel=" + rtspChannel
-                + "&subtype=" + rtspSubtype + "#backchannel=0";
-        String backchannelExec = "exec:ffmpeg -f alaw -ar 8000 -ac 1 -i - -c:a pcm_s16le -ar 16000 -ac 1 "
-                + "-payload_type 97 -ssrc 12345 -f rtp rtp://127.0.0.1:" + backchannelRtpPort
-                + "#backchannel=1#audio=pcma/8000";
-
-        String safeRtspUrl = rtspUrl.replace("'", "''");
-        String safeBackchannelExec = backchannelExec.replace("'", "''");
-
         StringBuilder candidates = new StringBuilder();
         String localIp = detectLocalIp();
         if (localIp != null) {
@@ -252,9 +277,81 @@ public class Go2RtcManager {
         }
         candidates.append("    - stun:").append(stunServer).append("\n");
 
-        return "log:\n" + "  level: debug\n" + "streams:\n" + "  " + streamName + ":\n" + "    - '" + safeRtspUrl
-                + "'\n" + "    - '" + safeBackchannelExec + "'\n" + "api:\n" + "  listen: \"127.0.0.1:" + apiPort
-                + "\"\n" + "webrtc:\n" + "  listen: \":" + webRtcPort + "\"\n" + "  candidates:\n" + candidates;
+        String rtspUrl = "rtsp://" + userInfo + "@" + hostname + ":554/cam/realmonitor?channel=" + rtspChannel
+                + "&subtype=" + rtspSubtype + "#backchannel=0";
+
+        StringBuilder yaml = new StringBuilder();
+        yaml.append("log:\n  level: ").append(resolveGo2RtcLogLevel()).append("\n");
+        yaml.append("streams:\n");
+        for (StreamEntry entry : streams) {
+            yaml.append("  ").append(entry.streamName()).append(":\n");
+            yaml.append("    - '").append(rtspUrl.replace("'", "''")).append("'\n");
+            yaml.append("    - '").append(buildBackchannelExec(entry.backchannelRtpPort()).replace("'", "''"))
+                    .append("'\n");
+        }
+        yaml.append("api:\n  listen: \"127.0.0.1:").append(apiPort).append("\"\n");
+        yaml.append("webrtc:\n  listen: \":").append(webRtcPort).append("\"\n");
+        yaml.append("  candidates:\n").append(candidates);
+        return yaml.toString();
+    }
+
+    private String buildBackchannelExec(int backchannelRtpPort) {
+        return "exec:ffmpeg -hide_banner -loglevel " + resolveFfmpegLogLevel()
+                + " -fflags nobuffer -f alaw -ar 8000 -ac 1 " + "-i - -vn -map 0:a:0 -c:a pcm_s16le -ar 16000 -ac 1 "
+                + "-payload_type 97 -ssrc 12345 -f rtp rtp://127.0.0.1:" + backchannelRtpPort
+                + "#backchannel=1#audio=pcma/8000";
+    }
+
+    private String resolveGo2RtcLogLevel() {
+        if (LOGGER.isTraceEnabled()) {
+            return "trace";
+        }
+        if (LOGGER.isDebugEnabled()) {
+            return "debug";
+        }
+        if (LOGGER.isInfoEnabled()) {
+            return "info";
+        }
+        if (LOGGER.isWarnEnabled()) {
+            return "warn";
+        }
+        return "error";
+    }
+
+    private String resolveFfmpegLogLevel() {
+        if (LOGGER.isTraceEnabled() || LOGGER.isDebugEnabled()) {
+            return "debug";
+        }
+        if (LOGGER.isInfoEnabled()) {
+            return "info";
+        }
+        if (LOGGER.isWarnEnabled()) {
+            return "warning";
+        }
+        return "error";
+    }
+
+    private String getLogContext(String line) {
+        String inferredStreamName = inferStreamNameFromLogLine(line);
+        return inferredStreamName.isEmpty() ? getDefaultLogContext() : inferredStreamName;
+    }
+
+    private String getDefaultLogContext() {
+        return streams.size() == 1 ? getStreamName() : "shared:" + String.join(",", getStreamNames());
+    }
+
+    private String getLogThreadNameSuffix() {
+        return streams.size() == 1 ? getStreamName() : "multi";
+    }
+
+    private String inferStreamNameFromLogLine(String line) {
+        for (StreamEntry entry : streams) {
+            String rtpMarker = "rtp://127.0.0.1:" + entry.backchannelRtpPort();
+            if (line.contains(rtpMarker)) {
+                return entry.streamName();
+            }
+        }
+        return "";
     }
 
     /**
@@ -282,13 +379,54 @@ public class Go2RtcManager {
      * Writes the YAML config to a temporary file and returns that file.
      */
     private File writeConfig() throws IOException {
-        File cfg = File.createTempFile("go2rtc_" + streamName + "_", ".yaml");
+        File cfg = File.createTempFile("go2rtc_" + getStreamName() + "_", ".yaml");
         cfg.deleteOnExit();
+        String yaml = buildYaml();
         try (FileWriter fw = new FileWriter(cfg, StandardCharsets.UTF_8)) {
-            fw.write(buildYaml());
+            fw.write(yaml);
         }
         LOGGER.debug("go2rtc config written to {}", cfg.getAbsolutePath());
+        LOGGER.debug("go2rtc config summary: rtspSource={}, backchannelSource={}, candidates={}", sanitizeRtspSource(),
+                summarizeBackchannelExec(), summarizeCandidates(yaml));
         return cfg;
+    }
+
+    private String sanitizeRtspSource() {
+        return String.format(Locale.ROOT, "rtsp://***:***@%s:554/cam/realmonitor?channel=%d&subtype=%d#backchannel=0",
+                hostname, rtspChannel, rtspSubtype);
+    }
+
+    private String summarizeBackchannelExec() {
+        return String.format(Locale.ROOT,
+                "exec:ffmpeg -f alaw -ar 8000 -ac 1 -i - -map 0:a:0 ... -f rtp rtp://127.0.0.1:ports%s #audio=pcma/8000",
+                getBackchannelPortsSummary());
+    }
+
+    private String getBackchannelPortsSummary() {
+        return streams.stream().map(StreamEntry::backchannelRtpPort).map(String::valueOf).toList().toString();
+    }
+
+    private static String summarizeCandidates(String yaml) {
+        int candidatesIndex = yaml.indexOf("  candidates:\n");
+        if (candidatesIndex < 0) {
+            return "[]";
+        }
+        String tail = yaml.substring(candidatesIndex + "  candidates:\n".length());
+        String[] lines = tail.split("\\n");
+        StringBuilder summary = new StringBuilder("[");
+        boolean first = true;
+        for (String line : lines) {
+            if (!line.startsWith("    - ")) {
+                break;
+            }
+            if (!first) {
+                summary.append(", ");
+            }
+            summary.append(line.substring("    - ".length()));
+            first = false;
+        }
+        summary.append(']');
+        return summary.toString();
     }
 
     /**

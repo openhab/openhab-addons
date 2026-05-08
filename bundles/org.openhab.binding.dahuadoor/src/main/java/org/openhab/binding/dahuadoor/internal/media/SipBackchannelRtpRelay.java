@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  * go2rtc currently uses ffmpeg to transcode browser backchannel audio to RTP PCM/16 kHz on a local
- * loopback port. This relay only forwards those RTP packets to the negotiated SIP target and rewrites
- * the payload type to the negotiated one.
+ * loopback port. This relay forwards those RTP packets to the negotiated SIP target, preferring
+ * PCM/16000 passthrough and falling back to G.711 PCMA/PCMU transcoding when needed.
  * </p>
  *
  * @author Sven Schad - Initial contribution
@@ -45,19 +45,32 @@ public class SipBackchannelRtpRelay {
     private static final int RTP_HEADER_MIN_LEN = 12;
     private static final int RTP_VERSION_MASK = 0xC0;
     private static final int RTP_VERSION_2 = 0x80;
+    private static final int RTP_TIMESTAMP_OFFSET = 4;
+    private static final String CODEC_PCM = "PCM";
+    private static final String CODEC_PCMA = "PCMA";
+    private static final String CODEC_PCMU = "PCMU";
+    private static final int PCM_CLOCK_RATE = 16000;
+    private static final int G711_CLOCK_RATE = 8000;
+    private static final int ULAW_CLIP = 32635;
+    private static final int[] SEGMENT_ENDS = { 0x1F, 0x3F, 0x7F, 0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF };
 
     static final class RelayTarget {
         final InetAddress remoteAddress;
         final int remotePort;
         final int payloadType;
+        final String codecName;
+        final int clockRate;
 
-        RelayTarget(InetAddress remoteAddress, int remotePort, int payloadType) {
+        RelayTarget(InetAddress remoteAddress, int remotePort, int payloadType, String codecName, int clockRate) {
             this.remoteAddress = remoteAddress;
             this.remotePort = remotePort;
             this.payloadType = payloadType;
+            this.codecName = codecName;
+            this.clockRate = clockRate;
         }
     }
 
+    private final String label;
     private final int listenPort;
     private final int sourcePort;
     private final Object lifecycleLock = new Object();
@@ -78,7 +91,8 @@ public class SipBackchannelRtpRelay {
     private volatile long targetSetAtMillis;
     private volatile long lastNoInputWarningAtMillis;
 
-    public SipBackchannelRtpRelay(int listenPort, int sourcePort) {
+    public SipBackchannelRtpRelay(String label, int listenPort, int sourcePort) {
+        this.label = label;
         this.listenPort = listenPort;
         this.sourcePort = sourcePort;
         this.resolvedSourcePort = sourcePort;
@@ -123,7 +137,7 @@ public class SipBackchannelRtpRelay {
             worker.start();
             workerThread = worker;
 
-            LOGGER.info("SIP backchannel RTP relay started on 127.0.0.1:{} with source port {}", listenPort,
+            LOGGER.info("SIP backchannel RTP relay '{}' started on 127.0.0.1:{} with source port {}", label, listenPort,
                     resolvedSourcePort);
         }
     }
@@ -168,8 +182,8 @@ public class SipBackchannelRtpRelay {
         }
 
         LOGGER.info(
-                "SIP backchannel RTP relay stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
-                listenPort, getSourcePort(), receivedPackets, forwardedPackets, droppedNoTargetPackets,
+                "SIP backchannel RTP relay '{}' stopped (listenPort={}, sourcePort={}, received={}, forwarded={}, droppedNoTarget={}, droppedInvalid={})",
+                label, listenPort, getSourcePort(), receivedPackets, forwardedPackets, droppedNoTargetPackets,
                 droppedInvalidPackets);
     }
 
@@ -178,29 +192,30 @@ public class SipBackchannelRtpRelay {
             relayTarget = null;
             targetSetAtMillis = 0;
             lastNoInputWarningAtMillis = 0;
-            LOGGER.info("SIP backchannel relay target cleared (reason={})", reason);
+            LOGGER.info("SIP backchannel relay '{}' target cleared (reason={})", label, reason);
             return;
         }
 
         try {
             String codecName = offer.getCodecName();
-            if (!("PCM".equals(codecName) && offer.getClockRate() == 16000)) {
+            int clockRate = offer.getClockRate();
+            if (!isSupportedTarget(codecName, clockRate)) {
                 relayTarget = null;
                 LOGGER.warn(
-                        "SIP backchannel relay target rejected (expected PCM/16000, got codec={} rate={}Hz, reason={})",
-                        codecName, offer.getClockRate(), reason);
+                        "SIP backchannel relay '{}' target rejected (expected PCM/16000 or PCMA/PCMU 8000, got codec={} rate={}Hz, reason={})",
+                        label, codecName, clockRate, reason);
                 return;
             }
 
             InetAddress address = InetAddress.getByName(offer.getRemoteHost());
-            relayTarget = new RelayTarget(address, offer.getRemotePort(), offer.getPayloadType());
+            relayTarget = new RelayTarget(address, offer.getRemotePort(), offer.getPayloadType(), codecName, clockRate);
             targetSetAtMillis = System.currentTimeMillis();
             lastNoInputWarningAtMillis = 0;
-            LOGGER.info("SIP backchannel relay target set to {}:{} (pt={}, codec={}, reason={})", offer.getRemoteHost(),
-                    offer.getRemotePort(), offer.getPayloadType(), codecName, reason);
+            LOGGER.info("SIP backchannel relay '{}' target set to {}:{} (pt={}, codec={}, rate={}Hz, reason={})", label,
+                    offer.getRemoteHost(), offer.getRemotePort(), offer.getPayloadType(), codecName, clockRate, reason);
         } catch (IOException e) {
             relayTarget = null;
-            LOGGER.warn("Failed to resolve SIP backchannel relay target '{}': {}", offer.getRemoteHost(),
+            LOGGER.warn("Failed to resolve SIP backchannel relay '{}' target '{}': {}", label, offer.getRemoteHost(),
                     e.getMessage());
         }
     }
@@ -225,8 +240,8 @@ public class SipBackchannelRtpRelay {
                     if (now - targetSetAtMillis >= 2000 && now - lastIncomingPacketAtMillis >= 2000
                             && now - lastNoInputWarningAtMillis >= 2000) {
                         LOGGER.debug(
-                                "SIP backchannel relay has active target {}:{} but no incoming RTP on 127.0.0.1:{} for {} ms",
-                                target.remoteAddress.getHostAddress(), target.remotePort, listenPort,
+                                "SIP backchannel relay '{}' has active target {}:{} but no incoming RTP on 127.0.0.1:{} for {} ms",
+                                label, target.remoteAddress.getHostAddress(), target.remotePort, listenPort,
                                 now - lastIncomingPacketAtMillis);
                         lastNoInputWarningAtMillis = now;
                     }
@@ -234,12 +249,12 @@ public class SipBackchannelRtpRelay {
                 continue;
             } catch (SocketException e) {
                 if (running) {
-                    LOGGER.debug("SIP backchannel relay receive socket closed: {}", e.getMessage());
+                    LOGGER.debug("SIP backchannel relay '{}' receive socket closed: {}", label, e.getMessage());
                 }
                 continue;
             } catch (IOException e) {
                 if (running) {
-                    LOGGER.debug("SIP backchannel relay receive failed: {}", e.getMessage());
+                    LOGGER.debug("SIP backchannel relay '{}' receive failed: {}", label, e.getMessage());
                 }
                 continue;
             }
@@ -250,8 +265,9 @@ public class SipBackchannelRtpRelay {
             if (target == null) {
                 droppedNoTargetPackets++;
                 if (droppedNoTargetPackets == 1 || droppedNoTargetPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay dropping RTP packet without target (count={}, listenPort={})",
-                            droppedNoTargetPackets, listenPort);
+                    LOGGER.debug(
+                            "SIP backchannel relay '{}' dropping RTP packet without target (count={}, listenPort={})",
+                            label, droppedNoTargetPackets, listenPort);
                 }
                 continue;
             }
@@ -260,7 +276,7 @@ public class SipBackchannelRtpRelay {
             if (forwardedPacket == null) {
                 droppedInvalidPackets++;
                 if (droppedInvalidPackets == 1 || droppedInvalidPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay dropped invalid RTP packet (count={}, length={})",
+                    LOGGER.debug("SIP backchannel relay '{}' dropped invalid RTP packet (count={}, length={})", label,
                             droppedInvalidPackets, incoming.getLength());
                 }
                 continue;
@@ -272,12 +288,14 @@ public class SipBackchannelRtpRelay {
                 localSendSocket.send(forwarded);
                 forwardedPackets++;
                 if (forwardedPackets == 1 || forwardedPackets % 100 == 0) {
-                    LOGGER.debug("SIP backchannel relay forwarded RTP packet (count={}, bytes={}, target={}:{}, pt={})",
-                            forwardedPackets, forwardedPacket.length, target.remoteAddress.getHostAddress(),
-                            target.remotePort, target.payloadType);
+                    LOGGER.debug(
+                            "SIP backchannel relay '{}' forwarded RTP packet (count={}, bytes={}, listenPort={}, sourcePort={}, target={}:{}, pt={}, codec={}, rate={}Hz)",
+                            label, forwardedPackets, forwardedPacket.length, listenPort, getSourcePort(),
+                            target.remoteAddress.getHostAddress(), target.remotePort, target.payloadType,
+                            target.codecName, target.clockRate);
                 }
             } catch (IOException e) {
-                LOGGER.debug("SIP backchannel relay forward failed to {}:{}: {}", target.remoteAddress,
+                LOGGER.debug("SIP backchannel relay '{}' forward failed to {}:{}: {}", label, target.remoteAddress,
                         target.remotePort, e.getMessage());
             }
         }
@@ -296,8 +314,114 @@ public class SipBackchannelRtpRelay {
             return null;
         }
 
-        rewriteRtpPayloadType(packet, target.payloadType);
-        return packet;
+        if (CODEC_PCM.equals(target.codecName) && target.clockRate == PCM_CLOCK_RATE) {
+            rewriteRtpPayloadType(packet, target.payloadType);
+            return packet;
+        }
+
+        if ((CODEC_PCMA.equals(target.codecName) || CODEC_PCMU.equals(target.codecName))
+                && target.clockRate == G711_CLOCK_RATE) {
+            return transcodePcm16LeToG711(packet, payloadOffset, length, target);
+        }
+
+        return null;
+    }
+
+    private static boolean isSupportedTarget(String codecName, int clockRate) {
+        return CODEC_PCM.equals(codecName) && clockRate == PCM_CLOCK_RATE
+                || (CODEC_PCMA.equals(codecName) || CODEC_PCMU.equals(codecName)) && clockRate == G711_CLOCK_RATE;
+    }
+
+    private static byte @Nullable [] transcodePcm16LeToG711(byte[] packet, int payloadOffset, int length,
+            RelayTarget target) {
+        int payloadLength = length - payloadOffset;
+        if (payloadLength < 4 || (payloadLength % 4) != 0) {
+            return null;
+        }
+
+        int sampleCount = payloadLength / 2;
+        int outputSamples = sampleCount / 2;
+        if (outputSamples <= 0) {
+            return null;
+        }
+
+        byte[] transcoded = new byte[payloadOffset + outputSamples];
+        System.arraycopy(packet, 0, transcoded, 0, payloadOffset);
+
+        for (int outputIndex = 0; outputIndex < outputSamples; outputIndex++) {
+            int inputIndex = payloadOffset + (outputIndex * 4);
+            short pcmSample = (short) ((packet[inputIndex] & 0xFF) | (packet[inputIndex + 1] << 8));
+            transcoded[payloadOffset + outputIndex] = CODEC_PCMA.equals(target.codecName) ? linearToALaw(pcmSample)
+                    : linearToMuLaw(pcmSample);
+        }
+
+        rewriteRtpPayloadType(transcoded, target.payloadType);
+        rewriteRtpTimestamp(transcoded, readRtpTimestamp(packet) / 2L);
+        return transcoded;
+    }
+
+    private static long readRtpTimestamp(byte[] packet) {
+        return ((packet[RTP_TIMESTAMP_OFFSET] & 0xFFL) << 24) | ((packet[RTP_TIMESTAMP_OFFSET + 1] & 0xFFL) << 16)
+                | ((packet[RTP_TIMESTAMP_OFFSET + 2] & 0xFFL) << 8) | (packet[RTP_TIMESTAMP_OFFSET + 3] & 0xFFL);
+    }
+
+    private static void rewriteRtpTimestamp(byte[] packet, long timestamp) {
+        packet[RTP_TIMESTAMP_OFFSET] = (byte) ((timestamp >>> 24) & 0xFF);
+        packet[RTP_TIMESTAMP_OFFSET + 1] = (byte) ((timestamp >>> 16) & 0xFF);
+        packet[RTP_TIMESTAMP_OFFSET + 2] = (byte) ((timestamp >>> 8) & 0xFF);
+        packet[RTP_TIMESTAMP_OFFSET + 3] = (byte) (timestamp & 0xFF);
+    }
+
+    private static byte linearToALaw(short sample) {
+        int pcmValue = sample;
+        int mask = 0xD5;
+        if (pcmValue < 0) {
+            mask = 0x55;
+            pcmValue = -pcmValue - 1;
+        }
+
+        int segment = searchSegment(pcmValue);
+        if (segment >= 8) {
+            return (byte) (0x7F ^ mask);
+        }
+
+        int alawValue = segment << 4;
+        if (segment < 2) {
+            alawValue |= (pcmValue >> 4) & 0x0F;
+        } else {
+            alawValue |= (pcmValue >> (segment + 3)) & 0x0F;
+        }
+        return (byte) (alawValue ^ mask);
+    }
+
+    private static byte linearToMuLaw(short sample) {
+        int pcmValue = sample;
+        int sign = (pcmValue >> 8) & 0x80;
+        if (sign != 0) {
+            pcmValue = -pcmValue;
+        }
+
+        if (pcmValue > ULAW_CLIP) {
+            pcmValue = ULAW_CLIP;
+        }
+
+        pcmValue += 0x84;
+        int exponent = 7;
+        for (int exponentMask = 0x4000; (pcmValue & exponentMask) == 0 && exponent > 0; exponentMask >>= 1) {
+            exponent--;
+        }
+
+        int mantissa = (pcmValue >> (exponent + 3)) & 0x0F;
+        return (byte) ~(sign | (exponent << 4) | mantissa);
+    }
+
+    private static int searchSegment(int pcmValue) {
+        for (int index = 0; index < SEGMENT_ENDS.length; index++) {
+            if (pcmValue <= SEGMENT_ENDS[index]) {
+                return index;
+            }
+        }
+        return SEGMENT_ENDS.length;
     }
 
     static void rewriteRtpPayloadType(byte[] packet, int payloadType) {

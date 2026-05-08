@@ -70,7 +70,21 @@ class SipSdpParserTest {
                 + "t=0 0\r\n" + "m=audio 6000 RTP/AVP 101\r\n" + "a=rtpmap:101 PCMA/8000\r\n" + "a=ptime:30\r\n";
 
         Optional<SipAudioOffer> parsed = parser.parseAudioOffer(sdp);
-        assertTrue(parsed.isEmpty());
+        assertTrue(parsed.isPresent());
+        assertEquals("PCMA", parsed.get().getCodecName());
+        assertEquals(8000, parsed.get().getClockRate());
+    }
+
+    @Test
+    void parseAudioOfferFallsBackToPcmuWhenPcmIsMissing() {
+        String sdp = "v=0\r\n" + "o=- 1 1 IN IP4 203.0.113.31\r\n" + "s=-\r\n" + "c=IN IP4 203.0.113.31\r\n"
+                + "t=0 0\r\n" + "m=audio 7000 RTP/AVP 0 101\r\n" + "a=ptime:20\r\n";
+
+        Optional<SipAudioOffer> parsed = parser.parseAudioOffer(sdp);
+        assertTrue(parsed.isPresent());
+        assertEquals(0, parsed.get().getPayloadType());
+        assertEquals("PCMU", parsed.get().getCodecName());
+        assertEquals(8000, parsed.get().getClockRate());
     }
 
     @Test
@@ -125,5 +139,18 @@ class SipSdpParserTest {
         String answerText = answer.get();
         assertTrue(answerText.contains("m=audio 20000 RTP/AVP 97\r\n"));
         assertTrue(answerText.contains("a=rtpmap:97 PCM/16000\r\n"));
+    }
+
+    @Test
+    void buildAnswerSdpFallsBackToPcmaWhenOnlyPcmaIsOffered() {
+        String sdp = "v=0\r\n" + "o=- 1 1 IN IP4 198.51.100.61\r\n" + "s=Dahua VT 1.5\r\n"
+                + "c=IN IP4 198.51.100.61\r\n" + "t=0 0\r\n" + "m=audio 20000 RTP/AVP 8 101\r\n" + "a=ptime:20\r\n";
+
+        Optional<String> answer = parser.buildAnswerSdp(sdp, "192.0.2.62", 20000);
+        assertTrue(answer.isPresent());
+
+        String answerText = answer.get();
+        assertTrue(answerText.contains("m=audio 20000 RTP/AVP 8\r\n"));
+        assertTrue(answerText.contains("a=rtpmap:8 PCMA/8000\r\n"));
     }
 }
