@@ -147,20 +147,17 @@ public class Shelly2RpcSocket implements WriteCallback {
         String ipAddr = inetAddr.getHostAddress();
 
         // Prepare connect
+        int port = socketAddr.getPort();
+        String hostHeader = port > 0 ? ipAddr + ":" + port : ipAddr;
         URI uri;
         try {
-            int port = socketAddr.getPort();
-            if (port > 0) {
-                uri = new URI("ws://" + ipAddr + ":" + port + SHELLYRPC_ENDPOINT);
-            } else {
-                uri = new URI("ws://" + ipAddr + SHELLYRPC_ENDPOINT);
-            }
+            uri = new URI("ws://" + hostHeader + SHELLYRPC_ENDPOINT);
         } catch (URISyntaxException e) {
             throw new ShellyApiException("Invalid URI: " + e.getMessage(), e);
         }
         ClientUpgradeRequest request = new ClientUpgradeRequest();
-        request.setHeader(HttpHeaders.HOST, ipAddr);
-        request.setHeader("Origin", "http://" + ipAddr);
+        request.setHeader(HttpHeaders.HOST, hostHeader);
+        request.setHeader("Origin", "http://" + hostHeader);
         request.setHeader("Pragma", "no-cache");
         request.setHeader("Cache-Control", "no-cache");
 

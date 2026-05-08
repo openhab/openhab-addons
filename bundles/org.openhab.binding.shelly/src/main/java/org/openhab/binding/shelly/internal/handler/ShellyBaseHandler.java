@@ -1076,8 +1076,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         } else {
             if (!apiConfig.resolveIp()) {
                 // may not be set in .things file
-                setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.revole-failed",
-                        apiConfig.getDeviceHostAddress());
+                setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "config-status.error.resolve-failed", apiConfig.getDeviceHostAddress());
                 return false;
             }
         }

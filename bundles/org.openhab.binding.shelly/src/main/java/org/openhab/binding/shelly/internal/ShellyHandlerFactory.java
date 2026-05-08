@@ -100,7 +100,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             // URLs, register CoIoT listeners, or handle WebSocket events. Starting in a
             // degraded state would silently break all Gen1 event handling and Gen2 battery
             // devices, so we fail fast here rather than logging a warning.
-            logger.error("{}", messages.get("message.init.noipaddress"));
+            logger.error("{}", messages.get("init.noipaddress"));
             throw new ComponentException("Failed to activate: Local IP can't be detected");
         }
 
