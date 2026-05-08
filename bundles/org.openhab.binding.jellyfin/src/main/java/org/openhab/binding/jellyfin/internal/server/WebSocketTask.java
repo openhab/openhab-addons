@@ -240,7 +240,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      * @return The WebSocket URI
      */
     private URI buildWebSocketUri() {
-        String baseUri = apiClient.getBaseUri().toString();
+        String baseUri = apiClient.getBaseUri();
 
         // Convert HTTP(S) scheme to WS(S)
         String webSocketScheme;

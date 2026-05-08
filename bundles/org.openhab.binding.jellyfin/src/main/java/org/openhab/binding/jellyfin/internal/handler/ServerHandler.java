@@ -132,7 +132,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
         // Create event buses
         this.errorEventBus = new ErrorEventBus();
-        this.errorEventBus.addListener(this);
         this.sessionEventBus = new SessionEventBus();
         this.sessionManager = new SessionManager(this.sessionEventBus);
 
@@ -199,8 +198,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
         // Dispose WebSocket resources
         AbstractTask wsTask = this.tasks.get(WebSocketTask.TASK_ID);
-        if (wsTask instanceof WebSocketTask) {
-            ((WebSocketTask) wsTask).dispose();
+        if (wsTask instanceof WebSocketTask wt) {
+            wt.dispose();
         }
 
         // Start polling task as fallback
@@ -329,8 +328,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         }
         try {
             SessionApi sessionApi = new SessionApi(apiClient);
-            if (generalCommand instanceof GeneralCommand) {
-                sessionApi.sendFullGeneralCommand(sessionId, (GeneralCommand) generalCommand);
+            if (generalCommand instanceof GeneralCommand gc) {
+                sessionApi.sendFullGeneralCommand(sessionId, gc);
             } else {
                 logger.warn("Invalid general command type: {}", generalCommand.getClass().getName());
             }
@@ -620,23 +619,19 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     public void onErrorEvent(ErrorEvent event) {
         // Strategy pattern for handling different error types and severities
         switch (event.getSeverity()) {
-            case WARNING:
-                // Just log, don't change state
+            case WARNING -> // Just log, don't change state
                 logger.warn("Warning in {}: {}", event.getContext(), event.getException().getMessage());
-                break;
-
-            case RECOVERABLE:
+            case RECOVERABLE -> {
                 // Set to error state but allow recovery
                 logger.error("Recoverable error in {}: {}", event.getContext(), event.getException().getMessage());
                 setState(ServerState.ERROR);
-                break;
-
-            case FATAL:
+            }
+            case FATAL -> {
                 // Set to error state and require restart
                 logger.error("Fatal error in {}: {}", event.getContext(), event.getException().getMessage(),
                         event.getException());
                 setState(ServerState.ERROR);
-                break;
+            }
         }
     }
 
@@ -664,6 +659,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     @Override
     public void initialize() {
         try {
+            this.errorEventBus.addListener(this);
             this.configuration = this.getConfigAs(Configuration.class);
             setState(ServerState.INITIALIZING);
             scheduler.execute(initializeHandler());
@@ -719,9 +715,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             // If token changed, dispose existing WebSocketTask so it can be recreated with new token
             if (tokenChanged) {
                 AbstractTask wsTask = this.tasks.get(WebSocketTask.TASK_ID);
-                if (wsTask instanceof WebSocketTask) {
+                if (wsTask instanceof WebSocketTask wt) {
                     logger.debug("[WEBSOCKET] Disposing existing WebSocketTask due to token change");
-                    ((WebSocketTask) wsTask).dispose();
+                    wt.dispose();
                     this.tasks.remove(WebSocketTask.TASK_ID);
                 }
             }
