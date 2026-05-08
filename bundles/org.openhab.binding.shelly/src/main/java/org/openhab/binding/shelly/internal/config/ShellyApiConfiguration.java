@@ -67,26 +67,26 @@ public class ShellyApiConfiguration {
     }
 
     /** Unresolved device hostname, can be an IP or a name, with or without a {@code :port} suffix */
-    private final String deviceHostAddress;
+    private final AtomicReference<String> deviceHostAddress = new AtomicReference<>("");
 
     /** Device IP with or without port or {@code null} */
     private final AtomicReference<@Nullable InetSocketAddress> deviceSocketAddr = new AtomicReference<>();
 
     /** Bluetooth device address, a unique 48-bit identifier, similar to a MAC address */
-    private final @Nullable String deviceBdAddr;
+    private final AtomicReference<@Nullable String> deviceBdAddr = new AtomicReference<>();
     private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
             new ShellyAuthCredentials("", "", "", "")); // auth credentials
-    private final ShellyApiUrls urls;
+    private final AtomicReference<ShellyApiUrls> urls = new AtomicReference<>(new ShellyApiUrls("", "0", ""));
 
-    private final boolean eventsButton; // true: register for Relay btn_xxx events
-    private final boolean eventsSwitch; // true: register for device out_xxx events
-    private final boolean eventsPush; // true: register for short/long push events
-    private final boolean eventsRoller; // true: register for short/long push events
-    private final boolean eventsSensorReport; // true: register for sensor events
+    private final AtomicBoolean eventsButton = new AtomicBoolean(false);
+    private final AtomicBoolean eventsSwitch = new AtomicBoolean(false);
+    private final AtomicBoolean eventsPush = new AtomicBoolean(false);
+    private final AtomicBoolean eventsRoller = new AtomicBoolean(false);
+    private final AtomicBoolean eventsSensorReport = new AtomicBoolean(false);
 
     // Gen2
-    private final boolean enableBluGateway;
-    private final boolean enableRangeExtender;
+    private final AtomicBoolean enableBluGateway = new AtomicBoolean(false);
+    private final AtomicBoolean enableRangeExtender = new AtomicBoolean(false);
 
     private final String localIp; // local ip addresses used to create callback url
     private final String localPort; // local port, used by callbacks through servlet
@@ -144,30 +144,31 @@ public class ShellyApiConfiguration {
         String bdAddr = thingConfig.getDeviceAddress();
         if (!bdAddr.isBlank()) {
             // BLU: remove : from MAC address and convert to lower case
-            this.deviceBdAddr = bdAddr.toLowerCase(Locale.ROOT).replace(":", "");
-            this.deviceHostAddress = "";
+            this.deviceBdAddr.set(bdAddr.toLowerCase(Locale.ROOT).replace(":", ""));
+            this.deviceHostAddress.set("");
         } else {
-            this.deviceBdAddr = null;
-            this.deviceHostAddress = thingConfig.getDeviceIp();
+            this.deviceBdAddr.set(null);
+            String host = thingConfig.getDeviceIp();
+            this.deviceHostAddress.set(host);
             if (resolveHostname) {
-                this.deviceSocketAddr.set(resolveSocketAddr(this.deviceHostAddress));
+                this.deviceSocketAddr.set(resolveSocketAddr(host));
             }
         }
 
         credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
                 bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword()));
 
-        enableBluGateway = thingConfig.getEnableBluGateway();
-        enableRangeExtender = thingConfig.getEnableRangeExtender();
+        enableBluGateway.set(thingConfig.getEnableBluGateway());
+        enableRangeExtender.set(thingConfig.getEnableRangeExtender());
 
-        enableCoIOT.set(gen2 ? false : thingConfig.getEventsCoIoT());
-        eventsButton = thingConfig.getEventsButton();
-        eventsSwitch = thingConfig.getEventsSwitch();
-        eventsPush = thingConfig.getEventsPush();
-        eventsRoller = thingConfig.getEventsRoller();
-        eventsSensorReport = thingConfig.getEventsSensorReport();
+        enableCoIOT.set(!gen2 && thingConfig.getEventsCoIoT());
+        eventsButton.set(thingConfig.getEventsButton());
+        eventsSwitch.set(thingConfig.getEventsSwitch());
+        eventsPush.set(thingConfig.getEventsPush());
+        eventsRoller.set(thingConfig.getEventsRoller());
+        eventsSensorReport.set(thingConfig.getEventsSensorReport());
 
-        urls = new ShellyApiUrls(localIp, localPort, deviceHostAddress);
+        urls.set(new ShellyApiUrls(localIp, localPort, this.deviceHostAddress.get()));
     }
 
     /**
@@ -179,21 +180,19 @@ public class ShellyApiConfiguration {
      */
     public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String host) {
         this.realm.set(realm); // mDNS service name or hostname provided by /shelly
-        this.deviceHostAddress = host;
+        this.deviceHostAddress.set(host);
         this.deviceSocketAddr.set(resolveSocketAddr(host));
-        this.deviceBdAddr = null;
+        this.deviceBdAddr.set(null);
 
         localIp = bindingConfig.getLocalIP();
         localPort = String.valueOf(bindingConfig.getHttpPort());
         credentials.set(new ShellyAuthCredentials(bindingConfig.getDefaultUserId(), bindingConfig.getDefaultPassword(),
                 "", ""));
 
-        // Disable all features, which are not required in discoverymode
+        // Disable all features not required in discovery mode
+        // enableCoIOT defaults to true at class level, so explicitly clear it here
         enableCoIOT.set(false);
-        eventsButton = eventsSwitch = eventsPush = eventsRoller = eventsSensorReport = false;
-        enableBluGateway = enableRangeExtender = false;
-
-        urls = new ShellyApiUrls(localIp, localPort, host);
+        urls.set(new ShellyApiUrls(localIp, localPort, host));
     }
 
     private @Nullable InetSocketAddress resolveSocketAddr(String hostname) {
@@ -236,7 +235,7 @@ public class ShellyApiConfiguration {
      * @return The unresolved device hostname.
      */
     public String getDeviceHostAddress() {
-        return deviceHostAddress;
+        return deviceHostAddress.get();
     }
 
     /**
@@ -266,7 +265,7 @@ public class ShellyApiConfiguration {
      * @return The Bluetooth device addres or {@code null}.
      */
     public @Nullable String getBdAddr() {
-        return deviceBdAddr;
+        return deviceBdAddr.get();
     }
 
     public String getUserId() {
@@ -287,43 +286,43 @@ public class ShellyApiConfiguration {
     }
 
     public boolean getEventsButton() {
-        return eventsButton;
+        return eventsButton.get();
     }
 
     public boolean getEventsSwitch() {
-        return eventsSwitch;
+        return eventsSwitch.get();
     }
 
     public boolean getEventsPush() {
-        return eventsPush;
+        return eventsPush.get();
     }
 
     public boolean getEventsRoller() {
-        return eventsRoller;
+        return eventsRoller.get();
     }
 
     public boolean getEventsSensorReport() {
-        return eventsSensorReport;
+        return eventsSensorReport.get();
     }
 
     public String getDeviceApiUrl() {
-        return urls.deviceApi;
+        return urls.get().deviceApi;
     }
 
     public String getEventCallbackUrl() {
-        return urls.eventCallback;
+        return urls.get().eventCallback;
     }
 
     public String getWebSocketCallback() {
-        return urls.websocketCallback;
+        return urls.get().websocketCallback;
     }
 
     public boolean getEnableBluGateway() {
-        return enableBluGateway;
+        return enableBluGateway.get();
     }
 
     public boolean getEnableRangeExtender() {
-        return enableRangeExtender;
+        return enableRangeExtender.get();
     }
 
     public String getLocalIp() {
@@ -357,22 +356,63 @@ public class ShellyApiConfiguration {
             // Already resolved, just return
             return true;
         }
-        socketAddr = resolveSocketAddr(this.deviceHostAddress);
+        socketAddr = resolveSocketAddr(this.deviceHostAddress.get());
         if (socketAddr == null) {
-            logger.debug("{}: Failed to resolve hostname '{}'", realm.get(), deviceHostAddress);
+            logger.debug("{}: Failed to resolve hostname '{}'", realm.get(), deviceHostAddress.get());
             return false;
         }
         deviceSocketAddr.set(socketAddr);
         return true;
     }
 
+    /**
+     * Refreshes all fields derived from the thing configuration so that changes made via
+     * {@code handleConfigurationUpdate()} (new credentials, device address, event flags, etc.)
+     * take effect on the next re-initialization cycle without rebuilding the handler or API client.
+     * Thread-safe: every mutable field uses an atomic type.
+     *
+     * @param thingConfig refreshed thing configuration
+     * @param bindingConfig current binding runtime configuration
+     * @param gen2 true for Gen2+ devices
+     */
+    public void updateFromThingConfig(ShellyThingConfiguration thingConfig, ShellyBindingRuntimeConfig bindingConfig,
+            boolean gen2) {
+        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
+                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword()));
+
+        eventsButton.set(thingConfig.getEventsButton());
+        eventsSwitch.set(thingConfig.getEventsSwitch());
+        eventsPush.set(thingConfig.getEventsPush());
+        eventsRoller.set(thingConfig.getEventsRoller());
+        eventsSensorReport.set(thingConfig.getEventsSensorReport());
+        enableCoIOT.set(!gen2 && thingConfig.getEventsCoIoT());
+        enableBluGateway.set(thingConfig.getEnableBluGateway());
+        enableRangeExtender.set(thingConfig.getEnableRangeExtender());
+
+        String bdAddr = thingConfig.getDeviceAddress();
+        if (!bdAddr.isBlank()) {
+            deviceBdAddr.set(bdAddr.toLowerCase(Locale.ROOT).replace(":", ""));
+            deviceHostAddress.set("");
+            deviceSocketAddr.set(null);
+        } else {
+            deviceBdAddr.set(null);
+            String newHost = thingConfig.getDeviceIp();
+            if (!newHost.equals(deviceHostAddress.get())) {
+                deviceHostAddress.set(newHost);
+                deviceSocketAddr.set(null); // force re-resolve on next resolveIp() call
+                urls.set(new ShellyApiUrls(localIp, localPort, newHost));
+            }
+        }
+    }
+
     @Override
     public String toString() {
-        ShellyAuthCredentials credentials = this.credentials.get();
-        return (deviceBdAddr != null ? "Bluetooth device address=" + deviceBdAddr + ", " : "") + "HTTP user/password="
-                + getUserId() + "/" + (credentials.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: "
-                + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush + ", Roller: "
-                + eventsRoller + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT.get() + "\n"
-                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
+        ShellyAuthCredentials cred = this.credentials.get();
+        String bdAddr = deviceBdAddr.get();
+        return (bdAddr != null ? "Bluetooth device address=" + bdAddr + ", " : "") + "HTTP user/password=" + getUserId()
+                + "/" + (cred.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: " + eventsButton.get()
+                + ", Switch (on/off): " + eventsSwitch.get() + ", Push: " + eventsPush.get() + ", Roller: "
+                + eventsRoller.get() + ", Sensor: " + eventsSensorReport.get() + ", CoIoT: " + enableCoIOT.get() + "\n"
+                + "Blu Gateway=" + enableBluGateway.get() + ", Range Extender: " + enableRangeExtender.get();
     }
 }
