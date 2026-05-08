@@ -58,6 +58,16 @@ public class SshClientManager {
     }
 
     /**
+     * Enable or disable strict host key checking. When enabled, unknown host keys
+     * are rejected. When disabled (default), unknown keys are accepted on first
+     * connection (TOFU) and saved to known_hosts. Changed keys are always rejected.
+     */
+    public void setStrictHostKeyChecking(boolean strict) {
+        this.strictHostKeyChecking = strict;
+        logger.debug("Strict host key checking {}", strict ? "enabled" : "disabled");
+    }
+
+    /**
      * Stop the SSH client and release resources. Called from the handler factory
      * deactivate to ensure clean shutdown during OSGi bundle restarts.
      */
@@ -72,6 +82,7 @@ public class SshClientManager {
 
     private final SshClient client;
     private final String ohPrivateKeyDirString = OpenHAB.getUserDataFolder() + "/ddwrt/keys";
+    private volatile boolean strictHostKeyChecking = false;
 
     private SshClientManager() {
         File ohPrivateKeyDir = new File(ohPrivateKeyDirString);
@@ -99,6 +110,10 @@ public class SshClientManager {
         Path knownHostsPath = getHomeSshDir() != null ? Objects.requireNonNull(getHomeSshDir()).resolve("known_hosts")
                 : Paths.get(ohPrivateKeyDirString, "known_hosts");
         ServerKeyVerifier verifier = new KnownHostsServerKeyVerifier((s, a, k) -> {
+            if (strictHostKeyChecking) {
+                logger.warn("Rejecting unknown host key for {} (strict host key checking is enabled)", a);
+                return false;
+            }
             logger.debug("TOFU: auto-accepting host key for {}", a);
             return true;
         }, knownHostsPath) {

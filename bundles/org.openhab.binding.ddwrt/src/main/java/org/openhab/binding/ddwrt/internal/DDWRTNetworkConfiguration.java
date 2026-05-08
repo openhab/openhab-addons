@@ -71,4 +71,11 @@ public class DDWRTNetworkConfiguration {
      * clients that the routers/APs cannot, or for cross-validation of presence detection.
      */
     public boolean useLocalArpCache = false;
+
+    /**
+     * When true, reject SSH connections to hosts not already in known_hosts (strict checking).
+     * When false (default), unknown host keys are automatically accepted on first connection (TOFU)
+     * and saved to known_hosts. Changed keys are always rejected regardless of this setting.
+     */
+    public boolean strictHostKeyChecking = false;
 }

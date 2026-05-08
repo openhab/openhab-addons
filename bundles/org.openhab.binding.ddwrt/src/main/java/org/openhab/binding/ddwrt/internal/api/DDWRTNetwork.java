@@ -92,6 +92,7 @@ public class DDWRTNetwork {
         if (!Objects.equals(this.config, netCfg)) {
             logger.debug("Config changed.");
             this.config = netCfg;
+            SshClientManager.getInstance().setStrictHostKeyChecking(netCfg.strictHostKeyChecking);
             reloadHostnameMappings();
 
             // Clear failure tracking for retry logic
