@@ -6,7 +6,8 @@
 	<channel-type id="send-notification-channel">
 		<item-type>String</item-type>
 		<label>Send Notification</label>
-		<description>Send notification to the client</description>
+		<description>Send a notification message to this client. The message is displayed as an overlay on the client's
+			screen.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -14,8 +15,8 @@
 	</channel-type>
 	<channel-type id="playing-item-id-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Id</label>
-		<description>Id of the item currently playing</description>
+		<label>Playing Item ID</label>
+		<description>Unique identifier of the item currently playing.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -25,7 +26,7 @@
 	<channel-type id="playing-item-name-channel">
 		<item-type>String</item-type>
 		<label>Playing Item Name</label>
-		<description>Name of the item currently playing</description>
+		<description>Name (title) of the item currently playing.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -34,8 +35,8 @@
 	</channel-type>
 	<channel-type id="playing-item-series-name-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Series Name</label>
-		<description>Name of the item's series currently playing, only have value when item is an episode</description>
+		<label>Series Name</label>
+		<description>Series name for the currently playing item. Present only when the item is an episode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -44,8 +45,8 @@
 	</channel-type>
 	<channel-type id="playing-item-season-name-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Season Name</label>
-		<description>Name of the item's season currently playing, only have value when item is an episode</description>
+		<label>Season Name</label>
+		<description>Season name for the currently playing item. Present only when the item is an episode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -54,8 +55,8 @@
 	</channel-type>
 	<channel-type id="playing-item-season-channel">
 		<item-type>Number</item-type>
-		<label>Playing Item Season</label>
-		<description>Number of the item's season currently playing, only have value when item is an episode</description>
+		<label>Season Number</label>
+		<description>Season number of the currently playing episode (integer). Present only when item is an episode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -64,8 +65,8 @@
 	</channel-type>
 	<channel-type id="playing-item-episode-channel">
 		<item-type>Number</item-type>
-		<label>Playing Item Episode</label>
-		<description>Number of the episode item currently playing, only have value when item is an episode</description>
+		<label>Episode Number</label>
+		<description>Episode number of the currently playing episode (integer). Present only when item is an episode.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -74,8 +75,8 @@
 	</channel-type>
 	<channel-type id="playing-item-genres-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Genres</label>
-		<description>Comma separated list of genres of the item currently playing</description>
+		<label>Genres</label>
+		<description>Comma-separated list of genres for the currently playing item.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -84,8 +85,8 @@
 	</channel-type>
 	<channel-type id="playing-item-type-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Type</label>
-		<description>Type of the item currently playing</description>
+		<label>Item Type</label>
+		<description>Media type of the currently playing item (e.g. Movie, Episode, Music).</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -94,11 +95,11 @@
 	</channel-type>
 	<channel-type id="playing-item-percentage-channel">
 		<item-type>Dimmer</item-type>
-		<label>Playing Item Percentage</label>
+		<label>Playback Percentage</label>
 		<description>
 			<![CDATA[
-			<p>Current playback position as a percentage (0-100%).</p>
-			<p>This channel allows both reading the current position and seeking to a new position by setting a percentage value.</p>
+			<p>Current playback position as a percentage (0–100%).</p>
+			<p>Read the current position or send a percentage to seek. Values outside the 0–100 range are ignored.</p>
 			]]>
 		</description>
 		<tags>
@@ -108,34 +109,35 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="playing-item-second-channel">
-		<item-type>Number</item-type>
-		<label>Playing Item Second</label>
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Playback Position</label>
 		<description>
 			<![CDATA[
-			<p>Current playback position in seconds.</p>
-			<p>This channel allows both reading the current position and seeking to a specific time by setting a value in seconds.</p>
+			<p>Current playback position.</p>
+			<p>Read the current position or send a value (in seconds) to seek to that timestamp.</p>
 			]]>
 		</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Progress</tag>
 		</tags>
+		<state pattern="%.0f %unit%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="playing-item-total-seconds-channel">
-		<item-type>Number</item-type>
-		<label>Playing Item Total Seconds</label>
-		<description>Total seconds for the item currently playing</description>
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Total Duration</label>
+		<description>Total duration of the currently playing item. Read-only.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="play-by-terms-channel">
 		<item-type>String</item-type>
-		<label>Play By Terms</label>
-		<description>Play media by terms, works for series, episodes and movies</description>
+		<label>Play by Terms</label>
+		<description>Play media matching the given search terms (title, series, or other metadata).</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -143,8 +145,8 @@
 	</channel-type>
 	<channel-type id="play-next-by-terms-channel">
 		<item-type>String</item-type>
-		<label>Play Next By Terms</label>
-		<description>Add to playback queue as next by terms; works for series, episodes and movies</description>
+		<label>Play Next by Terms</label>
+		<description>Add the first media matching the terms as the next item in the playback queue.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -152,8 +154,8 @@
 	</channel-type>
 	<channel-type id="play-last-by-terms-channel">
 		<item-type>String</item-type>
-		<label>Play Last By Terms</label>
-		<description>Add to playback queue as last by terms; works for series, episodes and movies</description>
+		<label>Play Last by Terms</label>
+		<description>Add the first media matching the terms to the end of the playback queue.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -161,8 +163,8 @@
 	</channel-type>
 	<channel-type id="browse-by-terms-channel">
 		<item-type>String</item-type>
-		<label>Browse By Terms</label>
-		<description>Browse media by terms, works for series, episodes and movies</description>
+		<label>Browse by Terms</label>
+		<description>Query the server for media matching the given search terms.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -170,8 +172,8 @@
 	</channel-type>
 	<channel-type id="play-by-id-channel">
 		<item-type>String</item-type>
-		<label>Play By Id</label>
-		<description>Play media by id</description>
+		<label>Play by ID</label>
+		<description>Play a media item identified by the given server ID.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -179,8 +181,8 @@
 	</channel-type>
 	<channel-type id="play-next-by-id-channel">
 		<item-type>String</item-type>
-		<label>Play Next By Id</label>
-		<description>Add to playback queue as next by id</description>
+		<label>Play Next by ID</label>
+		<description>Add the specified media ID as the next item in the playback queue.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -188,8 +190,8 @@
 	</channel-type>
 	<channel-type id="play-last-by-id-channel">
 		<item-type>String</item-type>
-		<label>Play Last By Id</label>
-		<description>Add to playback queue as last by id</description>
+		<label>Play Last by ID</label>
+		<description>Add the specified media ID to the end of the playback queue.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -197,8 +199,8 @@
 	</channel-type>
 	<channel-type id="browse-by-id-channel">
 		<item-type>String</item-type>
-		<label>Browse By Id</label>
-		<description>Browse media by id</description>
+		<label>Browse by ID</label>
+		<description>Retrieve metadata or browse media based on the specified server ID.</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>
@@ -211,7 +213,7 @@
 			<![CDATA[
 			<p>Stop playback control.</p>
 			<p>Send <b>ON</b> to stop playback. This ends playback and may reset the playback position depending on the client.</p>
-			<p><b>Note:</b> Use the <code>media-control</code> channel for play, pause, next, previous, fast-forward, and rewind commands.</p>
+			<p><b>Note:</b> Use the <em>media-control</em> channel for play, pause, next, previous, fast-forward, and rewind commands.</p>
 			]]>
 		</description>
 		<tags>
@@ -226,7 +228,7 @@
 			<![CDATA[
 			<p>Toggle shuffle mode for the playback queue.</p>
 			<p>
-				<b>ON</b>: Items in the queue will play in random order.<br/>
+				<b>ON</b>: Items in the queue will play in random order.<br />
 				<b>OFF</b>: Items in the queue will play in sequential order.
 			</p>
 			]]>
@@ -335,8 +337,10 @@
 	<channel-type id="playing-item-image-channel">
 		<item-type>Image</item-type>
 		<label>Now Playing Image</label>
-		<description>Cover art image for the currently playing item. The image is fetched from the Jellyfin server and
-			published as binary data.</description>
+		<description><![CDATA[
+			<p>Cover art image for the currently playing item.</p>
+			<p>The image is fetched from the Jellyfin server and published as binary data. The image type (Primary, Backdrop, etc.) and maximum width are configurable per client.</p>
+		]]></description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
