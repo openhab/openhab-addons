@@ -73,7 +73,7 @@ class ClientHandlerInitializeTest {
         ThingStatusInfo status = statusCaptor.getValue();
         assertEquals(ThingStatus.OFFLINE, status.getStatus());
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
-        assertEquals("No bridge configured for client", status.getDescription());
+        assertEquals("@text/error.configuration.no-bridge", status.getDescription());
 
         // The internal deviceId field must equal the serialNumber, not the ThingUID segment.
         Field deviceIdField = ClientHandler.class.getDeclaredField("deviceId");
