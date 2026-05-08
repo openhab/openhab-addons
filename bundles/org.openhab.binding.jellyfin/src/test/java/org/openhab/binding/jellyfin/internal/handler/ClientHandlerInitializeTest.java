@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import java.lang.reflect.Field;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.openhab.binding.jellyfin.internal.config.ImageChannelConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
