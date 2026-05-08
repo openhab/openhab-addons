@@ -51,6 +51,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     private String fileName = "src/test/resources/home/home.json";
     private Map<String, String> patchMap = new HashMap<>();
+    private Map<String, String> setPatchMap = new HashMap<>();
     public static List<String> scenesAdded = new ArrayList<>();
     public static List<String> scenesDeleted = new ArrayList<>();
 
@@ -99,7 +100,27 @@ public class DirigeraAPISimu implements DirigeraAPI {
     public int sendSetAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
         data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
-        return sendPatch(id, data);
+        synchronized (setPatchMap) {
+            setPatchMap.put(id, data.toString());
+            setPatchMap.notifyAll();
+        }
+        return 200;
+    }
+
+    public @Nullable String getSetPatch(String id) {
+        Instant endTime = Instant.now().plusSeconds(10);
+        synchronized (setPatchMap) {
+            String patch = setPatchMap.get(id);
+            while (patch == null && Instant.now().isBefore(endTime)) {
+                try {
+                    setPatchMap.wait(100);
+                    patch = setPatchMap.get(id);
+                } catch (InterruptedException e) {
+                    fail();
+                }
+            }
+            return patch;
+        }
     }
 
     @Override
@@ -166,8 +187,19 @@ public class DirigeraAPISimu implements DirigeraAPI {
         }
     }
 
+    /**
+     * Returns the patch for the given id immediately without waiting (returns null if not present).
+     * Use this when asserting that a patch was NOT sent.
+     */
+    public @Nullable String peekPatch(String id) {
+        synchronized (patchMap) {
+            return patchMap.get(id);
+        }
+    }
+
     public void clear() {
         patchMap.clear();
+        setPatchMap.clear();
         scenesAdded.clear();
         scenesDeleted.clear();
     }

@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +33,9 @@ import org.slf4j.LoggerFactory;
  * Commands are sent to the hub via the /devices/set/{id} endpoint instead of /devices/{id}.
  * All four light capabilities are supported: on/off, brightness, color temperature, and color.
  *
+ * The handler registers under each member device ID so the gateway routes websocket updates
+ * to handleUpdate. The set is ONLINE if at least one member reports isReachable=true.
+ *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - add device set handling
  */
@@ -33,20 +43,121 @@ import org.slf4j.LoggerFactory;
 public class LightSetHandler extends ColorLightHandler {
     private final Logger logger = LoggerFactory.getLogger(LightSetHandler.class);
 
+    /** Tracks per-member reachability: memberId -> isReachable */
+    private final Map<String, Boolean> memberReachability = new HashMap<>();
+    /** Member device IDs belonging to this set */
+    private List<String> memberDeviceIds = new ArrayList<>();
+
     public LightSetHandler(Thing thing, Map<String, String> mapping, DirigeraStateDescriptionProvider stateProvider) {
         super(thing, mapping, stateProvider);
         super.setChildHandler(this);
     }
 
+    @Override
+    public void initializeDevice() {
+        // 1) Get all member device IDs for this set from the model
+        memberDeviceIds = gateway().model().getMemberDeviceIds(config.id);
+        if (memberDeviceIds.isEmpty()) {
+            logger.warn("DIRIGERA LIGHT_SET {} no member devices found for set id {}", thing.getLabel(), config.id);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "No member devices found for light set");
+            return;
+        }
+        if (customDebug) {
+            logger.info("DIRIGERA LIGHT_SET {} member devices: {}", thing.getLabel(), memberDeviceIds);
+        }
+
+        // initialize all members as not reachable
+        memberReachability.clear();
+        memberDeviceIds.forEach(id -> memberReachability.put(id, false));
+
+        updateProperties();
+
+        // 2) Register under each member device ID so the gateway routes their
+        // websocket updates to our handleUpdate
+        memberDeviceIds.forEach(memberId -> gateway().registerDevice(child, memberId));
+
+        // 3) Poll current state for each reachable member so the handler reaches ONLINE
+        // immediately without waiting for the first websocket event.
+        // Only call handleUpdate for reachable members — unreachable ones stay false in
+        // memberReachability (initialized above) and must not overwrite channel state.
+        for (String memberId : memberDeviceIds) {
+            JSONObject deviceState = gateway().api().readDevice(memberId);
+            if (deviceState.optBoolean(JSON_KEY_REACHABLE, false)) {
+                handleUpdate(deviceState);
+            }
+        }
+
+        // 4) If no member reported isReachable=true, go OFFLINE explicitly.
+        // This covers the case where readDevice returned empty/error for all members.
+        boolean anyReachable = memberReachability.values().stream().anyMatch(r -> r);
+        if (!anyReachable) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.device.status.not-reachable");
+        }
+    }
+
     /**
-     * Override sendAttributes to route all light set commands to /devices/set/{id}.
-     * This is the only behavioral difference from ColorLightHandler.
+     * Receives websocket updates from all registered member devices.
+     * Aggregates isReachable across all members: ONLINE if at least one is reachable.
+     * Delegates attribute updates (brightness, color, etc.) to the parent only when online.
+     */
+    @Override
+    public void handleUpdate(JSONObject update) {
+        if (customDebug) {
+            logger.info("DIRIGERA LIGHT_SET {} handleUpdate {}", thing.getLabel(), update);
+        }
+
+        if (update.has(JSON_KEY_REACHABLE)) {
+            // identify which member sent this update and track its reachability
+            String sourceId = update.optString(JSON_KEY_DEVICE_ID, "");
+            if (memberReachability.containsKey(sourceId)) {
+                memberReachability.put(sourceId, update.getBoolean(JSON_KEY_REACHABLE));
+            }
+
+            boolean anyReachable = memberReachability.values().stream().anyMatch(r -> r);
+            if (anyReachable) {
+                online = true;
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                online = false;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.device.status.not-reachable");
+            }
+
+            // strip isReachable so the parent handleUpdate does not override our status
+            JSONObject stripped = new JSONObject(update.toString());
+            stripped.remove(JSON_KEY_REACHABLE);
+            super.handleUpdate(stripped);
+        } else {
+            super.handleUpdate(update);
+        }
+    }
+
+    /**
+     * 3) Unregister from all member device IDs on dispose.
+     */
+    @Override
+    public void dispose() {
+        memberDeviceIds.forEach(memberId -> {
+            try {
+                gateway().unregisterDevice(child, memberId);
+            } catch (Exception e) {
+                logger.debug("DIRIGERA LIGHT_SET {} unregister {} failed: {}", thing.getLabel(), memberId,
+                        e.getMessage());
+            }
+        });
+        memberDeviceIds.clear();
+        memberReachability.clear();
+        super.dispose();
+    }
+
+    /**
+     * Override sendAttributes to route all commands to /devices/set/{id}.
      */
     @Override
     protected int sendAttributes(JSONObject attributes) {
-        if (customDebug) {
-            logger.info("DIRIGERA LIGHT_SET {} sending set attributes {}", thing.getLabel(), attributes);
-        }
+        logger.trace("DIRIGERA LIGHT_SET {} sending set attributes {}", thing.getLabel(), attributes);
         return super.sendSetAttributes(attributes);
     }
 }

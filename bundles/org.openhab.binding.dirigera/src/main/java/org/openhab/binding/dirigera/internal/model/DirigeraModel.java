@@ -240,6 +240,36 @@ public class DirigeraModel implements Model {
         return new JSONObject();
     }
 
+    /**
+     * Returns the list of member device IDs that belong to the given light set ID.
+     * A device is a member if its deviceSet array contains an entry with the given setId.
+     *
+     * @param setId the light set ID to query
+     * @return list of member device IDs
+     */
+    @Override
+    public synchronized List<String> getMemberDeviceIds(String setId) {
+        List<String> memberIds = new ArrayList<>();
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
+            Iterator<Object> entries = devices.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                if (entry.has(JSON_KEY_DEVICE_SET) && entry.has(JSON_KEY_DEVICE_ID)) {
+                    JSONArray deviceSets = entry.getJSONArray(JSON_KEY_DEVICE_SET);
+                    for (Object setObj : deviceSets) {
+                        JSONObject set = (JSONObject) setObj;
+                        if (setId.equals(set.getString(JSON_KEY_DEVICE_ID))) {
+                            memberIds.add(entry.getString(JSON_KEY_DEVICE_ID));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return memberIds;
+    }
+
     private void addedDeviceScene(String id) {
         DiscoveryResult result = identifiy(id);
         if (result != null) {

@@ -234,4 +234,13 @@ public interface Model {
      * @return Map with attributes for Thing properties
      */
     Map<String, Object> getPropertiesFor(String id);
+
+    /**
+     * Returns the list of member device IDs that belong to the given light set ID.
+     * A device is a member if its deviceSet array contains an entry with the given setId.
+     *
+     * @param setId the light set ID to query
+     * @return list of member device IDs
+     */
+    List<String> getMemberDeviceIds(String setId);
 }
