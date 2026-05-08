@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class ShellyApiConfiguration {
     private final Logger logger = LoggerFactory.getLogger(ShellyApiConfiguration.class);
 
-    public static class ShellyAuthCredentials {
+    private static class ShellyAuthCredentials {
         private final String userId;
         private final String password;
         private final String bearer;
@@ -49,7 +49,7 @@ public class ShellyApiConfiguration {
         }
     }
 
-    public static class ShellyApiUrls {
+    private static class ShellyApiUrls {
         private final String deviceApi;
         private final String websocketCallback;
         private final String eventCallback;
