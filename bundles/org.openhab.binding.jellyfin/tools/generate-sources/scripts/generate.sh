@@ -148,6 +148,9 @@ for i in "${VERSIONS[@]}"; do
         yq -oy ${FILENAME_JSON} >${FILENAME_YAML}
     fi
 
+    # Remove the JSON file — the YAML is the versioned input; JSON is a transient download
+    rm -f "${FILENAME_JSON}"
+
     # Check if the OpenAPI spec has the malformed TranscodeReasons schema
     # Jellyfin API versions 10.11.3+ (including 10.11.6) incorrectly define TranscodeReasons with
     # both an inline enum AND type:array with $ref, which confuses the OpenAPI generator

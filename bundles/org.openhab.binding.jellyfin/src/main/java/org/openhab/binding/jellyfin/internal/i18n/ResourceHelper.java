@@ -49,7 +49,7 @@ public class ResourceHelper {
             TranslationProvider tp = ctx.getService(ref);
             bundle = b;
             return tp;
-        } catch (Throwable t) {
+        } catch (Exception e) {
             // defensive: any OSGi issues should not break callers
         }
         return null;
@@ -73,7 +73,7 @@ public class ResourceHelper {
         try {
             String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
             return localizedString == null ? missingKey : localizedString;
-        } catch (Throwable t) {
+        } catch (Exception e) {
             return missingKey;
         }
     }

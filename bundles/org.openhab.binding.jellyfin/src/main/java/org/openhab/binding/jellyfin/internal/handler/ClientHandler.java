@@ -130,7 +130,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         String id = (String) thing.getConfiguration().get("serialNumber");
         if (id == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing required configuration: serialNumber");
+                    "@text/error.configuration.missing-serial-number");
             return;
         }
         deviceId = id;
@@ -138,20 +138,22 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         // Validate bridge connection
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured for client");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.configuration.no-bridge");
             return;
         }
 
         // Verify bridge is a ServerHandler
         ServerHandler serverHandler = getServerHandler();
         if (serverHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not a Jellyfin server");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.configuration.invalid-bridge");
             return;
         }
 
         // Check bridge online status
         if (bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Server bridge is not online");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.not-online");
             return;
         }
 
@@ -236,7 +238,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateClientState();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Server bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.offline");
             clearChannelStates();
         }
     }
@@ -247,7 +249,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
         // Reject commands if thing is not ONLINE
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.info("Cannot send {} - client {} is {}", command, deviceId, getThing().getStatus());
+            logger.debug("Cannot send {} - client {} is {}", command, deviceId, getThing().getStatus());
             return;
         }
 
@@ -336,17 +338,17 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Server bridge is not available or offline");
+                    "@text/error.bridge.unavailable");
             return;
         }
 
         synchronized (sessionLock) {
             if (currentSession == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device not connected to server");
+                        "@text/error.communication.device-not-connected");
             } else if (timeoutMonitor.isTimedOut()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "No session update received (timeout)");
+                        "@text/error.communication.session-timeout");
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -358,7 +360,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
      * the timeout period. Clears the session and brings the client offline.
      */
     private void onSessionTimeout() {
-        logger.info("[SESSION] Clearing session for device {} due to timeout", deviceId);
+        logger.debug("[SESSION] Clearing session for device {} due to timeout", deviceId);
         synchronized (sessionLock) {
             currentSession = null;
         }
