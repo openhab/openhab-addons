@@ -172,6 +172,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
+        if ((localConfig.enableWebRTC || localConfig.enableSip) && !validateBackchannelPorts(localConfig)) {
+            return;
+        }
+
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
 
@@ -193,7 +197,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
-        if (!parseSipExtensions(cfg.sipExtension).isEmpty()) {
+        if (parseSipExtensions(cfg.sipExtension).isEmpty()) {
             return;
         }
         int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
@@ -960,6 +964,52 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     private static boolean isValidPort(int port) {
         return port > 0 && port <= 65535;
+    }
+
+    private boolean validateBackchannelPorts(DahuaDoorConfiguration cfg) {
+        List<String> extensions = parseSipExtensions(cfg.sipExtension);
+        boolean useWebRtcBackchannel = cfg.enableWebRTC;
+        boolean useSipBackchannel = cfg.enableSip && !extensions.isEmpty();
+        if (!useWebRtcBackchannel && !useSipBackchannel) {
+            return true;
+        }
+
+        int backchannelCount = useWebRtcBackchannel ? Math.max(1, extensions.size()) : extensions.size();
+        int backchannelBase = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
+        int backchannelMax = backchannelBase + backchannelCount - 1;
+
+        if (!isValidPort(backchannelBase) || !isValidPort(backchannelMax)) {
+            String detail = String.format("Invalid backchannel port range %d-%d (go2rtcApiPort=%d, sipExtensions=%d)",
+                    backchannelBase, backchannelMax, cfg.go2rtcApiPort, extensions.size());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+            logger.warn(detail);
+            return false;
+        }
+
+        if (useSipBackchannel) {
+            int sipBase = cfg.localSipPort;
+            int sipMax = sipBase + extensions.size() - 1;
+            if (!isValidPort(sipBase) || !isValidPort(sipMax)) {
+                String detail = String.format("Invalid SIP port range %d-%d (localSipPort=%d, sipExtensions=%d)",
+                        sipBase, sipMax, cfg.localSipPort, extensions.size());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                logger.warn(detail);
+                return false;
+            }
+
+            if (rangesOverlap(sipBase, sipMax, backchannelBase, backchannelMax)) {
+                String detail = String.format("SIP/backchannel port ranges overlap (sip=%d-%d, backchannel=%d-%d)",
+                        sipBase, sipMax, backchannelBase, backchannelMax);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                logger.warn(detail);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean rangesOverlap(int startA, int endA, int startB, int endB) {
+        return Math.max(startA, startB) <= Math.min(endA, endB);
     }
 
     private List<String> parseSipExtensions(String sipExtension) {

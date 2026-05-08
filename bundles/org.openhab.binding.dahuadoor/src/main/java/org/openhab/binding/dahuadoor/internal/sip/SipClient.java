@@ -96,6 +96,7 @@ public class SipClient implements SipListener {
 
     private final Logger logger = LoggerFactory.getLogger(SipClient.class);
     private static final String BINDING_PREFIX = "dahuadoor";
+    private static final String USER_AGENT = "openHAB";
 
     // Configuration
     private final String vtoIp;
@@ -382,7 +383,7 @@ public class SipClient implements SipListener {
             request.addHeader(expiresHeader);
 
             // User-Agent
-            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList("openHAB/5.2.0"));
+            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList(USER_AGENT));
             request.addHeader(userAgentHeader);
 
             // Send
@@ -439,7 +440,7 @@ public class SipClient implements SipListener {
             ExpiresHeader expiresHeader = hdrFactory.createExpiresHeader(60);
             request.addHeader(expiresHeader);
 
-            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList("openHAB/5.2.0"));
+            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList(USER_AGENT));
             request.addHeader(userAgentHeader);
 
             // Add Authorization header with Digest
@@ -505,7 +506,7 @@ public class SipClient implements SipListener {
             ExpiresHeader expiresHeader = hdrFactory.createExpiresHeader(0);
             request.addHeader(expiresHeader);
 
-            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList("openHAB/5.2.0"));
+            UserAgentHeader userAgentHeader = hdrFactory.createUserAgentHeader(Arrays.asList(USER_AGENT));
             request.addHeader(userAgentHeader);
 
             ClientTransaction tx = provider.getNewClientTransaction(request);
@@ -855,7 +856,8 @@ public class SipClient implements SipListener {
                 return false;
             }
 
-            SipURI requestURI = addrFactory.createSipURI(target, vtoIp);
+            String encodedTarget = encodeUserPart(target);
+            SipURI requestURI = addrFactory.createSipURI(encodedTarget, vtoIp);
             requestURI.setPort(5060);
 
             SipURI fromURI = createLocalUserUri(addrFactory, vtoIp);
@@ -875,7 +877,6 @@ public class SipClient implements SipListener {
             SipURI contactUri = createLocalContactUri(addrFactory);
             contactUri.setPort(localSipPort);
             invite.addHeader(hdrFactory.createContactHeader(addrFactory.createAddress(contactUri)));
-            invite.addHeader(hdrFactory.createContentTypeHeader("application", "sdp"));
 
             byte[] sdpBytes = buildOutgoingOfferSdp().getBytes(StandardCharsets.UTF_8);
             ContentTypeHeader contentTypeHeader = hdrFactory.createContentTypeHeader("application", "sdp");

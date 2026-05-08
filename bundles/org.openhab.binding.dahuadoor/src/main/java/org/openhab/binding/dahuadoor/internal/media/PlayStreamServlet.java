@@ -566,14 +566,17 @@ public class PlayStreamServlet extends HttpServlet {
             return;
         }
 
-        String dahuaClientId = handler.assignClientForSession(sessionId);
+        @Nullable
+        String dahuaClientId = handler.getAssignedClientForSession(sessionId);
+        String safeClientId = dahuaClientId != null ? dahuaClientId : "unassigned";
+        String safeRequestedClientId = requestedClientId != null ? requestedClientId : "";
         String mappingKey = buildStreamClientKey(streamName, sessionId);
-        String mappingValue = dahuaClientId + "|" + (requestedClientId != null ? requestedClientId : "");
+        String mappingValue = safeClientId + "|" + safeRequestedClientId;
         String previous = lastLoggedSessionClientMapping.put(mappingKey, mappingValue);
 
         if (!mappingValue.equals(previous)) {
             LOGGER.info("WebRTC session mapping: stream='{}' sessionId='{}' dahuaClientId='{}' requestedClientId='{}'",
-                    streamName, sessionId, dahuaClientId, requestedClientId != null ? requestedClientId : "");
+                    streamName, sessionId, safeClientId, safeRequestedClientId);
         }
     }
 

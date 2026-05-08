@@ -335,7 +335,7 @@ public class SipBackchannelRtpRelay {
     private static byte @Nullable [] transcodePcm16LeToG711(byte[] packet, int payloadOffset, int length,
             RelayTarget target) {
         int payloadLength = length - payloadOffset;
-        if (payloadLength < 4 || (payloadLength % 2) != 0) {
+        if (payloadLength < 4 || (payloadLength % 4) != 0) {
             return null;
         }
 
