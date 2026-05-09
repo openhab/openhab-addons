@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +52,9 @@ import org.openhab.binding.tibber.internal.action.TibberActions;
 import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
+import org.openhab.binding.tibber.internal.history.TibberHistory;
+import org.openhab.binding.tibber.internal.history.TibberHistoryListener;
+import org.openhab.binding.tibber.internal.history.TibberHistorySeries;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
@@ -59,6 +63,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.scheduler.ScheduledCompletableFuture;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -91,9 +96,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Stian Kjoglum - Initial contribution
  * @author Bernd Weymann - Use common HttpClient, rework of Nullable fields
  * @author Bernd Weymann - Rework initialization
+ * @author Bernd Weymann - Add history support
+ * @author Bernd Weymann - Add history channel group
  */
 @NonNullByDefault
-public class TibberHandler extends BaseThingHandler {
+public class TibberHandler extends BaseThingHandler implements TibberHistoryListener {
     private static final int REQUEST_TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
     private final Random random = new Random();
@@ -102,6 +109,7 @@ public class TibberHandler extends BaseThingHandler {
     private final CronScheduler cron;
     private final Map<String, String> templates = new HashMap<>();
     private final TimeZoneProvider timeZoneProvider;
+    private final StorageService storageService;
 
     private final ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
     private TibberConfiguration tibberConfig = new TibberConfiguration();
@@ -113,6 +121,7 @@ public class TibberHandler extends BaseThingHandler {
     private Object calculatorLock = new Object();
     private int retryCounter = 0;
     private boolean isDisposed = true;
+    private @Nullable TibberHistory history;
 
     private TimeSeries priceCache = new TimeSeries(TimeSeries.Policy.REPLACE);
     private TimeSeries energyCache = new TimeSeries(TimeSeries.Policy.REPLACE);
@@ -123,12 +132,13 @@ public class TibberHandler extends BaseThingHandler {
     protected @Nullable PriceCalculator calculator;
 
     public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
-            TimeZoneProvider timeZoneProvider) {
+            TimeZoneProvider timeZoneProvider, StorageService storageService) {
         super(thing);
         this.httpClient = httpClient;
         this.cron = cron;
         this.bundleContext = bundleContext;
         this.timeZoneProvider = timeZoneProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -160,6 +170,34 @@ public class TibberHandler extends BaseThingHandler {
                                 averageCache);
                         break;
                 }
+            } else if (CHANNEL_GROUP_HISTORY.equals(group)) {
+                TibberHistory localHistory = this.history;
+                if (localHistory != null) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_YEARLY_CONSUMPTION:
+                        case CHANNEL_YEARLY_COST:
+                        case CHANNEL_YEARLY_PRODUCTION:
+                            localHistory.updateHistory(TibberHistory.TimeWindow.ANNUAL.fullUpdate());
+                            break;
+                        case CHANNEL_MONTHLY_CONSUMPTION:
+                        case CHANNEL_MONTHLY_COST:
+                        case CHANNEL_MONTHLY_PRODUCTION:
+                            localHistory.updateHistory(TibberHistory.TimeWindow.MONTHLY.fullUpdate());
+                            break;
+                        case CHANNEL_WEEKLY_CONSUMPTION:
+                        case CHANNEL_WEEKLY_COST:
+                        case CHANNEL_WEEKLY_PRODUCTION:
+                            localHistory.updateHistory(TibberHistory.TimeWindow.WEEKLY.fullUpdate());
+                            break;
+                        case CHANNEL_HISTORY_DAILY_CONSUMPTION:
+                        case CHANNEL_HISTORY_DAILY_COST:
+                        case CHANNEL_HISTORY_DAILY_PRODUCTION:
+                            localHistory.updateHistory(TibberHistory.TimeWindow.DAILY.fullUpdate());
+                            break;
+                        default:
+                            logger.debug("Unhandled history channel: {}", channelUID.getIdWithoutGroup());
+                    }
+                }
             }
         }
     }
@@ -172,6 +210,8 @@ public class TibberHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.configuration-error");
         } else {
+            // Create TibberHistory here (not in constructor) to ensure StorageService OSGi injection is complete
+            history = new TibberHistory(storageService, tibberConfig.homeid, this);
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
         }
@@ -198,6 +238,12 @@ public class TibberHandler extends BaseThingHandler {
             webSocket.stop();
         }
         this.webSocket = null;
+
+        TibberHistory history = this.history;
+        if (history != null) {
+            history.dispose(true);
+        }
+        this.history = null;
 
         super.dispose();
     }
@@ -691,6 +737,63 @@ public class TibberHandler extends BaseThingHandler {
             logger.warn("no resource found for path {}", fileName);
         }
         return EMPTY_VALUE;
+    }
+
+    /**
+     * {@link TibberHistoryListener} implementation.
+     * Called by {@link TibberHistory} when a time window has been fetched.
+     * When {@code series} is null the fetch is still in progress (status update only).
+     * When {@code series} is non-null the result is sent to all three history channels of the window.
+     */
+    @Override
+    public void historyUpdated(TibberHistory.TimeWindow window, @Nullable TibberHistorySeries series) {
+        if (series == null) {
+            // Fetch started — update status to show which window is loading
+            updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail(),
+                    "@text/status.history-update [\"" + window.name() + "\"]");
+            return;
+        }
+
+        Instant start = Instant.MIN;
+        if (!window.isFullUpdate()) {
+            start = Instant.now().minus(window.daysInWindow(), ChronoUnit.DAYS);
+        }
+
+        TibberHistory localHistory = this.history;
+        if (localHistory == null) {
+            logger.warn("historyUpdated called but history is null (disposed?)");
+            return;
+        }
+
+        TimeSeries consumptionSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
+                TibberHistorySeries.PURPOSE_CONSUMPTION);
+        logger.debug("History {} consumption series size: {}", window, consumptionSeries.size());
+        if (consumptionSeries.size() > 0) {
+            sendTimeSeries(
+                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-consumption"),
+                    consumptionSeries);
+        }
+
+        TimeSeries costSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
+                TibberHistorySeries.PURPOSE_COST);
+        logger.debug("History {} cost series size: {}", window, costSeries.size());
+        if (costSeries.size() > 0) {
+            sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-cost"),
+                    costSeries);
+        }
+
+        TimeSeries productionSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
+                TibberHistorySeries.PURPOSE_PRODUCTION);
+        logger.debug("History {} production series size: {}", window, productionSeries.size());
+        if (productionSeries.size() > 0) {
+            sendTimeSeries(
+                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-production"),
+                    productionSeries);
+        }
+
+        // Restore status (clear the "loading" message)
+        updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail());
+        logger.info("History update for {} completed", window.name());
     }
 
     /**
