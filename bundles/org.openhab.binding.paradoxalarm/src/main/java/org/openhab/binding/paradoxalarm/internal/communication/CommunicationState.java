@@ -318,6 +318,8 @@ public enum CommunicationState implements IResponseReceiver {
                 // Transition to ONLINE is deferred until the first complete RAM read cycle
                 // completes (see EvoCommunicator.receiveRamResponse).
                 comm.initializeData();
+            } else {
+                nextState().runPhase(communicator);
             }
         }
     },
