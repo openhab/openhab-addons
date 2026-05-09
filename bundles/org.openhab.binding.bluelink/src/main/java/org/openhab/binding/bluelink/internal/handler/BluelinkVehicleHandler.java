@@ -559,10 +559,13 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         }
         final Set<ChannelUID> currentChannels = getThing().getChannelsOfGroup(group).stream().map(Channel::getUID)
                 .collect(toUnmodifiableSet());
-        final ThingBuilder thingBuilder = editThing();
-        newChannels.stream().map(ChannelBuilder::build).filter(c -> !currentChannels.contains(c.getUID()))
-                .forEach(thingBuilder::withChannel);
-        updateThing(thingBuilder.build());
+        final List<Channel> channelsToAdd = newChannels.stream().map(ChannelBuilder::build)
+                .filter(c -> !currentChannels.contains(c.getUID())).toList();
+        if (!channelsToAdd.isEmpty()) {
+            final ThingBuilder thingBuilder = editThing();
+            channelsToAdd.forEach(thingBuilder::withChannel);
+            updateThing(thingBuilder.build());
+        }
     }
 
     private ChannelBuilder buildChannel(final String group, final String channelId, final String itemType,
