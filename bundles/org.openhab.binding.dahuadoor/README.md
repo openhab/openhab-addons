@@ -44,6 +44,11 @@ VTO2202 is a single-button outdoor station; VTO3211 is a dual-button outdoor sta
 | localSipPort  | integer | No       | 5060                    | Local UDP SIP listening port.                                                                                                                                                                |
 | sipRealm      | text    | No       | VDP                     | SIP authentication realm (default for Dahua VTO devices).                                                                                                                                    |
 
+**Snapshot persistence:**
+The binding stores snapshots in `snapshotPath` and reloads the latest snapshot on startup to restore the `door-image` channels.
+For VTO2202, the latest file is `Doorbell.jpg` and timestamped files are named `DoorBell_YYYY-MM-DD_HH-mm-ss.jpg`.
+For VTO3211, the latest files are `Doorbell-1.jpg` and `Doorbell-2.jpg`, with timestamped files named `DoorBell-1_YYYY-MM-DD_HH-mm-ss.jpg` and `DoorBell-2_YYYY-MM-DD_HH-mm-ss.jpg`.
+
 **Note on SIP configuration:**
 To enable SIP call signaling, set `enableSip=true` and configure at least one value in `sipExtension`.
 If your VTO requires a dedicated SIP password, set `sipPassword`; otherwise the binding uses `password`.

@@ -21,6 +21,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,6 +194,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
         }
 
+        restoreLastSnapshots();
+
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -333,6 +337,14 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
+        saveSnapshot(buffer, null);
+    }
+
+    public void saveSnapshot(byte @Nullable [] buffer, int lockNumber) {
+        saveSnapshot(buffer, Integer.valueOf(lockNumber));
+    }
+
+    private void saveSnapshot(byte @Nullable [] buffer, @Nullable Integer lockNumber) {
         final DahuaDoorConfiguration localConfig = config;
         if (localConfig == null) {
             logger.warn("Configuration not initialized");
@@ -354,8 +366,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).format(new Date());
-        String filename = localConfig.snapshotPath + "/DoorBell_" + timestamp + ".jpg";
+        String filename = localConfig.snapshotPath + "/DoorBell" + suffix + "_" + timestamp + ".jpg";
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
@@ -364,7 +377,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
 
         // Write buffer directly to latest snapshot file (avoids copy-from-source failures)
-        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell.jpg";
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell" + suffix + ".jpg";
         try (FileOutputStream fos = new FileOutputStream(new File(latestSnapshotFilename))) {
             fos.write(buffer);
         } catch (IOException e) {
@@ -374,12 +387,51 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     private void updateChannelImage(byte @Nullable [] buffer) {
+        updateImageChannel(CHANNEL_DOOR_IMAGE, buffer);
+    }
+
+    protected void updateImageChannel(String channelId, byte @Nullable [] buffer) {
         if (buffer == null || buffer.length == 0) {
-            updateState(CHANNEL_DOOR_IMAGE, UnDefType.UNDEF);
+            updateState(channelId, UnDefType.UNDEF);
             return;
         }
         RawType image = new RawType(buffer, "image/jpeg");
-        updateState(CHANNEL_DOOR_IMAGE, image);
+        updateState(channelId, image);
+    }
+
+    protected byte @Nullable [] readLatestSnapshot() {
+        return readLatestSnapshotInternal(null);
+    }
+
+    protected byte @Nullable [] readLatestSnapshot(int lockNumber) {
+        return readLatestSnapshotInternal(Integer.valueOf(lockNumber));
+    }
+
+    private byte @Nullable [] readLatestSnapshotInternal(@Nullable Integer lockNumber) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.snapshotPath.isEmpty()) {
+            return null;
+        }
+
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell" + suffix + ".jpg";
+        return readSnapshotFile(latestSnapshotFilename);
+    }
+
+    private byte @Nullable [] readSnapshotFile(String filename) {
+        Path path = Path.of(filename);
+        if (!Files.isRegularFile(path)) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            logger.warn("Could not read snapshot from '{}', check permissions and path", filename, e);
+            return null;
+        }
+    }
+
+    protected void restoreLastSnapshots() {
     }
 
     protected void handleButtonPressed() {
