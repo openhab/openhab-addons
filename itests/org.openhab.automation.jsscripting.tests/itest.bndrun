@@ -20,8 +20,8 @@ Import-Package: \
 
 -runbundles: \
 	biz.aQute.tester.junit-platform;version='[7.2.3,7.2.4)',\
-	ch.qos.logback.classic;version='[1.5.27,1.5.28)',\
-	ch.qos.logback.core;version='[1.5.27,1.5.28)',\
+	ch.qos.logback.classic;version='[1.5.32,1.5.33)',\
+	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
 	com.fasterxml.jackson.core.jackson-core;version='[2.21.2,2.21.3)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.21.2,2.21.3)',\
@@ -49,7 +49,7 @@ Import-Package: \
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
 	org.apache.felix.scr;version='[2.2.18,2.2.19)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
-	org.eclipse.equinox.event;version='[1.6.300,1.6.301)',\
+	org.eclipse.equinox.event;version='[1.7.300,1.7.301)',\
 	org.eclipse.jetty.http;version='[9.4.58,9.4.59)',\
 	org.eclipse.jetty.io;version='[9.4.58,9.4.59)',\
 	org.eclipse.jetty.security;version='[9.4.58,9.4.59)',\
