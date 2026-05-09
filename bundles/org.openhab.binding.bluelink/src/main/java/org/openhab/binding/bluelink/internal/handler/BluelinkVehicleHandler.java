@@ -48,6 +48,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -167,6 +168,17 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         }
 
         vehicle = null;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && vehicle == null) {
+            final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
+            final String vin = config.vin;
+            if (vin != null && !vin.isBlank()) {
+                scheduler.execute(() -> loadVehicle(vin));
+            }
+        }
     }
 
     @Override
