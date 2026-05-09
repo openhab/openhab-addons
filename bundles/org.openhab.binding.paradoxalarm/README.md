@@ -159,14 +159,14 @@ Currently binding supports the following panels: EVO192, EVO48 (not tested), EVO
     String paradoxSendCommand "Send command to IP150" {channel="paradoxalarm:ip150:ip150:communicationCommand"}
 
     String panelState "Paradox panel state: [%s]"<network> (Paradox) { channel = "paradoxalarm:ip150:ip150:communicationState" }
-    Number paradoxAcVoltage “Input Voltage: [%.1f V]” <energy> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:inputVoltage” }
-    Number paradoxDcVoltage “Board DC Voltage: [%.1f V]” <energy> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:boardVoltage” }
-    Number paradoxBatteryVoltage “Battery Voltage: [%.1f V]” <energy> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:batteryVoltage” }
-    DateTime paradoxTime “Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]” <time> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:panelTime” }
-    Switch paradoxAcTrouble “AC Trouble [%s]” <alarm> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:acTrouble” }
-    Switch paradoxBatteryTrouble “Battery Trouble [%s]” <alarm> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:batteryTrouble” }
-    Switch paradoxModuleSupervisionTrouble “Module Supervision Trouble [%s]” <alarm> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:moduleSupervisionTrouble” }
-    Switch paradoxCommunicationTrouble “Communication Trouble [%s]” <alarm> (Paradox) { channel = “paradoxalarm:panel:ip150:panel:communicationTrouble” }
+    Number paradoxAcVoltage "Input Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:inputVoltage" }
+    Number paradoxDcVoltage "Board DC Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:boardVoltage" }
+    Number paradoxBatteryVoltage "Battery Voltage: [%.1f V]" <energy> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryVoltage" }
+    DateTime paradoxTime "Paradox Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1tS]" <time> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:panelTime" }
+    Switch paradoxAcTrouble "AC Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:acTrouble" }
+    Switch paradoxBatteryTrouble "Battery Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:batteryTrouble" }
+    Switch paradoxModuleSupervisionTrouble "Module Supervision Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:moduleSupervisionTrouble" }
+    Switch paradoxCommunicationTrouble "Communication Trouble [%s]" <alarm> (Paradox) { channel = "paradoxalarm:panel:ip150:panel:communicationTrouble" }
 
 //PARTITIONS
     String partition1State "Magnetic sensors - Floor 1: [%s]" (Partitions) { channel = "paradoxalarm:partition:ip150:partition1:state" }
