@@ -734,7 +734,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_OTADONE:
                     logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                            "message.offline.status-error-fwcompleted");
+                            "offline.status-error-fwcompleted");
                     break;
                 case SHELLY2_EVENT_RESTART:
                     logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));

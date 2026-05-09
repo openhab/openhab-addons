@@ -78,7 +78,7 @@ public class ShellyBindingRuntimeConfig {
             result = true;
         }
         if (this.autoCoIoT != config.isAutoCoIoT()) {
-            this.autoCoIoT = !this.autoCoIoT;
+            this.autoCoIoT = config.isAutoCoIoT();
             result = true;
         }
         s = config.getLocalIP();
@@ -109,7 +109,7 @@ public class ShellyBindingRuntimeConfig {
     /**
      * Returns the configured HTTP port, or
      * {@link org.openhab.binding.shelly.internal.ShellyBindingConstants#DEFAULT_LOCAL_PORT}
-     * if no explicit port has been set via {@link #withHttpPort}.
+     * if no explicit port has been set.
      */
     public synchronized int getHttpPort() {
         int httpPort = this.httpPort;

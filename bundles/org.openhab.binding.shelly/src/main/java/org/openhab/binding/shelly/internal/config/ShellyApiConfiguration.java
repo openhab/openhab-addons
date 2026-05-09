@@ -96,7 +96,7 @@ public class ShellyApiConfiguration {
     private boolean eventsPush;
 
     // All access must be guarded by "this"
-    /** {@code true}: register for short/long push events */
+    /** {@code true}: register for roller events */
     private boolean eventsRoller;
 
     // All access must be guarded by "this"
@@ -110,11 +110,9 @@ public class ShellyApiConfiguration {
     // All access must be guarded by "this"
     private boolean enableRangeExtender;
 
-    // All access must be guarded by "this"
     /** Local ip addresses used to create callback url */
     private final String localIp;
 
-    // All access must be guarded by "this"
     /** Local port, used by callbacks through servlet */
     private final String localPort;
 
@@ -348,7 +346,7 @@ public class ShellyApiConfiguration {
         return enableRangeExtender;
     }
 
-    public String getLocalIp() {
+    public synchronized String getLocalIp() {
         return localIp;
     }
 
@@ -392,14 +390,17 @@ public class ShellyApiConfiguration {
      * Refreshes all fields derived from the thing configuration so that changes made via
      * {@code handleConfigurationUpdate()} (new credentials, device address, event flags, etc.)
      * take effect on the next re-initialization cycle without rebuilding the handler or API client.
-     * Thread-safe: every mutable field uses an atomic type.
      *
      * @param thingConfig refreshed thing configuration
      * @param bindingConfig current binding runtime configuration
      * @param gen2 true for Gen2+ devices
+     * @param newRealm mDNS service name or hostname to use as the new realm (may be empty to keep current)
      */
     public synchronized void updateFromThingConfig(ShellyThingConfiguration thingConfig,
-            ShellyBindingRuntimeConfig bindingConfig, boolean gen2) {
+            ShellyBindingRuntimeConfig bindingConfig, boolean gen2, String newRealm) {
+        if (!newRealm.isBlank()) {
+            realm = newRealm;
+        }
         credentials = new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
                 bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword());
 
@@ -422,8 +423,7 @@ public class ShellyApiConfiguration {
             String newHost = thingConfig.getDeviceIp();
             if (!newHost.equals(deviceHostAddress)) {
                 deviceHostAddress = newHost;
-                deviceSocketAddr = null; // force re-resolve on next resolveIp() call
-                resolveIp();
+                deviceSocketAddr = null; // cleared so resolveIp() re-resolves on next initializeThingConfig()
                 urls = new ShellyApiUrls(localIp, localPort, newHost);
             }
         }
