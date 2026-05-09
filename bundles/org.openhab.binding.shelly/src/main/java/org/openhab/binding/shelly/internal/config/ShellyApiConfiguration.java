@@ -20,8 +20,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -66,44 +64,67 @@ public class ShellyApiConfiguration {
         }
     }
 
+    // All access must be guarded by "this"
     /** Unresolved device hostname, can be an IP or a name, with or without a {@code :port} suffix */
-    private final AtomicReference<String> deviceHostAddress = new AtomicReference<>("");
+    private String deviceHostAddress;
 
+    // All access must be guarded by "this"
     /** Device IP with or without port or {@code null} */
-    private final AtomicReference<@Nullable InetSocketAddress> deviceSocketAddr = new AtomicReference<>();
+    private @Nullable InetSocketAddress deviceSocketAddr;
 
+    // All access must be guarded by "this"
     /** Bluetooth device address, a unique 48-bit identifier, similar to a MAC address */
-    private final AtomicReference<@Nullable String> deviceBdAddr = new AtomicReference<>();
-    private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(
-            new ShellyAuthCredentials("", "", "", "")); // auth credentials
-    private final AtomicReference<ShellyApiUrls> urls = new AtomicReference<>(new ShellyApiUrls("", "0", ""));
+    private @Nullable String deviceBdAddr;
 
-    private final AtomicBoolean eventsButton = new AtomicBoolean(false);
-    private final AtomicBoolean eventsSwitch = new AtomicBoolean(false);
-    private final AtomicBoolean eventsPush = new AtomicBoolean(false);
-    private final AtomicBoolean eventsRoller = new AtomicBoolean(false);
-    private final AtomicBoolean eventsSensorReport = new AtomicBoolean(false);
+    /** Auth credentials */
+    // All access must be guarded by "this"
+    private @Nullable ShellyAuthCredentials credentials;
+
+    // All access must be guarded by "this"
+    private ShellyApiUrls urls;
+
+    // All access must be guarded by "this"
+    /** {@code true}: register for Relay btn_xxx events */
+    private boolean eventsButton;
+
+    // All access must be guarded by "this"
+    /** {@code true}: register for device out_xxx events */
+    private boolean eventsSwitch;
+
+    // All access must be guarded by "this"
+    /** {@code true}: register for short/long push events */
+    private boolean eventsPush;
+
+    // All access must be guarded by "this"
+    /** {@code true}: register for short/long push events */
+    private boolean eventsRoller;
+
+    // All access must be guarded by "this"
+    /** {@code true}: register for sensor events */
+    private boolean eventsSensorReport;
 
     // Gen2
-    private final AtomicBoolean enableBluGateway = new AtomicBoolean(false);
-    private final AtomicBoolean enableRangeExtender = new AtomicBoolean(false);
+    // All access must be guarded by "this"
+    private boolean enableBluGateway;
 
-    private final String localIp; // local ip addresses used to create callback url
-    private final String localPort; // local port, used by callbacks through servlet
+    // All access must be guarded by "this"
+    private boolean enableRangeExtender;
 
-    /*
-     * The two fields below are intentionally mutable after construction:
-     *
-     * - realm: not known until the first /shelly response is parsed (hostname may be returned by
-     * the device only after getDeviceInfo() or getDeviceProfile() succeeds).
-     * - enableCoIOT: the auto-CoIoT feature (bindingConfig.autoCoIoT) promotes this flag from
-     * false → true at runtime after the firmware version is checked in checkVersion().
-     *
-     * Both use thread-safe atomic types and are the only allowed exceptions to the
-     * "immutable after construction" rule for ShellyApiConfiguration.
-     */
-    private final AtomicReference<String> realm = new AtomicReference<>("");
-    private final AtomicBoolean enableCoIOT = new AtomicBoolean(true); // true: CoIoT/COAP enabled, event urls disabled
+    // All access must be guarded by "this"
+    /** Local ip addresses used to create callback url */
+    private final String localIp;
+
+    // All access must be guarded by "this"
+    /** Local port, used by callbacks through servlet */
+    private final String localPort;
+
+    // All access must be guarded by "this"
+    /** mDNS service name or hostname provided by /shelly */
+    private String realm = "";
+
+    // All access must be guarded by "this"
+    /** {@code true}: CoIoT/COAP enabled, event urls disabled */
+    private boolean enableCoIOT = true;
 
     /**
      * Constructor for Thing handler — resolves the device hostname to an IP address.
@@ -137,38 +158,38 @@ public class ShellyApiConfiguration {
             String realm, boolean gen2, boolean resolveHostname) {
         this.localIp = bindingConfig.getLocalIP();
         this.localPort = String.valueOf(bindingConfig.getHttpPort());
-        this.realm.set(realm);
+        this.realm = realm;
 
         // deviceIP can be an IP address, IP address:port or a FQDN, which needs to be resolved
         // deviceAddress is the MAC address for BLU device or the resolved IP address
         String bdAddr = thingConfig.getDeviceAddress();
         if (!bdAddr.isBlank()) {
             // BLU: remove : from MAC address and convert to lower case
-            this.deviceBdAddr.set(bdAddr.toLowerCase(Locale.ROOT).replace(":", ""));
-            this.deviceHostAddress.set("");
+            this.deviceBdAddr = bdAddr.toLowerCase(Locale.ROOT).replace(":", "");
+            this.deviceHostAddress = "";
         } else {
-            this.deviceBdAddr.set(null);
+            this.deviceBdAddr = null;
             String host = thingConfig.getDeviceIp();
-            this.deviceHostAddress.set(host);
+            this.deviceHostAddress = host;
             if (resolveHostname) {
-                this.deviceSocketAddr.set(resolveSocketAddr(host));
+                this.deviceSocketAddr = resolveSocketAddr(host);
             }
         }
 
-        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
-                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword()));
+        credentials = new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
+                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword());
 
-        enableBluGateway.set(thingConfig.getEnableBluGateway());
-        enableRangeExtender.set(thingConfig.getEnableRangeExtender());
+        enableBluGateway = thingConfig.getEnableBluGateway();
+        enableRangeExtender = thingConfig.getEnableRangeExtender();
 
-        enableCoIOT.set(!gen2 && thingConfig.getEventsCoIoT());
-        eventsButton.set(thingConfig.getEventsButton());
-        eventsSwitch.set(thingConfig.getEventsSwitch());
-        eventsPush.set(thingConfig.getEventsPush());
-        eventsRoller.set(thingConfig.getEventsRoller());
-        eventsSensorReport.set(thingConfig.getEventsSensorReport());
+        enableCoIOT = gen2 ? false : thingConfig.getEventsCoIoT();
+        eventsButton = thingConfig.getEventsButton();
+        eventsSwitch = thingConfig.getEventsSwitch();
+        eventsPush = thingConfig.getEventsPush();
+        eventsRoller = thingConfig.getEventsRoller();
+        eventsSensorReport = thingConfig.getEventsSensorReport();
 
-        urls.set(new ShellyApiUrls(localIp, localPort, this.deviceHostAddress.get()));
+        urls = new ShellyApiUrls(localIp, localPort, deviceHostAddress);
     }
 
     /**
@@ -179,20 +200,20 @@ public class ShellyApiConfiguration {
      * @param host Device IP address/hostname
      */
     public ShellyApiConfiguration(ShellyBindingRuntimeConfig bindingConfig, String realm, String host) {
-        this.realm.set(realm); // mDNS service name or hostname provided by /shelly
-        this.deviceHostAddress.set(host);
-        this.deviceSocketAddr.set(resolveSocketAddr(host));
-        this.deviceBdAddr.set(null);
+        this.realm = realm; // mDNS service name or hostname provided by /shelly
+        this.deviceHostAddress = host;
+        this.deviceSocketAddr = resolveSocketAddr(host);
+        this.deviceBdAddr = null;
 
         localIp = bindingConfig.getLocalIP();
         localPort = String.valueOf(bindingConfig.getHttpPort());
-        credentials.set(new ShellyAuthCredentials(bindingConfig.getDefaultUserId(), bindingConfig.getDefaultPassword(),
-                "", ""));
+        credentials = new ShellyAuthCredentials(bindingConfig.getDefaultUserId(), bindingConfig.getDefaultPassword(),
+                "", "");
 
         // Disable all features not required in discovery mode
         // enableCoIOT defaults to true at class level, so explicitly clear it here
-        enableCoIOT.set(false);
-        urls.set(new ShellyApiUrls(localIp, localPort, host));
+        enableCoIOT = false;
+        urls = new ShellyApiUrls(localIp, localPort, host);
     }
 
     private @Nullable InetSocketAddress resolveSocketAddr(String hostname) {
@@ -207,24 +228,24 @@ public class ShellyApiConfiguration {
                     try {
                         portNum = Integer.parseInt(port);
                     } catch (NumberFormatException e) {
-                        logger.warn("{}: Invalid port number '{}' - ignoring", realm.get(), port);
+                        logger.warn("{}: Invalid port number '{}' - ignoring", realm, port);
                     }
                 }
                 result = new InetSocketAddress(addr, portNum);
                 String resultAddr = addr.getHostAddress();
                 if (!ip.equals(resultAddr) && logger.isDebugEnabled()) {
-                    logger.debug("{}: hostname {} resolved to IP address {}", realm.get(), hostname,
+                    logger.debug("{}: hostname {} resolved to IP address {}", realm, hostname,
                             resultAddr + (port.isEmpty() ? "" : ":" + port));
                 }
             } catch (UnknownHostException e) {
-                logger.debug("{}: Unable to resolve hostname {}", realm.get(), hostname);
+                logger.debug("{}: Unable to resolve hostname {}", realm, hostname);
             }
         } else {
-            logger.debug("{}: Hostname is missing", realm.get());
+            logger.debug("{}: Hostname is missing", realm);
             return null;
         }
         if (result == null) {
-            logger.debug("{}: Hostname '{}' is invalid", realm.get(), hostname);
+            logger.debug("{}: Hostname '{}' is invalid", realm, hostname);
         }
         return result;
     }
@@ -234,15 +255,15 @@ public class ShellyApiConfiguration {
      *
      * @return The unresolved device hostname.
      */
-    public String getDeviceHostAddress() {
-        return deviceHostAddress.get();
+    public synchronized String getDeviceHostAddress() {
+        return deviceHostAddress;
     }
 
     /**
      * @return The device IP or {@code null}.
      */
-    public @Nullable InetAddress getDeviceIpAddress() {
-        InetSocketAddress isa = deviceSocketAddr.get();
+    public synchronized @Nullable InetAddress getDeviceIpAddress() {
+        InetSocketAddress isa = deviceSocketAddr;
         return isa == null ? null : isa.getAddress();
     }
 
@@ -251,12 +272,12 @@ public class ShellyApiConfiguration {
      *
      * @return The device socket address or {@code null}.
      */
-    public @Nullable InetSocketAddress getDeviceSocketAddress() {
-        return deviceSocketAddr.get();
+    public synchronized @Nullable InetSocketAddress getDeviceSocketAddress() {
+        return deviceSocketAddr;
     }
 
-    public void setDeviceIp(@Nullable InetSocketAddress deviceIp) {
-        this.deviceSocketAddr.set(deviceIp);
+    public synchronized void setDeviceIp(@Nullable InetSocketAddress deviceIp) {
+        this.deviceSocketAddr = deviceIp;
     }
 
     /**
@@ -264,85 +285,87 @@ public class ShellyApiConfiguration {
      *
      * @return The Bluetooth device addres or {@code null}.
      */
-    public @Nullable String getBdAddr() {
-        return deviceBdAddr.get();
+    public synchronized @Nullable String getBdAddr() {
+        return deviceBdAddr;
     }
 
-    public String getUserId() {
-        return credentials.get().userId;
+    public synchronized String getUserId() {
+        ShellyAuthCredentials credentials = this.credentials;
+        return credentials == null ? "" : credentials.userId;
     }
 
-    public String getPassword() {
-        return credentials.get().password;
+    public synchronized String getPassword() {
+        ShellyAuthCredentials credentials = this.credentials;
+        return credentials == null ? "" : credentials.password;
     }
 
-    public void setCredentials(String userId, String password) {
-        ShellyAuthCredentials cred = new ShellyAuthCredentials("", "", userId, password);
-        credentials.set(cred);
+    public synchronized void setCredentials(String userId, String password) {
+        credentials = new ShellyAuthCredentials("", "", userId, password);
     }
 
-    public String getBearer() {
-        return credentials.get().bearer;
+    public synchronized String getBearer() {
+        ShellyAuthCredentials credentials = this.credentials;
+        return credentials == null ? "" : credentials.bearer;
     }
 
-    public boolean getEventsButton() {
-        return eventsButton.get();
+    public synchronized boolean getEventsButton() {
+        return eventsButton;
     }
 
-    public boolean getEventsSwitch() {
-        return eventsSwitch.get();
+    public synchronized boolean getEventsSwitch() {
+        return eventsSwitch;
     }
 
-    public boolean getEventsPush() {
-        return eventsPush.get();
+    public synchronized boolean getEventsPush() {
+        return eventsPush;
     }
 
-    public boolean getEventsRoller() {
-        return eventsRoller.get();
+    public synchronized boolean getEventsRoller() {
+        return eventsRoller;
     }
 
-    public boolean getEventsSensorReport() {
-        return eventsSensorReport.get();
+    public synchronized boolean getEventsSensorReport() {
+        return eventsSensorReport;
     }
 
-    public String getDeviceApiUrl() {
-        return urls.get().deviceApi;
+    public synchronized String getDeviceApiUrl() {
+        return urls.deviceApi;
     }
 
-    public String getEventCallbackUrl() {
-        return urls.get().eventCallback;
+    public synchronized String getEventCallbackUrl() {
+        return urls.eventCallback;
     }
 
-    public String getWebSocketCallback() {
-        return urls.get().websocketCallback;
+    public synchronized String getWebSocketCallback() {
+        return urls.websocketCallback;
     }
 
-    public boolean getEnableBluGateway() {
-        return enableBluGateway.get();
+    public synchronized boolean getEnableBluGateway() {
+        return enableBluGateway;
     }
 
-    public boolean getEnableRangeExtender() {
-        return enableRangeExtender.get();
+    public synchronized boolean getEnableRangeExtender() {
+        return enableRangeExtender;
     }
 
     public String getLocalIp() {
         return localIp;
     }
 
-    public boolean getEnableCoIOT() {
-        return enableCoIOT.get();
+    public synchronized boolean getEnableCoIOT() {
+        return enableCoIOT;
     }
 
-    public void setEnableCoIOT(boolean value) {
-        enableCoIOT.set(value);
+    public synchronized void setEnableCoIOT(boolean value) {
+        enableCoIOT = value;
     }
 
-    public String getRealm() {
-        return realm.get();
+    public synchronized String getRealm() {
+        return realm;
     }
 
-    public void setRealm(String value) {
-        realm.set(value);
+    public synchronized void setRealm(String value) {
+        realm = value;
     }
 
     /**
@@ -350,18 +373,18 @@ public class ShellyApiConfiguration {
      *
      * @return {@code true} if the IP address is resolved, {@code false} if it isn't.
      */
-    public boolean resolveIp() {
-        InetSocketAddress socketAddr = deviceSocketAddr.get();
+    public synchronized boolean resolveIp() {
+        InetSocketAddress socketAddr = deviceSocketAddr;
         if (socketAddr != null) {
             // Already resolved, just return
             return true;
         }
-        socketAddr = resolveSocketAddr(this.deviceHostAddress.get());
+        socketAddr = resolveSocketAddr(this.deviceHostAddress);
         if (socketAddr == null) {
-            logger.debug("{}: Failed to resolve hostname '{}'", realm.get(), deviceHostAddress.get());
+            logger.debug("{}: Failed to resolve hostname '{}'", realm, deviceHostAddress);
             return false;
         }
-        deviceSocketAddr.set(socketAddr);
+        deviceSocketAddr = socketAddr;
         return true;
     }
 
@@ -375,44 +398,45 @@ public class ShellyApiConfiguration {
      * @param bindingConfig current binding runtime configuration
      * @param gen2 true for Gen2+ devices
      */
-    public void updateFromThingConfig(ShellyThingConfiguration thingConfig, ShellyBindingRuntimeConfig bindingConfig,
-            boolean gen2) {
-        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
-                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword()));
+    public synchronized void updateFromThingConfig(ShellyThingConfiguration thingConfig,
+            ShellyBindingRuntimeConfig bindingConfig, boolean gen2) {
+        credentials = new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
+                bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword());
 
-        eventsButton.set(thingConfig.getEventsButton());
-        eventsSwitch.set(thingConfig.getEventsSwitch());
-        eventsPush.set(thingConfig.getEventsPush());
-        eventsRoller.set(thingConfig.getEventsRoller());
-        eventsSensorReport.set(thingConfig.getEventsSensorReport());
-        enableCoIOT.set(!gen2 && thingConfig.getEventsCoIoT());
-        enableBluGateway.set(thingConfig.getEnableBluGateway());
-        enableRangeExtender.set(thingConfig.getEnableRangeExtender());
+        eventsButton = thingConfig.getEventsButton();
+        eventsSwitch = thingConfig.getEventsSwitch();
+        eventsPush = thingConfig.getEventsPush();
+        eventsRoller = thingConfig.getEventsRoller();
+        eventsSensorReport = thingConfig.getEventsSensorReport();
+        enableCoIOT = !gen2 && thingConfig.getEventsCoIoT();
+        enableBluGateway = thingConfig.getEnableBluGateway();
+        enableRangeExtender = thingConfig.getEnableRangeExtender();
 
         String bdAddr = thingConfig.getDeviceAddress();
         if (!bdAddr.isBlank()) {
-            deviceBdAddr.set(bdAddr.toLowerCase(Locale.ROOT).replace(":", ""));
-            deviceHostAddress.set("");
-            deviceSocketAddr.set(null);
+            deviceBdAddr = bdAddr.toLowerCase(Locale.ROOT).replace(":", "");
+            deviceHostAddress = "";
+            deviceSocketAddr = null;
         } else {
-            deviceBdAddr.set(null);
+            deviceBdAddr = null;
             String newHost = thingConfig.getDeviceIp();
-            if (!newHost.equals(deviceHostAddress.get())) {
-                deviceHostAddress.set(newHost);
-                deviceSocketAddr.set(null); // force re-resolve on next resolveIp() call
-                urls.set(new ShellyApiUrls(localIp, localPort, newHost));
+            if (!newHost.equals(deviceHostAddress)) {
+                deviceHostAddress = newHost;
+                deviceSocketAddr = null; // force re-resolve on next resolveIp() call
+                resolveIp();
+                urls = new ShellyApiUrls(localIp, localPort, newHost);
             }
         }
     }
 
     @Override
-    public String toString() {
-        ShellyAuthCredentials cred = this.credentials.get();
-        String bdAddr = deviceBdAddr.get();
+    public synchronized String toString() {
+        ShellyAuthCredentials credentials = this.credentials;
+        String bdAddr = this.deviceBdAddr;
         return (bdAddr != null ? "Bluetooth device address=" + bdAddr + ", " : "") + "HTTP user/password=" + getUserId()
-                + "/" + (cred.password.isEmpty() ? "<none>" : "***") + "\n" + "Events: Button: " + eventsButton.get()
-                + ", Switch (on/off): " + eventsSwitch.get() + ", Push: " + eventsPush.get() + ", Roller: "
-                + eventsRoller.get() + ", Sensor: " + eventsSensorReport.get() + ", CoIoT: " + enableCoIOT.get() + "\n"
-                + "Blu Gateway=" + enableBluGateway.get() + ", Range Extender: " + enableRangeExtender.get();
+                + "/" + (credentials == null || credentials.password.isEmpty() ? "<none>" : "***") + "\n"
+                + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
+                + ", Roller: " + eventsRoller + ", Sensor: " + eventsSensorReport + ", CoIoT: " + enableCoIOT + "\n"
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
     }
 }

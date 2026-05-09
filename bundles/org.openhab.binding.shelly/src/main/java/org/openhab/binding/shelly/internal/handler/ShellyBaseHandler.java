@@ -184,8 +184,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private void updateApiConfig() {
         Map<String, String> properties = getThing().getProperties();
-        apiConfig.setRealm(getString(properties.get(PROPERTY_SERVICE_NAME)));
-        apiConfig.updateFromThingConfig(config, bindingConfig, gen2);
+        synchronized (apiConfig) {
+            apiConfig.setRealm(getString(properties.get(PROPERTY_SERVICE_NAME)));
+            apiConfig.updateFromThingConfig(config, bindingConfig, gen2);
+        }
     }
 
     @Override
