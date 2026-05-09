@@ -13,6 +13,7 @@ The binding supports various Thing types including RGB/RGBW controllers, tempera
 - `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 012C and 02CA sensor types)
 - `motion-sensor` - Motion Sensors for detecting movement
 - `lux-sensor` - Light Level Sensors for measuring illuminance
+- `date` - Date/Time device for reading and synchronising the device clock
 - `temperature` - (Deprecated) Use `temperature-sensor` instead
 
 ## Discovery
@@ -106,6 +107,12 @@ The color channel of RGBW controllers supports these additional parameters:
 |---------|--------|------------|---------------------------|
 | lux     | Number | R          | Light level in LUX units. |
 
+### Date/Time Device Channels
+
+| Channel  | Type     | Read/Write | Description                          |
+|----------|----------|------------|--------------------------------------|
+| datetime | DateTime | RW         | Current date and time on the device. |
+
 **Note:** All sensor channels require a `channelNumber` parameter to specify the physical channel number.
 
 ## Full Example
@@ -153,6 +160,8 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
         Channels:
             Type lux-channel : lux [ channelNumber=1 ]
     }
+    
+    Thing date datetime1 [ id=1, refresh=0 ]
 }
 ```
 
@@ -181,6 +190,9 @@ Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:motion-sensor:mybrid
 
 // Lux Sensor
 Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybridge:sensor_lux:lux" }
+
+// Date/Time Device
+DateTime Device_DateTime "Device Clock [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="sbus:date:mybridge:datetime1:datetime" }
 ```
 
 ## Usage Notes
