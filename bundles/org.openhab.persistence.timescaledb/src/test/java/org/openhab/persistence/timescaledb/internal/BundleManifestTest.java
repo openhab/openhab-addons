@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,9 +24,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.Manifest;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Verifies structural requirements of the OSGi bundle to ensure it deploys and integrates
@@ -105,15 +109,34 @@ class BundleManifestTest {
     }
 
     @Test
-    void jdbcUrlParameterDoesNotUseUrlContext() throws IOException {
+    void jdbcUrlParameterDoesNotUseUrlContext() throws Exception {
         Path configPath = Path.of("src/main/resources/OH-INF/config/timescaledb.xml");
         assertTrue(Files.exists(configPath), "OH-INF/config/timescaledb.xml is missing.");
 
-        String xml = Files.readString(configPath, StandardCharsets.UTF_8);
-        assertTrue(xml.contains("<parameter name=\"url\" type=\"text\""),
-                "timescaledb.xml must define a text parameter named 'url'.");
-        assertFalse(xml.contains("<context>url</context>"), "The JDBC URL parameter must not use context 'url': "
-                + "MainUI enforces http/https URL semantics and rejects jdbc:postgresql://... values.");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        Document doc = dbf.newDocumentBuilder().parse(configPath.toFile());
+
+        Element urlParameter = null;
+        NodeList parameters = doc.getElementsByTagName("parameter");
+        for (int i = 0; i < parameters.getLength(); i++) {
+            Element parameter = (Element) parameters.item(i);
+            if ("url".equals(parameter.getAttribute("name"))) {
+                urlParameter = parameter;
+                break;
+            }
+        }
+
+        assertNotNull(urlParameter, "timescaledb.xml must define a parameter named 'url'.");
+        assertEquals("text", urlParameter.getAttribute("type"),
+                "The 'url' parameter must remain a text field for JDBC URLs.");
+
+        NodeList contexts = urlParameter.getElementsByTagName("context");
+        for (int i = 0; i < contexts.getLength(); i++) {
+            String context = contexts.item(i).getTextContent().trim();
+            assertNotEquals("url", context, "The JDBC URL parameter must not use context 'url': "
+                    + "MainUI enforces http/https URL semantics and rejects jdbc:postgresql://... values.");
+        }
     }
 
     /**
