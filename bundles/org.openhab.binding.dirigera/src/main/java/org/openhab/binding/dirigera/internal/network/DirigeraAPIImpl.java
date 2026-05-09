@@ -155,7 +155,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return responseStatus;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA API send set failed {} failed {} {}", url, dataArray, e.getMessage());
+            logger.warn("DIRIGERA API send set to {} with {} failed: {}", url, dataArray, e.getMessage());
             return responseStatus;
         }
     }

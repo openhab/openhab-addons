@@ -20,8 +20,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -195,7 +197,9 @@ public class DirigeraModel implements Model {
      * @return list of unique light set IDs
      */
     synchronized List<String> getAllLightSetIds() {
-        List<String> setIds = new ArrayList<>();
+        // LinkedHashSet gives O(1) duplicate-check while preserving insertion order.
+        // List.contains() on an ArrayList would be O(n) per check, resulting in O(n²) overall.
+        Set<String> setIds = new LinkedHashSet<>();
         if (!model.isNull(MODEL_KEY_DEVICES)) {
             JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
             Iterator<Object> entries = devices.iterator();
@@ -205,15 +209,12 @@ public class DirigeraModel implements Model {
                     JSONArray deviceSets = entry.getJSONArray(JSON_KEY_DEVICE_SET);
                     deviceSets.forEach(setObj -> {
                         JSONObject set = (JSONObject) setObj;
-                        String setId = set.getString(JSON_KEY_DEVICE_ID);
-                        if (!setIds.contains(setId)) {
-                            setIds.add(setId);
-                        }
+                        setIds.add(set.getString(JSON_KEY_DEVICE_ID));
                     });
                 }
             }
         }
-        return setIds;
+        return new ArrayList<>(setIds);
     }
 
     /**

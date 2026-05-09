@@ -197,9 +197,18 @@ public class DirigeraAPISimu implements DirigeraAPI {
         }
     }
 
-    public void clear() {
+    /**
+     * Clears all recorded device and set patches. Convenience method so tests do not need
+     * to call patchMap and setPatchMap individually — adding a new patch map in the future
+     * only requires updating this single method.
+     */
+    public void clearPatches() {
         patchMap.clear();
         setPatchMap.clear();
+    }
+
+    public void clear() {
+        clearPatches();
         scenesAdded.clear();
         scenesDeleted.clear();
     }

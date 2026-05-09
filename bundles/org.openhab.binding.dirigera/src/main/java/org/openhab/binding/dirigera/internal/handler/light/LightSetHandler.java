@@ -15,9 +15,10 @@ package org.openhab.binding.dirigera.internal.handler.light;
 import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -44,10 +45,17 @@ import org.slf4j.LoggerFactory;
 public class LightSetHandler extends ColorLightHandler {
     private final Logger logger = LoggerFactory.getLogger(LightSetHandler.class);
 
-    /** Tracks per-member reachability: memberId -> isReachable */
-    private final Map<String, Boolean> memberReachability = new HashMap<>();
-    /** Member device IDs belonging to this set */
-    private final List<String> memberDeviceIds = new ArrayList<>();
+    /**
+     * Tracks per-member reachability: memberId -> isReachable.
+     * ConcurrentHashMap because handleUpdate() is called from the WebSocket thread
+     * while initializeDevice() / dispose() run on the openHAB framework thread.
+     */
+    private final Map<String, Boolean> memberReachability = new ConcurrentHashMap<>();
+    /**
+     * Member device IDs belonging to this set.
+     * Wrapped for thread-safety (see memberReachability note above).
+     */
+    private final List<String> memberDeviceIds = Collections.synchronizedList(new ArrayList<>());
 
     public LightSetHandler(Thing thing, Map<String, String> mapping, DirigeraStateDescriptionProvider stateProvider) {
         super(thing, mapping, stateProvider);
@@ -77,6 +85,8 @@ public class LightSetHandler extends ColorLightHandler {
 
         // 2) Register under the set ID itself (for future set-level events from the hub)
         // and under each member device ID so the gateway routes member websocket updates.
+        // registerDevice() does not throw checked exceptions; any gateway NPE is prevented
+        // by the null-guard in BaseHandler.gateway(), so no try-catch is needed here.
         gateway().registerDevice(child, config.id);
         memberDeviceIds.forEach(memberId -> gateway().registerDevice(child, memberId));
 
@@ -128,8 +138,9 @@ public class LightSetHandler extends ColorLightHandler {
                         "@text/dirigera.device.status.not-reachable");
             }
 
-            // strip isReachable so the parent handleUpdate does not override our status
-            JSONObject stripped = new JSONObject(update.toString());
+            // Strip isReachable so the parent handleUpdate does not override our status.
+            // Shallow copy via keySet() avoids the expensive toString()/parse round-trip.
+            JSONObject stripped = new JSONObject(update, update.keySet().toArray(new String[0]));
             stripped.remove(JSON_KEY_REACHABLE);
             super.handleUpdate(stripped);
         } else {
@@ -140,6 +151,10 @@ public class LightSetHandler extends ColorLightHandler {
     /**
      * Unregister from all member device IDs on dispose.
      * The set ID (config.id) is unregistered by super.dispose().
+     *
+     * Ordering rationale: member IDs are unregistered BEFORE super.dispose() so that
+     * no further WebSocket events are routed to this handler while BaseHandler tears down.
+     * super.dispose() is called last to ensure config.id is also unregistered cleanly.
      */
     @Override
     public void dispose() {
