@@ -102,11 +102,14 @@ public class ParadoxPanel implements IDataUpdateListener {
         dcLevel = Math.max(0, (firstRamPage[27] & 0xFF) * 22.8 / 255);
         batteryLevel = Math.max(0, (firstRamPage[26] & 0xFF) * 22.8 / 255);
 
-        byte[] secondRamPage = communicator.getMemoryMap().getElement(1);
-        moduleSupervisionTrouble = (secondRamPage[16] & 0x10) != 0;
-        batteryTrouble = (secondRamPage[17] & 0x40) != 0;
-        acTrouble = (secondRamPage[17] & 0x80) != 0;
-        communicationTrouble = (secondRamPage[18] & 0x04) != 0;
+        parseTroubleFlags(communicator.getMemoryMap().getElement(1));
+    }
+
+    public void parseTroubleFlags(byte[] ramBlock1) {
+        moduleSupervisionTrouble = (ramBlock1[13] & 0x08) != 0;
+        batteryTrouble = (ramBlock1[14] & 0x02) != 0;
+        acTrouble = (ramBlock1[14] & 0x01) != 0;
+        communicationTrouble = (ramBlock1[15] & 0x20) != 0;
     }
 
     protected ZonedDateTime constructPanelTime(byte[] firstPage) {
