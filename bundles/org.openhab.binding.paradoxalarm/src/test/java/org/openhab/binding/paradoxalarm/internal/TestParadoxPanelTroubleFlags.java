@@ -22,14 +22,17 @@ import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
  * Verifies that {@link ParadoxPanel#parseTroubleFlags} extracts the correct bits from RAM block 1.
  *
  * Byte/bit offsets are derived from the PAI EVO RAMDataParserMap[1] BitStruct
- * (paradox/hardware/evo/parsers.py) and validated against the PAI test suite
- * (tests/hardware/evo/test_parsers.py::test_parse_ram_1_troubles).
+ * (paradox/hardware/evo/parsers.py) and validated against live EVO192 RAM captures.
  *
- * RAM block 1 layout (relevant bytes):
- * byte 13: zone/module trouble flags — module_supervision_trouble = bit 3 (mask 0x08)
- * byte 14: battery/AC trouble flags — battery_failure_trouble = bit 1 (mask 0x02)
- * ac_trouble = bit 0 (mask 0x01)
- * byte 15: communication flags — com_pc_trouble = bit 5 (mask 0x20)
+ * Trouble flags are in RAMDataParserMap[1] (RAM block number 2 in PAI), but stored at
+ * memoryMap.getElement(0) (RAM block number 1 = first 64-byte page, 0-indexed).
+ * The troubles BitStruct starts at byte offset 13 within that page.
+ *
+ * RAM block 1 layout (relevant bytes, construct BitStruct MSB-first ordering):
+ * byte 13: module_supervision_trouble = bit 3 from LSB (mask 0x08)
+ * byte 14: battery_failure_trouble = bit 1 from LSB (mask 0x02)
+ *          ac_trouble = bit 0 from LSB (mask 0x01)
+ * byte 15: com_pc_trouble = bit 5 from LSB (mask 0x20)
  */
 @NonNullByDefault
 public class TestParadoxPanelTroubleFlags {

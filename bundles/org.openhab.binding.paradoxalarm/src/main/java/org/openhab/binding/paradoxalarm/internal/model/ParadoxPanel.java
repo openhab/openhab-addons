@@ -102,7 +102,7 @@ public class ParadoxPanel implements IDataUpdateListener {
         dcLevel = Math.max(0, (firstRamPage[27] & 0xFF) * 22.8 / 255);
         batteryLevel = Math.max(0, (firstRamPage[26] & 0xFF) * 22.8 / 255);
 
-        parseTroubleFlags(communicator.getMemoryMap().getElement(1));
+        parseTroubleFlags(communicator.getMemoryMap().getElement(0));
     }
 
     public void parseTroubleFlags(byte[] ramBlock1) {
