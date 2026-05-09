@@ -115,6 +115,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     private TibberConfiguration tibberConfig = new TibberConfiguration();
     private @Nullable ScheduledFuture<?> watchdog;
     private @Nullable ScheduledCompletableFuture<?> cronDaily;
+    private @Nullable ScheduledCompletableFuture<?> cronHistory;
     private @Nullable TibberWebsocket webSocket;
     private @Nullable Boolean realtimeEnabled;
     private @Nullable String currencyUnit;
@@ -226,6 +227,12 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             cronDaily.cancel(true);
         }
         this.cronDaily = null;
+
+        ScheduledCompletableFuture<?> cronHistory = this.cronHistory;
+        if (cronHistory != null) {
+            cronHistory.cancel(true);
+        }
+        this.cronHistory = null;
 
         ScheduledFuture<?> watchdog = this.watchdog;
         if (watchdog != null) {
@@ -796,9 +803,102 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         logger.info("History update for {} completed", window.name());
     }
 
+    // -------------------------------------------------------------------------
+    // History: channel linking lifecycle
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        if (CHANNEL_GROUP_HISTORY.equals(channelUID.getGroupId())) {
+            logger.debug("History channel linked: {} — triggering initial fetch and starting cron", channelUID);
+            // Initial load when the first history channel is linked
+            scheduler.execute(this::updateHistoryChannels);
+            startHistoryCron();
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        if (CHANNEL_GROUP_HISTORY.equals(channelUID.getGroupId()) && !historyChannelsLinked()) {
+            logger.debug("Last history channel unlinked — stopping history cron");
+            stopHistoryCron();
+        }
+    }
+
     /**
-     * Tibber Actions
+     * Returns true when at least one channel in the history group is linked to an item.
      */
+    private boolean historyChannelsLinked() {
+        return getThing().getChannels().stream().map(Channel::getUID)
+                .filter(uid -> CHANNEL_GROUP_HISTORY.equals(uid.getGroupId())).anyMatch(this::isLinked);
+    }
+
+    /**
+     * Starts the daily cron job for history updates if not already running.
+     * Only schedules if at least one history channel is linked.
+     */
+    private void startHistoryCron() {
+        if (this.cronHistory != null || !historyChannelsLinked()) {
+            return;
+        }
+        // Run daily at 01:00 (offset from spot-price cron to spread API load)
+        cronHistory = cron.schedule(this::updateHistoryChannels, "30 0 1 ? * * *");
+        logger.debug("History cron scheduled");
+    }
+
+    /**
+     * Stops and clears the history cron job.
+     */
+    private void stopHistoryCron() {
+        ScheduledCompletableFuture<?> cronHistory = this.cronHistory;
+        if (cronHistory != null) {
+            cronHistory.cancel(true);
+        }
+        this.cronHistory = null;
+        logger.debug("History cron stopped");
+    }
+
+    /**
+     * Enqueues a partial update for all four time windows.
+     * Called by the daily cron job and on initial channel linking.
+     */
+    private void updateHistoryChannels() {
+        if (isDisposed || !historyChannelsLinked()) {
+            return;
+        }
+        TibberHistory localHistory = this.history;
+        if (localHistory == null) {
+            logger.debug("updateHistoryChannels: history not yet initialised");
+            return;
+        }
+        logger.debug("Scheduling partial history update for all windows");
+        for (TibberHistory.TimeWindow window : TibberHistory.TimeWindow.values()) {
+            localHistory.updateHistory(window.partialUpdate());
+        }
+    }
+
+    /**
+     * Explicitly fetches (full update) a single time window.
+     * Called by the {@code fetchHistory} ThingAction.
+     *
+     * @param window the time window to fetch
+     */
+    public void fetchHistory(TibberHistory.TimeWindow window) {
+        TibberHistory localHistory = this.history;
+        if (localHistory == null) {
+            logger.warn("fetchHistory called but history is not initialised (Thing OFFLINE?)");
+            return;
+        }
+        logger.info("ThingAction fetchHistory triggered for window {}", window);
+        localHistory.updateHistory(window.fullUpdate());
+    }
+
+    // -------------------------------------------------------------------------
+    // Tibber Actions
+    // -------------------------------------------------------------------------
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(TibberActions.class);
