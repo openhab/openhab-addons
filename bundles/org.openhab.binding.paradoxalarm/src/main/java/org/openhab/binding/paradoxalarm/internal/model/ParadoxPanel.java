@@ -128,8 +128,11 @@ public class ParadoxPanel implements IDataUpdateListener {
         zones = new ArrayList<>();
         Map<Integer, String> zoneLabels = communicator.getZoneLabels();
         for (int i = 0; i < zoneLabels.size(); i++) {
-            Zone zone = new Zone(this, i + 1, zoneLabels.get(i));
-            zones.add(zone);
+            String label = zoneLabels.get(i);
+            if (label == null || label.isBlank()) {
+                label = "Zone " + (i + 1);
+            }
+            zones.add(new Zone(this, i + 1, label));
         }
         return zones;
     }
@@ -138,7 +141,11 @@ public class ParadoxPanel implements IDataUpdateListener {
         partitions = new ArrayList<>();
         Map<Integer, String> partitionLabels = communicator.getPartitionLabels();
         for (int i = 0; i < partitionLabels.size(); i++) {
-            Partition partition = new Partition(this, i + 1, partitionLabels.get(i));
+            String label = partitionLabels.get(i);
+            if (label == null || label.isBlank()) {
+                label = "Partition " + (i + 1);
+            }
+            Partition partition = new Partition(this, i + 1, label);
             partitions.add(partition);
             logger.debug("Partition {}:\t{}", i + 1, partition.getState().getMainState());
         }
