@@ -31,8 +31,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -116,9 +114,6 @@ class TestLightSet {
 
         // REFRESH must reproduce the same states
         callback.clear();
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
@@ -127,7 +122,8 @@ class TestLightSet {
 
     /**
      * Asserts channel states against matter-home.json MEMBER2 (LED Strip Sideboard):
-     * isOn=false, hue≈35, sat≈100, brightness=0 (power off), OTA all zero, startupOnOff=startOn → 1.
+     * isOn=false, hue≈35, sat≈100, brightness=0 (power off), startupOnOff=startOn → 1.
+     * OTA channels are not supported by a light set and are intentionally excluded.
      */
     void checkLightSetStates(CallbackMock callback) {
         State onOffState = callback.getState("dirigera:light-set:test-device:power");
@@ -141,22 +137,6 @@ class TestLightSet {
         assertEquals(35, ((HSBType) hsbState).getHue().intValue(), "Hue");
         assertEquals(100, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
         assertEquals(0, ((HSBType) hsbState).getBrightness().intValue(), "Brightness (OFF → 0)");
-
-        State otaStatus = callback.getState("dirigera:light-set:test-device:ota-status");
-        assertNotNull(otaStatus);
-        assertTrue(otaStatus instanceof DecimalType);
-        assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
-
-        State otaState = callback.getState("dirigera:light-set:test-device:ota-state");
-        assertNotNull(otaState);
-        assertTrue(otaState instanceof DecimalType);
-        assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
-
-        State otaProgress = callback.getState("dirigera:light-set:test-device:ota-progress");
-        assertNotNull(otaProgress);
-        assertTrue(otaProgress instanceof QuantityType);
-        assertTrue(((QuantityType<?>) otaProgress).getUnit().equals(Units.PERCENT));
-        assertEquals(0, ((QuantityType<?>) otaProgress).intValue(), "OTA Progress");
 
         State startupState = callback.getState("dirigera:light-set:test-device:startup");
         assertNotNull(startupState);

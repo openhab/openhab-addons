@@ -33,8 +33,9 @@ import org.slf4j.LoggerFactory;
  * Commands are sent to the hub via the /devices/set/{id} endpoint instead of /devices/{id}.
  * All four light capabilities are supported: on/off, brightness, color temperature, and color.
  *
- * The handler registers under each member device ID so the gateway routes websocket updates
- * to handleUpdate. The set is ONLINE if at least one member reports isReachable=true.
+ * The handler registers under the set ID (config.id) as well as each member device ID so the
+ * gateway routes websocket updates to handleUpdate for both set-level and member-level events.
+ * The set is ONLINE if at least one member reports isReachable=true.
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - add device set handling
@@ -46,7 +47,7 @@ public class LightSetHandler extends ColorLightHandler {
     /** Tracks per-member reachability: memberId -> isReachable */
     private final Map<String, Boolean> memberReachability = new HashMap<>();
     /** Member device IDs belonging to this set */
-    private List<String> memberDeviceIds = new ArrayList<>();
+    private final List<String> memberDeviceIds = new ArrayList<>();
 
     public LightSetHandler(Thing thing, Map<String, String> mapping, DirigeraStateDescriptionProvider stateProvider) {
         super(thing, mapping, stateProvider);
@@ -56,7 +57,8 @@ public class LightSetHandler extends ColorLightHandler {
     @Override
     public void initializeDevice() {
         // 1) Get all member device IDs for this set from the model
-        memberDeviceIds = gateway().model().getMemberDeviceIds(config.id);
+        memberDeviceIds.clear();
+        memberDeviceIds.addAll(gateway().model().getMemberDeviceIds(config.id));
         if (memberDeviceIds.isEmpty()) {
             logger.warn("DIRIGERA LIGHT_SET {} no member devices found for set id {}", thing.getLabel(), config.id);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -73,8 +75,9 @@ public class LightSetHandler extends ColorLightHandler {
 
         updateProperties();
 
-        // 2) Register under each member device ID so the gateway routes their
-        // websocket updates to our handleUpdate
+        // 2) Register under the set ID itself (for future set-level events from the hub)
+        // and under each member device ID so the gateway routes member websocket updates.
+        gateway().registerDevice(child, config.id);
         memberDeviceIds.forEach(memberId -> gateway().registerDevice(child, memberId));
 
         // 3) Poll current state for each reachable member so the handler reaches ONLINE
@@ -135,7 +138,8 @@ public class LightSetHandler extends ColorLightHandler {
     }
 
     /**
-     * 3) Unregister from all member device IDs on dispose.
+     * Unregister from all member device IDs on dispose.
+     * The set ID (config.id) is unregistered by super.dispose().
      */
     @Override
     public void dispose() {
