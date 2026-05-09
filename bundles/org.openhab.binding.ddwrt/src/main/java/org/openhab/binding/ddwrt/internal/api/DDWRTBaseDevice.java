@@ -728,6 +728,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     // Catch-all: prevent unchecked exceptions (e.g. from dead SSH session)
                     // from killing the refresh thread. Log and continue so the device can
                     // recover on the next refresh cycle via ensureSession().
+                    online = false;
+                    DDWRTThingUpdater u = updater;
+                    if (u != null) {
+                        u.updateChannel("online", OnOffType.OFF);
+                    }
                     logger.warn("Refresh failed for {}, will retry next cycle: {}", hostname, e.getMessage());
                     logger.debug("Refresh exception details", e);
                 } finally {
@@ -1089,6 +1094,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             online = false;
             DDWRTThingUpdater u = updater;
             if (u != null) {
+                u.updateChannel("online", OnOffType.OFF);
                 u.reportOffline("@text/offline.ssh-session-unavailable");
             }
             return;
