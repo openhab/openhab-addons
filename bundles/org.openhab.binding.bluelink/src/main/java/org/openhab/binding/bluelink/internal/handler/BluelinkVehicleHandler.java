@@ -586,7 +586,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     /**
      * Reschedule the forced refresh so the first execution starts in 10 seconds.
      */
-    private void scheduleForceRefresh() {
+    private synchronized void scheduleForceRefresh() {
         final ScheduledFuture<?> job = forceRefreshJob;
         if (job != null) {
             job.cancel(false);
