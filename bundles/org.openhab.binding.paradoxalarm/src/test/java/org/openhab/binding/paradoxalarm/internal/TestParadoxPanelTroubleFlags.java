@@ -31,7 +31,7 @@ import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
  * RAM block 1 layout (relevant bytes, construct BitStruct MSB-first ordering):
  * byte 13: module_supervision_trouble = bit 3 from LSB (mask 0x08)
  * byte 14: battery_failure_trouble = bit 1 from LSB (mask 0x02)
- *          ac_trouble = bit 0 from LSB (mask 0x01)
+ * ac_trouble = bit 0 from LSB (mask 0x01)
  * byte 15: com_pc_trouble = bit 5 from LSB (mask 0x20)
  */
 @NonNullByDefault
