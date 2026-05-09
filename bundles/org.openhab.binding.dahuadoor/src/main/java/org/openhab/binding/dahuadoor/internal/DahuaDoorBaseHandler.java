@@ -368,7 +368,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         String suffix = lockNumber == null ? "" : "-" + lockNumber;
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).format(new Date());
-        String filename = localConfig.snapshotPath + "/DoorBell" + suffix + "_" + timestamp + ".jpg";
+        String filename = localConfig.snapshotPath + "/Doorbell" + suffix + "_" + timestamp + ".jpg";
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
@@ -383,6 +383,51 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         } catch (IOException e) {
             logger.warn("Could not write latest snapshot to '{}', check permissions and path", latestSnapshotFilename,
                     e);
+        }
+
+        cleanupOldSnapshots(lockNumber);
+    }
+
+    private void cleanupOldSnapshots(@Nullable Integer lockNumber) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.snapshotPath.isEmpty() || localConfig.maxImages <= 0) {
+            return;
+        }
+
+        Path snapshotDir = Path.of(localConfig.snapshotPath);
+        if (!Files.isDirectory(snapshotDir)) {
+            return;
+        }
+
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
+        String prefix = "Doorbell" + suffix + "_";
+        List<Path> candidates = new ArrayList<>();
+
+        try (var stream = Files.list(snapshotDir)) {
+            stream.filter(path -> {
+                String name = path.getFileName().toString();
+                return name.startsWith(prefix) && name.endsWith(".jpg");
+            }).forEach(candidates::add);
+        } catch (IOException e) {
+            logger.warn("Could not list snapshot directory '{}', check permissions and path", localConfig.snapshotPath,
+                    e);
+            return;
+        }
+
+        int maxImages = localConfig.maxImages;
+        if (candidates.size() <= maxImages) {
+            return;
+        }
+
+        candidates.sort((left, right) -> left.getFileName().toString().compareTo(right.getFileName().toString()));
+        int deleteCount = candidates.size() - maxImages;
+        for (int i = 0; i < deleteCount; i++) {
+            Path candidate = candidates.get(i);
+            try {
+                Files.deleteIfExists(candidate);
+            } catch (IOException e) {
+                logger.warn("Could not delete snapshot '{}', check permissions and path", candidate, e);
+            }
         }
     }
 
