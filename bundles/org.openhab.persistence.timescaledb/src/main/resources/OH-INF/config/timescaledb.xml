@@ -17,7 +17,6 @@
 		</parameter-group>
 
 		<parameter name="url" type="text" required="true" groupName="connection">
-			<context>url</context>
 			<label>JDBC URL</label>
 			<description>JDBC connection URL, e.g. jdbc:postgresql://localhost:5432/openhab</description>
 		</parameter>

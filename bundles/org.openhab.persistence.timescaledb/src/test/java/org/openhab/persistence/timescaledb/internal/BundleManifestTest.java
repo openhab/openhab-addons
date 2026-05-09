@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -101,6 +102,18 @@ class BundleManifestTest {
         assertTrue(Files.exists(Path.of("src/main/resources/OH-INF/addon/addon.xml")),
                 "OH-INF/addon/addon.xml is missing — the addon will not appear in the openHAB UI. "
                         + "Create src/main/resources/OH-INF/addon/addon.xml.");
+    }
+
+    @Test
+    void jdbcUrlParameterDoesNotUseUrlContext() throws IOException {
+        Path configPath = Path.of("src/main/resources/OH-INF/config/timescaledb.xml");
+        assertTrue(Files.exists(configPath), "OH-INF/config/timescaledb.xml is missing.");
+
+        String xml = Files.readString(configPath, StandardCharsets.UTF_8);
+        assertTrue(xml.contains("<parameter name=\"url\" type=\"text\""),
+                "timescaledb.xml must define a text parameter named 'url'.");
+        assertFalse(xml.contains("<context>url</context>"), "The JDBC URL parameter must not use context 'url': "
+                + "MainUI enforces http/https URL semantics and rejects jdbc:postgresql://... values.");
     }
 
     /**
