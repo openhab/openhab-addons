@@ -40,6 +40,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
     public static final ThingTypeUID THING_TYPE_LUX_SENSOR = new ThingTypeUID(BINDING_ID, "lux-sensor");
+    public static final ThingTypeUID THING_TYPE_DATE = new ThingTypeUID(BINDING_ID, "date");
 
     // Channel IDs for Switch Device
     public static final String CHANNEL_SWITCH_STATE = "state";
@@ -60,6 +61,9 @@ public class BindingConstants {
     // Channel IDs for Lux Sensor Device
     public static final String CHANNEL_LUX = "lux";
 
+    // Channel IDs for Logic Module Device
+    public static final String CHANNEL_DATETIME = "datetime";
+
     // Channel Types
     public static final String CHANNEL_TYPE_COLOR = "color-channel";
     public static final String CHANNEL_TYPE_SWITCH = "switch-channel";
@@ -68,4 +72,5 @@ public class BindingConstants {
     public static final String CHANNEL_TYPE_CONTACT = "contact-channel";
     public static final String CHANNEL_TYPE_MOTION = "motion-channel";
     public static final String CHANNEL_TYPE_LUX = "lux-channel";
+    public static final String CHANNEL_TYPE_DATETIME = "datetime-channel";
 }
