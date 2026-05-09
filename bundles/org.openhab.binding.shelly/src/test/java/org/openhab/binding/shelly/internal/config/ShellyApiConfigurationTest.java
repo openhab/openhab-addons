@@ -204,14 +204,14 @@ public class ShellyApiConfigurationTest {
     private ShellyBindingRuntimeConfig bindingConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP));
-        return new ShellyBindingRuntimeConfig(raw, nullNas()).withHttpPort(8080);
+        return new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
     }
 
     private ShellyBindingRuntimeConfig bindingConfig(String userId, String password) {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(Map.of(
                 ShellyBindingConfiguration.CONFIG_LOCAL_IP, LOCAL_IP, ShellyBindingConfiguration.CONFIG_DEF_HTTP_USER,
                 userId, ShellyBindingConfiguration.CONFIG_DEF_HTTP_PWD, password));
-        return new ShellyBindingRuntimeConfig(raw, nullNas()).withHttpPort(8080);
+        return new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
     }
 
     private static NetworkAddressService nullNas() {

@@ -22,18 +22,27 @@ import org.openhab.core.net.NetworkAddressService;
  * Runtime binding configuration derived from {@link ShellyBindingConfiguration}.
  * Resolves the local IP address (config override wins; falls back to
  * {@link NetworkAddressService}) and carries the HTTP port once the OSGi HTTP
- * service has started. Immutable after construction; use {@link #withHttpPort}
- * to produce an updated copy.
+ * service has started. Thread-safe.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyBindingRuntimeConfig {
-    private final String defaultUserId;
-    private final String defaultPassword;
-    private final String localIP;
-    private final int httpPort; // -1 = use DEFAULT_LOCAL_PORT sentinel
-    private final boolean autoCoIoT;
+
+    // All access must be guarded by "this"
+    private String defaultUserId;
+
+    // All access must be guarded by "this"
+    private String defaultPassword;
+
+    // All access must be guarded by "this"
+    private String localIP;
+
+    // All access must be guarded by "this"
+    private int httpPort; // -1 = use DEFAULT_LOCAL_PORT sentinel
+
+    // All access must be guarded by "this"
+    private boolean autoCoIoT;
 
     /**
      * Build a runtime config from raw binding properties and the network address service.
@@ -41,44 +50,59 @@ public class ShellyBindingRuntimeConfig {
      * otherwise the primary IPv4 address from {@code nas} is used (link-local addresses
      * are discarded).
      */
-    public ShellyBindingRuntimeConfig(ShellyBindingConfiguration config, NetworkAddressService nas) {
+    public ShellyBindingRuntimeConfig(ShellyBindingConfiguration config, int httpPort, NetworkAddressService nas) {
         this.defaultUserId = config.getDefaultUserId();
         this.defaultPassword = config.getDefaultPassword();
         this.autoCoIoT = config.isAutoCoIoT();
-        this.httpPort = -1;
+        this.httpPort = httpPort;
         String cfgIp = config.getLocalIP();
         this.localIP = cfgIp.isBlank() ? resolveLocalIP(nas) : cfgIp;
     }
 
-    private ShellyBindingRuntimeConfig(String localIP, String defaultUserId, String defaultPassword, int httpPort,
-            boolean autoCoIoT) {
-        this.localIP = localIP;
-        this.defaultUserId = defaultUserId;
-        this.defaultPassword = defaultPassword;
-        this.httpPort = httpPort;
-        this.autoCoIoT = autoCoIoT;
-    }
-
     /**
-     * Returns a new instance identical to this one but with the given HTTP port.
-     * Called by {@link org.openhab.binding.shelly.internal.ShellyHandlerFactory} once the OSGi
-     * HTTP service port is known.
+     * Updates this runtime configuration based on the specified binding configuration.
+     *
+     * @param config the binding configuration.
+     * @param nas the {@link NetworkAddressService} used to resolve the local IP.
+     * @return {@code true} if at least one value was changed, {@code false} if no change occurred.
      */
-    public ShellyBindingRuntimeConfig withHttpPort(int httpPort) {
-        return new ShellyBindingRuntimeConfig(localIP, defaultUserId, defaultPassword, httpPort, autoCoIoT);
+    public synchronized boolean update(ShellyBindingConfiguration config, NetworkAddressService nas) {
+        boolean result = false;
+        String s = config.getDefaultUserId();
+        if (!s.equals(this.defaultUserId)) {
+            this.defaultUserId = s;
+            result = true;
+        }
+        if (!(s = config.getDefaultPassword()).equals(this.defaultPassword)) {
+            this.defaultPassword = s;
+            result = true;
+        }
+        if (this.autoCoIoT != config.isAutoCoIoT()) {
+            this.autoCoIoT = !this.autoCoIoT;
+            result = true;
+        }
+        s = config.getLocalIP();
+        if (s.isBlank()) {
+            s = resolveLocalIP(nas);
+        }
+        if (!s.equals(this.localIP)) {
+            this.localIP = s;
+            result = true;
+        }
+        return result;
     }
 
     // ── Getters ──────────────────────────────────────────────────────────────
 
-    public String getDefaultUserId() {
+    public synchronized String getDefaultUserId() {
         return defaultUserId;
     }
 
-    public String getDefaultPassword() {
+    public synchronized String getDefaultPassword() {
         return defaultPassword;
     }
 
-    public String getLocalIP() {
+    public synchronized String getLocalIP() {
         return localIP;
     }
 
@@ -87,12 +111,24 @@ public class ShellyBindingRuntimeConfig {
      * {@link org.openhab.binding.shelly.internal.ShellyBindingConstants#DEFAULT_LOCAL_PORT}
      * if no explicit port has been set via {@link #withHttpPort}.
      */
-    public int getHttpPort() {
+    public synchronized int getHttpPort() {
+        int httpPort = this.httpPort;
         return httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT;
     }
 
-    public boolean isAutoCoIoT() {
+    public synchronized boolean isAutoCoIoT() {
         return autoCoIoT;
+    }
+
+    // ── Setters ──────────────────────────────────────────────────────────────
+
+    /**
+     * Sets the HTTP port to use. {@code -1} means "use default".
+     *
+     * @param httpPort the new HTTP port value.
+     */
+    public synchronized void setHttpPort(int httpPort) {
+        this.httpPort = httpPort;
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────

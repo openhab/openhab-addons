@@ -67,7 +67,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
-    private volatile ShellyBindingRuntimeConfig bindingConfig;
+    private final ShellyBindingRuntimeConfig bindingConfig;
     private final NetworkAddressService networkAddressService;
     private final ShellyTranslationProvider messages;
     private final ShellyThingTable thingTable;
@@ -95,7 +95,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
         ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
                 .fromProperties(componentContext.getProperties());
-        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
+        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, -1, networkAddressService);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         logger.debug("Shelly Binding Configuration refreshed");
         ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
                 .fromProperties(componentContext.getProperties());
-        bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
+        bindingConfig.update(rawConfig, networkAddressService);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             if (serviceConfig.getProperties() != null) {
                 ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration
                         .fromProperties(serviceConfig.getProperties());
-                cfg = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
+                cfg = new ShellyBindingRuntimeConfig(rawConfig, -1, networkAddressService);
             }
 
             String gen = getString(service.getPropertyString("gen"));

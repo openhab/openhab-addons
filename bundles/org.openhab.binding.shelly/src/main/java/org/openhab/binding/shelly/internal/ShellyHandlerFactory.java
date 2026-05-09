@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +69,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private volatile ShellyBindingRuntimeConfig bindingConfig;
+    private final NetworkAddressService networkAddressService;
+    private final ShellyBindingRuntimeConfig bindingConfig;
 
     /**
      * Activate the bundle: save properties
@@ -82,6 +85,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory,
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
+        this.networkAddressService = networkAddressService;
         this.messages = translationProvider;
         this.thingTable = thingTable;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
@@ -94,20 +98,13 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration.fromProperties(configProperties);
-        ShellyBindingRuntimeConfig runtimeConfig = new ShellyBindingRuntimeConfig(rawConfig, networkAddressService);
-        if (runtimeConfig.getLocalIP().isEmpty()) {
-            // Intentionally hard-fail: without a local IP the binding cannot build callback
-            // URLs, register CoIoT listeners, or handle WebSocket events. Starting in a
-            // degraded state would silently break all Gen1 event handling and Gen2 battery
-            // devices, so we fail fast here rather than logging a warning.
-            logger.error("{}", messages.get("init.noipaddress"));
-            throw new ComponentException("Failed to activate: Local IP can't be detected");
-        }
-
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         logger.debug("Using OH HTTP port {}", httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT);
-        bindingConfig = runtimeConfig.withHttpPort(httpPort);
+        this.bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, httpPort, networkAddressService);
+        if (bindingConfig.getLocalIP().isBlank()) {
+            logger.error("{}", messages.get("init.noipaddress"));
+        }
 
         this.coapServer = new Shelly1CoapServer();
         this.thingTable.startDiscoveryService(bundleContext);
@@ -119,6 +116,20 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             webSocketClient.stop();
         } catch (Exception e) {
             logger.warn("Failed to stop ShellyHandlerFactory WebSocketClient: {}", e.getMessage(), e);
+        }
+    }
+
+    @Modified
+    public void modified(@Nullable Map<String, Object> configProperties) {
+        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(configProperties);
+        if (bindingConfig.update(config, networkAddressService)) {
+            // Something changed, reinitialize all handlers
+            final Collection<ShellyThingInterface> handlers = thingTable.getAll().values();
+            new Thread(() -> {
+                for (ShellyThingInterface handler : handlers) {
+                    handler.reinitializeThing();
+                }
+            }, "OH-binding-shelly-reinitializer").start();
         }
     }
 

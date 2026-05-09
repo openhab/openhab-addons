@@ -134,7 +134,7 @@ public class ShellyBindingConfigurationTest {
     @Test
     void runtimeConfigUsesNasIpWhenConfigLocalIpIsBlank() {
         ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("10.0.0.1"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService("10.0.0.1"));
         assertThat(runtime.getLocalIP(), is("10.0.0.1"));
     }
 
@@ -142,41 +142,33 @@ public class ShellyBindingConfigurationTest {
     void runtimeConfigConfigLocalIpWinsOverNas() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(CONFIG_LOCAL_IP, "192.168.1.5"));
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("10.0.0.1"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService("10.0.0.1"));
         assertThat(runtime.getLocalIP(), is("192.168.1.5"));
     }
 
     @Test
     void runtimeConfigLinkLocalIpFromNasBecomesEmpty() {
         ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService("169.254.1.1"));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1,
+                networkAddressService("169.254.1.1"));
         assertThat(runtime.getLocalIP(), is(""));
     }
 
     @Test
     void runtimeConfigNullNasIpBecomesEmpty() {
         ShellyBindingConfiguration raw = new ShellyBindingConfiguration();
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService(null));
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService(null));
         assertThat(runtime.getLocalIP(), is(""));
     }
 
     // ── ShellyBindingRuntimeConfig: withHttpPort ──────────────────────────────
 
     @Test
-    void withHttpPortCreatesNewInstanceWithPort() {
-        ShellyBindingRuntimeConfig original = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
-                networkAddressService("10.0.0.1"));
-        ShellyBindingRuntimeConfig updated = original.withHttpPort(9090);
-        assertThat(updated, is(not(sameInstance(original))));
-        assertThat(updated.getHttpPort(), is(9090));
-    }
-
-    @Test
-    void withHttpPortPreservesOtherFields() {
+    void setHttpPortPreservesOtherFields() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration.fromProperties(
                 Map.of(CONFIG_DEF_HTTP_USER, "user1", CONFIG_DEF_HTTP_PWD, "pass1", CONFIG_LOCAL_IP, "192.168.1.1"));
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, networkAddressService(null))
-                .withHttpPort(9090);
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(raw, -1, networkAddressService(null));
+        runtime.setHttpPort(9090);
         assertThat(runtime.getDefaultUserId(), is("user1"));
         assertThat(runtime.getDefaultPassword(), is("pass1"));
         assertThat(runtime.getLocalIP(), is("192.168.1.1"));
@@ -185,14 +177,15 @@ public class ShellyBindingConfigurationTest {
 
     @Test
     void withHttpPortMinusOneReturnsDefaultPort() {
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
-                networkAddressService(null)).withHttpPort(9090).withHttpPort(-1);
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(), 9090,
+                networkAddressService(null));
+        runtime.setHttpPort(-1);
         assertThat(runtime.getHttpPort(), is(DEFAULT_LOCAL_PORT));
     }
 
     @Test
     void defaultHttpPortIsDefaultLocalPort() {
-        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(),
+        ShellyBindingRuntimeConfig runtime = new ShellyBindingRuntimeConfig(new ShellyBindingConfiguration(), -1,
                 networkAddressService(null));
         assertThat(runtime.getHttpPort(), is(DEFAULT_LOCAL_PORT));
     }
