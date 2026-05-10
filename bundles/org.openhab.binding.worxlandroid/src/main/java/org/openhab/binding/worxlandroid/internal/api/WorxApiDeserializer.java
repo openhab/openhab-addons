@@ -18,9 +18,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.annotations.Activate;
@@ -31,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link WorxApiDeserializer} is responsible to instantiate suitable Gson (de)serializer
@@ -68,12 +65,6 @@ public class WorxApiDeserializer {
 
     public String toJson(Object object) {
         return gson.toJson(object);
-    }
-
-    public Map<String, String> toMap(Object object) {
-        Map<String, String> fromObject = gson.fromJson(toJson(object), new TypeToken<HashMap<String, String>>() {
-        }.getType());
-        return fromObject != null ? Map.copyOf(fromObject) : Map.of();
     }
 
     public <T> T deserialize(Type typeToken, String json) throws WebApiException {
