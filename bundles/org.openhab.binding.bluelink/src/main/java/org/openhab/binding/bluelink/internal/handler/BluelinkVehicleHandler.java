@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
@@ -72,6 +73,9 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private static final Duration DEFAULT_FORCE_REFRESH_INTERVAL = Duration.ofMinutes(240);
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkVehicleHandler.class);
+
+    private final ReentrantLock refreshLock = new ReentrantLock();
+    private final ReentrantLock forceRefreshLock = new ReentrantLock();
 
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     private volatile @Nullable ScheduledFuture<?> forceRefreshJob;
@@ -345,14 +349,22 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return;
         }
 
+        final ReentrantLock lock = forceRefresh ? forceRefreshLock : refreshLock;
+        if (!lock.tryLock()) {
+            logger.debug("{} status refresh already in progress, skipping", forceRefresh ? "Forced" : "Vehicle");
+            return;
+        }
+
         try {
-            logger.debug("refreshing vehicle status");
+            logger.debug("Refreshing {}vehicle status", forceRefresh ? "forced " : "");
             if (bridgeHnd.getVehicleStatus(vehicle, forceRefresh, this)) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (final BluelinkApiException e) {
-            logger.debug("Failed to refresh vehicle status: {}", e.getMessage());
+            logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 
