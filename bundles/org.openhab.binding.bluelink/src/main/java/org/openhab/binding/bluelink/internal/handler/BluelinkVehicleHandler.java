@@ -180,7 +180,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
             final String vin = config.vin;
             if (vin != null && !vin.isBlank()) {
-                scheduler.execute(() -> loadVehicle(vin));
+                ScheduledFuture<?> job = initTask;
+                if (job != null) {
+                    job.cancel(true);
+                }
+                initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
             }
         }
     }
