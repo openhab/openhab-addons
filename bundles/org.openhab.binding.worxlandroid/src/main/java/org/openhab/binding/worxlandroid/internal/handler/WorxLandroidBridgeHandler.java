@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.worxlandroid.internal.api.WebApiException;
 import org.openhab.binding.worxlandroid.internal.api.WorxApiHandler;
 import org.openhab.binding.worxlandroid.internal.api.dto.ProductItemStatus;
-import org.openhab.binding.worxlandroid.internal.api.dto.UsersMeResponse;
 import org.openhab.binding.worxlandroid.internal.config.WebApiConfiguration;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -100,12 +99,9 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
                     .getAccessToken();
             if (token != null) {
                 accessToken = token;
-                UsersMeResponse user = apiHandler.retrieveMe(accessToken);
-                updateProperties(apiHandler.getDeserializer().toMap(user));
-
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (IOException | WebApiException e) {
+        } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OAuthResponseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/oauth-connection-error");
