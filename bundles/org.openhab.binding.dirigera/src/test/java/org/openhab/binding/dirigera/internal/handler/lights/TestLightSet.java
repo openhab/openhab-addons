@@ -168,13 +168,26 @@ class TestLightSet {
     void testHandleCommandBrightnessRoutesToSetEndpoint() {
         BaseHandler handler = getHandler();
         Thing thing = handler.getThing();
+
+        // check initial states before sending brightness command and clear received states after check
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
+        checkLightSetStates(callback);
+        callback.clear();
+
+        // Switch set ON first and wait for callback confirmation
+        handler.handleUpdate(new JSONObject().put("attributes", new JSONObject().put("isOn", true)));
+        State onOffState = callback.getState("dirigera:light-set:test-device:power");
+        assertNotNull(onOffState);
+        assertTrue(onOffState instanceof OnOffType);
+        assertTrue(OnOffType.ON.equals(onOffState), "Power state");
+
         DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
+        api.clear();
 
         // Brightness is only dispatched immediately when isPowered() — needs isOn:true AND online:true.
         // Simulate a full readDevice-style update (no isReachable key, so LightSetHandler passes it
         // straight to super) that sets currentPowerState=ON without triggering powerChanged restores.
-        handler.handleUpdate(new JSONObject().put("attributes", new JSONObject().put("isOn", true)));
-        api.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS), new PercentType(75));
 
         String setPatch = api.getSetPatch(SET_ID);
