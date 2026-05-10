@@ -203,7 +203,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                     boolean isOn = onOffCommand == OnOffType.ON;
                     writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, isOn ? 100 : 0,
                             -1);
-                    updateState(channelUID, OnOffType.from(isOn));
+                    pollDevice(); // Read back actual RGBW state so the channel is updated with an HSBType
                 } else if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)
                         && command instanceof OnOffType onOffCommand) {
                     // Handle switch command

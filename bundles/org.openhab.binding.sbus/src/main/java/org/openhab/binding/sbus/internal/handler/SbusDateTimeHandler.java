@@ -25,7 +25,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 
 import ro.ciprianpascu.sbus.msg.ReadDateTimeRequest;
 import ro.ciprianpascu.sbus.msg.ReadDateTimeResponse;
@@ -81,12 +80,8 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
 
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            logger.warn("Cannot handle command for {}: adapter not initialized", getThing().getUID());
-            return;
-        }
-
-        if (command instanceof RefreshType) {
-            pollDevice();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -95,6 +90,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
                 SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
                 ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
                 writeDateTime(adapter, config.subnetId, config.id, zonedDateTime);
+                updateState(channelUID, dateTimeCommand);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IllegalStateException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -126,8 +122,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
                     "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
 
-        return ZonedDateTime.of(dtResponse.getYear(), dtResponse.getMonth(), dtResponse.getDay(), dtResponse.getHour(),
-                dtResponse.getMinute(), dtResponse.getSecond(), 0, ZoneId.systemDefault());
+        return extractDateTime(dtResponse);
     }
 
     /**
@@ -164,12 +159,34 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
 
     @Override
     protected void processAsyncMessage(SbusResponse response) {
-        // No unsolicited date/time messages in S-BUS; nothing to process here.
+        try {
+            if (response instanceof ReadDateTimeResponse dtResponse) {
+                ZonedDateTime deviceTime = extractDateTime(dtResponse);
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_DATETIME), new DateTimeType(deviceTime));
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Processed async date/time message for handler {}", getThing().getUID());
+            }
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            logger.warn("Error processing async message in date/time handler {}: {}", getThing().getUID(),
+                    e.getMessage());
+        }
     }
 
     @Override
     protected boolean isMessageRelevant(SbusResponse response) {
-        // No unsolicited date/time messages in S-BUS.
+        if (response instanceof ReadDateTimeResponse) {
+            SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+            return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+        }
         return false;
+    }
+
+    /**
+     * Extracts a {@link ZonedDateTime} from a {@link ReadDateTimeResponse}.
+     * Reuses the existing logic from {@link #readDateTime}.
+     */
+    private ZonedDateTime extractDateTime(ReadDateTimeResponse response) {
+        return ZonedDateTime.of(response.getYear(), response.getMonth(), response.getDay(), response.getHour(),
+                response.getMinute(), response.getSecond(), 0, ZoneId.systemDefault());
     }
 }
