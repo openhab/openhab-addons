@@ -53,6 +53,7 @@ import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.history.TibberHistory;
+import org.openhab.binding.tibber.internal.history.TibberHistoryAggregator;
 import org.openhab.binding.tibber.internal.history.TibberHistoryListener;
 import org.openhab.binding.tibber.internal.history.TibberHistorySeries;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
@@ -213,6 +214,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         } else {
             // Create TibberHistory here (not in constructor) to ensure StorageService OSGi injection is complete
             history = new TibberHistory(storageService, tibberConfig.homeid, this);
+            history.dispose(false); // mark as active (default state is disposed=true)
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
         }
@@ -750,7 +752,8 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
      * {@link TibberHistoryListener} implementation.
      * Called by {@link TibberHistory} when a time window has been fetched.
      * When {@code series} is null the fetch is still in progress (status update only).
-     * When {@code series} is non-null the result is sent to all three history channels of the window.
+     * When {@code series} is non-null the result is sent to all three history channels of the window,
+     * followed by a bottom-up aggregation pass to fill the current (incomplete) period gap.
      */
     @Override
     public void historyUpdated(TibberHistory.TimeWindow window, @Nullable TibberHistorySeries series) {
@@ -772,8 +775,24 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             return;
         }
 
-        TimeSeries consumptionSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
-                TibberHistorySeries.PURPOSE_CONSUMPTION);
+        sendHistorySeries(localHistory, window, start);
+
+        // After sending raw data: fill current-period gap bottom-up (non-blocking)
+        scheduler.execute(() -> enrichCurrentPeriods(localHistory));
+
+        // Restore status (clear the "loading" message)
+        updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail());
+        logger.info("History update for {} completed", window.name());
+    }
+
+    /**
+     * Sends the three history channels (consumption, cost, production) for the given window
+     * from the persistent store, filtered to entries at or after {@code start}.
+     */
+    private void sendHistorySeries(TibberHistory history, TibberHistory.TimeWindow window, Instant start) {
+        TibberHistorySeries stored = history.getStoredSeries(window);
+
+        TimeSeries consumptionSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_CONSUMPTION);
         logger.debug("History {} consumption series size: {}", window, consumptionSeries.size());
         if (consumptionSeries.size() > 0) {
             sendTimeSeries(
@@ -781,26 +800,91 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                     consumptionSeries);
         }
 
-        TimeSeries costSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
-                TibberHistorySeries.PURPOSE_COST);
+        TimeSeries costSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_COST);
         logger.debug("History {} cost series size: {}", window, costSeries.size());
         if (costSeries.size() > 0) {
             sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-cost"),
                     costSeries);
         }
 
-        TimeSeries productionSeries = localHistory.getStoredSeries(window).getTimeSeries(start,
-                TibberHistorySeries.PURPOSE_PRODUCTION);
+        TimeSeries productionSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_PRODUCTION);
         logger.debug("History {} production series size: {}", window, productionSeries.size());
         if (productionSeries.size() > 0) {
             sendTimeSeries(
                     new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-production"),
                     productionSeries);
         }
+    }
 
-        // Restore status (clear the "loading" message)
-        updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail());
-        logger.info("History update for {} completed", window.name());
+    /**
+     * Performs a bottom-up aggregation pass to inject synthetic "current period" entries
+     * into each coarser resolution that would otherwise have a gap for the running period:
+     * <ol>
+     * <li>DAILY → WEEKLY (current ISO week so far)</li>
+     * <li>WEEKLY → MONTHLY (current month so far)</li>
+     * <li>MONTHLY → ANNUAL (current year so far)</li>
+     * </ol>
+     * Synthetic entries are transient — they are never written to the persistent store.
+     */
+    private void enrichCurrentPeriods(TibberHistory localHistory) {
+        if (isDisposed) {
+            return;
+        }
+        TibberHistoryAggregator agg = new TibberHistoryAggregator(timeZoneProvider.getTimeZone());
+
+        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.DAILY, TibberHistory.TimeWindow.WEEKLY);
+        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.WEEKLY, TibberHistory.TimeWindow.MONTHLY);
+        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.MONTHLY, TibberHistory.TimeWindow.ANNUAL);
+    }
+
+    /**
+     * Loads the stored series for both windows, fills the current-period gap via the aggregator,
+     * and sends the enriched coarser series to the three history channels.
+     *
+     * @param agg the aggregator instance
+     * @param history the history store
+     * @param finer source resolution
+     * @param coarser target resolution (the one with the gap)
+     */
+    private void enrichAndSend(TibberHistoryAggregator agg, TibberHistory history, TibberHistory.TimeWindow finer,
+            TibberHistory.TimeWindow coarser) {
+        TibberHistorySeries finerSeries = history.getStoredSeries(finer);
+        TibberHistorySeries coarserSeries = history.getStoredSeries(coarser);
+
+        TibberHistorySeries enriched = agg.fillCurrentPeriod(finer, coarser, finerSeries, coarserSeries);
+
+        if (enriched.equals(coarserSeries)) {
+            // No enrichment happened (identity return) — nothing to send
+            return;
+        }
+
+        // Send full enriched series (REPLACE policy ensures channels are up to date)
+        sendEnrichedSeries(enriched, coarser);
+    }
+
+    /**
+     * Sends all three history channels for the given window from an enriched (in-memory) series.
+     * Unlike {@link #sendHistorySeries}, this uses the provided series directly rather than
+     * reading from the persistent store, so that synthetic aggregation entries are included.
+     */
+    private void sendEnrichedSeries(TibberHistorySeries enriched, TibberHistory.TimeWindow window) {
+        TimeSeries consumptionSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_CONSUMPTION);
+        if (consumptionSeries.size() > 0) {
+            sendTimeSeries(
+                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-consumption"),
+                    consumptionSeries);
+        }
+        TimeSeries costSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_COST);
+        if (costSeries.size() > 0) {
+            sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-cost"),
+                    costSeries);
+        }
+        TimeSeries productionSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_PRODUCTION);
+        if (productionSeries.size() > 0) {
+            sendTimeSeries(
+                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-production"),
+                    productionSeries);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -812,8 +896,9 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         super.channelLinked(channelUID);
         if (CHANNEL_GROUP_HISTORY.equals(channelUID.getGroupId())) {
             logger.debug("History channel linked: {} — triggering initial fetch and starting cron", channelUID);
-            // Initial load when the first history channel is linked
-            scheduler.execute(this::updateHistoryChannels);
+            // On first link: full paginated fetch to load complete history.
+            // On subsequent links (store already populated): partial fetch is sufficient.
+            scheduler.execute(this::initialHistoryLoad);
             startHistoryCron();
         }
     }
@@ -861,8 +946,31 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     /**
+     * Called once when the first history channel is linked.
+     * Uses {@code fullUpdate()} for windows whose persistent store is still empty,
+     * so the complete available history is fetched via pagination.
+     * Windows that already have stored data get a {@code partialUpdate()} instead.
+     */
+    private void initialHistoryLoad() {
+        if (isDisposed || !historyChannelsLinked()) {
+            return;
+        }
+        TibberHistory localHistory = this.history;
+        if (localHistory == null) {
+            logger.debug("initialHistoryLoad: history not yet initialised");
+            return;
+        }
+        for (TibberHistory.TimeWindow window : TibberHistory.TimeWindow.values()) {
+            boolean hasStoredData = !localHistory.getStoredSeries(window).isEmpty();
+            TibberHistory.TimeWindow request = hasStoredData ? window.partialUpdate() : window.fullUpdate();
+            logger.debug("initialHistoryLoad: {} → {}", window, hasStoredData ? "partialUpdate" : "fullUpdate");
+            localHistory.updateHistory(request);
+        }
+    }
+
+    /**
      * Enqueues a partial update for all four time windows.
-     * Called by the daily cron job and on initial channel linking.
+     * Called by the daily cron job.
      */
     private void updateHistoryChannels() {
         if (isDisposed || !historyChannelsLinked()) {

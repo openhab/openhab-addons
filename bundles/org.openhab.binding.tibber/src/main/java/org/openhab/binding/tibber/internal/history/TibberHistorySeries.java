@@ -83,37 +83,43 @@ public class TibberHistorySeries extends TreeMap<Instant, JsonObject> {
      */
     public void addData(JsonArray data) {
         data.forEach(element -> {
-            JsonObject entry = element.getAsJsonObject();
-            JsonObject arrayEntry = entry.get("node").getAsJsonObject();
-            String startTime = arrayEntry.get("from").getAsString();
-            Instant key = Instant.parse(startTime);
-            JsonObject historyDataElement = get(key);
-            if (historyDataElement == null) {
-                historyDataElement = new JsonObject();
-            }
-            if (arrayEntry.has(PURPOSE_CONSUMPTION)) {
-                QuantityType<?> consumptionState = QuantityType
-                        .valueOf(arrayEntry.get(PURPOSE_CONSUMPTION).getAsString() + " "
-                                + arrayEntry.get("consumptionUnit").getAsString());
-                historyDataElement.addProperty(PURPOSE_CONSUMPTION, consumptionState.toFullString());
-            }
-            if (arrayEntry.has(PURPOSE_COST)) {
-                State costState;
-                Unit<?> currencyUnit = CurrencyUnits.getInstance().getUnit(arrayEntry.get("currency").getAsString());
-                if (currencyUnit != null) {
-                    costState = QuantityType.valueOf(
-                            arrayEntry.get("cost").getAsString() + " " + arrayEntry.get("currency").getAsString());
-                } else {
-                    costState = DecimalType.valueOf(arrayEntry.get("cost").getAsString());
+            try {
+                JsonObject entry = element.getAsJsonObject();
+                JsonObject arrayEntry = entry.get("node").getAsJsonObject();
+                String startTime = arrayEntry.get("from").getAsString();
+                Instant key = Instant.parse(startTime);
+                JsonObject historyDataElement = get(key);
+                if (historyDataElement == null) {
+                    historyDataElement = new JsonObject();
                 }
-                historyDataElement.addProperty(PURPOSE_COST, costState.toFullString());
+                if (arrayEntry.has(PURPOSE_CONSUMPTION) && !arrayEntry.get(PURPOSE_CONSUMPTION).isJsonNull()) {
+                    QuantityType<?> consumptionState = QuantityType
+                            .valueOf(arrayEntry.get(PURPOSE_CONSUMPTION).getAsString() + " "
+                                    + arrayEntry.get("consumptionUnit").getAsString());
+                    historyDataElement.addProperty(PURPOSE_CONSUMPTION, consumptionState.toFullString());
+                }
+                if (arrayEntry.has(PURPOSE_COST) && !arrayEntry.get(PURPOSE_COST).isJsonNull()) {
+                    State costState;
+                    Unit<?> currencyUnit = CurrencyUnits.getInstance()
+                            .getUnit(arrayEntry.get("currency").getAsString());
+                    if (currencyUnit != null) {
+                        costState = QuantityType.valueOf(
+                                arrayEntry.get("cost").getAsString() + " " + arrayEntry.get("currency").getAsString());
+                    } else {
+                        costState = DecimalType.valueOf(arrayEntry.get("cost").getAsString());
+                    }
+                    historyDataElement.addProperty(PURPOSE_COST, costState.toFullString());
+                }
+                if (arrayEntry.has(PURPOSE_PRODUCTION) && !arrayEntry.get(PURPOSE_PRODUCTION).isJsonNull()) {
+                    QuantityType<?> productionState = QuantityType
+                            .valueOf(arrayEntry.get(PURPOSE_PRODUCTION).getAsString() + " "
+                                    + arrayEntry.get("productionUnit").getAsString());
+                    historyDataElement.addProperty(PURPOSE_PRODUCTION, productionState.toFullString());
+                }
+                put(key, historyDataElement);
+            } catch (RuntimeException e) {
+                logger.warn("Skipping history entry due to parse error: {} — entry: {}", e.getMessage(), element);
             }
-            if (arrayEntry.has(PURPOSE_PRODUCTION)) {
-                QuantityType<?> productionState = QuantityType.valueOf(arrayEntry.get(PURPOSE_PRODUCTION).getAsString()
-                        + " " + arrayEntry.get("productionUnit").getAsString());
-                historyDataElement.addProperty(PURPOSE_PRODUCTION, productionState.toFullString());
-            }
-            put(key, historyDataElement);
         });
     }
 

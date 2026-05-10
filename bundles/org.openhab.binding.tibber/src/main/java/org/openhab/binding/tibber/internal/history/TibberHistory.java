@@ -66,6 +66,11 @@ public class TibberHistory {
             }
 
             @Override
+            public int getFullFetchPageSize() {
+                return 50;
+            }
+
+            @Override
             public int daysInWindow() {
                 return 365;
             }
@@ -80,6 +85,11 @@ public class TibberHistory {
             @Override
             public int getFetchCount() {
                 return 12;
+            }
+
+            @Override
+            public int getFullFetchPageSize() {
+                return 50;
             }
 
             @Override
@@ -100,6 +110,11 @@ public class TibberHistory {
             }
 
             @Override
+            public int getFullFetchPageSize() {
+                return 100;
+            }
+
+            @Override
             public int daysInWindow() {
                 return getFetchCount() * 7;
             }
@@ -117,6 +132,11 @@ public class TibberHistory {
             }
 
             @Override
+            public int getFullFetchPageSize() {
+                return 100;
+            }
+
+            @Override
             public int daysInWindow() {
                 return getFetchCount();
             }
@@ -128,6 +148,15 @@ public class TibberHistory {
 
         public int getFetchCount() {
             return 0;
+        }
+
+        /**
+         * Page size used when performing a full paginated fetch ({@link #fullUpdate()}).
+         * Larger than {@link #getFetchCount()} to minimise the number of API round-trips
+         * while staying well within Tibber API timeout limits.
+         */
+        public int getFullFetchPageSize() {
+            return 50;
         }
 
         public int daysInWindow() {
@@ -257,18 +286,25 @@ public class TibberHistory {
         final TimeWindow window = localWorkingWindow;
         listeners.forEach(listener -> listener.historyUpdated(window, null));
 
-        TibberHistorySeries series = getStoredSeries(window);
-        boolean fullFetch = series.isEmpty();
+        // fullUpdate: paginate through all available history pages, starting from a fresh series.
+        // partialUpdate: fetch only the most recent page and merge into the existing stored series.
+        boolean isPaginated = window.isFullUpdate();
+        int pageSize = isPaginated ? window.getFullFetchPageSize() : window.getFetchCount();
+        TibberHistorySeries series = isPaginated ? new TibberHistorySeries(null) : getStoredSeries(window);
+
+        logger.info("Starting {} fetch for {} (pageSize={}, paginated={})", isPaginated ? "full paginated" : "partial",
+                window, pageSize, isPaginated);
 
         for (String templatePath : queryTemplates) {
             logger.debug("Fetching {} for template {}", window, templatePath);
             String cursor = EMPTY_VALUE;
             boolean hasNext = false;
             int retryCounter = 0;
+            int pageCount = 0;
 
             do {
                 String queryTemplate = handler.getTemplate(templatePath);
-                String query = String.format(queryTemplate, homeid, window.name(), window.getFetchCount(), cursor);
+                String query = String.format(queryTemplate, homeid, window.name(), pageSize, cursor);
                 String response = executeRequest(query);
 
                 if (response != null) {
@@ -281,6 +317,7 @@ public class TibberHistory {
                     if (dataObject != null) {
                         JsonArray edges = dataObject.getAsJsonArray("edges");
                         series.addData(edges);
+                        pageCount++;
 
                         JsonObject pageInfo = dataObject.getAsJsonObject("pageInfo");
                         hasNext = pageInfo.get("hasPreviousPage").getAsBoolean();
@@ -289,7 +326,7 @@ public class TibberHistory {
                         } else {
                             cursor = EMPTY_VALUE;
                         }
-                        logger.debug("hasNext={} cursor={} fetched={}", hasNext, cursor, series.size());
+                        logger.debug("page={} hasNext={} totalFetched={}", pageCount, hasNext, series.size());
                     } else {
                         logger.warn("Unexpected response structure for template {}", templatePath);
                         hasNext = false;
@@ -300,8 +337,9 @@ public class TibberHistory {
                     logger.warn("No response for template {} - retry {}/3", templatePath, retryCounter);
                 }
 
-                if (hasNext || retryCounter > 0) {
-                    int sleepMs = dynamicRetryTimeMs(retryCounter);
+                // Sleep on retry (with exponential backoff) or between paginated pages (fixed 200ms courtesy delay)
+                if (retryCounter > 0 || (hasNext && isPaginated)) {
+                    int sleepMs = retryCounter > 0 ? dynamicRetryTimeMs(retryCounter) : 200;
                     try {
                         Thread.sleep(sleepMs);
                     } catch (InterruptedException e) {
@@ -310,7 +348,10 @@ public class TibberHistory {
                         return;
                     }
                 }
-            } while (hasNext && fullFetch && !disposed);
+            } while (hasNext && isPaginated && !disposed);
+
+            logger.info("Completed template {} for {} after {} page(s), {} total entries", templatePath, window,
+                    pageCount, series.size());
         }
 
         // Persist the merged result
@@ -329,13 +370,14 @@ public class TibberHistory {
     private @Nullable String executeRequest(String body) {
         Request request = handler.getRequest();
         String content = String.format(QUERY_CONTAINER, body);
-        logger.trace("History query body: {}", content);
+        logger.debug("History query: {}", content);
         request.content(new StringContentProvider(content, "utf-8"));
         try {
             ContentResponse cr = request.timeout(10, TimeUnit.SECONDS).send();
             int status = cr.getStatus();
             String responseBody = cr.getContentAsString();
             if (status == HttpStatus.OK_200) {
+                logger.debug("History response ({}): {}", status, responseBody);
                 return responseBody;
             } else {
                 logger.warn("History API returned HTTP {}: {}", status, responseBody);
