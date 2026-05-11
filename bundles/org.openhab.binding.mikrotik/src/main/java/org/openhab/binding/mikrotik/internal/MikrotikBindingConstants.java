@@ -43,6 +43,7 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_TOTAL_MEM = "totalMemory";
     public static final String CHANNEL_USED_MEM = "usedMemory";
     public static final String CHANNEL_CPU_LOAD = "cpuLoad";
+    public static final String CHANNEL_UPDATE_AVAILABLE = "updateAvailable";
 
     public static final String CHANNEL_COMMENT = "comment";
 

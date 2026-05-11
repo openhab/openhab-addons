@@ -16,6 +16,7 @@
 			<channel id="usedMemory" typeId="usedMemory"/>
 			<channel id="cpuLoad" typeId="cpuLoad"/>
 			<channel id="upSince" typeId="upSince"/>
+			<channel id="updateAvailable" typeId="updateAvailable"/>
 		</channels>
 		<properties>
 			<property name="vendor">Mikrotik</property>
@@ -209,6 +210,12 @@
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="updateAvailable">
+		<item-type>String</item-type>
+		<label>Update Available</label>
+		<description>Is a newer firmware available for this RouterOS device</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 
 	<channel-type id="interfaceType" advanced="true">
@@ -243,7 +250,6 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Reflects enabled or disabled state</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="connected">
