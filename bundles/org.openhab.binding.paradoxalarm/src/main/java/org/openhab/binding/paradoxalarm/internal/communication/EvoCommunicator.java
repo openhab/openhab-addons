@@ -94,6 +94,11 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
             // Trigger listeners update when last memory page update is received
             if (ramBlockNumber == panelType.getRamPagesNumber()) {
+                // Transition to ONLINE on the first completed RAM read cycle so that
+                // the bridge handler is not marked online before real data is available.
+                if (!isOnline()) {
+                    CommunicationState.ONLINE.runPhase(this);
+                }
                 updateListeners();
             }
         } else {
@@ -277,7 +282,10 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             logger.debug("Attempt to refresh memory map was made, but communicator is not online. Skipping update.");
             return;
         }
+        submitRamRequests();
+    }
 
+    private void submitRamRequests() {
         SyncQueue queue = SyncQueue.getInstance();
         synchronized (queue) {
             for (int i = 1; i <= panelType.getRamPagesNumber(); i++) {
@@ -346,7 +354,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     public void initializeData() {
         synchronized (SyncQueue.getInstance()) {
             initializeEpromData();
-            refreshMemoryMap();
+            submitRamRequests();
         }
     }
 
