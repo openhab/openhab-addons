@@ -147,6 +147,8 @@ public class ICloudSession {
 
         if (body != null) {
             builder.method(method, BodyPublishers.ofString(body));
+        } else {
+            builder.method(method, BodyPublishers.noBody());
         }
 
         HttpRequest request = builder.build();
