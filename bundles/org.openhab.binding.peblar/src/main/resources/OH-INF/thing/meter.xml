@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="peblar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel group for /api/wlac/v1/meter -->
+	<channel-group-type id="meter">
+		<label>Meter</label>
+		<description>Electrical meter data from the Peblar EV charger</description>
+		<channels>
+
+			<channel id="currentPhase1" typeId="currentPhase1"/>
+			<channel id="currentPhase2" typeId="currentPhase2"/>
+			<channel id="currentPhase3" typeId="currentPhase3"/>
+
+			<channel id="voltagePhase1" typeId="voltagePhase1"/>
+			<channel id="voltagePhase2" typeId="voltagePhase2"/>
+			<channel id="voltagePhase3" typeId="voltagePhase3"/>
+
+			<channel id="powerPhase1" typeId="powerPhase1"/>
+			<channel id="powerPhase2" typeId="powerPhase2"/>
+			<channel id="powerPhase3" typeId="powerPhase3"/>
+			<channel id="powerTotal" typeId="powerTotal"/>
+
+			<channel id="energyTotal" typeId="energyTotal"/>
+			<channel id="energySession" typeId="energySession"/>
+
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel type definitions -->
+
+	<channel-type id="currentPhase1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Phase 1</label>
+		<description>Current on phase 1 in milliamperes</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f mA"/>
+	</channel-type>
+
+	<channel-type id="currentPhase2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Phase 2</label>
+		<description>Current on phase 2 in milliamperes</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f mA"/>
+	</channel-type>
+
+	<channel-type id="currentPhase3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Phase 3</label>
+		<description>Current on phase 3 in milliamperes</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f mA"/>
+	</channel-type>
+
+	<channel-type id="voltagePhase1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage Phase 1</label>
+		<description>Voltage on phase 1 in volts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f V"/>
+	</channel-type>
+
+	<channel-type id="voltagePhase2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage Phase 2</label>
+		<description>Voltage on phase 2 in volts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f V"/>
+	</channel-type>
+
+	<channel-type id="voltagePhase3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage Phase 3</label>
+		<description>Voltage on phase 3 in volts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f V"/>
+	</channel-type>
+
+	<channel-type id="powerPhase1">
+		<item-type>Number:Power</item-type>
+		<label>Power Phase 1</label>
+		<description>Active power on phase 1 in watts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="powerPhase2">
+		<item-type>Number:Power</item-type>
+		<label>Power Phase 2</label>
+		<description>Active power on phase 2 in watts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="powerPhase3">
+		<item-type>Number:Power</item-type>
+		<label>Power Phase 3</label>
+		<description>Active power on phase 3 in watts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="powerTotal">
+		<item-type>Number:Power</item-type>
+		<label>Total Power</label>
+		<description>Total active power across all phases in watts</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f W"/>
+	</channel-type>
+
+	<channel-type id="energyTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Total lifetime energy delivered in watt-hours</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f kWh"/>
+	</channel-type>
+
+	<channel-type id="energySession">
+		<item-type>Number:Energy</item-type>
+		<label>Session Energy</label>
+		<description>Energy delivered in the current charging session in watt-hours</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.3f kWh"/>
+	</channel-type>
+
+</thing:thing-descriptions>
