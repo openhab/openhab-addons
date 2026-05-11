@@ -120,11 +120,11 @@ Switch temperature_unit "Fahrenheit or Celsius"                             { ch
 
 ```java
 Switch power "Power"                                                        { channel="mideaac:a1:dehumidifier:power" }
-Number maximum-humidity "Maximim Humidity"                                  { channel="mideaac:a1:dehumidifier:maximum-humidity" }
-String dehumidifier-mode "Dehumidifier Mode"                                { channel="mideaac:a1:dehumidifier:dehumidifier-mode" }
-String dh-fan-speed "Dehumidifier Fan Speed"                                { channel="mideaac:a1:dehumidifier:dh-fan-speed" }
-String dehumidifier-swing "Dehumidifier Swing Mode"                         { channel="mideaac:a1:dehumidifier:dehumidifier-swing" }
-Number:Temperature indoor-temperature "Indoor Temperature [%.1f °F]"        { channel="mideaac:a1:dehumidifier:indoor-temperature" }
+Number maximum_humidity "Maximum Humidity"                                  { channel="mideaac:a1:dehumidifier:maximum-humidity" }
+String dehumidifier_mode "Dehumidifier Mode"                                { channel="mideaac:a1:dehumidifier:dehumidifier-mode" }
+String dh_fan_speed "Dehumidifier Fan Speed"                                { channel="mideaac:a1:dehumidifier:dh-fan-speed" }
+Switch dehumidifier_swing "Dehumidifier Swing Mode"                         { channel="mideaac:a1:dehumidifier:dehumidifier-swing" }
+Number:Temperature indoor_temperature "Indoor Temperature [%.1f °F]"        { channel="mideaac:a1:dehumidifier:indoor-temperature" }
 Number humidity "Humidity in Room"                                          { channel="mideaac:a1:dehumidifier:humidity" }
 ```
 

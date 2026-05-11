@@ -15,7 +15,7 @@ package org.openhab.binding.mideaac.internal.devices.a1;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link A1StringCommands handles the String Commands for dehumidifiers
+ * The {@link A1StringCommands} handles the String Commands for dehumidifiers
  *
  * @author Bob Eckhoff - Initial contribution
  */

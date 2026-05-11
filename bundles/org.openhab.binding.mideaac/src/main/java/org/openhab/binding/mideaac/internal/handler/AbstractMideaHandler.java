@@ -40,6 +40,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -180,9 +181,23 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
 
     /** Initialize the connection manager from the current configuration. */
     private void initConnectionManagerFromConfig() {
-        connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
-                config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
-                config.deviceId, config.version, config.promptTone, config.deviceType);
+        String effectiveDeviceType = getDeviceTypeFromThingTypeUID();
+        if (!effectiveDeviceType.equals(config.deviceType)) {
+            logger.warn("Configured deviceType '{}' does not match thing type '{}'; using '{}'", config.deviceType,
+                    thing.getThingTypeUID(), effectiveDeviceType);
+        }
+
+        connectionManager = new ConnectionManager(config.ipAddress, config.ipPort, config.timeout, config.key,
+                config.token, config.cloud, config.email, config.password, config.deviceId, config.version,
+                config.promptTone, effectiveDeviceType);
+    }
+
+    private String getDeviceTypeFromThingTypeUID() {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (THING_TYPE_DEHUMIDIFIER.equals(thingTypeUID)) {
+            return "a1";
+        }
+        return "ac";
     }
 
     /** Subclasses decide what to do */
