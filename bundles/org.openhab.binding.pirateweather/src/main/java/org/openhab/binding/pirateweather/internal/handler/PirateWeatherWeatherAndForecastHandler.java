@@ -52,6 +52,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -160,6 +161,49 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             return;
         }
 
+        rebuildChannels(newForecastHours, newForecastDays, newNumberOfAlerts);
+
+        Channel sunriseTriggerChannel = getThing().getChannel(TRIGGER_SUNRISE);
+        sunriseTriggerChannelConfig = (sunriseTriggerChannel == null) ? null
+                : sunriseTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
+        Channel sunsetTriggerChannel = getThing().getChannel(TRIGGER_SUNSET);
+        sunsetTriggerChannelConfig = (sunsetTriggerChannel == null) ? null
+                : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
+
+        Bridge bridge = getBridge();
+        if (bridge != null && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        cancelAllJobs();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            updateChannel(channelUID);
+        } else {
+            logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
+                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())
+                && !ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    private void rebuildChannels(int newForecastHours, int newForecastDays, int newNumberOfAlerts) {
         logger.debug("Rebuilding thing '{}'.", getThing().getUID());
         List<Channel> toBeAddedChannels = new ArrayList<>();
         List<Channel> toBeRemovedChannels = new ArrayList<>();
@@ -229,40 +273,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             builder.withChannel(channel);
         }
         updateThing(builder.build());
-
-        Channel sunriseTriggerChannel = getThing().getChannel(TRIGGER_SUNRISE);
-        sunriseTriggerChannelConfig = (sunriseTriggerChannel == null) ? null
-                : sunriseTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
-        Channel sunsetTriggerChannel = getThing().getChannel(TRIGGER_SUNSET);
-        sunsetTriggerChannelConfig = (sunsetTriggerChannel == null) ? null
-                : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
-
-        updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    @Override
-    public void dispose() {
-        cancelAllJobs();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            updateChannel(channelUID);
-        } else {
-            logger.debug("The Pirate Weather binding is a read-only binding and cannot handle command '{}'.", command);
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())
-                && ThingStatusDetail.BRIDGE_OFFLINE.equals(getThing().getStatusInfo().getStatusDetail())) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())
-                && !ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
     }
 
     /**
