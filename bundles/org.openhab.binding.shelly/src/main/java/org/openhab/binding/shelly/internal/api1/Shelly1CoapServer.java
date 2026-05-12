@@ -64,9 +64,15 @@ public class Shelly1CoapServer {
         // register configurations before Configuration.getStandard() is used
         DtlsConfig.register();
         // register custom CoIoT options for Shelly devices
-        OptionRegistry registry = MapBasedOptionRegistry.builder().add(StandardOptionRegistry.STANDARD_OPTIONS)
-                .add(COIOT_GLOBAL_DEVID_DEF).add(COIOT_STATUS_VALIDITY_DEF).add(COIOT_STATUS_SERIAL_DEF).build();
-        StandardOptionRegistry.setDefaultOptionRegistry(registry);
+        // Merge with existing default registry to preserve options from other add-ons (e.g., Tradfri)
+        OptionRegistry currentRegistry = StandardOptionRegistry.getDefaultOptionRegistry();
+        OptionRegistry mergedRegistry = MapBasedOptionRegistry.builder() //
+                .add(currentRegistry) //
+                .add(COIOT_GLOBAL_DEVID_DEF) //
+                .add(COIOT_STATUS_VALIDITY_DEF) //
+                .add(COIOT_STATUS_SERIAL_DEF) //
+                .build();
+        StandardOptionRegistry.setDefaultOptionRegistry(mergedRegistry);
     }
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapServer.class);
 
