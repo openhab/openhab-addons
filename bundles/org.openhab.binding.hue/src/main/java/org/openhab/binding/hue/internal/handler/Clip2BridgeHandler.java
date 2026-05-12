@@ -162,6 +162,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
+    private boolean softwareUpdateReadyNotificationSent;
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
 
@@ -517,6 +518,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         applKeyRetriesRemaining = APPLICATION_KEY_MAX_TRIES;
         connectRetriesRemaining = RECONNECT_MAX_TRIES;
         initializeAssets();
+        softwareUpdateReadyNotificationSent = false;
     }
 
     /**
@@ -959,7 +961,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
                 case READY_TO_INSTALL:
-                    triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
+                    if (!softwareUpdateReadyNotificationSent) {
+                        softwareUpdateReadyNotificationSent = true;
+                        triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
+                    }
                     // note: fall through to set Thing status, status detail, and status description
                 case INSTALL_FAILED:
                 default:
