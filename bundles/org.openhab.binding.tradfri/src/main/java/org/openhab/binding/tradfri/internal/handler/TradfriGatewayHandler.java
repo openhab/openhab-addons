@@ -32,7 +32,7 @@ import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.californium.scandium.DTLSConnector;
 import org.eclipse.californium.scandium.config.DtlsConfig;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
-import org.eclipse.californium.scandium.dtls.pskstore.AdvancedSinglePskStore;
+import org.eclipse.californium.scandium.dtls.pskstore.SinglePskStore;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tradfri.internal.CoapCallback;
@@ -162,8 +162,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
                 org.eclipse.californium.elements.config.Configuration.getStandard()
                         .set(DtlsConfig.DTLS_MAX_CONNECTIONS, 100)
                         .set(DtlsConfig.DTLS_STALE_CONNECTION_THRESHOLD, 60, TimeUnit.SECONDS));
-        builder.setAdvancedPskStore(
-                new AdvancedSinglePskStore(configuration.identity, configuration.preSharedKey.getBytes()));
+        builder.setPskStore(new SinglePskStore(configuration.identity, configuration.preSharedKey.getBytes()));
         dtlsConnector = new DTLSConnector(builder.build());
         endPoint = new CoapEndpoint.Builder().setConnector(dtlsConnector).build();
         deviceClient.setEndpoint(endPoint);
@@ -192,7 +191,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         try {
             DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(
                     org.eclipse.californium.elements.config.Configuration.getStandard());
-            builder.setAdvancedPskStore(new AdvancedSinglePskStore("Client_identity", configuration.code.getBytes()));
+            builder.setPskStore(new SinglePskStore("Client_identity", configuration.code.getBytes()));
 
             DTLSConnector dtlsConnector = new DTLSConnector(builder.build());
             CoapEndpoint.Builder authEndpointBuilder = new CoapEndpoint.Builder();
