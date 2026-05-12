@@ -946,7 +946,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE) {
-            boolean wasSentFlagValue = softwareUpdateReadyNotificationSent;
             boolean newSentFlagValue = false;
             switch (status) {
                 case INSTALLING:
@@ -963,10 +962,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
                     break;
                 case READY_TO_INSTALL:
-                    if (!wasSentFlagValue) {
-                        newSentFlagValue = true;
+                    if (!softwareUpdateReadyNotificationSent) {
                         triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
                     }
+                    newSentFlagValue = true;
                     // note: fall through to set Thing status, status detail, and status description
                 case INSTALL_FAILED:
                 default:
