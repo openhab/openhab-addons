@@ -142,26 +142,33 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             errorMsg = initializeBridgeIp(getConfigAs(PowermaxIpConfiguration.class), threadName);
         }
 
+        // Normally globalJob should always be null when initialize() is called
+        // because job is cancelled and globalJob is set to null in dispose().
+        // By security, cancel the job in case it is not null.
+        ScheduledFuture<?> job = globalJob;
+        if (job != null) {
+            logger.warn("initialize() for {}: encountering not null globalJob", getThing().getUID());
+            job.cancel(true);
+            globalJob = null;
+        }
+
         if (errorMsg == null) {
-            ScheduledFuture<?> job = globalJob;
-            if (job == null || job.isCancelled()) {
-                // Delay the startup in case the handler is restarted immediately
-                globalJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        logger.trace("Powermax job...");
-                        updateMotionSensorState();
-                        updateRingingState();
-                        if (isConnected()) {
-                            checkKeepAlive();
-                            retryDownloadSetup();
-                        } else {
-                            tryReconnect();
-                        }
-                    } catch (Exception e) {
-                        logger.warn("Exception in scheduled job: {}", e.getMessage(), e);
+            // Delay the startup in case the handler is restarted immediately
+            globalJob = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    logger.trace("Powermax job...");
+                    updateMotionSensorState();
+                    updateRingingState();
+                    if (isConnected()) {
+                        checkKeepAlive();
+                        retryDownloadSetup();
+                    } else {
+                        tryReconnect();
                     }
-                }, 10, JOB_REPEAT, TimeUnit.SECONDS);
-            }
+                } catch (Exception e) {
+                    logger.warn("Exception in scheduled job: {}", e.getMessage(), e);
+                }
+            }, 10, JOB_REPEAT, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
@@ -225,7 +232,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     public void dispose() {
         logger.debug("Handler disposed for thing {}", getThing().getUID());
         ScheduledFuture<?> job = globalJob;
-        if (job != null && !job.isCancelled()) {
+        if (job != null) {
             job.cancel(true);
             globalJob = null;
         }
