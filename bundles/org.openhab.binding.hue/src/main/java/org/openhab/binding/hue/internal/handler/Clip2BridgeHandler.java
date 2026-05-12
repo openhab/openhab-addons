@@ -946,10 +946,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE) {
+            boolean wasSentFlagValue = softwareUpdateReadyNotificationSent;
+            boolean newSentFlagValue = false;
             switch (status) {
                 case INSTALLING:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
-                    softwareUpdateReadyNotificationSent = false;
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
                     /*
@@ -960,20 +961,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     String description = (statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) ? null
                             : statusInfo.getDescription();
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
-                    softwareUpdateReadyNotificationSent = false;
                     break;
                 case READY_TO_INSTALL:
-                    if (!softwareUpdateReadyNotificationSent) {
-                        softwareUpdateReadyNotificationSent = true;
+                    if (!wasSentFlagValue) {
+                        newSentFlagValue = true;
                         triggerChannel(CHANNEL_2_UPDATE_READY_TO_INSTALL);
                     }
                     // note: fall through to set Thing status, status detail, and status description
                 case INSTALL_FAILED:
                 default:
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
-                    softwareUpdateReadyNotificationSent = false;
                     break;
             }
+            softwareUpdateReadyNotificationSent = newSentFlagValue;
         }
 
         return status;
