@@ -162,7 +162,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
-    private boolean softwareUpdateReadyNotificationSent;
+    private volatile boolean softwareUpdateReadyNotificationSent;
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
 
