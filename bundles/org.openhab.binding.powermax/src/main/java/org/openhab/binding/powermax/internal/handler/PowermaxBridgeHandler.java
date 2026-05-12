@@ -147,7 +147,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         // By security, cancel the job in case it is not null.
         ScheduledFuture<?> job = globalJob;
         if (job != null) {
-            logger.warn("initialize(): encountering not null globalJob");
+            logger.warn("initialize() for {}: encountering not null globalJob", getThing().getUID());
             job.cancel(true);
             globalJob = null;
         }
