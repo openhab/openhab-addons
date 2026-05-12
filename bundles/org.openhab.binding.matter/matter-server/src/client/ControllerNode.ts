@@ -176,6 +176,12 @@ export class ControllerNode {
                 node?.events.initializedFromRemote.once(() => {
                     logger.info(`Node ${node?.nodeId} initialized from remote`);
                     if (timeoutId) clearTimeout(timeoutId);
+                    // Emit a synthetic Connected event so the client knows the resume completed,
+                    // since matter.js may not fire stateChanged when reusing an already-connected node.
+                    this.ws.sendEvent(EventType.NodeStateInformation, {
+                        nodeId: node!.nodeId,
+                        state: NodeStates[NodeStates.Connected],
+                    });
                     resolve();
                 });
             });
@@ -185,46 +191,55 @@ export class ControllerNode {
         if (node === undefined) {
             throw new Error(`Node ${nodeId} not connected`);
         }
-        node.connect();
         this.nodes.set(node.nodeId, node);
 
-        // register event listeners once the node is fully connected
+        // Register state/structure/decommission listeners BEFORE node.connect() so we capture the
+        // WaitingForDeviceDiscovery → Reconnecting → Connected transitions matter.js 0.17 fires
+        // during connect (in 0.16 these fired after initializedFromRemote and were caught below).
+        node.events.stateChanged.on(info => {
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeStates[info],
+            });
+        });
+
+        node.events.structureChanged.on(() => {
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeState.STRUCTURE_CHANGED,
+            });
+        });
+
+        node.events.decommissioned.on(() => {
+            this.nodes.delete(node!.nodeId);
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeState.DECOMMISSIONED,
+            });
+        });
+
+        // attributeChanged and eventTriggered only need to be wired up once initial priming completes,
+        // to avoid forwarding the priming burst as user-visible updates.
         node.events.initializedFromRemote.once(() => {
-            node.events.attributeChanged.on(data => {
-                data.path.nodeId = node.nodeId;
+            node!.events.attributeChanged.on(data => {
+                data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.AttributeChanged, data);
             });
 
-            node.events.eventTriggered.on(data => {
-                data.path.nodeId = node.nodeId;
+            node!.events.eventTriggered.on(data => {
+                data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.EventTriggered, data);
             });
 
-            node.events.stateChanged.on(info => {
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeStates[info],
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
-            });
-
-            node.events.structureChanged.on(() => {
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeState.STRUCTURE_CHANGED,
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
-            });
-
-            node.events.decommissioned.on(() => {
-                this.nodes.delete(node.nodeId);
-                const data: any = {
-                    nodeId: node.nodeId,
-                    state: NodeState.DECOMMISSIONED,
-                };
-                this.ws.sendEvent(EventType.NodeStateInformation, data);
+            // Defense in depth: emit a synthetic Connected event in case the stateChanged transition
+            // to Connected was coalesced/missed despite the early listener attachment above.
+            this.ws.sendEvent(EventType.NodeStateInformation, {
+                nodeId: node!.nodeId,
+                state: NodeStates[NodeStates.Connected],
             });
         });
+
+        node.connect();
 
         return new Promise((resolve, reject) => {
             let timeoutId: NodeJS.Timeout | undefined;
@@ -233,27 +248,18 @@ export class ControllerNode {
                 timeoutId = setTimeout(() => {
                     logger.info(`Node ${node?.nodeId} initialization timed out`);
 
-                    // register a listener to send the node state information once the node is connected at some future time
-                    node.events.initializedFromRemote.once(() => {
-                        const data: any = {
-                            nodeId: node.nodeId,
-                            state: NodeStates.Connected,
-                        };
-                        this.ws.sendEvent(EventType.NodeStateInformation, data);
-                    });
-
                     if (
                         node?.connectionState === NodeStates.Disconnected ||
                         node?.connectionState === NodeStates.WaitingForDeviceDiscovery
                     ) {
                         reject(new Error(`Node ${node.nodeId} connection failed: ${NodeStates[node.connectionState]}`));
                     } else {
-                        reject(new Error(`Node ${node.nodeId} connection timed out`));
+                        reject(new Error(`Node ${node!.nodeId} connection timed out`));
                     }
                 }, connectionTimeout);
             }
 
-            node.events.initializedFromRemote.once(() => {
+            node!.events.initializedFromRemote.once(() => {
                 if (timeoutId) clearTimeout(timeoutId);
                 resolve();
             });

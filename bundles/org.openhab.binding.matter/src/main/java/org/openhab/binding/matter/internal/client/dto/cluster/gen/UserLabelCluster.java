@@ -43,14 +43,13 @@ public class UserLabelCluster extends BaseCluster {
     public static class LabelStruct {
         /**
          * The Label or Value semantic is not defined here.
-         * Label examples: &quot;room&quot;, &quot;zone&quot;, &quot;group&quot;, &quot;direction&quot;.
+         * Label examples: "room", "zone", "group", "direction".
          */
         public String label; // string
         /**
          * The Label or Value semantic is not defined here. The Value is a discriminator for a Label that may have
          * multiple instances.
-         * Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;, &quot;orientation&quot;:&quot;North&quot;,
-         * &quot;floor&quot;:&quot;2&quot;, &quot;direction&quot;:&quot;up&quot;
+         * Label:Value examples: "room":"bedroom 2", "orientation":"North", "floor":"2", "direction":"up"
          */
         public String value; // string
 
