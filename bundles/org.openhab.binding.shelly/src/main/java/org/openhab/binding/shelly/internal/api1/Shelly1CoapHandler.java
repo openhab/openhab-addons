@@ -195,7 +195,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                                 break;
                             }
                         }
-                    } // else fall through
+                    }
                 }
             }
         }
@@ -232,8 +232,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 case OptionNumberRegistry.URI_PATH:
                     if (opt instanceof StringOption strOpt) {
                         uri = COLOIT_URI_BASE + strOpt.getStringValue();
-                        break;
-                    } // else fall through, logs error message
+                    } else {
+                        logger.debug("{}: URI_PATH option is not a StringOption, type: {}", thingName,
+                                opt.getClass().getSimpleName());
+                    }
+                    break;
                 case OptionNumberRegistry.URI_HOST: // ignore
                     break;
                 case OptionNumberRegistry.CONTENT_FORMAT: // ignore
@@ -270,15 +273,21 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                             coiotVers = iVersion;
                             coiotBound = true;
                         }
-                        break;
-                    } // else fall through, logs error message
+                    } else {
+                        logger.debug("{}: COIOT_OPTION_GLOBAL_DEVID option is not a StringOption, type: {}", thingName,
+                                opt.getClass().getSimpleName());
+                    }
+                    break;
                 case COIOT_OPTION_STATUS_VALIDITY:
                     break;
                 case COIOT_OPTION_STATUS_SERIAL:
                     if (opt instanceof IntegerOption intOpt) {
                         serial = intOpt.getIntegerValue();
-                        break;
-                    } // else fall through, logs error message
+                    } else {
+                        logger.debug("{}: COIOT_OPTION_STATUS_SERIAL option is not an IntegerOption, type: {}",
+                                thingName, opt.getClass().getSimpleName());
+                    }
+                    break;
                 default:
                     logger.debug("{} ({}): CoAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
                             opt.toValueString());
