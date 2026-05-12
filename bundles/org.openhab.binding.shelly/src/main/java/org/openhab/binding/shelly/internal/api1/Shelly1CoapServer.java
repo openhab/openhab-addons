@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.api1;
 
+import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_OPTION_GLOBAL_DEVID;
+import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_OPTION_STATUS_SERIAL;
+import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_OPTION_STATUS_VALIDITY;
 import static org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.COIOT_PORT;
 
 import java.net.InetAddress;
@@ -27,6 +30,11 @@ import org.eclipse.californium.core.coap.CoAP.Code;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
+import org.eclipse.californium.core.coap.option.IntegerOption;
+import org.eclipse.californium.core.coap.option.MapBasedOptionRegistry;
+import org.eclipse.californium.core.coap.option.OptionRegistry;
+import org.eclipse.californium.core.coap.option.StandardOptionRegistry;
+import org.eclipse.californium.core.coap.option.StringOption;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.elements.UdpMulticastConnector;
@@ -44,9 +52,27 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Shelly1CoapServer {
+    // Define custom CoIoT option definitions for Shelly devices
+    private static final StringOption.Definition COIOT_GLOBAL_DEVID_DEF = new StringOption.Definition(
+            COIOT_OPTION_GLOBAL_DEVID, "Shelly-GlobalDevId", true, 0, 255);
+    private static final IntegerOption.Definition COIOT_STATUS_VALIDITY_DEF = new IntegerOption.Definition(
+            COIOT_OPTION_STATUS_VALIDITY, "Shelly-StatusValidity", true, 0, 4);
+    private static final IntegerOption.Definition COIOT_STATUS_SERIAL_DEF = new IntegerOption.Definition(
+            COIOT_OPTION_STATUS_SERIAL, "Shelly-StatusSerial", true, 0, 4);
+
     static {
         // register configurations before Configuration.getStandard() is used
         DtlsConfig.register();
+        // register custom CoIoT options for Shelly devices
+        // Merge with existing default registry to preserve options from other add-ons (e.g., Tradfri)
+        OptionRegistry currentRegistry = StandardOptionRegistry.getDefaultOptionRegistry();
+        OptionRegistry mergedRegistry = MapBasedOptionRegistry.builder() //
+                .add(currentRegistry) //
+                .add(COIOT_GLOBAL_DEVID_DEF) //
+                .add(COIOT_STATUS_VALIDITY_DEF) //
+                .add(COIOT_STATUS_SERIAL_DEF) //
+                .build();
+        StandardOptionRegistry.setDefaultOptionRegistry(mergedRegistry);
     }
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapServer.class);
 
