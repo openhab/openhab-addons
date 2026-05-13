@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * shall not be accessed.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public interface Model {
@@ -40,6 +41,7 @@ public interface Model {
     static final String JSON_KEY_ATTRIBUTES = "attributes";
     static final String JSON_KEY_RELATION_ID = "relationId";
     static final String JSON_KEY_CAPABILITIES = "capabilities";
+    static final String JSON_KEY_DEVICE_SET = "deviceSet";
 
     static final String TYPE_USER_SCENE = "userScene";
     static final String TYPE_CUSTOM_SCENE = "customScene";
@@ -52,6 +54,7 @@ public interface Model {
     static final String DEVICE_TYPE_AIR_PURIFIER = "airPurifier";
     static final String DEVICE_TYPE_BLINDS = "blinds";
     static final String DEVICE_TYPE_LIGHT = "light";
+    static final String DEVICE_TYPE_LIGHT_SET = "lightSet";
     static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
     static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
     static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
@@ -231,4 +234,13 @@ public interface Model {
      * @return Map with attributes for Thing properties
      */
     Map<String, Object> getPropertiesFor(String id);
+
+    /**
+     * Returns the list of member device IDs that belong to the given light set ID.
+     * A device is a member if its deviceSet array contains an entry with the given setId.
+     *
+     * @param setId the light set ID to query
+     * @return list of member device IDs
+     */
+    List<String> getMemberDeviceIds(String setId);
 }

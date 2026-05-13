@@ -24,6 +24,7 @@ import org.openhab.core.types.State;
  * more updates were received.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public interface DirigeraAPI {
@@ -77,6 +78,15 @@ public interface DirigeraAPI {
      * @return Integer of http response status
      */
     int sendAttributes(String deviceId, JSONObject attributes);
+
+    /**
+     * Send attributes to a device set (multiple lights controlled as one unit via /devices/set/{id})
+     *
+     * @param setId to update
+     * @param attributes to send
+     * @return Integer of http response status
+     */
+    int sendSetAttributes(String setId, JSONObject attributes);
 
     /**
      * Send patch with other data than attributes to a device

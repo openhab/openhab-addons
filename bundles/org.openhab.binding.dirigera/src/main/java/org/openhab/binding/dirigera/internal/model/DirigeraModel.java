@@ -13,14 +13,17 @@
 package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * devices shall not be accessed.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public class DirigeraModel implements Model {
@@ -92,6 +96,7 @@ public class DirigeraModel implements Model {
             List<String> foundDevices = new ArrayList<>();
             foundDevices.addAll(getResolvedDeviceList());
             foundDevices.addAll(getAllSceneIds());
+            foundDevices.addAll(getAllLightSetIds());
             devices.clear();
             devices.addAll(foundDevices);
             previousDevices.forEach(deviceId -> {
@@ -185,6 +190,87 @@ public class DirigeraModel implements Model {
         return sceneList;
     }
 
+    /**
+     * Collects all unique light set IDs by scanning the deviceSet array of every device.
+     * A light set is not a top-level device entry; its ID only appears embedded in member devices.
+     *
+     * @return list of unique light set IDs
+     */
+    synchronized List<String> getAllLightSetIds() {
+        // LinkedHashSet gives O(1) duplicate-check while preserving insertion order.
+        // List.contains() on an ArrayList would be O(n) per check, resulting in O(n²) overall.
+        Set<String> setIds = new LinkedHashSet<>();
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
+            Iterator<Object> entries = devices.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                if (entry.has(JSON_KEY_DEVICE_SET)) {
+                    JSONArray deviceSets = entry.getJSONArray(JSON_KEY_DEVICE_SET);
+                    deviceSets.forEach(setObj -> {
+                        JSONObject set = (JSONObject) setObj;
+                        setIds.add(set.getString(JSON_KEY_DEVICE_ID));
+                    });
+                }
+            }
+        }
+        return new ArrayList<>(setIds);
+    }
+
+    /**
+     * Returns the first deviceSet entry found for a given set ID, or an empty JSONObject if not found.
+     * Used to retrieve name, icon and id of a light set.
+     */
+    private synchronized JSONObject getLightSetData(String setId) {
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
+            Iterator<Object> entries = devices.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                if (entry.has(JSON_KEY_DEVICE_SET)) {
+                    JSONArray deviceSets = entry.getJSONArray(JSON_KEY_DEVICE_SET);
+                    for (Object setObj : deviceSets) {
+                        JSONObject set = (JSONObject) setObj;
+                        if (setId.equals(set.getString(JSON_KEY_DEVICE_ID))) {
+                            return set;
+                        }
+                    }
+                }
+            }
+        }
+        return new JSONObject();
+    }
+
+    /**
+     * Returns the list of member device IDs that belong to the given light set ID.
+     * A device is a member if its deviceSet array contains an entry with the given setId.
+     *
+     * @param setId the light set ID to query
+     * @return list of member device IDs
+     */
+    @Override
+    public synchronized List<String> getMemberDeviceIds(String setId) {
+        List<String> memberIds = new ArrayList<>();
+        if (!model.isNull(MODEL_KEY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(MODEL_KEY_DEVICES);
+            Iterator<Object> entries = devices.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                if (entry.has(JSON_KEY_DEVICE_SET) && entry.has(JSON_KEY_DEVICE_ID)) {
+                    JSONArray deviceSets = entry.getJSONArray(JSON_KEY_DEVICE_SET);
+                    for (Object setObj : deviceSets) {
+                        JSONObject set = (JSONObject) setObj;
+                        if (setId.equals(set.getString(JSON_KEY_DEVICE_ID))) {
+                            memberIds.add(entry.getString(JSON_KEY_DEVICE_ID));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return memberIds;
+    }
+
     private void addedDeviceScene(String id) {
         DiscoveryResult result = identifiy(id);
         if (result != null) {
@@ -258,6 +344,11 @@ public class DirigeraModel implements Model {
 
     @Override
     public synchronized String getCustonNameFor(String id) {
+        // check if id refers to a light set
+        JSONObject setData = getLightSetData(id);
+        if (!setData.isEmpty() && setData.has("name")) {
+            return setData.getString("name");
+        }
         JSONObject deviceObject = getAllFor(id, MODEL_KEY_DEVICES);
         if (deviceObject.has(JSON_KEY_ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(JSON_KEY_ATTRIBUTES);
@@ -296,6 +387,15 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
+        // light sets are not top-level devices — build properties from set metadata
+        JSONObject setData = getLightSetData(id);
+        if (!setData.isEmpty()) {
+            properties.put(JSON_KEY_DEVICE_ID, id);
+            if (setData.has("name")) {
+                properties.put(ATTRIBUTES_KEY_CUSTOM_NAME, setData.getString("name"));
+            }
+            return properties;
+        }
         JSONObject deviceObject = getAllFor(id, MODEL_KEY_DEVICES);
         // get manufacturer, model and version data
         if (deviceObject.has(JSON_KEY_ATTRIBUTES)) {
@@ -382,6 +482,10 @@ public class DirigeraModel implements Model {
      */
     @Override
     public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
+        // light set IDs are not top-level devices — check separately first
+        if (getAllLightSetIds().contains(id)) {
+            return THING_TYPE_LIGHT_SET;
+        }
         JSONObject data = getAllFor(id, MODEL_KEY_DEVICES);
         if (data.isEmpty()) {
             data = getAllFor(id, MODEL_KEY_SCENES);
@@ -513,6 +617,8 @@ public class DirigeraModel implements Model {
                     return THING_TYPE_SOUND_CONTROLLER;
                 case DEVICE_TYPE_SHORTCUT_CONTROLLER:
                     return THING_TYPE_SINGLE_SHORTCUT_CONTROLLER;
+                case DEVICE_TYPE_LIGHT_SET:
+                    return THING_TYPE_LIGHT_SET;
             }
         } else {
             // device type is empty, check for scene

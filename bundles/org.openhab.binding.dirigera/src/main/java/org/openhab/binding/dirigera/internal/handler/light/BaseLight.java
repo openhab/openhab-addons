@@ -167,7 +167,7 @@ public class BaseLight extends BaseHandler implements PowerListener {
             case BRIGHTNESS:
             case TEMPERATURE:
             case COLOR:
-                super.sendAttributes(request.request);
+                sendAttributes(request.request);
                 if (isPowered()) {
                     addonMillis = lightConfig.fadeTime;
                 }
