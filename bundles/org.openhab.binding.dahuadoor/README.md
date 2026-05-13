@@ -30,6 +30,7 @@ VTO2202 is a single-button outdoor station; VTO3211 is a dual-button outdoor sta
 | username      | text    | Yes      |                         | Username to access the device                                                                                                                                                                |
 | password      | text    | Yes      |                         | Password to access the device                                                                                                                                                                |
 | snapshotPath  | text    | Yes      |                         | Linux path where image files are stored (e.g., /var/lib/openhab/door-images)                                                                                                                 |
+| maxImages     | integer | No       | 20                      | Maximum number of timestamped snapshots to keep (0 disables cleanup). For VTO3211 this applies per button.                                                                                   |
 | useHttps      | boolean | No       | false                   | Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on in its network settings. When disabled, plain HTTP (port 80) is used.                     |
 | enableWebRTC  | boolean | No       | false                   | Enables local go2rtc sidecar management and publishes a `webrtc-url` channel.                                                                                                                |
 | go2rtcPath    | text    | No       |                         | Absolute path to the go2rtc binary (required when `enableWebRTC=true`).                                                                                                                      |
@@ -43,6 +44,12 @@ VTO2202 is a single-button outdoor station; VTO3211 is a dual-button outdoor sta
 | sipPassword   | text    | No       |                         | SIP password; if empty, the binding falls back to `password`.                                                                                                                                |
 | localSipPort  | integer | No       | 5060                    | Local UDP SIP listening port.                                                                                                                                                                |
 | sipRealm      | text    | No       | VDP                     | SIP authentication realm (default for Dahua VTO devices).                                                                                                                                    |
+
+**Snapshot persistence:**
+The binding stores snapshots in `snapshotPath` and reloads the latest snapshot on startup to restore the `door-image` channels.
+For VTO2202, the latest file is `Doorbell.jpg` and timestamped files are named `Doorbell_YYYY-MM-DD_HH-mm-ss.jpg`.
+For VTO3211, the latest files are `Doorbell-1.jpg` and `Doorbell-2.jpg`, with timestamped files named `Doorbell-1_YYYY-MM-DD_HH-mm-ss.jpg` and `Doorbell-2_YYYY-MM-DD_HH-mm-ss.jpg`.
+Timestamped files are capped by `maxImages` (0 disables cleanup).
 
 **Note on SIP configuration:**
 To enable SIP call signaling, set `enableSip=true` and configure at least one value in `sipExtension`.
@@ -104,6 +111,7 @@ Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
     username="admin",
     password="password123",
     snapshotPath="/var/lib/openhab/door-images",
+    maxImages=20,
     useHttps=false
 ]
 ```
@@ -141,6 +149,7 @@ Thing dahuadoor:vto3211:entrance "Entrance Station" @ "Entrance" [
     username="admin",
     password="password123",
     snapshotPath="/var/lib/openhab/door-images",
+    maxImages=20,
     useHttps=false
 ]
 ```
@@ -185,7 +194,7 @@ end
 Intercom operation is implemented with WebRTC via the `go2rtc` binary.
 It converts the Dahua RTP audio/video stream into browser-compatible WebRTC. The audio stream is transcoded using `ffmpeg`. Hence both tools are needed.
 When `enableWebRTC=true`, the binding starts everything automatically when a call is received.
-The binding registers itself at the VTO. Define one or more terminals (for example `9901#2` or `9901#2,9901#3`, type `public`) and list those accounts in `sipExtension` as a comma-separated list. Use the matching `sipPassword` (single password for all accounts).
+The binding registers itself at the VTO similar to a VTH device. Create one or more SIP terminals in the VTO menu (type `public`) for the number of parallel connections you expect (for example `9901#2`, `9901#3`, `9901#4`), then list those accounts in `sipExtension` as a comma-separated list. Use the matching `sipPassword` (single password for all accounts).
 You can try Dahua's default password for initial testing, but do not use it in production. Consult your VTO manual for setup details.
 
 ### Tool installation
@@ -236,6 +245,7 @@ Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
   username="admin",
   password="password123",
   snapshotPath="/var/lib/openhab/door-images",
+  maxImages=20,
   enableWebRTC=true,
   go2rtcPath="/usr/local/bin/go2rtc",
   go2rtcApiPort=1984,
