@@ -30,6 +30,7 @@ import org.openhab.binding.dirigera.internal.handler.controller.ShortcutControll
 import org.openhab.binding.dirigera.internal.handler.controller.SoundControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
+import org.openhab.binding.dirigera.internal.handler.light.LightSetHandler;
 import org.openhab.binding.dirigera.internal.handler.light.SwitchLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
 import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonController;
@@ -70,6 +71,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.dirigera", service = ThingHandlerFactory.class)
@@ -189,6 +191,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new Matter3ButtonController(thing);
         } else if (THING_TYPE_MATTER_LIGHT.equals(thingTypeUID)) {
             return new MatterLight(thing, COLOR_LIGHT_MAP, stateProvider);
+        } else if (THING_TYPE_LIGHT_SET.equals(thingTypeUID)) {
+            return new LightSetHandler(thing, LIGHT_SET_MAP, stateProvider);
         } else {
             logger.debug("DIRIGERA FACTORY Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;

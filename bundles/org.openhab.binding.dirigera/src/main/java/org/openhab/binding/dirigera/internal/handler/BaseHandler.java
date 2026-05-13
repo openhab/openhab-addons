@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * {@link BaseHandler} for all devices
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - add device set handling
  */
 @NonNullByDefault
 public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
@@ -338,6 +339,21 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         int status = gateway().api().sendAttributes(config.id, attributes);
         if (customDebug) {
             logger.info("DIRIGERA BASE_HANDLER {} API call: Status {} payload {}", thing.getUID(), status, attributes);
+        }
+        return status;
+    }
+
+    /**
+     * Wrapper function for device sets - routes to /devices/set/{id} endpoint
+     *
+     * @param attributes
+     * @return status
+     */
+    protected int sendSetAttributes(JSONObject attributes) {
+        int status = gateway().api().sendSetAttributes(config.id, attributes);
+        if (customDebug) {
+            logger.info("DIRIGERA BASE_HANDLER {} API set call: Status {} payload {}", thing.getUID(), status,
+                    attributes);
         }
         return status;
     }
