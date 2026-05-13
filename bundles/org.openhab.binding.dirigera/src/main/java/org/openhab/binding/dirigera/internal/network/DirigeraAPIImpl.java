@@ -83,6 +83,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
@@ -104,6 +105,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
@@ -121,6 +123,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 logger.warn("DIRIGERA API Scene trigger failed with {}", responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API Exception calling {}", url);
         }
     }
@@ -155,6 +158,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return responseStatus;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API send set to {} with {} failed: {}", url, dataArray, e.getMessage());
             return responseStatus;
         }
@@ -182,6 +186,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return responseStatus;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API send failed {} failed {} {}", url, dataArray, e.getMessage());
             return responseStatus;
         }
@@ -203,6 +208,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return image;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API call to {} failed {}", imageURL, e.getMessage());
             return image;
         }
@@ -223,6 +229,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             }
             return statusObject;
         } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
+            checkInterruptedException(e);
             logger.warn("DIRIGERA API Exception calling {}", url);
             statusObject = getErrorJson(-1, e.getMessage());
             return statusObject;
@@ -257,6 +264,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                     logger.warn("DIRIGERA API send {} to {} failed with status {}", payload, url, response.getStatus());
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
+                checkInterruptedException(e);
                 logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
             }
             logger.debug("DIRIGERA API createScene failed {} retries remaining", retryCounter);
@@ -283,6 +291,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                     logger.warn("DIRIGERA API send {} failed with status {}", url, response.getStatus());
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                checkInterruptedException(e);
                 logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
             }
             logger.debug("DIRIGERA API deleteScene failed with status {}, {} retries remaining", responseStatus,
@@ -295,5 +304,11 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         String error = String.format(
                 "{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", status, message);
         return new JSONObject(error);
+    }
+
+    private void checkInterruptedException(Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

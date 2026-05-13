@@ -203,8 +203,12 @@ public class DirigeraAPISimu implements DirigeraAPI {
      * only requires updating this single method.
      */
     public void clearPatches() {
-        patchMap.clear();
-        setPatchMap.clear();
+        synchronized (patchMap) {
+            patchMap.clear();
+        }
+        synchronized (setPatchMap) {
+            setPatchMap.clear();
+        }
     }
 
     public void clear() {

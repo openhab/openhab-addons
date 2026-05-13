@@ -83,14 +83,26 @@ public class LightSetHandler extends ColorLightHandler {
 
         updateProperties();
 
-        // 2) Register under the set ID itself (for future set-level events from the hub)
+        // 2) Initialize the set's own customName from the model so that subsequent member
+        // updates (which carry the member's own customName) cannot overwrite it.
+        // getPropertiesFor() returns a map with ATTRIBUTES_KEY_CUSTOM_NAME = set name for light sets.
+        Object setName = gateway().model().getPropertiesFor(config.id).get(ATTRIBUTES_KEY_CUSTOM_NAME);
+        if (setName instanceof String nameStr && !nameStr.isBlank()) {
+            JSONObject nameInit = new JSONObject();
+            JSONObject attributes = new JSONObject();
+            attributes.put(ATTRIBUTES_KEY_CUSTOM_NAME, nameStr);
+            nameInit.put(JSON_KEY_ATTRIBUTES, attributes);
+            super.handleUpdate(nameInit);
+        }
+
+        // 3) Register under the set ID itself (for future set-level events from the hub)
         // and under each member device ID so the gateway routes member websocket updates.
         // registerDevice() does not throw checked exceptions; any gateway NPE is prevented
         // by the null-guard in BaseHandler.gateway(), so no try-catch is needed here.
         gateway().registerDevice(child, config.id);
         memberDeviceIds.forEach(memberId -> gateway().registerDevice(child, memberId));
 
-        // 3) Poll current state for each reachable member so the handler reaches ONLINE
+        // 4) Poll current state for each reachable member so the handler reaches ONLINE
         // immediately without waiting for the first websocket event.
         // Only call handleUpdate for reachable members — unreachable ones stay false in
         // memberReachability (initialized above) and must not overwrite channel state.
@@ -101,7 +113,7 @@ public class LightSetHandler extends ColorLightHandler {
             }
         }
 
-        // 4) If no member reported isReachable=true, go OFFLINE explicitly.
+        // 5) If no member reported isReachable=true, go OFFLINE explicitly.
         // This covers the case where readDevice returned empty/error for all members.
         boolean anyReachable = memberReachability.values().stream().anyMatch(r -> r);
         if (!anyReachable) {
@@ -120,7 +132,14 @@ public class LightSetHandler extends ColorLightHandler {
         if (customDebug) {
             logger.info("DIRIGERA LIGHT_SET {} handleUpdate {}", thing.getLabel(), update);
         }
+        JSONObject stripped = new JSONObject(update, update.keySet().toArray(new String[0]));
 
+        // strip customName for each member update
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            stripped.getJSONObject(JSON_KEY_ATTRIBUTES).remove(ATTRIBUTES_KEY_CUSTOM_NAME);
+        }
+
+        // handle reachable flag for deviceSet
         if (update.has(JSON_KEY_REACHABLE)) {
             // identify which member sent this update and track its reachability
             String sourceId = update.optString(JSON_KEY_DEVICE_ID, "");
@@ -140,12 +159,14 @@ public class LightSetHandler extends ColorLightHandler {
 
             // Strip isReachable so the parent handleUpdate does not override our status.
             // Shallow copy via keySet() avoids the expensive toString()/parse round-trip.
-            JSONObject stripped = new JSONObject(update, update.keySet().toArray(new String[0]));
             stripped.remove(JSON_KEY_REACHABLE);
-            super.handleUpdate(stripped);
-        } else {
-            super.handleUpdate(update);
+            // Also strip customName from member attributes: each member carries its own
+            // device name, which must not overwrite the set name initialized in initializeDevice().
+            if (stripped.has(JSON_KEY_ATTRIBUTES)) {
+                stripped.getJSONObject(JSON_KEY_ATTRIBUTES).remove(ATTRIBUTES_KEY_CUSTOM_NAME);
+            }
         }
+        super.handleUpdate(stripped);
     }
 
     /**
