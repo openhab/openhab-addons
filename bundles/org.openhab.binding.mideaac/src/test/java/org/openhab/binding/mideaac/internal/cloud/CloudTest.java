@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,13 +40,17 @@ import org.junit.jupiter.api.Test;
 @NonNullByDefault
 public class CloudTest {
 
+    private static <T> T typedMock(Class<T> clazz) {
+        return Objects.requireNonNull(mock(clazz));
+    }
+
     @Test
     public void testLogin() throws Exception {
         // Mock HttpClient and ContentResponse
-        HttpClient mockHttpClient = mock(HttpClient.class);
-        Request mockRequest = mock(Request.class);
-        ContentResponse mockResponse = mock(ContentResponse.class);
-        HttpFields mockHeaders = mock(HttpFields.class);
+        HttpClient mockHttpClient = typedMock(HttpClient.class);
+        Request mockRequest = typedMock(Request.class);
+        ContentResponse mockResponse = typedMock(ContentResponse.class);
+        HttpFields mockHeaders = typedMock(HttpFields.class);
 
         // Define behavior of HttpFields
         when(mockHeaders.toString()).thenReturn("Mocked Headers");
@@ -95,10 +100,10 @@ public class CloudTest {
     @Test
     public void testLoginproxy() throws Exception {
         // Mock HttpClient and ContentResponse
-        HttpClient mockHttpClient = mock(HttpClient.class);
-        Request mockRequest = mock(Request.class);
-        ContentResponse mockResponse = mock(ContentResponse.class);
-        HttpFields mockHeaders = mock(HttpFields.class);
+        HttpClient mockHttpClient = typedMock(HttpClient.class);
+        Request mockRequest = typedMock(Request.class);
+        ContentResponse mockResponse = typedMock(ContentResponse.class);
+        HttpFields mockHeaders = typedMock(HttpFields.class);
 
         // Define behavior of HttpFields
         when(mockHeaders.toString()).thenReturn("Mocked Headers");
@@ -148,7 +153,7 @@ public class CloudTest {
                 "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
 
         // Create the Cloud class
-        HttpClient mockHttpClient = mock(HttpClient.class);
+        HttpClient mockHttpClient = typedMock(HttpClient.class);
         Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
 
         // Set loginId using reflection so that the getLoginId() check doesn't trigger
@@ -171,10 +176,10 @@ public class CloudTest {
     @Test
     public void testGetLoginId() throws Exception {
         // Mock HttpClient and dependent objects
-        HttpClient mockHttpClient = mock(HttpClient.class);
-        Request mockRequest = mock(Request.class);
-        ContentResponse mockResponse = mock(ContentResponse.class);
-        HttpFields mockHeaders = mock(HttpFields.class);
+        HttpClient mockHttpClient = typedMock(HttpClient.class);
+        Request mockRequest = typedMock(Request.class);
+        ContentResponse mockResponse = typedMock(ContentResponse.class);
+        HttpFields mockHeaders = typedMock(HttpFields.class);
 
         // Define behavior for HttpFields
         when(mockHeaders.toString()).thenReturn("Mocked Headers");
