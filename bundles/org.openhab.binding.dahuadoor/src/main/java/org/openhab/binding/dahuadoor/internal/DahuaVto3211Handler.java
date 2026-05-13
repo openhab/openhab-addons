@@ -15,7 +15,6 @@ package org.openhab.binding.dahuadoor.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 
@@ -52,14 +51,24 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
+    protected void restoreLastSnapshots() {
+        byte[] buffer1 = readLatestSnapshot(1);
+        updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_1, buffer1);
+
+        byte[] buffer2 = readLatestSnapshot(2);
+        updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2, buffer2);
+    }
+
+    @Override
     protected void onButtonPressed(int lockNumber) {
-        logger.debug("Button {} pressed on VTO3211", lockNumber);
+        int resolvedLockNumber = lockNumber == 2 ? 2 : 1;
+        logger.debug("Button {} pressed on VTO3211", resolvedLockNumber);
 
         // Determine channel IDs based on lock number
         String bellButtonChannelId;
         String doorImageChannelId;
 
-        if (lockNumber == 2) {
+        if (resolvedLockNumber == 2) {
             bellButtonChannelId = DahuaDoorBindingConstants.CHANNEL_BELL_BUTTON_2;
             doorImageChannelId = DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2;
         } else {
@@ -88,13 +97,12 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
             byte[] buffer = localClient.requestImage();
             if (buffer != null && buffer.length > 0) {
                 // Update image channel for the specific button
-                RawType image = new RawType(buffer, "image/jpeg");
-                updateState(doorImageChannelIdFinal, image);
+                updateImageChannel(doorImageChannelIdFinal, buffer);
 
                 // Save snapshot image
-                saveSnapshot(buffer);
+                saveSnapshot(buffer, resolvedLockNumber);
             } else {
-                logger.warn("Received empty or null image buffer from VTO3211 button {}", lockNumber);
+                logger.warn("Received empty or null image buffer from VTO3211 button {}", resolvedLockNumber);
             }
         });
     }

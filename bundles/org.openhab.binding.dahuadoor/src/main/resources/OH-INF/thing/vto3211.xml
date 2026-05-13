@@ -63,6 +63,11 @@
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
 			</parameter>
+			<parameter name="maxImages" type="integer">
+				<label>Max Images</label>
+				<description>Maximum number of timestamped snapshots to keep per button (0 disables cleanup)</description>
+				<default>20</default>
+			</parameter>
 			<parameter name="useHttps" type="boolean">
 				<label>Use HTTPS</label>
 				<description>Use HTTPS (port 443) for snapshot and door-open requests. Enable if the device has HTTPS turned on.

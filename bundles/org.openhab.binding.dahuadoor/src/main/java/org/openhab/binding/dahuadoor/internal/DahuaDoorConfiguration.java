@@ -30,6 +30,7 @@ public class DahuaDoorConfiguration {
     public String username = "";
     public String password = "";
     public String snapshotPath = "";
+    public int maxImages = 20;
     public boolean useHttps = false;
 
     // WebRTC / go2rtc settings

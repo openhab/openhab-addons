@@ -15,7 +15,6 @@ package org.openhab.binding.dahuadoor.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 
@@ -41,6 +40,12 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
+    protected void restoreLastSnapshots() {
+        byte[] buffer = readLatestSnapshot();
+        updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, buffer);
+    }
+
+    @Override
     protected void onButtonPressed(int lockNumber) {
         logger.debug("Button pressed on VTO2202 (lockNumber ignored, single button)");
 
@@ -63,8 +68,7 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
             byte[] buffer = localClient.requestImage();
             if (buffer != null && buffer.length > 0) {
                 // Update image channel
-                RawType image = new RawType(buffer, "image/jpeg");
-                updateState(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, image);
+                updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, buffer);
 
                 // Save snapshot
                 saveSnapshot(buffer);
