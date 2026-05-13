@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import io.calimero.Connection.BlockingMode;
 import io.calimero.KNXException;
+import io.calimero.KNXIllegalArgumentException;
 import io.calimero.link.KNXNetworkLink;
 import io.calimero.link.KNXNetworkLinkFT12;
 import io.calimero.link.medium.TPSettings;
@@ -100,7 +101,7 @@ public class SerialClient extends AbstractKNXClient {
                     return true;
                 }
             }
-        } catch (final ExecutionException | TimeoutException | KNXException na) {
+        } catch (final ExecutionException | TimeoutException | KNXException | KNXIllegalArgumentException na) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Exception detecting cEMI: ", na);
             }
