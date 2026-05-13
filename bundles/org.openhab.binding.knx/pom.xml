@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.calimero</groupId>
       <artifactId>calimero-core</artifactId>
-      <version>3.0-M1</version>
+      <version>3.0-M2</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>io.calimero</groupId>
       <artifactId>calimero-device</artifactId>
-      <version>3.0-M1</version>
+      <version>3.0-M2</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
