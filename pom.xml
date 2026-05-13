@@ -77,7 +77,7 @@
     <jna.version>5.18.1</jna.version>
     <json.version>20251224</json.version>
     <karaf.version>4.4.11</karaf.version>
-    <mockito.version>5.21.0</mockito.version>
+    <mockito.version>5.23.0</mockito.version>
     <netty.version>4.1.133.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
     <okhttp3.version>4.12.0</okhttp3.version>
