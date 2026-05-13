@@ -38,7 +38,7 @@ jobs:
         id: build
         # call mvnw directly instead of the repo's log-filtering wrapper script,
         # use more cores, safe to do so as we skip tests (which might depend on load)
-        run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver'
+        run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver -Dmarkdownlint.skip=true -DspotlessCheck.skip=true'
         env:
           MAVEN_OPTS: >-
             -Xmx8g
