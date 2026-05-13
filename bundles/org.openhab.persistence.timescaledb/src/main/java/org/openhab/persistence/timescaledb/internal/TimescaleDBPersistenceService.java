@@ -114,7 +114,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
 
     @Activate
     public void activate(final Map<String, Object> config) {
-        String url = (String) config.getOrDefault("url", "");
+        String url = normalizeJdbcUrl((String) config.getOrDefault("url", ""));
         if (url.isBlank()) {
             LOGGER.warn("TimescaleDB persistence not configured: missing 'url'. "
                     + "Configure org.openhab.timescaledb:url.");
@@ -445,6 +445,14 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
         cfg.setConnectionTimeout(connectTimeoutMs);
         cfg.setPoolName("timescaledb-persistence");
         return new HikariDataSource(cfg);
+    }
+
+    static String normalizeJdbcUrl(String url) {
+        String trimmed = url.trim();
+        if (trimmed.regionMatches(true, 0, "postgresql://", 0, "postgresql://".length())) {
+            return "jdbc:postgresql://" + trimmed.substring("postgresql://".length());
+        }
+        return trimmed;
     }
 
     static int parseIntConfig(Map<String, Object> config, String key, int defaultValue) {
