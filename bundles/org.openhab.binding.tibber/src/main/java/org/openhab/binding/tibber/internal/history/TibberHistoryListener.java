@@ -26,8 +26,8 @@ public interface TibberHistoryListener {
     /**
      * Called when history data for a given time window has been updated.
      *
-     * @param window the time window that was updated
+     * @param request the history request (time window + full/partial flag)
      * @param series the updated series, or null if the fetch is still in progress
      */
-    void historyUpdated(TibberHistory.TimeWindow window, @Nullable TibberHistorySeries series);
+    void historyUpdated(TibberHistory.HistoryRequest request, @Nullable TibberHistorySeries series);
 }

@@ -150,11 +150,23 @@ These synthetic entries are transient and will be replaced by real API data once
 | daily-cost          | Number:Currency | Daily energy costs                   | yes         |
 | daily-production    | Number:Energy   | Daily energy production              | yes         |
 
-History data is fetched automatically when a channel is linked to an item, and refreshed daily at 01:00.
-A full re-fetch for any time window can be triggered manually via the [`fetchHistory`](#fetchhistory) Thing Action.
+#### Persistence Requirement
 
-Please note that time series are not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
-The items connected to the above channels need to be stored in, e.g., [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
+History channels deliver data as time series, which is not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
+Items linked to history channels **must** be configured with a persistence service that supports time series, such as [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
+Without a compatible persistence service, history data will not be stored correctly.
+
+#### Initial Fetch on Item Link
+
+When a new item is linked to a history channel, the binding performs an **initial fetch for one time window only** — for example, the last year for yearly channels or the last month for monthly channels.
+This keeps the startup load low and avoids requesting the entire available history from the Tibber API at once.
+
+To populate the full available history (all years, months, weeks, or days), trigger the [`fetchHistory`](#fetchhistory) Thing Action manually after linking the item.
+
+#### Automatic Refresh
+
+Once an item is linked, history data is refreshed automatically once per day at 01:00.
+A full re-fetch for any time window can also be triggered at any time via the [`fetchHistory`](#fetchhistory) Thing Action.
 
 ## Thing Actions
 

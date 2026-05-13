@@ -179,22 +179,22 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                         case CHANNEL_YEARLY_CONSUMPTION:
                         case CHANNEL_YEARLY_COST:
                         case CHANNEL_YEARLY_PRODUCTION:
-                            localHistory.updateHistory(TibberHistory.TimeWindow.ANNUAL.fullUpdate());
+                            localHistory.updateHistory(TibberHistory.TimeWindow.ANNUAL, false);
                             break;
                         case CHANNEL_MONTHLY_CONSUMPTION:
                         case CHANNEL_MONTHLY_COST:
                         case CHANNEL_MONTHLY_PRODUCTION:
-                            localHistory.updateHistory(TibberHistory.TimeWindow.MONTHLY.fullUpdate());
+                            localHistory.updateHistory(TibberHistory.TimeWindow.MONTHLY, false);
                             break;
                         case CHANNEL_WEEKLY_CONSUMPTION:
                         case CHANNEL_WEEKLY_COST:
                         case CHANNEL_WEEKLY_PRODUCTION:
-                            localHistory.updateHistory(TibberHistory.TimeWindow.WEEKLY.fullUpdate());
+                            localHistory.updateHistory(TibberHistory.TimeWindow.WEEKLY, false);
                             break;
                         case CHANNEL_HISTORY_DAILY_CONSUMPTION:
                         case CHANNEL_HISTORY_DAILY_COST:
                         case CHANNEL_HISTORY_DAILY_PRODUCTION:
-                            localHistory.updateHistory(TibberHistory.TimeWindow.DAILY.fullUpdate());
+                            localHistory.updateHistory(TibberHistory.TimeWindow.DAILY, false);
                             break;
                         default:
                             logger.debug("Unhandled history channel: {}", channelUID.getIdWithoutGroup());
@@ -756,7 +756,8 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
      * followed by a bottom-up aggregation pass to fill the current (incomplete) period gap.
      */
     @Override
-    public void historyUpdated(TibberHistory.TimeWindow window, @Nullable TibberHistorySeries series) {
+    public void historyUpdated(TibberHistory.HistoryRequest request, @Nullable TibberHistorySeries series) {
+        TibberHistory.TimeWindow window = request.window();
         if (series == null) {
             // Fetch started — update status to show which window is loading
             updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail(),
@@ -765,7 +766,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         }
 
         Instant start = Instant.MIN;
-        if (!window.isFullUpdate()) {
+        if (!request.fullUpdate()) {
             start = Instant.now().minus(window.daysInWindow(), ChronoUnit.DAYS);
         }
 
@@ -947,9 +948,9 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
 
     /**
      * Called once when the first history channel is linked.
-     * Uses {@code fullUpdate()} for windows whose persistent store is still empty,
-     * so the complete available history is fetched via pagination.
-     * Windows that already have stored data get a {@code partialUpdate()} instead.
+     * Issues a full update (paginated) for windows whose persistent store is still empty,
+     * so the complete available history is fetched. Windows that already have stored data
+     * get a partial update (most recent page only) instead.
      */
     private void initialHistoryLoad() {
         if (isDisposed || !historyChannelsLinked()) {
@@ -962,9 +963,9 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         }
         for (TibberHistory.TimeWindow window : TibberHistory.TimeWindow.values()) {
             boolean hasStoredData = !localHistory.getStoredSeries(window).isEmpty();
-            TibberHistory.TimeWindow request = hasStoredData ? window.partialUpdate() : window.fullUpdate();
-            logger.debug("initialHistoryLoad: {} → {}", window, hasStoredData ? "partialUpdate" : "fullUpdate");
-            localHistory.updateHistory(request);
+            boolean fullUpdate = !hasStoredData;
+            logger.debug("initialHistoryLoad: {} → {}", window, fullUpdate ? "fullUpdate" : "partialUpdate");
+            localHistory.updateHistory(window, fullUpdate);
         }
     }
 
@@ -983,7 +984,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         }
         logger.debug("Scheduling partial history update for all windows");
         for (TibberHistory.TimeWindow window : TibberHistory.TimeWindow.values()) {
-            localHistory.updateHistory(window.partialUpdate());
+            localHistory.updateHistory(window, false);
         }
     }
 
@@ -1000,7 +1001,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             return;
         }
         logger.info("ThingAction fetchHistory triggered for window {}", window);
-        localHistory.updateHistory(window.fullUpdate());
+        localHistory.updateHistory(window, true);
     }
 
     // -------------------------------------------------------------------------

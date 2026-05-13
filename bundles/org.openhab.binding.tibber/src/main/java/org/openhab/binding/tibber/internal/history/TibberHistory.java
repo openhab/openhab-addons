@@ -151,7 +151,8 @@ public class TibberHistory {
         }
 
         /**
-         * Page size used when performing a full paginated fetch ({@link #fullUpdate()}).
+         * Page size used when performing a full paginated fetch
+         * (see {@link TibberHistory#updateHistory(TimeWindow, boolean)} with {@code fullUpdate=true}).
          * Larger than {@link #getFetchCount()} to minimise the number of API round-trips
          * while staying well within Tibber API timeout limits.
          */
@@ -163,35 +164,29 @@ public class TibberHistory {
             return 0;
         }
 
-        /** Marks this window for a full (paginated) update. */
-        public TimeWindow fullUpdate() {
-            fullUpdate = true;
-            return this;
-        }
-
-        /** Marks this window for a partial update (only data within the window's time span). */
-        public TimeWindow partialUpdate() {
-            fullUpdate = false;
-            return this;
-        }
-
-        public boolean isFullUpdate() {
-            return fullUpdate;
-        }
-
         @Override
         public String toString() {
-            return name() + (fullUpdate ? " full update" : " partial update");
+            return name();
         }
+    }
 
-        private boolean fullUpdate = false;
+    /**
+     * Immutable value object that pairs a {@link TimeWindow} with its update mode.
+     * Using a separate record avoids storing mutable state on the {@link TimeWindow} enum singletons,
+     * which would be unsafe when multiple Tibber homes (multiple handler instances) issue concurrent requests.
+     */
+    public record HistoryRequest(TimeWindow window, boolean fullUpdate) {
+        @Override
+        public String toString() {
+            return window.name() + " (" + (fullUpdate ? "full" : "partial") + ")";
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(TibberHistory.class);
     private final List<String> queryTemplates = List.of(CONSUMPTION_QUERY_RESOURCE_PATH,
             PRODUCTION_QUERY_RESOURCE_PATH);
     private final List<TibberHistoryListener> listeners = new ArrayList<>();
-    private final List<TimeWindow> workingList = new ArrayList<>();
+    private final List<HistoryRequest> workingList = new ArrayList<>();
     private final Storage<String> store;
     private final TibberHandler handler;
     private final String homeid;
@@ -241,17 +236,20 @@ public class TibberHistory {
      * Enqueues an update for the given time window.
      * If the same window is already queued the request is ignored.
      *
-     * @param window the time window to update (use {@link TimeWindow#fullUpdate()} or
-     *            {@link TimeWindow#partialUpdate()} to set the update mode)
+     * @param window the time window to update
+     * @param fullUpdate {@code true} for a full paginated fetch (replaces stored data);
+     *            {@code false} for a partial fetch (merges into stored data)
      */
-    public void updateHistory(TimeWindow window) {
+    public void updateHistory(TimeWindow window, boolean fullUpdate) {
         synchronized (workingList) {
-            if (workingList.contains(window)) {
+            boolean alreadyQueued = workingList.stream().anyMatch(r -> r.window() == window);
+            if (alreadyQueued) {
                 logger.info("{} already requested", window);
                 return;
             }
-            logger.info("Queuing history request: {}", window);
-            workingList.add(window);
+            HistoryRequest request = new HistoryRequest(window, fullUpdate);
+            logger.info("Queuing history request: {}", request);
+            workingList.add(request);
             historyScheduler.execute(this::getHistory);
         }
     }
@@ -272,23 +270,25 @@ public class TibberHistory {
      * stores the result, and notifies all listeners.
      */
     private void getHistory() {
-        TimeWindow localWorkingWindow;
+        HistoryRequest localRequest;
         synchronized (workingList) {
             if (workingList.isEmpty()) {
                 logger.debug("History queue is empty — nothing to fetch");
                 return;
             }
-            localWorkingWindow = workingList.get(0);
-            logger.info("Processing {} ({} request(s) in queue)", localWorkingWindow, workingList.size());
+            localRequest = workingList.get(0);
+            logger.info("Processing {} ({} request(s) in queue)", localRequest, workingList.size());
         }
 
+        // Snapshot the request fields — no further access to workingList needed until removal
+        final TimeWindow window = localRequest.window();
+        final boolean isPaginated = localRequest.fullUpdate();
+
         // Notify listeners that a fetch is starting (series == null signals "in progress")
-        final TimeWindow window = localWorkingWindow;
-        listeners.forEach(listener -> listener.historyUpdated(window, null));
+        listeners.forEach(listener -> listener.historyUpdated(localRequest, null));
 
         // fullUpdate: paginate through all available history pages, starting from a fresh series.
         // partialUpdate: fetch only the most recent page and merge into the existing stored series.
-        boolean isPaginated = window.isFullUpdate();
         int pageSize = isPaginated ? window.getFullFetchPageSize() : window.getFetchCount();
         TibberHistorySeries series = isPaginated ? new TibberHistorySeries(null) : getStoredSeries(window);
 
@@ -364,7 +364,7 @@ public class TibberHistory {
             logger.info("Completed {}. {} request(s) remaining in queue.", window, remaining);
         }
 
-        listeners.forEach(listener -> listener.historyUpdated(window, series));
+        listeners.forEach(listener -> listener.historyUpdated(localRequest, series));
     }
 
     private @Nullable String executeRequest(String body) {

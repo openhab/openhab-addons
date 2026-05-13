@@ -132,8 +132,10 @@ public class TibberHistorySeries extends TreeMap<Instant, JsonObject> {
      */
     public TimeSeries getTimeSeries(Instant start, String purpose) {
         TimeSeries series = new TimeSeries(TimeSeries.Policy.REPLACE);
-        SortedMap<Instant, JsonObject> partMap = this.tailMap(start);
-        partMap.forEach((time, historyElement) -> {
+        // Defensive copy of the live-backed tailMap view to avoid ConcurrentModificationException
+        // if another thread merges new data into this series while we iterate.
+        SortedMap<Instant, JsonObject> snapshot = new TreeMap<>(this.tailMap(start));
+        snapshot.forEach((time, historyElement) -> {
             if (historyElement.has(purpose)) {
                 series.add(time, QuantityType.valueOf(historyElement.get(purpose).getAsString()));
             }
