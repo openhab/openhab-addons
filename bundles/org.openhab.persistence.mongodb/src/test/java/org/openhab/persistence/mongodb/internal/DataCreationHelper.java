@@ -264,7 +264,7 @@ public class DataCreationHelper {
                     // Create a DatabaseTestContainer with a MemoryBackend
                     Arguments.of(new DatabaseTestContainer(new MemoryBackend())),
                     // Create DatabaseTestContainers with MongoDBContainers of specific versions
-                    Arguments.of(new DatabaseTestContainer("mongo:3.6")),
+                    Arguments.of(new DatabaseTestContainer("mongo:4.0")),
                     Arguments.of(new DatabaseTestContainer("mongo:4.4")),
                     Arguments.of(new DatabaseTestContainer("mongo:5.0")),
                     Arguments.of(new DatabaseTestContainer("mongo:6.0")));
