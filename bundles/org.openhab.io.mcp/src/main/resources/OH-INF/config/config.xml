@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:mcp">
+		<parameter name="enabled" type="boolean" required="true">
+			<label>Enable MCP Server</label>
+			<description>Enable or disable the MCP server endpoint.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="registerCloudWebhook" type="boolean" required="false">
+			<label>Register openHAB Cloud Webhook</label>
+			<description><![CDATA[When enabled, registers the <code>/mcp</code> endpoint with the openHAB Cloud service so
+				remote MCP clients (Claude Desktop, ChatGPT, etc.) can reach this server via a stable
+				<code>https://myopenhab.org/api/hooks/&lt;uuid&gt;</code> URL - no port forwarding or reverse proxy needed.
+				Requires the openHAB Cloud add-on to be installed and connected to myopenhab.org.]]></description>
+			<default>false</default>
+		</parameter>
+		<parameter name="webhookUrl" type="text" required="false" readOnly="true">
+			<label>Cloud Webhook URL</label>
+			<description>Public URL assigned by openHAB Cloud once the webhook is registered. Copy this into your remote MCP
+				client (Claude Desktop, ChatGPT, etc.) as the MCP server address. Empty when the Cloud webhook is disabled or the
+				Cloud service isn't connected.</description>
+		</parameter>
+		<parameter name="enableFullApiAccess" type="boolean" required="false">
+			<label>Enable Full REST API Access</label>
+			<description><![CDATA[When enabled, the agent gains access to three meta-tools (list_api_endpoints,
+				describe_api_endpoint, call_api) that allow invocation of any openHAB REST endpoint - including destructive
+				operations like deleting items or modifying service configs. The agent's permissions mirror your user. Only
+				enable if you want the agent to have full parity with the REST API. The meta-tools forward the caller's
+				bearer token to <code>/rest/*</code>, so the token's user must have the rights needed for the endpoints the
+				agent calls.]]></description>
+			<default>false</default>
+		</parameter>
+		<parameter name="exposeUntaggedItems" type="boolean" required="false">
+			<label>Expose Untagged Items</label>
+			<description>Whether to include items that are not part of the semantic model in search results.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxItemsPerPage" type="integer" required="false">
+			<label>Maximum Items Per Page</label>
+			<description>Maximum number of items returned per page in paginated tool responses.</description>
+			<default>100</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="resourceCoalesceMs" type="integer" required="false">
+			<label>Resource Notification Coalesce Window</label>
+			<description>Minimum milliseconds between notifications/resources/updated notifications for the same resource URI.
+				Prevents flooding for chatty items (power meters, CPU load). Set to 0 to disable.</description>
+			<default>500</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
