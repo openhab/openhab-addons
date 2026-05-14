@@ -41,7 +41,7 @@
         "@matter/main": "v0.16.10",
         "@matter/node": "v0.16.10",
         "@project-chip/matter.js": "v0.16.10",
-        "uuid": "^9.0.1",
+        "uuid": "^14.0.0",
         "ws": "^8.18.0",
         "yargs": "^17.7.2"
     },
