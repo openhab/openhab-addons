@@ -33,9 +33,6 @@ import org.eclipse.californium.core.coap.Option;
 import org.eclipse.californium.core.coap.OptionNumberRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
-import org.eclipse.californium.core.coap.option.IntegerOption;
-import org.eclipse.californium.core.coap.option.OpaqueOption;
-import org.eclipse.californium.core.coap.option.StringOption;
 import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -185,16 +182,14 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
                 if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
-                    if (opt instanceof StringOption strOpt) {
-                        String devid = strOpt.getStringValue();
-                        if (devid.contains("#") && profile.device.mac != null) {
-                            // Format: <device type>#<mac address>#<coap version>
-                            String macid = substringBetween(devid, "#", "#");
-                            if (getString(profile.device.mac).toUpperCase(Locale.ROOT)
-                                    .contains(macid.toUpperCase(Locale.ROOT))) {
-                                match = true;
-                                break;
-                            }
+                    String devid = opt.getStringValue();
+                    if (devid.contains("#") && profile.device.mac != null) {
+                        // Format: <device type>#<mac address>#<coap version>
+                        String macid = substringBetween(devid, "#", "#");
+                        if (getString(profile.device.mac).toUpperCase(Locale.ROOT)
+                                .contains(macid.toUpperCase(Locale.ROOT))) {
+                            match = true;
+                            break;
                         }
                     }
                 }
@@ -231,63 +226,48 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         for (Option opt : options) {
             switch (opt.getNumber()) {
                 case OptionNumberRegistry.URI_PATH:
-                    if (opt instanceof StringOption strOpt) {
-                        uri = COLOIT_URI_BASE + strOpt.getStringValue();
-                    } else {
-                        logger.debug("{}: URI_PATH option is not a StringOption, type: {}", thingName,
-                                opt.getClass().getSimpleName());
-                    }
+                    uri = COLOIT_URI_BASE + opt.getStringValue();
                     break;
                 case OptionNumberRegistry.URI_HOST: // ignore
                     break;
                 case OptionNumberRegistry.CONTENT_FORMAT: // ignore
                     break;
                 case COIOT_OPTION_GLOBAL_DEVID:
-                    if (opt instanceof StringOption strOpt) {
-                        devId = strOpt.getStringValue();
-                        String sVersion = substringAfterLast(devId, "#");
-                        int iVersion;
-                        try {
-                            iVersion = Integer.parseInt(sVersion);
-                        } catch (NumberFormatException e) {
-                            logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
-                            thingHandler.incProtErrors();
+                    devId = opt.getStringValue();
+                    String sVersion = substringAfterLast(devId, "#");
+                    int iVersion;
+                    try {
+                        iVersion = Integer.parseInt(sVersion);
+                    } catch (NumberFormatException e) {
+                        logger.debug("{}: Unable to parse version in CoIoT message: {}", thingName, devId);
+                        thingHandler.incProtErrors();
+                        return;
+                    }
+                    if (coiotBound && coiotVers != iVersion) {
+                        logger.debug("{}: CoIoT version has changed from {} to {}, maybe the firmware was upgraded",
+                                thingName, coiotVers, iVersion);
+                        thingHandler.reinitializeThing();
+                        coiotBound = false;
+                    }
+                    if (!coiotBound) {
+                        thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
+                        logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                        if (iVersion == COIOT_VERSION_1) {
+                            coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
+                        } else if (iVersion == COIOT_VERSION_2) {
+                            coiot = new Shelly1CoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
+                        } else {
+                            logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
                             return;
                         }
-                        if (coiotBound && coiotVers != iVersion) {
-                            logger.debug("{}: CoIoT version has changed from {} to {}, maybe the firmware was upgraded",
-                                    thingName, coiotVers, iVersion);
-                            thingHandler.reinitializeThing();
-                            coiotBound = false;
-                        }
-                        if (!coiotBound) {
-                            thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
-                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
-                            if (iVersion == COIOT_VERSION_1) {
-                                coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
-                            } else if (iVersion == COIOT_VERSION_2) {
-                                coiot = new Shelly1CoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
-                            } else {
-                                logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
-                                return;
-                            }
-                            coiotVers = iVersion;
-                            coiotBound = true;
-                        }
-                    } else {
-                        logger.debug("{}: COIOT_OPTION_GLOBAL_DEVID option is not a StringOption, type: {}", thingName,
-                                opt.getClass().getSimpleName());
+                        coiotVers = iVersion;
+                        coiotBound = true;
                     }
                     break;
                 case COIOT_OPTION_STATUS_VALIDITY:
                     break;
                 case COIOT_OPTION_STATUS_SERIAL:
-                    if (opt instanceof IntegerOption intOpt) {
-                        serial = intOpt.getIntegerValue();
-                    } else {
-                        logger.debug("{}: COIOT_OPTION_STATUS_SERIAL option is not an IntegerOption, type: {}",
-                                thingName, opt.getClass().getSimpleName());
-                    }
+                    serial = opt.getIntegerValue();
                     break;
                 default:
                     logger.debug("{} ({}): CoAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
