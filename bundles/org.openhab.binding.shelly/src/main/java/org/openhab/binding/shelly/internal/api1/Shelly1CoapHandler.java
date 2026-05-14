@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,7 @@ import org.eclipse.californium.core.coap.Option;
 import org.eclipse.californium.core.coap.OptionNumberRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
+import org.eclipse.californium.core.coap.option.OpaqueOption;
 import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -155,6 +157,27 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         return statusClient != null;
     }
 
+    private byte[] readOptionBytes(Option option) {
+        try {
+            return option.encode();
+        } catch (RuntimeException e) {
+            logger.debug("{}: Failed to encode option value", thingName, e);
+            return EMPTY_BYTE;
+        }
+    }
+
+    private String readStringOption(Option option) {
+        return new String(readOptionBytes(option), StandardCharsets.UTF_8);
+    }
+
+    private int readIntegerOption(Option option) {
+        int value = 0;
+        for (byte b : readOptionBytes(option)) {
+            value = (value << 8) | (b & 0xFF);
+        }
+        return value;
+    }
+
     /**
      * Process an inbound Response (or mapped Request): decode CoAP options. handle discovery result or status updates
      *
@@ -182,7 +205,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
                 if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
-                    String devid = opt.getStringValue();
+                    String devid = readStringOption(opt);
                     if (devid.contains("#") && profile.device.mac != null) {
                         // Format: <device type>#<mac address>#<coap version>
                         String macid = substringBetween(devid, "#", "#");
@@ -226,14 +249,14 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         for (Option opt : options) {
             switch (opt.getNumber()) {
                 case OptionNumberRegistry.URI_PATH:
-                    uri = COLOIT_URI_BASE + opt.getStringValue();
+                    uri = COLOIT_URI_BASE + readStringOption(opt);
                     break;
                 case OptionNumberRegistry.URI_HOST: // ignore
                     break;
                 case OptionNumberRegistry.CONTENT_FORMAT: // ignore
                     break;
                 case COIOT_OPTION_GLOBAL_DEVID:
-                    devId = opt.getStringValue();
+                    devId = readStringOption(opt);
                     String sVersion = substringAfterLast(devId, "#");
                     int iVersion;
                     try {
@@ -267,7 +290,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 case COIOT_OPTION_STATUS_VALIDITY:
                     break;
                 case COIOT_OPTION_STATUS_SERIAL:
-                    serial = opt.getIntegerValue();
+                    serial = readIntegerOption(opt);
                     break;
                 default:
                     logger.debug("{} ({}): CoAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
