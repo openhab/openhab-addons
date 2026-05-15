@@ -24,6 +24,7 @@
 			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="pause-resume" typeId="pause-resume"/>
 			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:threedprinter:prusaprinter"/>
@@ -49,6 +50,7 @@
 			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="pause-resume" typeId="pause-resume"/>
 			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:threedprinter:klipper"/>
@@ -74,6 +76,7 @@
 			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="pause-resume" typeId="pause-resume"/>
 			<channel id="cancel" typeId="cancel"/>
+			<channel id="job-preview" typeId="job-preview"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:threedprinter:octoprint"/>

@@ -14,6 +14,11 @@ package org.openhab.binding.threedprinter.internal.handler;
 
 import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +31,7 @@ import org.openhab.binding.threedprinter.internal.dto.prusa.PrusaStatusResponse.
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
@@ -49,6 +55,7 @@ import org.openhab.core.types.RefreshType;
 public class PrusaLinkHandler extends AbstractPrinterHandler {
 
     private @Nullable PrusaLinkConfiguration config;
+    private String lastPreviewFilename = "";
 
     public PrusaLinkHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -123,10 +130,24 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             if (file != null) {
                 String name = file.displayName.isBlank() ? file.name : file.displayName;
                 updateState(CHANNEL_JOB_NAME, new StringType(name));
+
+                if (!file.name.isBlank() && !file.name.equals(lastPreviewFilename)) {
+                    lastPreviewFilename = file.name;
+                    // Prefer the path from the API (e.g. "/usb/benchy.gcode"); fall back to "usb/{name}"
+                    String thumbPath = file.path.isBlank() ? "usb/" + file.name
+                            : file.path.startsWith("/") ? file.path.substring(1) : file.path;
+                    String encodedPath = Arrays.stream(thumbPath.split("/"))
+                            .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8)).collect(Collectors.joining("/"));
+                    byte[] bytes = httpGetBytes(baseUrl + "/thumb/l/" + encodedPath, cfg.apiKey);
+                    if (bytes != null && bytes.length > 0) {
+                        updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+                    }
+                }
             }
         } else {
             updateState(CHANNEL_JOB_PROGRESS, new DecimalType(0));
             updateState(CHANNEL_JOB_NAME, new StringType(""));
+            lastPreviewFilename = "";
         }
     }
 

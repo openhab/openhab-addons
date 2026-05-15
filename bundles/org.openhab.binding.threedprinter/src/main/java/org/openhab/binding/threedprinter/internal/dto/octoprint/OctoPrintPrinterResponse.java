@@ -31,7 +31,6 @@ public class OctoPrintPrinterResponse {
     @SerializedName("state")
     public @Nullable OctoPrintState state;
 
-    @NonNullByDefault
     public static class OctoPrintTemperature {
         @SerializedName("tool0")
         public @Nullable OctoPrintTempReading tool0;
@@ -39,7 +38,6 @@ public class OctoPrintPrinterResponse {
         @SerializedName("bed")
         public @Nullable OctoPrintTempReading bed;
 
-        @NonNullByDefault
         public static class OctoPrintTempReading {
             @SerializedName("actual")
             public double actual;
@@ -49,7 +47,6 @@ public class OctoPrintPrinterResponse {
         }
     }
 
-    @NonNullByDefault
     public static class OctoPrintState {
         @SerializedName("text")
         public String text = "";
@@ -57,7 +54,6 @@ public class OctoPrintPrinterResponse {
         @SerializedName("flags")
         public @Nullable OctoPrintStateFlags flags;
 
-        @NonNullByDefault
         public static class OctoPrintStateFlags {
             @SerializedName("printing")
             public boolean printing;

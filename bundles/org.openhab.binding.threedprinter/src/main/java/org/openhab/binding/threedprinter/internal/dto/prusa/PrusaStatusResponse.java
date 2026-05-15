@@ -31,7 +31,6 @@ public class PrusaStatusResponse {
     @SerializedName("job")
     public @Nullable PrusaJobData job;
 
-    @NonNullByDefault
     public static class PrusaPrinterData {
         @SerializedName("state")
         public String state = "";
@@ -58,7 +57,6 @@ public class PrusaStatusResponse {
         public int flow = 100;
     }
 
-    @NonNullByDefault
     public static class PrusaJobData {
         @SerializedName("progress")
         public double progress;
@@ -72,13 +70,15 @@ public class PrusaStatusResponse {
         @SerializedName("file")
         public @Nullable PrusaFileData file;
 
-        @NonNullByDefault
         public static class PrusaFileData {
             @SerializedName("display_name")
             public String displayName = "";
 
             @SerializedName("name")
             public String name = "";
+
+            @SerializedName("path")
+            public String path = "";
         }
     }
 }

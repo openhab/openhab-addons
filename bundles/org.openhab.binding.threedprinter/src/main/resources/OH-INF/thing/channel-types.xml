@@ -151,4 +151,14 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<channel-type id="job-preview">
+		<item-type>Image</item-type>
+		<label>Print Preview</label>
+		<description>Thumbnail image of the object being printed. Populated when the sliced file contains embedded thumbnails.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

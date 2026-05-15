@@ -34,7 +34,6 @@ public class OctoPrintJobResponse {
     @SerializedName("state")
     public String state = "";
 
-    @NonNullByDefault
     public static class OctoPrintJob {
         @SerializedName("file")
         public @Nullable OctoPrintFile file;
@@ -42,7 +41,6 @@ public class OctoPrintJobResponse {
         @SerializedName("estimatedPrintTime")
         public double estimatedPrintTime;
 
-        @NonNullByDefault
         public static class OctoPrintFile {
             @SerializedName("name")
             public String name = "";
@@ -52,7 +50,6 @@ public class OctoPrintJobResponse {
         }
     }
 
-    @NonNullByDefault
     public static class OctoPrintProgress {
         @SerializedName("completion")
         public double completion;

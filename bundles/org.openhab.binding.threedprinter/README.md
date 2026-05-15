@@ -69,6 +69,7 @@ All three thing types expose the same set of channels.
 | `fan-speed`                   | Number               | RW  | Part-cooling fan speed percentage (0–100). Read support varies by firmware.                          |
 | `pause-resume`                | Switch               | RW  | `ON` when the print is paused. Send `ON` to pause, `OFF` to resume.                                 |
 | `cancel`                      | Switch               | W   | Send `ON` to cancel the current print. Resets to `OFF` automatically.                               |
+| `job-preview`                 | Image                | R   | Thumbnail image of the object being printed. Only populated when the sliced file contains embedded thumbnails. For OctoPrint, requires the [PrusaSlicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) plugin. |
 
 ## Full Example
 
@@ -114,6 +115,7 @@ Number   MK4_PrintSpeed     "Print speed [%d %%]"            { channel="threedpr
 Number   MK4_FanSpeed       "Fan speed [%d %%]"              { channel="threedprinter:prusaprinter:mk4:fan-speed" }
 Switch   MK4_PauseResume    "Paused"                         { channel="threedprinter:prusaprinter:mk4:pause-resume" }
 Switch   MK4_Cancel         "Cancel print"                   { channel="threedprinter:prusaprinter:mk4:cancel" }
+Image    MK4_Preview        "Print preview"                  { channel="threedprinter:prusaprinter:mk4:job-preview" }
 ```
 
 ### Sitemap
@@ -136,6 +138,7 @@ sitemap threedprinter label="3D Printers" {
         Slider item=MK4_FanSpeed minValue=0 maxValue=100 step=5
         Switch item=MK4_PauseResume label="Pause/Resume"
         Switch item=MK4_Cancel label="Cancel Print"
+        Image  item=MK4_Preview
     }
 }
 ```
