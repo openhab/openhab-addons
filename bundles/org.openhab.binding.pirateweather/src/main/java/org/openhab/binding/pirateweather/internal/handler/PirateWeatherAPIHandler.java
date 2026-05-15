@@ -178,6 +178,10 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     }
 
     public PirateWeatherAPIConfiguration getPirateWeatherAPIConfig() {
-        return config;
+        PirateWeatherAPIConfiguration cfg = config;
+        if (cfg == null) {
+            throw new IllegalStateException("Handler not yet initialized");
+        }
+        return cfg;
     }
 }
