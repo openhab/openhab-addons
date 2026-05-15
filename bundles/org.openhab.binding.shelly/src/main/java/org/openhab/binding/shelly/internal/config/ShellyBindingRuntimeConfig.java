@@ -78,7 +78,7 @@ public class ShellyBindingRuntimeConfig {
             result = true;
         }
         if (this.autoCoIoT != config.isAutoCoIoT()) {
-            this.autoCoIoT = config.isAutoCoIoT();
+            this.autoCoIoT = !this.autoCoIoT;
             result = true;
         }
         s = config.getLocalIP();

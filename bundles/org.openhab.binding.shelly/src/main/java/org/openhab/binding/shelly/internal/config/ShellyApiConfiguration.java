@@ -346,7 +346,7 @@ public class ShellyApiConfiguration {
         return enableRangeExtender;
     }
 
-    public synchronized String getLocalIp() {
+    public String getLocalIp() {
         return localIp;
     }
 
@@ -394,13 +394,9 @@ public class ShellyApiConfiguration {
      * @param thingConfig refreshed thing configuration
      * @param bindingConfig current binding runtime configuration
      * @param gen2 true for Gen2+ devices
-     * @param newRealm mDNS service name or hostname to use as the new realm (may be empty to keep current)
      */
     public synchronized void updateFromThingConfig(ShellyThingConfiguration thingConfig,
-            ShellyBindingRuntimeConfig bindingConfig, boolean gen2, String newRealm) {
-        if (!newRealm.isBlank()) {
-            realm = newRealm;
-        }
+            ShellyBindingRuntimeConfig bindingConfig, boolean gen2) {
         credentials = new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.getDefaultUserId(),
                 bindingConfig.getDefaultPassword(), thingConfig.getUserId(), thingConfig.getPassword());
 
@@ -423,7 +419,8 @@ public class ShellyApiConfiguration {
             String newHost = thingConfig.getDeviceIp();
             if (!newHost.equals(deviceHostAddress)) {
                 deviceHostAddress = newHost;
-                deviceSocketAddr = null; // cleared so resolveIp() re-resolves on next initializeThingConfig()
+                deviceSocketAddr = null; // force re-resolve on next resolveIp() call
+                resolveIp();
                 urls = new ShellyApiUrls(localIp, localPort, newHost);
             }
         }
