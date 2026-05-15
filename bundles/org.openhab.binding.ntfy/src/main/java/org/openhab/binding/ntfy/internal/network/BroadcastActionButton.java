@@ -40,6 +40,6 @@ public class BroadcastActionButton extends ActionButtonBase {
     @Override
     public String getHeader() {
         return "broadcast, " + label + (params != null ? ", " + params : "")
-                + (clearNotification ? ", clear=true" : "");
+                + (Boolean.TRUE.equals(clearNotification) ? ", clear=true" : "");
     }
 }

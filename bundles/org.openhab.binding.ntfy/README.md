@@ -4,20 +4,21 @@ The Ntfy binding enables openHAB to publish notifications to Ntfy-compatible ser
 
 Ntfy is a simple HTTP-based notification service and message broker; see [ntfy.sh](https://ntfy.sh) for details and public servers.
 
-It is intended for integrations where openHAB should push alert or informational messages to mobile or desktop clients that support the Ntfy protocol. The binding supports basic text messages as well as common rich features supported by the protocol: message priority, tags, icon URLs, attachments, click actions and simple action buttons.
+It is intended for integrations where openHAB should push alert or informational messages to mobile or desktop clients that support the Ntfy protocol.
+The binding supports basic text messages as well as common rich features supported by the protocol: message priority, tags, icon URLs, attachments, click actions and simple action buttons
 
 Typical uses include doorbell alerts, security notifications, system health messages, or any automation that should notify users in real time via an Ntfy-compatible notification channel.
 
 ## Supported Things
 
-This binding provides the following Thing types. The Thing type IDs match the definitions in `src/main/resources/OH-INF/thing/thing-types.xml`.
+This binding provides the following Thing types:
 
-- `ntfy:ntfyConnection` (bridge) — Represents a connection to an Ntfy server. Configure the bridge with the server hostname (for example `https://ntfy.sh`) and optional credentials (username/password). The bridge holds shared connection settings (hostname, username, password, connectionTimeout) which are used by topic Things.
-- `ntfy:ntfyTopic` (Thing) — Represents a topic/channel on a configured Ntfy server. Each topic Thing must be associated with an `ntfyConnection` bridge and requires the `topicname` configuration parameter.
+- `server` (bridge) — Represents a connection to an Ntfy server. The bridge holds shared connection settings (hostname, username, password, connectionTimeout) which are used by topic Things.
+- `ntfy-topic` (Thing) — Represents a topic/channel on a configured Ntfy server. Each topic Thing must be associated with a `server` bridge.
 
 ## Thing Configuration
 
-### `ntfyConnection` Bridge Configuration
+### `server` Bridge Configuration
 
 | Name              | Type    | Description                                                                              | Default                            | Required | Advanced |
 |-------------------|---------|------------------------------------------------------------------------------------------|------------------------------------|----------|----------|
@@ -26,45 +27,44 @@ This binding provides the following Thing types. The Thing type IDs match the de
 | password          | text    | Optional password - if username is provided basic auth is used else Bearer token is used | N/A                                | no       | no       |
 | connectionTimeout | integer | WebSocket / HTTP connection timeout ms                                                   | 60000                              | no       | yes      |
 
-Configure the `ntfyConnection` as a bridge to hold shared server and authentication settings. Topic Things reference the bridge to reuse these settings. For authentication with access token only set the password and leave the username empty.
+Configure the `server` as a bridge to hold shared server and authentication settings.
+For authentication with access token only set the password and leave the username empty.
 
-### `ntfyTopic` Thing Configuration
+### `ntfy-topic` Thing Configuration
 
 | Name      | Type | Description               | Default | Required | Advanced |
 |-----------|------|---------------------------|---------|----------|----------|
-| topicname | text | Name of the topic/channel | N/A     | yes      | no       |
+| topicName | text | Name of the topic/channel | N/A     | yes      | no       |
 
 ## Channels
 
-### `ntfyTopic` Channels
+### `ntfy-topic` Channels
 
-| Channel         | Type     | Read/Write | Description                                 |
-|-----------------|----------|------------|---------------------------------------------|
-| lastMessage     | String   | R          | Last received message payload (read-only)   |
-| lastMessageTime | DateTime | R          | Timestamp of the last message (read-only)   |
-| lastMessageId   | String   | R          | ID of the last message (read-only)          |
+| Channel           | Type     | Read/Write | Description                                 |
+|-------------------|----------|------------|---------------------------------------------|
+| last-message      | String   | R          | Last received message payload (read-only)   |
+| last-message-time | DateTime | R          | Timestamp of the last message (read-only)   |
+| last-message-id   | String   | R          | ID of the last message (read-only)          |
 
 ## Full Example
 
-Below are examples for textual configuration files showing a bridge (`ntfyConnection`), a topic Thing (`ntfyTopic`), Items bound to the Thing's channels, and a simple sitemap to display the last message and its timestamp.
+Below are examples for textual configuration files showing a bridge (`server`), a topic Thing (`ntfy-topic`), Items bound to the Thing's channels, and a simple sitemap to display the last message and its timestamp.
 
 ### Thing Configuration
 
-```things
-Bridge ntfy:ntfyConnection:myConn "Ntfy Server" [ hostname="https://ntfy.sh", connectionTimeout=60000 ]
+```java
+Bridge ntfy:server:myConn "Ntfy Server" [ hostname="https://ntfy.sh", connectionTimeout=60000, username="ntfyUser", password="MyPaSsWoRd"]
 
-Thing ntfy:ntfyTopic:home "Front Door Notifications" (ntfy:ntfyConnection:myConn) [ topicname="home" ]
+Thing ntfy:ntfy-topic:home "Front Door Notifications" (ntfy:server:myConn) [ topicName="home" ]
 ```
-
-If your server requires authentication, supply `username` and `password` in the bridge configuration. The `topicname` must be provided for each `ntfyTopic` Thing.
 
 ### Item Configuration (items file)
 
 Bind Items to the read-only channels exposed by the topic Thing to show the last received message and its timestamp:
 
-```items
-String FrontDoorLastMessage "Front Door Message" { channel="ntfy:ntfyTopic:home:lastMessage" }
-DateTime FrontDoorMessageTime "Last message received" { channel="ntfy:ntfyTopic:home:messageTime" }
+```java
+String FrontDoorLastMessage "Front Door Message" { channel="ntfy:ntfy-topic:home:last-message" }
+DateTime FrontDoorMessageTime "Last message received" { channel="ntfy:ntfy-topic:home:last-message-time" }
 ```
 
 Note: Sending notifications from openHAB to ntfy is done via the binding's Actions from rules (the binding exposes Actions to publish/delete messages). The channels above are read-only and show incoming or last-state values.
@@ -73,7 +73,7 @@ Note: Sending notifications from openHAB to ntfy is done via the binding's Actio
 
 Simple sitemap demonstrating how to display the last message and its timestamp:
 
-```sitemap
+```perl
  sitemap notifications label="Notifications"
 {
     <Frame label="Front Door">
@@ -85,9 +85,11 @@ Simple sitemap demonstrating how to display the last message and its timestamp:
 
 ## Actions (Rules DSL and JavaScript)
 
-This binding exposes Rule Actions to send and manage messages on a configured topic. Actions are available for use from the Rules DSL and the ECMAScript/JavaScript automation scripts. The actions support a builder-style API to configure a message (message text, priority, tags, icon, attachments, actions, sequence id, ...) and then send it.
+This binding exposes Rule Actions to send and manage messages on a configured topic.
+Actions are available for use from the Rules DSL and the ECMAScript/JavaScript automation scripts.
+The actions support a builder-style API to configure a message (message text, priority, tags, icon, attachments, actions, sequence id, ...) and then send it.
 
-Important: Always check that the returned actions object is not null (the Thing must exist and be handled by the binding) before invoking methods.
+Important: Always check that the Thing exist before invoking methods.
 
 ### Available action methods
 
@@ -118,7 +120,7 @@ For more information about ntfy features and the notification format, see the nt
 
 ```rules
 // Obtain the Thing-specific actions and use the builder to send a message
-val bindingActions = getActions("ntfy", "ntfy:ntfyTopic:frontdoor")
+val bindingActions = getActions("ntfy", "ntfy:ntfy-topic:frontdoor")
 if (bindingActions !== null) {
     // simple one-liner: send a message
     val msgId = bindingActions.withMessage("Someone is at the door").withPriority(4).send()
@@ -144,7 +146,7 @@ In ECMAScript scripts you can obtain the Thing Actions and use the same builder 
 
 ```javascript
 // get the Thing actions for the topic Thing
-var bindingActions = actions.get("ntfy", "ntfy:ntfyTopic:frontdoor");
+var bindingActions = actions.get("ntfy", "ntfy:ntfy-topic:frontdoor");
 if (bindingActions) {
     // send a simple message
     var id = bindingActions.withMessage("Garage opened").withPriority(3).send();

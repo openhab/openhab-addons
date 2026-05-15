@@ -143,14 +143,14 @@ public class NtfySender {
                 return GsonDeserializer.deserialize(response.getContentAsString(), MessageEvent.class);
             }
         } catch (IOException e) {
-            logger.error("Failed to read file for upload: {}", e.getMessage());
+            logger.warn("Failed to read file for upload: {}", e.getMessage());
             return null;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Failed to send message: {}", e.getMessage());
+            logger.debug("Failed to send message: {}", e.getMessage());
             bridgeHandler.connectionError(e);
         } catch (TimeoutException | ExecutionException e) {
-            logger.error("Failed to send file: {}", e.getMessage());
+            logger.warn("Failed to send file: {}", e.getMessage());
             bridgeHandler.connectionError(e);
         }
         return null;
@@ -167,9 +167,10 @@ public class NtfySender {
         NtfyConnectionConfiguration connectionConfiguration = getConfiguration();
 
         URI requestURI = buildRequestURI(connectionConfiguration);
-
-        Request request = httpClient.newRequest(requestURI.resolve(requestURI.getPath() + "/" + sequenceId))
-                .method(HttpMethod.DELETE).timeout(connectionConfiguration.connectionTimeout, TimeUnit.MILLISECONDS);
+        URI deleteURI = new URI(requestURI.getScheme(), requestURI.getAuthority(),
+                requestURI.getPath() + "/" + sequenceId, null, null);
+        Request request = httpClient.newRequest(deleteURI).method(HttpMethod.DELETE)
+                .timeout(connectionConfiguration.connectionTimeout, TimeUnit.MILLISECONDS);
 
         if (connectionConfiguration.isAuthHeaderNeeded()) {
             String authHeader = connectionConfiguration.buildAuthHeader();
@@ -180,10 +181,10 @@ public class NtfySender {
             return HttpStatus.isSuccess(request.send().getStatus());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("Failed to delete message: {}", e.getMessage());
+            logger.warn("Failed to delete message: {}", e.getMessage());
             bridgeHandler.connectionError(e);
         } catch (TimeoutException | ExecutionException e) {
-            logger.error("Failed to delete message: {}", e.getMessage());
+            logger.warn("Failed to delete message: {}", e.getMessage());
             bridgeHandler.connectionError(e);
         }
         return false;
@@ -200,6 +201,12 @@ public class NtfySender {
     }
 
     private URI buildRequestURI(NtfyConnectionConfiguration connectionConfiguration) throws URISyntaxException {
-        return new URI(connectionConfiguration.hostname).resolve("./" + topicName);
+        URI baseUri = new URI(connectionConfiguration.hostname);
+        String path = baseUri.getPath();
+        if (path != null && !path.isEmpty() && !path.endsWith("/")) {
+            baseUri = new URI(baseUri.getScheme(), baseUri.getUserInfo(), baseUri.getHost(), baseUri.getPort(),
+                    path + "/", baseUri.getQuery(), baseUri.getFragment());
+        }
+        return baseUri.resolve("./" + topicName);
     }
 }

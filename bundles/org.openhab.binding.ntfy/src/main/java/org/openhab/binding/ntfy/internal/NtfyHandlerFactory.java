@@ -48,7 +48,7 @@ public class NtfyHandlerFactory extends BaseThingHandlerFactory {
      * OSGi activation constructor. Initializes the handler factory with the
      * shared HTTP client and a WebSocketFactory used to create WebSocket clients.
      *
-     * @param httpClientFactory factory providing a common
+     * @param httpClientFactory factory providing a common HTTP client for the binding
      * @param webSocketFactory factory used to create {@link org.eclipse.jetty.websocket.client.WebSocketClient}
      */
     @Activate

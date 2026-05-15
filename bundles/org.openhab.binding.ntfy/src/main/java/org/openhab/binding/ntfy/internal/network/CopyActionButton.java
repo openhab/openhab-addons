@@ -38,6 +38,6 @@ public class CopyActionButton extends ActionButtonBase {
 
     @Override
     public String getHeader() {
-        return "copy, " + label + ", " + value + (clearNotification ? ", clear=true" : "");
+        return "copy, " + label + ", " + value + (Boolean.TRUE.equals(clearNotification) ? ", clear=true" : "");
     }
 }

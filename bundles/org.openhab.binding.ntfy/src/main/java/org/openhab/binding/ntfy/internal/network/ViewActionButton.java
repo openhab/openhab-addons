@@ -46,6 +46,7 @@ public class ViewActionButton extends ActionButtonBase {
 
     @Override
     public String getHeader() {
-        return "view, " + label + ", " + url.toString() + (clearNotification ? ", clear=true" : "");
+        return "view, " + label + ", " + url.toString()
+                + (Boolean.TRUE.equals(clearNotification) ? ", clear=true" : "");
     }
 }

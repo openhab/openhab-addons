@@ -8,6 +8,7 @@
 
 		<label>Ntfy Connection</label>
 		<description>Connection to an ntfy server</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<representation-property>hostname</representation-property>
 
 		<config-description>
@@ -27,11 +28,12 @@
 				<label>Password</label>
 				<description>Password to access the server</description>
 			</parameter>
-			<parameter name="connectionTimeout" type="integer" required="false">
+			<parameter name="connectionTimeout" type="integer" required="true">
 				<context>time</context>
 				<label>Connection timeout</label>
 				<description>Connection timeout for web requests and web socket connections in milliseconds</description>
 				<advanced>true</advanced>
+				<default>60000</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -42,7 +44,7 @@
 		</supported-bridge-type-refs>
 		<label>Ntfy Topic</label>
 		<description>Topic of a ntfy server</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
 			<channel id="last-message" typeId="last-message"/>
 			<channel id="last-message-time" typeId="last-message-time"/>
@@ -54,7 +56,7 @@
 		<config-description>
 			<parameter name="topicName" type="text" required="true">
 				<context>topicName</context>
-				<label>Topic name</label>
+				<label>Topic Name</label>
 				<description>Name of the topic</description>
 			</parameter>
 		</config-description>
@@ -76,6 +78,9 @@
 	<channel-type id="last-message-time">
 		<item-type>DateTime</item-type>
 		<label>Time of the last message</label>
+		<tags>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -17,6 +17,7 @@ import static org.openhab.binding.ntfy.internal.NtfyBindingConstants.*;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,14 +52,13 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
 
     private NtfyWebSocket ntfyWebSocket;
     private @Nullable NtfySender ntfySender;
-    private boolean isInitializing;
+    private AtomicBoolean isInitializing = new AtomicBoolean(false);
     private @Nullable MessageEvent lastMessageEvent;
 
     /**
      * Creates a new {@link NtfyTopicHandler} for the provided topic thing.
      *
      * @param thing the topic thing this handler belongs to
-     * @param httpClient the HTTP client used by the sender to perform REST calls
      */
     public NtfyTopicHandler(Thing thing) {
         super(thing);
@@ -95,7 +95,7 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
         if (bridgeHandler == null) {
             return;
         }
-        ntfySender = bridgeHandler.CreateSender(this.getConfigAs(NtfyTopicConfiguration.class).topicName);
+        ntfySender = bridgeHandler.createSender(this.getConfigAs(NtfyTopicConfiguration.class).topicName);
         bridgeHandler.createAndRegisterWebSocketClient(thing);
         startConnection();
     }
@@ -121,10 +121,9 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
 
     @Override
     public void initialize() {
-        if (isInitializing) {
+        if (!isInitializing.compareAndSet(false, true)) {
             return;
         }
-        this.isInitializing = true;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -132,7 +131,7 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
             try {
                 start(thing);
             } finally {
-                this.isInitializing = false;
+                isInitializing.set(false);
             }
         });
     }
@@ -157,7 +156,8 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
     @Override
     public void connectionLost(@Nullable String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                reason == null || reason.isBlank() ? "WebSocket connection lost" : reason);
+                reason == null || reason.isBlank() ? "@text/offline.communication-error.websocket-connection-lost"
+                        : reason);
     }
 
     @Override

@@ -75,7 +75,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public NtfySender CreateSender(String topicName) {
+    public NtfySender createSender(String topicName) {
         return new NtfySender(topicName, httpClient, this);
     }
 
@@ -84,8 +84,6 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
         cancelRetryFuture();
 
         config = getConfigAs(NtfyConnectionConfiguration.class);
-
-        updateStatus(ThingStatus.UNKNOWN);
 
         String scheme;
         try {
@@ -96,8 +94,7 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
         }
         if (!"http".equals(scheme) && !"https".equals(scheme)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "URI scheme is missing in hostname or unsupported URI scheme (only http or https are supported): "
-                            + config.hostname);
+                    "@text/offline.communication-error.unsupported-schema");
             return;
         }
 
@@ -167,11 +164,10 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                     client.stop();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    logger.error("WebSocket connection was interrupted", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                     return false;
                 } catch (Exception e) {
-                    logger.warn("Error stopping WebSocket connection - ignore it and continue", e);
+                    logger.debug("Error stopping WebSocket connection - ignore it and continue", e);
                 }
             }
             try {
@@ -198,7 +194,6 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
                 return false;
             }
             updateStatus(ThingStatus.ONLINE);
-
         }
         return true;
     }
@@ -215,10 +210,8 @@ public class NtfyConnectionHandler extends BaseBridgeHandler {
      */
     public void connectionError(Throwable cause) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getLocalizedMessage());
-        retryConnectionFuture = scheduler.schedule(() -> {
-            retryConnectionFuture = null;
-            updateStatus(ThingStatus.ONLINE);
-        }, 30, TimeUnit.SECONDS);
+        cancelRetryFuture();
+        retryConnectionFuture = scheduler.schedule(this::initialize, 30, TimeUnit.SECONDS);
     }
 
     @Override

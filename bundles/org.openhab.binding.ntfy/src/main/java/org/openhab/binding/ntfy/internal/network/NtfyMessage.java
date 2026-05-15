@@ -72,7 +72,7 @@ public class NtfyMessage {
     /**
      * Sets the title for the message to be sent.
      *
-     * @param message the message text
+     * @param title the title of the message
      */
     public void setTitle(String title) {
         this.title = title;
