@@ -175,9 +175,6 @@ public class HmDatapoint implements Cloneable {
 
     public @Nullable Integer getIntegerValue() {
         Object value = this.value;
-        if (value instanceof Integer intValue) {
-            return intValue;
-        }
         if (value instanceof Number numberValue) {
             return numberValue.intValue();
         }
@@ -470,12 +467,13 @@ public class HmDatapoint implements Cloneable {
 
     @Override
     public String toString() {
-        String[] options = Objects.requireNonNullElse(this.options, new String[0]);
+        String @Nullable [] options = this.options;
         return String.format("""
                 %s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,specialValues=%s,options=%s,\
                 readOnly=%b,readable=%b,unit=%s,description=%s,info=%s,paramsetType=%s,virtual=%b,trigger=%b]\
                 """, getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue, specialValues,
-                String.join(";", options), readOnly, readable, unit, description, info, paramsetType, virtual, trigger);
+                (options == null ? null : String.join(";", options)), readOnly, readable, unit, description, info,
+                paramsetType, virtual, trigger);
     }
 
     private String sanitizeName(String name) {

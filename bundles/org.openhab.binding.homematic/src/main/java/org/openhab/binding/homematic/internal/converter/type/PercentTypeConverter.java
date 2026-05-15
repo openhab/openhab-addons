@@ -73,7 +73,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
     @Override
     protected Object toBinding(PercentType type, HmDatapoint dp) throws ConverterException {
         double maxValue = getCorrectedMaxValue(dp);
-        Double number = (type.doubleValue() / 100) * maxValue;
+        double number = (type.doubleValue() / 100) * maxValue;
 
         if (MetadataUtils.isRollerShutter(dp)) {
             if (PercentType.HUNDRED.equals(type)) { // means DOWN
@@ -88,7 +88,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
             number = number < 0.0 ? 0.0 : 100.0;
         }
         if (dp.isIntegerType()) {
-            return number.intValue();
+            return (int) Math.round(number);
         }
         return round(number).doubleValue();
     }

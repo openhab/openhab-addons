@@ -37,6 +37,7 @@ public class HmRssiInfo {
      */
     private int convert(Integer intValue) {
         if (intValue == 65536) {
+            return 0;
         }
         return intValue;
     }

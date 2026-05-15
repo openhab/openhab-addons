@@ -78,25 +78,11 @@ public class MetadataUtils {
         try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;
-            int lineNumber = 0;
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
-                if (!line.trim().isEmpty() && !line.startsWith("#")) {
+                if (!line.isBlank() && !line.startsWith("#")) {
                     String[] parts = line.split("\\|");
-                    String channelType = null;
-                    String datapointName = null;
-                    if (parts.length > 0) {
-                        channelType = parts[0].trim();
-                        if (parts.length > 1) {
-                            datapointName = parts[1].trim();
-                        }
-                    }
-
-                    if (channelType == null || channelType.isEmpty() || datapointName == null
-                            || datapointName.isEmpty()) {
-                        throw new IllegalStateException(
-                                String.format("Malformed standard datapoint entry at line %d: %s", lineNumber, line));
-                    }
+                    String channelType = parts[0].trim();
+                    String datapointName = parts.length > 1 ? parts[1].trim() : null;
 
                     Set<@Nullable String> channelDatapoints = standardDatapoints.get(channelType);
                     if (channelDatapoints == null) {
@@ -107,8 +93,8 @@ public class MetadataUtils {
                     channelDatapoints.add(datapointName);
                 }
             }
-        } catch (IOException e) {
-            throw new IllegalStateException("Can't load standard-datapoints.properties file!", e);
+        } catch (IllegalStateException | IOException e) {
+            throw new IllegalStateException("Cannot load standard-datapoints.properties file!", e);
         }
     }
 

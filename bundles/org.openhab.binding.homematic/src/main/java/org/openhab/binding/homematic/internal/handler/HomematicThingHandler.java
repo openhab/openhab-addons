@@ -668,7 +668,6 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public synchronized void handleRemoval() {
         final Bridge bridge;
