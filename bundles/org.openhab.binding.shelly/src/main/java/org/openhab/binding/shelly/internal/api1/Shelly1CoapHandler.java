@@ -34,6 +34,7 @@ import org.eclipse.californium.core.coap.OptionNumberRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.coap.option.IntegerOption;
+import org.eclipse.californium.core.coap.option.OpaqueOption;
 import org.eclipse.californium.core.coap.option.StringOption;
 import org.eclipse.californium.core.network.Endpoint;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -290,7 +291,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     break;
                 default:
                     logger.debug("{} ({}): CoAP option {} with value {} skipped", thingName, devId, opt.getNumber(),
-                            opt.toValueString());
+                            opt instanceof OpaqueOption opOpt ? opOpt.getValue() : opt);
             }
         }
 
