@@ -18,7 +18,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link ThreedprinterBindingConstants} class defines all constants used across the binding.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class ThreedprinterBindingConstants {

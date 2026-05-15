@@ -43,7 +43,7 @@ import org.openhab.core.types.RefreshType;
  * Authentication: X-Api-Key header (newer firmware) or HTTP Digest (older firmware).
  * This handler uses the X-Api-Key header approach.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PrusaLinkHandler extends AbstractPrinterHandler {

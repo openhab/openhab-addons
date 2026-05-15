@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * DTO for the Moonraker GET /printer/objects/query response.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class KlipperObjectsResponse {

@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * DTO for the PrusaLink GET /api/v1/status response.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class PrusaStatusResponse {
