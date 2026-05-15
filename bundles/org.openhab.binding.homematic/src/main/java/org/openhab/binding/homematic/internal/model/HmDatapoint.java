@@ -183,10 +183,6 @@ public class HmDatapoint implements Cloneable {
             try {
                 return Integer.parseInt(stringValue);
             } catch (NumberFormatException e1) {
-                try {
-                    return Double.valueOf(stringValue.replace(',', '.')).intValue();
-                } catch (NumberFormatException e2) {
-                }
             }
         }
         return null;
