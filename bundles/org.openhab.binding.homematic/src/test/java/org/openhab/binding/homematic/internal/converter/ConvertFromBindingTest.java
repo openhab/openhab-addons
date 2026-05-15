@@ -19,7 +19,6 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -31,7 +30,7 @@ import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for
- * {@link org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter#convertFromBinding(HmDatapoint)}.
+ * {@link org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter#convertFromBinding(org.openhab.binding.homematic.internal.model.HmDatapoint)}.
  *
  * @author Michael Reitler - Initial Contribution
  *
@@ -122,12 +121,14 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         integerDp.setMaxValue(100);
         convertedState = percentTypeConverter.convertFromBinding(integerDp);
         assertThat(convertedState, instanceOf(PercentType.class));
-        assertThat(((PercentType) convertedState).doubleValue(), is(99.0));
+        PercentType percentState = (PercentType) Objects.requireNonNull(convertedState);
+        assertThat(percentState.doubleValue(), is(99.0));
 
         integerDp.setValue(77.77777778);
         convertedState = percentTypeConverter.convertFromBinding(integerDp);
         assertThat(convertedState, instanceOf(PercentType.class));
-        assertThat(((PercentType) convertedState).doubleValue(), is(77.0));
+        percentState = (PercentType) Objects.requireNonNull(convertedState);
+        assertThat(percentState.doubleValue(), is(77.0));
 
         integerDp.setValue("");
         convertedState = percentTypeConverter.convertFromBinding(integerDp);

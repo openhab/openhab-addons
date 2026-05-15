@@ -58,7 +58,6 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
 
     @BeforeEach
     public void setup() throws IOException {
-
         HomematicBridgeHandler homematicBridgeHandler = mockHomematicBridgeHandler();
         HomematicDeviceDiscoveryService discoveryService = new HomematicDeviceDiscoveryService(
                 new SameThreadExecutorService());

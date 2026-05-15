@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -112,7 +113,7 @@ public class XmlRpcResponse implements RpcResponse {
                 throws SAXException {
             String currentTag = qName == null ? "" : qName.toLowerCase();
             String currentValue = tagValue.toString();
-            List<Object> data = currentDataObject.peekLast();
+            List<Object> data = Objects.requireNonNull(currentDataObject.peekLast());
 
             switch (currentTag) {
                 case "boolean":
@@ -137,7 +138,7 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "array":
                     List<Object> arrayData = currentDataObject.removeLast();
-                    currentDataObject.peekLast().add(arrayData.toArray());
+                    Objects.requireNonNull(currentDataObject.peekLast()).add(arrayData.toArray());
                     break;
                 case "struct":
                     List<Object> mapData = currentDataObject.removeLast();
@@ -146,7 +147,7 @@ public class XmlRpcResponse implements RpcResponse {
                     for (int i = 0; i < mapData.size(); i += 2) {
                         resultMap.put(mapData.get(i), mapData.get(i + 1));
                     }
-                    currentDataObject.peekLast().add(resultMap);
+                    Objects.requireNonNull(currentDataObject.peekLast()).add(resultMap);
                     break;
                 case "base64":
                     data.add(Base64.getDecoder().decode(currentValue));
@@ -177,7 +178,7 @@ public class XmlRpcResponse implements RpcResponse {
         @Override
         public void characters(char @Nullable [] ch, int start, int length) throws SAXException {
             StringBuilder sb = tagValue;
-            if (sb != null && ch != null) {
+            if (ch != null) {
                 sb.append(ch, start, length);
             }
         }

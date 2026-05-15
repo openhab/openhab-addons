@@ -49,7 +49,6 @@ public class CcuDiscoveryService extends AbstractDiscoveryService {
 
     private static final int RECEIVE_TIMEOUT_MSECS = 3000;
     private @Nullable InetAddress broadcastAddress;
-    private @Nullable MulticastSocket socket;
     private @Nullable Future<?> scanFuture;
     private final NetworkAddressService networkAddressService;
 

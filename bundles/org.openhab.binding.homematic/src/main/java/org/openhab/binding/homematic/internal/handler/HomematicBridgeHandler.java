@@ -170,13 +170,13 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         final Map<String, String> properties = getThing().getProperties();
 
         if (!properties.containsKey(PROPERTY_FIRMWARE_VERSION)) {
-            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info != null ? info.getFirmware() : null);
+            getThing().setProperty(PROPERTY_FIRMWARE_VERSION, info.getFirmware());
         }
         if (!properties.containsKey(PROPERTY_SERIAL_NUMBER)) {
-            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info != null ? info.getAddress() : null);
+            getThing().setProperty(PROPERTY_SERIAL_NUMBER, info.getAddress());
         }
         if (!properties.containsKey(PROPERTY_MODEL_ID)) {
-            getThing().setProperty(PROPERTY_MODEL_ID, info != null ? info.getType() : null);
+            getThing().setProperty(PROPERTY_MODEL_ID, info.getType());
         }
     }
 
@@ -194,7 +194,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void dispose() {
         synchronized (initDisposeLock) {
             super.dispose();
-
+            final Future<?> initializeFuture = this.initializeFuture;
             if (initializeFuture != null) {
                 initializeFuture.cancel(true);
             }
@@ -473,7 +473,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * @param defer <i>true</i> will delete the device once it becomes available.
      */
     public void deleteFromGateway(String address, boolean reset, boolean force, boolean defer) {
-
         executorService.submit(() -> {
             final HomematicGateway gateway = this.gateway;
             if (gateway != null) {

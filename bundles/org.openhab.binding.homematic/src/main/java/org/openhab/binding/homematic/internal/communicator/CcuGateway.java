@@ -247,11 +247,9 @@ public class CcuGateway extends AbstractHomematicGateway {
         try (InputStream stream = bundle.getResource("homematic/tclrega-scripts.xml").openStream()) {
             TclScriptList scriptList = (TclScriptList) xStream.fromXML(stream);
             Map<String, @Nullable String> result = new HashMap<>();
-            if (scriptList.getScripts() != null) {
-                for (TclScript script : scriptList.getScripts()) {
-                    String value = script.data.trim();
-                    result.put(script.name, value.isEmpty() ? null : value);
-                }
+            for (TclScript script : scriptList.getScripts()) {
+                String value = script.data.trim();
+                result.put(script.name, value.isEmpty() ? null : value);
             }
             return result;
         } catch (IllegalStateException | IOException e) {
