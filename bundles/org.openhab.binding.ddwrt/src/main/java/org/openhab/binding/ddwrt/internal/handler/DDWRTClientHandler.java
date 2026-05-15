@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.handler;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_AP_MAC;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CHANNEL;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CONNECTION_TYPE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_HOSTNAME;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IP_ADDRESS;
@@ -21,6 +22,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_L
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_MAC_ADDRESS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_RX_RATE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SIGNAL;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SNR;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TX_RATE;
@@ -116,7 +118,10 @@ public class DDWRTClientHandler extends DDWRTBaseHandler<DDWRTClient, DDWRTClien
             case CHANNEL_AP_MAC ->
                 client.getApMac().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(client.getApMac());
             case CHANNEL_SSID -> client.getSsid().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(client.getSsid());
-            case CHANNEL_SNR -> new DecimalType(client.getSnr());
+            case CHANNEL_CHANNEL -> client.getChannel() != 0 ? new DecimalType(client.getChannel()) : UnDefType.UNDEF;
+            case CHANNEL_SIGNAL ->
+                client.getSignalDbm() != 0 ? new DecimalType(client.getSignalDbm()) : UnDefType.UNDEF;
+            case CHANNEL_SNR -> client.getSnr() != 0 ? new DecimalType(client.getSnr()) : UnDefType.UNDEF;
             case CHANNEL_RX_RATE ->
                 client.getRxRate().isEmpty() ? UnDefType.UNDEF : new DecimalType(parseRate(client.getRxRate()));
             case CHANNEL_TX_RATE ->

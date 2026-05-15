@@ -14,8 +14,10 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +38,9 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
     // After first successful enumeration, only probe these interfaces
     private volatile String @Nullable [] discoveredIfaces;
+
+    // Per-radio noise floor cache (cleared each refresh cycle)
+    private final Map<String, Integer> noiseCache = new HashMap<>();
 
     public DDWRTBroadcomDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
@@ -62,37 +67,46 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected List<DDWRTClient> getAssociatedClients(SshRunner runner, String iface) {
-        String output = runner.execStdout("wl -i " + iface + " assoclist");
-        if (output.isEmpty()) {
-            return Objects.requireNonNull(Collections.emptyList());
+    protected void populateClientStats(SshRunner runner, DDWRTNetworkCache cache, String clientMac, String iface) {
+        // Query per-client RSSI (signal strength in dBm)
+        String rssiStr = safeTrim(runner.execStdout("wl -i " + iface + " rssi " + clientMac));
+        if (rssiStr.isEmpty()) {
+            return;
+        }
+        int signalDbm;
+        try {
+            signalDbm = Integer.parseInt(rssiStr);
+        } catch (NumberFormatException e) {
+            return;
         }
 
-        List<DDWRTClient> clients = new ArrayList<>();
-        for (String line : output.split("\n")) {
-            String trimmed = line.trim();
-            // Format: "assoclist XX:XX:XX:XX:XX:XX"
-            if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
-                String clientMac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase(Locale.ROOT));
-                DDWRTClient client = new DDWRTClient(clientMac);
-                client.setApMac(Objects.requireNonNull(mac));
-                client.setIface(iface);
-                client.setOnline(true);
-
-                // Query RSSI for this client
-                String rssiStr = runner.execStdout("wl -i " + iface + " rssi " + clientMac);
-                if (!rssiStr.isEmpty()) {
-                    try {
-                        client.setSnr(Integer.parseInt(rssiStr.trim()));
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
+        // Query per-radio noise floor (dBm) — cached per interface since it's the same
+        // for all clients on the same radio
+        final int noiseDbm = noiseCache.computeIfAbsent(iface, i -> {
+            String noiseStr = safeTrim(runner.execStdout("wl -i " + i + " noise"));
+            if (!noiseStr.isEmpty()) {
+                try {
+                    return Integer.parseInt(noiseStr);
+                } catch (NumberFormatException e) {
+                    // fall through
                 }
-
-                clients.add(client);
             }
-        }
-        return clients;
+            return 0;
+        });
+
+        int snr = (noiseDbm != 0) ? signalDbm - noiseDbm : 0;
+        cache.computeWirelessClient(clientMac, c -> {
+            c.setSignalDbm(signalDbm);
+            c.setNoiseDbm(noiseDbm);
+            c.setSnr(snr);
+            return c;
+        });
+    }
+
+    @Override
+    protected void refreshWirelessClients(SshRunner runner) {
+        noiseCache.clear();
+        super.refreshWirelessClients(runner);
     }
 
     @Override
@@ -136,12 +150,8 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
-        if (model.isEmpty()) {
-            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
-        }
-        if (firmware.isEmpty()) {
-            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
-        }
+        refreshDdwrtIdentity(runner);
+        super.refreshIdentity(runner);
         if (cpuModel.isEmpty()) {
             // First try to get chipset from system type line (FreshTomato style)
             String systemType = safeTrim(runner.execStdout("grep 'system type' /proc/cpuinfo | cut -d':' -f2 | xargs"));

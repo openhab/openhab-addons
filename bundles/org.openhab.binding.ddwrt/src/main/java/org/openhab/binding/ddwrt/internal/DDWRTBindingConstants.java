@@ -82,6 +82,7 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_IP_ADDRESS = "ip-address";
     public static final String CHANNEL_AP = "ap";
     public static final String CHANNEL_AP_MAC = "ap-mac";
+    public static final String CHANNEL_SIGNAL = "signal";
     public static final String CHANNEL_SNR = "snr";
     public static final String CHANNEL_RX_RATE = "rx-rate";
     public static final String CHANNEL_TX_RATE = "tx-rate";
@@ -90,6 +91,9 @@ public class DDWRTBindingConstants {
 
     // List of firewall rule channel ids
     public static final String CHANNEL_DESCRIPTION = "description";
+
+    // Syslog follower health
+    public static final String CHANNEL_SYSLOG_CONNECTED = "syslog-connected";
 
     // List of syslog event channel ids (modeled after logreader binding)
     public static final String CHANNEL_LAST_WARNING_EVENT = "last-warning-event";

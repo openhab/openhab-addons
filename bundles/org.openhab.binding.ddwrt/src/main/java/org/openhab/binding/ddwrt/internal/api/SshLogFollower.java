@@ -269,4 +269,11 @@ public class SshLogFollower implements Runnable, AutoCloseable {
     public boolean isRunning() {
         return running;
     }
+
+    /**
+     * Check if the follower has an active SSH channel reading syslog lines.
+     */
+    public boolean isConnected() {
+        return running && current != null;
+    }
 }

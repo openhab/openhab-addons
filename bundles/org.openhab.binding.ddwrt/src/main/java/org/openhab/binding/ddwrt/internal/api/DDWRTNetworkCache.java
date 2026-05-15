@@ -110,6 +110,12 @@ public class DDWRTNetworkCache {
     // Listeners keyed by normalized lookup key (lowercase hostname or MAC)
     private final Map<String, List<CacheChangeListener>> listenersByKey = new ConcurrentHashMap<>();
 
+    // MAC-to-hostname hints registered by thing handlers.
+    // When a client thing has both a hostname and MAC configured, the handler registers
+    // a hint so that refreshWirelessClients can resolve the hostname for a randomized MAC
+    // even when DHCP doesn't provide the hostname (e.g. SSID roaming with per-SSID MAC randomization).
+    private final Map<String, String> macToHostnameHint = new ConcurrentHashMap<>();
+
     // ---- Listeners ----
 
     /**
@@ -160,6 +166,15 @@ public class DDWRTNetworkCache {
         }
     }
 
+    /**
+     * Check if any listener is registered for the given key (MAC or hostname).
+     * Used to determine if a thing exists for a client before running expensive per-client queries.
+     */
+    public boolean hasListeners(String key) {
+        List<CacheChangeListener> listeners = listenersByKey.get(key.toLowerCase(Locale.ROOT));
+        return listeners != null && !listeners.isEmpty();
+    }
+
     private void collectListeners(String key, Set<CacheChangeListener> dest) {
         List<CacheChangeListener> listeners = listenersByKey.get(key);
         if (listeners != null) {
@@ -178,6 +193,16 @@ public class DDWRTNetworkCache {
                 }
             }
         }
+    }
+
+    // ---- MAC-to-hostname hints ----
+    // Hints are populated by mergeRandomizedMac() when a hostname is found under a different MAC.
+
+    /**
+     * Look up a hostname hint for the given MAC. Returns null if no hint is registered.
+     */
+    public @Nullable String getHostnameHintForMac(String mac) {
+        return macToHostnameHint.get(normalizeMac(mac));
     }
 
     // ---- Devices ----
@@ -303,6 +328,11 @@ public class DDWRTNetworkCache {
                             normalizedNewMac, oldClient.getApMac(), oldClient.getSsid());
                 }
 
+                // Register hostname hints for both MACs so the phone can be identified
+                // when it roams back to the old SSID (per-SSID MAC randomization)
+                macToHostnameHint.put(oldMac, hostname);
+                macToHostnameHint.put(normalizedNewMac, hostname);
+
                 // Track old MAC as merged-away so refreshDhcpLeases won't re-create it
                 mergedAwayMacs.add(oldMac);
                 // The new MAC is now active — un-merge it if it was previously merged away
@@ -403,6 +433,22 @@ public class DDWRTNetworkCache {
         }
         String mac = dhcpHostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
         return mac != null ? dhcpLeasesByMac.get(mac) : null;
+    }
+
+    /**
+     * Find a DHCP lease by IP address. Scans all leases since there is no IP-keyed index.
+     * Returns null if no lease has this IP.
+     */
+    public @Nullable DDWRTDhcpLease getDhcpLeaseByIp(String ip) {
+        if (ip.isEmpty()) {
+            return null;
+        }
+        for (DDWRTDhcpLease lease : dhcpLeasesByMac.values()) {
+            if (ip.equals(lease.getIpAddress())) {
+                return lease;
+            }
+        }
+        return null;
     }
 
     public List<DDWRTDhcpLease> getDhcpLeases() {

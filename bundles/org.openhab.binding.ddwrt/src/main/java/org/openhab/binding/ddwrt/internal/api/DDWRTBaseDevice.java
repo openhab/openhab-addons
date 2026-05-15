@@ -21,10 +21,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -156,6 +158,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     // Cached DHCP leases - only updated on initial load and DHCP events
     private volatile boolean dhcpLeasesCacheValid = false;
 
+    // Negative cache for reverse DNS lookups — IPs that had no PTR record.
+    // Avoids re-querying on every refresh cycle (each lookup can block ~5s on timeout).
+    private final Set<String> dnsNegativeCache = ConcurrentHashMap.newKeySet();
+
     // Configuration
     protected DDWRTDeviceConfiguration config;
 
@@ -265,6 +271,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     existing.config = cfg;
                     existing.closeSessionQuietly();
                     existing.authSession = ssh;
+                    ssh = null; // prevent finally from closing session handed to device
                     log.info("Updated credentials for device: {} (MAC: {})", cfg.hostname, mac);
                 } else {
                     ssh.close();
@@ -311,6 +318,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
             cache.putDevice(mac, device);
             log.info("Created {} device: {} (MAC: {}, model: {})", result.chipset, cfg.hostname, mac, device.model);
+            ssh = null; // prevent finally from closing session handed to device
             return device;
         } catch (IOException e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
@@ -808,6 +816,54 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         return "journalctl -f --no-pager -p " + config.syslogPriority;
     }
 
+    // ---- Client association helpers (shared by syslog events + polling refresh) ----
+
+    /**
+     * Mark a client as connected on this device. Updates AP, interface, SSID, channel,
+     * connection type, online status, and last-seen time in the cache.
+     */
+    private void applyClientConnect(DDWRTNetworkCache cache, String clientMac, String iface, String radioName,
+            String ssid, int radioChannel) {
+        cache.computeWirelessClient(clientMac, client -> {
+            client.setApMac(mac);
+            client.setIface(iface);
+            client.setRadioName(radioName);
+            if (!ssid.isEmpty()) {
+                client.setSsid(ssid);
+            }
+            if (radioChannel > 0) {
+                client.setChannel(radioChannel);
+            }
+            client.setConnectionType("wireless");
+            client.setOnline(true);
+            client.setLastSeen(Instant.now());
+            return client;
+        });
+    }
+
+    /**
+     * Clear AP association for a client on this device. Only clears if the client
+     * is currently associated with this device (prevents clearing a client that roamed).
+     *
+     * @return true if the client was disassociated, false if it was not on this device
+     */
+    private boolean applyClientDisconnect(DDWRTNetworkCache cache, String clientMac) {
+        DDWRTClient existing = cache.getWirelessClient(clientMac);
+        if (existing != null && mac.equals(existing.getApMac())) {
+            cache.computeWirelessClient(clientMac, client -> {
+                client.setOnline(false);
+                client.setApMac("");
+                client.setRadioName("");
+                client.setSsid("");
+                client.setIface("");
+                client.setChannel(0);
+                return client;
+            });
+            return true;
+        }
+        return false;
+    }
+
     // ---- SyslogListener implementation ----
 
     @Override
@@ -842,6 +898,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 }
 
                 final String finalHostname = (dhcpHostname != null && !"*".equals(dhcpHostname)) ? dhcpHostname : "";
+
+                // IP now has a hostname — remove from reverse DNS negative cache
+                if (!finalHostname.isEmpty()) {
+                    dnsNegativeCache.remove(ip);
+                }
 
                 // Update the wireless client directly in the cache
                 cache.computeWirelessClient(clientMac, client -> {
@@ -887,37 +948,14 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 String radioName = (hostname.isEmpty() ? mac : hostname) + " " + iface;
 
                 if ("CONNECTED".equalsIgnoreCase(action)) {
-                    // Look up the radio to get its SSID and channel
                     String radioId = mac + ":" + iface;
                     DDWRTRadio radio = cache.getRadio(radioId);
                     String ssid = radio != null ? radio.getSsid() : "";
                     int radioChannel = radio != null ? radio.getChannel() : 0;
-
-                    // Update the wireless client directly in the cache
-                    cache.computeWirelessClient(clientMac, client -> {
-                        client.setApMac(mac);
-                        client.setIface(iface);
-                        client.setRadioName(radioName);
-                        if (!ssid.isEmpty()) {
-                            client.setSsid(ssid);
-                        }
-                        if (radioChannel > 0) {
-                            client.setChannel(radioChannel);
-                        }
-                        client.setConnectionType("wireless");
-                        client.setOnline(true);
-                        client.setLastSeen(Instant.now());
-                        return client;
-                    });
+                    applyClientConnect(cache, clientMac, iface, radioName, ssid, radioChannel);
                     logger.debug("[AP-CONNECT] {} connected on {} ssid={} ap={}", clientMac, radioName, ssid, hostname);
                 } else {
-                    // DISCONNECTED — mark client offline
-                    DDWRTClient existing = cache.getWirelessClient(clientMac);
-                    if (existing != null && mac.equals(existing.getApMac())) {
-                        cache.computeWirelessClient(clientMac, client -> {
-                            client.setOnline(false);
-                            return client;
-                        });
+                    if (applyClientDisconnect(cache, clientMac)) {
                         logger.debug("[AP-DISCONNECT] {} disconnected from {} ap={}", clientMac, radioName, hostname);
                     }
                 }
@@ -943,31 +981,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     DDWRTRadio radio = cache.getRadio(radioId);
                     String ssid = radio != null ? radio.getSsid() : "";
                     int radioChannel = radio != null ? radio.getChannel() : 0;
-
-                    cache.computeWirelessClient(clientMac, client -> {
-                        client.setApMac(mac);
-                        client.setIface(iface);
-                        client.setRadioName(radioName);
-                        if (!ssid.isEmpty()) {
-                            client.setSsid(ssid);
-                        }
-                        if (radioChannel > 0) {
-                            client.setChannel(radioChannel);
-                        }
-                        client.setConnectionType("wireless");
-                        client.setOnline(true);
-                        client.setLastSeen(Instant.now());
-                        return client;
-                    });
+                    applyClientConnect(cache, clientMac, iface, radioName, ssid, radioChannel);
                     logger.debug("[AP-CONNECT] {} connected on {} ssid={} ap={} (MLME)", clientMac, radioName, ssid,
                             hostname);
                 } else if (isDisconnect) {
-                    DDWRTClient existing = cache.getWirelessClient(clientMac);
-                    if (existing != null && mac.equals(existing.getApMac())) {
-                        cache.computeWirelessClient(clientMac, client -> {
-                            client.setOnline(false);
-                            return client;
-                        });
+                    if (applyClientDisconnect(cache, clientMac)) {
                         logger.debug("[AP-DISCONNECT] {} disconnected from {} ap={} (MLME)", clientMac, radioName,
                                 hostname);
                     }
@@ -1231,36 +1249,35 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         // WAN interface — only fetch if device has a real WAN IP (is a gateway)
         String wanIface = isGateway() ? getWanInterface(runner) : "";
         if (!wanIface.isEmpty()) {
-            String wanLine = safeTrim(
-                    runner.execStdout("cat /proc/net/dev | grep '" + wanIface + "' | awk '{print $2, $10}'"));
-            if (!wanLine.isEmpty()) {
-                String[] parts = wanLine.split("\\s+");
-                if (parts.length >= 2) {
-                    try {
-                        wanIn = Long.parseLong(parts[0]);
-                        wanOut = Long.parseLong(parts[1]);
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
-                }
-            }
+            long[] wan = parseIfaceCounters(runner, wanIface);
+            wanIn = wan[0];
+            wanOut = wan[1];
         }
 
         // LAN interface (overridable: br0 for DD-WRT/Tomato, br-lan for OpenWrt)
-        String lanIface = getLanInterface();
-        String lanLine = safeTrim(
-                runner.execStdout("cat /proc/net/dev | grep '" + lanIface + "' | awk '{print $2, $10}'"));
-        if (!lanLine.isEmpty()) {
-            String[] parts = lanLine.split("\\s+");
+        long[] lan = parseIfaceCounters(runner, getLanInterface());
+        ifIn = lan[0];
+        ifOut = lan[1];
+    }
+
+    /**
+     * Read RX and TX byte counters from {@code /proc/net/dev} for the given interface.
+     *
+     * @return two-element array: [rxBytes, txBytes], both 0 on parse failure
+     */
+    private long[] parseIfaceCounters(SshRunner runner, String iface) {
+        String line = safeTrim(runner.execStdout("cat /proc/net/dev | grep '" + iface + "' | awk '{print $2, $10}'"));
+        if (!line.isEmpty()) {
+            String[] parts = line.split("\\s+");
             if (parts.length >= 2) {
                 try {
-                    ifIn = Long.parseLong(parts[0]);
-                    ifOut = Long.parseLong(parts[1]);
+                    return new long[] { Long.parseLong(parts[0]), Long.parseLong(parts[1]) };
                 } catch (NumberFormatException e) {
                     // ignore
                 }
             }
         }
+        return new long[] { 0, 0 };
     }
 
     /**
@@ -1290,23 +1307,44 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         }
         u.updateChannel("if-in", new DecimalType(ifIn));
         u.updateChannel("if-out", new DecimalType(ifOut));
+        u.updateChannel("syslog-connected", isSyslogConnected() ? OnOffType.ON : OnOffType.OFF);
+    }
+
+    /**
+     * Check if the syslog follower has an active SSH channel reading log lines.
+     */
+    public boolean isSyslogConnected() {
+        SshLogFollower follower = logFollower;
+        return follower != null && follower.isConnected();
     }
 
     // ---- Chipset-specific methods (overridden by subclasses) ----
 
     /**
-     * Populate model and firmware fields. Default implementation uses generic Linux sources.
-     * DD-WRT subclasses override to use /tmp/loginprompt; OpenWrt uses /tmp/sysinfo/model.
+     * Populate model and firmware fields from generic Linux sources.
+     * DD-WRT subclasses call {@link #refreshDdwrtIdentity} first, then {@code super}.
+     * OpenWrt overrides entirely to use {@code /tmp/sysinfo/model}.
      */
     protected void refreshIdentity(SshRunner runner) {
-        // Generic Linux: DMI or device-tree for model
         if (model.isEmpty()) {
             model = safeTrim(
                     runner.execStdout("cat /sys/devices/virtual/dmi/id/product_name || cat /proc/device-tree/model"));
         }
-        // Generic Linux: os-release for firmware/distro
         if (firmware.isEmpty()) {
             firmware = safeTrim(runner.execStdout("cat /etc/os-release | grep PRETTY_NAME | cut -d'\"' -f2"));
+        }
+    }
+
+    /**
+     * Parse DD-WRT {@code /tmp/loginprompt} for board model and firmware version.
+     * Called by DD-WRT chipset subclasses before {@code super.refreshIdentity()}.
+     */
+    protected void refreshDdwrtIdentity(SshRunner runner) {
+        if (model.isEmpty()) {
+            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
+        }
+        if (firmware.isEmpty()) {
+            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
         }
     }
 
@@ -1522,15 +1560,24 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             return;
         }
 
-        // For each wireless client that has an IP but no hostname, try reverse DNS
+        // Only look up clients associated with THIS device (not the entire shared cache).
+        // Each InetAddress.getHostName() can block ~5s on DNS timeout, so we also skip
+        // IPs that previously returned no PTR record (negative cache).
         for (DDWRTClient client : cache.getWirelessClients()) {
+            if (!mac.equals(client.getApMac())) {
+                continue;
+            }
             if (!client.getIpAddress().isEmpty() && client.getHostname().isEmpty()) {
                 String ip = client.getIpAddress();
+                if (dnsNegativeCache.contains(ip)) {
+                    continue;
+                }
                 try {
                     InetAddress addr = InetAddress.getByName(ip);
                     String fqdn = addr.getHostName();
                     // If getHostName() returned the IP itself, no PTR record exists — skip
                     if (fqdn.equals(ip)) {
+                        dnsNegativeCache.add(ip);
                         continue;
                     }
                     // Use short hostname only (strip domain suffix)
@@ -1542,7 +1589,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                         cache.putWirelessClient(client.getMac(), client);
                     }
                 } catch (UnknownHostException e) {
-                    // No reverse DNS entry for this IP, ignore
+                    dnsNegativeCache.add(ip);
                     logger.trace("No reverse DNS entry for {}", ip);
                 }
             }
@@ -1562,6 +1609,9 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         logger.debug("Refreshing wireless clients for {}", hostname);
         int totalClients = 0;
 
+        // Collect all currently-associated MACs for this device (across all its radios)
+        Set<String> currentlyAssociated = new HashSet<>();
+
         // Use radios already in cache (populated by refreshRadios)
         for (DDWRTRadio radio : cache.getRadios()) {
             // Only process radios belonging to this device
@@ -1570,6 +1620,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             }
             String radioName = (hostname.isEmpty() ? mac : hostname) + " " + radio.getIfaceName();
             for (String clientMac : radio.getAssoclist()) {
+                currentlyAssociated.add(clientMac.toLowerCase(Locale.ROOT));
                 // Thread-safe update of wireless client (computeWirelessClient handles null case)
                 cache.computeWirelessClient(clientMac, client -> {
                     // Update device-specific info
@@ -1631,6 +1682,29 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                         }
                     }
 
+                    // For randomized MACs with an IP but no hostname, try reverse DHCP lookup
+                    // (handles SSID roaming where the phone keeps its IP but changes MAC)
+                    if (client.getHostname().isEmpty() && !client.getIpAddress().isEmpty()
+                            && OuiDatabase.isRandomizedMac(clientMac)) {
+                        DDWRTDhcpLease ipLease = cache.getDhcpLeaseByIp(client.getIpAddress());
+                        if (ipLease != null && !ipLease.getHostname().isEmpty()) {
+                            client.setHostname(ipLease.getHostname());
+                            logger.debug("Resolved hostname for randomized MAC {} via DHCP IP {}: {}", clientMac,
+                                    client.getIpAddress(), ipLease.getHostname());
+                        }
+                    }
+
+                    // For randomized MACs still without a hostname, try the thing-handler hint map
+                    // (handles per-SSID MAC randomization where DHCP doesn't include the hostname)
+                    if (client.getHostname().isEmpty() && OuiDatabase.isRandomizedMac(clientMac)) {
+                        String hintHostname = cache.getHostnameHintForMac(clientMac);
+                        if (hintHostname != null && !hintHostname.isEmpty()) {
+                            client.setHostname(hintHostname);
+                            logger.debug("Resolved hostname for randomized MAC {} via thing-handler hint: {}",
+                                    clientMac, hintHostname);
+                        }
+                    }
+
                     // Last resort: generate hostname from OUI vendor prefix (skip randomized MACs)
                     if (client.getHostname().isEmpty() && !OuiDatabase.isRandomizedMac(clientMac)) {
                         String generated = OuiDatabase.generateHostname(clientMac);
@@ -1643,6 +1717,14 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     return client;
                 });
 
+                // Populate signal/rate stats only if a thing exists for this client
+                // (avoids expensive per-client SSH queries for unmonitored clients)
+                DDWRTClient current = cache.getWirelessClient(clientMac);
+                if (current != null && (cache.hasListeners(clientMac)
+                        || (!current.getHostname().isEmpty() && cache.hasListeners(current.getHostname())))) {
+                    populateClientStats(runner, cache, clientMac, radio.getIfaceName());
+                }
+
                 // Handle MAC randomization: merge old entry if hostname matches a different MAC
                 DDWRTClient updated = cache.getWirelessClient(clientMac);
                 if (updated != null && !updated.getHostname().isEmpty()) {
@@ -1652,6 +1734,17 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 totalClients++;
             }
         }
+        // Clear AP association for clients that claim to be on this device but are no
+        // longer in any of its assoclists. This handles both normal departures and stale
+        // state left over from a previous session or binding restart.
+        for (DDWRTClient client : cache.getWirelessClients()) {
+            if (mac.equals(client.getApMac()) && !currentlyAssociated.contains(client.getMac())) {
+                if (applyClientDisconnect(cache, client.getMac())) {
+                    logger.debug("Cleared stale AP association for {} on {}", client.getMac(), hostname);
+                }
+            }
+        }
+
         logger.debug("Refreshed wireless clients: {} total", totalClients);
     }
 
@@ -1874,6 +1967,19 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 cache.putFirewallRule(rule.getRuleId(), rule);
             }
         }
+    }
+
+    /**
+     * Populate per-client signal and rate statistics. Subclasses override to query
+     * chipset-specific commands (e.g. {@code wl rssi} for Broadcom, {@code iw station dump}
+     * for Marvell/generic). Default implementation does nothing.
+     *
+     * @param runner SSH command runner
+     * @param cache network cache for thread-safe client updates
+     * @param clientMac lowercase MAC address of the client
+     * @param iface radio interface name the client is associated on
+     */
+    protected void populateClientStats(SshRunner runner, DDWRTNetworkCache cache, String clientMac, String iface) {
     }
 
     /**

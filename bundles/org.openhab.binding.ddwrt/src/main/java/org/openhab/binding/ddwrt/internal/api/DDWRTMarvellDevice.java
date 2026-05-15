@@ -150,12 +150,8 @@ public class DDWRTMarvellDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
-        if (model.isEmpty()) {
-            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
-        }
-        if (firmware.isEmpty()) {
-            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
-        }
+        refreshDdwrtIdentity(runner);
+        super.refreshIdentity(runner);
     }
 
     @Override

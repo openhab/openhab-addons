@@ -19,6 +19,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_I
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_OUT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_REBOOT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SYSLOG_CONNECTED;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_UPTIME;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IN;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WAN_IP;
@@ -138,6 +139,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             case CHANNEL_WAN_OUT -> device.isGateway() ? new DecimalType(device.getWanOut()) : UnDefType.UNDEF;
             case CHANNEL_IF_IN -> new DecimalType(device.getIfIn());
             case CHANNEL_IF_OUT -> new DecimalType(device.getIfOut());
+            case CHANNEL_SYSLOG_CONNECTED -> OnOffType.from(device.isSyslogConnected());
             case CHANNEL_REBOOT -> OnOffType.OFF;
             default -> UnDefType.NULL;
         };

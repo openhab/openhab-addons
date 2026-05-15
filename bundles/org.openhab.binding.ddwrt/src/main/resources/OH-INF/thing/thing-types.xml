@@ -109,6 +109,7 @@
 			<channel id="if-in" typeId="if-in"/>
 			<channel id="if-out" typeId="if-out"/>
 			<channel id="reboot" typeId="reboot"/>
+			<channel id="syslog-connected" typeId="syslog-connected"/>
 			<channel id="last-warning-event" typeId="last-warning-event"/>
 			<channel id="last-error-event" typeId="last-error-event"/>
 			<channel id="warning-events" typeId="warning-events"/>
@@ -249,6 +250,7 @@
 			<channel id="ap" typeId="ap"/>
 			<channel id="ap-mac" typeId="ap-mac"/>
 			<channel id="ssid" typeId="ssid"/>
+			<channel id="channel" typeId="channel"/>
 			<channel id="signal" typeId="signal"/>
 			<channel id="snr" typeId="snr"/>
 			<channel id="rx-rate" typeId="rx-rate"/>
@@ -627,6 +629,19 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description of the firewall rule</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Syslog follower health -->
+
+	<channel-type id="syslog-connected">
+		<item-type>Switch</item-type>
+		<label>Syslog Connected</label>
+		<description>Whether the syslog follower has an active SSH channel to the device</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
