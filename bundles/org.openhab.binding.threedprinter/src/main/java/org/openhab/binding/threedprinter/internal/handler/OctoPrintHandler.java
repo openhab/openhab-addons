@@ -14,6 +14,9 @@ package org.openhab.binding.threedprinter.internal.handler;
 
 import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +32,7 @@ import org.openhab.binding.threedprinter.internal.dto.octoprint.OctoPrintPrinter
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
@@ -44,6 +48,7 @@ import org.openhab.core.types.RefreshType;
  * <p>
  * OctoPrint REST API reference: https://docs.octoprint.org/en/master/api/
  * Authentication via X-Api-Key header.
+ * Thumbnails require the PrusaSlicer Thumbnails plugin.
  *
  * @author Scott Hanson - Initial contribution
  */
@@ -51,6 +56,7 @@ import org.openhab.core.types.RefreshType;
 public class OctoPrintHandler extends AbstractPrinterHandler {
 
     private @Nullable OctoPrintConfiguration config;
+    private String lastPreviewFilename = "";
 
     public OctoPrintHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -104,16 +110,17 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
 
         OctoPrintTemperature temps = printerResponse.temperature;
         if (temps != null) {
-            if (temps.tool0 != null) {
-                updateState(CHANNEL_NOZZLE_TEMPERATURE,
-                        new QuantityType<Temperature>(temps.tool0.actual, SIUnits.CELSIUS));
+            OctoPrintTemperature.OctoPrintTempReading tool0 = temps.tool0;
+            if (tool0 != null) {
+                updateState(CHANNEL_NOZZLE_TEMPERATURE, new QuantityType<Temperature>(tool0.actual, SIUnits.CELSIUS));
                 updateState(CHANNEL_NOZZLE_TEMPERATURE_SETPOINT,
-                        new QuantityType<Temperature>(temps.tool0.target, SIUnits.CELSIUS));
+                        new QuantityType<Temperature>(tool0.target, SIUnits.CELSIUS));
             }
-            if (temps.bed != null) {
-                updateState(CHANNEL_BED_TEMPERATURE, new QuantityType<Temperature>(temps.bed.actual, SIUnits.CELSIUS));
+            OctoPrintTemperature.OctoPrintTempReading bed = temps.bed;
+            if (bed != null) {
+                updateState(CHANNEL_BED_TEMPERATURE, new QuantityType<Temperature>(bed.actual, SIUnits.CELSIUS));
                 updateState(CHANNEL_BED_TEMPERATURE_SETPOINT,
-                        new QuantityType<Temperature>(temps.bed.target, SIUnits.CELSIUS));
+                        new QuantityType<Temperature>(bed.target, SIUnits.CELSIUS));
             }
         }
 
@@ -143,9 +150,28 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
         }
 
         OctoPrintJob job = jobResponse.job;
-        if (job != null && job.file != null) {
-            String name = job.file.display.isBlank() ? job.file.name : job.file.display;
-            updateState(CHANNEL_JOB_NAME, new StringType(name));
+        if (job != null) {
+            OctoPrintJob.OctoPrintFile file = job.file;
+            if (file != null) {
+                String name = file.display.isBlank() ? file.name : file.display;
+                updateState(CHANNEL_JOB_NAME, new StringType(name));
+
+                // Use the raw filename (not display name) as the key for the thumbnail URL
+                String filename = file.name;
+                if (!filename.isBlank()) {
+                    if (!filename.equals(lastPreviewFilename)) {
+                        lastPreviewFilename = filename;
+                        String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                        byte @Nullable [] bytes = httpGetBytes(
+                                baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName, cfg.apiKey);
+                        if (bytes != null && bytes.length > 0) {
+                            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
+                        }
+                    }
+                } else {
+                    lastPreviewFilename = "";
+                }
+            }
         }
     }
 

@@ -28,13 +28,11 @@ public class KlipperObjectsResponse {
     @SerializedName("result")
     public @Nullable KlipperResult result;
 
-    @NonNullByDefault
     public static class KlipperResult {
         @SerializedName("status")
         public @Nullable KlipperStatus status;
     }
 
-    @NonNullByDefault
     public static class KlipperStatus {
         @SerializedName("extruder")
         public @Nullable KlipperHeater extruder;
@@ -55,7 +53,6 @@ public class KlipperObjectsResponse {
         public @Nullable KlipperGcodeMove gcodeMove;
     }
 
-    @NonNullByDefault
     public static class KlipperHeater {
         @SerializedName("temperature")
         public double temperature;
@@ -64,7 +61,6 @@ public class KlipperObjectsResponse {
         public double target;
     }
 
-    @NonNullByDefault
     public static class KlipperPrintStats {
         @SerializedName("state")
         public String state = "";
@@ -82,7 +78,6 @@ public class KlipperObjectsResponse {
         public double filamentUsed;
     }
 
-    @NonNullByDefault
     public static class KlipperDisplayStatus {
         @SerializedName("progress")
         public double progress;
@@ -91,13 +86,11 @@ public class KlipperObjectsResponse {
         public String message = "";
     }
 
-    @NonNullByDefault
     public static class KlipperFan {
         @SerializedName("speed")
         public double speed;
     }
 
-    @NonNullByDefault
     public static class KlipperGcodeMove {
         @SerializedName("speed_factor")
         public double speedFactor = 1.0;

@@ -146,6 +146,27 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Sends an HTTP GET and returns the raw response bytes, or null on failure.
+     */
+    protected byte @Nullable [] httpGetBytes(String url, String apiKey) {
+        try {
+            Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
+            if (!apiKey.isBlank()) {
+                request.header("X-Api-Key", apiKey);
+            }
+            ContentResponse response = request.send();
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            }
+            logger.debug("GET bytes {} returned HTTP {}", url, response.getStatus());
+            return null;
+        } catch (Exception e) {
+            logger.debug("GET bytes {} failed: {}", url, e.getMessage());
+            return null;
+        }
+    }
+
     protected void markOffline(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
     }

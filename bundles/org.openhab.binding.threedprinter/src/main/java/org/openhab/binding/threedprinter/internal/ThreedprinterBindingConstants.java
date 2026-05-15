@@ -44,6 +44,7 @@ public class ThreedprinterBindingConstants {
     public static final String CHANNEL_FAN_SPEED = "fan-speed";
     public static final String CHANNEL_PAUSE_RESUME = "pause-resume";
     public static final String CHANNEL_CANCEL = "cancel";
+    public static final String CHANNEL_JOB_PREVIEW = "job-preview";
 
     // Printer state values
     public static final String STATE_IDLE = "IDLE";

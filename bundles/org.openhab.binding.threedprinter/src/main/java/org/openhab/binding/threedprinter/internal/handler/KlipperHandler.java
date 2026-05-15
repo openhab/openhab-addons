@@ -14,12 +14,22 @@ package org.openhab.binding.threedprinter.internal.handler;
 
 import static org.openhab.binding.threedprinter.internal.ThreedprinterBindingConstants.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.threedprinter.internal.config.KlipperConfiguration;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperMetadataResult;
+import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperMetadataResponse.KlipperThumbnail;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperDisplayStatus;
 import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResponse.KlipperFan;
@@ -31,6 +41,7 @@ import org.openhab.binding.threedprinter.internal.dto.klipper.KlipperObjectsResp
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
@@ -55,6 +66,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
     private static final String QUERY_URL_SUFFIX = "/printer/objects/query?extruder&heater_bed&print_stats&display_status&fan&gcode_move";
 
     private @Nullable KlipperConfiguration config;
+    private String lastPreviewFilename = "";
 
     public KlipperHandler(Thing thing, HttpClient httpClient) {
         super(thing, httpClient);
@@ -131,6 +143,15 @@ public class KlipperHandler extends AbstractPrinterHandler {
             updateState(CHANNEL_PAUSE_RESUME, OnOffType.from(STATE_PAUSED.equals(mappedState)));
             updateState(CHANNEL_JOB_NAME, new StringType(stats.filename));
             updateState(CHANNEL_TIME_ELAPSED, new DecimalType((long) stats.printDuration));
+
+            if (!stats.filename.isBlank()) {
+                if (!stats.filename.equals(lastPreviewFilename)) {
+                    lastPreviewFilename = stats.filename;
+                    fetchAndUpdatePreview(baseUrl, cfg.apiKey, stats.filename);
+                }
+            } else {
+                lastPreviewFilename = "";
+            }
         }
 
         KlipperDisplayStatus display = status.displayStatus;
@@ -153,6 +174,38 @@ public class KlipperHandler extends AbstractPrinterHandler {
             long elapsed = (long) stats.printDuration;
             long remaining = display.progress < 1.0 ? (long) (elapsed / display.progress - elapsed) : 0L;
             updateState(CHANNEL_TIME_REMAINING, new DecimalType(remaining));
+        }
+    }
+
+    private void fetchAndUpdatePreview(String baseUrl, String apiKey, String filename) {
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+        String metaJson = httpGet(baseUrl + "/server/files/metadata?filename=" + encodedFilename, apiKey);
+        if (metaJson == null) {
+            return;
+        }
+        KlipperMetadataResponse meta = gson.fromJson(metaJson, KlipperMetadataResponse.class);
+        if (meta == null) {
+            return;
+        }
+        KlipperMetadataResult metaResult = meta.result;
+        if (metaResult == null) {
+            return;
+        }
+        List<KlipperThumbnail> thumbnails = metaResult.thumbnails;
+        if (thumbnails == null || thumbnails.isEmpty()) {
+            return;
+        }
+        @Nullable
+        KlipperThumbnail best = thumbnails.stream().max(Comparator.comparingInt(t -> t.size)).orElse(null);
+        if (best == null || best.relativePath.isBlank()) {
+            return;
+        }
+        // Encode each path segment individually to preserve the directory separator
+        String encodedPath = Arrays.stream(best.relativePath.split("/"))
+                .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8)).collect(Collectors.joining("/"));
+        byte @Nullable [] bytes = httpGetBytes(baseUrl + "/server/files/gcodes/" + encodedPath, apiKey);
+        if (bytes != null && bytes.length > 0) {
+            updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));
         }
     }
 
