@@ -18,9 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.time.Duration;
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.roborock.internal.MqttInboundLivenessWatchdog.Decision;
 
+@NonNullByDefault({})
 class MqttInboundLivenessWatchdogTest {
 
     @Test

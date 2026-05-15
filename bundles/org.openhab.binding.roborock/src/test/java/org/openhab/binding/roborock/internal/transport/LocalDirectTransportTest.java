@@ -37,10 +37,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.zip.CRC32;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.roborock.internal.RoborockException;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 
+@NonNullByDefault({})
 class LocalDirectTransportTest {
 
     @Test
@@ -173,7 +175,7 @@ class LocalDirectTransportTest {
                     dispatchedRequestId.set(requestId.intValue());
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new AssertionError(e);
             }
         });
 

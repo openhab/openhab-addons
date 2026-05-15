@@ -321,7 +321,7 @@ public class LocalDirectTransport implements RoborockCommandTransport {
             if (cause != null) {
                 logger.debug("{} Cause: {}", reason, cause.getMessage());
             } else if (logger.isTraceEnabled()) {
-                logger.trace(reason);
+                logger.trace("{}", reason);
             }
 
             if (socket == null) {

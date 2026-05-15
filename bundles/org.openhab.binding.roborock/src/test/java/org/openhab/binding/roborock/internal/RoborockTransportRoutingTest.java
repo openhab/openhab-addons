@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.COMMAND_APP_START;
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.COMMAND_GET_MAP;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+@NonNullByDefault({})
 class RoborockTransportRoutingTest {
 
     @Test

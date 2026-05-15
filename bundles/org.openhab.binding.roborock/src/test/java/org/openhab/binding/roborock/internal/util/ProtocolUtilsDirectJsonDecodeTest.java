@@ -20,12 +20,14 @@ import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.roborock.internal.RoborockException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+@NonNullByDefault({})
 class ProtocolUtilsDirectJsonDecodeTest {
 
     @Test

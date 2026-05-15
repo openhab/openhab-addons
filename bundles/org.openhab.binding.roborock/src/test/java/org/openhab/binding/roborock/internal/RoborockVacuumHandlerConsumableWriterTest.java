@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+@NonNullByDefault({})
 class RoborockVacuumHandlerConsumableWriterTest {
 
     private static final Path HANDLER_PATH = Path

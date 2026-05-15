@@ -19,9 +19,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+@NonNullByDefault({})
 class RoborockVacuumHandlerPathResolutionTest {
 
     @Test
