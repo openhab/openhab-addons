@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * Factory for creating 3D printer thing handlers.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.threedprinter", service = ThingHandlerFactory.class)

@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 /**
  * Base class for all 3D printer handlers providing shared HTTP and scheduling logic.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public abstract class AbstractPrinterHandler extends BaseThingHandler {

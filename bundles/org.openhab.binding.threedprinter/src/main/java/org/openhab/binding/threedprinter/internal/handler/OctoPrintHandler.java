@@ -45,7 +45,7 @@ import org.openhab.core.types.RefreshType;
  * OctoPrint REST API reference: https://docs.octoprint.org/en/master/api/
  * Authentication via X-Api-Key header.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class OctoPrintHandler extends AbstractPrinterHandler {

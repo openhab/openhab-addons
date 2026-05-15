@@ -47,7 +47,7 @@ import org.openhab.core.types.RefreshType;
  * Moonraker API reference: https://moonraker.readthedocs.io/
  * Default port is 7125. API key is optional on local networks.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author Scott Hanson - Initial contribution
  */
 @NonNullByDefault
 public class KlipperHandler extends AbstractPrinterHandler {
