@@ -142,16 +142,6 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             errorMsg = initializeBridgeIp(getConfigAs(PowermaxIpConfiguration.class), threadName);
         }
 
-        // Normally globalJob should always be null when initialize() is called
-        // because job is cancelled and globalJob is set to null in dispose().
-        // By security, cancel the job in case it is not null.
-        ScheduledFuture<?> job = globalJob;
-        if (job != null) {
-            logger.warn("initialize() for {}: encountering not null globalJob", getThing().getUID());
-            job.cancel(true);
-            globalJob = null;
-        }
-
         if (errorMsg == null) {
             // Delay the startup in case the handler is restarted immediately
             globalJob = scheduler.scheduleWithFixedDelay(() -> {
