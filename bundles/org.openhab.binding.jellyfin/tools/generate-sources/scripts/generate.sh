@@ -49,7 +49,7 @@ function checkEnvironment() {
 checkEnvironment
 
 OPENAPI_JAVA_CONFIG="tools/generate-sources/scripts/java.config.json"
-ROOT=$(pwd)
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../" && pwd)"
 
 
 # Get the latest stable release tag from GitHub for openapi-generator
@@ -121,7 +121,7 @@ for i in "${VERSIONS[@]}"; do
     FILENAME_JSON=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/jellyfin-openapi-${i}.json
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
 
-    mkdir -p logs/endpoints
+    mkdir -p ${ROOT}/target/generator/logs
     mkdir -p ${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/
     mkdir -p ${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/
 
@@ -140,7 +140,7 @@ for i in "${VERSIONS[@]}"; do
         }
     fi
 
-    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey.txt
+    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >"${ROOT}/target/generator/logs/${i}-jersey.txt"
 
     if [ ! -e "${FILENAME_YAML}" ]; then
         echo "⚙️: json ➡️  yaml"
@@ -177,7 +177,7 @@ for i in "${VERSIONS[@]}"; do
     FILENAME_YAML_SORTED="${FILENAME_YAML}.sorted"
     echo "🔧 sort all enum arrays in OpenAPI YAML input"
     # Always use dedicated Python helper to sort enums, passing exception args
-    PY_SCRIPT="tools/generate-sources/scripts/sort_openapi_enums.py"
+    PY_SCRIPT="${ROOT}/tools/generate-sources/scripts/sort_openapi_enums.py"
     # Split comma-separated ENUM_SORT_EXCEPTIONS into multiple --exception args
     PY_ARGS=("${FILENAME_YAML_INPUT}" "${FILENAME_YAML_SORTED}")
     IFS=',' read -ra EXARR <<< "${ENUM_SORT_EXCEPTIONS}"
