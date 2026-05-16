@@ -44,6 +44,8 @@ public class SmartThingsConverterFactory {
                     new SmartThingsHue100Converter(typeRegistry));
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_SATURATION,
                     new SmartThingsSaturationConverter(typeRegistry));
+            registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_MUTE,
+                    new SmartThingsMuteConverter(typeRegistry));
             registerConverter(SmartThingsBindingConstants.CHANNEL_NAME_DEFAULT,
                     new SmartThingsDefaultConverter(typeRegistry));
         }

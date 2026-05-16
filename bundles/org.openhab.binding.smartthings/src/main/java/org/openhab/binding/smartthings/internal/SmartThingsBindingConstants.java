@@ -101,6 +101,7 @@ public class SmartThingsBindingConstants {
     public static final String CLOSE_VALUE = "close";
 
     public static final String CHANNEL_NAME_COLOR = "color";
+    public static final String CHANNEL_NAME_MUTE = "mute";
     public static final String CHANNEL_NAME_COLOR_VALUE = "colorValue";
     public static final String CHANNEL_NAME_CONTACT = "contact";
     public static final String CHANNEL_NAME_HUE = "hue";
@@ -118,6 +119,8 @@ public class SmartThingsBindingConstants {
     public static final String CMD_SET_COLOR = "setColor";
     public static final String CMD_SET_LEVEL = "setLevel";
     public static final String CMD_SET_HUE = "setHue";
+
+    public static final String CMD_SET_MUTE = "setMute";
 
     public static final String CATEGORY_THING_SMARTTHINGS = "SmartThings";
 
