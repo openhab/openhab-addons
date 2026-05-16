@@ -35,6 +35,8 @@
 			<property name="vendor">Miele</property>
 		</properties>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description-ref uri="thing-type:mielecloud:device"/>
 	</thing-type>
 
