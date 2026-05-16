@@ -98,9 +98,9 @@ public class TelegramMessageStore {
     public TelegramMessageStore(StorageService storageService, ThingUID thingUID) {
         String uid = thingUID.getAsString();
         this.messageIdStorage = storageService.getStorage(STORAGE_NAME_PREFIX + uid + MESSAGE_ID_STORAGE_SUFFIX,
-                String.class.getClassLoader());
+                TelegramMessageStore.class.getClassLoader());
         this.callbackIdStorage = storageService.getStorage(STORAGE_NAME_PREFIX + uid + CALLBACK_ID_STORAGE_SUFFIX,
-                String.class.getClassLoader());
+                TelegramMessageStore.class.getClassLoader());
     }
 
     // -------------------------------------------------------------------------
