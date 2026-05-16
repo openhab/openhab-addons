@@ -151,8 +151,16 @@ class TelegramMessageStoreTest {
     // -----------------------------------------------------------------------
 
     @Test
-    void buildKeyCombinesChatIdAndReplyIdWithColon() {
-        assertEquals(CHAT_ID + ":" + REPLY_ID, TelegramMessageStore.buildKey(CHAT_ID, REPLY_ID));
+    void buildKeyEncodesReplyIdToAvoidDelimiterCollisions() {
+        String key = TelegramMessageStore.buildKey(CHAT_ID, REPLY_ID);
+
+        assertTrue(key.startsWith(CHAT_ID + ":"), "Composite keys must start with the chat ID and a colon");
+        assertNotEquals(CHAT_ID + ":" + REPLY_ID, key, "Reply IDs are encoded in the composite key");
+    }
+
+    @Test
+    void buildKeyAllowsReplyIdContainingColon() {
+        assertDoesNotThrow(() -> TelegramMessageStore.buildKey(CHAT_ID, "action:confirm"));
     }
 
     @Test

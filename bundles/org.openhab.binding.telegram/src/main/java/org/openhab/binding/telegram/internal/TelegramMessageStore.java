@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.telegram.internal;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * <p>
- * Within each store, keys are composite strings {@code "<chatId>:<replyId>"}
+ * Within each store, keys are composite strings {@code "<chatId>:<encodedReplyId>"}
  * to allow a flat key-value layout without nested structures.
  *
  * <p>
@@ -129,15 +131,15 @@ public class TelegramMessageStore {
      * Builds the composite storage key from a chat ID and a reply ID.
      *
      * @param chatId Telegram chat ID
-     * @param replyId application-level reply identifier (must not contain ':')
-     * @return composite key {@code "<chatId>:<replyId>"}
-     * @throws IllegalArgumentException if {@code replyId} contains ':'
+     * @param replyId application-level reply identifier
+     * @return composite key {@code "<chatId>:<encodedReplyId>"}
      */
     static String buildKey(Long chatId, String replyId) {
-        if (replyId.indexOf(':') >= 0) {
-            throw new IllegalArgumentException("replyId must not contain ':': " + replyId);
-        }
-        return chatId + ":" + replyId;
+        return chatId + ":" + encodeReplyId(replyId);
+    }
+
+    private static String encodeReplyId(String replyId) {
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(replyId.getBytes(StandardCharsets.UTF_8));
     }
 
     // -------------------------------------------------------------------------
