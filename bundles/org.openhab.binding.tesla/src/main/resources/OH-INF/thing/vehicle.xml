@@ -13,6 +13,8 @@
 		<label>Tesla</label>
 		<description>A Tesla Vehicle</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
+		<representation-property>vin</representation-property>
+
 		<config-description>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number</label>
