@@ -97,12 +97,12 @@ When _fetch_ is set to true, the binding will read out the memory of the KNX act
 This is just for information and has no effect on the functionality of the binding.
 It can safely be turned off to save bandwidth on the bus or avoid problems with older devices.
 
-| Name         | Required | Description                                                                                                              | Default value                                                               |
-|--------------|----------|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| address      | N        | The individual device address (in 0.0.0 notation)                                                                        | -  |
-| fetch        | N        | Read out the device parameters and address/communication object tables (requires the address)                            | false                                                                       |
-| pingInterval | N        | Interval (in seconds) to contact the device and set the Thing status based on the result (requires the address)          | 600                                                                         |
-| readInterval | N        | Interval (in seconds) to actively request reading of values from the bus (0 if they should only be read once at startup) | 0                                                                           |
+| Name           | Required   | Description                                                                                                                                      | Default value   |
+|----------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| address        | N          | The individual device address (in 0.0.0 notation)                                                                                                | -               |
+| fetch          | N          | Read out the device parameters and address/communication object tables (requires the address)                                                    | false           |
+| pingInterval   | N          | Interval (in seconds) to contact the device and set the Thing status based on the result (requires the address, 0 disables polling)              | 600             |
+| readInterval   | N          | Interval (in seconds) to actively request reading of values from the bus (0 if they should only be read once at startup)                         | 0               |
 
 Different kinds of channels are defined and can be used to group together Group Addresses.
 All channels of a device share one configuration parameter defined at the device level: _readInterval_, an optional parameter that indicates if the 'readable' group addresses of that Channel should be read periodically at the given interval, in seconds.
