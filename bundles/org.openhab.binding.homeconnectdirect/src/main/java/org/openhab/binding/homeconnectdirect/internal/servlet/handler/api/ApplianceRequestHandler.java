@@ -148,8 +148,8 @@ public class ApplianceRequestHandler {
         StringBuilder dsl = new StringBuilder();
         dsl.append("Thing ");
         dsl.append(thing.getUID());
-        dsl.append(" \"")
-                .append(escapeDslString(thing.getLabel() != null ? thing.getLabel() : thing.getUID().toString()))
+        var thingLabel = thing.getLabel();
+        dsl.append(" \"").append(escapeDslString(thingLabel != null ? thingLabel : thing.getUID().toString()))
                 .append("\"");
 
         var config = thing.getConfiguration().getProperties();
@@ -172,8 +172,9 @@ public class ApplianceRequestHandler {
                             || "trigger".equals(type) || "enum-switch".equals(type)) {
                         dsl.append("    Type ").append(type).append(" : ").append(channel.getUID().getId());
 
-                        if (channel.getLabel() != null) {
-                            dsl.append(" \"").append(escapeDslString(channel.getLabel())).append("\"");
+                        var channelLabel = channel.getLabel();
+                        if (channelLabel != null) {
+                            dsl.append(" \"").append(escapeDslString(channelLabel)).append("\"");
                         }
 
                         var channelConfig = channel.getConfiguration().getProperties();
