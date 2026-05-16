@@ -337,7 +337,7 @@ public class TelegramActions implements ThingActions {
             try {
                 retMessage = localHandler.execute(sendMessage);
             } catch (Exception e) {
-                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+                logger.warn("Exception occurred whilst sending message:{}", e.getMessage());
             }
             if (!evaluateResponse(retMessage)) {
                 return false;
