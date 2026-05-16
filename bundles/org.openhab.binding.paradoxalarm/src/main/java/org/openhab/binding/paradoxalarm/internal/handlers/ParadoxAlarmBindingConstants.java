@@ -66,6 +66,10 @@ public class ParadoxAlarmBindingConstants {
     public static final String PANEL_INPUT_VOLTAGE = "inputVoltage";
     public static final String PANEL_BOARD_VOLTAGE = "boardVoltage";
     public static final String PANEL_BATTERY_VOLTAGE = "batteryVoltage";
+    public static final String PANEL_AC_TROUBLE = "acTrouble";
+    public static final String PANEL_BATTERY_TROUBLE = "batteryTrouble";
+    public static final String PANEL_MODULE_SUPERVISION_TROUBLE = "moduleSupervisionTrouble";
+    public static final String PANEL_COMMUNICATION_TROUBLE = "communicationTrouble";
 
     public static final String PARTITION_LABEL_CHANNEL_UID = "label";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
