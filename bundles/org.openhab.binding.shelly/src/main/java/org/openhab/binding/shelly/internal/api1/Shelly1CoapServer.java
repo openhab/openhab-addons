@@ -63,21 +63,17 @@ public class Shelly1CoapServer {
     static {
         // register configurations before Configuration.getStandard() is used
         DtlsConfig.register();
-        // register custom CoIoT options for Shelly devices
-        // Merge with existing default registry to preserve options from other add-ons (e.g., Tradfri)
-        OptionRegistry currentRegistry = StandardOptionRegistry.getDefaultOptionRegistry();
-        OptionRegistry mergedRegistry = MapBasedOptionRegistry.builder() //
-                .add(currentRegistry) //
-                .add(COIOT_GLOBAL_DEVID_DEF) //
-                .add(COIOT_STATUS_VALIDITY_DEF) //
-                .add(COIOT_STATUS_SERIAL_DEF) //
-                .build();
-        StandardOptionRegistry.setDefaultOptionRegistry(mergedRegistry);
     }
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapServer.class);
 
+    private final OptionRegistry coiotOptionRegistry = MapBasedOptionRegistry.builder() //
+            .add(StandardOptionRegistry.getDefaultOptionRegistry()) //
+            .add(COIOT_GLOBAL_DEVID_DEF) //
+            .add(COIOT_STATUS_VALIDITY_DEF) //
+            .add(COIOT_STATUS_SERIAL_DEF) //
+            .build();
     boolean started = false;
-    private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().build();
+    private CoapEndpoint statusEndpoint = new CoapEndpoint.Builder().setOptionRegistry(coiotOptionRegistry).build();
     private @Nullable UdpMulticastConnector statusConnector;
     private CoapServer server = new CoapServer(Configuration.getStandard(), COIOT_PORT);
     private final Set<Shelly1CoapListener> coapListeners = ConcurrentHashMap.newKeySet();
@@ -117,7 +113,8 @@ public class Shelly1CoapServer {
             // Join the multicast group on the selected network interface, add UDP listener
             statusConnector = new UdpMulticastConnector.Builder().setLocalAddress(localAddr, port).setLocalPort(port)
                     .setOutgoingMulticastInterface(localAddr).addMulticastGroup(CoAP.MULTICAST_IPV4).build();
-            statusEndpoint = new CoapEndpoint.Builder().setConfiguration(nc).setConnector(statusConnector).build();
+            statusEndpoint = new CoapEndpoint.Builder().setConfiguration(nc).setConnector(statusConnector)
+                    .setOptionRegistry(coiotOptionRegistry).build();
             server = new CoapServer(Configuration.getStandard(), port);
             server.addEndpoint(statusEndpoint);
             CoapResource cit = new ShellyStatusListener("cit", this);
