@@ -148,7 +148,9 @@ public class ApplianceRequestHandler {
         StringBuilder dsl = new StringBuilder();
         dsl.append("Thing ");
         dsl.append(thing.getUID());
-        dsl.append(" \"").append(thing.getLabel() != null ? thing.getLabel() : thing.getUID().toString()).append("\"");
+        dsl.append(" \"")
+                .append(escapeDslString(thing.getLabel() != null ? thing.getLabel() : thing.getUID().toString()))
+                .append("\"");
 
         var config = thing.getConfiguration().getProperties();
         if (!config.isEmpty()) {
@@ -171,7 +173,7 @@ public class ApplianceRequestHandler {
                         dsl.append("    Type ").append(type).append(" : ").append(channel.getUID().getId());
 
                         if (channel.getLabel() != null) {
-                            dsl.append(" \"").append(channel.getLabel()).append("\"");
+                            dsl.append(" \"").append(escapeDslString(channel.getLabel())).append("\"");
                         }
 
                         var channelConfig = channel.getConfiguration().getProperties();
@@ -232,7 +234,12 @@ public class ApplianceRequestHandler {
         if (value instanceof Number || value instanceof Boolean) {
             return key + "=" + value;
         }
-        return key + "=\"" + value + "\"";
+        return key + "=\"" + escapeDslString(value.toString()) + "\"";
+    }
+
+    private String escapeDslString(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r").replace("\t",
+                "\\t");
     }
 
     private @Nullable DeviceDescriptionType mapDeviceDescriptionType(@Nullable String typeString) {
@@ -242,7 +249,7 @@ public class ApplianceRequestHandler {
 
         try {
             return DeviceDescriptionType.valueOf(typeString);
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }

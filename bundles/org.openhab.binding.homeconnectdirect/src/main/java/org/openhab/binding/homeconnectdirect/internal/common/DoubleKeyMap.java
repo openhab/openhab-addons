@@ -14,6 +14,7 @@ package org.openhab.binding.homeconnectdirect.internal.common;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -106,11 +107,11 @@ public class DoubleKeyMap<K1, K2, V> {
     }
 
     public synchronized Set<Map.Entry<K1, V>> entrySet() {
-        return k1ToVal.entrySet();
+        return Set.copyOf(k1ToVal.entrySet());
     }
 
     public synchronized Collection<V> values() {
-        return k1ToVal.values();
+        return List.copyOf(k1ToVal.values());
     }
 
     @Override

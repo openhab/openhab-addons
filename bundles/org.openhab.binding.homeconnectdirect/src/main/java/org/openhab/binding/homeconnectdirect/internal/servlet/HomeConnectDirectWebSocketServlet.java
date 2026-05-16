@@ -157,8 +157,8 @@ public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
         @OnWebSocketConnect
         public void onConnect(Session session) {
             this.session = session;
-            thingHandler.getApplianceMessages().forEach(this::sendMessage);
             thingHandler.registerApplianceMessageListener(eventConsumer);
+            thingHandler.getApplianceMessages().forEach(this::sendMessage);
         }
 
         @OnWebSocketMessage

@@ -39,6 +39,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.binding.homeconnectdirect.internal.service.websocket.exception.WebSocketClientServiceException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
     }
 
     @Override
-    public void connect() {
+    public void connect() throws WebSocketClientServiceException {
         logger.debug("Connecting to {} ({}).", applianceUri, getThingUID());
         try {
             var webSocketClient = getWebSocketClient();
@@ -83,8 +84,9 @@ public abstract class AbstractWebSocketClientService implements WebSocketClientS
                 webSocketClient.start();
                 webSocketClient.connect(this, applianceUri).get();
             }
-        } catch (Exception ignored) {
-            // best-effort connect, errors are handled by the connection check mechanism
+        } catch (Exception e) {
+            logger.debug("Could not connect to {} ({}). error={}", applianceUri, getThingUID(), e.getMessage());
+            throw new WebSocketClientServiceException("Could not connect to " + applianceUri, e);
         }
     }
 

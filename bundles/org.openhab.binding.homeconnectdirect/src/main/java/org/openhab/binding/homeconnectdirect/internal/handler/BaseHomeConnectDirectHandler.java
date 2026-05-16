@@ -118,13 +118,13 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -259,7 +259,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         this.services = new ArrayList<>();
         this.disposeInitialized = new AtomicBoolean(false);
         this.applianceMessages = new LimitedSizeList<>(configuration.messageQueueSize);
-        this.applianceMessageConsumers = Collections.synchronizedList(new ArrayList<>());
+        this.applianceMessageConsumers = new CopyOnWriteArrayList<>();
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = translationProvider;
@@ -589,9 +589,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             if (valueData != null) {
                                 logger.debug("Received appliance value update: {} (thingUID={})", valueData,
                                         thing.getUID());
-                                scheduleUpdateAllValuesFuture();
                             }
                         }
+                        scheduleUpdateAllValuesFuture();
                     } else if (RO_ALL_DESCRIPTION_CHANGES.equals(message.resource())
                             || RO_DESCRIPTION_CHANGE.equals(message.resource())) {
                         if (logger.isDebugEnabled()) {
@@ -599,9 +599,9 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                             if (valueData != null) {
                                 logger.debug("Received appliance description change: {} (thingUID={})", valueData,
                                         thing.getUID());
-                                scheduleUpdateAllValuesFuture();
                             }
                         }
+                        scheduleUpdateAllValuesFuture();
                     }
                 }
                 case GET -> logger.trace("Received message: {} ({})", message, thing.getUID());

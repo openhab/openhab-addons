@@ -34,7 +34,7 @@ public record Value(int uid, String key, Object value, Object rawValue, DeviceDe
             } else {
                 return Double.valueOf(value.toString()).intValue();
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             return 0;
         }
     }
@@ -46,7 +46,7 @@ public record Value(int uid, String key, Object value, Object rawValue, DeviceDe
             } else {
                 return Double.parseDouble(value.toString());
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             return 0;
         }
     }

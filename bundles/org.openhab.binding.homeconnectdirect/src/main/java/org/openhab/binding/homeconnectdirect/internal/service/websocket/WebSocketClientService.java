@@ -13,6 +13,7 @@
 package org.openhab.binding.homeconnectdirect.internal.service.websocket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnectdirect.internal.service.websocket.exception.WebSocketClientServiceException;
 
 /**
  * WebSocket client service interface.
@@ -21,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface WebSocketClientService {
-    void connect();
+    void connect() throws WebSocketClientServiceException;
 
     void dispose();
 

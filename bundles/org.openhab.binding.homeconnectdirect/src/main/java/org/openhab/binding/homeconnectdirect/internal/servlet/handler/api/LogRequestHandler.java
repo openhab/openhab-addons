@@ -806,7 +806,7 @@ public class LogRequestHandler {
 
         try {
             return DeviceDescriptionType.valueOf(typeString);
-        } catch (IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }

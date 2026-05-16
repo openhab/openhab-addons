@@ -92,8 +92,9 @@ public class ApplianceProfileService {
 
             if (jsonFiles != null) {
                 for (File jsonFile : jsonFiles) {
-                    profiles.add(
-                            gson.fromJson(new FileReader(jsonFile, StandardCharsets.UTF_8), ApplianceProfile.class));
+                    try (var reader = new FileReader(jsonFile, StandardCharsets.UTF_8)) {
+                        profiles.add(gson.fromJson(reader, ApplianceProfile.class));
+                    }
                 }
             }
         } catch (SecurityException | JsonParseException | IOException e) {
@@ -115,12 +116,13 @@ public class ApplianceProfileService {
 
             if (jsonFiles != null) {
                 for (File jsonFile : jsonFiles) {
-                    var profile = gson.fromJson(new FileReader(jsonFile, StandardCharsets.UTF_8),
-                            ApplianceProfile.class);
-                    if (Objects.equals(profile.haId(), haId)) {
-                        Files.delete(safePath(profileDirectory, profile.featureMappingFileName()));
-                        Files.delete(safePath(profileDirectory, profile.deviceDescriptionFileName()));
-                        Files.delete(safePath(profileDirectory, jsonFile.getName()));
+                    try (var reader = new FileReader(jsonFile, StandardCharsets.UTF_8)) {
+                        var profile = gson.fromJson(reader, ApplianceProfile.class);
+                        if (Objects.equals(profile.haId(), haId)) {
+                            Files.delete(safePath(profileDirectory, profile.featureMappingFileName()));
+                            Files.delete(safePath(profileDirectory, profile.deviceDescriptionFileName()));
+                            Files.delete(safePath(profileDirectory, jsonFile.getName()));
+                        }
                     }
                 }
             }
@@ -153,7 +155,7 @@ public class ApplianceProfileService {
                     return Optional.of(gson.fromJson(reader, ApplianceProfile.class));
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             logger.debug("Could not save profile! error={}", e.getMessage());
         }
 
