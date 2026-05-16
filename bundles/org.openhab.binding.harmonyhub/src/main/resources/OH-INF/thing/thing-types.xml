@@ -28,6 +28,9 @@
 		<properties>
 			<property name="name"></property>
 		</properties>
+
+		<representation-property>uuid</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="false">
 				<label>Host</label>
@@ -52,6 +55,7 @@
 		<channels>
 			<channel id="buttonPress" typeId="buttonPress"/>
 		</channels>
+
 		<config-description>
 			<parameter name="id" type="integer" required="false">
 				<label>ID</label>
