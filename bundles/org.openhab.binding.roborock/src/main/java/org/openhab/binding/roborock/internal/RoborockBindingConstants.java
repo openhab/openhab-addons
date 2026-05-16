@@ -195,6 +195,13 @@ public class RoborockBindingConstants {
     public static final String COMMAND_GET_MAP = "get_map_v1";
 
     public static final String THING_CONFIG_DUID = "duid";
+    public static final String THING_CONFIG_COMMUNICATION = "communication";
+    public static final String THING_CONFIG_LOCAL_HOST = "localHost";
+    public static final String THING_CONFIG_LOCAL_PORT = "localPort";
+    public static final String THING_CONFIG_CLOUD_MAP_REFRESH = "cloudMapRefresh";
+    public static final String THING_CONFIG_CLOUD_METADATA_REFRESH = "cloudMetadataRefresh";
+    public static final String THING_CONFIG_CLOUD_REFRESH_INTERVAL = "cloudRefreshInterval";
+    public static final String THING_CONFIG_FAST_REFRESH_INTERVAL = "fastRefreshInterval";
     public static final String THING_PROPERTY_SN = "sn";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);

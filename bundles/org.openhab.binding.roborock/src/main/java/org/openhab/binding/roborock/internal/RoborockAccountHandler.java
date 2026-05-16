@@ -76,13 +76,20 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCallbackExtended {
 
+    static final Duration MQTT_INBOUND_SILENCE_THRESHOLD = Duration.ofMinutes(3);
+    static final Duration MQTT_ACTIVITY_USAGE_WINDOW = Duration.ofMinutes(2);
+    static final Duration MQTT_WATCHDOG_RECYCLE_COOLDOWN = Duration.ofMinutes(1);
+    static final long MQTT_WATCHDOG_INTERVAL_SECONDS = 30;
+
     private final Logger logger = LoggerFactory.getLogger(RoborockAccountHandler.class);
 
     private final Storage<String> sessionStorage;
     private @Nullable RoborockAccountConfiguration config;
     private final SchedulerTask initTask;
     private final SchedulerTask mqttConnectTask;
+    private final SchedulerTask mqttWatchdogTask;
     private final RoborockWebTargets webTargets;
+    private final MqttInboundLivenessWatchdog mqttWatchdog;
     private @Nullable MqttClient mqttClient;
     private volatile boolean disposed = false;
     private String country = "";
@@ -100,11 +107,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final Gson gson = new Gson();
 
     public RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient) {
+        this(bridge, stateStorage, httpClient, new MqttInboundLivenessWatchdog(MQTT_ACTIVITY_USAGE_WINDOW,
+                MQTT_INBOUND_SILENCE_THRESHOLD, MQTT_WATCHDOG_RECYCLE_COOLDOWN));
+    }
+
+    RoborockAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient,
+            MqttInboundLivenessWatchdog mqttWatchdog) {
         super(bridge);
         webTargets = new RoborockWebTargets(httpClient);
         sessionStorage = stateStorage;
+        this.mqttWatchdog = mqttWatchdog;
         initTask = new SchedulerTask(scheduler, logger, "API Init", this::initAPI);
         mqttConnectTask = new SchedulerTask(scheduler, logger, "MQTT Connection", this::establishMQTTConnection);
+        mqttWatchdogTask = new SchedulerTask(scheduler, logger, "MQTT Watchdog", this::checkMqttInboundLiveness);
     }
 
     public String getToken() {
@@ -190,7 +205,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         updateStatus(ThingStatus.UNKNOWN);
         initTask.setNamePrefix(getThing().getUID().getId());
         mqttConnectTask.setNamePrefix(getThing().getUID().getId());
+        mqttWatchdogTask.setNamePrefix(getThing().getUID().getId());
         initTask.submit();
+        mqttWatchdogTask.scheduleRecurring(MQTT_WATCHDOG_INTERVAL_SECONDS);
     }
 
     @Override
@@ -277,7 +294,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
                 if (localConfig.twofa.isBlank()) {
-                    if (country != null && !country.isBlank()) {
+                    if (!country.isBlank()) {
                         webTargets.requestCodeV4(baseUri, localConfig.email);
                     } else {
                         webTargets.requestCode(baseUri, localConfig.email);
@@ -286,7 +303,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     return;
                 } else {
                     String response = "";
-                    if (country != null && !country.isBlank()) {
+                    if (!country.isBlank()) {
                         response = webTargets.doLoginV4(baseUri, country, countryCode, localConfig.email,
                                 localConfig.twofa);
                     } else {
@@ -332,6 +349,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         disposed = true;
         initTask.cancel();
         mqttConnectTask.cancel();
+        mqttWatchdogTask.cancel();
         disconnectMqttClient();
     }
 
@@ -380,9 +398,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
-            connOpts.setKeepAliveInterval(0);
+            connOpts.setKeepAliveInterval(30);
 
             localMqttClient.connect(connOpts);
+            mqttWatchdog.reset(Instant.now());
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.comm-error.mqtt-url-bad");
@@ -400,7 +419,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Handler disposed, ignoring MQTT connectComplete");
             return;
         }
-        logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
+        if (reconnect) {
+            logger.info("MQTT reconnection completed for server URI: {}", serverURI);
+        } else {
+            logger.debug("MQTT connection established. Server URI: {}", serverURI);
+        }
 
         // Subscribe to topics after a successful connection
         try {
@@ -423,7 +446,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Handler disposed, ignoring MQTT connectionLost");
             return;
         }
-        // Additional logic can be placed here if specific actions are needed on disconnect
+        String causeMessage = cause != null ? cause.getMessage() : "unknown";
+        logger.warn("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
     }
 
     @Override
@@ -443,6 +467,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
 
         String destination = localTopic.substring(localTopic.lastIndexOf('/') + 1);
+        mqttWatchdog.noteInboundMessage(Instant.now());
         logger.debug("Received MQTT message for device {}", destination);
 
         // Check list of child handlers and send message to the right one
@@ -513,6 +538,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 message.setQos(1);
                 message.setRetained(false);
                 localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
                 return id;
             } catch (MqttException e) {
                 logger.error("MQTT publish failed", e);
@@ -570,6 +596,44 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         }
         logger.debug("Device connection failed, reconnecting", error);
         mqttConnectTask.schedule(60);
+    }
+
+    void checkMqttInboundLiveness() {
+        if (disposed) {
+            return;
+        }
+
+        MqttClient localMqttClient = mqttClient;
+        boolean connected = localMqttClient != null && localMqttClient.isConnected();
+        Instant now = Instant.now();
+        MqttInboundLivenessWatchdog.Decision decision = mqttWatchdog.evaluate(now, connected);
+
+        if (decision == MqttInboundLivenessWatchdog.Decision.STALE) {
+            @Nullable
+            Instant lastInbound = mqttWatchdog.getLastInboundMessageAt();
+            String lastInboundAge = lastInbound == null ? "never"
+                    : Duration.between(lastInbound, now).toSeconds() + "s";
+            logger.debug(
+                    "MQTT inbound watchdog detected possible silent cloud downlink stall (connection may appear alive but no inbound traffic; last inbound: {}). Recycling MQTT client as recovery.",
+                    lastInboundAge);
+            mqttWatchdog.noteRecycleAttempt(now);
+            recycleMqttClient();
+        } else if (decision != MqttInboundLivenessWatchdog.Decision.HEALTHY) {
+            logger.debug("MQTT inbound watchdog check skipped: {}", decision);
+        }
+    }
+
+    void recycleMqttClient() {
+        disconnectMqttClient();
+        try {
+            connectMqttClient();
+            logger.debug("MQTT client recycled after inbound liveness watchdog trigger");
+            updateStatus(ThingStatus.ONLINE);
+        } catch (MqttException e) {
+            logger.warn("MQTT recycle attempt failed", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.no-mqtt");
+        }
     }
 
     @Override

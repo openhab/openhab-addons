@@ -24,8 +24,10 @@ import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+@NonNullByDefault({})
 class RRMapRendererTest {
 
     private static final int UPSCALE_TARGET_MAX_DIMENSION = 1024;

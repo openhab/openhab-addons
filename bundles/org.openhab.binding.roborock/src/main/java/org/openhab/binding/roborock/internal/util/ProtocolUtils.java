@@ -33,6 +33,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -48,6 +49,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
+    private static final String SHA_256_ALGORITHM = "SHA-256";
+    private static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
+    private static final int GCM_TAG_LENGTH_BITS = 128;
+    private static final int PROTOCOL_GENERAL_REQUEST = 4;
+    private static final int PROTOCOL_GENERAL_RESPONSE = 5;
+    private static final String VERSION_L01 = "L01";
     private static final int MAX_GZIP_DECOMPRESSED_SIZE_BYTES = 10 * 1024 * 1024;
     private static final int GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES = 8192;
 
@@ -101,6 +108,75 @@ public final class ProtocolUtils {
                 | BadPaddingException e) {
             throw new RoborockException("Failed to encrypt data using AES/ECB/PKCS5Padding.", e);
         }
+    }
+
+    public static byte[] encryptL01(byte[] payload, String localKey, int timestamp, int sequence, int nonce,
+            int connectNonce, int ackNonce) throws RoborockException {
+        try {
+            byte[] key = deriveL01Key(localKey, timestamp);
+            byte[] iv = deriveL01Iv(timestamp, nonce, sequence);
+            byte[] aad = deriveL01Aad(timestamp, nonce, sequence, connectNonce, ackNonce);
+
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to encrypt data using AES/GCM/NoPadding (L01).", e);
+        }
+    }
+
+    public static byte[] decryptL01(byte[] payload, String localKey, int timestamp, int sequence, int nonce,
+            int connectNonce, int ackNonce) throws RoborockException {
+        try {
+            byte[] key = deriveL01Key(localKey, timestamp);
+            byte[] iv = deriveL01Iv(timestamp, nonce, sequence);
+            byte[] aad = deriveL01Aad(timestamp, nonce, sequence, connectNonce, ackNonce);
+
+            Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+            SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt data using AES/GCM/NoPadding (L01).", e);
+        }
+    }
+
+    private static byte[] deriveL01Key(String localKey, int timestamp) throws RoborockException {
+        String encodedTimestamp = encodeTimestamp(timestamp);
+        byte[] hashInput = (encodedTimestamp + localKey + SALT).getBytes(StandardCharsets.UTF_8);
+        try {
+            return MessageDigest.getInstance(SHA_256_ALGORITHM).digest(hashInput);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoborockException("SHA-256 algorithm not available for L01 key derivation.", e);
+        }
+    }
+
+    private static byte[] deriveL01Iv(int timestamp, int nonce, int sequence) throws RoborockException {
+        byte[] digestInput = new byte[12];
+        writeInt32BE(digestInput, sequence, 0);
+        writeInt32BE(digestInput, nonce, 4);
+        writeInt32BE(digestInput, timestamp, 8);
+        try {
+            byte[] digest = MessageDigest.getInstance(SHA_256_ALGORITHM).digest(digestInput);
+            return Arrays.copyOf(digest, 12);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RoborockException("SHA-256 algorithm not available for L01 IV derivation.", e);
+        }
+    }
+
+    private static byte[] deriveL01Aad(int timestamp, int nonce, int sequence, int connectNonce, int ackNonce) {
+        byte[] aad = new byte[20];
+        writeInt32BE(aad, sequence, 0);
+        writeInt32BE(aad, connectNonce, 4);
+        writeInt32BE(aad, ackNonce, 8);
+        writeInt32BE(aad, nonce, 12);
+        writeInt32BE(aad, timestamp, 16);
+        return aad;
     }
 
     private static String bytesToString(byte[] data, int start, int length) {
@@ -278,7 +354,8 @@ public final class ProtocolUtils {
      * @param localKey The local key for decryption.
      * @return The decrypted payload as a string, or an empty string on decryption failure.
      */
-    private static String handleDataProtocol(byte[] message, MessageHeader header, String localKey) {
+    private static String handleDataProtocol(byte[] message, MessageHeader header, String localKey, int connectNonce,
+            int ackNonce, boolean handshakeContextAvailable) {
         int payloadStart = HEADER_LENGTH_WITHOUT_CRC;
         int payloadEnd = payloadStart + header.payloadLen;
 
@@ -288,9 +365,21 @@ public final class ProtocolUtils {
 
         byte[] payload = Arrays.copyOfRange(message, payloadStart, payloadEnd);
 
-        String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
         try {
-            byte[] decryptedResult = decrypt(payload, encryptionKey);
+            byte[] decryptedResult;
+            if (VERSION_L01.equals(header.version)) {
+                if (!handshakeContextAvailable) {
+                    LOGGER.debug(
+                            "Received L01 frame but local handshake context is unavailable (connectNonce={}, ackNonce={}).",
+                            connectNonce, ackNonce);
+                    return "";
+                }
+                decryptedResult = decryptL01(payload, localKey, header.timestamp, header.sequence, header.random,
+                        connectNonce, ackNonce);
+            } else {
+                String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
+                decryptedResult = decrypt(payload, encryptionKey);
+            }
             return new String(decryptedResult, StandardCharsets.UTF_8);
         } catch (RoborockException e) {
             LOGGER.debug("Exception decrypting payload for protocol 102: {}", e.getMessage(), e);
@@ -317,13 +406,25 @@ public final class ProtocolUtils {
     }
 
     public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix) {
+        return decodeMessage(message, localKey, nonce, endpointPrefix, -1, -1, false);
+    }
+
+    public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix,
+            int connectNonce, int ackNonce) {
+        boolean handshakeContextAvailable = !(connectNonce == -1 && ackNonce == -1);
+        return decodeMessage(message, localKey, nonce, endpointPrefix, connectNonce, ackNonce,
+                handshakeContextAvailable);
+    }
+
+    public static DecodedMessage decodeMessage(byte[] message, String localKey, byte[] nonce, String endpointPrefix,
+            int connectNonce, int ackNonce, boolean handshakeContextAvailable) {
         if (message.length < HEADER_LENGTH_WITHOUT_CRC + CRC_LENGTH) {
             return new IgnoredResponse();
         }
 
         MessageHeader header = parseMessageHeader(message);
-        if (!VERSION_1_0.equals(header.version)) {
-            LOGGER.debug("Received message version is not 1.0: {}", header.version);
+        if (!VERSION_1_0.equals(header.version) && !VERSION_L01.equals(header.version)) {
+            LOGGER.debug("Received unsupported message version: {}", header.version);
             return new IgnoredResponse();
         }
 
@@ -336,8 +437,9 @@ public final class ProtocolUtils {
         switch (header.protocol) {
             case PROTOCOL_MAP:
                 return handleImageProtocol(message, header, localKey, nonce, endpointPrefix);
-            case PROTOCOL_JSON:
-                String payload = handleDataProtocol(message, header, localKey);
+            case PROTOCOL_JSON, PROTOCOL_GENERAL_RESPONSE, PROTOCOL_GENERAL_REQUEST:
+                String payload = handleDataProtocol(message, header, localKey, connectNonce, ackNonce,
+                        handshakeContextAvailable);
                 if (!payload.isEmpty()) {
                     return new JsonPayloadResponse(payload);
                 }

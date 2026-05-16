@@ -29,8 +29,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+@NonNullByDefault({})
 class ProtocolUtilsMapDecodeTest {
 
     @Test
