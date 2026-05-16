@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal;
 
+import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -145,6 +147,8 @@ public class HueBindingConstants {
     public static final ThingTypeUID THING_TYPE_AREA = new ThingTypeUID(BINDING_ID, "area");
     public static final ThingTypeUID THING_TYPE_SERVICE_GROUP = new ThingTypeUID(BINDING_ID, "service-group");
 
+    public static final String CHANNEL_GROUP_SOFTWARE = "software";
+
     // channels for API v2
     public static final String CHANNEL_2_COLOR = CHANNEL_COLOR;
     public static final String CHANNEL_2_COLOR_TEMP_PERCENT = "color-temperature";
@@ -188,7 +192,8 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_MOTION_AREA_ENABLED = "motion-area-enabled";
     public static final String CHANNEL_2_SECURITY_MOTION = "security-motion";
     public static final String CHANNEL_2_SECURITY_MOTION_LAST_UPDATED = "security-motion-last-updated";
-    public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = "update-ready";
+    public static final String CHANNEL_2_UPDATE_READY_TO_INSTALL = //
+            CHANNEL_GROUP_SOFTWARE + CHANNEL_GROUP_SEPARATOR + "update-ready";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,
