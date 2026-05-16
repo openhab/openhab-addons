@@ -14,6 +14,7 @@ package org.openhab.binding.ipobserver.internal;
 
 import static org.openhab.binding.ipobserver.internal.IpObserverBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -104,35 +105,67 @@ public class IpObserverHandler extends BaseThingHandler {
         public void processValue(String sensorValue) {
             if (!sensorValue.equals(previousValue)) {
                 previousValue = sensorValue;
-                switch (channel.getUID().getId()) {
-                    case LAST_UPDATED_TIME:
-                        try {
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
-                                    .withZone(TimeZone.getDefault().toZoneId());
-                            ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
-                            this.handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
-                        } catch (DateTimeParseException e) {
-                            logger.debug("Could not parse {} as a valid dateTime", sensorValue);
-                        }
-                        return;
-                    case INDOOR_BATTERY:
-                    case OUTDOOR_BATTERY:
-                        if ("1".equals(sensorValue)) {
-                            handler.updateState(this.channel.getUID(), OnOffType.ON);
-                        } else {
-                            handler.updateState(this.channel.getUID(), OnOffType.OFF);
-                        }
-                        return;
-                }
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state == null) {
                     return;
                 } else if (state instanceof QuantityType) {
+                    QuantityType quantityType = (QuantityType) state;
+                    switch (channel.getUID().getId()) {
+                        case TEMP_OUTDOOR:
+                        case TEMP_WIND_CHILL:
+                        case TEMP_INDOOR:
+                        case TEMP_DEW_POINT:
+                            if (sensorValue.length() > 4) {
+                                logger.debug("A temperature reading was longer than 4 characters:{}", sensorValue);
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                        case SOLAR_RADIATION:
+                            if (quantityType.toBigDecimal().compareTo(BigDecimal.ZERO) < 0) {
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                    }
                     handler.updateState(this.channel.getUID(),
                             QuantityType.valueOf(Double.parseDouble(sensorValue), unit));
-                } else {
-                    handler.updateState(this.channel.getUID(), state);
+                    return;
+                } else if (state instanceof DecimalType) {
+                    DecimalType decimalType = (DecimalType) state;
+                    switch (channel.getUID().getId()) {
+                        case INDOOR_HUMIDITY:
+                        case OUTDOOR_HUMIDITY:
+                            if (decimalType.compareTo(new DecimalType(100)) > 0
+                                    || decimalType.compareTo(DecimalType.ZERO) < 0) {
+                                return; // RF packet must be corrupt.
+                            }
+                            break;
+                    }
+                } else if (state instanceof StringType) {
+                    switch (channel.getUID().getId()) {
+                        case INDOOR_BATTERY:
+                        case OUTDOOR_BATTERY:
+                            if ("1".equals(sensorValue)) {
+                                handler.updateState(this.channel.getUID(), OnOffType.ON);
+                            } else {
+                                handler.updateState(this.channel.getUID(), OnOffType.OFF);
+                            }
+                            return;
+                    }
+                } else if (state instanceof DateTimeType) {
+                    switch (channel.getUID().getId()) {
+                        case LAST_UPDATED_TIME:
+                            try {
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
+                                        .withZone(TimeZone.getDefault().toZoneId());
+                                ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
+                                handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
+                            } catch (DateTimeParseException e) {
+                                logger.debug("Could not parse {} as a valid dateTime", sensorValue);
+                            }
+                            return;
+                    }
                 }
+                handler.updateState(this.channel.getUID(), state);
             }
         }
     }
@@ -385,9 +418,8 @@ public class IpObserverHandler extends BaseThingHandler {
         // The units for the following are ignored as they are not a QuantityType.class
         createChannelHandler(UV, DecimalType.class, SIUnits.CELSIUS, "uv");
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "uvi");
-        // was outBattSta1 so some units may use this instead?
+        // was outBattSta1 so some units may use this instead? Can not create same channel twice
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
-        createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannelHandler(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
         createChannelHandler(LAST_UPDATED_TIME, DateTimeType.class, SIUnits.CELSIUS, "CurrTime");
     }
