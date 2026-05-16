@@ -133,6 +133,8 @@
 			<property name="thingTypeVersion">3</property>
 		</properties>
 
+		<representation-property>vin</representation-property>
+
 		<config-description>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number</label>
