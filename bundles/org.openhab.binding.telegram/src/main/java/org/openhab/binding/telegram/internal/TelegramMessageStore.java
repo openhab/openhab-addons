@@ -247,7 +247,9 @@ public class TelegramMessageStore {
         try {
             return Integer.valueOf(value);
         } catch (NumberFormatException e) {
-            logger.warn("Stored {} '{}' for key '{}' is not a valid integer – ignoring entry", fieldName, value, key);
+            logger.warn("Stored {} '{}' for key '{}' is not a valid integer - removing corrupt entry", fieldName, value,
+                    key);
+            messageIdStorage.remove(key);
             return null;
         }
     }
