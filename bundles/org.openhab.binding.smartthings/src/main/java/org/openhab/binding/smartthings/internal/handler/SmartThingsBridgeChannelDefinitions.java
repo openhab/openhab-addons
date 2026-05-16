@@ -135,18 +135,19 @@ public class SmartThingsBridgeChannelDefinitions {
         // ============================
         // = colorControl
         // ============================
+
         channelProperties.put("colorControl#saturation",
                 new ChannelProperty(SmartThingsBindingConstants.TYPE_NUMBER, null, Point.CONTROL, Property.COLOR));
         channelProperties.put("colorControl#hue",
                 new ChannelProperty(SmartThingsBindingConstants.TYPE_NUMBER, null, Point.CONTROL, Property.COLOR));
         channelProperties.put("colorControl#color",
-                new ChannelProperty(SmartThingsBindingConstants.TYPE_COLOR, null, Point.CONTROL, Property.COLOR));
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR));
 
         // ============================
         // = colorTemperature
         // ============================
         channelProperties.put("colorTemperature#colorTemperature",
-                new ChannelProperty(SmartThingsBindingConstants.TYPE_NUMBER, null, Point.CONTROL, null));
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR_TEMPERATURE));
 
         // ============================
         // = energyMeter
@@ -184,15 +185,16 @@ public class SmartThingsBridgeChannelDefinitions {
         // = motionSensor
         // ============================
         channelProperties.put("motionSensor#motion",
-                new ChannelProperty(SmartThingsBindingConstants.TYPE_CONTACT, Point.ALARM, Property.MOTION));
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MOTION));
+
         channelProperties.put("legendabsolute60149.sensorSensitivity#sensorSensitivity",
                 new ChannelProperty(SmartThingsBindingConstants.TYPE_NUMBER, Point.MEASUREMENT, Property.LEVEL));
 
         // ============================
         // = powerMeter
         // ============================
-        channelProperties.put("powerMeter#power", new ChannelProperty(SmartThingsBindingConstants.TYPE_NUMBER, "Power",
-                Point.MEASUREMENT, Property.POWER));
+        channelProperties.put("powerMeter#power",
+                new ChannelProperty(SmartThingsBindingConstants.SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER));
 
         // =================================
         // = samsungce.ovenOperatingState
@@ -211,8 +213,8 @@ public class SmartThingsBridgeChannelDefinitions {
         // ============================
         // = signal Metrics
         // ============================
-        channelProperties.put("legendabsolute60149.signalMetrics#signalMetrics", new ChannelProperty(
-                SmartThingsBindingConstants.TYPE_NUMBER, "Percent", Point.MEASUREMENT, Property.SIGNAL_STRENGTH));
+        channelProperties.put("legendabsolute60149.signalMetrics#signalMetrics",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_SIGNAL_STRENGTH));
 
         // ============================
         // = switch
@@ -223,8 +225,8 @@ public class SmartThingsBridgeChannelDefinitions {
         // ============================
         // = switchLevel
         // ============================
-        channelProperties.put("switchLevel#level", new ChannelProperty(SmartThingsBindingConstants.TYPE_DIMMER,
-                "Dimensionless", Point.CONTROL, Property.BRIGHTNESS));
+        channelProperties.put("switchLevel#level",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_BRIGHTNESS));
 
         // ============================
         // = waterSensor
