@@ -42,6 +42,7 @@
 			<property name="hardwareVersion"/>
 			<property name="applicationVersion"/>
 			<property name="bootloaderVersion"/>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 	</thing-type>
 
