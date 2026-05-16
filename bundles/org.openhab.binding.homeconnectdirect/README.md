@@ -266,7 +266,7 @@ The binding includes a built-in web console (accessible at `http://[YOUR_OPENHAB
 
 - **Home Appliances**: Lists all discovered and configured appliances. It provides a quick overview of their connection status (ONLINE/OFFLINE), hardware details (Brand, Type, VIB), and local network addresses.
 - **Profiles**: Central management for **Appliance Profiles**. Here you can upload new profiles (required for initial setup), download existing ones for backup, or delete outdated profiles.
-- **Logs**: Allows management of message logs stored on the openHAB server. You can import external logs (e.g., from the [Home Connect Appliance Proxy](https://github.com/bruestel/homeconnect-appliance-proxy)), download logs for analysis or view them directly in the browser.
+- **Logs**: Allows management of message logs stored on the openHAB server. You can import external logs (e.g., from [HomeCap](https://github.com/bruestel/HomeCap) or the [Home Connect Appliance Proxy](https://github.com/bruestel/homeconnect-appliance-proxy)), download logs for analysis or view them directly in the browser.
 
 ![Home Appliances UI](doc/home-appliances-view.png)
 

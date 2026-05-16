@@ -256,7 +256,7 @@ function app() {
         loginEnabled: globalThis.loginEnabled,
         bindingDeviceId: globalThis.bindingDeviceId,
         allActions: ['NOTIFY', 'GET', 'POST', 'RESPONSE'],
-        specialResources: ['/ci/registeredDevices', '/ci/tzInfo', '/ci/info', '/ni/config', '/ci/services', '/ni/info', '/ei/initialValues'],
+        specialResources: ['/ci/registeredDevices', '/ci/tzInfo', '/ci/info', '/ni/config', '/ci/services', '/ni/info', '/ci/networkDetails', '/ci/wifiSetting', '/ei/initialValues'],
         locale: 'en',
         allTypes: ['INCOMING', 'OUTGOING'],
         filter: {
