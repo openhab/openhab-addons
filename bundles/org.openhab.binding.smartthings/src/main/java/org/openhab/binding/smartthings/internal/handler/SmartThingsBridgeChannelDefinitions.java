@@ -243,8 +243,15 @@ public class SmartThingsBridgeChannelDefinitions {
         // ============================
         // = mediaPlayback
         // ============================
-        channelProperties.put("mediaPlayback#playbackStatus", new ChannelProperty(
-                SmartThingsBindingConstants.TYPE_PLAYER, null, Point.CONTROL, Property.MEDIA_CONTROL));
+        channelProperties.put("mediaPlayback#playbackStatus",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MEDIA_CONTROL));
+        channelProperties.put("mediaTrackControl#supportedTrackControlCommands",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MEDIA_CONTROL));
+
+        channelProperties.put("audioTrackData#title",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MEDIA_TITLE));
+        channelProperties.put("audioTrackData#artist",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MEDIA_ARTIST));
 
         // ============================
         // = base derived type
