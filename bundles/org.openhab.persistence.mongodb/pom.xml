@@ -15,44 +15,48 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: MongoDB</name>
 
   <properties>
-    <bnd.importpackage>!sun.nio.ch;!org.bson.codecs.kotlin*;!jnr.unixsocket*;!javax.annotation*;!com.google*;!io.netty*;com.oracle*;resolution:=optional;com.aayushatharva*;resolution:=optional;com.mongodb.crypt*;resolution:=optional;com.amazon*;resolution:=optional;software.amazon*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>!sun.nio.ch;!org.bson.codecs.kotlin*;!jnr.unixsocket*;!javax.annotation*;!com.google*;!io.netty*;com.oracle*;resolution:=optional;com.aayushatharva*;resolution:=optional;com.mongodb.crypt*;resolution:=optional;com.mongodb.internal.crypt*;resolution:=optional;com.amazon*;resolution:=optional;software.amazon*;resolution:=optional</bnd.importpackage>
+    <!-- driver >5.4.x requires mongodb 4.2 / wire 8 interface which cannot be provided
+    by mongo-java-server test framework (only used when Docker is unavailable)
+    -->
+    <mongodb.version>5.4.0</mongodb.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
-      <version>4.11.1</version>
+      <version>${mongodb.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>bson</artifactId>
-      <version>4.11.1</version>
+      <version>${mongodb.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-core</artifactId>
-      <version>4.11.1</version>
+      <version>${mongodb.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
-      <version>1.1.10.3</version>
+      <version>1.1.10.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.5.5-3</version>
+      <version>1.5.7-8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>bson-record-codec</artifactId>
-      <version>4.11.1</version>
+      <version>${mongodb.version}</version>
       <scope>compile</scope>
     </dependency>
 
@@ -60,19 +64,20 @@
     <dependency>
       <groupId>de.bwaldvogel</groupId>
       <artifactId>mongo-java-server</artifactId>
-      <version>1.44.0</version>
+      <!-- going beyond 1.46.x requires netty >= 4.2 -->
+      <version>1.46.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>mongodb</artifactId>
-      <version>1.19.4</version>
+      <version>1.21.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.14.0</version>
+      <version>3.20.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
