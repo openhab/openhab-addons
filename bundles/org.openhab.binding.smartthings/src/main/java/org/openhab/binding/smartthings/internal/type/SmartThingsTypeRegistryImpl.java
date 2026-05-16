@@ -160,6 +160,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     public void createChannelTypes(SmartThingsCapability capa) {
         logger.trace("createChannelTypes: capa:{} / {}", capa.id, capa.version);
 
+        if (shouldIgnoreCapa(capa)) {
+            return;
+        }
+
         for (String key : capa.attributes.keySet()) {
             SmartThingsAttribute attr = capa.attributes.get(key);
 
@@ -212,6 +216,18 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 logger.warn("Unable to register ChannelTypes for capability '{}'", key, ex);
             }
         }
+    }
+
+    private boolean shouldIgnoreCapa(SmartThingsCapability capa) {
+        if (capa.id.startsWith("healthCheck")) {
+            return true;
+        }
+
+        if (capa.id.startsWith("sec.diagnosticsInformation")) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean shouldIgnoreProperty(String key, @Nullable SmartThingsAttribute attr) {
@@ -477,6 +493,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
     private void addChannels(String deviceCategory, String deviceType, List<ChannelGroupType> groupTypes,
             SmartThingsComponent component, SmartThingsCapability capa) {
+        if (shouldIgnoreCapa(capa)) {
+            return;
+        }
+
         List<ChannelDefinition> channelDefinitions = new ArrayList<>();
         SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SmartThingsChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;

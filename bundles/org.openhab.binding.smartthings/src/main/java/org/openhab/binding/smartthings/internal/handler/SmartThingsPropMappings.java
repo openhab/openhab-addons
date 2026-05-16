@@ -65,5 +65,8 @@ public class SmartThingsPropMappings {
         propNameMap.put("vid", "Vendor ID");
         propNameMap.put("icv", "Ocf Version");
         propNameMap.put("n", "Device Name");
+
+        isPropertiesMap.put("samsungvd.firmwareVersion", Boolean.TRUE);
+        propNameMap.put("Firmware-version", "Firmware Version");
     }
 }

@@ -194,7 +194,13 @@ public class SmartThingsBridgeChannelDefinitions {
         // = powerMeter
         // ============================
         channelProperties.put("powerMeter#power",
-                new ChannelProperty(SmartThingsBindingConstants.SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER));
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_ELECTRIC_POWER));
+
+        // =================================
+        // = samsungvd.supportsPowerOnByOcf
+        // =================================
+        channelProperties.put("samsungvd.supportsPowerOnByOcf#supportsPowerOnByOcf",
+                new ChannelProperty(SmartThingsBindingConstants.TYPE_SWITCH, Point.MEASUREMENT, Property.INFO));
 
         // =================================
         // = samsungce.ovenOperatingState
