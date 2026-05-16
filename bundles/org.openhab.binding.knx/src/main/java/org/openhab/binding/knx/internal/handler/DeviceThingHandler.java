@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.handler;
 
+import static org.openhab.binding.knx.internal.KNXBindingConstants.CHANNEL_RESET;
+
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
@@ -30,7 +32,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
-import static org.openhab.binding.knx.internal.KNXBindingConstants.CHANNEL_RESET;
 import org.openhab.binding.knx.internal.channel.KNXChannel;
 import org.openhab.binding.knx.internal.channel.KNXChannelFactory;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;
