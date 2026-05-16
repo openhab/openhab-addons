@@ -20,6 +20,8 @@ import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Configuration data for SmartThings
@@ -35,9 +37,16 @@ public class SmartThingsBridgeChannelDefinitions {
 
     public class ChannelProperty {
         private String channelType;
+        private @Nullable ChannelTypeUID systemChannelTypeUid;
         private @Nullable String uOm;
         private @Nullable SemanticTag semanticPoint;
         private @Nullable SemanticTag semanticProperty;
+
+        public ChannelProperty(ChannelTypeUID channelTypeUid) {
+            this.channelType = "";
+            this.systemChannelTypeUid = channelTypeUid;
+            this.uOm = null;
+        }
 
         public ChannelProperty(String openhabChannelType) {
             this.channelType = openhabChannelType;
@@ -68,6 +77,10 @@ public class SmartThingsBridgeChannelDefinitions {
             return this.channelType;
         }
 
+        public @Nullable ChannelTypeUID getSystemChannelTypeUid() {
+            return this.systemChannelTypeUid;
+        }
+
         public @Nullable String getUoM() {
             return this.uOm;
         }
@@ -94,6 +107,19 @@ public class SmartThingsBridgeChannelDefinitions {
     }
 
     public SmartThingsBridgeChannelDefinitions() {
+
+        // ============================
+        // = audioMute
+        // ============================
+        channelProperties.put("audioMute#mute",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MUTE));
+
+        // ============================
+        // = audioVolume
+        // ============================
+        channelProperties.put("audioVolume#volume",
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_VOLUME));
+
         // ============================
         // = battery
         // ============================
