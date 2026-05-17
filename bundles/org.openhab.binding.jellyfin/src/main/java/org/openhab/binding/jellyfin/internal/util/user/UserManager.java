@@ -69,10 +69,10 @@ public class UserManager {
 
         logger.debug("  Enabled & visible users: {}", currentUsers.size());
         if (!addedUserIds.isEmpty()) {
-            logger.info("Added users: {}", addedUserIds);
+            logger.debug("Added users: {}", addedUserIds);
         }
         if (!removedUserIds.isEmpty()) {
-            logger.info("Removed users: {}", removedUserIds);
+            logger.debug("Removed users: {}", removedUserIds);
         }
 
         return new UserChangeResult(currentUserIds, addedUserIds, removedUserIds, currentUsers);

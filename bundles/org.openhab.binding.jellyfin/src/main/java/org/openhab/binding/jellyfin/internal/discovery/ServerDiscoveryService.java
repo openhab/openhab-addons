@@ -98,7 +98,7 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
 
                         this.thingDiscovered(result);
                     } else {
-                        logger.info("Discovered server {} @ {} will be ignored. Version {} is not supported.",
+                        logger.debug("Discovered server {} @ {} will be ignored. Version {} is not supported.",
                                 serverName, serverAddress, version);
                     }
                 } catch (Exception e) {

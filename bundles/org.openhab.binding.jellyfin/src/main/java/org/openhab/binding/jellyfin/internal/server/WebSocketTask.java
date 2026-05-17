@@ -175,7 +175,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
         } catch (Exception e) {
             connectionState.set(ConnectionState.FAILED);
-            logger.error("[WEBSOCKET] ✗ Failed to initiate WebSocket connection: {}", e.getMessage(), e);
+            logger.warn("[WEBSOCKET] Failed to initiate WebSocket connection: {}", e.getMessage(), e);
             handleConnectionFailure();
         }
     }
@@ -288,7 +288,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      * Called when the task is being shut down.
      */
     public void dispose() {
-        logger.info("[WEBSOCKET] Disposing, closing connection and cleaning up resources...");
+        logger.debug("[WEBSOCKET] Disposing, closing connection and cleaning up resources...");
 
         // Cancel pending connection attempt
         Future<Session> future = this.connectFuture;
@@ -319,7 +319,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         }
 
         connectionState.set(ConnectionState.DISCONNECTED);
-        logger.info("[WEBSOCKET] Disposed successfully - state: DISCONNECTED");
+        logger.debug("[WEBSOCKET] Disposed successfully - state: DISCONNECTED");
     }
 
     // ========== WebSocketListener Implementation ==========
@@ -333,7 +333,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
         this.webSocketSession = session;
         connectionState.set(ConnectionState.CONNECTED);
-        logger.info("[WEBSOCKET] ✓ Connected successfully to {} (state: CONNECTED)", session.getRemoteAddress());
+        logger.debug("[WEBSOCKET] Connected successfully to {} (state: CONNECTED)", session.getRemoteAddress());
         logger.debug("[WEBSOCKET] Session ID: {}, protocol version: {}", session.hashCode(),
                 session.getProtocolVersion());
 
@@ -364,7 +364,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     private void sendSessionsStartSubscription(Session session) {
         try {
             session.getRemote().sendString("{\"MessageType\":\"SessionsStart\",\"Data\":\"0,1500\"}");
-            logger.info("[WEBSOCKET] ✓ Sent SessionsStart subscription (0 ms delay, 1 500 ms interval)");
+            logger.debug("[WEBSOCKET] Sent SessionsStart subscription (0 ms delay, 1500 ms interval)");
         } catch (IOException e) {
             logger.warn("[WEBSOCKET] Failed to send SessionsStart subscription: {}", e.getMessage());
         }
@@ -381,7 +381,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         try {
             messageHandler.handleMessage(message);
         } catch (Exception e) {
-            logger.error("Error handling WebSocket message: {}", e.getMessage(), e);
+            logger.warn("Error handling WebSocket message: {}", e.getMessage(), e);
         }
     }
 
@@ -397,7 +397,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
 
         // Determine if this is a normal or abnormal close
         if (statusCode == 1000) {
-            logger.info("[WEBSOCKET] Connection closed normally: {} - {} (state: DISCONNECTED)", statusCode, reason);
+            logger.debug("[WEBSOCKET] Connection closed normally: {} - {} (state: DISCONNECTED)", statusCode, reason);
         } else {
             logger.debug("[WEBSOCKET] Connection closed abnormally: {} - {} (state: DISCONNECTED)", statusCode, reason);
         }

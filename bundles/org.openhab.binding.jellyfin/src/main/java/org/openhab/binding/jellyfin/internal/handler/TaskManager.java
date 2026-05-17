@@ -125,9 +125,8 @@ public class TaskManager implements TaskManagerInterface {
 
     @Override
     public void stopAllTasks(Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
-        logger.info("[TASK] Stopping {} task(s): {}", scheduledTasks.values().size(),
+        logger.debug("[TASK] Stopping {} task(s): {}", scheduledTasks.values().size(),
                 String.join(", ", scheduledTasks.keySet()));
-        logger.debug("[TASK] Active tasks being stopped: {}", scheduledTasks.keySet());
 
         for (ScheduledFuture<?> scheduledTask : scheduledTasks.values()) {
             stopScheduledTask(scheduledTask);
@@ -151,7 +150,7 @@ public class TaskManager implements TaskManagerInterface {
                 // Also run discovery task to discover Jellyfin clients in the background
                 // Note: Connection task stops automatically when successful
                 if (availableTasks.containsKey(WebSocketTask.TASK_ID)) {
-                    logger.info("[MODE] Active update mode: WEBSOCKET (real-time updates)");
+                    logger.debug("[MODE] Active update mode: WEBSOCKET (real-time updates)");
                     return List.of(WebSocketTask.TASK_ID, DiscoveryTask.TASK_ID);
                 }
                 logger.warn("[MODE] Active update mode: POLLING (WebSocket not available, interval: {}s)",
@@ -203,8 +202,7 @@ public class TaskManager implements TaskManagerInterface {
         int delay = task.getStartupDelay();
         int interval = task.getInterval();
 
-        logger.trace("[TASK] Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
-        logger.info("[TASK] ▶️ Starting task [{}] (delay: {}s, interval: {}s)", taskId, delay, interval);
+        logger.debug("[TASK] Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
 
         ScheduledFuture<?> scheduledTask = scheduleTask(task, delay, interval, scheduler);
         scheduledTasks.put(taskId, scheduledTask);
@@ -220,7 +218,7 @@ public class TaskManager implements TaskManagerInterface {
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
         ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
         if (scheduledTask != null) {
-            logger.info("[TASK] ⏹️ Stopping task [{}]", taskId);
+            logger.debug("[TASK] Stopping task [{}]", taskId);
             stopScheduledTask(scheduledTask);
             // Dispose resources for tasks that maintain connections
             AbstractTask task = availableTasks.get(taskId);

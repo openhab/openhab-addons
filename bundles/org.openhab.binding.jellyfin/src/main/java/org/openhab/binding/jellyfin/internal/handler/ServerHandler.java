@@ -174,7 +174,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 var wsTask = new WebSocketTask(apiClient, this.configuration.token, wsHandler,
                         () -> this.handleWebSocketFallback());
                 this.tasks.put(WebSocketTask.TASK_ID, wsTask);
-                logger.info("[MODE] WebSocket mode initialized (real-time updates enabled with automatic fallback)");
+                logger.debug("[MODE] WebSocket mode initialized (real-time updates enabled with automatic fallback)");
             }
         } catch (Exception ex) {
             logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage(), ex);
@@ -187,7 +187,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * Stops WebSocket task and starts polling task (ServerSyncTask).
      */
     private void handleWebSocketFallback() {
-        logger.info("[MODE] Switching from WebSocket to POLLING mode after repeated connection failures");
+        logger.debug("[MODE] Switching from WebSocket to POLLING mode after repeated connection failures");
 
         // Stop WebSocket task
         ScheduledFuture<?> wsSchedule = this.scheduledTasks.get(WebSocketTask.TASK_ID);
@@ -208,10 +208,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             ScheduledFuture<?> scheduledTask = this.scheduler.scheduleWithFixedDelay(pollingTask,
                     pollingTask.getStartupDelay(), pollingTask.getInterval(), TimeUnit.SECONDS);
             this.scheduledTasks.put(ServerSyncTask.TASK_ID, scheduledTask);
-            logger.info("[MODE] Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
+            logger.debug("[MODE] Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
                     pollingTask.getInterval());
         } else {
-            logger.error("[MODE] Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
+            logger.warn("[MODE] Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
         }
     }
 
@@ -594,11 +594,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.state = newState;
 
         // Log state transition at INFO level for operational visibility
-        logger.info("[STATE] Server state transition: {} -> {} (thing: {})", oldState, newState, thing.getUID());
+        logger.debug("[STATE] Server state transition: {} -> {} (thing: {})", oldState, newState, thing.getUID());
 
         // Log additional context for specific transitions
         if (newState == ServerState.CONNECTED) {
-            logger.info("[STATE] Server fully connected and operational");
+            logger.debug("[STATE] Server fully connected and operational");
             // Initialize WebSocketTask now that we have an authenticated connection with token
             initializeWebSocketTask();
             // Inform the session manager about the full device IDs currently configured in child
@@ -608,7 +608,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         } else if (newState == ServerState.ERROR) {
             logger.warn("[STATE] Server entered ERROR state from {}", oldState);
         } else if (newState == ServerState.DISPOSED) {
-            logger.info("[STATE] Server handler disposed, cleanup complete");
+            logger.debug("[STATE] Server handler disposed, cleanup complete");
         }
 
         // Update running tasks based on the new state
@@ -623,12 +623,12 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 logger.warn("Warning in {}: {}", event.getContext(), event.getException().getMessage());
             case RECOVERABLE -> {
                 // Set to error state but allow recovery
-                logger.error("Recoverable error in {}: {}", event.getContext(), event.getException().getMessage());
+                logger.debug("Recoverable error in {}: {}", event.getContext(), event.getException().getMessage());
                 setState(ServerState.ERROR);
             }
             case FATAL -> {
                 // Set to error state and require restart
-                logger.error("Fatal error in {}: {}", event.getContext(), event.getException().getMessage(),
+                logger.warn("Fatal error in {}: {}", event.getContext(), event.getException().getMessage(),
                         event.getException());
                 setState(ServerState.ERROR);
             }
@@ -706,7 +706,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 || configurationParameters.containsKey("path");
 
         if (tokenChanged || connectionParametersChanged) {
-            logger.info("Critical configuration parameters changed (token: {}, connection: {}), re-initializing",
+            logger.debug("Critical configuration parameters changed (token: {}, connection: {}), re-initializing",
                     tokenChanged, connectionParametersChanged);
 
             // Stop all running tasks before re-initialization
@@ -791,7 +791,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 // No specific authentication action for other states
 
             } catch (Exception e) {
-                this.logger.error("Error during initialization: {}", e.getMessage(), e);
+                this.logger.warn("Error during initialization: {}", e.getMessage(), e);
                 ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.UNKNOWN_ERROR, ErrorEvent.ErrorSeverity.FATAL,
                         "initializeHandler");
                 errorEventBus.publishEvent(event);
@@ -950,7 +950,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 this.configuration.ssl = updatedConfig.ssl;
                 this.configuration.path = updatedConfig.path;
 
-                logger.info("Configuration changed from URI, updating Thing configuration");
+                logger.debug("Configuration changed from URI, updating Thing configuration");
 
                 var config = editConfiguration();
                 config.put("hostname", updatedConfig.hostname);
@@ -980,7 +980,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 this.configuration.serverName = updatedConfig.serverName;
                 this.configuration.hostname = updatedConfig.hostname;
 
-                logger.info("Configuration updated from SystemInfo");
+                logger.debug("Configuration updated from SystemInfo");
 
                 var config = editConfiguration();
                 config.put("serverName", updatedConfig.serverName);
@@ -1024,12 +1024,12 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 if (scheme != null && (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
                     return candidate;
                 } else {
-                    logger.error("Thing property '{}' contains unsupported URI scheme: {}",
+                    logger.warn("Thing property '{}' contains unsupported URI scheme: {}",
                             Constants.ServerProperties.SERVER_URI, scheme);
                     throw new IllegalArgumentException("Unsupported URI scheme: " + scheme);
                 }
             } catch (Exception ex) {
-                logger.error("Thing property '{}' contains invalid URI: {}", Constants.ServerProperties.SERVER_URI,
+                logger.warn("Thing property '{}' contains invalid URI: {}", Constants.ServerProperties.SERVER_URI,
                         propertyValue, ex);
                 throw ex;
             }
@@ -1037,7 +1037,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         try {
             return this.configuration.getServerURI();
         } catch (URISyntaxException ex) {
-            logger.error("Configuration contains invalid server URI", ex);
+            logger.warn("Configuration contains invalid server URI", ex);
             throw new IllegalStateException("Configuration contains invalid server URI", ex);
         }
     }

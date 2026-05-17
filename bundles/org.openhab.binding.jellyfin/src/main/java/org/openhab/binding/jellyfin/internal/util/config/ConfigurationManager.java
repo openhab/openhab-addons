@@ -44,7 +44,7 @@ public class ConfigurationManager {
 
         if (update.hasChanges()) {
             Configuration updated = update.configuration();
-            logger.info(
+            logger.debug(
                     "Configuration changes detected from {}: hostname={} -> {}, port={} -> {}, ssl={} -> {}, path={} -> {}",
                     sourceName, current.hostname, updated.hostname, current.port, updated.port, current.ssl,
                     updated.ssl, current.path, updated.path);
