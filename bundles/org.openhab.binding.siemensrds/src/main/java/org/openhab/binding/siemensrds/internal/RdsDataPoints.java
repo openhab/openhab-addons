@@ -266,7 +266,7 @@ public class RdsDataPoints {
                 valueFilter = String.join(",", set);
             }
 
-            String url = String.format(URL_VALUES, escape(String.format(ARG_POINT, valueFilter)));
+            String url = String.format(URL_VALUES, escape(ARG_POINT.formatted(valueFilter)));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

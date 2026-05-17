@@ -400,7 +400,7 @@ public class RdsHandler extends BaseThingHandler {
                 throw new RdsCloudException("missing configuration");
             }
 
-            String url = String.format(URL_POINTS, escape(String.format(ARG_PARENT, config.plantId)));
+            String url = String.format(URL_POINTS, escape(ARG_PARENT.formatted(config.plantId)));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());
