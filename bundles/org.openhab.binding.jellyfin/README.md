@@ -10,10 +10,10 @@ Earlier versions use a different API and are not supported.
 Parameters to fine-tune server discovery.
 For most users the default configuration will work.
 
-| Parameter | Description                                        | Value      |
-| --------- | -------------------------------------------------- | ---------- |
-| Port      | Port used to query servers on local network(s)     | 0 - 65535  |
-| Timeout   | Maximum amount of time to wait for a response [ms] | 500 - 5000 |
+| Parameter        | Description                                        | Value      |
+| ---------------- | -------------------------------------------------- | ---------- |
+| discoveryPort    | Port used to query servers on local network(s)     | 0 - 65535  |
+| discoveryTimeout | Maximum amount of time to wait for a response [ms] | 500 - 5000 |
 
 ## Discovery
 
