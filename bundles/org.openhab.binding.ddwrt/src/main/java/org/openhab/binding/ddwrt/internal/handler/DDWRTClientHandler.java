@@ -47,6 +47,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -73,7 +75,8 @@ public class DDWRTClientHandler extends DDWRTBaseHandler<DDWRTClient, DDWRTClien
     protected boolean initialize(DDWRTClientConfiguration config) {
         this.config = config;
         if (config.hostname.isEmpty()) {
-            logger.warn("Hostname is required for client thing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-hostname");
             return false;
         }
         return true;

@@ -242,7 +242,11 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             return;
         }
 
-        Collection<DiscoveryResult> entries = inbox.getAll();
+        Inbox inboxRef = inbox;
+        if (inboxRef == null) {
+            return;
+        }
+        Collection<DiscoveryResult> entries = inboxRef.getAll();
         if (entries.isEmpty()) {
             return;
         }
@@ -254,7 +258,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             }
 
             // Only operate on pending client inbox entries
-            if (!existingUID.getId().startsWith("client")) {
+            if (!THING_TYPE_CLIENT.equals(entry.getThingTypeUID())) {
                 continue;
             }
 
@@ -275,7 +279,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
                 logger.debug(
                         "Removing stale client inbox entry {} before adding replacement {} (hostname match={}, mac match={})",
                         existingUID, newThingUID, sameHostname, sameMac);
-                inbox.remove(existingUID);
+                inboxRef.remove(existingUID);
             }
         }
     }
