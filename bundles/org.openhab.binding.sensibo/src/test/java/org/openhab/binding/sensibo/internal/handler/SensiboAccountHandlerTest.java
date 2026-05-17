@@ -77,8 +77,14 @@ public class SensiboAccountHandlerTest {
         testInitialize("/get_pods_response.json", 1);
     }
 
+    /**
+     * See github issue #18018 - test that initialization can handle a response where some pods are not fully setup and
+     * thus missing some fields
+     * 
+     * @throws IOException if the mocked response file cannot be read
+     */
     @Test
-    public void testInitialize_Issue8018() throws IOException {
+    public void testInitialize_Issue18018_Partial_Setup() throws IOException {
         testInitialize("/get_pods_response_partial_setup.json", 4);
     }
 
