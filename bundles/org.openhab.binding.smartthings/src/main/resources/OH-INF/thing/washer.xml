@@ -8,7 +8,7 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════
 		Thing: Washer
 		═══════════════════════════════════════════════════════════════════════ -->
-	<thing-type id="washer">
+	<thing-type id="generic-washer">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>

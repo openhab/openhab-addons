@@ -9,7 +9,7 @@
 		Light Sensor thing type
 		═══════════════════════════════════════════════════════════════════ -->
 
-	<thing-type id="lightSensor">
+	<thing-type id="generic-light-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>

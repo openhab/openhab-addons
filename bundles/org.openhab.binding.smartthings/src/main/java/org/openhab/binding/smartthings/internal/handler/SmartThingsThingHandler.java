@@ -35,6 +35,7 @@ import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHan
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -100,6 +101,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 refreshDevice();
             } else {
                 try {
+                    Channel can = this.thing.getChannel(channelUID);
+
                     if (converter != null) {
                         jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
                     }
@@ -109,11 +112,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                         return;
                     }
                     Map<String, String> properties = this.getThing().getProperties();
-                    String deviceId = properties.get(SmartThingsBindingConstants.DEVICE_ID);
-
-                    if (deviceId != null) {
-                        api.sendCommand(deviceId, jsonMsg);
-                    }
+                    api.sendCommand(deviceId, jsonMsg);
                 } catch (SmartThingsException ex) {
                     logger.error("Unable to send command: {}", ex.toString());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -126,12 +125,14 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             Object value) throws SmartThingsException {
         String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
 
-        String groupId = deviceType + "_" + componentId + "_";
+        // String groupId = deviceType + "_" + componentId + "_";
 
-        if (!"".equals(namespace)) {
-            groupId = groupId + namespace + "_";
-        }
-        groupId = groupId + capaKey;
+        // if (!"".equals(namespace)) {
+        // groupId = groupId + namespace + "_";
+        // }
+        // groupId = groupId + capaKey;
+
+        String groupId = componentId;
 
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
 
@@ -309,8 +310,26 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
         Map<String, String> properties = getThing().getProperties();
 
-        deviceId = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_ID));
-        deviceCategory = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY));
+        SmartThingsThingConfig config = getConfigAs(SmartThingsThingConfig.class);
+
+        if (properties.get(SmartThingsBindingConstants.DEVICE_ID) != null) {
+            deviceId = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_ID));
+        }
+
+        if (!config.deviceId.isBlank()) {
+            deviceId = config.deviceId;
+        }
+
+        if (deviceId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID is not configured");
+            return;
+        }
+
+        if (properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY) != null) {
+            deviceCategory = Objects.requireNonNull(properties.get(SmartThingsBindingConstants.DEVICE_CATEGORY));
+        } else {
+            deviceCategory = "";
+        }
 
         refreshDevice();
 

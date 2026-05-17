@@ -10,7 +10,7 @@
 		Television thing type
 		═══════════════════════════════════════════════════════════════════ -->
 
-	<thing-type id="television">
+	<thing-type id="generic-television">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>

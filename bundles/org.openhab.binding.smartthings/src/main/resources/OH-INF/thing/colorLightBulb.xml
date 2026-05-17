@@ -9,16 +9,25 @@
 		Light Sensor thing type
 		═══════════════════════════════════════════════════════════════════ -->
 
-	<thing-type id="colorLightBulb">
+	<thing-type id="generic-color-light-bulb">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>SmartThings Color Light Bulb</label>
 		<description>A SmartThings color light bulb.</description>
 
+		
 		<channels>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="switch" typeId="system.power">
+				<properties>
+					<property name="propertyName">propertyValue</property>	
+				</properties>
+			</channel>
+			
 			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color_temperature" typeId="system.color-temperature"/>
+
 		</channels>
 
 		<config-description>

@@ -9,7 +9,7 @@
 	<!-- Scene -->
 	<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-	<thing-type id="scene">
+	<thing-type id="generic-scene">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
