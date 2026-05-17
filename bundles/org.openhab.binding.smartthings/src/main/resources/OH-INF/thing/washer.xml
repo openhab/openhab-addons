@@ -18,44 +18,9 @@
 			Provides real-time state, program info, energy
 			monitoring and remote control.</description>
 
-		<channels>
-			<!-- Operating state -->
-			<channel id="machineState" typeId="machine-state"/>
-			<channel id="jobState" typeId="job-state"/>
-			<channel id="completionTime" typeId="completion-time"/>
-			<channel id="running" typeId="running"/>
-			<channel id="remaining" typeId="remaining"/>
-
-			<!-- Power and remote -->
-			<channel id="power" typeId="power"/>
-			<channel id="remoteEnabled" typeId="remote-enabled"/>
-
-			<!-- Program settings -->
-			<channel id="mode" typeId="mode"/>
-			<!-- Energy monitoring -->
-			<channel id="watt" typeId="watt"/>
-			<channel id="kwh" typeId="kwh"/>
-			<channel id="rinseMode" typeId="rinse-mode"/>
-			<channel id="spinSpeed" typeId="spin-speed"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="bubbleSoak" typeId="bubble-soak"/>
-			<channel id="volume" typeId="volume"/>
-			<channel id="extraCare" typeId="extra-care"/>
-			<channel id="extraCareLocation" typeId="extra-care-location"/>
-			<!-- Extended monitoring -->
-			<channel id="waterLiters" typeId="water-liters"/>
-			<channel id="kidsLock" typeId="kids-lock"/>
-			<channel id="currentCycle" typeId="current-cycle"/>
-			<channel id="operatingState" typeId="operating-state"/>
-			<channel id="progress" typeId="progress"/>
-			<channel id="detergentRemaining" typeId="detergent-remaining"/>
-			<channel id="softenerRemaining" typeId="softener-remaining"/>
-			<channel id="delayEnd" typeId="delay-end"/>
-			<channel id="supportedCourses" typeId="supported-courses"/>
-			<channel id="remainingTimeStr" typeId="remaining-time-str"/>
-			<channel id="operationTime" typeId="operation-time"/>
-			<channel id="updateAvailable" typeId="update-available"/>
-		</channels>
+		<channel-groups>
+			<channel-group typeId="main-group-type-generic-washer" id="main"/>
+		</channel-groups>
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -68,6 +33,201 @@
 		</config-description>
 	</thing-type>
 
+	<channel-group-type id="main-group-type-generic-washer">
+			<label>Main group type generic Washer</label>
+			<channels>
+				<channel id="switch" typeId="system.power">
+					<properties>
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+					</properties>
+				</channel>
+				
+				
+				<!-- Operating state -->
+				<channel id="machineState" typeId="machine-state">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="jobState" typeId="job-state">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="completionTime" typeId="completion-time">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="running" typeId="running">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="remaining" typeId="remaining">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<!-- Power and remote -->
+				<channel id="power" typeId="power">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="remoteEnabled" typeId="remote-enabled">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				
+				<!-- Program settings -->
+				<channel id="mode" typeId="mode">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<!-- Energy monitoring -->
+				<channel id="watt" typeId="watt">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="kwh" typeId="kwh">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="rinseMode" typeId="rinse-mode">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="spinSpeed" typeId="spin-speed">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="temperature" typeId="temperature">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="bubbleSoak" typeId="bubble-soak">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="volume" typeId="volume">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="extraCare" typeId="extra-care">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="extraCareLocation" typeId="extra-care-location">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				
+				<!-- Extended monitoring -->
+				<channel id="waterLiters" typeId="water-liters">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="kidsLock" typeId="kids-lock">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="currentCycle" typeId="current-cycle">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="operatingState" typeId="operating-state">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="progress" typeId="progress">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="detergentRemaining" typeId="detergent-remaining">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="softenerRemaining" typeId="softener-remaining">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="delayEnd" typeId="delay-end">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="supportedCourses" typeId="supported-courses">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="remainingTimeStr" typeId="remaining-time-str">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="operationTime" typeId="operation-time">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+				
+				<channel id="updateAvailable" typeId="update-available">
+						<property name="component">main</property>	
+						<property name="capability">switch</property>	
+						<property name="attribute">switch</property>	
+				</channel>
+		</channels>
+	</channel-group-type>
+	
 
 	<!-- ═══════════════════════════════════════════════════════════════════════
 		Channel Types

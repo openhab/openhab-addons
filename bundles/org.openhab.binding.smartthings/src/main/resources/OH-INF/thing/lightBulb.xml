@@ -17,7 +17,7 @@
 		<description>A SmartThings light bulb.</description>
 		
 		<channel-groups>
-			<channel-group typeId="main-group-type-light-buld" id="main"/>
+			<channel-group typeId="main-group-type-generic-light-bulb" id="main"/>
 		</channel-groups>
 		
 		<config-description>
@@ -28,7 +28,7 @@
 		</config-description>
 	</thing-type>
 	
-	<channel-group-type id="main-group-type-light-buld">
+	<channel-group-type id="main-group-type-generic-light-bulb">
 			<label>Main group type Light Bulb</label>
 			<channels>
 				<channel id="switch" typeId="system.power">
