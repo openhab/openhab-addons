@@ -20,6 +20,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +72,7 @@ import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.events.AbstractEvent;
+import org.openhab.core.io.rest.Webhook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -878,11 +881,22 @@ public class CloudClient {
      * Register a webhook with the openHAB Cloud for the given local path.
      *
      * @param localPath the local path to forward webhook requests to
-     * @param future the future to complete with the webhook URL or an error
+     * @param future the future to complete with the {@link Webhook} or an error
      */
-    public void registerWebhook(String localPath, CompletableFuture<String> future) {
-        emitWebhookEvent("webhook:register", localPath, future, response -> response.getString("webhookUrl"),
+    protected void registerWebhook(String localPath, CompletableFuture<Webhook> future) {
+        emitWebhookEvent("webhook:register", localPath, future, CloudClient::toWebhook,
                 "Webhook registration timed out");
+    }
+
+    private static Webhook toWebhook(JSONObject response) {
+        try {
+            URL url = new URL(response.getString("webhookUrl"));
+            Instant expiresAt = response.has("expiresAt") ? Instant.parse(response.getString("expiresAt"))
+                    : Instant.now().plus(Duration.ofDays(30));
+            return new Webhook(url, expiresAt);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid webhook URL from openHAB Cloud", e);
+        }
     }
 
     /**
@@ -904,6 +918,7 @@ public class CloudClient {
         try {
             JSONObject data = new JSONObject();
             data.put("localPath", localPath);
+            logger.debug("Emitting {} for localPath {}", eventName, localPath);
             socket.emit(eventName, data, (io.socket.client.Ack) args -> {
                 try {
                     if (args == null || args.length == 0 || !(args[0] instanceof JSONObject)) {
@@ -911,12 +926,14 @@ public class CloudClient {
                         return;
                     }
                     JSONObject response = (JSONObject) args[0];
+                    logger.debug("{} for {} response: {}", eventName, localPath, response);
                     if (response.optBoolean("success")) {
                         future.complete(successHandler.apply(response));
                     } else {
                         future.completeExceptionally(new IOException(response.optString("error", "Unknown error")));
                     }
-                } catch (JSONException | ClassCastException e) {
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse {} response for {}: {}", eventName, localPath, args[0], e);
                     future.completeExceptionally(new IOException("Invalid response from cloud", e));
                 }
             });
