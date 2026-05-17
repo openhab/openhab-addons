@@ -28,6 +28,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -53,10 +54,10 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     public SmartThingsAccountHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
             SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
             HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
-            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder,
-            SseEventSourceFactory eventSourceFactory) {
+            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory,
+            WebhookService webHookService) {
         super(bridge, smartthingsHandlerFactory, authService, translationProvider, bundleContext, httpService,
-                oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
+                oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory, webHookService);
     }
 
     @Override

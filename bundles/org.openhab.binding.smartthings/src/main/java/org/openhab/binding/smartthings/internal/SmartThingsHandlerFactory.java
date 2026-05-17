@@ -29,6 +29,7 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -69,6 +70,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private final SmartThingsTypeRegistry typeRegistry;
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
+    private final WebhookService webHookService;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -81,7 +83,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
             final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory,
             final @Reference SmartThingsTypeRegistry typeRegistery, final @Reference ClientBuilder clientBuilder,
-            final @Reference SseEventSourceFactory eventSourceFactory) {
+            final @Reference SseEventSourceFactory eventSourceFactory, final @Reference WebhookService webHookService) {
         this.httpService = httpService;
         this.authService = authService;
         this.translationProvider = translationProvider;
@@ -90,6 +92,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         this.typeRegistry = typeRegistery;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
+        this.webHookService = webHookService;
     }
 
     @Override
@@ -108,7 +111,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
             bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,
                     bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder,
-                    eventSourceFactory);
+                    eventSourceFactory, webHookService);
 
             SmartThingsOAuthHandler oAuthHandler = bridgeHandler;
             authService.setSmartThingsOAuthHandler(oAuthHandler);
