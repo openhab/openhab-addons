@@ -47,6 +47,7 @@ public class SyncTimePayload implements IPayload {
         buf[9] = (byte) time.getDayOfMonth();
         buf[10] = (byte) time.getHour();
         buf[11] = (byte) time.getMinute();
+        // buf[12] left as 0x00 — ParadoxIPPacket(byte[]) overwrites the last byte with the checksum
         return buf;
     }
 }

@@ -131,8 +131,6 @@ public class GenericCommunicator extends AbstractCommunicator implements IRespon
             receiveRamResponse(response);
         } else if (type == RequestType.EPROM) {
             receiveEpromResponse(response);
-        } else if (type == RequestType.SYNC_TIME) {
-            logger.debug("SYNC_TIME response received.");
         } else {
             logger.debug("Probably wrong sender in the request. Request type is not one of the supported methods.");
         }
