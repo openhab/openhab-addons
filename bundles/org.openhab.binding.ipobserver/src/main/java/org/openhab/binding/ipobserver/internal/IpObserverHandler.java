@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -109,19 +110,32 @@ public class IpObserverHandler extends BaseThingHandler {
                 if (state == null) {
                     return;
                 } else if (state instanceof QuantityType) {
-                    QuantityType quantityType = (QuantityType) state;
                     switch (channel.getUID().getId()) {
                         case TEMP_OUTDOOR:
                         case TEMP_WIND_CHILL:
                         case TEMP_INDOOR:
                         case TEMP_DEW_POINT:
-                            if (sensorValue.length() > 4) {
-                                logger.debug("A temperature reading was longer than 4 characters:{}", sensorValue);
+                            QuantityType<Temperature> quantityType = (QuantityType<Temperature>) state;
+                            QuantityType<Temperature> maxTemp = new QuantityType<>("100 °C");
+                            QuantityType<Temperature> minTemp = new QuantityType<>("-30 °C");
+                            if (quantityType.compareTo(maxTemp) > 0 || quantityType.compareTo(minTemp) < 0) {
+                                logger.debug("A temperature reading was outside of allowed values:{}", sensorValue);
                                 return; // RF packet must be corrupt.
                             }
                             break;
+                        // prevent negative values for these channels.
+                        case HOURLY_RAIN_RATE:
+                        case DAILY_RAIN:
+                        case WEEKLY_RAIN:
+                        case MONTHLY_RAIN:
+                        case YEARLY_RAIN:
+                        case TOTAL_RAIN:
                         case SOLAR_RADIATION:
-                            if (quantityType.toBigDecimal().compareTo(BigDecimal.ZERO) < 0) {
+                        case WIND_AVERAGE_SPEED:
+                        case WIND_SPEED:
+                        case WIND_GUST:
+                        case WIND_MAX_GUST:
+                            if (((QuantityType) state).toBigDecimal().compareTo(BigDecimal.ZERO) < 0) {
                                 return; // RF packet must be corrupt.
                             }
                             break;
