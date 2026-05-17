@@ -270,10 +270,6 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
         try {
             router.route(channelUID, command);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while handling command {} for channel {}: {}", command, channelUID,
-                    e.getMessage());
         } catch (Exception e) {
             logger.warn("Error handling command {} for channel {}: {}", command, channelUID, e.getMessage(), e);
         }

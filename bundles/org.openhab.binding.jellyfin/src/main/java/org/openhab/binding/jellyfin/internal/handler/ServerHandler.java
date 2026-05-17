@@ -230,9 +230,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             if (sessionId != null) {
                 sessionApi.sendMessageCommand(sessionId, msg);
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while sending device message to session {}: {}", sessionId, e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to send device message to session {}: {}", sessionId, e.getMessage());
         }
@@ -263,10 +260,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             sessionApi.sendPlaystateCommand(targetSessionId, command,
                     seekPositionTicks == null ? 0L : seekPositionTicks,
                     controllingUserId == null ? null : controllingUserId);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while sending playstate command {} to session {}: {}", command, sessionId,
-                    e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to send playstate command {} to session {}: {}", command, sessionId, e.getMessage());
         }
@@ -796,9 +789,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 }
                 // No specific authentication action for other states
 
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                this.logger.warn("Interrupted during initialization: {}", e.getMessage());
             } catch (Exception e) {
                 this.logger.warn("Error during initialization: {}", e.getMessage(), e);
                 ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.UNKNOWN_ERROR, ErrorEvent.ErrorSeverity.FATAL,
@@ -848,9 +838,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             }
             // Update the client list after updating the user list
             updateClientList();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while processing users list: {}", e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to process users list: {}", e.getMessage(), e);
             ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.API_ERROR, ErrorEvent.ErrorSeverity.WARNING,
@@ -886,9 +873,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 }
             }
             imageCache.evictUnused(activeItemIds);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while updating client list: {}", e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to update client list: {}", e.getMessage());
         }

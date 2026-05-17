@@ -307,10 +307,6 @@ public final class ClientCommandRouter {
             arguments.put(argumentKey, argumentValue);
             command.setArguments(arguments);
             serverHandler.sendGeneralCommand(sessionId, command);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while sending general command {} for session {}: {}", commandType, sessionId,
-                    e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to send general command {} for session {}: {}", commandType, sessionId,
                     e.getMessage());
@@ -356,9 +352,6 @@ public final class ClientCommandRouter {
             if (episodeId != null && playCommand != null) {
                 serverHandler.playItem(sessionId, playCommand, episodeId.toString(), null);
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while searching for item {}: {}", terms, e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to run item search for {}: {}", terms, e.getMessage(), e);
         }
@@ -371,9 +364,6 @@ public final class ClientCommandRouter {
         }
         try {
             serverHandler.playItem(currentSessionId(), playCommand, id.toString(), null);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while playing item {}: {}", id, e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to run item by id {}: {}", id, e.getMessage(), e);
         }
@@ -382,9 +372,6 @@ public final class ClientCommandRouter {
     private void sendDeviceMessage(Command command) {
         try {
             serverHandler.sendDeviceMessage(currentSessionId(), "Jellyfin OpenHAB", command.toFullString(), 15000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while sending device message: {}", e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to send device message: {}", e.getMessage(), e);
         }
@@ -403,9 +390,6 @@ public final class ClientCommandRouter {
                 return;
             }
             logger.debug("No items found for browse: {}", terms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while browsing by terms {}: {}", terms, e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to browse by terms {}: {}", terms, e.getMessage(), e);
         }
@@ -419,9 +403,6 @@ public final class ClientCommandRouter {
             } else {
                 logger.warn("Item not found for browse: {}", id);
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.warn("Interrupted while browsing by id {}: {}", id, e.getMessage());
         } catch (Exception e) {
             logger.warn("Failed to browse by id {}: {}", id, e.getMessage(), e);
         }
@@ -448,9 +429,6 @@ public final class ClientCommandRouter {
                 try {
                     serverHandler.browseToItem(sessionId, itemId.toString(), itemType, item.getName());
                     logger.debug("Browsed to item: {}", item.getName());
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    logger.warn("Interrupted while browsing to item after delay: {}", e.getMessage());
                 } catch (Exception e) {
                     logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
                 }
@@ -459,9 +437,6 @@ public final class ClientCommandRouter {
             try {
                 serverHandler.browseToItem(sessionId, itemId.toString(), itemType, item.getName());
                 logger.debug("Browsed to item: {}", item.getName());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                logger.warn("Interrupted while browsing to item: {}", e.getMessage());
             } catch (Exception e) {
                 logger.warn("Failed to browse to item: {}", e.getMessage(), e);
             }

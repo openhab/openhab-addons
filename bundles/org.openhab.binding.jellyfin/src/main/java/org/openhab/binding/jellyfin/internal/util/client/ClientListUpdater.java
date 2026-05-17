@@ -71,9 +71,6 @@ public final class ClientListUpdater {
                     clientMap.put(session.getId(), session);
                 }
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted while fetching sessions: {}", e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to fetch sessions from Jellyfin: {}", e.getMessage(), e);
         }

@@ -61,9 +61,6 @@ public class ConnectionTask extends AbstractTask {
             var systemInfo = systemApi.getSystemInfo();
 
             this.acceptedHandler.accept(systemInfo);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            this.exceptionHandler.handle(e);
         } catch (Exception e) {
             this.exceptionHandler.handle(e);
         }
