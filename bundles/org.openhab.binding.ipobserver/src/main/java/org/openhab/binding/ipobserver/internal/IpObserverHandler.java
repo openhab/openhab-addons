@@ -106,6 +106,18 @@ public class IpObserverHandler extends BaseThingHandler {
         public void processValue(String sensorValue) {
             if (!sensorValue.equals(previousValue)) {
                 previousValue = sensorValue;
+                if (LAST_UPDATED_TIME.equals(channel.getUID().getId())) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
+                                .withZone(TimeZone.getDefault().toZoneId());
+                        ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
+                        handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
+                    } catch (DateTimeParseException e) {
+                        logger.debug("Could not parse {} as a valid dateTime", sensorValue);
+                    }
+                    return;
+                }
+
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state == null) {
                     return;
@@ -164,23 +176,11 @@ public class IpObserverHandler extends BaseThingHandler {
                             }
                             return;
                     }
-                } else if (state instanceof DateTimeType) {
-                    switch (channel.getUID().getId()) {
-                        case LAST_UPDATED_TIME:
-                            try {
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
-                                        .withZone(TimeZone.getDefault().toZoneId());
-                                ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
-                                handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
-                            } catch (DateTimeParseException e) {
-                                logger.debug("Could not parse {} as a valid dateTime", sensorValue);
-                            }
-                            return;
-                    }
                 }
                 handler.updateState(this.channel.getUID(), state);
             }
         }
+
     }
 
     public IpObserverHandler(Thing thing, HttpClient httpClient, IpObserverUpdateReceiver UpdateReceiver) {
