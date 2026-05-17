@@ -330,16 +330,16 @@ public class JdbcConfiguration {
                         warn += "\tHSQLDB:    version >= 2.7.4 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
                         break;
                     case "mariadb":
-                        warn += "\tMariaDB:   version >= 3.5.7 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        warn += "\tMariaDB:   version >= 3.5.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 9.5.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
+                        warn += "\tMySQL:     version >= 9.7.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.7.9 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.7.11 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.51.1.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.53.1.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                     case "oracle":
                         warn += "\tOracle:    version >= 23.5.0.0 from           https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11\n";

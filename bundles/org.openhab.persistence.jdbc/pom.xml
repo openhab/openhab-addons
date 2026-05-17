@@ -15,12 +15,12 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: JDBC</name>
 
   <properties>
-    <bnd.importpackage>!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.db2.jcc,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,oracle.*;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>!io.dropwizard.metrics5.*,!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.db2.jcc,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,oracle.*;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
     <dep.noembedding>derby,h2,hsqldb,mariadb-java-client,mysql-connector-j,postgresql,sqlite-jdbc,com.oracle.database.jdbc.ojdbc11</dep.noembedding>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <hikari.version>5.1.0</hikari.version>
+    <hikari.version>7.0.2</hikari.version>
     <!-- updating dbutils beyond 1.6 is causing issues, see #18821 -->
     <dbutils.version>1.6</dbutils.version>
     <yank.version>3.5.0</yank.version>
@@ -29,10 +29,10 @@
     <derby.version>10.17.1.0</derby.version>
     <h2.version>2.4.240</h2.version>
     <hsqldb.version>2.7.4</hsqldb.version>
-    <mariadb.version>3.5.7</mariadb.version>
-    <mysql.version>9.5.0</mysql.version>
-    <postgresql.version>42.7.9</postgresql.version>
-    <sqlite.version>3.51.1.0</sqlite.version>
+    <mariadb.version>3.5.8</mariadb.version>
+    <mysql.version>9.7.0</mysql.version>
+    <postgresql.version>42.7.11</postgresql.version>
+    <sqlite.version>3.53.1.0</sqlite.version>
     <oracle.version>23.5.0.2407</oracle.version>
   </properties>
 
