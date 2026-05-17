@@ -36,5 +36,5 @@
 		<label>Trigger</label>
 		<description>Send ON to execute the scene. Automatically resets to OFF after triggering.</description>
 	</channel-type>
-	
+
 </thing:thing-descriptions>

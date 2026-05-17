@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════
 		Light Sensor thing type
 		═══════════════════════════════════════════════════════════════════ -->
@@ -45,5 +45,5 @@
 		<description>Relative brightness intensity level (1–5)</description>
 		<state readOnly="true" pattern="%.0f" min="1" max="5"/>
 	</channel-type>
-	
+
 </thing:thing-descriptions>

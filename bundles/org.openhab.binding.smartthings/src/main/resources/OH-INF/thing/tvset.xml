@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════
 		Television thing type
 		═══════════════════════════════════════════════════════════════════ -->
@@ -48,8 +48,8 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
-		<!-- Television channel types -->
+
+	<!-- Television channel types -->
 
 	<channel-type id="tvVolume">
 		<item-type>Number</item-type>
@@ -149,5 +149,5 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	
+
 </thing:thing-descriptions>
