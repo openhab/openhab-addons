@@ -219,11 +219,15 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     private boolean shouldIgnoreCapa(SmartThingsCapability capa) {
-        if (capa.id.startsWith("healthCheck")) {
+        return shouldIgnoreCapaKey(capa.id);
+    }
+
+    public static boolean shouldIgnoreCapaKey(String capaKey) {
+        if (capaKey.startsWith("healthCheck")) {
             return true;
         }
 
-        if (capa.id.startsWith("sec.diagnosticsInformation")) {
+        if (capaKey.startsWith("sec.diagnosticsInformation")) {
             return true;
         }
 

@@ -254,6 +254,10 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 if (value != null) {
                     logger.trace("refrehDevice for deviceId: value : {}", value);
 
+                    if (SmartThingsTypeRegistryImpl.shouldIgnoreCapaKey(capaKey)) {
+                        continue;
+                    }
+
                     refreshDevice(thing.getThingTypeUID().getId(), componentKey, capaKey, propertyKey, value);
                 }
             }
