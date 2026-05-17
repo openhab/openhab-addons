@@ -126,8 +126,7 @@ public class IpObserverHandler extends BaseThingHandler {
                             }
                             break;
                     }
-                    handler.updateState(this.channel.getUID(),
-                            QuantityType.valueOf(Double.parseDouble(sensorValue), unit));
+                    handler.updateState(this.channel.getUID(), new QuantityType<>(quantityType.toBigDecimal(), unit));
                     return;
                 } else if (state instanceof DecimalType) {
                     DecimalType decimalType = (DecimalType) state;
