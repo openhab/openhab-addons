@@ -115,10 +115,10 @@ public class IpObserverHandler extends BaseThingHandler {
                         case TEMP_WIND_CHILL:
                         case TEMP_INDOOR:
                         case TEMP_DEW_POINT:
-                            QuantityType<Temperature> quantityType = (QuantityType<Temperature>) state;
-                            QuantityType<Temperature> maxTemp = new QuantityType<>("100 °C");
-                            QuantityType<Temperature> minTemp = new QuantityType<>("-30 °C");
-                            if (quantityType.compareTo(maxTemp) > 0 || quantityType.compareTo(minTemp) < 0) {
+                            QuantityType<Temperature> quantityType = new QuantityType<Temperature>(
+                                    ((QuantityType) state).toBigDecimal(), (Unit<Temperature>) unit);
+                            if (quantityType.compareTo(MAX_TEMPERATURE) > 0
+                                    || quantityType.compareTo(MIN_TEMPERATURE) < 0) {
                                 logger.debug("A temperature reading was outside of allowed values:{}", sensorValue);
                                 return; // RF packet must be corrupt.
                             }
@@ -140,15 +140,15 @@ public class IpObserverHandler extends BaseThingHandler {
                             }
                             break;
                     }
-                    handler.updateState(this.channel.getUID(), new QuantityType<>(quantityType.toBigDecimal(), unit));
+                    handler.updateState(this.channel.getUID(),
+                            new QuantityType<>(((QuantityType) state).toBigDecimal(), unit));
                     return;
                 } else if (state instanceof DecimalType) {
                     DecimalType decimalType = (DecimalType) state;
                     switch (channel.getUID().getId()) {
                         case INDOOR_HUMIDITY:
                         case OUTDOOR_HUMIDITY:
-                            if (decimalType.compareTo(new DecimalType(100)) > 0
-                                    || decimalType.compareTo(DecimalType.ZERO) < 0) {
+                            if (decimalType.compareTo(DecimalType.ZERO) < 0) {
                                 return; // RF packet must be corrupt.
                             }
                             break;
