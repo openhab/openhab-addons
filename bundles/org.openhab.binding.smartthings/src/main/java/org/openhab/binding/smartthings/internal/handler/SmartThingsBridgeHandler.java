@@ -139,6 +139,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.discoService.setSmartThingsTypeRegistry(typeRegistry);
     }
 
+    public boolean useDynamicThings() {
+        return config.useDynamicThings;
+    }
+
     public boolean appCreated() {
         if ("".equals(config.appName) || "".equals(config.clientId)) {
             return false;

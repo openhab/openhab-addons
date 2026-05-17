@@ -41,11 +41,6 @@
 				<label>Device ID</label>
 				<description>SmartThings device UUID. Find it via GET https://api.smartthings.com/v1/devices.</description>
 			</parameter>
-			<parameter name="pollingIntervalSeconds" type="integer" min="5" max="3600">
-				<label>Polling Interval (s)</label>
-				<description>How often to poll the SmartThings API for status updates.</description>
-				<default>30</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

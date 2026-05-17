@@ -226,7 +226,7 @@ public class SmartThingsBridgeChannelDefinitions {
         // = switch
         // ============================
         channelProperties.put("switch#switch",
-                new ChannelProperty(SmartThingsBindingConstants.TYPE_SWITCH, null, Point.SWITCH, Property.POWER));
+                new ChannelProperty(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_POWER));
 
         // ============================
         // = switchLevel

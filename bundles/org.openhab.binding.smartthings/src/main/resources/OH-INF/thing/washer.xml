@@ -65,11 +65,6 @@
 					token,
 					or from the SmartThings app device details.</description>
 			</parameter>
-			<parameter name="pollingIntervalSeconds" type="integer" required="false" min="10" max="300">
-				<label>Polling Interval (seconds)</label>
-				<description>How often to poll SmartThings API for washer status.</description>
-				<default>30</default>
-			</parameter>
 		</config-description>
 	</thing-type>
 

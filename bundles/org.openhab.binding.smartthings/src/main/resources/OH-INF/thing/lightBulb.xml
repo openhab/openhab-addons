@@ -6,17 +6,18 @@
 
 
 	<!-- ═══════════════════════════════════════════════════════════════════
-		Presence thing type
+		Light Sensor thing type
 		═══════════════════════════════════════════════════════════════════ -->
 
-	<thing-type id="presence">
+	<thing-type id="lightBulb">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
-		<label>SmartThings Presence Sensor</label>
-		<description>A SmartThings presence sensor or mobile phone showing home/away state.</description>
+		<label>SmartThings Light Bulb</label>
+		<description>A SmartThings light bulb.</description>
 		<channels>
-			<channel id="presence" typeId="presence"/>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
@@ -26,19 +27,5 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="auth-status">
-		<item-type>String</item-type>
-		<label>Authorization Status</label>
-		<description>Shows whether the SmartThings account is authorized. Authorize at
-			http(s)://[YOUR_OPENHAB]/smartthingscloud</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="presence">
-		<item-type>Switch</item-type>
-		<label>Presence</label>
-		<description>ON = present (home), OFF = not present (away)</description>
-		<state readOnly="true"/>
-	</channel-type>
 
 </thing:thing-descriptions>
