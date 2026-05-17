@@ -7,9 +7,20 @@ import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
 import { printError } from "../util/error";
 import { SoftwareUpdateManager } from "@matter/node";
-import { DclOtaUpdateService } from "@matter/main/protocol";
-import { OtaSoftwareUpdateRequestorCluster } from "@matter/types/clusters/ota-software-update-requestor";
+import { DclOtaUpdateService, PhysicalDeviceProperties } from "@matter/main/protocol";
+
 const logger = Logger.get("ControllerNode");
+
+function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDeviceProperties | undefined {
+    if (!node) return undefined;
+    try {
+        // these are lazy properties, so we need to access them to actuall hydrate our return object
+        return { ...node.deviceInformation };
+    } catch (e) {
+        logger.debug(`Could not read deviceInformation for node ${node.nodeId}: ${e}`);
+        return undefined;
+    }
+}
 
 /**
  * This class represents the Matter Controller / Admin client
@@ -181,6 +192,7 @@ export class ControllerNode {
                     this.ws.sendEvent(EventType.NodeStateInformation, {
                         nodeId: node!.nodeId,
                         state: NodeStates[NodeStates.Connected],
+                        physicalProperties: extractPhysicalProperties(node),
                     });
                     resolve();
                 });
@@ -236,6 +248,7 @@ export class ControllerNode {
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
                 state: NodeStates[NodeStates.Connected],
+                physicalProperties: extractPhysicalProperties(node),
             });
         });
 
