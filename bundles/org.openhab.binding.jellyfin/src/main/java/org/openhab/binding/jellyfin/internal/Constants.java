@@ -36,6 +36,17 @@ public class Constants {
         public static final String SERVER_VERSION = "serverVersion";
     }
 
+    public static class ConfigurationKeys {
+
+        public static final String HOSTNAME = "hostname";
+        public static final String PORT = "port";
+        public static final String SSL = "ssl";
+        public static final String PATH = "path";
+        public static final String TOKEN = "token";
+        public static final String REFRESH_SECONDS = "refreshSeconds";
+        public static final String SERVER_NAME = "serverName";
+    }
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
     public static final ThingTypeUID THING_TYPE_JELLYFIN_CLIENT = new ThingTypeUID(BINDING_ID, "client");

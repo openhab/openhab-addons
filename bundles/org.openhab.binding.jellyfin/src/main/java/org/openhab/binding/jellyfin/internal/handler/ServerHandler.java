@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
+
+import org.eclipse.jetty.http.HttpStatus;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -559,16 +561,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     private Set<String> getConfiguredClientSerialNumbers() {
         Set<String> ids = new HashSet<>();
-        try {
-            for (Thing child : getThing().getThings()) {
-                Object serialNumber = child.getConfiguration().get("serialNumber");
-                if (serialNumber instanceof String sn && !sn.isBlank()) {
-                    ids.add(sn);
-                }
+        for (Thing child : getThing().getThings()) {
+            Object serialNumber = child.getConfiguration().get("serialNumber");
+            if (serialNumber instanceof String sn && !sn.isBlank()) {
+                ids.add(sn);
             }
-        } catch (ClassCastException e) {
-            // Should not occur in production (thing is always a Bridge), but guard defensively.
-            logger.debug("Could not iterate child Things — thing is not a Bridge: {}", e.getMessage());
         }
         return ids;
     }
@@ -707,10 +704,12 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         logger.debug("Configuration update received: {}", configurationParameters.keySet());
 
         // Check if token was updated (this is the most critical parameter)
-        boolean tokenChanged = configurationParameters.containsKey("token");
-        boolean connectionParametersChanged = configurationParameters.containsKey("hostname")
-                || configurationParameters.containsKey("port") || configurationParameters.containsKey("ssl")
-                || configurationParameters.containsKey("path");
+        boolean tokenChanged = configurationParameters.containsKey(Constants.ConfigurationKeys.TOKEN);
+        boolean connectionParametersChanged = configurationParameters
+                .containsKey(Constants.ConfigurationKeys.HOSTNAME)
+                || configurationParameters.containsKey(Constants.ConfigurationKeys.PORT)
+                || configurationParameters.containsKey(Constants.ConfigurationKeys.SSL)
+                || configurationParameters.containsKey(Constants.ConfigurationKeys.PATH);
 
         if (tokenChanged || connectionParametersChanged) {
             logger.debug("Critical configuration parameters changed (token: {}, connection: {}), re-initializing",
@@ -753,7 +752,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             this.configuration.refreshSeconds = newConfig.refreshSeconds;
 
             // Restart tasks with new refresh interval if needed
-            if (configurationParameters.containsKey("refreshSeconds")) {
+            if (configurationParameters.containsKey(Constants.ConfigurationKeys.REFRESH_SECONDS)) {
                 taskManager.stopAllTasks(scheduledTasks);
                 taskManager.processStateChange(this.state, tasks, scheduledTasks, scheduler);
             }
@@ -937,11 +936,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             throw new IOException("Image fetch interrupted", e);
         }
         int status = resp.statusCode();
-        if (status == 200) {
+        if (status == HttpStatus.OK_200) {
             byte[] bytes = resp.body();
             imageCache.put(key, bytes);
             return bytes;
-        } else if (status == 404) {
+        } else if (status == HttpStatus.NOT_FOUND_404) {
             return null;
         }
         logger.debug("Unexpected HTTP {} fetching {} image for item {}", status, imageType, itemId);
@@ -969,10 +968,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 logger.debug("Configuration changed from URI, updating Thing configuration");
 
                 var config = editConfiguration();
-                config.put("hostname", updatedConfig.hostname);
-                config.put("port", updatedConfig.port);
-                config.put("ssl", updatedConfig.ssl);
-                config.put("path", updatedConfig.path);
+                config.put(Constants.ConfigurationKeys.HOSTNAME, updatedConfig.hostname);
+                config.put(Constants.ConfigurationKeys.PORT, updatedConfig.port);
+                config.put(Constants.ConfigurationKeys.SSL, updatedConfig.ssl);
+                config.put(Constants.ConfigurationKeys.PATH, updatedConfig.path);
                 updateConfiguration(config);
             } else {
                 logger.debug("No configuration changes needed from URI");
@@ -999,8 +998,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 logger.debug("Configuration updated from SystemInfo");
 
                 var config = editConfiguration();
-                config.put("serverName", updatedConfig.serverName);
-                config.put("hostname", updatedConfig.hostname);
+                config.put(Constants.ConfigurationKeys.SERVER_NAME, updatedConfig.serverName);
+                config.put(Constants.ConfigurationKeys.HOSTNAME, updatedConfig.hostname);
                 updateConfiguration(config);
             }
         } catch (Exception e) {
