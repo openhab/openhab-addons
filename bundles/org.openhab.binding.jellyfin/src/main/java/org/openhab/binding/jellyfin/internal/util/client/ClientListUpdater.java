@@ -19,6 +19,8 @@ import java.util.Set;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.gen.current.SessionApi;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility for updating the Jellyfin client list based on active users.
@@ -32,6 +34,8 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
  * @author Initial contribution by openHAB Community
  */
 public final class ClientListUpdater {
+    private static final Logger logger = LoggerFactory.getLogger(ClientListUpdater.class);
+
     private ClientListUpdater() {
     }
 
@@ -67,8 +71,11 @@ public final class ClientListUpdater {
                     clientMap.put(session.getId(), session);
                 }
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while fetching sessions: {}", e.getMessage());
         } catch (Exception e) {
-            // Log or handle as appropriate in the caller
+            logger.debug("Failed to fetch sessions from Jellyfin: {}", e.getMessage(), e);
         }
     }
 }

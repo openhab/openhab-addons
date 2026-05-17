@@ -19,6 +19,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -26,6 +28,7 @@ import org.osgi.framework.ServiceReference;
  */
 @NonNullByDefault
 public class ResourceHelper {
+    private static final Logger logger = LoggerFactory.getLogger(ResourceHelper.class);
     private static volatile @Nullable TranslationProvider translationProvider = null;
     private static volatile @Nullable Bundle bundle = null;
 
@@ -50,7 +53,7 @@ public class ResourceHelper {
             bundle = b;
             return tp;
         } catch (Exception e) {
-            // defensive: any OSGi issues should not break callers
+            logger.debug("Failed to look up TranslationProvider from OSGi: {}", e.getMessage());
         }
         return null;
     }
