@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -51,7 +54,9 @@ public class RdsBindingConstants {
     public static final String ARG_POINT = "[%s]";
 
     public static final String URL_TOKEN = API + "Token";
-    public static final String URL_PLANTS = API + "Plants?filterId=" + escape(ARG_RDS);
+    public static final String URL_PLANTS = API + "Plants?filterId="
+            + URLEncoder.encode(ARG_RDS, StandardCharsets.UTF_8);
+
     public static final String URL_POINTS = API + "DataPoints?parentId=%s&take=100";
     public static final String URL_SETVAL = API + "DataPoints/%s";
     public static final String URL_VALUES = API + "DataPoints/Values?filterId=%s";
@@ -240,14 +245,6 @@ public class RdsBindingConstants {
 
     public static final String LOG_SYSTEM_EXCEPTION = "system exception in {}, type={}, message=\"{}\"";
     public static final String LOG_RUNTIME_EXCEPTION = "runtime exception in {}, type={}, message=\"{}\"";
-
-    /**
-     * Escape characters in the query string that would otherwise cause problems with the HTTP client
-     */
-    public static String escape(String query) {
-        return query.replace("[", "%5B").replace("]", "%5D").replace("{", "%7B").replace("}", "%7D")
-                .replace("\"", "%22").replace(":", "%3A").replace(",", "%2C");
-    }
 }
 
 /**

@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -266,7 +267,8 @@ public class RdsDataPoints {
                 valueFilter = String.join(",", set);
             }
 
-            String url = String.format(URL_VALUES, escape(ARG_POINT.formatted(valueFilter)));
+            String url = URL_VALUES
+                    .formatted(URLEncoder.encode(ARG_POINT.formatted(valueFilter), StandardCharsets.UTF_8));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

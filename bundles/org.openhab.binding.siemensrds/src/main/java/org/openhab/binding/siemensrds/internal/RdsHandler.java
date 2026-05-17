@@ -15,6 +15,8 @@ package org.openhab.binding.siemensrds.internal;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -400,7 +402,8 @@ public class RdsHandler extends BaseThingHandler {
                 throw new RdsCloudException("missing configuration");
             }
 
-            String url = String.format(URL_POINTS, escape(ARG_PARENT.formatted(config.plantId)));
+            String url = URL_POINTS
+                    .formatted(URLEncoder.encode(ARG_PARENT.formatted(config.plantId), StandardCharsets.UTF_8));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());
