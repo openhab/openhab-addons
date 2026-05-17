@@ -208,10 +208,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             ScheduledFuture<?> scheduledTask = this.scheduler.scheduleWithFixedDelay(pollingTask,
                     pollingTask.getStartupDelay(), pollingTask.getInterval(), TimeUnit.SECONDS);
             this.scheduledTasks.put(ServerSyncTask.TASK_ID, scheduledTask);
-            logger.info("[MODE] ✓ Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
+            logger.info("[MODE] Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
                     pollingTask.getInterval());
         } else {
-            logger.error("[MODE] ✗ Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
+            logger.error("[MODE] Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
         }
     }
 
