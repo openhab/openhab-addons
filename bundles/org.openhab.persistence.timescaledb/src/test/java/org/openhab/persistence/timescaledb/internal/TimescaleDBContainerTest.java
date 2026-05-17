@@ -90,7 +90,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * @author René Ulbricht - Initial contribution
  */
 @Tag("integration")
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @NonNullByDefault({ DefaultLocation.RETURN_TYPE, DefaultLocation.PARAMETER })
 @SuppressWarnings("null")
