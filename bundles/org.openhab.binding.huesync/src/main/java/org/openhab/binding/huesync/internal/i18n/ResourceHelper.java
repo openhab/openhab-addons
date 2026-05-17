@@ -22,24 +22,41 @@ import org.osgi.framework.ServiceReference;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static final BundleContext BUNDLE_CONTEXT = FrameworkUtil.getBundle(ResourceHelper.class)
-            .getBundleContext();
-    private static final ServiceReference<TranslationProvider> SERVICE_REFERENCE = BUNDLE_CONTEXT
-            .getServiceReference(TranslationProvider.class);
-    private static final Bundle BUNDLE = BUNDLE_CONTEXT.getBundle();
-    private static final TranslationProvider TRANSLATION_PROVIDER = BUNDLE_CONTEXT.getService(SERVICE_REFERENCE);
-
+    @SuppressWarnings("null")
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
 
         String missingKey = "Missing Translation: " + key;
 
-        var localizedString = TRANSLATION_PROVIDER.getText(BUNDLE, lookupKey, missingKey, null);
+        Bundle bundle = FrameworkUtil.getBundle(ResourceHelper.class);
+        if (bundle == null) {
+            return missingKey;
+        }
 
-        return localizedString == null ? missingKey : localizedString;
+        BundleContext context = bundle.getBundleContext();
+        if (context == null) {
+            return missingKey;
+        }
+
+        ServiceReference<TranslationProvider> ref = context.getServiceReference(TranslationProvider.class);
+        if (ref == null) {
+            return missingKey;
+        }
+
+        TranslationProvider provider = context.getService(ref);
+        if (provider == null) {
+            return missingKey;
+        }
+
+        try {
+            String localizedString = provider.getText(bundle, lookupKey, missingKey, null);
+            return localizedString == null ? missingKey : localizedString;
+        } finally {
+            context.ungetService(ref);
+        }
     }
 }
