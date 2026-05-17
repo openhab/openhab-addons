@@ -15,12 +15,12 @@
 
   <dependencies>
     <dependency>
-	  <groupId>org.openhab.core.bundles</groupId>
+      <groupId>org.openhab.core.bundles</groupId>
       <artifactId>org.openhab.core.io.rest</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${gson.version}</version>
