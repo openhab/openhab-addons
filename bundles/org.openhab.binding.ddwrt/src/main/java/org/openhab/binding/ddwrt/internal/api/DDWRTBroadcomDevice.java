@@ -210,8 +210,11 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
             if (!tempStr.isEmpty()) {
                 try {
                     // Broadcom phy_tempsense returns raw sensor value; convert to Celsius: raw / 2 + 20
+                    // Add bounds check to reject absurd values (e.g., 680 C from wrong raw scale)
                     double temp = Double.parseDouble(tempStr) / 2.0 + 20.0;
-                    if (i == 0) {
+                    if (temp > 200.0 || temp < -40.0) {
+                        logger.debug("Ignoring out-of-range wireless temp {} C from {} (raw={})", temp, iface, tempStr);
+                    } else if (i == 0) {
                         wl0Temp = temp;
                     } else if (i == 1) {
                         wl1Temp = temp;

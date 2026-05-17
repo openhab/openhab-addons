@@ -131,6 +131,16 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected double wl0Temp = 0.0;
     protected double wl1Temp = 0.0;
 
+    /** CPU temperature source, probed once and cached. */
+    protected enum CpuTempSource {
+        UNKNOWN,
+        DMU,
+        THERMAL_ZONE,
+        NONE
+    }
+
+    protected volatile CpuTempSource cpuTempSource = CpuTempSource.UNKNOWN;
+
     // Discovered radio interface names (populated by refreshRadios, used by refreshCpuTemp)
     protected volatile List<String> radioIfaceNames = Objects.requireNonNull(Collections.emptyList());
     protected String wanIp = "";
@@ -1209,21 +1219,80 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Read CPU temperature in degrees Celsius. Default implementation tries /proc/dmu/temperature
-     * then /sys/class/thermal/thermal_zone0/temp (millidegrees). Subclasses may override for
-     * chipset-specific parsing.
+     * Read CPU temperature in degrees Celsius. Probes the temperature source on the first call
+     * and caches the result so subsequent calls use only the known-working command with
+     * unambiguous parsing. Subclasses may override for chipset-specific sources.
      */
     protected double refreshCpuTemp(SshRunner runner) {
-        // Single command: try DMU first, fall back to thermal_zone (avoids guaranteed rc=1)
-        String tempStr = safeTrim(runner.execStdout(
-                "cat /proc/dmu/temperature | grep -oE '[0-9.]+' || cat /sys/class/thermal/thermal_zone0/temp"));
+        CpuTempSource source = cpuTempSource;
+        if (source == CpuTempSource.UNKNOWN) {
+            source = probeCpuTempSource(runner);
+            cpuTempSource = source;
+        }
+        return switch (source) {
+            case DMU -> readDmuTemp(runner);
+            case THERMAL_ZONE -> readThermalZoneTemp(runner);
+            default -> 0.0;
+        };
+    }
+
+    /**
+     * Probe which CPU temperature source is available. Tries DMU first, then thermal_zone.
+     */
+    private CpuTempSource probeCpuTempSource(SshRunner runner) {
+        String dmu = safeTrim(runner.execStdout("cat /proc/dmu/temperature"));
+        if (!dmu.isEmpty()) {
+            logger.debug("CPU temp source: /proc/dmu/temperature (raw={})", dmu);
+            return CpuTempSource.DMU;
+        }
+        String tz = safeTrim(runner.execStdout("cat /sys/class/thermal/thermal_zone0/temp"));
+        if (!tz.isEmpty()) {
+            logger.debug("CPU temp source: /sys/class/thermal/thermal_zone0/temp (raw={})", tz);
+            return CpuTempSource.THERMAL_ZONE;
+        }
+        logger.debug("No CPU temperature source found");
+        return CpuTempSource.NONE;
+    }
+
+    /**
+     * Read temperature from Broadcom DMU. Output format: "CPU Temperature : 68 C / 154 F"
+     * or decidegrees (680). The grep extracts just the first numeric value.
+     */
+    private double readDmuTemp(SshRunner runner) {
+        String tempStr = safeTrim(runner.execStdout("cat /proc/dmu/temperature | grep -oE '[0-9.]+' | head -n1"));
         if (tempStr.isEmpty()) {
             return 0.0;
         }
         try {
             double val = Double.parseDouble(tempStr);
-            // thermal_zone reports millidegrees (values > 1000); DMU reports degrees directly
-            return val > 1000.0 ? val / 1000.0 : val;
+            // DMU reports decidegrees (e.g., 680 = 68.0 C) or direct degrees (e.g., 68)
+            double temp = val >= 100.0 ? val / 10.0 : val;
+            if (temp > 150.0 || temp < -40.0) {
+                logger.debug("Ignoring out-of-range DMU CPU temp {} C (raw={})", temp, tempStr);
+                return 0.0;
+            }
+            return temp;
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Read temperature from sysfs thermal zone. Reports millidegrees (e.g., 68000 = 68.0 C).
+     */
+    protected double readThermalZoneTemp(SshRunner runner) {
+        String tempStr = safeTrim(runner.execStdout("cat /sys/class/thermal/thermal_zone0/temp"));
+        if (tempStr.isEmpty()) {
+            return 0.0;
+        }
+        try {
+            double val = Double.parseDouble(tempStr);
+            double temp = val > 1000.0 ? val / 1000.0 : val;
+            if (temp > 150.0 || temp < -40.0) {
+                logger.debug("Ignoring out-of-range thermal_zone CPU temp {} C (raw={})", temp, tempStr);
+                return 0.0;
+            }
+            return temp;
         } catch (NumberFormatException e) {
             return 0.0;
         }

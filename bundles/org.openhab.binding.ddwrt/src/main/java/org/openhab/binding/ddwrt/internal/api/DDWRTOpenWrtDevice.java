@@ -381,18 +381,9 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected double refreshCpuTemp(SshRunner runner) {
-        // OpenWrt: only check sysfs thermal zones (no /proc/dmu)
-        String tempStr = safeTrim(runner.execStdout("cat /sys/class/thermal/thermal_zone0/temp"));
-        if (tempStr.isEmpty()) {
-            return 0.0;
-        }
-        try {
-            double val = Double.parseDouble(tempStr);
-            // thermal_zone reports millidegrees
-            return val > 1000.0 ? val / 1000.0 : val;
-        } catch (NumberFormatException e) {
-            return 0.0;
-        }
+        // OpenWrt: only sysfs thermal zones (no /proc/dmu), skip probing
+        cpuTempSource = CpuTempSource.THERMAL_ZONE;
+        return readThermalZoneTemp(runner);
     }
 
     @Override
