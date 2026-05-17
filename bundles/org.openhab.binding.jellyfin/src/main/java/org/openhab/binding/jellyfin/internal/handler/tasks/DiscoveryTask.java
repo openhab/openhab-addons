@@ -48,7 +48,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
  */
 @NonNullByDefault
 public class DiscoveryTask extends AbstractTask {
-    private static final Logger logger = LoggerFactory.getLogger(DiscoveryTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryTask.class);
 
     public static final String TASK_ID = "discovery";
     private static final int STARTUP_DELAY_SEC = 60;
@@ -87,11 +87,11 @@ public class DiscoveryTask extends AbstractTask {
             ThingStatus status = serverHandler.getThing().getStatus();
 
             if (status != ThingStatus.ONLINE) {
-                logger.trace("Server not online (status: {}), skipping discovery", status);
+                LOGGER.trace("Server not online (status: {}), skipping discovery", status);
                 return;
             }
 
-            logger.trace("Running periodic client discovery - fetching users first");
+            LOGGER.trace("Running periodic client discovery - fetching users first");
 
             // Fetch users from /Users endpoint and invoke the handler before discovery
             try {
@@ -129,7 +129,7 @@ public class DiscoveryTask extends AbstractTask {
             }
 
             // Now perform the normal discovery step
-            logger.trace("Triggering discovery service");
+            LOGGER.trace("Triggering discovery service");
             discoveryService.discoverClients();
 
         } catch (Exception e) {

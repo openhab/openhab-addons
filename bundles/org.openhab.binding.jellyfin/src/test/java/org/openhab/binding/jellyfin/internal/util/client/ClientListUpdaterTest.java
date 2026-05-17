@@ -14,7 +14,13 @@ package org.openhab.binding.jellyfin.internal.util.client;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +34,7 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@SuppressWarnings("checkstyle:MethodName")
 class ClientListUpdaterTest {
 
     private Map<String, SessionInfoDto> clientMap;

@@ -136,7 +136,7 @@ public final class PlaybackExtrapolator {
 
         final Long runTimeTicks = playingItem.getRunTimeTicks();
 
-        task = scheduler.scheduleAtFixedRate(() -> {
+        task = scheduler.scheduleWithFixedDelay(() -> {
             if (!running) {
                 return;
             }

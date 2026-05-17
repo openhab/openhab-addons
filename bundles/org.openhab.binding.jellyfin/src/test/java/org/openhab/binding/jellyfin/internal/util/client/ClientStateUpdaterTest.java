@@ -41,6 +41,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@SuppressWarnings("checkstyle:MethodName")
 @NonNullByDefault
 class ClientStateUpdaterTest {
 

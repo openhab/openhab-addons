@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Patrik Gfeller - Initial Contribution
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public class ResourceHelper {
-    private static final Logger logger = LoggerFactory.getLogger(ResourceHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceHelper.class);
     private static volatile @Nullable TranslationProvider translationProvider = null;
     private static volatile @Nullable Bundle bundle = null;
 
@@ -53,7 +53,7 @@ public class ResourceHelper {
             bundle = b;
             return tp;
         } catch (Exception e) {
-            logger.debug("Failed to look up TranslationProvider from OSGi: {}", e.getMessage());
+            LOGGER.debug("Failed to look up TranslationProvider from OSGi: {}", e.getMessage());
         }
         return null;
     }

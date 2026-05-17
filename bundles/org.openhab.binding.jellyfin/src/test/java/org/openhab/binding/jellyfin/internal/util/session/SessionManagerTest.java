@@ -30,6 +30,7 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@SuppressWarnings("checkstyle:MethodName")
 class SessionManagerTest {
     private SessionEventBus eventBus;
     private SessionManager sessionManager;

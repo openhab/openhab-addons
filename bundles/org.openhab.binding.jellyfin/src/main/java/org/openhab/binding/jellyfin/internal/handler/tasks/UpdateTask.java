@@ -35,7 +35,7 @@ public class UpdateTask extends AbstractTask {
     public static final int DEFAULT_INTERVAL = 10;
 
     private final Logger logger = LoggerFactory.getLogger(UpdateTask.class);
-    @SuppressWarnings("unused") // TODO: Will be used when update logic is implemented
+    @SuppressWarnings("unused") // will be used when update logic is implemented
     private final ApiClientWrapper client;
     private final ExceptionHandlerType exceptionHandler;
 
@@ -54,7 +54,7 @@ public class UpdateTask extends AbstractTask {
     @Override
     public void run() {
         try {
-            // TODO: Implement polling/update logic in future
+            // implement polling/update logic in future
             logger.debug("Update task not implemented yet");
         } catch (Exception e) {
             this.exceptionHandler.handle(e);

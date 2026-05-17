@@ -76,7 +76,6 @@ public class TaskManager implements TaskManagerInterface {
     public Map<String, AbstractTask> initializeTasks(ApiClientWrapper apiClient, ErrorEventBus errorEventBus,
             Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
             @Nullable ClientDiscoveryService discoveryService) {
-
         Map<String, AbstractTask> tasks = new HashMap<>();
 
         // Create tasks using the injected factory with context-specific exception handlers
@@ -100,7 +99,6 @@ public class TaskManager implements TaskManagerInterface {
     @Override
     public void processStateChange(ServerState serverState, Map<String, AbstractTask> availableTasks,
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
-
         List<String> taskIdsToStart = getTaskIdsForState(serverState, availableTasks);
 
         // Stop any running tasks that are not needed for this state
@@ -261,12 +259,7 @@ public class TaskManager implements TaskManagerInterface {
     @Override
     public AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
             ErrorEventBus errorEventBus, ApiClientWrapper apiClient, Consumer<List<UserDto>> usersHandler) {
-        TaskFactoryInterface factory = taskFactory;
-        if (factory == null) {
-            throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
-        }
-
-        return factory.createDiscoveryTask(serverHandler, discoveryService, apiClient, usersHandler,
+        return taskFactory.createDiscoveryTask(serverHandler, discoveryService, apiClient, usersHandler,
                 new ContextualExceptionHandler(errorEventBus, "DiscoveryTask"));
     }
 }

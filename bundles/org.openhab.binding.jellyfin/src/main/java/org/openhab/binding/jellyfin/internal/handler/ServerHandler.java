@@ -1020,7 +1020,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             try {
                 URI candidate = URI.create(propertyValue);
                 String scheme = candidate.getScheme();
-                if (scheme != null && (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
+                if (scheme != null && ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))) {
                     return candidate;
                 } else {
                     logger.warn("Thing property '{}' contains unsupported URI scheme: {}",

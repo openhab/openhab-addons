@@ -33,7 +33,7 @@ import org.openhab.binding.jellyfin.internal.types.ServerState;
  * This version integrates TaskFactory responsibilities for cleaner architecture.
  * TaskManager becomes the central coordinator for all task-related operations.
  *
- * @author Patrik Gfeller - Refactoring contribution
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public interface TaskManagerInterface {

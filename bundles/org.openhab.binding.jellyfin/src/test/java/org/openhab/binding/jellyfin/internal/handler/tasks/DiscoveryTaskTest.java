@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingStatus;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@SuppressWarnings("checkstyle:MethodName")
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)

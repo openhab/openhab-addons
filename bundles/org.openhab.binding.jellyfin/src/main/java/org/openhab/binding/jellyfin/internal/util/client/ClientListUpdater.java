@@ -19,6 +19,7 @@ import java.util.Set;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.gen.current.SessionApi;
 import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +32,11 @@ import org.slf4j.LoggerFactory;
  * sessions in a single API call rather than per-user queries, this approach ensures
  * that all client devices are discovered reliably.
  *
- * @author Initial contribution by openHAB Community
+ * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public final class ClientListUpdater {
-    private static final Logger logger = LoggerFactory.getLogger(ClientListUpdater.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientListUpdater.class);
 
     private ClientListUpdater() {
     }
@@ -67,12 +69,13 @@ public final class ClientListUpdater {
         try {
             List<SessionInfoDto> sessions = sessionApi.getSessions(null, null, null, null);
             for (SessionInfoDto session : sessions) {
-                if (session.getUserId() != null && userIds.contains(session.getUserId().toString())) {
-                    clientMap.put(session.getId(), session);
+                String sessionId = session.getId();
+                if (sessionId != null && session.getUserId() != null && userIds.contains(session.getUserId().toString())) {
+                    clientMap.put(sessionId, session);
                 }
             }
         } catch (Exception e) {
-            logger.debug("Failed to fetch sessions from Jellyfin: {}", e.getMessage(), e);
+            LOGGER.debug("Failed to fetch sessions from Jellyfin: {}", e.getMessage(), e);
         }
     }
 }

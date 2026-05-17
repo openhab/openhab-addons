@@ -27,7 +27,7 @@ import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
  * Interface for creating tasks used in the Jellyfin binding.
  * This enables dependency inversion and better testability.
  *
- * @author Patrik Gfeller - Refactoring contribution
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public interface TaskFactoryInterface {

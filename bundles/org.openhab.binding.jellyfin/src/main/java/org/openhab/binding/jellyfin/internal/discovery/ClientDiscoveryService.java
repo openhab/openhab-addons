@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = ClientDiscoveryService.class)
 @NonNullByDefault
 public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService<ServerHandler> {
-    private static final Logger logger = LoggerFactory.getLogger(ClientDiscoveryService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientDiscoveryService.class);
 
     private final ThingRegistry thingRegistry;
 
@@ -77,12 +77,12 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
     protected void startScan() {
         ThingStatus serverStatus = thingHandler.getThing().getStatus();
         if (serverStatus != ThingStatus.ONLINE) {
-            logger.debug("Server handler {} is not online (status: {}), skipping client discovery",
+            LOGGER.debug("Server handler {} is not online (status: {}), skipping client discovery",
                     thingHandler.getThing().getLabel(), serverStatus);
             return;
         }
 
-        logger.debug("Starting client discovery scan for server {}", thingHandler.getThing().getLabel());
+        LOGGER.debug("Starting client discovery scan for server {}", thingHandler.getThing().getLabel());
         discoverClients();
     }
 
@@ -118,11 +118,11 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
         ThingUID bridgeUID = thingHandler.getThing().getUID();
 
         if (clients.isEmpty()) {
-            logger.debug("No clients found for server {}", thingHandler.getThing().getLabel());
+            LOGGER.debug("No clients found for server {}", thingHandler.getThing().getLabel());
             return;
         }
 
-        logger.debug("Processing {} client(s) for discovery", clients.size());
+        LOGGER.debug("Processing {} client(s) for discovery", clients.size());
 
         // ----------------------------------------------------------------
         // Pre-pass: canonical ID expansion (Android short-ID migration)
@@ -143,7 +143,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             String candidateFullId = computeCandidateFullId(shortId, userId);
             Thing existingThing = findThingBySerialNumber(bridgeUID, candidateFullId);
             if (existingThing != null) {
-                logger.info(
+                LOGGER.info(
                         "[MIGRATION] Canonical ID expansion: updating serialNumber '{}' → '{}' for device '{}' (client: {})",
                         candidateFullId, shortId, session.getDeviceName(), session.getClient());
                 Map<String, Object> updatedConfig = new HashMap<>(existingThing.getConfiguration().getProperties());
@@ -164,7 +164,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
             // Skip clients with missing or empty device ID
             if (deviceId == null || deviceId.isBlank()) {
-                logger.debug("Skipping client with missing or empty device ID: sessionId={}, client={}",
+                LOGGER.debug("Skipping client with missing or empty device ID: sessionId={}, client={}",
                         session.getId(), session.getClient());
                 continue;
             }
@@ -172,7 +172,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             // Skip devices whose serialNumber was just migrated — their Thing config is up to date;
             // no new inbox entry is needed.
             if (migratedDeviceIds.contains(deviceId)) {
-                logger.debug("Skipping migrated device '{}' (serialNumber config updated)", deviceId);
+                LOGGER.debug("Skipping migrated device '{}' (serialNumber config updated)", deviceId);
                 continue;
             }
 
@@ -205,7 +205,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
             // Apply client category filter
             if (!isClientCategoryEnabled(config, session.getClient())) {
-                logger.debug("Skipping client '{}' (category disabled by configuration)", session.getClient());
+                LOGGER.debug("Skipping client '{}' (category disabled by configuration)", session.getClient());
                 continue;
             }
 
@@ -236,7 +236,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             if (existingThing != null && existingThing.getConfiguration().get("serialNumber") == null) {
                 String legacySerial = existingThing.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
                 if (legacySerial != null && !legacySerial.isBlank()) {
-                    logger.info(
+                    LOGGER.info(
                             "[MIGRATION] Promoting serialNumber '{}' from property to configuration for {} (legacy thing)",
                             legacySerial, clientUID);
                     Map<String, Object> updatedConfig = new HashMap<>(existingThing.getConfiguration().getProperties());
@@ -251,7 +251,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             String client = session.getClient();
             if (deviceName != null && !deviceName.isBlank()
                     && handleDeviceIdChange(bridgeUID, deviceId, deviceName, client)) {
-                logger.info("Device '{}' (client: {}) regenerated its device ID to {}; updated existing Thing config",
+                LOGGER.info("Device '{}' (client: {}) regenerated its device ID to {}; updated existing Thing config",
                         deviceName, client, deviceId);
                 continue;
             }
@@ -281,7 +281,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             // Publish discovery result
             thingDiscovered(resultBuilder.build());
 
-            logger.debug("Discovered Jellyfin client: {} [deviceId={}, client={}]", label, deviceId, client);
+            LOGGER.debug("Discovered Jellyfin client: {} [deviceId={}, client={}]", label, deviceId, client);
         }
     }
 
@@ -339,7 +339,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             return matches.get(0);
         }
         if (matches.size() > 1) {
-            logger.warn(
+            LOGGER.warn(
                     "Found {} Things matching deviceName='{}' client='{}' — cannot uniquely identify device; skipping ID update",
                     matches.size(), deviceName, client);
         }
@@ -376,7 +376,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             return false; // device ID unchanged — normal update path
         }
 
-        logger.info("Detected device ID change for '{}' (client: {}): {} -> {}", deviceName, client, storedId,
+        LOGGER.info("Detected device ID change for '{}' (client: {}): {} -> {}", deviceName, client, storedId,
                 newDeviceId);
 
         // Copy the full existing configuration to preserve any future parameters, then update serialNumber

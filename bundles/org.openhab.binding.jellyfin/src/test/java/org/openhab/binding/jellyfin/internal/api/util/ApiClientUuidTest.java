@@ -18,12 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Test to verify that the custom ApiClient correctly uses the UUID deserializer
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class ApiClientUuidTest {
 
     @Test
@@ -47,6 +52,7 @@ public class ApiClientUuidTest {
         assertNotNull(result.id);
         assertEquals("test", result.name);
         // Verify the UUID is correctly converted
+        assertNotNull(result.id);
         assertEquals("05e66d53-183c-4be4-986c-18d7e12694be", result.id.toString());
     }
 
@@ -71,7 +77,7 @@ public class ApiClientUuidTest {
     }
 
     public static class TestDto {
-        public java.util.UUID id;
-        public String name;
+        public @Nullable UUID id;
+        public @Nullable String name;
     }
 }
