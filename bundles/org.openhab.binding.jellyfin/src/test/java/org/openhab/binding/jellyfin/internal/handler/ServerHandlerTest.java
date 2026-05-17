@@ -28,6 +28,7 @@ import org.openhab.binding.jellyfin.internal.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -458,7 +459,7 @@ class ServerHandlerTest {
         config.ssl = false;
         config.token = "test-token"; // Valid token
 
-        Thing mockThing = mock(Thing.class);
+        Bridge mockThing = mock(Bridge.class);
         Map<String, String> props = new HashMap<>();
         props.put(org.openhab.binding.jellyfin.internal.Constants.ServerProperties.SERVER_URI,
                 "http://test-server:8096");
@@ -497,7 +498,7 @@ class ServerHandlerTest {
         config.ssl = false;
         config.token = ""; // Empty token
 
-        Thing mockThing = mock(Thing.class);
+        Bridge mockThing = mock(Bridge.class);
         Map<String, String> props = new HashMap<>();
         props.put(org.openhab.binding.jellyfin.internal.Constants.ServerProperties.SERVER_URI,
                 "http://test-server:8096");
@@ -540,7 +541,7 @@ class ServerHandlerTest {
         config.ssl = false;
         config.token = "test-token";
 
-        Thing mockThing = mock(Thing.class);
+        Bridge mockThing = mock(Bridge.class);
         Map<String, String> props = new HashMap<>();
         props.put(org.openhab.binding.jellyfin.internal.Constants.ServerProperties.SERVER_URI,
                 "http://test-server:8096");
@@ -587,7 +588,7 @@ class ServerHandlerTest {
         config.ssl = false;
         config.token = "old-token";
 
-        Thing mockThing = mock(Thing.class);
+        Bridge mockThing = mock(Bridge.class);
         Map<String, String> props = new HashMap<>();
         props.put(org.openhab.binding.jellyfin.internal.Constants.ServerProperties.SERVER_URI,
                 "http://test-server:8096");
