@@ -180,7 +180,6 @@ public class IpObserverHandler extends BaseThingHandler {
                 handler.updateState(this.channel.getUID(), state);
             }
         }
-
     }
 
     public IpObserverHandler(Thing thing, HttpClient httpClient, IpObserverUpdateReceiver UpdateReceiver) {
