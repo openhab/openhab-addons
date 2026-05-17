@@ -201,7 +201,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void initialize() {
-        isDisposed = false;
+        if (isDisposed) {
+            logger.debug("Skipping initialization because handler is already disposed.");
+            return;
+        }
         config = getConfigAs(FroniusWattpilotConfiguration.class);
 
         FroniusWattpilotConfiguration config = this.config;
@@ -274,6 +277,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         logger.debug("Disconnected from Wattpilot: {}", reason, cause);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
         synchronized (this) {
+            var reconnectJob = this.reconnectJob;
             if (cause != null && reconnectJob == null && !isDisposed) {
                 logger.debug("Connection to Wattpilot lost, scheduling reconnection job ...", cause);
                 this.reconnectJob = scheduler.scheduleAtFixedRate(this::initialize, 30L, 60L, TimeUnit.SECONDS);
