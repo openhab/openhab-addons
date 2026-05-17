@@ -162,7 +162,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
             }
 
             String plantId = plant.getId();
-            String url = String.format(URL_POINTS, plantId);
+            String url = String.format(URL_POINTS, escape(String.format(ARG_PARENT, plantId)));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());

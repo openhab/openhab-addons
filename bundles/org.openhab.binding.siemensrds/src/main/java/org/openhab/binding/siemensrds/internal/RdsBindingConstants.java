@@ -45,23 +45,16 @@ public class RdsBindingConstants {
 
     private static final String API = "https://api.climatixic.com/";
 
-    private static final String ARG_RDS = """
-            ?filterId=[\
-            {"asn":"RDS110"},\
-            {"asn":"RDS120"},\
-            {"asn":"RDS110.R"},\
-            {"asn":"RDS120.B"}\
-            ]\
-            """;
+    private static final String ARG_RDS = "[{\"asn\":\"RDS110\"},{\"asn\":\"RDS120\"},{\"asn\":\"RDS110.R\"},{\"asn\":\"RDS120.B\"}]";
 
-    private static final String ARG_PARENT = "?parentId=[\"%s\"]&take=100";
-    private static final String ARG_POINT = "?filterId=[%s]";
+    public static final String ARG_PARENT = "[\"%s\"]";
+    public static final String ARG_POINT = "[%s]";
 
     public static final String URL_TOKEN = API + "Token";
-    public static final String URL_PLANTS = API + "Plants" + ARG_RDS;
-    public static final String URL_POINTS = API + "DataPoints" + ARG_PARENT;
+    public static final String URL_PLANTS = API + "Plants?filterId=" + escape(ARG_RDS);
+    public static final String URL_POINTS = API + "DataPoints?parentId=%s&take=100";
     public static final String URL_SETVAL = API + "DataPoints/%s";
-    public static final String URL_VALUES = API + "DataPoints/Values" + ARG_POINT;
+    public static final String URL_VALUES = API + "DataPoints/Values?filterId=%s";
 
     public static final String HTTP_POST = "POST";
     public static final String HTTP_GET = "GET";
@@ -247,6 +240,14 @@ public class RdsBindingConstants {
 
     public static final String LOG_SYSTEM_EXCEPTION = "system exception in {}, type={}, message=\"{}\"";
     public static final String LOG_RUNTIME_EXCEPTION = "runtime exception in {}, type={}, message=\"{}\"";
+
+    /**
+     * Escape characters in the query string that would otherwise cause problems with the HTTP client
+     */
+    public static String escape(String query) {
+        return query.replace("[", "%5B").replace("]", "%5D").replace("{", "%7B").replace("}", "%7D")
+                .replace("\"", "%22").replace(":", "%3A").replace(",", "%2C");
+    }
 }
 
 /**

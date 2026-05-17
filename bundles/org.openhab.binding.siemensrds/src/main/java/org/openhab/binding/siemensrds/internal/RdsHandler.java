@@ -222,7 +222,7 @@ public class RdsHandler extends BaseThingHandler {
             }
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "server response ok");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
             for (ChannelMap channel : CHAN_MAP) {
@@ -400,7 +400,7 @@ public class RdsHandler extends BaseThingHandler {
                 throw new RdsCloudException("missing configuration");
             }
 
-            String url = String.format(URL_POINTS, config.plantId);
+            String url = String.format(URL_POINTS, escape(String.format(ARG_PARENT, config.plantId)));
 
             if (logger.isTraceEnabled()) {
                 logger.trace(LOG_HTTP_COMMAND, HTTP_GET, url.length());
