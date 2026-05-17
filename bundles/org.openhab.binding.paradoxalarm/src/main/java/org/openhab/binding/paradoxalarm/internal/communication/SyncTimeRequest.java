@@ -15,23 +15,23 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
- * The {@link IRequest} - interface definition for the request used in the communication.
+ * The {@link SyncTimeRequest}. Request for setting the date/time on a Paradox EVO panel.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public interface IRequest {
+public class SyncTimeRequest extends Request {
 
-    IResponseReceiver getResponseReceiver();
+    public SyncTimeRequest(IPPacket packet, IResponseReceiver receiver) {
+        super(RequestType.SYNC_TIME, packet, receiver);
+    }
 
-    IPPacket getRequestPacket();
+    @Override
+    public boolean isResponseExpected() {
+        return false;
+    }
 
-    void setTimeStamp();
-
-    boolean isTimeStampExpired(long expirationTreshold);
-
-    RequestType getType();
-
-    default boolean isResponseExpected() {
-        return true;
+    @Override
+    public String toString() {
+        return "SyncTimeRequest [getType()=" + getType() + "]";
     }
 }

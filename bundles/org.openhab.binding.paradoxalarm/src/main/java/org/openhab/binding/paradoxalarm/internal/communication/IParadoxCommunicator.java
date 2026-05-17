@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +41,6 @@ public interface IParadoxCommunicator extends IParadoxInitialLoginCommunicator {
     void initializeData();
 
     MemoryMap getMemoryMap();
+
+    void syncTime(ZonedDateTime time);
 }
