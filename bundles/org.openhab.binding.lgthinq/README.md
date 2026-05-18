@@ -22,11 +22,11 @@ supported**.
 Major structural changes were introduced in the official version,
 including:
 
--   Standardization and renaming of channels\
--   Reorganization of metadata\
--   New Thing IDs\
--   Updated discovery and bridge flow\
--   Conformance to openHAB's add-on development guidelines
+- Standardization and renaming of channels\
+- Reorganization of metadata\
+- New Thing IDs\
+- Updated discovery and bridge flow\
+- Conformance to openHAB's add-on development guidelines
 
 Because of these differences, **Things created by older bindings are not
 compatible and cannot be migrated automatically**.
@@ -35,17 +35,17 @@ compatible and cannot be migrated automatically**.
 
 To migrate successfully:
 
-1.  **Delete all existing LG ThinQ Things**, including:
+1. **Delete all existing LG ThinQ Things**, including:
 
-    -   The LG ThinQ Bridge\
-    -   All discovered LG ThinQ devices
+    - The LG ThinQ Bridge\
+    - All discovered LG ThinQ devices
 
-2.  **Install the official LG ThinQ binding** from the openHAB Add-on
+1. **Install the official LG ThinQ binding** from the openHAB Add-on
     Store.
 
-3.  **Create a new LG ThinQ Bridge Thing** using the official binding.
+1. **Create a new LG ThinQ Bridge Thing** using the official binding.
 
-4.  **Allow auto-discovery** to detect your devices again and re-add
+1. **Allow auto-discovery** to detect your devices again and re-add
     them.
 
 ### What Can Be Preserved?
@@ -54,8 +54,8 @@ Your **Items do NOT need to be deleted**.
 
 You may:
 
--   Keep all existing Items\
--   Re-link each Item to its corresponding new channel once devices are
+- Keep all existing Items\
+- Re-link each Item to its corresponding new channel once devices are
     rediscovered
 
 This allows you to preserve UI pages, sitemaps, HABPanels, and
