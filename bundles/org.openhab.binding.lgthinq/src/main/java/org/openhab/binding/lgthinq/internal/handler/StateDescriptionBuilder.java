@@ -42,8 +42,8 @@ public final class StateDescriptionBuilder {
      */
     public static <V> void setStateOptions(LGThinQStateDescriptionProvider provider, ChannelUID channelUID,
             Map<String, V> mapping, Function<Map.Entry<String, V>, String> labelFn) {
-        List<StateOption> options = mapping.entrySet().stream()
-                .map(e -> new StateOption(e.getKey(), labelFn.apply(e))).toList();
+        List<StateOption> options = mapping.entrySet().stream().map(e -> new StateOption(e.getKey(), labelFn.apply(e)))
+                .toList();
         provider.setStateOptions(channelUID, options);
     }
 

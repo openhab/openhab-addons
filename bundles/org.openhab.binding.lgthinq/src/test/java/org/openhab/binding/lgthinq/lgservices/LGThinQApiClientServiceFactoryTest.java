@@ -55,8 +55,7 @@ class LGThinQApiClientServiceFactoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "thinq1, LGThinQDishWasherApiV1ClientServiceImpl",
-            "thinq2, LGThinQDishWasherApiV2ClientServiceImpl" })
+    @CsvSource({ "thinq1, LGThinQDishWasherApiV1ClientServiceImpl", "thinq2, LGThinQDishWasherApiV2ClientServiceImpl" })
     void newDishWasherApiClientServiceReturnsCorrectImpl(String platform, String expectedClass) {
         Object service = LGThinQApiClientServiceFactory.newDishWasherApiClientService(platform, mockHttpFactory());
         assertEquals(expectedClass, service.getClass().getSimpleName());
