@@ -120,8 +120,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                     new StringType(shot.getFreshAirFilterState()));
         }
         if (isLinked(extendedInfo.channel(CHANNEL_FR_WATER_FILTER))) {
-            updateState(extendedInfo.channel(CHANNEL_FR_WATER_FILTER),
-                    new StringType(shot.getWaterFilterUsedMonth()));
+            updateState(extendedInfo.channel(CHANNEL_FR_WATER_FILTER), new StringType(shot.getWaterFilterUsedMonth()));
         }
 
         updateState(dashboard.channel(CHANNEL_FR_REF_TEMP_UNIT), new StringType(shot.getTempUnit()));
@@ -267,18 +266,16 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 CoreItemFactory.STRING, !cap.getExpressFreezeModeMap().isEmpty());
         manageDynChannel(dashboard.channel(CHANNEL_FR_EXPRESS_COOL_MODE), CHANNEL_FR_EXPRESS_COOL_MODE,
                 CoreItemFactory.SWITCH, cap.isExpressCoolModePresent());
-        manageDynChannel(dashboard.channel(CHANNEL_FR_VACATION_MODE), CHANNEL_FR_VACATION_MODE,
-                CoreItemFactory.SWITCH, cap.isEcoFriendlyModePresent());
+        manageDynChannel(dashboard.channel(CHANNEL_FR_VACATION_MODE), CHANNEL_FR_VACATION_MODE, CoreItemFactory.SWITCH,
+                cap.isEcoFriendlyModePresent());
 
         Unit<Temperature> unTemp = getTemperatureUnit(getLastShot());
         if (SIUnits.CELSIUS.equals(unTemp)) {
             loadChannelTempStateOption(cap.getFridgeTempCMap(), dashboard.channel(CHANNEL_FR_FRIDGE_TEMP_ID), unTemp);
-            loadChannelTempStateOption(cap.getFreezerTempCMap(), dashboard.channel(CHANNEL_FR_FREEZER_TEMP_ID),
-                    unTemp);
+            loadChannelTempStateOption(cap.getFreezerTempCMap(), dashboard.channel(CHANNEL_FR_FREEZER_TEMP_ID), unTemp);
         } else {
             loadChannelTempStateOption(cap.getFridgeTempFMap(), dashboard.channel(CHANNEL_FR_FRIDGE_TEMP_ID), unTemp);
-            loadChannelTempStateOption(cap.getFreezerTempFMap(), dashboard.channel(CHANNEL_FR_FREEZER_TEMP_ID),
-                    unTemp);
+            loadChannelTempStateOption(cap.getFreezerTempFMap(), dashboard.channel(CHANNEL_FR_FREEZER_TEMP_ID), unTemp);
         }
         loadChannelStateOption(cap.getActiveSavingMap(), dashboard.channel(CHANNEL_FR_ACTIVE_SAVING));
         loadChannelStateOption(cap.getExpressFreezeModeMap(), dashboard.channel(CHANNEL_FR_EXPRESS_FREEZE_MODE));

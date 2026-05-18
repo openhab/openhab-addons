@@ -61,8 +61,8 @@ public class LGThinQApiClientServiceFactory {
      */
     public static LGThinQACApiClientService newACApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return versioned(lgPlatformType, httpClientFactory,
-                LGThinQACApiV1ClientServiceImpl::new, LGThinQACApiV2ClientServiceImpl::new);
+        return versioned(lgPlatformType, httpClientFactory, LGThinQACApiV1ClientServiceImpl::new,
+                LGThinQACApiV2ClientServiceImpl::new);
     }
 
     /**
@@ -74,8 +74,8 @@ public class LGThinQApiClientServiceFactory {
      */
     public static LGThinQFridgeApiClientService newFridgeApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return versioned(lgPlatformType, httpClientFactory,
-                LGThinQFridgeApiV1ClientServiceImpl::new, LGThinQFridgeApiV2ClientServiceImpl::new);
+        return versioned(lgPlatformType, httpClientFactory, LGThinQFridgeApiV1ClientServiceImpl::new,
+                LGThinQFridgeApiV2ClientServiceImpl::new);
     }
 
     /**
@@ -87,8 +87,8 @@ public class LGThinQApiClientServiceFactory {
      */
     public static LGThinQWMApiClientService newWMApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return versioned(lgPlatformType, httpClientFactory,
-                LGThinQWMApiV1ClientServiceImpl::new, LGThinQWMApiV2ClientServiceImpl::new);
+        return versioned(lgPlatformType, httpClientFactory, LGThinQWMApiV1ClientServiceImpl::new,
+                LGThinQWMApiV2ClientServiceImpl::new);
     }
 
     /**
@@ -100,8 +100,8 @@ public class LGThinQApiClientServiceFactory {
      */
     public static LGThinQDishWasherApiClientService newDishWasherApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return versioned(lgPlatformType, httpClientFactory,
-                LGThinQDishWasherApiV1ClientServiceImpl::new, LGThinQDishWasherApiV2ClientServiceImpl::new);
+        return versioned(lgPlatformType, httpClientFactory, LGThinQDishWasherApiV1ClientServiceImpl::new,
+                LGThinQDishWasherApiV2ClientServiceImpl::new);
     }
 
     /**

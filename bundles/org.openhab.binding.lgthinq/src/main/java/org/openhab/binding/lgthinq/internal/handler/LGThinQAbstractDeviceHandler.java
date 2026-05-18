@@ -100,7 +100,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private boolean pollExtraInfoOnPowerOff = false;
 
     private enum MonitorPhase {
-        IDLE, IN_PROGRESS
+        IDLE,
+        IN_PROGRESS
     }
 
     private volatile MonitorPhase monitorPhase = MonitorPhase.IDLE;
@@ -664,8 +665,8 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.extraInfoCollectorPollingJob = scheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
-                    10, pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
+            this.extraInfoCollectorPollingJob = scheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(), 10,
+                    pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
         }
     }
 

@@ -83,12 +83,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                         .withoutChannels(this.getThing().getChannelsOfGroup(extendedInfo.uid().getId()));
                 updateThing(builder.build());
             } else if (!cap.isEnergyMonitorAvailable()) {
-                ThingBuilder builder = editThing()
-                        .withoutChannel(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID));
+                ThingBuilder builder = editThing().withoutChannel(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID));
                 updateThing(builder.build());
             } else if (!cap.isFilterMonitorAvailable()) {
-                ThingBuilder builder = editThing()
-                        .withoutChannel(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID));
+                ThingBuilder builder = editThing().withoutChannel(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID));
                 updateThing(builder.build());
             }
         } catch (LGThinqApiException e) {
@@ -192,8 +190,9 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 CoreItemFactory.SWITCH, acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {
-            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_AC_FAN_SPEED_ID),
-                    acCap.getFanSpeed(), e -> Objects.requireNonNullElse(CAP_AC_FAN_SPEED.get(e.getValue()), ""));
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    dashboard.channel(CHANNEL_AC_FAN_SPEED_ID), acCap.getFanSpeed(),
+                    e -> Objects.requireNonNullElse(CAP_AC_FAN_SPEED.get(e.getValue()), ""));
         }
         if (!acCap.getOpMode().isEmpty()) {
             StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_AC_MOD_OP_ID),
@@ -408,7 +407,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         } else {
             try {
                 double ip = Double.parseDouble(instantEnergyConsumption);
-                updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID), new QuantityType<>(ip, Units.WATT_HOUR));
+                updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID),
+                        new QuantityType<>(ip, Units.WATT_HOUR));
             } catch (NumberFormatException e) {
                 updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID), UnDefType.UNDEF);
             }
@@ -421,7 +421,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 double used = Double.parseDouble(filterUsed);
                 double max = Double.parseDouble(filterLifetime);
                 double perc = (1 - (used / max)) * 100;
-                updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID), new QuantityType<>(perc, Units.PERCENT));
+                updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID),
+                        new QuantityType<>(perc, Units.PERCENT));
             } catch (NumberFormatException ex) {
                 updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID), UnDefType.UNDEF);
             }
