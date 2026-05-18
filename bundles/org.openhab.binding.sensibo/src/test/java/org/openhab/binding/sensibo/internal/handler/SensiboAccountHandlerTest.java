@@ -14,11 +14,11 @@ package org.openhab.binding.sensibo.internal.handler;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -46,7 +45,7 @@ public class SensiboAccountHandlerTest {
     private HttpClient httpClient;
 
     private @Mock Configuration configuration;
-    private @Mock Bridge sensiboAccountMock;
+    private @Mock Bridge bridgeMock;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -89,10 +88,6 @@ public class SensiboAccountHandlerTest {
     }
 
     private void testInitialize(String podsResponse, int numExpectedPods) throws IOException {
-        // Setup account
-        final SensiboAccountConfiguration accountConfig = new SensiboAccountConfiguration();
-        accountConfig.apiKey = "APIKEY";
-        when(configuration.as(eq(SensiboAccountConfiguration.class))).thenReturn(accountConfig);
 
         // Setup initial response
         final String getPodsResponse = new String(getClass().getResourceAsStream(podsResponse).readAllBytes(),
@@ -101,10 +96,12 @@ public class SensiboAccountHandlerTest {
                 .withHeader("Accept-Encoding", equalTo("gzip"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodsResponse)));
 
-        when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);
-        when(sensiboAccountMock.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
+        // Setup account
+        when(configuration.getProperties()).thenReturn(Map.of("apiKey", "APIKEY"));
+        when(bridgeMock.getConfiguration()).thenReturn(configuration);
+        when(bridgeMock.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
 
-        final SensiboAccountHandler handler = new SensiboAccountHandler(sensiboAccountMock, httpClient);
+        final SensiboAccountHandler handler = new SensiboAccountHandler(bridgeMock, httpClient);
         handler.initialize();
 
         // Async, poll for status
