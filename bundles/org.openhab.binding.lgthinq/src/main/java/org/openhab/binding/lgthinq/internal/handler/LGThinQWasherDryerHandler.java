@@ -113,77 +113,51 @@ public class LGThinQWasherDryerHandler
     }
 
     private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
-        List<StateOption> optionsCourses = new ArrayList<>();
-        cap.getCourses().forEach((k, v) -> optionsCourses.add(new StateOption(k, emptyIfNull(v.getCourseName()))));
-        stateDescriptionProvider.setStateOptions(courseChannel, optionsCourses);
+        loadCourseOptions(cap.getCourses(), courseChannel);
     }
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         WasherDryerCapability wmCap = getCapabilities();
 
-        List<StateOption> options = new ArrayList<>();
-        wmCap.getStateFeat().getValuesMapping()
-                .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_STATE, v))));
-        stateDescriptionProvider.setStateOptions(stateChannelUID, options);
-
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stateChannelUID,
+                wmCap.getStateFeat().getValuesMapping(), CAP_WMD_STATE);
         loadOptionsCourse(wmCap, courseChannelUID);
-
-        List<StateOption> optionsTemp = new ArrayList<>();
-        wmCap.getTemperatureFeat().getValuesMapping()
-                .forEach((k, v) -> optionsTemp.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_TEMPERATURE, v))));
-        stateDescriptionProvider.setStateOptions(temperatureChannelUID, optionsTemp);
-
-        List<StateOption> optionsDoor = new ArrayList<>();
-        optionsDoor.add(new StateOption("0", "Unlocked"));
-        optionsDoor.add(new StateOption("1", "Locked"));
-        stateDescriptionProvider.setStateOptions(doorLockChannelUID, optionsDoor);
-
-        List<StateOption> optionsSpin = new ArrayList<>();
-        wmCap.getSpinFeat().getValuesMapping()
-                .forEach((k, v) -> optionsSpin.add(new StateOption(k, keyIfValueNotFound(CAP_WM_SPIN, v))));
-        stateDescriptionProvider.setStateOptions(spinChannelUID, optionsSpin);
-
-        List<StateOption> optionsRinse = new ArrayList<>();
-        wmCap.getRinseFeat().getValuesMapping()
-                .forEach((k, v) -> optionsRinse.add(new StateOption(k, keyIfValueNotFound(CAP_WM_RINSE, v))));
-        stateDescriptionProvider.setStateOptions(rinseChannelUID, optionsRinse);
-
-        List<StateOption> optionsPre = new ArrayList<>();
-        wmCap.getProcessState().getValuesMapping()
-                .forEach((k, v) -> optionsPre.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_PROCESS_STATE, v))));
-        stateDescriptionProvider.setStateOptions(processStateChannelUID, optionsPre);
-
-        List<StateOption> optionsPrevious = new ArrayList<>();
-        wmCap.getPreviousState().getValuesMapping()
-                .forEach((k, v) -> optionsPrevious.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_STATE, v))));
-        stateDescriptionProvider.setStateOptions(previousStateChannelUID, optionsPrevious);
-
-        List<StateOption> optionsChildLock = new ArrayList<>();
-        optionsChildLock.add(new StateOption("CHILDLOCK_OFF", "Unlocked"));
-        optionsChildLock.add(new StateOption("CHILDLOCK_ON", "Locked"));
-        stateDescriptionProvider.setStateOptions(childLockChannelUID, optionsChildLock);
-
-        List<StateOption> optionsDryLevel = new ArrayList<>();
-        wmCap.getDryLevel().getValuesMapping()
-                .forEach((k, v) -> optionsDryLevel.add(new StateOption(k, keyIfValueNotFound(CAP_DR_DRY_LEVEL, v))));
-        stateDescriptionProvider.setStateOptions(dryLevelChannelUID, optionsDryLevel);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, temperatureChannelUID,
+                wmCap.getTemperatureFeat().getValuesMapping(), CAP_WMD_TEMPERATURE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, doorLockChannelUID,
+                Map.of("0", "Unlocked", "1", "Locked"));
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, spinChannelUID,
+                wmCap.getSpinFeat().getValuesMapping(), CAP_WM_SPIN);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, rinseChannelUID,
+                wmCap.getRinseFeat().getValuesMapping(), CAP_WM_RINSE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, processStateChannelUID,
+                wmCap.getProcessState().getValuesMapping(), CAP_WMD_PROCESS_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, previousStateChannelUID,
+                wmCap.getPreviousState().getValuesMapping(), CAP_WMD_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, childLockChannelUID,
+                Map.of("CHILDLOCK_OFF", "Unlocked", "CHILDLOCK_ON", "Locked"));
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dryLevelChannelUID,
+                wmCap.getDryLevel().getValuesMapping(), CAP_DR_DRY_LEVEL);
 
         // the remote start channels are always present; earlier versions removed them while remote start was off
         addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_START_STOP, CoreItemFactory.SWITCH);
         addRemoteStartChannel(CHANNEL_WMD_REMOTE_COURSE, CoreItemFactory.STRING);
         loadOptionsCourse(wmCap, remoteStartCourseChannelUID);
         if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getTemperatureFeat())) {
-            stateDescriptionProvider.setStateOptions(
-                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_TEMP, CoreItemFactory.STRING), optionsTemp);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_TEMP, CoreItemFactory.STRING),
+                    wmCap.getTemperatureFeat().getValuesMapping(), CAP_WMD_TEMPERATURE);
         }
         if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getSpinFeat())) {
-            stateDescriptionProvider.setStateOptions(
-                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_SPIN, CoreItemFactory.STRING), optionsSpin);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_SPIN, CoreItemFactory.STRING),
+                    wmCap.getSpinFeat().getValuesMapping(), CAP_WM_SPIN);
         }
         if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getRinseFeat())) {
-            stateDescriptionProvider.setStateOptions(
-                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_RINSE, CoreItemFactory.STRING), optionsRinse);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_RINSE, CoreItemFactory.STRING),
+                    wmCap.getRinseFeat().getValuesMapping(), CAP_WM_RINSE);
         }
     }
 
@@ -358,7 +332,7 @@ public class LGThinQWasherDryerHandler
     }
 
     @Override
-    protected void processCommand(LGThinQAbstractDeviceHandler.AsyncCommandParams params) throws LGThinqApiException {
+    protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
         WasherDryerSnapshot lastShot = getLastShot();
         Command command = params.command;
         String simpleChannelUID;

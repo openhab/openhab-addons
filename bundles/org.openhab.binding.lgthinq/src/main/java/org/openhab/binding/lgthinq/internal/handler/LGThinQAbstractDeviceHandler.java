@@ -50,6 +50,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -226,6 +227,11 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
      */
     protected final String keyIfValueNotFound(Map<String, String> map, String key) {
         return Objects.requireNonNullElse(map.get(key), key);
+    }
+
+    protected void loadCourseOptions(Map<String, CourseDefinition> courses, ChannelUID channelUID) {
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, channelUID, courses,
+                e -> emptyIfNull(e.getValue().getCourseName()));
     }
 
     protected void startCommandExecutorQueueJob() {
@@ -796,16 +802,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             createDynChannel(channelName, channelUid, itemType);
         } else if (chan != null && (!isFeatureAvailable)) {
             updateThing(editThing().withoutChannel(chan.getUID()).build());
-        }
-    }
-
-    protected static class AsyncCommandParams {
-        final String channelUID;
-        final Command command;
-
-        public AsyncCommandParams(String channelUUID, Command command) {
-            this.channelUID = channelUUID;
-            this.command = command;
         }
     }
 
