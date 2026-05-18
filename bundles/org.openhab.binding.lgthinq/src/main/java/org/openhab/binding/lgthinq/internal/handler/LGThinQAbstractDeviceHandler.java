@@ -125,33 +125,33 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
             try {
                 processCommand(params);
-                String channelUid = getSimpleChannelUID(params.channelUID);
+                String channelUid = getSimpleChannelUID(params.channelUID());
                 if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
                     // if processed command come from POWER channel, then force updateDeviceChannels immediatly
                     // this is important to analise if the polling needs to be changed in time.
                     updateThingStateFromLG();
                 } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
-                    if (OnOffType.ON.equals(params.command)) {
+                    if (OnOffType.ON.equals(params.command())) {
                         getLogger().debug("Turning ON extended information collector");
                         if (pollExtraInfoOnPowerOff
                                 || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
                             startExtraInfoCollectorPolling();
                         }
-                    } else if (OnOffType.OFF.equals(params.command)) {
+                    } else if (OnOffType.OFF.equals(params.command())) {
                         getLogger().debug("Turning OFF extended information collector");
                         stopExtraInfoCollectorPolling();
                     } else {
                         getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
-                                params.command, CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
+                                params.command(), CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
                     }
                 }
             } catch (LGThinqException e) {
                 getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
-                        params.command, params.channelUID, e);
+                        params.command(), params.channelUID(), e);
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
                 getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
-                        params.command, params.channelUID, e);
+                        params.command(), params.channelUID(), e);
             }
         }
         getLogger().debug("Finishing QueueCommandExecutor thread...");
