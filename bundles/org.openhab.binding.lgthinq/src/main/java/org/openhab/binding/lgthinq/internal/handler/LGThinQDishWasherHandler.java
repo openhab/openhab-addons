@@ -14,9 +14,6 @@ package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
@@ -34,8 +31,6 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
-import org.openhab.core.types.StateOption;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,31 +68,20 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     }
 
     private void loadOptionsCourse(DishWasherCapability cap, ChannelUID courseChannel) {
-        List<StateOption> optionsCourses = new ArrayList<>();
-        cap.getCourses().forEach((k, v) -> optionsCourses.add(new StateOption(k, emptyIfNull(v.getCourseName()))));
-        stateDescriptionProvider.setStateOptions(courseChannel, optionsCourses);
+        loadCourseOptions(cap.getCourses(), courseChannel);
     }
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         DishWasherCapability dwCap = getCapabilities();
 
-        List<StateOption> options = new ArrayList<>();
-        dwCap.getStateFeat().getValuesMapping()
-                .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_DW_STATE, v))));
-        stateDescriptionProvider.setStateOptions(stateChannelUID, options);
-
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stateChannelUID,
+                dwCap.getStateFeat().getValuesMapping(), CAP_DW_STATE);
         loadOptionsCourse(dwCap, courseChannelUID);
-
-        List<StateOption> optionsDoor = new ArrayList<>();
-        dwCap.getDoorStateFeat().getValuesMapping()
-                .forEach((k, v) -> optionsDoor.add(new StateOption(k, keyIfValueNotFound(CAP_DW_DOOR_STATE, v))));
-        stateDescriptionProvider.setStateOptions(doorLockChannelUID, optionsDoor);
-
-        List<StateOption> optionsPre = new ArrayList<>();
-        dwCap.getProcessState().getValuesMapping()
-                .forEach((k, v) -> optionsPre.add(new StateOption(k, keyIfValueNotFound(CAP_DW_PROCESS_STATE, v))));
-        stateDescriptionProvider.setStateOptions(processStateChannelUID, optionsPre);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, doorLockChannelUID,
+                dwCap.getDoorStateFeat().getValuesMapping(), CAP_DW_DOOR_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, processStateChannelUID,
+                dwCap.getProcessState().getValuesMapping(), CAP_DW_PROCESS_STATE);
     }
 
     @Override
