@@ -116,11 +116,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final boolean blu;
 
     // Thing status
-    protected boolean autoCoIoT;
-    protected ShellyDeviceProfile profile;
+    protected volatile boolean autoCoIoT;
+    protected volatile ShellyDeviceProfile profile;
     private volatile ShellyDeviceStats stats = new ShellyDeviceStats();
-    private boolean channelsCreated = false;
-    private boolean stopping = false;
+    private volatile boolean channelsCreated = false;
+    private volatile boolean stopping = false;
     private int vibrationFilter = 0;
     private String lastWakeupReason = "";
 
@@ -297,6 +297,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (coap != null) {
             coap.stop();
         }
+        config = getConfigAs(ShellyThingConfiguration.class);
+        updateApiConfig();
         stopping = false;
         reinitializeThing();// force re-initialization
     }
@@ -1133,11 +1135,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
             }
         }
-        if (!gen2 && bindingConfig.isAutoCoIoT() && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
-                || "production_test".equalsIgnoreCase(prf.fwVersion)) {
-            if (!apiConfig.getEnableCoIOT()) {
-                logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
-            }
+        if (!gen2 && bindingConfig.isAutoCoIoT() && (version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT) >= 0
+                || "production_test".equalsIgnoreCase(prf.fwVersion))) {
             autoCoIoT = true;
         }
         if (getBool(status.update.hasUpdate) && !version.checkBeta(getString(prf.fwVersion))) {

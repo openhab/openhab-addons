@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +49,6 @@ import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,20 +114,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             webSocketClient.stop();
         } catch (Exception e) {
             logger.warn("Failed to stop ShellyHandlerFactory WebSocketClient: {}", e.getMessage(), e);
-        }
-    }
-
-    @Modified
-    public void modified(@Nullable Map<String, Object> configProperties) {
-        ShellyBindingConfiguration config = ShellyBindingConfiguration.fromProperties(configProperties);
-        if (bindingConfig.update(config, networkAddressService)) {
-            // Something changed, reinitialize all handlers
-            final Collection<ShellyThingInterface> handlers = thingTable.getAll().values();
-            new Thread(() -> {
-                for (ShellyThingInterface handler : handlers) {
-                    handler.reinitializeThing();
-                }
-            }, "OH-binding-shelly-reinitializer").start();
         }
     }
 
