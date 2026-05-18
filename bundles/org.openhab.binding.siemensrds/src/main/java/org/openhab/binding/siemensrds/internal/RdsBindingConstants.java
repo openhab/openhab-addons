@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -45,23 +48,18 @@ public class RdsBindingConstants {
 
     private static final String API = "https://api.climatixic.com/";
 
-    private static final String ARG_RDS = """
-            ?filterId=[\
-            {"asn":"RDS110"},\
-            {"asn":"RDS120"},\
-            {"asn":"RDS110.R"},\
-            {"asn":"RDS120.B"}\
-            ]\
-            """;
+    private static final String ARG_RDS = "[{\"asn\":\"RDS110\"},{\"asn\":\"RDS120\"},{\"asn\":\"RDS110.R\"},{\"asn\":\"RDS120.B\"}]";
 
-    private static final String ARG_PARENT = "?parentId=[\"%s\"]&take=100";
-    private static final String ARG_POINT = "?filterId=[%s]";
+    public static final String ARG_PARENT = "[\"%s\"]";
+    public static final String ARG_POINT = "[%s]";
 
     public static final String URL_TOKEN = API + "Token";
-    public static final String URL_PLANTS = API + "Plants" + ARG_RDS;
-    public static final String URL_POINTS = API + "DataPoints" + ARG_PARENT;
+    public static final String URL_PLANTS = API + "Plants?filterId="
+            + URLEncoder.encode(ARG_RDS, StandardCharsets.UTF_8);
+
+    public static final String URL_POINTS = API + "DataPoints?parentId=%s&take=100";
     public static final String URL_SETVAL = API + "DataPoints/%s";
-    public static final String URL_VALUES = API + "DataPoints/Values" + ARG_POINT;
+    public static final String URL_VALUES = API + "DataPoints/Values?filterId=%s";
 
     public static final String HTTP_POST = "POST";
     public static final String HTTP_GET = "GET";
