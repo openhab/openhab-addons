@@ -24,11 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -86,8 +83,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected final ItemChannelLinkRegistry itemChannelLinkRegistry;
     protected final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(30);
     protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-    private final ScheduledExecutorService pollingScheduler = Executors.newScheduledThreadPool(1);
     protected @Nullable LGThinQBridgeHandler account;
     @Nullable
     protected C thinQCapability;
@@ -249,7 +244,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected void startCommandExecutorQueueJob() {
         Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            this.commandExecutorQueueJob = getExecutorService().submit(getQueuedCommandExecutor());
+            this.commandExecutorQueueJob = scheduler.submit(getQueuedCommandExecutor());
         }
     }
 
@@ -328,10 +323,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.handler.device-cmd-queue-busy");
             }
         }
-    }
-
-    protected ExecutorService getExecutorService() {
-        return executorService;
     }
 
     public String getDeviceId() {
@@ -659,7 +650,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
         if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
             getLogger().debug("Starting LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.thingStatePollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
+            this.thingStatePollingJob = scheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
                     currentPeriodSeconds, TimeUnit.SECONDS);
         }
     }
@@ -673,7 +664,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.extraInfoCollectorPollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
+            this.extraInfoCollectorPollingJob = scheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
                     10, pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
         }
     }
