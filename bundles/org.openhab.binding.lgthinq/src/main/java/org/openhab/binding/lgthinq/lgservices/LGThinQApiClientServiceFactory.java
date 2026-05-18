@@ -42,34 +42,72 @@ public class LGThinQApiClientServiceFactory {
         return LG_API_PLATFORM_TYPE_V1.equals(platformType) ? v1Factory.apply(http) : v2Factory.apply(http);
     }
 
+    /**
+     * Creates a general-purpose API client (used for gateway/bridge operations).
+     *
+     * @param httpClientFactory the HTTP client factory provided by openHAB
+     * @return a new {@link LGThinQGeneralApiClientService}
+     */
     public static LGThinQGeneralApiClientService newGeneralApiClientService(HttpClientFactory httpClientFactory) {
         return new LGThinQGeneralApiClientService(httpClientFactory.getCommonHttpClient());
     }
 
+    /**
+     * Creates an air-conditioner API client for the given platform version.
+     *
+     * @param lgPlatformType {@code "thinq1"} for V1 or {@code "thinq2"} for V2
+     * @param httpClientFactory the HTTP client factory provided by openHAB
+     * @return a V1 or V2 implementation of {@link LGThinQACApiClientService}
+     */
     public static LGThinQACApiClientService newACApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
         return versioned(lgPlatformType, httpClientFactory,
                 LGThinQACApiV1ClientServiceImpl::new, LGThinQACApiV2ClientServiceImpl::new);
     }
 
+    /**
+     * Creates a fridge API client for the given platform version.
+     *
+     * @param lgPlatformType {@code "thinq1"} for V1 or {@code "thinq2"} for V2
+     * @param httpClientFactory the HTTP client factory provided by openHAB
+     * @return a V1 or V2 implementation of {@link LGThinQFridgeApiClientService}
+     */
     public static LGThinQFridgeApiClientService newFridgeApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
         return versioned(lgPlatformType, httpClientFactory,
                 LGThinQFridgeApiV1ClientServiceImpl::new, LGThinQFridgeApiV2ClientServiceImpl::new);
     }
 
+    /**
+     * Creates a washer/dryer API client for the given platform version.
+     *
+     * @param lgPlatformType {@code "thinq1"} for V1 or {@code "thinq2"} for V2
+     * @param httpClientFactory the HTTP client factory provided by openHAB
+     * @return a V1 or V2 implementation of {@link LGThinQWMApiClientService}
+     */
     public static LGThinQWMApiClientService newWMApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
         return versioned(lgPlatformType, httpClientFactory,
                 LGThinQWMApiV1ClientServiceImpl::new, LGThinQWMApiV2ClientServiceImpl::new);
     }
 
+    /**
+     * Creates a dishwasher API client for the given platform version.
+     *
+     * @param lgPlatformType {@code "thinq1"} for V1 or {@code "thinq2"} for V2
+     * @param httpClientFactory the HTTP client factory provided by openHAB
+     * @return a V1 or V2 implementation of {@link LGThinQDishWasherApiClientService}
+     */
     public static LGThinQDishWasherApiClientService newDishWasherApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
         return versioned(lgPlatformType, httpClientFactory,
                 LGThinQDishWasherApiV1ClientServiceImpl::new, LGThinQDishWasherApiV2ClientServiceImpl::new);
     }
 
+    /**
+     * General-purpose API client used for gateway/bridge operations (device listing, authentication).
+     * Does not support device-specific commands.
+     */
     public static final class LGThinQGeneralApiClientService
             extends LGThinQAbstractApiClientService<GenericCapability, AbstractSnapshotDefinition> {
 

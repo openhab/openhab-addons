@@ -91,7 +91,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected @Nullable LGThinQBridgeHandler account;
     @Nullable
     protected C thinQCapability;
-    private S lastShot;
+    private volatile S lastShot;
     private @Nullable Future<?> commandExecutorQueueJob;
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable ScheduledFuture<?> extraInfoCollectorPollingJob;
@@ -103,9 +103,14 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private int currentPeriodSeconds = 10;
     private int pollingExtraInfoPeriodSeconds = 60;
     private boolean pollExtraInfoOnPowerOff = false;
-    private boolean monitorV1Began = false;
+
+    private enum MonitorPhase {
+        IDLE, IN_PROGRESS
+    }
+
+    private volatile MonitorPhase monitorPhase = MonitorPhase.IDLE;
     private boolean isThingReconfigured = false;
-    private String monitorWorkId = "";
+    private volatile String monitorWorkId = "";
     private String bridgeId = "";
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     private final Runnable queuedCommandExecutor = () -> {
@@ -229,6 +234,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         return Objects.requireNonNullElse(map.get(key), key);
     }
 
+    /**
+     * Builds and registers {@link org.openhab.core.types.StateOption}s for a course channel from a
+     * {@link CourseDefinition} map.
+     *
+     * @param courses map of course key → course definition (course name used as display label)
+     * @param channelUID target channel to register the options on
+     */
     protected void loadCourseOptions(Map<String, CourseDefinition> courses, ChannelUID channelUID) {
         StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, channelUID, courses,
                 e -> emptyIfNull(e.getValue().getCourseName()));
@@ -668,7 +680,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     private void stopDeviceV1Monitor(String deviceId) {
         try {
-            monitorV1Began = false;
+            monitorPhase = MonitorPhase.IDLE;
             getLgThinQAPIClientService().stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (LGThinqDeviceV1OfflineException e) {
             getLogger().debug("Monitor stopped. Device is unavailable/disconnected", e);
@@ -693,14 +705,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     @Nullable
     protected S getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
-        // analise de platform version
         if (LG_API_PLATFORM_TYPE_V2.equals(lgPlatformType)) {
             return getLgThinQAPIClientService().getDeviceData(getBridgeId(), getDeviceId(), getCapabilities());
         } else {
             try {
-                if (!monitorV1Began) {
+                if (monitorPhase == MonitorPhase.IDLE) {
                     monitorWorkId = getLgThinQAPIClientService().startMonitor(getBridgeId(), getDeviceId());
-                    monitorV1Began = true;
+                    monitorPhase = MonitorPhase.IN_PROGRESS;
                 }
             } catch (LGThinqDeviceV1OfflineException e) {
                 try {
@@ -712,37 +723,41 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 stopDeviceV1Monitor(deviceId);
                 throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
-            int retries = 10;
-            @Nullable
-            S shot;
             try {
-                while (retries > 0) {
-                    // try to get monitoring data result 3 times.
-
-                    shot = getLgThinQAPIClientService().getMonitorData(getBridgeId(), deviceId, monitorWorkId,
-                            getDeviceType(), getCapabilities());
-                    if (shot != null) {
-                        return shot;
-                    }
-                    Thread.sleep(500);
-                    retries--;
-                }
-            } catch (LGThinqDeviceV1MonitorExpiredException | LGThinqUnmarshallException e) {
-                getLogger().debug("Monitor for device {} is invalid. Forcing stop and start to next cycle.", deviceId);
-                return null;
-            } catch (Exception e) {
-                // If it can't get monitor handler, then stop monitor and restart the process again in new
-                // interaction
-                // Force restart monitoring because of the errors returned (just in case)
-                throw new LGThinqApiException("Error getting monitor data for the device:" + deviceId, e);
+                return pollMonitorData(deviceId);
             } finally {
                 try {
                     stopDeviceV1Monitor(deviceId);
                 } catch (Exception ignored) {
                 }
             }
-            throw new LGThinqApiExhaustionException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
+    }
+
+    @Nullable
+    private S pollMonitorData(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
+        int retries = 10;
+        try {
+            while (retries > 0) {
+                @Nullable
+                S shot = getLgThinQAPIClientService().getMonitorData(getBridgeId(), deviceId, monitorWorkId,
+                        getDeviceType(), getCapabilities());
+                if (shot != null) {
+                    return shot;
+                }
+                Thread.sleep(500);
+                retries--;
+            }
+        } catch (LGThinqDeviceV1MonitorExpiredException | LGThinqUnmarshallException e) {
+            getLogger().debug("Monitor for device {} is invalid. Forcing stop and start to next cycle.", deviceId);
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error getting monitor data for the device:" + deviceId, e);
+        }
+        throw new LGThinqApiExhaustionException("Exhausted trying to get monitor data for the device:" + deviceId);
     }
 
     protected abstract void processCommand(AsyncCommandParams params) throws LGThinqApiException;
