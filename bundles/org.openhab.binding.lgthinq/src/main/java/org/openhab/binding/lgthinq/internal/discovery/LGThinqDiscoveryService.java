@@ -86,8 +86,12 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         }
     }
 
+    private static String safe(Object o) {
+        return String.valueOf(o);
+    }
+
     public void addLgDeviceDiscovery(LGDevice device) {
-        logger.debug("Thing added to discovery: {}", device.getDeviceId());
+        logger.debug("LG Thing added to discovery: {}", device.getDeviceId());
         String modelId = device.getModelName();
         ThingUID thingUID;
         ThingTypeUID thingTypeUID;
@@ -109,7 +113,10 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         properties.put(PROP_INFO_MODEL_URL_INFO, device.getModelJsonUri());
         properties.put(PROP_INFO_PLATFORM_TYPE, device.getPlatformType());
         properties.put(PROP_INFO_MODEL_ID, modelId);
-
+        logger.debug("LG Thing added to discovery: {} ", device.getDeviceId());
+        logger.debug("LG Thing properties discovered: id={}, alias={}, modelUri=[{}], platformType={}, modelId={}",
+                safe(device.getDeviceId()), safe(device.getAlias()), safe(device.getModelJsonUri()),
+                safe(device.getPlatformType()), safe(modelId));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(PROP_INFO_DEVICE_ID)
                 .withLabel(device.getAlias()).build();
