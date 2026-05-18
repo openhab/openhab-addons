@@ -291,9 +291,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     }
 
     private void loadChannelStateOption(Map<String, String> cap, ChannelUID channelUID) {
-        final List<StateOption> faOptions = new ArrayList<>();
-        cap.forEach((k, v) -> faOptions.add(new StateOption(k, v)));
-        stateDescriptionProvider.setStateOptions(channelUID, faOptions);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, channelUID, cap);
     }
 
     private void loadChannelTempStateOption(Map<String, String> cap, ChannelUID channelUID, Unit<Temperature> unTemp) {

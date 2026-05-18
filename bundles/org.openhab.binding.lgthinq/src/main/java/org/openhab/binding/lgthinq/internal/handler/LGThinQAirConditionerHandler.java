@@ -15,9 +15,7 @@ package org.openhab.binding.lgthinq.internal.handler;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,7 +44,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,27 +220,21 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getFanSpeed()
-                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_FAN_SPEED.get(v)))));
-            stateDescriptionProvider.setStateOptions(fanSpeedChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, fanSpeedChannelUID, acCap.getFanSpeed(),
+                    e -> Objects.requireNonNullElse(CAP_AC_FAN_SPEED.get(e.getValue()), ""));
         }
         if (!acCap.getOpMode().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getOpMode().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_OP_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, opModeChannelUID, acCap.getOpMode(),
+                    e -> Objects.requireNonNullElse(CAP_AC_OP_MODE.get(e.getValue()), ""));
         }
         if (!acCap.getStepLeftRight().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepLeftRight().forEach(
-                    (k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_LEFT_RIGHT_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepLeftRightChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stepLeftRightChannelUID,
+                    acCap.getStepLeftRight(),
+                    e -> Objects.requireNonNullElse(CAP_AC_STEP_LEFT_RIGHT_MODE.get(e.getValue()), ""));
         }
         if (!acCap.getStepUpDown().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepUpDown()
-                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_UP_DOWN_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepUpDownChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stepUpDownChannelUID, acCap.getStepUpDown(),
+                    e -> Objects.requireNonNullElse(CAP_AC_STEP_UP_DOWN_MODE.get(e.getValue()), ""));
         }
     }
 
