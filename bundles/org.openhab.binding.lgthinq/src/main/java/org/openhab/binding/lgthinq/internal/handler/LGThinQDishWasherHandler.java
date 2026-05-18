@@ -27,10 +27,9 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWashe
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishWasherCapability, DishWasherSnapshot> {
 
-    public final ChannelGroupUID channelGroupDashboardUID;
+    private final DeviceChannelGroup dashboard;
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
-    private final ChannelUID courseChannelUID;
-    private final ChannelUID remainTimeChannelUID;
-    private final ChannelUID stateChannelUID;
-    private final ChannelUID processStateChannelUID;
-    private final ChannelUID doorLockChannelUID;
     private final Logger logger = LoggerFactory.getLogger(LGThinQDishWasherHandler.class);
-
     private final LGThinQDishWasherApiClientService lgThinqDishWasherApiClientService;
 
     public LGThinQDishWasherHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
@@ -59,29 +52,20 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgThinqDishWasherApiClientService = LGThinQApiClientServiceFactory.newDishWasherApiClientService(lgPlatformType,
                 httpClientFactory);
-        channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
-        stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
-        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
-        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
-        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
-    }
-
-    private void loadOptionsCourse(DishWasherCapability cap, ChannelUID courseChannel) {
-        loadCourseOptions(cap.getCourses(), courseChannel);
+        dashboard = new DeviceChannelGroup(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
     }
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         DishWasherCapability dwCap = getCapabilities();
-
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stateChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_STATE_ID),
                 dwCap.getStateFeat().getValuesMapping(), CAP_DW_STATE);
-        loadOptionsCourse(dwCap, courseChannelUID);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, doorLockChannelUID,
+        loadCourseOptions(dwCap.getCourses(), dashboard.channel(CHANNEL_WMD_COURSE_ID));
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID),
                 dwCap.getDoorStateFeat().getValuesMapping(), CAP_DW_DOOR_STATE);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, processStateChannelUID,
-                dwCap.getProcessState().getValuesMapping(), CAP_DW_PROCESS_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), dwCap.getProcessState().getValuesMapping(),
+                CAP_DW_PROCESS_STATE);
     }
 
     @Override
@@ -98,11 +82,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     protected void updateDeviceChannels(DishWasherSnapshot shot) {
         updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID,
                 OnOffType.from(DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus())));
-        updateState(stateChannelUID, new StringType(shot.getState()));
-        updateState(processStateChannelUID, new StringType(shot.getProcessState()));
-        updateState(courseChannelUID, new StringType(shot.getCourse()));
-        updateState(doorLockChannelUID, new StringType(shot.getDoorLock()));
-        updateState(remainTimeChannelUID, new StringType(shot.getRemainingTime()));
+        updateState(dashboard.channel(CHANNEL_WMD_STATE_ID), new StringType(shot.getState()));
+        updateState(dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), new StringType(shot.getProcessState()));
+        updateState(dashboard.channel(CHANNEL_WMD_COURSE_ID), new StringType(shot.getCourse()));
+        updateState(dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID), new StringType(shot.getDoorLock()));
+        updateState(dashboard.channel(CHANNEL_WMD_REMAIN_TIME_ID), new StringType(shot.getRemainingTime()));
     }
 
     @Override
@@ -140,10 +124,10 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     @Override
     public void onDeviceDisconnected() {
         updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID, OnOffType.OFF);
-        updateState(stateChannelUID, UnDefType.UNDEF);
-        updateState(processStateChannelUID, UnDefType.UNDEF);
-        updateState(courseChannelUID, UnDefType.UNDEF);
-        updateState(doorLockChannelUID, UnDefType.UNDEF);
-        updateState(remainTimeChannelUID, UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_STATE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_COURSE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_REMAIN_TIME_ID), UnDefType.UNDEF);
     }
 }

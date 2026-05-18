@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.internal.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,13 +39,11 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,25 +58,9 @@ import org.slf4j.LoggerFactory;
 public class LGThinQWasherDryerHandler
         extends LGThinQAbstractDeviceHandler<WasherDryerCapability, WasherDryerSnapshot> {
 
-    public final ChannelGroupUID channelGroupRemoteStartUID;
-    public final ChannelGroupUID channelGroupDashboardUID;
+    private final DeviceChannelGroup dashboard;
+    private final DeviceChannelGroup remoteStart;
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
-    private final ChannelUID courseChannelUID;
-    private final ChannelUID remoteStartStopChannelUID;
-    private final ChannelUID remainTimeChannelUID;
-    private final ChannelUID delayTimeChannelUID;
-    private final ChannelUID spinChannelUID;
-    private final ChannelUID rinseChannelUID;
-    private final ChannelUID stateChannelUID;
-    private final ChannelUID previousStateChannelUID;
-    private final ChannelUID processStateChannelUID;
-    private final ChannelUID childLockChannelUID;
-    private final ChannelUID dryLevelChannelUID;
-    private final ChannelUID temperatureChannelUID;
-    private final ChannelUID doorLockChannelUID;
-    private final ChannelUID standByModeChannelUID;
-    private final ChannelUID remoteStartFlagChannelUID;
-    private final ChannelUID remoteStartCourseChannelUID;
     private volatile @Nullable WasherDryerSnapshot remoteStartShot;
     private volatile boolean remoteStartValuesInitialized;
 
@@ -92,58 +73,40 @@ public class LGThinQWasherDryerHandler
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgThinqWMApiClientService = LGThinQApiClientServiceFactory.newWMApiClientService(lgPlatformType,
                 httpClientFactory);
-        channelGroupRemoteStartUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_WMD_REMOTE_START_GRP_ID);
-        channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
-        dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DRY_LEVEL_ID);
-        stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
-        previousStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PREVIOUS_STATE_ID);
-        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
-        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
-        delayTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DELAY_TIME_ID);
-        temperatureChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_TEMP_LEVEL_ID);
-        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
-        childLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_CHILD_LOCK_ID);
-        rinseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_RINSE_ID);
-        spinChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_SPIN_ID);
-        standByModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STAND_BY_ID);
-        remoteStartFlagChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMOTE_START_ID);
-        remoteStartStopChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_START_START_STOP);
-        remoteStartCourseChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_COURSE);
-    }
-
-    private void loadOptionsCourse(WasherDryerCapability cap, ChannelUID courseChannel) {
-        loadCourseOptions(cap.getCourses(), courseChannel);
+        dashboard = new DeviceChannelGroup(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
+        remoteStart = new DeviceChannelGroup(getThing().getUID(), CHANNEL_WMD_REMOTE_START_GRP_ID);
     }
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         WasherDryerCapability wmCap = getCapabilities();
 
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, stateChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_STATE_ID),
                 wmCap.getStateFeat().getValuesMapping(), CAP_WMD_STATE);
-        loadOptionsCourse(wmCap, courseChannelUID);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, temperatureChannelUID,
+        loadCourseOptions(wmCap.getCourses(), dashboard.channel(CHANNEL_WMD_COURSE_ID));
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_TEMP_LEVEL_ID),
                 wmCap.getTemperatureFeat().getValuesMapping(), CAP_WMD_TEMPERATURE);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, doorLockChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID),
                 Map.of("0", "Unlocked", "1", "Locked"));
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, spinChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_SPIN_ID),
                 wmCap.getSpinFeat().getValuesMapping(), CAP_WM_SPIN);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, rinseChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_RINSE_ID),
                 wmCap.getRinseFeat().getValuesMapping(), CAP_WM_RINSE);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, processStateChannelUID,
-                wmCap.getProcessState().getValuesMapping(), CAP_WMD_PROCESS_STATE);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, previousStateChannelUID,
-                wmCap.getPreviousState().getValuesMapping(), CAP_WMD_STATE);
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, childLockChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), wmCap.getProcessState().getValuesMapping(),
+                CAP_WMD_PROCESS_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                dashboard.channel(CHANNEL_WMD_PREVIOUS_STATE_ID), wmCap.getPreviousState().getValuesMapping(),
+                CAP_WMD_STATE);
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_CHILD_LOCK_ID),
                 Map.of("CHILDLOCK_OFF", "Unlocked", "CHILDLOCK_ON", "Locked"));
-        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dryLevelChannelUID,
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_WMD_DRY_LEVEL_ID),
                 wmCap.getDryLevel().getValuesMapping(), CAP_DR_DRY_LEVEL);
 
         // the remote start channels are always present; earlier versions removed them while remote start was off
         addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_START_STOP, CoreItemFactory.SWITCH);
         addRemoteStartChannel(CHANNEL_WMD_REMOTE_COURSE, CoreItemFactory.STRING);
-        loadOptionsCourse(wmCap, remoteStartCourseChannelUID);
+        loadCourseOptions(wmCap.getCourses(), remoteStart.channel(CHANNEL_WMD_REMOTE_COURSE));
         if (!FeatureDefinition.NULL_DEFINITION.equals(wmCap.getTemperatureFeat())) {
             StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
                     addRemoteStartChannel(CHANNEL_WMD_REMOTE_START_TEMP, CoreItemFactory.STRING),
@@ -162,7 +125,7 @@ public class LGThinQWasherDryerHandler
     }
 
     private ChannelUID addRemoteStartChannel(String channelId, String itemType) {
-        ChannelUID channelUID = new ChannelUID(channelGroupRemoteStartUID, channelId);
+        ChannelUID channelUID = remoteStart.channel(channelId);
         if (getThing().getChannel(channelUID) == null && getCallback() != null) {
             createDynChannel(channelId, channelUID, itemType);
         }
@@ -183,20 +146,20 @@ public class LGThinQWasherDryerHandler
     protected void updateDeviceChannels(WasherDryerSnapshot shot) throws LGThinqApiException {
         updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID,
                 OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
-        updateState(stateChannelUID, stringState(shot.getState()));
-        updateState(previousStateChannelUID, stringState(shot.getPreviousState()));
-        updateState(processStateChannelUID, stringState(shot.getProcessState()));
-        updateState(dryLevelChannelUID, new StringType(shot.getDryLevel()));
-        updateState(childLockChannelUID, new StringType(shot.getChildLock()));
-        updateState(courseChannelUID, new StringType(shot.getCourse()));
-        updateState(temperatureChannelUID, new StringType(shot.getTemperatureLevel()));
-        updateState(doorLockChannelUID, new StringType(shot.getDoorLock()));
-        updateState(remainTimeChannelUID, new StringType(shot.getRemainingTime()));
-        updateState(delayTimeChannelUID, new StringType(shot.getReserveTime()));
-        updateState(standByModeChannelUID, OnOffType.from(shot.isStandBy()));
-        updateState(remoteStartFlagChannelUID, OnOffType.from(shot.isRemoteStartEnabled()));
-        updateState(spinChannelUID, new StringType(shot.getSpin()));
-        updateState(rinseChannelUID, new StringType(shot.getRinse()));
+        updateState(dashboard.channel(CHANNEL_WMD_STATE_ID), stringState(shot.getState()));
+        updateState(dashboard.channel(CHANNEL_WMD_PREVIOUS_STATE_ID), stringState(shot.getPreviousState()));
+        updateState(dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), stringState(shot.getProcessState()));
+        updateState(dashboard.channel(CHANNEL_WMD_DRY_LEVEL_ID), new StringType(shot.getDryLevel()));
+        updateState(dashboard.channel(CHANNEL_WMD_CHILD_LOCK_ID), new StringType(shot.getChildLock()));
+        updateState(dashboard.channel(CHANNEL_WMD_COURSE_ID), new StringType(shot.getCourse()));
+        updateState(dashboard.channel(CHANNEL_WMD_TEMP_LEVEL_ID), new StringType(shot.getTemperatureLevel()));
+        updateState(dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID), new StringType(shot.getDoorLock()));
+        updateState(dashboard.channel(CHANNEL_WMD_REMAIN_TIME_ID), new StringType(shot.getRemainingTime()));
+        updateState(dashboard.channel(CHANNEL_WMD_DELAY_TIME_ID), new StringType(shot.getReserveTime()));
+        updateState(dashboard.channel(CHANNEL_WMD_STAND_BY_ID), OnOffType.from(shot.isStandBy()));
+        updateState(dashboard.channel(CHANNEL_WMD_REMOTE_START_ID), OnOffType.from(shot.isRemoteStartEnabled()));
+        updateState(dashboard.channel(CHANNEL_WMD_SPIN_ID), new StringType(shot.getSpin()));
+        updateState(dashboard.channel(CHANNEL_WMD_RINSE_ID), new StringType(shot.getRinse()));
         // in stand-by the machine reports no course, so keep the settings it had while remote start was enabled
         WasherDryerCapability cap = getCapabilities();
         if (!shot.isRemoteStartEnabled()) {
@@ -207,12 +170,11 @@ public class LGThinQWasherDryerHandler
             // fill the remote start items once with the washer's settings, afterwards they keep the user's values
             if (!remoteStartValuesInitialized) {
                 remoteStartValuesInitialized = true;
-                updateState(remoteStartStopChannelUID, OnOffType.OFF);
-                updateState(remoteStartCourseChannelUID, new StringType(shot.getCourse()));
+                updateState(remoteStart.channel(CHANNEL_WMD_REMOTE_START_START_STOP), OnOffType.OFF);
+                updateState(remoteStart.channel(CHANNEL_WMD_REMOTE_COURSE), new StringType(shot.getCourse()));
                 for (String channelId : List.of(CHANNEL_WMD_REMOTE_START_TEMP, CHANNEL_WMD_REMOTE_START_SPIN,
                         CHANNEL_WMD_REMOTE_START_RINSE)) {
-                    updateState(new ChannelUID(channelGroupRemoteStartUID, channelId),
-                            new StringType(getFeatureValue(channelId, shot)));
+                    updateState(remoteStart.channel(channelId), new StringType(getFeatureValue(channelId, shot)));
                 }
             }
         }
@@ -266,7 +228,7 @@ public class LGThinQWasherDryerHandler
             return Collections.emptyMap();
         }
         WasherDryerSnapshot rsShot = selectRemoteStartShot(cap, lastShot, remoteStartShot);
-        String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
+        String selectedCourse = getItemLinkedValue(remoteStart.channel(CHANNEL_WMD_REMOTE_COURSE));
         if (selectedCourse == null || cap.getNotSelectedCourseKey().equals(selectedCourse)
                 || !cap.getCourses().containsKey(selectedCourse)) {
             selectedCourse = getCurrentCourse(cap, rsShot);
@@ -334,9 +296,9 @@ public class LGThinQWasherDryerHandler
     @Override
     protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
         WasherDryerSnapshot lastShot = getLastShot();
-        Command command = params.command;
+        Command command = params.command();
         String simpleChannelUID;
-        simpleChannelUID = getSimpleChannelUID(params.channelUID);
+        simpleChannelUID = getSimpleChannelUID(params.channelUID());
         switch (simpleChannelUID) {
             case CHANNEL_WMD_REMOTE_START_START_STOP: {
                 if (command instanceof OnOffType ooCmd) {
@@ -378,7 +340,7 @@ public class LGThinQWasherDryerHandler
                 // the values are read from the linked items when the remote start is sent
                 break;
             default: {
-                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID());
             }
         }
     }
@@ -403,13 +365,13 @@ public class LGThinQWasherDryerHandler
     @Override
     public void onDeviceDisconnected() {
         updateState(CHANNEL_DASHBOARD_GRP_WITH_SEP + CHANNEL_AC_POWER_ID, OnOffType.OFF);
-        updateState(stateChannelUID, UnDefType.UNDEF);
-        updateState(previousStateChannelUID, UnDefType.UNDEF);
-        updateState(processStateChannelUID, UnDefType.UNDEF);
-        updateState(courseChannelUID, UnDefType.UNDEF);
-        updateState(temperatureChannelUID, UnDefType.UNDEF);
-        updateState(doorLockChannelUID, UnDefType.UNDEF);
-        updateState(remainTimeChannelUID, UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_STATE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_PREVIOUS_STATE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_PROCESS_STATE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_COURSE_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_TEMP_LEVEL_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_DOOR_LOCK_ID), UnDefType.UNDEF);
+        updateState(dashboard.channel(CHANNEL_WMD_REMAIN_TIME_ID), UnDefType.UNDEF);
     }
 
     private State stringState(String value) {
