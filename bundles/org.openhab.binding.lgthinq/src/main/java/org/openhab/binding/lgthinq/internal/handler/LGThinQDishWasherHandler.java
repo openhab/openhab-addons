@@ -122,13 +122,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     protected DeviceTypes getDeviceType() {
-        if (THING_TYPE_WASHING_MACHINE.equals(getThing().getThingTypeUID())) {
-            return DeviceTypes.WASHERDRYER_MACHINE;
-        } else if (THING_TYPE_WASHING_TOWER.equals(getThing().getThingTypeUID())) {
-            return DeviceTypes.WASHER_TOWER;
+        if (THING_TYPE_DISHWASHER.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.DISH_WASHER;
         } else {
             throw new IllegalArgumentException(
-                    "DeviceTypeUuid [" + getThing().getThingTypeUID() + "] not expected for WashingTower/Machine");
+                    "DeviceTypeUuid [" + getThing().getThingTypeUID() + "] not expected for DishWashing/Machine");
         }
     }
 
