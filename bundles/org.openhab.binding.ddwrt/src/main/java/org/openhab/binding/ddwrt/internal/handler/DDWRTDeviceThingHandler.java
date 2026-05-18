@@ -14,7 +14,6 @@ package org.openhab.binding.ddwrt.internal.handler;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_LOAD;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_TEMP;
-import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_FIRMWARE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_IN;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_OUT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
@@ -110,7 +109,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     @Override
     protected @Nullable DDWRTBaseDevice getEntity(DDWRTNetworkCache cache) {
         // Try MAC first
-        final @Nullable String mac = getThing().getProperties().get("mac");
+        final @Nullable String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
         if (mac != null && !isBlank(mac)) {
             DDWRTBaseDevice d = cache.getDevice(mac);
             if (d != null) {
@@ -133,7 +132,6 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             case CHANNEL_UPTIME -> device.getUptimeSince();
             case CHANNEL_CPU_LOAD -> new DecimalType(device.getCpuLoad());
             case CHANNEL_CPU_TEMP -> new QuantityType<Temperature>(device.getCpuTemp(), SIUnits.CELSIUS);
-            case CHANNEL_FIRMWARE -> StringType.valueOf(device.getFirmware());
             case CHANNEL_WAN_IP -> device.isGateway() ? StringType.valueOf(device.getWanIp()) : UnDefType.UNDEF;
             case CHANNEL_WAN_IN -> device.isGateway() ? new DecimalType(device.getWanIn()) : UnDefType.UNDEF;
             case CHANNEL_WAN_OUT -> device.isGateway() ? new DecimalType(device.getWanOut()) : UnDefType.UNDEF;
@@ -161,14 +159,15 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     @Override
     protected void updateProperties(@Nullable DDWRTBaseDevice device) {
         if (device != null) {
-            updateProperty("mac", device.getMac());
-            updateProperty("model", device.getModel());
+            updateProperty(Thing.PROPERTY_MAC_ADDRESS, device.getMac());
+            updateProperty(Thing.PROPERTY_MODEL_ID, device.getModel());
             updateProperty("chipset", device.getChipset());
+            updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmware());
         }
     }
 
     private @Nullable DDWRTBaseDevice findDevice(DDWRTNetwork net) {
-        final @Nullable String mac = getThing().getProperties().get("mac");
+        final @Nullable String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
         if (mac != null && !isBlank(mac)) {
             DDWRTBaseDevice d = net.getDeviceByMac(mac);
             if (d != null) {

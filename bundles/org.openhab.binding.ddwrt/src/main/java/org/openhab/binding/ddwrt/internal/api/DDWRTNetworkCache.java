@@ -486,8 +486,8 @@ public class DDWRTNetworkCache {
     public void putArpEntry(String source, String mac, String ip, Instant lastSeen, boolean isStatic) {
         String normalizedMac = normalizeMac(mac);
         ArpState state = isStatic ? ArpState.STATIC : classifyDynamicArp(lastSeen);
-        arpEntriesBySource.computeIfAbsent(source, k -> new ConcurrentHashMap<>()).put(normalizedMac,
-                new ArpEntry(normalizedMac, ip, lastSeen, state, source));
+        Objects.requireNonNull(arpEntriesBySource.computeIfAbsent(source, k -> new ConcurrentHashMap<>()))
+                .put(normalizedMac, new ArpEntry(normalizedMac, ip, lastSeen, state, source));
     }
 
     public void replaceArpEntries(String source, List<ArpEntry> entries) {

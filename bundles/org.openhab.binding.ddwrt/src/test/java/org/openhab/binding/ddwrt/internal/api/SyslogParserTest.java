@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +50,7 @@ class SyslogParserTest {
         String line = "Feb 21 16:21:46 gateway daemon.info dnsmasq-dhcp[25563]: DHCPACK(br0) 192.168.1.100 aa:bb:cc:dd:ee:ff MyPhone";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.hostname, is(equalTo("gateway")));
         assertThat(event.process, is(equalTo("dnsmasq-dhcp")));
         assertThat(event.pid, is(equalTo(25563)));
@@ -62,6 +64,7 @@ class SyslogParserTest {
         String line = "Feb 21 16:08:56 gateway authpriv.notice dropbear[2663]: Password auth succeeded for 'root' from 10.0.0.5:54321";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(equalTo("dropbear")));
         assertThat(event.pid, is(equalTo(2663)));
         assertThat(event.facility, is(equalTo("authpriv")));
@@ -73,6 +76,7 @@ class SyslogParserTest {
         String line = "Mar 15 10:30:00 router crond[1234]: job completed";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.hostname, is(equalTo("router")));
         assertThat(event.process, is(equalTo("crond")));
         assertThat(event.pid, is(equalTo(1234)));
@@ -87,6 +91,7 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway kernel: some kernel message";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(equalTo("kernel")));
         assertThat(event.pid, is(nullValue()));
         assertThat(event.message, is(equalTo("some kernel message")));
@@ -97,12 +102,14 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway kernel: IPTABLES DROP IN=eth0 OUT= SRC=10.0.0.1 DST=192.168.1.1 PROTO=TCP SPT=12345 DPT=80 WINDOW=0";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.firewall, is(notNullValue()));
-        assertThat(event.firewall.sourceIp, is(equalTo("10.0.0.1")));
-        assertThat(event.firewall.destIp, is(equalTo("192.168.1.1")));
-        assertThat(event.firewall.protocol, is(equalTo("TCP")));
-        assertThat(event.firewall.sourcePort, is(equalTo(12345)));
-        assertThat(event.firewall.destPort, is(equalTo(80)));
+        SyslogParser.FirewallInfo fw = Objects.requireNonNull(event.firewall);
+        assertThat(fw.sourceIp, is(equalTo("10.0.0.1")));
+        assertThat(fw.destIp, is(equalTo("192.168.1.1")));
+        assertThat(fw.protocol, is(equalTo("TCP")));
+        assertThat(fw.sourcePort, is(equalTo(12345)));
+        assertThat(fw.destPort, is(equalTo(80)));
     }
 
     // ---- Wireless events ----
@@ -112,6 +119,7 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway kern.info kernel: wireless: STA aa:bb:cc:dd:ee:ff associated";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.isWirelessEvent, is(true));
     }
 
@@ -120,6 +128,7 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway daemon.info dnsmasq[123]: query from 10.0.0.1";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.isWirelessEvent, is(false));
     }
 
@@ -130,6 +139,7 @@ class SyslogParserTest {
         String line = "{\"message\":{\"msg\":\"dnsmasq-dhcp[1234]: DHCPACK(br-lan) 192.168.1.50 aa:bb:cc:dd:ee:ff phone\",\"id\":1,\"priority\":30,\"source\":0,\"time\":1740000000000000}}";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(equalTo("dnsmasq-dhcp")));
         assertThat(event.pid, is(equalTo(1234)));
         assertThat(event.message, is(equalTo("DHCPACK(br-lan) 192.168.1.50 aa:bb:cc:dd:ee:ff phone")));
@@ -143,6 +153,7 @@ class SyslogParserTest {
         String line = "{\"message\":{\"msg\":\"netifd: Interface 'wan' is now up\",\"id\":2,\"priority\":14,\"source\":0,\"time\":1740000000000000}}";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(equalTo("netifd")));
         assertThat(event.pid, is(nullValue()));
         assertThat(event.message, is(equalTo("Interface 'wan' is now up")));
@@ -158,6 +169,7 @@ class SyslogParserTest {
         String line = "Mar 15 10:30:00 2026 daemon.info dnsmasq[100]: test message";
         SyslogEvent event = parser.parseLine(line, 2026, owrtPattern);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(equalTo("dnsmasq")));
         assertThat(event.message, is(equalTo("test message")));
     }
@@ -181,6 +193,7 @@ class SyslogParserTest {
         String line = "\u001B[32mMar 10 12:00:00 gateway daemon.info test[1]: hello world\u001B[0m";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.message, is(equalTo("hello world")));
     }
 
@@ -189,6 +202,7 @@ class SyslogParserTest {
         String line = "Mar  4 09:15:30 router daemon.info sshd[500]: Accepted publickey for root";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.timestamp, is(notNullValue()));
         assertThat(event.process, is(equalTo("sshd")));
     }
@@ -201,6 +215,7 @@ class SyslogParserTest {
         String line = "{\"message\":{\"msg\":\"panic[1]: kernel panic\",\"id\":1,\"priority\":0,\"source\":0,\"time\":1740000000000000}}";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.severity, is(equalTo("emerg")));
         assertThat(event.facility, is(equalTo("kern")));
     }
@@ -211,6 +226,7 @@ class SyslogParserTest {
         String line = "{\"message\":{\"msg\":\"dnsmasq[1]: warning message\",\"id\":1,\"priority\":28,\"source\":0,\"time\":1740000000000000}}";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.severity, is(equalTo("warning")));
         assertThat(event.facility, is(equalTo("daemon")));
     }
@@ -220,6 +236,7 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway daemon.info dnsmasq[123]: query from 10.0.0.1";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.firewall, is(nullValue()));
     }
 
@@ -228,6 +245,7 @@ class SyslogParserTest {
         String line = "Mar 10 12:00:00 gateway daemon.info dnsmasq-dhcp.sub[999]: test";
         SyslogEvent event = parser.parseLine(line, 2026, null);
         assertThat(event, is(notNullValue()));
+        event = Objects.requireNonNull(event);
         assertThat(event.process, is(not(equalTo(""))));
     }
 }

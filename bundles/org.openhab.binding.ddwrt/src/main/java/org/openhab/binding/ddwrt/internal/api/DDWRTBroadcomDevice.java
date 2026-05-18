@@ -82,7 +82,7 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
         // Query per-radio noise floor (dBm) — cached per interface since it's the same
         // for all clients on the same radio
-        final int noiseDbm = noiseCache.computeIfAbsent(iface, i -> {
+        Integer noiseVal = noiseCache.computeIfAbsent(iface, i -> {
             String noiseStr = safeTrim(runner.execStdout("wl -i " + i + " noise"));
             if (!noiseStr.isEmpty()) {
                 try {
@@ -93,6 +93,7 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
             }
             return 0;
         });
+        final int noiseDbm = noiseVal != null ? noiseVal : 0;
 
         int snr = (noiseDbm != 0) ? signalDbm - noiseDbm : 0;
         cache.computeWirelessClient(clientMac, c -> {

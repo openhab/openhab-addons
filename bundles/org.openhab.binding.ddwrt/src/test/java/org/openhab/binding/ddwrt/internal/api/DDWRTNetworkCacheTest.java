@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +50,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTClient result = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getHostname(), is(equalTo("TestPhone")));
     }
 
@@ -69,6 +71,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTClient result = cache.getWirelessClientByHostname("Lee-Pixel-8a");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getMac(), is(equalTo("aa:bb:cc:dd:ee:ff")));
     }
 
@@ -81,6 +84,7 @@ class DDWRTNetworkCacheTest {
         // Sanitized form matches thing ID
         DDWRTClient result = cache.getWirelessClientByHostname("leepixel8a");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getMac(), is(equalTo("aa:bb:cc:dd:ee:ff")));
     }
 
@@ -122,6 +126,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTClient updated = cache.getWirelessClient("aa:bb:cc:dd:ee:ff");
         assertThat(updated, is(notNullValue()));
+        updated = Objects.requireNonNull(updated);
         assertThat(updated.getHostname(), is(equalTo("Phone")));
         assertThat(updated.getIpAddress(), is(equalTo("192.168.1.50")));
     }
@@ -149,6 +154,7 @@ class DDWRTNetworkCacheTest {
         // New entry has AP info carried over
         DDWRTClient merged = cache.getWirelessClient("11:22:33:44:55:00");
         assertThat(merged, is(notNullValue()));
+        merged = Objects.requireNonNull(merged);
         assertThat(merged.getApMac(), is(equalTo("11:22:33:44:55:66")));
         assertThat(merged.getSsid(), is(equalTo("MyWiFi")));
     }
@@ -252,6 +258,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTRadio result = cache.getRadio("aa:bb:cc:dd:ee:ff:wl0");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getSsid(), is(equalTo("TestNetwork")));
         assertThat(result.getChannel(), is(equalTo(6)));
     }
@@ -278,6 +285,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTFirewallRule result = cache.getFirewallRule("filter_rule3");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getDescription(), is(equalTo("Bedtime 10-12")));
         assertThat(result.isEnabled(), is(true));
     }
@@ -293,6 +301,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTDhcpLease result = cache.getDhcpLease("aa:bb:cc:dd:ee:ff");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getIpAddress(), is(equalTo("192.168.1.50")));
     }
 
@@ -304,6 +313,7 @@ class DDWRTNetworkCacheTest {
 
         DDWRTDhcpLease result = cache.getDhcpLeaseByHostname("Phone");
         assertThat(result, is(notNullValue()));
+        result = Objects.requireNonNull(result);
         assertThat(result.getMac(), is(equalTo("aa:bb:cc:dd:ee:ff")));
     }
 

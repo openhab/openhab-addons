@@ -290,7 +290,8 @@ public class DDWRTNetwork {
         // ARP/neighbor information comes from the gateway by default.
         // Fall back to the local openHAB host only when no gateway is present.
         boolean hasGateway = cache.getDevices().stream().anyMatch(d -> d.isGateway() && d.isOnline());
-        if (config != null && config.useLocalArpCache && !hasGateway) {
+        DDWRTNetworkConfiguration localCfg = config;
+        if (localCfg != null && localCfg.useLocalArpCache && !hasGateway) {
             refreshLocalArpCache();
         } else {
             cache.clearArpEntries("local-host");

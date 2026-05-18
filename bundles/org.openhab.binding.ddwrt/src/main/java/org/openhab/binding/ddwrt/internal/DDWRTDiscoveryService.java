@@ -152,11 +152,10 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             logger.debug("Discovered device: '{}'", thingUID);
 
             final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
-                    devCfg.user, "refreshInterval", devCfg.refreshInterval, "mac", device.getMac(), "model",
-                    device.getModel());
+                    devCfg.user, "refreshInterval", devCfg.refreshInterval);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).withProperties(props).withRepresentationProperty("mac").build();
+                    .withLabel(label).withProperties(props).withRepresentationProperty("hostname").build();
 
             thingDiscovered(result);
         });
@@ -253,7 +252,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         for (DiscoveryResult entry : new ArrayList<>(entries)) {
             ThingUID existingUID = entry.getThingUID();
-            if (existingUID == null || existingUID.equals(newThingUID)) {
+            if (existingUID.equals(newThingUID)) {
                 continue;
             }
 
@@ -265,7 +264,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             // Only operate on entries that belong to the same bridge
             ThingUID existingBridgeUID = entry.getBridgeUID();
             ThingUID newBridgeUID = thingHandler.getThing().getUID();
-            if (existingBridgeUID == null || newBridgeUID == null || !existingBridgeUID.equals(newBridgeUID)) {
+            if (existingBridgeUID == null || !existingBridgeUID.equals(newBridgeUID)) {
                 continue;
             }
 
@@ -285,9 +284,6 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     private static String normalizeHostname(String hostname) {
-        if (hostname == null) {
-            return "";
-        }
         String trimmed = hostname.trim();
         if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
             return "";
@@ -296,9 +292,6 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     private static String normalizeMac(String mac) {
-        if (mac == null) {
-            return "";
-        }
         String trimmed = mac.trim();
         if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed)) {
             return "";

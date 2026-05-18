@@ -270,13 +270,12 @@ public class SshClientManager {
         return 0;
     }
 
-    @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             Duration defaultTimeout) throws IOException {
         // Precedence: user@ in hostnames > user parameter > ~/.ssh/config > system username.
         // The config default is "root" but the user can clear it to fall through to
         // ~/.ssh/config or the system username via the HostConfigEntryResolver.
-        String effectiveUser = (user == null || user.isBlank()) ? "" : user;
+        String effectiveUser = user.isBlank() ? "" : user;
         logger.debug("Connecting to {} port {} as {}", host, port, effectiveUser);
         // Port 0 means "not set" — MINA SSHD resolves from ~/.ssh/config or defaults to 22
         ConnectFuture cf = client.connect(effectiveUser, host, port);
