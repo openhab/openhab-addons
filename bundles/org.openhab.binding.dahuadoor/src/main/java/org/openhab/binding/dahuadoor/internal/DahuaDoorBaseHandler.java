@@ -741,18 +741,51 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return null;
         }
 
-        byte[] bytes = localClient.downloadFileFromActiveSession(remotePath, DHIP_DOWNLOAD_TIMEOUT_MS);
+        String targetPath = targetDir.getPath();
+        if (targetPath.isBlank()) {
+            if (required) {
+                logger.warn("Skipping {} download: target directory is blank", logLabel);
+            } else {
+                logger.debug("Skipping optional {} download: target directory is blank", logLabel);
+            }
+            return null;
+        }
+
+        if (targetDir.exists() && !targetDir.isDirectory()) {
+            if (required) {
+                logger.warn("Skipping {} download: target path '{}' is not a directory", logLabel, targetDir);
+            } else {
+                logger.debug("Skipping optional {} download: target path '{}' is not a directory", logLabel, targetDir);
+            }
+            return null;
+        }
+
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            if (required) {
+                logger.warn("Could not create target directory '{}' for {}", targetDir, logLabel);
+            } else {
+                logger.debug("Could not create optional target directory '{}' for {}", targetDir, logLabel);
+            }
+            return null;
+        }
+
+        byte[] bytes;
+        try {
+            bytes = localClient.downloadFileFromActiveSession(remotePath, DHIP_DOWNLOAD_TIMEOUT_MS);
+        } catch (IOException e) {
+            if (required) {
+                logger.warn("Failed to download {} from {}: {}", logLabel, remotePath, e.getMessage());
+            } else {
+                logger.debug("Optional download failed for {} from {}: {}", logLabel, remotePath, e.getMessage());
+            }
+            return null;
+        }
         if (bytes == null || bytes.length == 0) {
             if (required) {
                 logger.warn("Failed to download {} from {}", logLabel, remotePath);
             } else {
                 logger.debug("Optional download missing for {} from {}", logLabel, remotePath);
             }
-            return null;
-        }
-
-        if (!targetDir.exists() && !targetDir.mkdirs()) {
-            logger.warn("Could not create target directory '{}' for {}", targetDir, logLabel);
             return null;
         }
 

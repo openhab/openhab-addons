@@ -91,11 +91,11 @@ Files are organized by category and type:
 All downloaded event-triggered files use a consistent timestamp-based naming scheme derived from the VTO device's local time:
 
 ```text
-Doorbell[_-1/_-2]_YYYY-MM-DD_HH-MM-SS.<extension>
-Doorbell_hangup_YYYY-MM-DD_HH-MM-SS.<extension>
-Doorbell_unlock_YYYY-MM-DD_HH-MM-SS.<extension>
-Doorbell_rec_YYYY-MM-DD_HH-MM-SS.<extension>
-Doorbell_msg_YYYY-MM-DD_HH-MM-SS.<extension>
+Doorbell[_-1/_-2]_YYYY-MM-DD_HH-mm-ss.<extension>
+Doorbell_hangup_YYYY-MM-DD_HH-mm-ss.<extension>
+Doorbell_unlock_YYYY-MM-DD_HH-mm-ss.<extension>
+Doorbell_rec_YYYY-MM-DD_HH-mm-ss.<extension>
+Doorbell_msg_YYYY-MM-DD_HH-mm-ss.<extension>
 ```
 
 #### Snapshot persistence
@@ -260,7 +260,7 @@ end
 
 Intercom operation is implemented with WebRTC via the `go2rtc` binary.
 It converts the Dahua RTP audio/video stream into browser-compatible WebRTC. The audio stream is transcoded using `ffmpeg`. Hence both tools are needed.
-When `enableWebRTC=true`, the binding starts go2rtc (and the ffmpeg backchannel pipeline) during thing initialization. Furthermore, when `enableSIP=true` the binding registers itself at the VTO similar to a VTH device. Create one or more SIP terminals in the VTO menu (type `public`) for the number of parallel connections you expect (for example `9901#2`, `9901#3`, `9901#4`), then list those accounts in `sipExtension` as a comma-separated list. Use the matching `sipPassword` (single password for all accounts).
+When `enableWebRTC=true`, the binding starts go2rtc (and the ffmpeg backchannel pipeline) during thing initialization. Furthermore, when `enableSip=true` the binding registers itself at the VTO similar to a VTH device. Create one or more SIP terminals in the VTO menu (type `public`) for the number of parallel connections you expect (for example `9901#2`, `9901#3`, `9901#4`), then list those accounts in `sipExtension` as a comma-separated list. Use the matching `sipPassword` (single password for all accounts).
 You can try Dahua's default password for initial testing, but do not use it in production. Consult your VTO manual for setup details.
 Note that you need to run openHAB behind an HTTPS reverse proxy; otherwise browsers will refuse WebRTC connections. See the [openHAB reverse proxy guide](https://www.openhab.org/docs/installation/security.html#running-openhab-behind-a-reverse-proxy).
 

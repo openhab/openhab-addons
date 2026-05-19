@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -86,6 +87,8 @@ public class DahuaEventClient implements Runnable {
     private static final String SNAPSHOT_PATH = "/cgi-bin/snapshot.cgi";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final SSLSocketFactory BC_SSL_SOCKET_FACTORY = buildBcSslSocketFactory();
+    private static final String[] DOWNLOAD_LENGTH_FIELDS = { "length", "fileLength", "fileSize", "size", "totalLength",
+            "totalSize", "dataLen", "dataSize" };
 
     /** Whether to use HTTPS (port 443) or HTTP (port 80) for snapshot and door-open requests. */
     private final boolean httpsAvailable;
@@ -847,8 +850,10 @@ public class DahuaEventClient implements Runnable {
      * @param remotePath full file path on VTO SD card (for example /mnt/sd/Record/.../file.dav)
      * @param timeoutMs socket timeout for this transfer
      * @return file bytes or null on failure
+     * @throws IOException if the download times out or a socket error occurs
      */
-    public synchronized byte @Nullable [] downloadFileFromActiveSession(String remotePath, int timeoutMs) {
+    public synchronized byte @Nullable [] downloadFileFromActiveSession(String remotePath, int timeoutMs)
+            throws IOException {
         if (remotePath.isBlank()) {
             return null;
         }
@@ -875,6 +880,7 @@ public class DahuaEventClient implements Runnable {
 
             ByteArrayOutputStream fileBytes = new ByteArrayOutputStream(64 * 1024);
             boolean sawBinary = false;
+            Long expectedLength = null;
             long deadline = System.currentTimeMillis() + timeoutMs;
 
             while (System.currentTimeMillis() < deadline) {
@@ -900,6 +906,7 @@ public class DahuaEventClient implements Runnable {
                             logger.debug("DHIP download error for {}: {}", remotePath, asJson.get("error"));
                             return null;
                         }
+                        expectedLength = mergeExpectedLength(expectedLength, extractExpectedLength(asJson));
                         continue;
                     }
 
@@ -910,6 +917,9 @@ public class DahuaEventClient implements Runnable {
                             logger.debug("DHIP download prefix error for {}: {}", remotePath, prefixJson.get("error"));
                             return null;
                         }
+                        if (prefixJson != null) {
+                            expectedLength = mergeExpectedLength(expectedLength, extractExpectedLength(prefixJson));
+                        }
                         if (prefixEnd < payload.length) {
                             fileBytes.write(payload, prefixEnd, payload.length - prefixEnd);
                             sawBinary = true;
@@ -918,6 +928,10 @@ public class DahuaEventClient implements Runnable {
                         fileBytes.write(payload);
                         sawBinary = true;
                     }
+
+                    if (expectedLength != null && fileBytes.size() >= expectedLength) {
+                        return fileBytes.toByteArray();
+                    }
                 }
             }
 
@@ -925,16 +939,29 @@ public class DahuaEventClient implements Runnable {
                 logger.debug("DHIP download returned no binary payload for {}", remotePath);
                 return null;
             }
+            if (expectedLength != null && fileBytes.size() < expectedLength) {
+                throw new DahuaDownloadTimeoutException("DHIP download timed out before completion for " + remotePath
+                        + " (received " + fileBytes.size() + " of " + expectedLength + " bytes)");
+            }
             return fileBytes.toByteArray();
+        } catch (DahuaDownloadTimeoutException e) {
+            throw e;
         } catch (IOException e) {
-            logger.debug("DHIP download failed for {}: {}", remotePath, e.getMessage());
-            return null;
+            throw new IOException("DHIP download failed for " + remotePath + ": " + e.getMessage(), e);
         } finally {
             try {
                 localSock.setSoTimeout(oldTimeout);
             } catch (IOException e) {
                 logger.trace("Could not restore socket timeout after DHIP download", e);
             }
+        }
+    }
+
+    public static class DahuaDownloadTimeoutException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        public DahuaDownloadTimeoutException(String message) {
+            super(message);
         }
     }
 
@@ -948,6 +975,64 @@ public class DahuaEventClient implements Runnable {
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    private @Nullable Long extractExpectedLength(JsonObject json) {
+        Long length = extractLengthFromObject(json);
+        if (length != null) {
+            return length;
+        }
+        if (json.has("params") && json.get("params").isJsonObject()) {
+            length = extractLengthFromObject(json.getAsJsonObject("params"));
+            if (length != null) {
+                return length;
+            }
+        }
+        if (json.has("result") && json.get("result").isJsonObject()) {
+            length = extractLengthFromObject(json.getAsJsonObject("result"));
+            if (length != null) {
+                return length;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long extractLengthFromObject(JsonObject obj) {
+        for (String field : DOWNLOAD_LENGTH_FIELDS) {
+            if (obj.has(field)) {
+                Long value = parseLengthValue(obj.get(field));
+                if (value != null && value > 0) {
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long parseLengthValue(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            if (element.getAsJsonPrimitive().isNumber()) {
+                return element.getAsLong();
+            }
+            if (element.getAsJsonPrimitive().isString()) {
+                try {
+                    return Long.parseLong(element.getAsString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long mergeExpectedLength(@Nullable Long current, @Nullable Long candidate) {
+        if (candidate == null) {
+            return current;
+        }
+        if (current == null) {
+            return candidate;
+        }
+        return Math.max(current, candidate);
     }
 
     private int findJsonPrefixEnd(byte[] payload) {
