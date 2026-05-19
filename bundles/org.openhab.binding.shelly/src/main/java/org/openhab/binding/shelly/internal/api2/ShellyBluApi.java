@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
-    private boolean connected = false; // true = BLU devices has connected
+    private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private static final int PID_CYCLE_TRESHHOLD = 50;
