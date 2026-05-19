@@ -570,7 +570,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             }
 
             // if battery is low and description is null then apply the low battery text
-            if (OnOffType.ON.equals(batteryLowState) && description == null) {
+            if (OnOffType.ON.equals(batteryLowState) && (description == null || description.isBlank())) {
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
                 return;
             }
