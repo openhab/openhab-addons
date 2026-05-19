@@ -450,8 +450,18 @@ public class PlayStreamServlet extends HttpServlet {
         @Nullable
         String clientId = handler.assignClientForSession(sessionId);
         if (clientId == null) {
-            sendBase64Message(resp, HttpServletResponse.SC_CONFLICT, "No free outgoing SIP client available");
-            return null;
+            @Nullable
+            String defaultStreamName = handler.getWebRtcStreamNameForClientId("default");
+            if (defaultStreamName == null || defaultStreamName.isBlank()) {
+                sendBase64Message(resp, HttpServletResponse.SC_NOT_FOUND,
+                        "No WebRTC stream available for thing: " + thingUid);
+                return null;
+            }
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("No SIP client available for session '{}', using default WebRTC stream '{}'", sessionId,
+                        defaultStreamName);
+            }
+            return defaultStreamName;
         }
 
         @Nullable

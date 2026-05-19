@@ -13,7 +13,6 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -57,24 +56,12 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
         }
         triggerChannel(channel.getUID(), "PRESSED");
 
-        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
-        DahuaEventClient localClient = client;
-        if (localClient == null) {
-            logger.warn("Client not initialized, cannot retrieve doorbell image");
+        if (isDhipSnapshotMode()) {
+            logger.debug("snapshotMode=dhip: waiting for NewFile snapshot event instead of active API snapshot");
             return;
         }
 
-        scheduler.submit(() -> {
-            byte[] buffer = localClient.requestImage();
-            if (buffer != null && buffer.length > 0) {
-                // Update image channel
-                updateImageChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, buffer);
-
-                // Save snapshot
-                saveSnapshot(buffer);
-            } else {
-                logger.warn("Received empty or null image buffer from VTO2202");
-            }
-        });
+        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
+        scheduler.submit(() -> requestApiSnapshotForChannel(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, "VTO2202"));
     }
 }

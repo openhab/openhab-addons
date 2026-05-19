@@ -13,7 +13,6 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -60,6 +59,17 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
     }
 
     @Override
+    protected String getDoorImageChannelForLock(int lockNumber) {
+        return lockNumber == 2 ? DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_2
+                : DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE_1;
+    }
+
+    @Override
+    protected String getDoorbellSnapshotSuffixForLock(int lockNumber) {
+        return lockNumber == 2 ? "-2" : "-1";
+    }
+
+    @Override
     protected void onButtonPressed(int lockNumber) {
         int resolvedLockNumber = lockNumber == 2 ? 2 : 1;
         logger.debug("Button {} pressed on VTO3211", resolvedLockNumber);
@@ -85,25 +95,14 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
         }
         triggerChannel(bellChannel.getUID(), "PRESSED");
 
-        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
-        DahuaEventClient localClient = client;
-        if (localClient == null) {
-            logger.warn("Client not initialized, cannot retrieve doorbell image");
+        if (isDhipSnapshotMode()) {
+            logger.debug("snapshotMode=dhip: waiting for NewFile snapshot event for lock {}", lockNumber);
             return;
         }
 
+        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
         final String doorImageChannelIdFinal = doorImageChannelId;
-        scheduler.submit(() -> {
-            byte[] buffer = localClient.requestImage();
-            if (buffer != null && buffer.length > 0) {
-                // Update image channel for the specific button
-                updateImageChannel(doorImageChannelIdFinal, buffer);
-
-                // Save snapshot image
-                saveSnapshot(buffer, resolvedLockNumber);
-            } else {
-                logger.warn("Received empty or null image buffer from VTO3211 button {}", resolvedLockNumber);
-            }
-        });
+        scheduler.submit(() -> requestApiSnapshotForChannel(doorImageChannelIdFinal, "VTO3211 button " + lockNumber,
+                resolvedLockNumber));
     }
 }
