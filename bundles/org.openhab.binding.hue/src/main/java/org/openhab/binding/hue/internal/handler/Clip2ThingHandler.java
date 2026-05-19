@@ -1060,8 +1060,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case DEVICE_POWER:
                 updateState(CHANNEL_2_BATTERY_LEVEL, resource.getBatteryLevelState(), fullUpdate);
-                updateState(CHANNEL_2_BATTERY_LOW, resource.getBatteryLowState(), fullUpdate);
-                updateOnlineStatusDescription(resource.getBatteryLowState());
+                State batteryLowState = resource.getBatteryLowState();
+                updateState(CHANNEL_2_BATTERY_LOW, batteryLowState, fullUpdate);
+                updateOnlineStatusDescription(batteryLowState);
                 break;
 
             case LIGHT:
