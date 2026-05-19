@@ -350,7 +350,7 @@ public class ShadeThingHandler extends BaseThingHandler {
      * issue.
      */
     private void updateOnlineStatusDescription(State batteryLowState) {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_SHADE_LOW_BATTERY) != null) {
             String description = statusInfo.getDescription();
 
@@ -361,7 +361,7 @@ public class ShadeThingHandler extends BaseThingHandler {
             }
 
             // if battery is low and description is null then apply the low battery text
-            if (OnOffType.ON.equals(batteryLowState) && description == null) {
+            if (OnOffType.ON.equals(batteryLowState) && (description == null || description.isBlank())) {
                 updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
                 return;
             }
