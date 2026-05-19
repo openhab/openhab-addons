@@ -247,7 +247,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         client.removeListener(this);
         try {
             client.disconnect().get(3, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Failed to disconnect", e);
+        } catch (ExecutionException | TimeoutException e) {
             logger.error("Failed to disconnect", e);
         }
     }
