@@ -1726,13 +1726,13 @@ public class Clip2ThingHandler extends BaseThingHandler {
             String description = statusInfo.getDescription();
 
             // if battery is OK and description is the low battery text then clear the description
-            if (batteryLowState == OnOffType.OFF && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
+            if (OnOffType.OFF.equals(batteryLowState) && TEXT_ONLINE_BATTERY_LOW.equals(description)) {
                 super.updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail());
                 return;
             }
 
             // if battery is low and description is null then apply the low battery text
-            if (batteryLowState == OnOffType.ON && description == null) {
+            if (OnOffType.ON.equals(batteryLowState) && description == null) {
                 super.updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), TEXT_ONLINE_BATTERY_LOW);
                 return;
             }
