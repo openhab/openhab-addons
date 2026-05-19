@@ -1721,7 +1721,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * such as software update available or software installing.
      */
     private void updateOnlineStatusDescription(State batteryLowState) {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_2_BATTERY_LOW) != null) {
             String description = statusInfo.getDescription();
 
