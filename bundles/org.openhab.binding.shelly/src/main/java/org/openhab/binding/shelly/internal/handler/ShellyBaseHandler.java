@@ -1069,7 +1069,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase(Locale.ROOT);
         }
 
-        if (blu) { // TODO: (Nad) Check if the logic is correct
+        if (blu) {
             String bdAddr = apiConfig.getBdAddr();
             if (bdAddr == null || bdAddr.isBlank()) {
                 // may not be set in .things file
