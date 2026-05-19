@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,33 @@ public class ShellyThingTable {
 
     public ShellyThingInterface getThing(InetAddress deviceIp) {
         return getThing(deviceIp.getHostAddress());
+    }
+
+    /**
+     * Look up a thing by socket address, preferring an exact IP:port match before falling back to IP-only.
+     * This is required for range extender mode where multiple devices share the same IP but differ by port.
+     */
+    public ShellyThingInterface getThing(InetSocketAddress socketAddr) {
+        ShellyThingInterface t = findThing(socketAddr);
+        if (t == null) {
+            throw new IllegalArgumentException("Unknown thing for address '" + socketAddr + "'");
+        }
+        return t;
+    }
+
+    public @Nullable ShellyThingInterface findThing(InetSocketAddress socketAddr) {
+        InetAddress addr = socketAddr.getAddress();
+        if (addr == null) {
+            return null;
+        }
+        int port = socketAddr.getPort();
+        if (port > 0) {
+            ShellyThingInterface result = findThing(addr.getHostAddress() + ":" + port);
+            if (result != null) {
+                return result;
+            }
+        }
+        return findThing(addr.getHostAddress());
     }
 
     public ShellyThingInterface getThing(String key) {

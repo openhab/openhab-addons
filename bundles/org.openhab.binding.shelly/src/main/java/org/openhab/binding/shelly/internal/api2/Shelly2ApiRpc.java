@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -605,9 +604,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onConnect(InetAddress deviceIp, boolean connected) {
-        thing = thingTable.getThing(deviceIp);
-        logger.debug("{}: Get thing from thingTable", thingName);
+    public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
+        thing = thingTable.getThing(deviceSocketAddr);
+        logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
     }
 
     @Override

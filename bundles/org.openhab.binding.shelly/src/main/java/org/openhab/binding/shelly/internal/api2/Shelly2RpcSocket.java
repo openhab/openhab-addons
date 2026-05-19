@@ -205,7 +205,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         // the lock is acquired.
         ShellyThingInterface thing;
         try {
-            thing = thingTable.getThing(socketAddr.getAddress());
+            thing = thingTable.getThing(socketAddr);
             thingName = thing.getThingName();
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: Inbound connection request from {}, but unknown/disabled thing - {}, closing socket",
@@ -236,7 +236,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                     session.getRemoteAddress(), session.getIdleTimeout());
         }
         startPing(session);
-        handler.onConnect(socketAddr.getAddress(), true);
+        handler.onConnect(socketAddr, true);
 
         if (queue != null) {
             if (logger.isDebugEnabled()) {
