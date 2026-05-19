@@ -29,7 +29,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
@@ -37,7 +37,6 @@ import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -260,11 +259,10 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
     }
 
     private Map<String, String> getStatusWarnings(ShellyManagerInterface handler) {
-        Thing thing = handler.getThing();
         ThingStatus status = handler.getThing().getStatus();
         ShellyDeviceStats stats = handler.getStats();
         ShellyDeviceProfile profile = handler.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyApiConfiguration config = handler.getApiConfig();
         TreeMap<String, String> result = new TreeMap<>();
 
         if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
@@ -306,7 +304,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
         if (profile.alwaysOn && (status == ThingStatus.ONLINE)) {
-            if (config.eventsCoIoT && profile.settings.coiot != null) {
+            if (config.getEnableCoIOT() && profile.settings.coiot != null) {
                 if (profile.settings.coiot.enabled != null && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
                 } else {

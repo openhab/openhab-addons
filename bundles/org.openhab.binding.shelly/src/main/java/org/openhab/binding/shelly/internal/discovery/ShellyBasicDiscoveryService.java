@@ -31,8 +31,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -110,7 +110,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
+            ShellyBindingRuntimeConfig bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
             ShellyThingTable thingTable) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
@@ -127,19 +127,20 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, String> properties = new HashMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
+            ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, hostname, ipAddress);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
                 api = new Shelly1HttpApi(name, config, httpClient);
             }
-            api.initialize(name, config);
+            api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                config.realm = name = getString(devInfo.hostname);
+                name = getString(devInfo.hostname);
+                config.setRealm(name);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
@@ -189,17 +190,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         }
 
         return null;
-    }
-
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
-            String realm) {
-        ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.realm = realm; // mDNS service name or hostname provided by /shelly
-        config.deviceIp = address;
-        config.userId = getString(bindingConfig.defaultUserId);
-        config.password = getString(bindingConfig.defaultPassword);
-        config.localIp = getString(bindingConfig.localIP);
-        return config;
     }
 
     private static void addProperty(Map<String, String> properties, String key, @Nullable String value) {

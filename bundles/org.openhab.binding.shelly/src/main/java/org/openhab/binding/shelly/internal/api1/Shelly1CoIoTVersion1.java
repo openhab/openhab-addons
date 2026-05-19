@@ -115,7 +115,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         }
                         break;
                     default:
-                        logger.debug("{}: Unknown temperatur type: {}", thingName, sen.desc);
+                        logger.debug("{}: Unknown temperature type: {}", thingName, sen.desc);
                 }
                 break;
             case "p": // Power/Watt
