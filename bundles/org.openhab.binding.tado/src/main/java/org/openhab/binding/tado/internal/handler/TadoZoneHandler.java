@@ -559,7 +559,7 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
      * issue.
      */
     private void updateOnlineStatusDescription(State batteryLowState) {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHANNEL_ZONE_BATTERY_LOW_ALARM) != null) {
             String description = statusInfo.getDescription();
 
