@@ -4,7 +4,6 @@
 
 	<feature name="openhab-binding-telegram" description="Telegram Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:org.ow2.asm/asm/9.9.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.telegram/${project.version}</bundle>
 	</feature>
 </features>
