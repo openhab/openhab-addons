@@ -1137,6 +1137,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (!gen2 && bindingConfig.isAutoCoIoT() && (version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT) >= 0
                 || "production_test".equalsIgnoreCase(prf.fwVersion))) {
+            logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             autoCoIoT = true;
         }
         if (getBool(status.update.hasUpdate) && !version.checkBeta(getString(prf.fwVersion))) {
