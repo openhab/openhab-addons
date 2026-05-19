@@ -144,7 +144,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         if (alwaysOn) {
             disconnect();
             InetSocketAddress socketAddr = config.getDeviceSocketAddress();
@@ -152,12 +152,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.warn("{}: Failed to initialize because the IP address is unknown", thingName);
                 return;
             }
-            synchronized (this) {
-                Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client, scheduler);
-                rpcSocket.addMessageHandler(this);
-                this.rpcSocket = rpcSocket;
-            }
+
+            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client, scheduler);
+            rpcSocket.addMessageHandler(this);
+            this.rpcSocket = rpcSocket;
         }
+
         initialized = true;
     }
 
@@ -1276,14 +1276,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
-        if (alwaysOn) {
-            reconnect();
-        }
-
         Shelly2RpcSocket rpcSocket;
         synchronized (this) {
+            if (alwaysOn) {
+                reconnect();
+            }
             rpcSocket = this.rpcSocket;
         }
+
         if (rpcSocket != null) {
             Shelly2RpcBaseMessage request = buildRequest(method, null);
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
