@@ -233,9 +233,7 @@ public class TuyaDecoder extends ByteToMessageDecoder {
             decodedString = new String(decodedMessage).trim();
 
             try {
-                if (commandType == DP_QUERY //
-                        && "json obj data unvalid".equals(decodedString) || "data format error".equals(decodedString) //
-                ) {
+                if ("json obj data unvalid".equals(decodedString) || "data format error".equals(decodedString)) {
                     // Some devices don't handle DP_QUERY. Using a CONTROL message with null values is a known
                     // workaround, cf. https://github.com/codetheweb/tuyapi/blob/master/index.js#L156
                     // Since already we sent a CONTROL as well we can ignore this error.
