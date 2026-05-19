@@ -290,7 +290,7 @@ public class NeoBaseHandler extends BaseThingHandler {
      * issue.
      */
     protected void updateOnlineStatusDescription(State batteryLowState) {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (statusInfo.getStatus() == ThingStatus.ONLINE && thing.getChannel(CHAN_BATTERY_LOW_ALARM) != null) {
             String description = statusInfo.getDescription();
 
