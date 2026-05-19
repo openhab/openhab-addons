@@ -249,7 +249,13 @@ public class TelegramMessageStore {
         } catch (NumberFormatException e) {
             logger.warn("Stored {} '{}' for key '{}' is not a valid integer - removing corrupt entry", fieldName, value,
                     key);
-            messageIdStorage.remove(key);
+            String currentValue = messageIdStorage.get(key);
+            if (value.equals(currentValue)) {
+                messageIdStorage.remove(key);
+            } else {
+                logger.debug("Skipping removal of key '{}' because stored value changed while handling invalid {}", key,
+                        fieldName);
+            }
             return null;
         }
     }
