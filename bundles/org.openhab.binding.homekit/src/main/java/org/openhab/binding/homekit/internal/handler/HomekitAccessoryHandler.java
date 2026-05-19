@@ -1328,7 +1328,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * issue.
      */
     private void updateOnlineStatusDescription(Characteristic characteristic, State batteryLowState) {
-        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusInfo statusInfo = thing.getStatusInfo();
         if (CharacteristicType.STATUS_LO_BATT.equals(characteristic.getCharacteristicType())
                 && statusInfo.getStatus() == ThingStatus.ONLINE) {
             String description = statusInfo.getDescription();
