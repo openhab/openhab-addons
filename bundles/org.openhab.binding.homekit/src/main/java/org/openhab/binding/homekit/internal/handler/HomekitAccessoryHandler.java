@@ -913,6 +913,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Service service = GSON.fromJson(json, Service.class);
         boolean snapshotChannelExists = thing.getChannel(CHANNEL_SNAPSHOT) != null;
         boolean snapshotChannelRefresh = false;
+        State batteryLowState = null;
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
@@ -930,7 +931,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             switch (channel.getKind()) {
                                 case STATE -> {
                                     updateState(channelUID, state);
-                                    updateOnlineStatusDescription(cxx, state);
+                                    if (CharacteristicType.STATUS_LO_BATT.equals(cxx.getCharacteristicType())) {
+                                        batteryLowState = state;
+                                    }
                                 }
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
@@ -959,6 +962,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
         if (hsbChannelUID != null) {
             updateState(hsbChannelUID, Objects.requireNonNull(lightModel).getHsb());
+        }
+        if (batteryLowState != null) {
+            updateOnlineStatusDescription(batteryLowState);
         }
     }
 
@@ -1322,13 +1328,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Update thing status description based on the given battery low state. If the battery is low and the description
      * is null, then the description is set to the respective battery low translatable text. If the battery is OK, and
-     * the description is the low battery translatable text, then the description message is cleared. If the thing does
-     * not have a battery low channel then the description is not updated. NOTE: this method only updates the status
-     * description if the thing does not already have a status description for a different issue.
+     * the description is the low battery translatable text, then the description message is cleared. If the thing is
+     * not ONLINE, or if it does not have a battery low channel then the description is not updated. NOTE: this method
+     * only updates the status description if the thing does not already have a status description for a different
+     * issue.
      */
-    private void updateOnlineStatusDescription(Characteristic characteristic, State batteryLowState) {
+    private void updateOnlineStatusDescription(State batteryLowState) {
         ThingStatusInfo statusInfo = thing.getStatusInfo();
-        if (CharacteristicType.STATUS_LO_BATT.equals(characteristic.getCharacteristicType())) {
+        if (statusInfo.getStatus() == ThingStatus.ONLINE) {
             String description = statusInfo.getDescription();
 
             // if battery is OK and description is the low battery text then clear the description
