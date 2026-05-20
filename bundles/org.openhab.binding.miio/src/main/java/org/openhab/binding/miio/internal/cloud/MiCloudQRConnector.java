@@ -89,7 +89,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             getQRImage(sessionData.imageUrl);
             logger.info("Xiaomi QR code login: {}", sessionData.loginUrl);
 
-            String location = checkSession(sessionData, null);
+            String location = checkSession(sessionData, (sessionData.timeout + REQUEST_TIMEOUT_SECONDS) * 1000L);
             if (location == null || location.isEmpty()) {
                 logger.warn("Failed to fetch service token, location is empty");
                 return false;

@@ -21,6 +21,7 @@
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<label>Xiaomi cloud password</label>
+				<context>password</context>
 			</parameter>
 			<parameter name="loginMethod" type="text" required="false">
 				<label>Cloud login method</label>
@@ -89,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="twofa">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>2 Factor Authentication Response</label>
 		<description>Enter the 2 factor authentication code received by email.</description>
 		<category>settings</category>

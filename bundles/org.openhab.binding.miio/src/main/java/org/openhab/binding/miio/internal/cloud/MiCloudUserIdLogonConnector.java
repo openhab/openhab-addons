@@ -69,7 +69,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
 
     @Override
     public synchronized boolean login() {
-        logger.info("client Id={}", clientId);
+        logger.debug("client Id={}", clientId);
         return login("");
     }
 
@@ -273,8 +273,8 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
     }
 
     private void get2factory(String url) {
+        CookieStore cookieStore = httpClient.getCookieStore();
         try {
-            CookieStore cookieStore = httpClient.getCookieStore();
             httpClient.setCookieStore(new HttpCookieStore.Empty());
             logger.debug("Trying to request code from {}", url);
 
@@ -310,10 +310,10 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             request = httpClient.newRequest(verifyticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.method(HttpMethod.POST);
             this.fa = request;
-
-            httpClient.setCookieStore(cookieStore);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error requesting 2FA code: {}", e.getMessage(), e);
+        } finally {
+            httpClient.setCookieStore(cookieStore);
         }
     }
 

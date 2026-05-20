@@ -79,6 +79,7 @@ public class CloudConnector {
     private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
+    private final List<CloudLogonListener> pendingListeners = new ArrayList<>();
 
     private ConcurrentHashMap<@NonNull String, @NonNull HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -168,6 +169,10 @@ public class CloudConnector {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null) {
             cl.registerListener(cloudLogonListener);
+        } else {
+            if (!pendingListeners.contains(cloudLogonListener)) {
+                pendingListeners.add(cloudLogonListener);
+            }
         }
     }
 
@@ -286,30 +291,51 @@ public class CloudConnector {
             return connected;
         }
         try {
-
             logger.info("Login mode is {}", this.loginMode);
 
-            // switch (this.loginMode) {
-            // case CloudLoginMode.TOKEN:
-            final MiCloudConnector cl = new MiCloudConnector(username, password, httpClient, this.clientId, this.userId,
-                    this.serviceToken, this.ssecurity);
-            // break;
-            // case CloudLoginMode.PASSWORD:
-            // final MiCloudConnector cl = new MiCloudUserIdLogonConnector(username, password, httpClient,
-            // this.clientId, this.userId, this.serviceToken, this.ssecurity);
-            // break;
-            // case CloudLoginMode.QRCODE:
-            // final MiCloudConnector cl = new MiCloudQRConnector(username, password, httpClient, this.clientId,
-            // this.userId, this.serviceToken, this.ssecurity);
-            // break;
-            // }
+            final MiCloudConnector cl;
+            switch (this.loginMode) {
+                case TOKEN:
+                    cl = new MiCloudConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+                case PASSWORD:
+                    cl = new MiCloudUserIdLogonConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+                case QRCODE:
+                default:
+                    cl = new MiCloudQRConnector(username, password, httpClient, this.clientId, this.userId,
+                            this.serviceToken, this.ssecurity);
+                    break;
+            }
+
+            // Transfer any listeners registered before the connector was created
+            for (CloudLogonListener listener : pendingListeners) {
+                cl.registerListener(listener);
+            }
+            pendingListeners.clear();
+
+            // Also re-register listeners from any previous connector instance
+            final MiCloudConnector prev = this.cloudConnector;
+            if (prev != null) {
+                for (CloudLogonListener listener : prev.getListeners()) {
+                    cl.registerListener(listener);
+                }
+            }
 
             this.cloudConnector = cl;
             connected = cl.login();
             if (connected) {
+                // Sync back the potentially refreshed token fields
+                this.serviceToken = cl.getServiceToken();
+                this.userId = cl.getUserId();
+                this.ssecurity = cl.getSsecurity();
                 getDevicesList();
             } else {
                 deviceListState = CloudListState.FAILED;
+                // Clear stale token so next logon() attempt doesn't reuse it
+                this.serviceToken = "";
             }
         } catch (MiCloudException e) {
             connected = false;

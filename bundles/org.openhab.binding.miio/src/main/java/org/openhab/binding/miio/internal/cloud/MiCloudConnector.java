@@ -86,7 +86,6 @@ public class MiCloudConnector {
 
     protected int loginFailedCounter = 0;
     protected HttpClient httpClient;
-    private String captchaResponse = "";
     protected String sign = "";
     protected CloudLoginState loginState = CloudLoginState.INTIATING;
 
@@ -110,7 +109,7 @@ public class MiCloudConnector {
     // code":10012,"action":"","title":"","tips":"Onwettig verzoek","desc":"非法请求"}
     private final Logger logger = LoggerFactory.getLogger(MiCloudConnector.class);
 
-    static public String generateClientId() {
+    public static String generateClientId() {
         return (new Random().ints(97, 122 + 1).limit(6)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString());
     }
@@ -278,7 +277,7 @@ public class MiCloudConnector {
                 logger.debug("Response is not a json object: '{}'", response);
             }
         } catch (MiCloudException e) {
-            logger.info("{}", e.getMessage());
+            logger.debug("{}", e.getMessage());
             loginFailedCounter++;
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
@@ -297,7 +296,7 @@ public class MiCloudConnector {
                 return resp;
             }
         } catch (MiCloudException e) {
-            logger.info("{}", e.getMessage());
+            logger.debug("{}", e.getMessage());
             loginFailedCounter++;
         }
         throw new MiCloudException("Empty device list response");
@@ -407,7 +406,7 @@ public class MiCloudConnector {
 
     protected Path saveBytesToTempFile(byte[] content, String prefix, String suffix) throws MiCloudException {
         try {
-            Path tmp = Files.createTempFile(prefix, suffix == null ? ".img" : suffix);
+            Path tmp = Files.createTempFile(prefix, suffix);
             Files.write(tmp, content, StandardOpenOption.WRITE);
             return tmp;
         } catch (IOException e) {
@@ -418,7 +417,7 @@ public class MiCloudConnector {
     protected byte[] fetchAndInformImage(String url, int timeoutSeconds, String tempPrefix) throws MiCloudException {
         byte[] content = fetchImageBytes(url, timeoutSeconds);
         try {
-            Path path = saveBytesToTempFile(content, tempPrefix == null ? "miio-img-" : tempPrefix, ".jpg");
+            Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
             logger.info("Saved image to {} -> {} bytes", path.toAbsolutePath(), content.length);
         } catch (MiCloudException e) {
             logger.debug("Could not save image to temp file: {}", e.getMessage());
@@ -428,8 +427,7 @@ public class MiCloudConnector {
     }
 
     public synchronized boolean login() {
-        logger.info(" client Id={}", clientId);
-
+        logger.debug("client Id={}", clientId);
         return login("");
     }
 
@@ -438,28 +436,12 @@ public class MiCloudConnector {
             return false;
         }
         if (!userId.isEmpty() && !serviceToken.isEmpty()) {
+            logger.debug("Xiaomi cloud login using stored token for userId {}", userId);
+            updateLoginState(CloudLoginState.ONLINE);
             return true;
         }
-        logger.debug("Xiaomi cloud login with userid {}", username);
-        /*
-         * try {
-         * // if (loginRequest(captchaResponse)) {
-         * // loginFailedCounter = 0;
-         * // } else {
-         * // loginFailedCounter++;
-         * logger.debug("Xiaomi cloud login attempt {}", loginFailedCounter);
-         * }
-         * }catch(
-         *
-         * MiCloudException e)
-         * {
-         * logger.info("Error logging on to Xiaomi cloud ({}): {}", loginFailedCounter, e.getMessage());
-         * loginFailedCounter++;
-         * serviceToken = "";
-         * loginFailedCounterCheck();
-         * return false;
-         * }return true;
-         */
+        logger.debug("Xiaomi cloud login with userid {} - no token available", username);
+        updateLoginState(CloudLoginState.ACCESS_DENIED);
         return false;
     }
 
@@ -470,6 +452,7 @@ public class MiCloudConnector {
             dumpCookies(".mi.com", true);
             serviceToken = "";
             loginFailedCounter = 0;
+            updateLoginState(CloudLoginState.ACCESS_DENIED);
         }
     }
 
