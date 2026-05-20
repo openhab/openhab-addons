@@ -80,6 +80,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
     public synchronized boolean login() {
         logger.debug("Cloud login using QR code");
         try {
+            startClient();
             LoginSessionData sessionData = startLoginSession();
             if (sessionData == null) {
                 logger.warn("Failed to start QR code login session");

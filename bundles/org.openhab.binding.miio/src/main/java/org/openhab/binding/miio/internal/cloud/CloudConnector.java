@@ -291,7 +291,7 @@ public class CloudConnector {
             return connected;
         }
         try {
-            logger.info("Login mode is {}", this.loginMode);
+            logger.info("Xiaomi cloud login mode is {}", this.loginMode);
 
             final MiCloudConnector cl;
             switch (this.loginMode) {
@@ -476,5 +476,33 @@ public class CloudConnector {
 
     public void setLoginMode(CloudLoginMode loginMode) {
         this.loginMode = loginMode;
+    }
+
+    /**
+     * Submits a captcha response to the active cloud connector's login flow.
+     *
+     * @param captchaResponse the captcha text entered by the user
+     */
+    public void submitCaptcha(String captchaResponse) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.login(captchaResponse);
+        } else {
+            logger.debug("submitCaptcha: no active cloud connector");
+        }
+    }
+
+    /**
+     * Submits a 2FA response code to the active cloud connector's login flow.
+     *
+     * @param faCode the 2FA code entered by the user
+     */
+    public void submit2FA(String faCode) {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl instanceof MiCloudUserIdLogonConnector) {
+            ((MiCloudUserIdLogonConnector) cl).FAResponse(faCode);
+        } else {
+            logger.debug("submit2FA: active connector does not support 2FA");
+        }
     }
 }

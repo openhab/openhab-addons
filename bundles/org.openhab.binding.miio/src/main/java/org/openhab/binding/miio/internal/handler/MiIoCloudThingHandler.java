@@ -26,12 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.cloud.CloudLogonListener;
-import org.openhab.binding.miio.internal.cloud.MiCloudConnector;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginMode;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
-import org.openhab.binding.miio.internal.cloud.MiCloudException;
-import org.openhab.binding.miio.internal.cloud.MiCloudQRConnector;
-import org.openhab.binding.miio.internal.cloud.MiCloudUserIdLogonConnector;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.RawType;
@@ -62,7 +58,6 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     private @Nullable ScheduledFuture<?> loginFuture;
 
     private final CloudConnector cloudConnector;
-    private @Nullable MiCloudUserIdLogonConnector miCloudConnector;
 
     private String username = "";
     private String password = "";
@@ -100,51 +95,14 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
         updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
         updateState(CHANNEL_TWOFA, UnDefType.NULL);
 
-        if (hasValidCredentials()) {
-            setupCloudConnector();
-            cloudConnector.setLoginMode(CloudLoginMode.TOKEN);
-            loginFuture = scheduler.schedule(this::connectorLogin, 1, TimeUnit.SECONDS);
-        } else {
-            if (this.loginMethod == CloudLoginMode.QRCODE) {
-                logger.debug("Login method is QR code");
-                loginFuture = scheduler.schedule(this::startQRLogin, 1, TimeUnit.SECONDS);
-            } else {
-                logger.debug("Login method is User ID");
-                loginFuture = scheduler.schedule(this::startUserIdLogin, 1, TimeUnit.SECONDS);
-            }
-        }
+        setupCloudConnector();
+        loginFuture = scheduler.schedule(this::connectorLogin, 1, TimeUnit.SECONDS);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initiating logon");
     }
 
     private String getConfigString(Configuration config, String key) {
         String value = (String) config.get(key);
         return value == null ? "" : value;
-    }
-
-    private void startQRLogin() {
-        logger.info("Logon with QR code for username: [{}]", username);
-        try {
-            MiCloudQRConnector miCloudQRConnector = new MiCloudQRConnector(username, password, httpClient, clientId,
-                    userId, serviceToken, ssecurity);
-            miCloudQRConnector.registerListener(this);
-            if (miCloudQRConnector.login()) {
-                this.userId = miCloudQRConnector.getUserId();
-                this.serviceToken = miCloudQRConnector.getServiceToken();
-                this.ssecurity = miCloudQRConnector.getSsecurity();
-                updateThingProperties(
-                        Map.of("userId", this.userId, "serviceToken", this.serviceToken, "ssecurity", this.ssecurity));
-                updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
-                setupCloudConnector();
-                cloudConnector.setLoginMode(CloudLoginMode.TOKEN);
-                connectorLogin();
-            } else {
-                logger.warn("QR code login failed");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "QR code login failed");
-            }
-        } catch (MiCloudException e) {
-            logger.warn("Error during login to Xiaomi cloud", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
     }
 
     private void connectorLogin() {
@@ -171,31 +129,20 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
 
     private void setupCloudConnector() {
         cloudConnector.setCredentials(username, password, country, clientId, userId, serviceToken, ssecurity);
+        cloudConnector.setLoginMode(hasValidCredentials() ? CloudLoginMode.TOKEN : loginMethod);
         cloudConnector.registerListener(this);
-    }
-
-    private void startUserIdLogin() {
-        logger.debug("Logon with username {}", username);
-        try {
-            final MiCloudUserIdLogonConnector miCloudConnector = new MiCloudUserIdLogonConnector(username, password,
-                    httpClient, clientId, userId, serviceToken, ssecurity);
-            this.miCloudConnector = miCloudConnector;
-            miCloudConnector.registerListener(this);
-            miCloudConnector.login();
-        } catch (MiCloudException e) {
-            logger.warn("Error during login to Xiaomi cloud", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
     }
 
     @Override
     public void onLogonImage(byte[] captcha) {
         logger.debug("QR / Captcha received with length: {}", captcha.length);
         if (loginMethod == CloudLoginMode.QRCODE) {
-            logger.info("QR code is ready for scanning. Open the '{}' channel in openHAB and scan the QR code with your Xiaomi app.",
+            logger.info(
+                    "QR code is ready for scanning. Open the '{}' channel in openHAB and scan the QR code with your Xiaomi app.",
                     CHANNEL_LOGON_IMAGE);
         } else {
-            logger.info("Captcha image is available. Check the '{}' channel and submit the response via the '{}' channel.",
+            logger.info(
+                    "Captcha image is available. Check the '{}' channel and submit the response via the '{}' channel.",
                     CHANNEL_LOGON_IMAGE, CHANNEL_CAPTCHA_RESPONSE);
         }
         String mimeType = HttpUtil.guessContentTypeFromData(captcha);
@@ -205,21 +152,14 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command for channel {}, with command: {}", channelUID.getId(), command);
-        final MiCloudConnector mcc = miCloudConnector;
-        if (mcc == null) {
-            logger.debug("Command ignored: cloud connector not available");
-            return;
-        }
         switch (channelUID.getId()) {
             case CHANNEL_CAPTCHA_RESPONSE:
-                logger.debug("Submit captcha response {}", command.toString());
-                mcc.login(command.toString());
+                logger.debug("Submit captcha response {}", command);
+                cloudConnector.submitCaptcha(command.toString());
                 break;
             case CHANNEL_TWOFA:
-                logger.debug("Received 2-factor authentication response {}", command.toString());
-                if (mcc instanceof MiCloudUserIdLogonConnector) {
-                    ((MiCloudUserIdLogonConnector) mcc).FAResponse(command.toString());
-                }
+                logger.debug("Received 2-factor authentication response {}", command);
+                cloudConnector.submit2FA(command.toString());
                 break;
             default:
                 logger.info("Cannot handle channel {}", channelUID);
@@ -241,20 +181,21 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 updateStatus(ThingStatus.ONLINE);
             }
             updateState(CHANNEL_TWOFA, UnDefType.NULL);
-            final MiCloudUserIdLogonConnector conn = miCloudConnector;
-            if (conn != null && !conn.getServiceToken().isEmpty()) {
-                this.userId = conn.getUserId();
-                this.serviceToken = conn.getServiceToken();
-                this.ssecurity = conn.getSsecurity();
-                final Map<String, String> tokens = Map.of("userId", this.userId, "serviceToken", this.serviceToken,
-                        "ssecurity", this.ssecurity);
-                scheduler.schedule(() -> {
-                    updateThingProperties(tokens);
-                    setupCloudConnector();
-                    cloudConnector.setLoginMode(CloudLoginMode.TOKEN);
-                    connectorLogin();
-                }, 0, TimeUnit.SECONDS);
-            }
+            updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
+            // Read back tokens after logon() completes; schedule with a short delay because
+            // CloudConnector.logon() syncs its token fields after login() returns (i.e., after this callback fires)
+            scheduler.schedule(() -> {
+                String newUserId = cloudConnector.getUserId();
+                String newServiceToken = cloudConnector.getServiceToken();
+                String newSsecurity = cloudConnector.getSsecurity();
+                if (!newServiceToken.equals(this.serviceToken) || !newUserId.equals(this.userId)) {
+                    this.userId = newUserId;
+                    this.serviceToken = newServiceToken;
+                    this.ssecurity = newSsecurity;
+                    updateThingProperties(Map.of("userId", this.userId, "serviceToken", this.serviceToken, "ssecurity",
+                            this.ssecurity));
+                }
+            }, 1, TimeUnit.SECONDS);
         } else if (loginState == CloudLoginState.ACCESS_DENIED && hasValidCredentials()) {
             // Stored token was rejected — clear it and fall back to QR or password login
             logger.info("Stored token rejected by Xiaomi cloud. Clearing token and retrying with {} login",
@@ -262,19 +203,19 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             this.userId = "";
             this.serviceToken = "";
             this.ssecurity = "";
-            scheduler.schedule(() -> updateThingProperties(Map.of("userId", "", "serviceToken", "", "ssecurity", "")),
-                    0, TimeUnit.SECONDS);
-            if (loginMethod == CloudLoginMode.QRCODE) {
-                loginFuture = scheduler.schedule(this::startQRLogin, 2, TimeUnit.SECONDS);
-            } else {
-                loginFuture = scheduler.schedule(this::startUserIdLogin, 2, TimeUnit.SECONDS);
-            }
+            loginFuture = scheduler.schedule(() -> {
+                updateThingProperties(Map.of("userId", "", "serviceToken", "", "ssecurity", ""));
+                cloudConnector.setCredentials(username, password, country, clientId, "", "", "");
+                cloudConnector.setLoginMode(loginMethod);
+                connectorLogin();
+            }, 2, TimeUnit.SECONDS);
         } else if (loginState == CloudLoginState.AWAITING_2FA) {
             logger.info("Two-factor authentication required. Please submit the 2FA code via the '{}' channel.",
                     CHANNEL_TWOFA);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, loginState.toString());
         } else if (loginState == CloudLoginState.AWAITING_CAPTCHA) {
-            logger.info("Captcha is required. Check the '{}' channel image and submit the response via the '{}' channel.",
+            logger.info(
+                    "Captcha is required. Check the '{}' channel image and submit the response via the '{}' channel.",
                     CHANNEL_LOGON_IMAGE, CHANNEL_CAPTCHA_RESPONSE);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, loginState.toString());
         } else {
