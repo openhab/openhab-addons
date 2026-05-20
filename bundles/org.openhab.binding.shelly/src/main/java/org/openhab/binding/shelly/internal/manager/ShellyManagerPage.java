@@ -48,8 +48,8 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -81,7 +81,6 @@ public class ShellyManagerPage {
     private final ShellyHandlerFactory handlerFactory;
     protected final HttpClient httpClient;
     protected final ConfigurationAdmin configurationAdmin;
-    protected final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     protected final String localIp;
     protected final int localPort;
 
@@ -194,9 +193,10 @@ public class ShellyManagerPage {
 
     protected Map<String, String> fillProperties(Map<String, String> properties, String uid,
             ShellyManagerInterface th) {
+        ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
         try {
             Configuration serviceConfig = configurationAdmin.getConfiguration("binding." + BINDING_ID);
-            bindingConfig.updateFromProperties(serviceConfig.getProperties());
+            bindingConfig = ShellyBindingConfiguration.fromProperties(serviceConfig.getProperties());
         } catch (IOException e) {
             logger.debug("ShellyManager: Unable to get bindingConfig");
         }
@@ -213,7 +213,7 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_UID, uid);
 
         ShellyDeviceProfile profile = th.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyApiConfiguration config = th.getApiConfig();
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
@@ -235,10 +235,10 @@ public class ShellyManagerPage {
                     !deviceName.isEmpty() ? deviceName : getString(properties.get(PROPERTY_SERVICE_NAME)));
         }
 
-        if (config.userId.isEmpty()) {
-            // Get defauls from Binding Config
-            properties.put("userId", bindingConfig.defaultUserId);
-            properties.put("password", bindingConfig.defaultPassword);
+        if (config.getUserId().isBlank()) {
+            // Get defaults from Binding Config
+            properties.put("userId", bindingConfig.getDefaultUserId());
+            properties.put("password", bindingConfig.getDefaultPassword());
         }
 
         addAttribute(properties, th, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
@@ -294,8 +294,8 @@ public class ShellyManagerPage {
         if ((profile.settings.coiot != null) && (profile.settings.coiot.enabled != null)) {
             coiotEnabled = profile.settings.coiot.enabled;
         }
-        properties.put(ATTRIBUTE_COIOT_STATUS,
-                !coiotEnabled ? "Disbaled in settings" : "Events are " + (config.eventsCoIoT ? "enabled" : "disabled"));
+        properties.put(ATTRIBUTE_COIOT_STATUS, !coiotEnabled ? "Disabled in settings"
+                : "Events are " + (config.getEnableCoIOT() ? "enabled" : "disabled"));
         properties.put(ATTRIBUTE_COIOT_PEER,
                 (profile.settings.coiot != null) && !getString(profile.settings.coiot.peer).isEmpty()
                         ? profile.settings.coiot.peer
@@ -574,16 +574,6 @@ public class ShellyManagerPage {
             name = thing.getUID().getId();
         }
         return name;
-    }
-
-    protected ShellyThingConfiguration getThingConfig(ShellyManagerInterface th, Map<String, String> properties) {
-        Thing thing = th.getThing();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
-        if (config.userId.isEmpty()) {
-            config.userId = getString(properties.get("userId"));
-            config.password = getString(properties.get("password"));
-        }
-        return config;
     }
 
     protected void scheduleUpdate(ShellyManagerInterface th, String name, int delay) {
