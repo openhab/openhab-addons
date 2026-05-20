@@ -104,6 +104,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
     private @Nullable ScheduledFuture<?> reinitializationFuture3;
     private boolean ignoreEventSourceClosedEvent;
+    private volatile boolean disposed;
     private @Nullable String programOptionsDelayedUpdate;
 
     private final ConcurrentHashMap<String, EventHandler> eventHandlers;
@@ -135,6 +136,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
+        disposed = false;
         if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
@@ -144,6 +146,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         } else {
             updateStatus(UNKNOWN);
             scheduler.submit(() -> {
+                if (disposed) {
+                    return;
+                }
                 refreshThingStatus(); // set ONLINE / OFFLINE
                 updateSelectedProgramStateDescription();
                 updateChannels();
@@ -156,6 +161,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void dispose() {
+        disposed = true;
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
@@ -170,6 +176,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private void reinitialize() {
         logger.debug("Reinitialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
+        disposed = true;
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
