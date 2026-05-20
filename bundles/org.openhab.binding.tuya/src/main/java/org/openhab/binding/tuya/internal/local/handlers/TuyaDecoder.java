@@ -14,7 +14,6 @@ package org.openhab.binding.tuya.internal.local.handlers;
 
 import static org.openhab.binding.tuya.internal.local.CommandType.BROADCAST_LPV34;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY;
-import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY_NOT_SUPPORTED;
 import static org.openhab.binding.tuya.internal.local.CommandType.HEART_BEAT;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_RESPONSE;
 import static org.openhab.binding.tuya.internal.local.CommandType.STATUS;
@@ -29,7 +28,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -235,13 +233,11 @@ public class TuyaDecoder extends ByteToMessageDecoder {
             decodedString = new String(decodedMessage).trim();
 
             try {
-                if (commandType == DP_QUERY && "json obj data unvalid".equals(decodedString)) {
-                    // "json obj data unvalid" would also result in a JSONSyntaxException but is a known error when
-                    // DP_QUERY is not supported by the device. Using a CONTROL message with null values is a known
+                if ("json obj data unvalid".equals(decodedString) || "data format error".equals(decodedString)) {
+                    // Some devices don't handle DP_QUERY. Using a CONTROL message with null values is a known
                     // workaround, cf. https://github.com/codetheweb/tuyapi/blob/master/index.js#L156
-                    logger.info("{}{}: DP_QUERY not supported. Trying to request with CONTROL.", deviceId,
-                            Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""));
-                    m = new MessageWrapper<>(DP_QUERY_NOT_SUPPORTED, Map.of());
+                    // Since already we sent a CONTROL as well we can ignore this error.
+                    return;
                 } else if (commandType == STATUS || commandType == DP_QUERY) {
                     m = new MessageWrapper<>(commandType,
                             Objects.requireNonNull(gson.fromJson(decodedString, TcpStatusPayload.class)));
@@ -254,8 +250,9 @@ public class TuyaDecoder extends ByteToMessageDecoder {
                     m = new MessageWrapper<>(commandType, decodedString);
                 }
             } catch (JsonSyntaxException e) {
-                logger.warn("{}{} failed to parse JSON: {}", deviceId,
-                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), e.getMessage());
+                logger.warn("{}{} failed to parse JSON command={} json={}: {}", deviceId, //
+                        Objects.requireNonNullElse(ctx.channel().remoteAddress(), ""), //
+                        commandType, decodedString, e.getMessage());
                 return;
             }
         }
