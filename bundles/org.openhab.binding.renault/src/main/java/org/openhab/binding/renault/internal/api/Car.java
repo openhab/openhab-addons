@@ -41,13 +41,13 @@ public class Car {
 
     private boolean disableLocation = false;
     private boolean disableBattery = false;
+    private boolean disableChargeMode = false;
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
     private boolean disableLockStatus = false;
 
-    private boolean pausemode = false;
     private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
-    private ChargingMode chargingMode = ChargingMode.UNKNOWN;
+    private @Nullable ChargingMode chargingMode;
     private PlugStatus plugStatus = PlugStatus.UNKNOWN;
     private double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
@@ -65,7 +65,6 @@ public class Car {
     private @Nullable Double externalTemperature;
 
     public enum ChargingMode {
-        UNKNOWN,
         SCHEDULE_MODE,
         ALWAYS_CHARGING
     }
@@ -130,6 +129,10 @@ public class Car {
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing Battery Status: {}", e.getMessage(), responseJson);
         }
+    }
+
+    public void setChargeMode(ChargingMode chargeMode) {
+        this.chargingMode = chargeMode;
     }
 
     public void resetHVACStatus() {
@@ -294,12 +297,8 @@ public class Car {
         return chargingStatus;
     }
 
-    public ChargingMode getChargingMode() {
+    public @Nullable ChargingMode getChargingMode() {
         return chargingMode;
-    }
-
-    public boolean getPauseMode() {
-        return pausemode;
     }
 
     public @Nullable Integer getChargingRemainingTime() {
@@ -334,26 +333,6 @@ public class Car {
         this.disableHvac = disableHvac;
     }
 
-    /**
-     * Set the charging mode to a known mode.
-     * 
-     * @param mode
-     */
-    public void setChargeMode(ChargingMode mode) {
-        switch (mode) {
-            case SCHEDULE_MODE:
-            case ALWAYS_CHARGING:
-                chargingMode = mode;
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void setPauseMode(boolean pausemode) {
-        this.pausemode = pausemode;
-    }
-
     private @Nullable JsonObject getAttributes(JsonObject responseJson)
             throws IllegalStateException, ClassCastException {
         if (responseJson.get("data") != null && responseJson.get("data").getAsJsonObject().get("attributes") != null) {
@@ -363,54 +342,37 @@ public class Car {
     }
 
     private LockStatus mapLockStatus(final String apiLockStatus) {
-        switch (apiLockStatus) {
-            case "locked":
-                return LockStatus.LOCKED;
-            case "unlocked":
-                return LockStatus.UNLOCKED;
-            default:
-                return LockStatus.UNKNOWN;
-        }
+        return switch (apiLockStatus) {
+            case "locked" -> LockStatus.LOCKED;
+            case "unlocked" -> LockStatus.UNLOCKED;
+            default -> LockStatus.UNKNOWN;
+        };
     }
 
     private PlugStatus mapPlugStatus(final String apiPlugState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
-        switch (apiPlugState) {
-            case "0":
-                return PlugStatus.UNPLUGGED;
-            case "1":
-                return PlugStatus.PLUGGED;
-            case "-1":
-                return PlugStatus.PLUG_ERROR;
-            case "-2147483648":
-                return PlugStatus.PLUG_UNKNOWN;
-            default:
-                return PlugStatus.UNKNOWN;
-        }
+        return switch (apiPlugState) {
+            case "0" -> PlugStatus.UNPLUGGED;
+            case "1" -> PlugStatus.PLUGGED;
+            case "-1" -> PlugStatus.PLUG_ERROR;
+            case "-2147483648" -> PlugStatus.PLUG_UNKNOWN;
+            default -> PlugStatus.UNKNOWN;
+        };
     }
 
     private ChargingStatus mapChargingStatus(final String apiChargeState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
-        switch (apiChargeState) {
-            case "0.0":
-                return ChargingStatus.NOT_IN_CHARGE;
-            case "0.1":
-                return ChargingStatus.WAITING_FOR_A_PLANNED_CHARGE;
-            case "0.2":
-                return ChargingStatus.CHARGE_ENDED;
-            case "0.3":
-                return ChargingStatus.WAITING_FOR_CURRENT_CHARGE;
-            case "0.4":
-                return ChargingStatus.ENERGY_FLAP_OPENED;
-            case "1.0":
-                return ChargingStatus.CHARGE_IN_PROGRESS;
-            case "-1.0":
-                return ChargingStatus.CHARGE_ERROR;
-            case "-1.1":
-                return ChargingStatus.UNAVAILABLE;
-            default:
-                return ChargingStatus.UNKNOWN;
-        }
+        return switch (apiChargeState) {
+            case "0.0" -> ChargingStatus.NOT_IN_CHARGE;
+            case "0.1" -> ChargingStatus.WAITING_FOR_A_PLANNED_CHARGE;
+            case "0.2" -> ChargingStatus.CHARGE_ENDED;
+            case "0.3" -> ChargingStatus.WAITING_FOR_CURRENT_CHARGE;
+            case "0.4" -> ChargingStatus.ENERGY_FLAP_OPENED;
+            case "1.0" -> ChargingStatus.CHARGE_IN_PROGRESS;
+            case "-1.0" -> ChargingStatus.CHARGE_ERROR;
+            case "-1.1" -> ChargingStatus.UNAVAILABLE;
+            default -> ChargingStatus.UNKNOWN;
+        };
     }
 
     public LockStatus getLockStatus() {
@@ -423,5 +385,13 @@ public class Car {
 
     public void setDisableLockStatus(boolean disableLockStatus) {
         this.disableLockStatus = disableLockStatus;
+    }
+
+    public boolean isDisableChargeMode() {
+        return disableChargeMode;
+    }
+
+    public void setDisableChargeMode(boolean disableChargeMode) {
+        this.disableChargeMode = disableChargeMode;
     }
 }
