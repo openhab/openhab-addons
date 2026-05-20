@@ -45,7 +45,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLi
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -65,8 +65,8 @@ import com.google.gson.JsonSyntaxException;
 public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly1HttpApi.class);
 
-    public Shelly1HttpApi(String thingName, ShellyThingInterface thing) {
-        super(thingName, thing);
+    public Shelly1HttpApi(String thingName, ShellyApiConfiguration config, ShellyThingInterface thing) {
+        super(thingName, config, thing);
     }
 
     /**
@@ -76,13 +76,12 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @param config Thing Configuration
      * @param httpClient HTTP Client to be passed to ShellyHttpClient
      */
-    public Shelly1HttpApi(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+    public Shelly1HttpApi(String thingName, ShellyApiConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
     }
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        setConfig(thingName, config);
+    public void initialize() {
     }
 
     @Override
@@ -567,7 +566,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     private void setSensorEventUrls() throws ShellyApiException, ShellyApiException {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
-            setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
+            boolean enable = !config.getEnableCoIOT() && config.getEventsSensorReport();
+            setEventUrl(enable, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
                     SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN, SHELLY_EVENT_CLOSE,
                     SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF,
                     SHELLY_EVENT_TEMP_OVER, SHELLY_EVENT_TEMP_UNDER);
@@ -581,40 +581,44 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     private void setEventUrls(Integer index) throws ShellyApiException {
+        // When CoIoT is active all event type flags are forced to false so that any
+        // previously registered action URLs are cleared from the device.
+        boolean coiot = config.getEnableCoIOT();
         if (profile.isRoller) {
-            setEventUrl(EVENT_TYPE_ROLLER, 0, config.eventsRoller, SHELLY_EVENT_ROLLER_OPEN, SHELLY_EVENT_ROLLER_CLOSE,
-                    SHELLY_EVENT_ROLLER_STOP);
+            setEventUrl(EVENT_TYPE_ROLLER, 0, !coiot && config.getEventsRoller(), SHELLY_EVENT_ROLLER_OPEN,
+                    SHELLY_EVENT_ROLLER_CLOSE, SHELLY_EVENT_ROLLER_STOP);
         } else if (profile.isDimmer) {
             // 2 set of URLs
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsButton, SHELLY_EVENT_BTN1_ON, SHELLY_EVENT_BTN1_OFF,
-                    SHELLY_EVENT_BTN2_ON, SHELLY_EVENT_BTN2_OFF);
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsPush, SHELLY_EVENT_SHORTPUSH1, SHELLY_EVENT_LONGPUSH1,
-                    SHELLY_EVENT_SHORTPUSH2, SHELLY_EVENT_LONGPUSH2);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsButton(), SHELLY_EVENT_BTN1_ON,
+                    SHELLY_EVENT_BTN1_OFF, SHELLY_EVENT_BTN2_ON, SHELLY_EVENT_BTN2_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsPush(), SHELLY_EVENT_SHORTPUSH1,
+                    SHELLY_EVENT_LONGPUSH1, SHELLY_EVENT_SHORTPUSH2, SHELLY_EVENT_LONGPUSH2);
 
             // Relay output
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         } else if (profile.hasRelays) {
             // Standard relays: btn_xxx, out_xxx, short/longpush URLs
-            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsButton, SHELLY_EVENT_BTN_ON, SHELLY_EVENT_BTN_OFF);
-            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsPush, SHELLY_EVENT_SHORTPUSH, SHELLY_EVENT_LONGPUSH);
-            setEventUrl(EVENT_TYPE_RELAY, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsButton(), SHELLY_EVENT_BTN_ON,
+                    SHELLY_EVENT_BTN_OFF);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsPush(), SHELLY_EVENT_SHORTPUSH,
+                    SHELLY_EVENT_LONGPUSH);
+            setEventUrl(EVENT_TYPE_RELAY, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         } else if (profile.isLight) {
             // Duo, Bulb
-            setEventUrl(EVENT_TYPE_LIGHT, index, config.eventsSwitch, SHELLY_EVENT_OUT_ON, SHELLY_EVENT_OUT_OFF);
+            setEventUrl(EVENT_TYPE_LIGHT, index, !coiot && config.getEventsSwitch(), SHELLY_EVENT_OUT_ON,
+                    SHELLY_EVENT_OUT_OFF);
         }
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
-        if (config.localIp.isEmpty()) {
-            throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
-        }
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
                 // H&T adds the type=xx to report_url itself, so we need to ommit here
                 String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
                 String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + eclass + urlParm;
+                String callBackUrl = config.getEventCallbackUrl() + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
                 if (!enabled && !profile.settingsJson.contains(testUrl)) {
@@ -635,8 +639,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
+                String callBackUrl = config.getEventCallbackUrl() + profile.thingName + "/" + deviceClass + "/" + index
+                        + "?type=" + eventType;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
                 if (!enabled && !profile.settingsJson.contains(test)) {
@@ -676,16 +680,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         }
         uri = uri + "/" + id;
         return uri;
-    }
-
-    @Override
-    public int getTimeoutErrors() {
-        return timeoutErrors;
-    }
-
-    @Override
-    public int getTimeoutsRecovered() {
-        return timeoutsRecovered;
     }
 
     @Override
