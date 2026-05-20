@@ -106,7 +106,7 @@ class TelegramMessageStoreTest {
     }
 
     // -----------------------------------------------------------------------
-    // Cross-Thing isolation (the critical Copilot finding)
+    // Cross-Thing isolation
     // -----------------------------------------------------------------------
 
     @Test
