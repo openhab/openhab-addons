@@ -252,7 +252,7 @@ public class TelegramMessageStore {
             String currentValue = messageIdStorage.get(key);
             if (value.equals(currentValue)) {
                 messageIdStorage.remove(key);
-            } else {
+            } else if (currentValue != null) {
                 logger.debug("Skipping removal of key '{}' because stored value changed while handling invalid {}", key,
                         fieldName);
             }
