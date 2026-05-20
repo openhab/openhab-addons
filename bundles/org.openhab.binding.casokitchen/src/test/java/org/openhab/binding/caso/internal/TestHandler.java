@@ -88,8 +88,72 @@ class TestHandler {
     }
 
     @Test
-    void testConfigErrors() {
+    void testConfigErrorNoConfiguration() {
         ThingImpl thing = new ThingImpl(CasoKitchenBindingConstants.THING_TYPE_WINECOOLER, "test");
+
+        FactoryMock factory = new FactoryMock(prepareHttpResponse(), tzp);
+        ThingHandler handler = factory.createHandler(thing);
+        assertNotNull(handler);
+        assertTrue(handler instanceof TwoZonesWinecoolerHandler);
+        TwoZonesWinecoolerHandler winecoolerHandler = (TwoZonesWinecoolerHandler) handler;
+        winecoolerHandler.setCallback(new CallbackMock());
+        winecoolerHandler.initialize();
+
+        ThingStatusInfo tsi = thing.getStatusInfo();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
+        assertEquals("@text/casokitchen.winecooler-2z.status.api-key-missing", tsi.getDescription());
+    }
+
+    @Test
+    void testConfigErrorMissingDeviceId() {
+        ThingImpl thing = new ThingImpl(CasoKitchenBindingConstants.THING_TYPE_WINECOOLER, "test");
+        Configuration config = new Configuration();
+        config.put("apiKey", "abc");
+        thing.setConfiguration(config);
+
+        FactoryMock factory = new FactoryMock(prepareHttpResponse(), tzp);
+        ThingHandler handler = factory.createHandler(thing);
+        assertNotNull(handler);
+        assertTrue(handler instanceof TwoZonesWinecoolerHandler);
+        TwoZonesWinecoolerHandler winecoolerHandler = (TwoZonesWinecoolerHandler) handler;
+        winecoolerHandler.setCallback(new CallbackMock());
+        winecoolerHandler.initialize();
+
+        ThingStatusInfo tsi = thing.getStatusInfo();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
+        assertEquals("@text/casokitchen.winecooler-2z.status.device-id-missing", tsi.getDescription());
+    }
+
+    @Test
+    void testConfigErrorMissingApiKey() {
+        ThingImpl thing = new ThingImpl(CasoKitchenBindingConstants.THING_TYPE_WINECOOLER, "test");
+        Configuration config = new Configuration();
+        config.put("deviceId", "xyz");
+        thing.setConfiguration(config);
+
+        FactoryMock factory = new FactoryMock(prepareHttpResponse(), tzp);
+        ThingHandler handler = factory.createHandler(thing);
+        assertNotNull(handler);
+        assertTrue(handler instanceof TwoZonesWinecoolerHandler);
+        TwoZonesWinecoolerHandler winecoolerHandler = (TwoZonesWinecoolerHandler) handler;
+        winecoolerHandler.setCallback(new CallbackMock());
+        winecoolerHandler.initialize();
+
+        ThingStatusInfo tsi = thing.getStatusInfo();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
+        assertEquals("@text/casokitchen.winecooler-2z.status.api-key-missing", tsi.getDescription());
+    }
+
+    @Test
+    void testConfigValidConfigurationBecomesOnline() {
+        ThingImpl thing = new ThingImpl(CasoKitchenBindingConstants.THING_TYPE_WINECOOLER, "test");
+        Configuration config = new Configuration();
+        config.put("apiKey", "abc");
+        config.put("deviceId", "xyz");
+        thing.setConfiguration(config);
 
         FactoryMock factory = new FactoryMock(prepareHttpResponse(), tzp);
         ThingHandler handler = factory.createHandler(thing);
@@ -100,25 +164,8 @@ class TestHandler {
         winecoolerHandler.setCallback(callback);
         winecoolerHandler.initialize();
 
-        ThingStatusInfo tsi = thing.getStatusInfo();
-        assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
-        assertEquals("@text/casokitchen.winecooler-2z.status.api-key-missing", tsi.getDescription());
-
-        Configuration config = new Configuration();
-        config.put("apiKey", "abc");
-        thing.setConfiguration(config);
-        winecoolerHandler.initialize();
-        tsi = thing.getStatusInfo();
-        assertEquals(ThingStatus.OFFLINE, tsi.getStatus());
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail());
-        assertEquals("@text/casokitchen.winecooler-2z.status.device-id-missing", tsi.getDescription());
-
-        config.put("deviceId", "xyz");
-        thing.setConfiguration(config);
-        winecoolerHandler.initialize();
         callback.waitForOnline();
-        tsi = thing.getStatusInfo();
+        ThingStatusInfo tsi = thing.getStatusInfo();
         assertEquals(ThingStatus.ONLINE, tsi.getStatus());
     }
 
