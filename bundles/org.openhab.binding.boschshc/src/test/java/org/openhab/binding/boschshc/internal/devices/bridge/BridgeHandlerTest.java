@@ -1066,7 +1066,7 @@ class BridgeHandlerTest {
     void initializeNoIpAddress() {
         bridgeConfiguration.setProperties(new HashMap<String, Object>());
 
-        fixture.initialize();
+        fixture.thingUpdated(thing);
 
         ThingStatusInfo expectedStatus = ThingStatusInfoBuilder
                 .create(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR)
@@ -1080,7 +1080,7 @@ class BridgeHandlerTest {
         properties.put("ipAddress", "localhost");
         bridgeConfiguration.setProperties(properties);
 
-        fixture.initialize();
+        fixture.thingUpdated(thing);
 
         ThingStatusInfo expectedStatus = ThingStatusInfoBuilder
                 .create(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR)
