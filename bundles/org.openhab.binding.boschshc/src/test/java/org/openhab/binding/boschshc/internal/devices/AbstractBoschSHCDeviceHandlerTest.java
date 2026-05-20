@@ -90,7 +90,7 @@ public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDevice
     @Test
     void initializeInvalidDeviceId() {
         getFixture().getThing().getConfiguration().remove("id");
-        getFixture().initialize();
+        getFixture().thingUpdated(getThing());
 
         verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
