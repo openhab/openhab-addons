@@ -113,6 +113,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_LOGON_IMAGE = "logonimage";
     public static final String CHANNEL_CAPTCHA_RESPONSE = "captcharesponse";
     public static final String CHANNEL_TWOFA = "twofa";
+    public static final String CHANNEL_TRIGGER_LOGIN = "triggerlogin";
 
     public static final String PROPERTY_HOST_IP = "host";
     public static final String PROPERTY_DID = "deviceId";

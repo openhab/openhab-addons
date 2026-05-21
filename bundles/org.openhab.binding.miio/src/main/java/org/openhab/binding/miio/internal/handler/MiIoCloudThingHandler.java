@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_CAPTCHA_RESPONSE;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_LOGON_IMAGE;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_TRIGGER_LOGIN;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CHANNEL_TWOFA;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_CLIENT_ID;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_COUNTRY;
@@ -24,6 +25,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_SSEC
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_USERNAME;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.CONFIG_USER_ID;
 
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -37,6 +39,7 @@ import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginMode;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -60,6 +63,10 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
 
     private static final int CLIENT_ID_LENGTH = 6;
     private static final String DEFAULT_COUNTRY = "ru,us,tw,sg,cn,de,i2";
+    private static final long MIN_RETRY_INTERVAL_MS = 30_000L;
+
+    private static final RawType HOURGLASS_IMAGE = loadStatusImage("cloud_initiating.svg");
+    private static final RawType HAPPY_IMAGE = loadStatusImage("cloud_online.svg");
 
     private final Logger logger = LoggerFactory.getLogger(MiIoCloudThingHandler.class);
     private @Nullable ScheduledFuture<?> loginFuture;
@@ -76,6 +83,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     private volatile String ssecurity = "";
     private volatile String serviceToken = "";
     private CloudLoginMode loginMethod = CloudLoginMode.QRCODE;
+    private volatile long lastLoginTriggerTime = 0;
 
     public MiIoCloudThingHandler(Thing thing, CloudConnector cloudConnector) {
         super(thing);
@@ -102,9 +110,10 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
         validateAndGenerateClientId();
         setupCloudConnector();
         loginFuture = scheduler.schedule(this::connectorLogin, 1, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Initiating logon");
-        updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.cloud-initiating");
+        updateState(CHANNEL_LOGON_IMAGE, HOURGLASS_IMAGE);
         updateState(CHANNEL_TWOFA, UnDefType.NULL);
+        updateState(CHANNEL_TRIGGER_LOGIN, OnOffType.OFF);
     }
 
     private String getConfigString(Configuration config, String key) {
@@ -145,8 +154,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
     public void onLogonImage(byte[] captcha) {
         logger.debug("QR / Captcha received with length: {}", captcha.length);
         if (loginMethod == CloudLoginMode.QRCODE) {
-            logger.info(
-                    "QR code is ready for scanning. Open the '{}' channel in openHAB and scan the QR code with your Xiaomi app.",
+            logger.info("QR code is ready for scanning. Open the '{}' channel in openHAB and scan the QR code.",
                     CHANNEL_LOGON_IMAGE);
         } else {
             logger.info(
@@ -175,6 +183,12 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 logger.debug("Received 2-factor authentication response {}", command);
                 cloudConnector.submit2FA(command.toString());
                 break;
+            case CHANNEL_TRIGGER_LOGIN:
+                if (OnOffType.ON.equals(command)) {
+                    updateState(CHANNEL_TRIGGER_LOGIN, OnOffType.OFF);
+                    triggerNewLoginSequence();
+                }
+                break;
             default:
                 logger.info("Cannot handle channel {}", channelUID);
         }
@@ -201,7 +215,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
                 updateStatus(ThingStatus.ONLINE);
             }
             updateState(CHANNEL_TWOFA, UnDefType.NULL);
-            updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
+            updateState(CHANNEL_LOGON_IMAGE, HAPPY_IMAGE);
             // Read back tokens after logon() completes; schedule with a short delay because
             // CloudConnector.logon() syncs its token fields after login() returns (i.e., after this callback fires)
             ScheduledFuture<?> existingTokenFuture = tokenReadFuture;
@@ -241,25 +255,23 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             logger.info("Two-factor authentication required. Please submit the 2FA code via the '{}' channel.",
                     CHANNEL_TWOFA);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Two-factor authentication required. Enter code via the twofa channel.");
+                    "@text/offline.cloud-awaiting-2fa");
         } else if (loginState == CloudLoginState.AWAITING_CAPTCHA) {
             logger.info(
                     "Captcha is required. Check the '{}' channel image and submit the response via the '{}' channel.",
                     CHANNEL_LOGON_IMAGE, CHANNEL_CAPTCHA_RESPONSE);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Captcha verification required. Check the logonimage channel and submit via captcharesponse.");
+                    "@text/offline.cloud-awaiting-captcha");
         } else if (loginState == CloudLoginState.AWAITING_QRLOGIN) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "QR code ready. Scan with the Mi Home app via the logonimage channel.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.cloud-awaiting-qr");
         } else if (loginState == CloudLoginState.ACCESS_DENIED) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication denied by Xiaomi cloud. Check credentials or re-scan QR.");
+                    "@text/offline.cloud-access-denied");
         } else if (loginState == CloudLoginState.CAPTCHA_FAILED) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Captcha verification failed. Check the logonimage channel and try again.");
+                    "@text/offline.cloud-captcha-failed");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cloud communication error. Login state: " + loginState);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.cloud-comm-error");
         }
     }
 
@@ -282,5 +294,56 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             tokenReadFuture = null;
         }
         cloudConnector.unregisterListener(this);
+    }
+
+    /**
+     * Cancels any in-progress login, resets the connector state, and schedules a fresh login
+     * sequence. Has a 30-second cooldown to prevent rapid re-triggering.
+     */
+    private void triggerNewLoginSequence() {
+        long now = System.currentTimeMillis();
+        if (now - lastLoginTriggerTime < MIN_RETRY_INTERVAL_MS) {
+            logger.info("Login re-trigger ignored: another login attempt was started less than {} seconds ago.",
+                    MIN_RETRY_INTERVAL_MS / 1000);
+            return;
+        }
+        lastLoginTriggerTime = now;
+        logger.info("Re-triggering login sequence for Cloud Connector '{}'", getThing().getUID());
+
+        ScheduledFuture<?> existingLoginFuture = loginFuture;
+        if (existingLoginFuture != null) {
+            existingLoginFuture.cancel(true);
+            loginFuture = null;
+        }
+
+        // Clear stored token credentials from handler state so the connector uses interactive login
+        this.userId = "";
+        this.serviceToken = "";
+        this.ssecurity = "";
+
+        // Stop any in-progress connector and reset the login state
+        cloudConnector.resetLogin();
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.cloud-retrigger");
+        updateState(CHANNEL_LOGON_IMAGE, HOURGLASS_IMAGE);
+        updateState(CHANNEL_TWOFA, UnDefType.NULL);
+
+        loginFuture = scheduler.schedule(() -> {
+            updateThingProperties(Map.of(CONFIG_USER_ID, "", CONFIG_SERVICE_TOKEN, "", CONFIG_SSECURITY, ""));
+            cloudConnector.setCredentials(username, password, country, clientId, "", "", "");
+            cloudConnector.setLoginMode(loginMethod);
+            connectorLogin();
+        }, 1, TimeUnit.SECONDS);
+    }
+
+    private static RawType loadStatusImage(String filename) {
+        try (InputStream stream = MiIoCloudThingHandler.class.getResourceAsStream("/images/" + filename)) {
+            if (stream != null) {
+                return new RawType(stream.readAllBytes(), "image/svg+xml");
+            }
+        } catch (Exception e) {
+            // fall through to empty image — must never throw here or the class fails to initialise
+        }
+        return new RawType(new byte[0], "image/svg+xml");
     }
 }

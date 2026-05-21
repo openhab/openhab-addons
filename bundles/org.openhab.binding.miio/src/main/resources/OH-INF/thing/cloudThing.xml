@@ -12,6 +12,7 @@
 			<channel id="logonimage" typeId="logonimage"/>
 			<channel id="captcharesponse" typeId="captcharesponse"/>
 			<channel id="twofa" typeId="twofa"/>
+			<channel id="triggerlogin" typeId="triggerlogin"/>
 		</channels>
 
 		<config-description>
@@ -95,6 +96,14 @@
 		<item-type>String</item-type>
 		<label>2 Factor Authentication Response</label>
 		<description>Enter the 2 factor authentication code received by email.</description>
+		<category>settings</category>
+	</channel-type>
+
+	<channel-type id="triggerlogin">
+		<item-type>Switch</item-type>
+		<label>Trigger Login</label>
+		<description>Turn ON to cancel any in-progress login and start a fresh login sequence (new QR code or captcha). Resets
+			automatically. Has a 30-second cooldown to prevent rapid re-triggering.</description>
 		<category>settings</category>
 	</channel-type>
 

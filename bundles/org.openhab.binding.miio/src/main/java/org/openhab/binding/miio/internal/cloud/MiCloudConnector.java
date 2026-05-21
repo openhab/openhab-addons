@@ -90,13 +90,23 @@ public class MiCloudConnector {
     protected CloudLoginState loginState = CloudLoginState.INITIATING;
 
     public enum CloudLoginState {
-        INITIATING,
-        ACCESS_DENIED,
-        AWAITING_2FA,
-        AWAITING_CAPTCHA,
-        AWAITING_QRLOGIN,
-        CAPTCHA_FAILED,
-        ONLINE,
+        INITIATING("Initiating cloud connection"),
+        ACCESS_DENIED("Access denied by Xiaomi cloud"),
+        AWAITING_2FA("Awaiting two-factor authentication"),
+        AWAITING_CAPTCHA("Awaiting captcha response"),
+        AWAITING_QRLOGIN("Awaiting QR code scan"),
+        CAPTCHA_FAILED("Captcha verification failed"),
+        ONLINE("Connected to Xiaomi cloud");
+
+        private final String description;
+
+        CloudLoginState(String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 
     public enum CloudLoginMode {
@@ -422,7 +432,7 @@ public class MiCloudConnector {
         byte[] content = fetchImageBytes(url, timeoutSeconds);
         try {
             Path path = saveBytesToTempFile(content, tempPrefix, ".jpg");
-            logger.info("Saved image to {} -> {} bytes", path.toAbsolutePath(), content.length);
+            logger.debug("Saved logon image to {} -> {} bytes", path.toAbsolutePath(), content.length);
         } catch (MiCloudException e) {
             logger.debug("Could not save image to temp file: {}", e.getMessage());
         }
@@ -463,9 +473,9 @@ public class MiCloudConnector {
     protected void updateLoginState(CloudLoginState state) {
         loginState = state;
         for (CloudLogonListener listener : listeners) {
-            logger.debug("inform listener {}, state {}", listener, state);
+            logger.trace("inform listener {}, state {}", listener, state);
             try {
-                listener.onStatusUpdated(state, state.toString());
+                listener.onStatusUpdated(state, state.getDescription());
             } catch (Exception e) {
                 logger.debug("Could not inform listener {}: {}: ", listener, e.getMessage(), e);
             }
@@ -493,7 +503,7 @@ public class MiCloudConnector {
 
     protected void informImageListeners(byte[] image) {
         for (CloudLogonListener listener : listeners) {
-            logger.debug("Inform listener {}, with image", listener);
+            logger.trace("Inform listener {}, with image", listener);
             try {
                 listener.onLogonImage(image);
             } catch (Exception e) {
@@ -603,7 +613,7 @@ public class MiCloudConnector {
      */
     public void registerListener(CloudLogonListener listener) {
         if (!getListeners().contains(listener)) {
-            logger.debug("Adding cloud listener {}", listener);
+            logger.trace("Adding cloud listener {}", listener);
             getListeners().add(listener);
         }
     }

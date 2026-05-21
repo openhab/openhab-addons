@@ -487,6 +487,26 @@ public class CloudConnector {
     }
 
     /**
+     * Stops the active cloud connector and invalidates the login cache, allowing a fresh
+     * login sequence to be initiated on the next {@link #isConnected(boolean)} call.
+     */
+    public void resetLogin() {
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            // Preserve listeners so they are re-registered when the new connector is created in logon()
+            for (CloudLogonListener listener : cl.getListeners()) {
+                if (!pendingListeners.contains(listener)) {
+                    pendingListeners.add(listener);
+                }
+            }
+            cl.stopClient();
+        }
+        cloudConnector = null;
+        connected = false;
+        logonCache.invalidateValue();
+    }
+
+    /**
      * Submits a captcha response to the active cloud connector's login flow.
      *
      * @param captchaResponse the captcha text entered by the user
