@@ -204,6 +204,10 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             updateState(CHANNEL_LOGON_IMAGE, UnDefType.NULL);
             // Read back tokens after logon() completes; schedule with a short delay because
             // CloudConnector.logon() syncs its token fields after login() returns (i.e., after this callback fires)
+            ScheduledFuture<?> existingTokenFuture = tokenReadFuture;
+            if (existingTokenFuture != null && !existingTokenFuture.isDone()) {
+                existingTokenFuture.cancel(true);
+            }
             tokenReadFuture = scheduler.schedule(() -> {
                 String newUserId = cloudConnector.getUserId();
                 String newServiceToken = cloudConnector.getServiceToken();
@@ -223,6 +227,10 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogo
             this.userId = "";
             this.serviceToken = "";
             this.ssecurity = "";
+            ScheduledFuture<?> existingLoginFuture = loginFuture;
+            if (existingLoginFuture != null && !existingLoginFuture.isDone()) {
+                existingLoginFuture.cancel(true);
+            }
             loginFuture = scheduler.schedule(() -> {
                 updateThingProperties(Map.of(CONFIG_USER_ID, "", CONFIG_SERVICE_TOKEN, "", CONFIG_SSECURITY, ""));
                 cloudConnector.setCredentials(username, password, country, clientId, "", "", "");

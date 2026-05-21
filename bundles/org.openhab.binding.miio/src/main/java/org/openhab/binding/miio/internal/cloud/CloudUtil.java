@@ -135,7 +135,7 @@ public class CloudUtil {
         signatureParams.add(method.toUpperCase());
         signatureParams.add(path);
 
-        for (Map.Entry<String, String> entry : params.entrySet()) {
+        for (Map.Entry<String, String> entry : new TreeMap<>(params).entrySet()) {
             signatureParams.add(entry.getKey() + "=" + entry.getValue());
         }
 
@@ -173,12 +173,12 @@ public class CloudUtil {
      */
     public static Map<String, String> generateEncParams(String url, String method, String signedNonce, String nonce,
             Map<String, String> params, String ssecurity) throws MiIoCryptoException {
-        Map<String, String> encParams = new java.util.HashMap<>(params);
+        Map<String, String> encParams = new TreeMap<>(params);
         // Step 1: Add rc4_hash__
         String rc4Hash = generateEncSignature(url, method, signedNonce, encParams);
         encParams.put("rc4_hash__", rc4Hash);
         // Step 2: Encrypt all values with RC4
-        for (Map.Entry<String, String> entry : new java.util.HashMap<>(encParams).entrySet()) {
+        for (Map.Entry<String, String> entry : new TreeMap<>(encParams).entrySet()) {
             String encrypted = CloudCrypto.encryptRc4(signedNonce, entry.getValue());
             encParams.put(entry.getKey(), encrypted);
         }

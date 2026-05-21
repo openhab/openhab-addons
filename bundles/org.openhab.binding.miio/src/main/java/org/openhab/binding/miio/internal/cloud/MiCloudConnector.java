@@ -124,7 +124,6 @@ public class MiCloudConnector {
         this.serviceToken = serviceToken != null ? serviceToken : "";
         this.ssecurity = ssecurity != null ? ssecurity : "";
         this.clientId = clientId != null ? clientId : generateClientId();
-        this.httpClient.setFollowRedirects(true);
         if (!checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
         }
@@ -134,8 +133,6 @@ public class MiCloudConnector {
         this.username = username;
         this.password = password;
         this.httpClient = httpClient;
-        this.httpClient.setFollowRedirects(true);
-
         if (!checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
         }
@@ -145,6 +142,8 @@ public class MiCloudConnector {
     void startClient() throws MiCloudException {
         if (!httpClient.isStarted()) {
             try {
+                // setFollowRedirects must be configured before the client is started
+                httpClient.setFollowRedirects(true);
                 httpClient.start();
                 CookieStore cookieStore = httpClient.getCookieStore();
                 // set default cookies
@@ -277,8 +276,9 @@ public class MiCloudConnector {
                 logger.debug("Response is not a json object: '{}'", response);
             }
         } catch (MiCloudException e) {
-            logger.debug("{}", e.getMessage());
-            loginFailedCounter++;
+            // loginFailedCounter is already managed by request() for network and authentication failures;
+            // do not double-count here
+            logger.debug("Could not retrieve device list from server {}: {}", country, e.getMessage());
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
             logger.info("Error while parsing devices: {}", e.getMessage());
@@ -287,19 +287,14 @@ public class MiCloudConnector {
     }
 
     public String getDeviceString(String country) throws MiCloudException {
-        try {
-            String resp = request("/home/device_list_page", country,
-                    "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
-            logger.trace("Get devices response: {}", resp);
-            if (resp.length() > 2) {
-                CloudUtil.saveDeviceInfoFile(resp, country, logger);
-                return resp;
-            }
-        } catch (MiCloudException e) {
-            logger.debug("{}", e.getMessage());
-            loginFailedCounter++;
+        // Let request() exceptions propagate directly; request() manages loginFailedCounter for network failures.
+        String resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
+        logger.trace("Get devices response: {}", resp);
+        if (resp.length() > 2) {
+            CloudUtil.saveDeviceInfoFile(resp, country, logger);
+            return resp;
         }
-        throw new MiCloudException("Empty device list response");
+        throw new MiCloudException("Empty device list response for server " + country);
     }
 
     public String request(String urlPart, String country, String params) throws MiCloudException {
@@ -362,6 +357,11 @@ public class MiCloudConnector {
             if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
                     && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 this.serviceToken = "";
+                // Notify listeners that authentication was rejected so callers can re-authenticate.
+                // Only fire once when transitioning away from ONLINE to avoid repeated callbacks.
+                if (loginState == CloudLoginState.ONLINE) {
+                    updateLoginState(CloudLoginState.ACCESS_DENIED);
+                }
             }
             return response.getContentAsString();
         } catch (HttpResponseException e) {
@@ -369,7 +369,11 @@ public class MiCloudConnector {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
             throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
-        } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            loginFailedCounter++;
+            throw new MiCloudException("Request interrupted: " + e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
             throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
@@ -396,7 +400,10 @@ public class MiCloudConnector {
                 throw new MiCloudException("Failed to fetch image from " + url + " status=" + response.getStatus());
             }
             return response.getContent();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MiCloudException("Image fetch interrupted: " + e.getMessage(), e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new MiCloudException("Error fetching image from " + url + ": " + e.getMessage(), e);
         }
     }
@@ -463,7 +470,7 @@ public class MiCloudConnector {
                 logger.debug("Could not inform listener {}: {}: ", listener, e.getMessage(), e);
             }
         }
-    };
+    }
 
     protected ContentResponse debugRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
@@ -594,7 +601,7 @@ public class MiCloudConnector {
      *
      * @param listener {@link CloudLogonListener} to be called back
      */
-    public synchronized void registerListener(CloudLogonListener listener) {
+    public void registerListener(CloudLogonListener listener) {
         if (!getListeners().contains(listener)) {
             logger.debug("Adding cloud listener {}", listener);
             getListeners().add(listener);
@@ -607,7 +614,7 @@ public class MiCloudConnector {
      *
      * @param listener {@link CloudLogonListener} to be unregistered
      */
-    public synchronized void unregisterListener(CloudLogonListener listener) {
+    public void unregisterListener(CloudLogonListener listener) {
         getListeners().remove(listener);
     }
 

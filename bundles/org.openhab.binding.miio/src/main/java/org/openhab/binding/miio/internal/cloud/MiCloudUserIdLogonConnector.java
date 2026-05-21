@@ -123,7 +123,10 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
                             responseStep3.getReason(), responseStep3.getContentAsString());
                     throw new MiCloudException(responseStep3.getStatus() + responseStep3.getReason());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MiCloudException("Xiaomi cloud login interrupted", e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new MiCloudException("Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
         } catch (MiIoCryptoException e) {
             throw new MiCloudException("Error decrypting. Cannot logon to Xiaomi cloud: " + e.getMessage(), e);
@@ -310,7 +313,10 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             request = httpClient.newRequest(verifyticket).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.method(HttpMethod.POST);
             this.fa = request;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("2FA setup interrupted: {}", e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             logger.warn("Error requesting 2FA code: {}", e.getMessage(), e);
         } finally {
             httpClient.setCookieStore(cookieStore);
@@ -374,7 +380,10 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
             } else {
                 logger.warn("2FA completed but no redirect location found");
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException | MalformedURLException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("2FA response interrupted: {}", e.getMessage());
+        } catch (TimeoutException | ExecutionException | MalformedURLException e) {
             logger.warn("Error in 2FA code: {}", e.getMessage(), e);
         } catch (JsonParseException e) {
             logger.warn("Error parsing 2FA response: {}", e.getMessage(), e);

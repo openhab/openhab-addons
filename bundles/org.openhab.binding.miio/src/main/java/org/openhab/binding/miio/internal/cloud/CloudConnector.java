@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -82,7 +81,7 @@ public class CloudConnector {
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
     private final List<CloudLogonListener> pendingListeners = new CopyOnWriteArrayList<>();
 
-    private ConcurrentHashMap<@NonNull String, @NonNull HomeListDTO> homeLists = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     private ExpiringCache<Boolean> logonCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
