@@ -50,20 +50,20 @@
 			</parameter>
 
 			<parameter name="userId" type="text" required="false">
-				<label>Xiaomi Cloud User Id</label>
-				<description>Xiaomi cloud user Id, automatically retreived at logon</description>
+				<label>Xiaomi Cloud User ID</label>
+				<description>Xiaomi cloud user ID, automatically retrieved at logon</description>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="clientId" type="text" required="false">
 				<label>Xiaomi cloud client Id</label>
-				<description>Xiaomi cloud clientId Id identifies this client</description>
+				<description>Xiaomi cloud client ID identifies this client</description>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="serviceToken" type="text" required="false">
-				<label>Xiaomi cloud service Token</label>
-				<description>Xiaomi cloud service Token, automatically retrieved at logon</description>
+				<label>Xiaomi cloud service token</label>
+				<description>Xiaomi cloud service token, automatically retrieved at logon</description>
 				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
@@ -87,7 +87,7 @@
 
 	<channel-type id="captcharesponse">
 		<item-type>String</item-type>
-		<label>Capcha Response</label>
+		<label>Captcha Response</label>
 		<description>Enter in this channel the value as seen in the captcha.</description>
 		<category>settings</category>
 	</channel-type>
