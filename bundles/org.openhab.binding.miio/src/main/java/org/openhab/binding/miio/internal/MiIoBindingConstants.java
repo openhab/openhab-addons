@@ -122,6 +122,15 @@ public final class MiIoBindingConstants {
     public static final String PROPERTY_TIMEOUT = "timeout";
     public static final String PROPERTY_CLOUDSERVER = "cloudServer";
 
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_COUNTRY = "country";
+    public static final String CONFIG_CLIENT_ID = "clientId";
+    public static final String CONFIG_USER_ID = "userId";
+    public static final String CONFIG_SERVICE_TOKEN = "serviceToken";
+    public static final String CONFIG_SSECURITY = "ssecurity";
+    public static final String CONFIG_LOGIN_METHOD = "loginMethod";
+
     public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
             Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)
                     .collect(Collectors.toSet()));

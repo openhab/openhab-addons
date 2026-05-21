@@ -258,10 +258,8 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
 
     private void cloudThingDiscovery() {
         logger.debug("Proposing Cloud Connector thing for discovery.");
-        thingDiscovered(DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
-                .withLabel("Xiaomi Cloud Connector")
-                .build());
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
+                .withLabel("Xiaomi Cloud Connector").build());
     }
 
     private void submitDiscovery(String ip, String token, String id, String label, String model, String country,

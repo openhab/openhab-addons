@@ -62,13 +62,15 @@
 
 			<parameter name="serviceToken" type="text" required="false">
 				<label>Xiaomi cloud service Token</label>
-				<description>Xiaomi cloud service Token, automatically retreived at logon</description>
+				<description>Xiaomi cloud service Token, automatically retrieved at logon</description>
+				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ssecurity" type="text" required="false">
 				<label>Xiaomi cloud ssecurity</label>
-				<description>Xiaomi ssecurity value, automatically retreived at logon</description>
+				<description>Xiaomi ssecurity value, automatically retrieved at logon</description>
+				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
 

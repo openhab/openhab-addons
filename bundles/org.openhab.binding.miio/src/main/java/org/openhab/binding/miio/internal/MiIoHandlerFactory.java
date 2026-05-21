@@ -144,7 +144,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
                     i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_CLOUD)) {
-            return new MiIoCloudThingHandler(thing, cloudConnector, httpClientFactory.getCommonHttpClient());
+            return new MiIoCloudThingHandler(thing, cloudConnector);
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
                 httpClientFactory.getCommonHttpClient(), i18nProvider, localeProvider);

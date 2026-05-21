@@ -177,6 +177,14 @@ public class CloudConnector {
         }
     }
 
+    public void unregisterListener(CloudLogonListener cloudLogonListener) {
+        pendingListeners.remove(cloudLogonListener);
+        final MiCloudConnector cl = cloudConnector;
+        if (cl != null) {
+            cl.unregisterListener(cloudLogonListener);
+        }
+    }
+
     public boolean isConnected(boolean force) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null && cl.hasLoginToken()) {
