@@ -70,7 +70,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 ## Thing Configuration
 
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Each Xiaomi device (Thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
 The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
@@ -631,7 +631,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### robo rock vacuum channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|

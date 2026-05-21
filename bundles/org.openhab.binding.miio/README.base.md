@@ -229,7 +229,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### robo rock vacuum channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|

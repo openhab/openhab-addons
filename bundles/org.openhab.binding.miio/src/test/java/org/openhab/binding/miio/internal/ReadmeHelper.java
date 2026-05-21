@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_CHANNEL_PREFIX;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_OPTION_PREFIX;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_THING_PREFIX;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -258,8 +260,8 @@ public class ReadmeHelper {
         });
 
         // Remove excess newline
-        if (sw.length() > 0) {
-            sw.setLength(sw.length() - 1);
+        if (sw.length() > 1) {
+            sw.setLength(sw.length() - 2);
         }
         return sw;
     }
