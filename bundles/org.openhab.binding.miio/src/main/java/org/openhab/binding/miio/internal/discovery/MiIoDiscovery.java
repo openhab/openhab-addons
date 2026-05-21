@@ -12,7 +12,20 @@
  */
 package org.openhab.binding.miio.internal.discovery;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.DISCOVER_STRING;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.IGNORED_TOKENS;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PORT;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PROPERTY_CLOUDSERVER;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PROPERTY_DID;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PROPERTY_HOST_IP;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PROPERTY_MODEL;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.PROPERTY_TOKEN;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_CLOUD;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_GATEWAY;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_LUMI;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_MIIO;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.THING_TYPE_UNSUPPORTED;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -157,7 +170,6 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     protected void startScan() {
         String cloudDiscoveryMode = getCloudDiscoveryMode();
         logger.debug("Start Xiaomi Mi IO discovery with cloudDiscoveryMode: {}", cloudDiscoveryMode);
-        cloudThingDiscovery();
         if (!cloudDiscoveryMode.contentEquals(DISABLED)) {
             cloudDiscovery();
         }
@@ -245,31 +257,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     }
 
     private void cloudThingDiscovery() {
-        logger.debug("Discovering standard cloud connector thing.");
-        DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
-                .withLabel("Cloud Connector");
-        final Configuration miioConfig = this.miioConfig;
-        if (miioConfig != null) {
-            try {
-                Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
-                if (properties != null) {
-                    @Nullable
-                    String username = (String) properties.get("username");
-                    if (username != null) {
-                        dr = dr.withProperty("username", username);
-                    }
-                    @Nullable
-                    String password = (String) properties.get("password");
-                    if (password != null) {
-                        dr = dr.withProperty("password", password);
-                    }
-                }
-            } catch (ClassCastException | SecurityException e) {
-                logger.debug("Error getting cloud discovery configuration: {}", e.getMessage());
-            }
-        }
-
-        thingDiscovered(dr.build());
+        logger.debug("Proposing Cloud Connector thing for discovery.");
+        thingDiscovered(DiscoveryResultBuilder
+                .create(new ThingUID(THING_TYPE_CLOUD, "cloudConnector"))
+                .withLabel("Xiaomi Cloud Connector")
+                .build());
     }
 
     private void submitDiscovery(String ip, String token, String id, String label, String model, String country,

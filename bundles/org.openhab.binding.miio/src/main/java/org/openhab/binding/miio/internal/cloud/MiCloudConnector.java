@@ -87,10 +87,10 @@ public class MiCloudConnector {
     protected int loginFailedCounter = 0;
     protected HttpClient httpClient;
     protected String sign = "";
-    protected CloudLoginState loginState = CloudLoginState.INTIATING;
+    protected CloudLoginState loginState = CloudLoginState.INITIATING;
 
     public enum CloudLoginState {
-        INTIATING,
+        INITIATING,
         ACCESS_DENIED,
         AWAITING_2FA,
         AWAITING_CAPTCHA,
@@ -329,9 +329,6 @@ public class MiCloudConnector {
         request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
         request.cookie(new HttpCookie("userId", this.userId));
         request.cookie(new HttpCookie("yetAnotherServiceToken", this.serviceToken));
-
-        // request.cookie(new HttpCookie("cUserId", "9ujlMfMzZ-HvcQbOdtiqwdFeqss"));
-
         request.cookie(new HttpCookie("serviceToken", this.serviceToken));
         request.cookie(new HttpCookie("locale", locale.toString()));
         request.cookie(new HttpCookie("timezone", ZonedDateTime.now().format(FORMATTER)));
@@ -471,19 +468,18 @@ public class MiCloudConnector {
     protected ContentResponse debugRequest(Request request)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response;
-        logger.debug("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
-        logger.debug("Xiaomi cloud request content req= {}",
+        logger.trace("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
+        logger.trace("Xiaomi cloud request content req= {}",
                 request.getContent() == null ? "" : request.getContent().toString());
-        logger.debug("Xiaomi cloud request headers= {}", request.getHeaders().toString());
-        logger.debug("Xiaomi cloud request param= {}", request.getParams());
-        logger.debug("Xiaomi cloud request cookie= {}", request.getCookies().toString());
+        logger.trace("Xiaomi cloud request headers= {}", request.getHeaders().toString());
+        logger.trace("Xiaomi cloud request param= {}", request.getParams());
+        logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().toString());
         response = request.send();
-        logger.debug("Xiaomi cloud response status = {}", response.getStatus());
-        logger.debug("Xiaomi cloud response response = {}", response);
-        logger.debug("Xiaomi cloud response content = {}", response.toString());
-        logger.debug("Xiaomi cloud response header = {}", response.getHeaders().toString());
-        logger.debug("Xiaomi cloud response content = {}", response.getContentAsString());
-        // logger.debug("Xiaomi cloud response cookie= {}", response.s.getCookies().toString());
+        logger.trace("Xiaomi cloud response status = {}", response.getStatus());
+        logger.trace("Xiaomi cloud response response = {}", response);
+        logger.trace("Xiaomi cloud response content = {}", response.toString());
+        logger.trace("Xiaomi cloud response header = {}", response.getHeaders().toString());
+        logger.trace("Xiaomi cloud response content = {}", response.getContentAsString());
         dumpCookies(request.getHost() + request.getPath(), false);
         return response;
     }
@@ -613,5 +609,15 @@ public class MiCloudConnector {
      */
     public synchronized void unregisterListener(CloudLogonListener listener) {
         getListeners().remove(listener);
+    }
+
+    /**
+     * Submits a 2FA response code to this connector's login flow.
+     * The default implementation is a no-op; subclasses that support 2FA must override this method.
+     *
+     * @param faCode the 2FA code entered by the user
+     */
+    public void faResponse(String faCode) {
+        logger.debug("faResponse: 2FA is not supported by this connector type ({})", getClass().getSimpleName());
     }
 }

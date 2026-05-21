@@ -169,10 +169,10 @@ public class CloudUtil {
      * @param params request params (will not be modified)
      * @param ssecurity ssecurity value
      * @return Map with encrypted parameters and required fields (a new map)
-     * @throws Exception when encryption or signature generation fails
+     * @throws MiIoCryptoException when encryption or signature generation fails
      */
     public static Map<String, String> generateEncParams(String url, String method, String signedNonce, String nonce,
-            Map<String, String> params, String ssecurity) throws Exception {
+            Map<String, String> params, String ssecurity) throws MiIoCryptoException {
         Map<String, String> encParams = new java.util.HashMap<>(params);
         // Step 1: Add rc4_hash__
         String rc4Hash = generateEncSignature(url, method, signedNonce, encParams);

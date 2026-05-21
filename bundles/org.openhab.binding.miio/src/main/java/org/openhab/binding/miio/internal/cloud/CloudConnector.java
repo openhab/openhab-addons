@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -79,7 +80,7 @@ public class CloudConnector {
     private final HttpClient httpClient;
     private @Nullable MiCloudConnector cloudConnector;
     private final Logger logger = LoggerFactory.getLogger(CloudConnector.class);
-    private final List<CloudLogonListener> pendingListeners = new ArrayList<>();
+    private final List<CloudLogonListener> pendingListeners = new CopyOnWriteArrayList<>();
 
     private ConcurrentHashMap<@NonNull String, @NonNull HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -499,10 +500,10 @@ public class CloudConnector {
      */
     public void submit2FA(String faCode) {
         final MiCloudConnector cl = cloudConnector;
-        if (cl instanceof MiCloudUserIdLogonConnector) {
-            ((MiCloudUserIdLogonConnector) cl).FAResponse(faCode);
+        if (cl != null) {
+            cl.faResponse(faCode);
         } else {
-            logger.debug("submit2FA: active connector does not support 2FA");
+            logger.debug("submit2FA: no active cloud connector");
         }
     }
 }

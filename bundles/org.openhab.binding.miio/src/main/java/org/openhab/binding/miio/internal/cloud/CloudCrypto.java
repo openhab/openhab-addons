@@ -13,6 +13,7 @@
 package org.openhab.binding.miio.internal.cloud;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -74,21 +75,25 @@ public class CloudCrypto {
      * @param password The Base64 encoded key.
      * @param payload The string payload to encrypt.
      * @return The Base64 encoded encrypted payload.
-     * @throws Exception if an error occurs during encryption.
+     * @throws MiIoCryptoException if an error occurs during encryption.
      */
-    public static String encryptRc4(String password, String payload) throws Exception {
-        byte[] key = Base64.getDecoder().decode(password);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "RC4");
+    public static String encryptRc4(String password, String payload) throws MiIoCryptoException {
+        try {
+            byte[] key = Base64.getDecoder().decode(password);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, "RC4");
 
-        Cipher cipher = Cipher.getInstance("RC4");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+            Cipher cipher = Cipher.getInstance("RC4");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
 
-        // Discard the first 1024 bytes of the keystream
-        byte[] discard = new byte[1024];
-        cipher.update(discard);
+            // Discard the first 1024 bytes of the keystream
+            byte[] discard = new byte[1024];
+            cipher.update(discard);
 
-        byte[] encryptedPayload = cipher.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(encryptedPayload);
+            byte[] encryptedPayload = cipher.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(encryptedPayload);
+        } catch (GeneralSecurityException | IllegalArgumentException e) {
+            throw new MiIoCryptoException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -97,20 +102,24 @@ public class CloudCrypto {
      * @param password The Base64 encoded key.
      * @param payload The Base64 encoded encrypted payload.
      * @return The decrypted payload as a byte array.
-     * @throws Exception if an error occurs during decryption.
+     * @throws MiIoCryptoException if an error occurs during decryption.
      */
-    public static byte[] decryptRc4(String password, String payload) throws Exception {
-        byte[] key = Base64.getDecoder().decode(password);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "RC4");
+    public static byte[] decryptRc4(String password, String payload) throws MiIoCryptoException {
+        try {
+            byte[] key = Base64.getDecoder().decode(password);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, "RC4");
 
-        Cipher cipher = Cipher.getInstance("RC4");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
+            Cipher cipher = Cipher.getInstance("RC4");
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
 
-        // Discard the first 1024 bytes of the keystream
-        byte[] discard = new byte[1024];
-        cipher.update(discard);
+            // Discard the first 1024 bytes of the keystream
+            byte[] discard = new byte[1024];
+            cipher.update(discard);
 
-        byte[] decodedPayload = Base64.getDecoder().decode(payload);
-        return cipher.doFinal(decodedPayload);
+            byte[] decodedPayload = Base64.getDecoder().decode(payload);
+            return cipher.doFinal(decodedPayload);
+        } catch (GeneralSecurityException | IllegalArgumentException e) {
+            throw new MiIoCryptoException(e.getMessage(), e);
+        }
     }
 }

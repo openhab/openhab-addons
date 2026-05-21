@@ -177,7 +177,7 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
 
         Fields fields = new Fields();
         fields.put("sid", "xiaomiio");
-        fields.put("hash", Utils.getHex(MiIoCrypto.md5(password.getBytes())));
+        fields.put("hash", Utils.getHex(MiIoCrypto.md5(password.getBytes(java.nio.charset.StandardCharsets.UTF_8))));
         fields.put("callback", "https://sts.api.io.mi.com/sts");
         fields.put("qs", "%3Fsid%3Dxiaomiio%26_json%3Dtrue");
         fields.put("user", username);
@@ -322,7 +322,8 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
      *
      * @param faCode The 2FA code entered by the user
      */
-    public void FAResponse(String faCode) {
+    @Override
+    public void faResponse(String faCode) {
         try {
             Request fa = this.fa;
             if (fa == null) {
