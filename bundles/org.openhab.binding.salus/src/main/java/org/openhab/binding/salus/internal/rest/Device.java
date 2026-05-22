@@ -16,9 +16,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Martin Grześlowski - Initial contribution

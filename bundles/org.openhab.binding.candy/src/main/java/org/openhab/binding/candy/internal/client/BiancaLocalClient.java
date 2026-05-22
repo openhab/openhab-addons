@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.openhab.binding.candy.internal.BiancaConfiguration;
 import org.openhab.binding.candy.internal.protocol.BiancaSnapshot;
 import org.openhab.binding.candy.internal.protocol.BiancaStatusParser;
@@ -84,7 +84,7 @@ public class BiancaLocalClient {
         });
         BufferingResponseListener listener = new BufferingResponseListener(CandyCodec.MAX_WIRE_BYTES) {
             @Override
-            public void onComplete(Result result) {
+            public void onComplete(@NonNullByDefault({}) Result result) {
                 if (future.isDone()) {
                     logger.debug("Ignoring completed or cancelled local status response from {}", host);
                     return;
@@ -177,7 +177,7 @@ public class BiancaLocalClient {
         try {
             request.send(new BufferingResponseListener(CandyCodec.MAX_WIRE_BYTES) {
                 @Override
-                public void onComplete(Result result) {
+                public void onComplete(@NonNullByDefault({}) Result result) {
                     if (future.isDone()) {
                         return;
                     }

@@ -35,18 +35,18 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
+import org.eclipse.jetty.client.InputStreamRequestContent;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MultiPart;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
@@ -262,7 +262,7 @@ public class UniFiProtectPublicClient implements Closeable {
         String query = "?highQuality=" + highQuality.toString();
         Request req = newRequest(HttpMethod.GET, "/v1/cameras/" + id + "/snapshot" + query);
         req.timeout(5, TimeUnit.SECONDS); // if this take longer, its going to fail
-        req.header(HttpHeader.ACCEPT, "image/jpeg");
+        req.headers(h -> h.add(HttpHeader.ACCEPT, "image/jpeg"));
         ContentResponse resp = sendJson(req, null);
         ensure2xx(resp);
         return resp.getContent();
@@ -309,14 +309,15 @@ public class UniFiProtectPublicClient implements Closeable {
     public FileSchema uploadFile(AssetFileType type, String filename, String contentType, InputStream data)
             throws IOException {
         String path = "/v1/files/" + toPathEnum(type);
-        MultiPartContentProvider multi = new MultiPartContentProvider();
-        HttpFields partHeaders = new HttpFields();
+        MultiPartRequestContent multi = new MultiPartRequestContent();
+        HttpFields.Mutable partHeaders = HttpFields.build();
         partHeaders.put(HttpHeader.CONTENT_TYPE, contentType);
-        multi.addFilePart("file", filename, new InputStreamContentProvider(data), partHeaders);
+        multi.addPart(
+                new MultiPart.ContentSourcePart("file", filename, partHeaders, new InputStreamRequestContent(data)));
         multi.close();
         Request req = newRequest(HttpMethod.POST, path);
-        req.content(multi);
-        req.header(HttpHeader.ACCEPT, "application/json");
+        req.body(multi);
+        req.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"));
         try {
             throttleRequest();
             ContentResponse resp = req.send();
@@ -441,7 +442,7 @@ public class UniFiProtectPublicClient implements Closeable {
         logger.trace("New request {} {} {}", method, path, uri);
         Request request = httpClient.newRequest(uri).method(method).timeout(30, TimeUnit.SECONDS);
         for (Map.Entry<String, String> h : defaultHeaders.entrySet()) {
-            request.header(h.getKey(), h.getValue());
+            request.headers(mh -> mh.add(h.getKey(), h.getValue()));
         }
         return request;
     }
@@ -484,13 +485,113 @@ public class UniFiProtectPublicClient implements Closeable {
         throttleRequest();
         if (body != null) {
             String json = gson.toJson(body);
-            req.header(HttpHeader.CONTENT_TYPE, "application/json");
-            req.content(new BytesContentProvider(json.getBytes(StandardCharsets.UTF_8)));
+            req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+            req.body(new BytesRequestContent(json.getBytes(StandardCharsets.UTF_8)));
         }
         try {
             return req.send();
         } catch (Exception e) {
             throw new IOException("HTTP request failed", e);
+        }
+    }
+
+    /**
+     * WebSocket listener. A member class and public, as Jetty 12 looks up the callbacks via
+     * {@code MethodHandles.publicLookup()}, which cannot access local classes.
+     */
+    public class WsAdapter implements Session.Listener.AutoDemanding {
+        private final CompletableFuture<Session> future;
+        private final URI wsUri;
+        private final Consumer<String> onText;
+        private final Runnable onOpen;
+        private final BiConsumer<Integer, String> onClosed;
+        private final Consumer<Throwable> onError;
+        private @Nullable Session wsSession;
+        private @Nullable ScheduledFuture<?> heartbeatTask;
+        private volatile long lastActivityMs;
+
+        WsAdapter(CompletableFuture<Session> future, URI wsUri, Consumer<String> onText, Runnable onOpen,
+                BiConsumer<Integer, String> onClosed, Consumer<Throwable> onError) {
+            this.future = future;
+            this.wsUri = wsUri;
+            this.onText = onText;
+            this.onOpen = onOpen;
+            this.onClosed = onClosed;
+            this.onError = onError;
+        }
+
+        @Override
+        public void onWebSocketOpen(@Nullable Session session) {
+            if (session == null) {
+                future.completeExceptionally(new IOException("WebSocket connection failed"));
+                return;
+            }
+            this.wsSession = session;
+            lastActivityMs = System.currentTimeMillis();
+            // A write-only ping does not fail on a half-open socket, so liveness is
+            // judged on frames *received*.
+            heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
+                Session s = this.wsSession;
+                if (s == null || !s.isOpen()) {
+                    return;
+                }
+                long silentMs = System.currentTimeMillis() - lastActivityMs;
+                if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
+                    logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
+                    s.close(1001, "No data received", Callback.NOOP);
+                    return;
+                }
+                s.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+                }, cause -> {
+                    logger.debug("WebSocket heartbeat ping failed", cause);
+                    s.close(1000, "WebSocket heartbeat ping failed", Callback.NOOP);
+                }));
+            }, 30, 30, TimeUnit.SECONDS);
+            logger.debug("WebSocket connected: {}", wsUri);
+            future.complete(session);
+            onOpen.run();
+        }
+
+        @Override
+        public void onWebSocketText(@Nullable String message) {
+            lastActivityMs = System.currentTimeMillis();
+            if (message != null) {
+                onText.accept(message);
+            }
+        }
+
+        @Override
+        public void onWebSocketError(@Nullable Throwable cause) {
+            Throwable t = cause != null ? cause : new IOException("WebSocket connection failed");
+            if (!future.isDone()) {
+                future.completeExceptionally(t);
+            }
+            onError.accept(t);
+        }
+
+        @Override
+        public void onWebSocketClose(int statusCode, @Nullable String reason) {
+            ScheduledFuture<?> hb = heartbeatTask;
+            if (hb != null) {
+                hb.cancel(true);
+                heartbeatTask = null;
+            }
+            onClosed.accept(statusCode, reason != null ? reason : "");
+        }
+
+        @Override
+        public void onWebSocketPong(@Nullable ByteBuffer payload) {
+            lastActivityMs = System.currentTimeMillis();
+        }
+
+        @Override
+        public void onWebSocketPing(@Nullable ByteBuffer payload) {
+            lastActivityMs = System.currentTimeMillis();
+            // Overriding this method disables Jetty's automatic pong reply, so answer explicitly.
+            Session s = this.wsSession;
+            if (s != null) {
+                s.sendPong(payload != null ? payload : ByteBuffer.allocate(0), Callback.NOOP);
+            }
         }
     }
 
@@ -510,82 +611,8 @@ public class UniFiProtectPublicClient implements Closeable {
                 upgrade.setHeader(h.getKey(), h.getValue());
             }
 
-            class WsAdapter extends WebSocketAdapter implements WebSocketPingPongListener {
-                private @Nullable ScheduledFuture<?> heartbeatTask;
-                private volatile long lastActivityMs;
-
-                @Override
-                public void onWebSocketConnect(@Nullable Session session) {
-                    if (session == null) {
-                        future.completeExceptionally(new IOException("WebSocket connection failed"));
-                        return;
-                    }
-                    super.onWebSocketConnect(session);
-                    lastActivityMs = System.currentTimeMillis();
-                    // A write-only ping does not fail on a half-open socket, so liveness is
-                    // judged on frames *received*.
-                    heartbeatTask = executorService.scheduleWithFixedDelay(() -> {
-                        Session s = getSession();
-                        if (s == null || !s.isOpen()) {
-                            return;
-                        }
-                        long silentMs = System.currentTimeMillis() - lastActivityMs;
-                        if (silentMs > UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS) {
-                            logger.debug("No WebSocket frames received in {} ms; closing to reconnect", silentMs);
-                            s.close(1001, "No data received");
-                            return;
-                        }
-                        try {
-                            s.getRemote().sendPing(ByteBuffer.allocate(0));
-                        } catch (IOException e) {
-                            logger.debug("WebSocket heartbeat ping failed", e);
-                            s.close(1000, "WebSocket heartbeat ping failed");
-                        }
-                    }, 30, 30, TimeUnit.SECONDS);
-                    logger.debug("WebSocket connected: {}", wsUri);
-                    future.complete(session);
-                    onOpen.run();
-                }
-
-                @Override
-                public void onWebSocketText(@Nullable String message) {
-                    lastActivityMs = System.currentTimeMillis();
-                    if (message != null) {
-                        onText.accept(message);
-                    }
-                }
-
-                @Override
-                public void onWebSocketError(@Nullable Throwable cause) {
-                    Throwable t = cause != null ? cause : new IOException("WebSocket connection failed");
-                    if (!future.isDone()) {
-                        future.completeExceptionally(t);
-                    }
-                    onError.accept(t);
-                }
-
-                @Override
-                public void onWebSocketClose(int statusCode, @Nullable String reason) {
-                    ScheduledFuture<?> hb = heartbeatTask;
-                    if (hb != null) {
-                        hb.cancel(true);
-                        heartbeatTask = null;
-                    }
-                    onClosed.accept(statusCode, reason != null ? reason : "");
-                    super.onWebSocketClose(statusCode, reason);
-                }
-
-                @Override
-                public void onWebSocketPong(@Nullable ByteBuffer payload) {
-                    lastActivityMs = System.currentTimeMillis();
-                }
-
-                @Override
-                public void onWebSocketPing(@Nullable ByteBuffer payload) {
-                    lastActivityMs = System.currentTimeMillis();
-                }
-            }
-            future.complete(wsClient.connect(new WsAdapter(), wsUri, upgrade).get());
+            future.complete(wsClient
+                    .connect(new WsAdapter(future, wsUri, onText, onOpen, onClosed, onError), wsUri, upgrade).get());
         } catch (Exception e) {
             future.completeExceptionally(e);
         }

@@ -15,8 +15,6 @@ package org.openhab.binding.mielecloud.internal.config;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.config.servlet.AccountOverviewServlet;
@@ -36,17 +34,19 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.ThingRegistry;
+import org.ops4j.pax.web.service.http.HttpContext;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpContext;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
 
 /**
  * Handles the lifecycle of the Miele Cloud binding's configuration UI.

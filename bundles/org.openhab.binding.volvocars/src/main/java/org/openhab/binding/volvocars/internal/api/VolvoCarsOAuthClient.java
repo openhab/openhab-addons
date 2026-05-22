@@ -31,9 +31,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -247,9 +247,10 @@ public class VolvoCarsOAuthClient {
                 .encodeToString((config.clientId + ":" + config.clientSecret).getBytes(StandardCharsets.UTF_8));
         try {
             ContentResponse response = httpClient.newRequest(config.tokenUrl()).method(HttpMethod.POST)
-                    .header(HttpHeader.AUTHORIZATION, "Basic " + credentials)
-                    .header(HttpHeader.ACCEPT, "application/json").content(new FormContentProvider(fields))
-                    .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                    .headers(headers -> {
+                        headers.put(HttpHeader.AUTHORIZATION, "Basic " + credentials);
+                        headers.put(HttpHeader.ACCEPT, "application/json");
+                    }).body(new FormRequestContent(fields)).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int status = response.getStatus();
             if (status != HttpStatus.OK_200) {
                 throw new VolvoCarsException(

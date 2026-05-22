@@ -16,10 +16,10 @@ import java.util.function.LongSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Response.CompleteListener;
-import org.eclipse.jetty.client.api.Response.ContentListener;
-import org.eclipse.jetty.client.api.Response.FailureListener;
-import org.eclipse.jetty.client.api.Response.SuccessListener;
+import org.eclipse.jetty.client.Response.CompleteListener;
+import org.eclipse.jetty.client.Response.ContentListener;
+import org.eclipse.jetty.client.Response.FailureListener;
+import org.eclipse.jetty.client.Response.SuccessListener;
 
 /**
  * public interface for all commands

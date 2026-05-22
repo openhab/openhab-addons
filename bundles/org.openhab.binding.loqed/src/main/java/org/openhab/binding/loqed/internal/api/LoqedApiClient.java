@@ -21,8 +21,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -63,8 +63,8 @@ public class LoqedApiClient {
     private ContentResponse send(String url) throws LoqedApiException {
         try {
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, "Bearer " + apiToken).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    .send();
+                    .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + apiToken))
+                    .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             if (!HttpStatus.isSuccess(response.getStatus())) {
                 throw responseException(response);
             }

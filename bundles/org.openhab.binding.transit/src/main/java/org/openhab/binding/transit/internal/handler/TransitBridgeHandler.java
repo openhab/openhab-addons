@@ -24,8 +24,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -87,7 +87,7 @@ public class TransitBridgeHandler extends BaseBridgeHandler {
     private void verifyApiKey() {
         try {
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "nearby_stops?lat=0.0&lon=0.0")
-                    .method(HttpMethod.GET).header(API_KEY_HEADER, config.apiKey)
+                    .method(HttpMethod.GET).headers(h -> h.put(API_KEY_HEADER, config.apiKey))
                     .timeout(API_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
 
             if (Thread.currentThread().isInterrupted()) {
