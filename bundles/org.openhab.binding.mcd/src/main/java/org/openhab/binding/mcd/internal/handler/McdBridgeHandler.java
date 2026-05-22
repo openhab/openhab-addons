@@ -18,11 +18,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mcd.internal.util.Listener;
@@ -106,14 +106,15 @@ public class McdBridgeHandler extends BaseBridgeHandler {
         if (localConfig != null) {
             try {
                 Request request = httpClient.newRequest("https://cunds-syncapi.azurewebsites.net/token")
-                        .method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                        .header(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net")
-                        .header(HttpHeader.ACCEPT, "application/json")
+                        .method(HttpMethod.POST)
+                        .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"))
+                        .headers(h -> h.add(HttpHeader.HOST, "cunds-syncapi.azurewebsites.net"))
+                        .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
                         .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
                 String content = "grant_type=password&username=" + localConfig.getUserEmail() + "&password="
                         + localConfig.getUserPassword();
-                request.content(new StringContentProvider(content), "application/x-www-form-urlencoded");
+                request.body(new StringRequestContent("application/x-www-form-urlencoded", content));
                 request.send(new BufferingResponseListener() {
                     @NonNullByDefault({})
                     @Override

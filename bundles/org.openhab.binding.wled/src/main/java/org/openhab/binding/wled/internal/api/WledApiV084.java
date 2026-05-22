@@ -25,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.wled.internal.WLedHelper;
@@ -92,7 +92,7 @@ public class WledApiV084 implements WledApi {
         Request request = httpClient.newRequest(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip"));
         logger.trace("Sending WLED GET:{}", url);
         String errorReason = "";
         try {
@@ -122,8 +122,8 @@ public class WledApiV084 implements WledApi {
         logger.debug("Sending WLED POST:{} Message:{}", url, json);
         Request request = httpClient.POST(address + url);
         request.timeout(3, TimeUnit.SECONDS);
-        request.header(HttpHeader.CONTENT_TYPE, "application/json");
-        request.content(new StringContentProvider(json), "application/json");
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+        request.body(new StringRequestContent("application/json", json));
         String errorReason = "";
         try {
             ContentResponse contentResponse = request.send();

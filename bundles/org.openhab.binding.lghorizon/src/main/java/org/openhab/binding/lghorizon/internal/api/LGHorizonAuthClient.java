@@ -26,10 +26,10 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.lghorizon.internal.LGHorizonContentAnonymizer;
@@ -170,11 +170,12 @@ public class LGHorizonAuthClient {
             path = AUTH_SERVICE_AUTHORIZATION_REFRESH_PATH;
         }
 
-        Request request = httpClient.newRequest(apiBaseUrl + path).method(HttpMethod.POST)
-                .header(CONTENT_TYPE_HEADER, APPLICATION_JSON).header(CHARSET_HEADER, UTF_8)
-                .content(new StringContentProvider(APPLICATION_JSON, gson.toJson(payload), StandardCharsets.UTF_8));
+        Request request = httpClient.newRequest(apiBaseUrl + path).method(HttpMethod.POST).headers(h -> {
+            h.put(CONTENT_TYPE_HEADER, APPLICATION_JSON);
+            h.put(CHARSET_HEADER, UTF_8);
+        }).body(new StringRequestContent(APPLICATION_JSON, gson.toJson(payload), StandardCharsets.UTF_8));
         if (!usesRefreshTokenFlow() && accessToken == null) {
-            request = request.header(X_DEVICE_CODE_HEADER, X_DEVICE_CODE_WEB);
+            request = request.headers(h -> h.put(X_DEVICE_CODE_HEADER, X_DEVICE_CODE_WEB));
         }
 
         ContentResponse response = send(request);
@@ -239,14 +240,14 @@ public class LGHorizonAuthClient {
         ensureFreshToken();
         String url = serviceBaseUrl + path;
         String anonymizedUrl = String.valueOf(LGHorizonContentAnonymizer.anonymizeTopic(url));
-        ContentResponse response = send(
-                httpClient.newRequest(url).method(HttpMethod.GET).header(AUTHORIZATION_HEADER, BEARER + accessToken));
+        ContentResponse response = send(httpClient.newRequest(url).method(HttpMethod.GET)
+                .headers(h -> h.put(AUTHORIZATION_HEADER, BEARER + accessToken)));
 
         if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             logger.debug("Got HTTP 401 from {}, refreshing token and retrying once", anonymizedUrl);
             fetchAccessToken();
-            response = send(httpClient.newRequest(url).method(HttpMethod.GET).header(AUTHORIZATION_HEADER,
-                    BEARER + accessToken));
+            response = send(httpClient.newRequest(url).method(HttpMethod.GET)
+                    .headers(h -> h.put(AUTHORIZATION_HEADER, BEARER + accessToken)));
         }
         if (response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw new LGHorizonApiException(

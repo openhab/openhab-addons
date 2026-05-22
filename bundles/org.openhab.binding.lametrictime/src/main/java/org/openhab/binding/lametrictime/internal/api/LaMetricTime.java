@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lametrictime.internal.api;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.cloud.CloudConfiguration;
@@ -39,6 +37,8 @@ import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
 import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
 import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
 import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Interface for LaMetric Time devices.

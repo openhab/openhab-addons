@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Utility class for common servlet tasks.

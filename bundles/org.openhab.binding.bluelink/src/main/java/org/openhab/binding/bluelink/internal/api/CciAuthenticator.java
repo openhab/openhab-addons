@@ -18,8 +18,6 @@ import static org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi.oper
 import static org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi.send;
 
 import java.math.BigInteger;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -39,11 +37,13 @@ import javax.crypto.Cipher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -136,7 +136,7 @@ class CciAuthenticator {
         }
         final String url = config.apiBaseUrl() + "/domain/api/v2/auth/token-refresh";
         final Request request = cciRequest(url, current.deviceId(), current.tokens())
-                .content(new StringContentProvider(gson.toJson(current.tokens())), "application/json");
+                .body(new StringRequestContent("application/json", gson.toJson(current.tokens())));
         final ContentResponse response = send(request, "CCI token refresh");
         final CciTokens tokens = merge(current.tokens(), parseJson(response, CciTokens.class, "CCI token refresh"),
                 cookieValue(response, "t"));
@@ -149,9 +149,9 @@ class CciAuthenticator {
 
     // the account's HTTP client keeps the login session cookies, stale ones from an earlier login must not be sent
     private void clearLoginCookies() {
-        final CookieStore cookieStore = httpClient.getCookieStore();
+        final HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
         final URI uri = URI.create(loginBaseUrl);
-        for (final HttpCookie cookie : cookieStore.get(uri)) {
+        for (final HttpCookie cookie : cookieStore.match(uri)) {
             cookieStore.remove(uri, cookie);
         }
     }
@@ -161,7 +161,7 @@ class CciAuthenticator {
                 + config.clientId() + "&redirect_uri=" + config.redirectUri() + "&lang=en&state=ccsp&country=de";
         // a blocked login only shows on the page behind the redirect
         final ContentResponse response = send(httpClient.newRequest(url).method(HttpMethod.GET)
-                .header(HttpHeader.USER_AGENT, USER_AGENT).followRedirects(true), "authorize");
+                .headers(h -> h.put(HttpHeader.USER_AGENT, USER_AGENT)).followRedirects(true), "authorize");
         if (response.getContentAsString().toLowerCase(Locale.ROOT).contains("abusing")
                 || response.getRequest().getURI().toString().contains("/error?status=400")) {
             throw new LoginRejectedException(Reason.BLOCKED, "Login blocked by the Bluelink server");
@@ -173,8 +173,10 @@ class CciAuthenticator {
 
     private SigningKeyResponse.Key fetchSigningKey() throws BluelinkApiException {
         final Request request = httpClient.newRequest(loginBaseUrl + "/auth/api/v1/accounts/certs")
-                .method(HttpMethod.GET).header(HttpHeader.USER_AGENT, USER_AGENT)
-                .header(HttpHeader.ACCEPT, "application/json");
+                .method(HttpMethod.GET).headers(h -> {
+                    h.put(HttpHeader.USER_AGENT, USER_AGENT);
+                    h.put(HttpHeader.ACCEPT, "application/json");
+                });
         final SigningKeyResponse.Key key = sendJson(request, SigningKeyResponse.class, "fetch signing key").retValue();
         if (key == null || key.kid() == null || key.n() == null || key.e() == null) {
             throw new BluelinkApiException("fetch signing key: invalid response");
@@ -214,7 +216,7 @@ class CciAuthenticator {
 
         // the authorization code is passed in the redirect location
         final Request request = httpClient.newRequest(loginBaseUrl + "/auth/account/signin").method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, USER_AGENT).content(new FormContentProvider(fields))
+                .headers(h -> h.put(HttpHeader.USER_AGENT, USER_AGENT)).body(new FormRequestContent(fields))
                 .followRedirects(false);
         final ContentResponse response = send(request, "sign in");
         if (response.getStatus() != HttpStatus.FOUND_302) {
@@ -248,7 +250,8 @@ class CciAuthenticator {
     private static @Nullable String cookieValue(final ContentResponse response, final String name) {
         for (final String header : response.getHeaders().getValuesList(HttpHeader.SET_COOKIE)) {
             try {
-                for (final HttpCookie cookie : HttpCookie.parse(header)) {
+                // parsing a Set-Cookie header is a JDK utility; the Jetty cookie type has no equivalent
+                for (final java.net.HttpCookie cookie : java.net.HttpCookie.parse(header)) {
                     if (name.equals(cookie.getName()) && !cookie.getValue().isEmpty()) {
                         return cookie.getValue();
                     }
@@ -288,18 +291,25 @@ class CciAuthenticator {
     }
 
     private Request cciRequest(final String url, final String deviceId, final @Nullable CciTokens tokens) {
-        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .content(new StringContentProvider("")).header("client-id", config.packageId())
-                .header("client-name", config.clientName()).header("client-version", CLIENT_VERSION)
-                .header("client-os-code", "ios").header("client-os-version", config.osVersion())
-                .header("client-device-id", deviceId).header("client-device-model", "iPhone")
-                .header("client-notification-provider-type", config.notificationProvider())
-                .header("locale", LANGUAGE.toUpperCase(Locale.ROOT)).header("timezone", timeZoneOffset())
-                .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ACCEPT_LANGUAGE, LANGUAGE)
-                .header(HttpHeader.USER_AGENT, USER_AGENT);
+        final Request request = httpClient.newRequest(url).method(HttpMethod.POST).body(new StringRequestContent(""))
+                .headers(h -> {
+                    h.put("client-id", config.packageId());
+                    h.put("client-name", config.clientName());
+                    h.put("client-version", CLIENT_VERSION);
+                    h.put("client-os-code", "ios");
+                    h.put("client-os-version", config.osVersion());
+                    h.put("client-device-id", deviceId);
+                    h.put("client-device-model", "iPhone");
+                    h.put("client-notification-provider-type", config.notificationProvider());
+                    h.put("locale", LANGUAGE.toUpperCase(Locale.ROOT));
+                    h.put("timezone", timeZoneOffset());
+                    h.put(HttpHeader.ACCEPT, "application/json");
+                    h.put(HttpHeader.ACCEPT_LANGUAGE, LANGUAGE);
+                    h.put(HttpHeader.USER_AGENT, USER_AGENT);
+                });
         if (tokens != null) {
             if (!tokens.accessToken().isEmpty()) {
-                request.header(HttpHeader.AUTHORIZATION, "Bearer " + tokens.accessToken());
+                request.headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + tokens.accessToken()));
             }
             header(request, "Authentication", tokens.nonCcsToken());
             header(request, "exchangeable-token", tokens.exchangeableAccessToken());
@@ -310,7 +320,7 @@ class CciAuthenticator {
 
     private static void header(final Request request, final String name, final String value) {
         if (!value.isEmpty()) {
-            request.header(name, value);
+            request.headers(h -> h.put(name, value));
         }
     }
 

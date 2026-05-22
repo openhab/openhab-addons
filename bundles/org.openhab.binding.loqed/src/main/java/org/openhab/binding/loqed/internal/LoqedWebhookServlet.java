@@ -18,15 +18,15 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Receives signed outgoing webhook calls from local LOQED bridges.
@@ -52,6 +52,7 @@ public class LoqedWebhookServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String routeId = request.getPathInfo();
         if (routeId == null || routeId.length() < 2) {

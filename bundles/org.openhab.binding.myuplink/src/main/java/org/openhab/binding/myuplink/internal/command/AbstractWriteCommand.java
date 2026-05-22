@@ -21,7 +21,7 @@ import javax.measure.MetricPrefix;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 import org.openhab.binding.myuplink.internal.model.ValidationException;

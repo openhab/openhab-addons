@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.api;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -85,9 +86,9 @@ public class EvccWebSocketClient {
     public void start() {
         stopped = false;
         try {
-            client.getPolicy().setIdleTimeout(0); // Jetty 9
-            client.getPolicy().setMaxTextMessageSize(1024 * 1024);
-            client.getPolicy().setMaxTextMessageBufferSize(1024 * 1024);
+            client.setIdleTimeout(Duration.ZERO);
+            // Jetty 12 has no separate message buffer size; the message limit alone bounds assembly
+            client.setMaxTextMessageSize(1024 * 1024);
             client.start();
             connect();
         } catch (Exception e) {

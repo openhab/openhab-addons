@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.casokitchen.internal.config.TwoZonesWinecoolerConfiguration;
 import org.openhab.binding.casokitchen.internal.dto.CallResponse;
@@ -233,9 +233,11 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
 
     private CallResponse post(String url, Object dto) {
         Request req = httpClient.POST(url);
-        req.header(HttpHeader.CONTENT_TYPE, "application/json");
-        req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
-        req.content(new StringContentProvider(GSON.toJson(dto)));
+        req.headers(headers -> {
+            headers.add(HttpHeader.CONTENT_TYPE, "application/json");
+            headers.add(HTTP_HEADER_API_KEY, configuration.apiKey);
+        });
+        req.body(new StringRequestContent(GSON.toJson(dto)));
         CallResponse callResponse = new CallResponse();
         try {
             ContentResponse cr = req.timeout(60, TimeUnit.SECONDS).send();

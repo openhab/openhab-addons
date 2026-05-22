@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 
 /**
  * Default {@link UniFiSession} implementation used by {@code UniFiControllerBridgeHandler}. Wraps a

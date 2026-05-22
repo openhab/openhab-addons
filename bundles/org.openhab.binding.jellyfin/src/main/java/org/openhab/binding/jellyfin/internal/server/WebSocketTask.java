@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.jellyfin.internal.server;
 
-import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class WebSocketTask extends AbstractTask implements WebSocketListener {
+public class WebSocketTask extends AbstractTask implements Session.Listener.AutoDemanding {
 
     private final Logger logger = LoggerFactory.getLogger(WebSocketTask.class);
 
@@ -163,7 +163,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
             // Jellyfin can send large Sessions payloads (all active sessions in a single
             // message). The default Jetty limit of 64 KiB is frequently exceeded on busy
             // servers; raise it to 4 MiB so the connection is not killed with error 1009.
-            client.getPolicy().setMaxTextMessageSize(4 * 1024 * 1024);
+            client.setMaxTextMessageSize(4 * 1024 * 1024);
             this.webSocketClient = client;
 
             // Start client and connect asynchronously
@@ -325,15 +325,14 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     // ========== WebSocketListener Implementation ==========
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         if (session == null) {
             logger.warn("[WEBSOCKET] Connected with null session");
             return;
         }
-
         this.webSocketSession = session;
         connectionState.set(ConnectionState.CONNECTED);
-        logger.debug("[WEBSOCKET] Connected successfully to {} (state: CONNECTED)", session.getRemoteAddress());
+        logger.debug("[WEBSOCKET] Connected successfully to {} (state: CONNECTED)", session.getRemoteSocketAddress());
         logger.debug("[WEBSOCKET] Session ID: {}, protocol version: {}", session.hashCode(),
                 session.getProtocolVersion());
 
@@ -341,7 +340,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
         resetReconnectionState();
 
         // Configure session timeouts
-        session.setIdleTimeout(TimeUnit.MINUTES.toMillis(5));
+        session.setIdleTimeout(Duration.ofMinutes(5));
         logger.debug("[WEBSOCKET] Configured idle timeout: 5 minutes");
 
         // Subscribe to real-time session updates.
@@ -362,12 +361,10 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
      * @param session the active Jetty WebSocket session to send through
      */
     private void sendSessionsStartSubscription(Session session) {
-        try {
-            session.getRemote().sendString("{\"MessageType\":\"SessionsStart\",\"Data\":\"0,1500\"}");
-            logger.debug("[WEBSOCKET] Sent SessionsStart subscription (0 ms delay, 1500 ms interval)");
-        } catch (IOException e) {
-            logger.warn("[WEBSOCKET] Failed to send SessionsStart subscription: {}", e.getMessage());
-        }
+        session.sendText("{\"MessageType\":\"SessionsStart\",\"Data\":\"0,1500\"}", Callback.from(
+                () -> logger.debug("[WEBSOCKET] Sent SessionsStart subscription (0 ms delay, 1500 ms interval)"),
+                failure -> logger.warn("[WEBSOCKET] Failed to send SessionsStart subscription: {}",
+                        failure.getMessage())));
     }
 
     @Override
@@ -386,9 +383,13 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(@Nullable ByteBuffer payload, @Nullable Callback callback) {
         // Jellyfin uses text-based JSON messages, binary messages are unexpected
-        logger.debug("WebSocket received unexpected binary message, length: {}", len);
+        logger.debug("WebSocket received unexpected binary message, length: {}",
+                payload != null ? payload.remaining() : 0);
+        if (callback != null) {
+            callback.succeed();
+        }
     }
 
     @Override

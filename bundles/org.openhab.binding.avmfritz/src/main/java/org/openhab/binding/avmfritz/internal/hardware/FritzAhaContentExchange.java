@@ -13,13 +13,13 @@
 package org.openhab.binding.avmfritz.internal.hardware;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Response.CompleteListener;
-import org.eclipse.jetty.client.api.Response.ContentListener;
-import org.eclipse.jetty.client.api.Response.FailureListener;
-import org.eclipse.jetty.client.api.Response.SuccessListener;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Response.CompleteListener;
+import org.eclipse.jetty.client.Response.ContentListener;
+import org.eclipse.jetty.client.Response.FailureListener;
+import org.eclipse.jetty.client.Response.SuccessListener;
+import org.eclipse.jetty.client.Result;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -38,9 +38,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.windcentrale.internal.dto.AuthenticationResultResponse;
 import org.openhab.binding.windcentrale.internal.dto.ChallengeResponse;
 import org.openhab.binding.windcentrale.internal.dto.CognitoError;
@@ -371,8 +371,8 @@ public class AuthenticationHelper {
             logger.debug("Posting JSON to: {}", url);
             ContentResponse contentResponse = httpClient.newRequest(url) //
                     .method(POST) //
-                    .header("x-amz-target", target) //
-                    .content(new StringContentProvider(requestContent), "application/x-amz-json-1.1") //
+                    .headers(h -> h.add("x-amz-target", target)) //
+                    .body(new StringRequestContent("application/x-amz-json-1.1", requestContent)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS).send();
 
             String response = contentResponse.getContentAsString();

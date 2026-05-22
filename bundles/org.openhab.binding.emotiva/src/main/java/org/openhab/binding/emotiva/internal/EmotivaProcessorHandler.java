@@ -50,7 +50,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Frequency;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,6 +93,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * The EmotivaProcessorHandler is responsible for handling OpenHAB commands, which are

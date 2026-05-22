@@ -56,11 +56,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.WebOSTVMouseSocketListener;
@@ -241,9 +242,9 @@ public class LGWebOSTVSocket {
      * WebSocket Callbacks
      */
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
-        logger.debug("WebSocket Connected to: {}", session.getRemoteAddress().getAddress());
+        logger.debug("WebSocket Connected");
         this.session = session;
         sendHello();
     }
@@ -397,12 +398,12 @@ public class LGWebOSTVSocket {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Message [out]: {}", checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
                 }
-                s.getRemote().sendString(msg);
+                s.sendText(msg, Callback.NOOP);
             } else {
                 logger.warn("No Connection to TV, skipping [out]: {}",
                         checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("Unable to send message.", e);
         }
     }

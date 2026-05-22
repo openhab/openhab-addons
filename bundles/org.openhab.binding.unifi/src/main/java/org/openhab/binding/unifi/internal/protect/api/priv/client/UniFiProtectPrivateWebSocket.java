@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.protect.api.priv.client;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -25,8 +26,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
@@ -100,7 +101,6 @@ public class UniFiProtectPrivateWebSocket {
         this.wsClient = new WebSocketClient(httpClient);
         // Prevent wsClient.stop() from stopping the shared HttpClient instance
         this.wsClient.unmanage(httpClient);
-        this.wsClient.setMaxIdleTimeout(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS);
 
         try {
             wsClient.start();
@@ -263,28 +263,28 @@ public class UniFiProtectPrivateWebSocket {
     /**
      * WebSocket adapter to handle messages
      */
-    private class UniFiWebSocketAdapter extends WebSocketAdapter {
+    private class UniFiWebSocketAdapter implements Session.Listener.AutoDemanding {
 
         @Override
-        public void onWebSocketConnect(Session session) {
-            super.onWebSocketConnect(session);
+        public void onWebSocketOpen(Session session) {
+            // Configure per-session, as WebSocketClient.setIdleTimeout() would also reconfigure the shared HttpClient
+            session.setIdleTimeout(Duration.ofMillis(UnifiProtectBindingConstants.WEBSOCKET_IDLE_TIMEOUT_MS));
             logger.debug("WebSocket session connected");
         }
 
         @Override
-        public void onWebSocketBinary(byte[] payload, int offset, int len) {
+        public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
             try {
-                ByteBuffer buffer = ByteBuffer.wrap(payload, offset, len);
-                parseWebSocketPacket(buffer);
+                parseWebSocketPacket(payload.slice());
             } catch (Exception e) {
                 logger.debug("Error parsing WebSocket binary message", e);
             }
+            callback.succeed();
         }
 
         @Override
         public void onWebSocketText(String message) {
             try {
-                // Sometimes we might get text messages too
                 logger.trace("WebSocket Text Message: {}", message);
                 JsonObject json = JsonParser.parseString(message).getAsJsonObject();
                 processUpdate(json);

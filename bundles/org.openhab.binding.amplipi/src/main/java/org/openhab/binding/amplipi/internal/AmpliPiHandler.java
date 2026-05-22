@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amplipi.internal.audio.PAAudioSink;
@@ -119,9 +119,9 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                 SourceUpdate update = new SourceUpdate();
                 update.setInput(stringCommand.toString());
                 try {
-                    StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
                     ContentResponse response = this.httpClient.newRequest(url + "/api/sources/" + source)
-                            .method(HttpMethod.PATCH).content(contentProvider, "application/json")
+                            .method(HttpMethod.PATCH)
+                            .body(new StringRequestContent("application/json", gson.toJson(update)))
                             .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
                     if (response.getStatus() != HttpStatus.OK_200) {
                         logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
@@ -231,10 +231,9 @@ public class AmpliPiHandler extends BaseBridgeHandler {
             announcement.setVol(AmpliPiUtils.percentTypeToVolume(volume));
         }
         String url = getUrl() + "/api/announce";
-        StringContentProvider contentProvider = new StringContentProvider(gson.toJson(announcement));
         try {
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
-                    .content(contentProvider, "application/json").send();
+                    .body(new StringRequestContent("application/json", gson.toJson(announcement))).send();
             if (response.getStatus() != HttpStatus.OK_200) {
                 logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                 logger.debug("Content: {}", response.getContentAsString());

@@ -13,9 +13,8 @@
 package org.openhab.binding.energyforecast;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.energyforecast.internal.EnergyForecastBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class APICaller {
     private final Logger logger = LoggerFactory.getLogger(APICaller.class);
 
-    private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+    private static HttpClient httpClient = new HttpClient();
     private String token = "YOUR_TOKEN";
 
     public static void main(String[] args) {

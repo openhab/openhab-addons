@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Result;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solaredge.internal.config.PublicApiVersion;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;

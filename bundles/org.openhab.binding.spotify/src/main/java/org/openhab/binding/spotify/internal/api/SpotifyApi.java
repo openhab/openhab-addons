@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationException;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
@@ -296,7 +296,7 @@ public class SpotifyApi {
     private <T> @Nullable T request(HttpMethod method, String url, String requestData, Class<T> clazz) {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
         final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
-                .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
+                .headers(h -> h.add("Accept", CONTENT_TYPE)).body(new StringRequestContent(CONTENT_TYPE, requestData));
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             final String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();

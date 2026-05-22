@@ -20,8 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.discovery.LaMetricTimeAppDiscoveryService;
@@ -45,6 +43,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link LaMetricTimeHandlerFactory} is responsible for creating things and thing

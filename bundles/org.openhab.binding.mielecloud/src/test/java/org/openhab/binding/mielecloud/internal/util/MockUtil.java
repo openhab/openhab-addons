@@ -20,7 +20,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Ident;

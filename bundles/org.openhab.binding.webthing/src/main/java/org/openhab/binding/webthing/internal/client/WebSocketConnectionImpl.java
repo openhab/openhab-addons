@@ -28,9 +28,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gregor Roth - Initial contribution
  */
 @NonNullByDefault
-public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketListener, WebSocketPingPongListener {
+public class WebSocketConnectionImpl implements WebSocketConnection, Session.Listener.AutoDemanding {
     private static final BiConsumer<String, Object> EMPTY_PROPERTY_CHANGED_LISTENER = (String propertyName,
             Object value) -> {
     };
@@ -92,7 +91,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         sessionRef.set(Optional.ofNullable(session)); // save websocket session to be able to send ping
     }
 
@@ -106,7 +105,8 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     }
 
     @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(@NonNullByDefault({}) ByteBuffer payload, @NonNullByDefault({}) Callback callback) {
+        callback.succeed();
     }
 
     @Override
@@ -158,11 +158,7 @@ public class WebSocketConnectionImpl implements WebSocketConnection, WebSocketLi
     private void sendPing() {
         var optionalSession = sessionRef.get();
         if (optionalSession.isPresent()) {
-            try {
-                optionalSession.get().getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
-            } catch (IOException e) {
-                onError("could not send ping " + e.getMessage());
-            }
+            optionalSession.get().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()), Callback.NOOP);
         }
     }
 

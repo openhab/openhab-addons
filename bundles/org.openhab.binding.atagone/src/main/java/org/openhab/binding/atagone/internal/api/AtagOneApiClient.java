@@ -21,9 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
@@ -261,9 +261,10 @@ public class AtagOneApiClient {
                 logger.trace("POST {} request (attempt {}): {}", path, attempt + 1, body);
                 byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
-                        .version(HttpVersion.HTTP_1_0).header(HttpHeader.CONTENT_TYPE, "application/json")
-                        .header(HttpHeader.CONNECTION, "close").content(new BytesContentProvider(bodyBytes))
-                        .timeout(REQUEST_TIMEOUT_S, TimeUnit.SECONDS).send();
+                        .version(HttpVersion.HTTP_1_0).headers(h -> {
+                            h.put(HttpHeader.CONTENT_TYPE, "application/json");
+                            h.put(HttpHeader.CONNECTION, "close");
+                        }).body(new BytesRequestContent(bodyBytes)).timeout(REQUEST_TIMEOUT_S, TimeUnit.SECONDS).send();
                 String responseContent = response.getContentAsString();
                 logger.trace("POST {} → HTTP {}, response: {}", path, response.getStatus(), responseContent);
                 return responseContent;

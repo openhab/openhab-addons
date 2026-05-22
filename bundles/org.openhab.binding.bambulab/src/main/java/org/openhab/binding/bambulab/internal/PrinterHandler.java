@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -623,7 +623,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuPasswordRequest(username, password)), UTF_8));
         try {
             var response = request.send();
@@ -653,7 +653,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuCodeRequest(username, code)), UTF_8));
         try {
             var response = request.send();

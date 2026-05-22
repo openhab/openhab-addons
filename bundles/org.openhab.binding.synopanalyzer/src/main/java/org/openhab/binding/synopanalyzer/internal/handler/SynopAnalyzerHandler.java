@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Speed;
-import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,6 +63,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.HttpMethod;
 
 /**
  * The {@link SynopAnalyzerHandler} is responsible for handling commands, which are

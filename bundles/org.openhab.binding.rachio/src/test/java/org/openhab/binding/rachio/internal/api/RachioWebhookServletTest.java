@@ -31,11 +31,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -43,6 +38,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
+
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Tests servlet-level Rachio webhook duplicate handling.

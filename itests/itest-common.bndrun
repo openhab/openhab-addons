@@ -12,11 +12,11 @@
 Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 
 # We would like to use the following bundles to ensure deterministic bundle resolution:
-# - the JAX-RS API provided by Apache Aries (org.apache.aries.javax.jax.rs-api)
 # - the Configuration Admin API exported by Apache Felix Config Admin (org.apache.felix.configadmin)
 # - the SLF4J API and implementation provided by Pax Logging (org.ops4j.pax.logging.pax-logging-api)
+# The Jakarta RESTful Web Services API now comes from jakarta.ws.rs-api; the previously preferred
+# Apache Aries bundle (org.apache.aries.javax.jax.rs-api) only exports the javax.ws.rs namespace.
 -runblacklist.itest-common: \
-	bnd.identity;id='jakarta.ws.rs-api',\
 	bnd.identity;id='org.osgi.service.cm',\
 	bnd.identity;id='slf4j.api'
 
@@ -38,9 +38,12 @@ Export-Package:
 -exportcontents: 
 
 -runrequires.ee: \
-	bnd.identity;id='org.apache.servicemix.specs.activation-api-1.2.1',\
 	bnd.identity;id='org.glassfish.hk2.osgi-resource-locator',\
-	bnd.identity;id='com.sun.xml.bind.jaxb-osgi'
+	bnd.identity;id='jakarta.activation-api',\
+	bnd.identity;id='com.sun.istack.commons-runtime',\
+	bnd.identity;id='org.glassfish.jaxb.txw2',\
+	bnd.identity;id='org.glassfish.jaxb.core',\
+	bnd.identity;id='org.glassfish.jaxb.runtime'
 
 -runrequires.junit: \
 	bnd.identity;id='biz.aQute.tester.junit-platform',\
