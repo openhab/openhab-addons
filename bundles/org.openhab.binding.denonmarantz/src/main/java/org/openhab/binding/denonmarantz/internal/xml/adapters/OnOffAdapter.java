@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.denonmarantz.internal.xml.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Maps 'On' and 'Off' string values to a boolean

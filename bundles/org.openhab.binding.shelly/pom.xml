@@ -14,7 +14,17 @@
   <name>openHAB Add-ons :: Bundles :: Shelly Binding</name>
 
   <properties>
-    <bnd.importpackage>org.eclipse.jetty.websocket.server</bnd.importpackage>
+    <bnd.importpackage>org.eclipse.jetty.ee10.websocket.server</bnd.importpackage>
+    <jetty.version>12.0.23</jetty.version>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty.ee10.websocket</groupId>
+      <artifactId>jetty-ee10-websocket-jetty-server</artifactId>
+      <version>${jetty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>

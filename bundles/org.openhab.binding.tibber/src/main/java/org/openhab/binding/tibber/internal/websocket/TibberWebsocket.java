@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,20 +28,21 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.tibber.internal.Utils;
@@ -83,7 +85,7 @@ public class TibberWebsocket {
         }
         pingPongMap.clear();
         WebSocketClient client = new WebSocketClient(httpClient);
-        client.setMaxIdleTimeout(30 * 1000);
+        client.setIdleTimeout(Duration.ofMillis(30 * 1000));
 
         ClientUpgradeRequest newRequest = new ClientUpgradeRequest();
         newRequest.setHeader(HttpHeader.USER_AGENT.asString(), Utils.getUserAgent(this));
@@ -105,7 +107,7 @@ public class TibberWebsocket {
             return wsUrl;
         } else {
             Request websocketUrlRequest = handler.getRequest();
-            websocketUrlRequest.content(new StringContentProvider(WEBSOCKET_URL_QUERY, "utf-8"));
+            websocketUrlRequest.body(new StringRequestContent(WEBSOCKET_URL_QUERY));
             try {
                 ContentResponse response = websocketUrlRequest.send();
                 int responseStatus = response.getStatus();
@@ -153,7 +155,7 @@ public class TibberWebsocket {
         this.session = null;
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session wssession) {
         session = wssession;
         String connection = String.format(CONNECT_MESSAGE, config.token);
@@ -184,7 +186,7 @@ public class TibberWebsocket {
     }
 
     @OnWebSocketFrame
-    public void onFrame(Frame frame) {
+    public void onFrame(Frame frame, Callback callback) {
         if (Frame.Type.PONG.equals(frame.getType())) {
             ByteBuffer buffer = frame.getPayload();
             byte[] bytes = new byte[frame.getPayloadLength()];
@@ -200,15 +202,12 @@ public class TibberWebsocket {
             Session session = this.session;
             if (session != null) {
                 ByteBuffer buffer = frame.getPayload();
-                try {
-                    session.getRemote().sendPong(buffer);
-                } catch (IOException e) {
-                    logger.debug("Websocket onPing answer exception {}", e.getMessage());
-                }
+                session.sendPong(buffer, Callback.NOOP);
             } else {
                 logger.debug("Websocket onPing answer cannot be initiated");
             }
         }
+        callback.succeed();
     }
 
     public boolean isConnected() {
@@ -219,13 +218,9 @@ public class TibberWebsocket {
     public void ping() {
         Session session = this.session;
         if (session != null) {
-            try {
-                String pingId = UUID.randomUUID().toString();
-                pingPongMap.put(pingId, Instant.now());
-                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
-            } catch (IOException e) {
-                logger.debug("Websocket ping failed {}", e.getMessage());
-            }
+            String pingId = UUID.randomUUID().toString();
+            pingPongMap.put(pingId, Instant.now());
+            session.sendPing(ByteBuffer.wrap(pingId.getBytes()), Callback.NOOP);
         }
     }
 
@@ -233,11 +228,7 @@ public class TibberWebsocket {
         Session session = this.session;
         if (session != null) {
             logger.trace("Websocket send message {}", message);
-            try {
-                session.getRemote().sendString(message);
-            } catch (IOException e) {
-                logger.warn("Websocket send message {} failed - reason {}", message, e.getMessage());
-            }
+            session.sendText(message, Callback.NOOP);
         } else {
             logger.debug("Websocket send message {} rejected - websocket offline", message);
         }

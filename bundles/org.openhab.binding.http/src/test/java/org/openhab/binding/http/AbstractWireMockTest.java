@@ -16,6 +16,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.removeAllMappings;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -29,6 +30,8 @@ import org.openhab.core.test.TestPortUtil;
 import org.openhab.core.test.java.JavaTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.TemplateEngine;
 
 /**
  * The {@link AbstractWireMockTest} implements tests for the {@link RateLimitedHttpClient}

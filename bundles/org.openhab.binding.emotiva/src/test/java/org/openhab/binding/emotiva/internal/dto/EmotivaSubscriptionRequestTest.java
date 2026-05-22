@@ -19,13 +19,13 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersi
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Unit tests for EmotivaSubscription requests.

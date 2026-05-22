@@ -26,10 +26,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -287,9 +287,10 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             fields.put("password", config.password);
 
             Request selfAssertedRequest = httpClient.POST(LOGIN_BASE + "/SelfAsserted")
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("X-Csrf-Token", signInConfig.csrf)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .headers(headers -> headers.add("X-Csrf-Token", signInConfig.csrf))
                     .param("tx", "StateProperties=" + signInConfig.transId).param("p", "B2C_1A_SignUpOrSigninOnline")
-                    .content(new FormContentProvider(fields));
+                    .body(new FormRequestContent(fields));
 
             ContentResponse selfAssertedResponse = selfAssertedRequest.send();
 
@@ -365,7 +366,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
         fields.put("code", loginCode.attr("value"));
 
         Request loginRequest = httpClient.POST(action).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new FormContentProvider(fields));
+                .body(new FormRequestContent(fields));
 
         ContentResponse loginResponse = loginRequest.send();
         if (logger.isTraceEnabled()) {

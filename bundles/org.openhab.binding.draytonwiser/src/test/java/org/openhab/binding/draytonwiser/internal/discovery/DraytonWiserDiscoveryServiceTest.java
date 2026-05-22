@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,12 +29,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.http.HttpServletResponse;
-
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpContentResponse;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -77,8 +75,8 @@ public class DraytonWiserDiscoveryServiceTest {
 
         doReturn(request).when(httpClient).newRequest((String) any());
         doReturn(request).when(request).method((String) any());
-        doReturn(request).when(request).header((String) any(), any());
-        doReturn(request).when(request).content(any());
+        doReturn(request).when(request).headers(any());
+        doReturn(request).when(request).body(any());
         doReturn(request).when(request).timeout(anyLong(), any());
         doReturn(bridge).when(bridgeHandler).getThing();
         doReturn(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_BRIDGE, "1")).when(bridge).getUID();
@@ -89,9 +87,10 @@ public class DraytonWiserDiscoveryServiceTest {
     public void testDiscovery(final String jsonFile, final int expectedResults) throws IOException, URISyntaxException,
             InterruptedException, TimeoutException, ExecutionException, DraytonWiserApiException {
         final byte[] content = Files.readAllBytes(Paths.get(getClass().getResource(jsonFile).toURI()));
-        final HttpResponse response = new HttpResponse(null, null);
-        response.status(HttpServletResponse.SC_OK);
-        doReturn(new HttpContentResponse(response, content, null, null)).when(request).send();
+        final ContentResponse mockResponse = mock(ContentResponse.class);
+        doReturn(200).when(mockResponse).getStatus();
+        doReturn(new String(content)).when(mockResponse).getContentAsString();
+        doReturn(mockResponse).when(request).send();
         final List<DiscoveryResult> discoveryResults = new ArrayList<>();
         final DraytonWiserDiscoveryService service = new DraytonWiserDiscoveryService() {
             @Override

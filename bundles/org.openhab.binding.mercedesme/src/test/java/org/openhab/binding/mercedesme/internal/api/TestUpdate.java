@@ -16,7 +16,6 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
@@ -38,7 +37,7 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 public class TestUpdate implements AccessTokenRefreshListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TestUpdate.class);
 
-    private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+    private static HttpClient httpClient = new HttpClient();
 
     // NOTE: This is a manual test utility. Update the following placeholder values
     // with valid data from your environment before running:

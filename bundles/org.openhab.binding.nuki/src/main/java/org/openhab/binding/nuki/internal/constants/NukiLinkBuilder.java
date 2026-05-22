@@ -23,10 +23,10 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link NukiLinkBuilder} class helps with constructing links to various Nuki APIs.

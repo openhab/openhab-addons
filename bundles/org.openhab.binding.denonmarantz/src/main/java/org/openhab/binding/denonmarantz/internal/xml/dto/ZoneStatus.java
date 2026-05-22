@@ -14,15 +14,15 @@ package org.openhab.binding.denonmarantz.internal.xml.dto;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.openhab.binding.denonmarantz.internal.xml.dto.types.OnOffType;
 import org.openhab.binding.denonmarantz.internal.xml.dto.types.StringType;
 import org.openhab.binding.denonmarantz.internal.xml.dto.types.VolumeType;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Holds information about the secondary zones of the receiver

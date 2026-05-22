@@ -14,9 +14,9 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.SUPPORTED_TOUCHWAND_TYPES;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,11 +25,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -86,6 +87,7 @@ public class TouchWandWebSockets {
         }
 
         client.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        client.setIdleTimeout(Duration.ofMillis(WEBSOCKET_IDLE_TIMEOUT_MS));
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
@@ -123,7 +125,7 @@ public class TouchWandWebSockets {
         listeners.remove(listener);
     }
 
-    @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT_MS)
+    @WebSocket
     public class TouchWandSocket {
 
         @OnWebSocketClose
@@ -135,16 +137,12 @@ public class TouchWandWebSockets {
             }
         }
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session session) {
-            logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
-            try {
-                long timestamp = System.currentTimeMillis(); // need unique id
-                String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp);
-                session.getRemote().sendString(controllerIdStr);
-            } catch (IOException e) {
-                logger.warn("sendString : {}", e.getMessage());
-            }
+            logger.debug("TouchWandWebSockets connected to {}", session.getRemoteSocketAddress().toString());
+            long timestamp = System.currentTimeMillis(); // need unique id
+            String controllerIdStr = String.format("{\"contId\": \"openhab%d\"}", timestamp);
+            session.sendText(controllerIdStr, Callback.NOOP);
         }
 
         @OnWebSocketMessage

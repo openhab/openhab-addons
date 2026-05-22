@@ -26,12 +26,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifi.internal.api.UniFiSession;
@@ -283,8 +283,8 @@ public class UniFiProtectPrivateClient {
                 String requestBody = null;
                 if (body != null) {
                     requestBody = JsonUtil.toJson(body);
-                    request.header("Content-Type", "application/json");
-                    request.content(new StringContentProvider(requestBody));
+                    request.headers(h -> h.add("Content-Type", "application/json"));
+                    request.body(new StringRequestContent(requestBody));
                 }
 
                 if (logger.isTraceEnabled()) {
@@ -296,6 +296,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         try {
                             if (result.isFailed()) {
@@ -580,6 +581,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(
@@ -613,6 +615,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(
@@ -646,6 +649,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(

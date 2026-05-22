@@ -24,11 +24,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FutureResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homematic.internal.common.AuthenticationHandler;
@@ -106,7 +106,7 @@ public class XmlRpcClient extends RpcClient<String> {
     private byte[] send(int port, RpcRequest<String> request) throws IOException {
         byte[] ret = new byte[0];
         try {
-            BytesContentProvider content = new BytesContentProvider(
+            BytesRequestContent content = new BytesRequestContent(
                     request.createMessage().getBytes(config.getEncoding()));
             String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
             if (port == config.getGroupPort()) {
@@ -118,9 +118,9 @@ public class XmlRpcClient extends RpcClient<String> {
                 this.authenticationHandler = authenticationHandler = new AuthenticationHandler(config);
             }
 
-            Request req = authenticationHandler.updateAuthenticationInformation(
-                    httpClient.POST(new URI(url)).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
-                            .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()));
+            Request req = authenticationHandler.updateAuthenticationInformation(httpClient.POST(new URI(url))
+                    .body(content).timeout(config.getTimeout(), TimeUnit.SECONDS).headers(headers -> headers
+                            .put(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding())));
 
             FutureResponseListener listener = new FutureResponseListener(req, config.getBufferSize() * 1024);
             req.send(listener);

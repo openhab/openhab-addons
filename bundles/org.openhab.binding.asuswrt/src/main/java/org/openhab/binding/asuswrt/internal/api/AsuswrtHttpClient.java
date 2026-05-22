@@ -22,12 +22,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
@@ -94,7 +94,7 @@ public class AsuswrtHttpClient {
         httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         // Add request body
-        httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
+        httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
         try {
             return httpRequest.send();
         } catch (Exception e) {
@@ -122,13 +122,13 @@ public class AsuswrtHttpClient {
             httpRequest = setHeaders(httpRequest);
 
             // Add request body
-            httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
+            httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
 
             httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
                 public void onComplete(Result result) {
-                    final HttpResponse response = (HttpResponse) result.getResponse();
+                    final Response response = result.getResponse();
                     if (result.getFailure() != null) {
                         // Handle result errors
                         handleHttpResultError(result.getFailure());
@@ -156,10 +156,12 @@ public class AsuswrtHttpClient {
      */
     private Request setHeaders(Request httpRequest) {
         // Set header
-        httpRequest.header("content-type", HTTP_CONTENT_TYPE);
-        httpRequest.header("user-agent", HTTP_USER_AGENT);
+        httpRequest.headers(headers -> {
+            headers.put("content-type", HTTP_CONTENT_TYPE);
+            headers.put("user-agent", HTTP_USER_AGENT);
+        });
         if (cookieStore.isValid()) {
-            httpRequest.header("cookie", cookieStore.getCookie());
+            httpRequest.headers(headers -> headers.put("cookie", cookieStore.getCookie()));
         }
         return httpRequest;
     }

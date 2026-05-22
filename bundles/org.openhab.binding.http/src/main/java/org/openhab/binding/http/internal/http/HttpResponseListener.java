@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.binding.generic.ChannelHandlerContent;
@@ -64,7 +64,7 @@ public class HttpResponseListener extends BufferingResponseListener {
         Request request = result.getRequest();
         if (response == null || (result.isFailed() && response.getStatus() != HttpStatus.UNAUTHORIZED_401)) {
             logger.debug("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(),
-                    request.getMethod(), request.getContent(), result.getFailure().getMessage());
+                    request.getMethod(), "(body)", result.getFailure().getMessage());
             future.complete(null);
             httpStatusListener.onHttpError(result.getFailure().getMessage());
         } else {
@@ -89,12 +89,12 @@ public class HttpResponseListener extends BufferingResponseListener {
                     break;
                 case HttpStatus.UNAUTHORIZED_401:
                     logger.debug("Requesting '{}' (method='{}', content='{}') failed: Authorization error",
-                            request.getURI(), request.getMethod(), request.getContent());
+                            request.getURI(), request.getMethod(), "(body)");
                     future.completeExceptionally(new HttpAuthException());
                     break;
                 default:
                     logger.debug("Requesting '{}' (method='{}', content='{}') failed: {} {}", request.getURI(),
-                            request.getMethod(), request.getContent(), response.getStatus(), response.getReason());
+                            request.getMethod(), "(body)", response.getStatus(), response.getReason());
                     future.complete(null);
                     httpStatusListener.onHttpError(response.getReason());
             }

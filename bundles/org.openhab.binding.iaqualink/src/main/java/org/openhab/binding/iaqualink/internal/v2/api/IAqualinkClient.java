@@ -29,14 +29,13 @@ import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -51,6 +50,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
+import jakarta.ws.rs.core.UriBuilder;
 import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5Client;
 import software.amazon.awssdk.crt.mqtt5.Mqtt5ClientOptions;
@@ -161,7 +161,7 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
         String signIn = gson.toJson(new SignIn(apiKey, username, password));
         try {
             ContentResponse response = httpClient.newRequest(AUTH_URL).method(HttpMethod.POST)
-                    .content(new StringContentProvider(signIn), "application/json").send();
+                    .body(new StringRequestContent("application/json", signIn)).send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new NotAuthorizedException(response.getReason());
             }
@@ -449,15 +449,18 @@ public class IAqualinkClient implements Mqtt5ClientOptions.LifecycleEvents, Mqtt
             }
             logger.trace("Trying {}", uri);
 
-            Request request = httpClient.newRequest(uri).method(HttpMethod.GET) //
-                    .agent(HEADER_AGENT) //
-                    .header(HttpHeader.ACCEPT_LANGUAGE, HEADER_ACCEPT_LANGUAGE) //
-                    .header(HttpHeader.ACCEPT_ENCODING, HEADER_ACCEPT_ENCODING) //
-                    .header(HttpHeader.ACCEPT, HEADER_ACCEPT); //
+            Request request = httpClient.newRequest(uri).method(HttpMethod.GET).agent(HEADER_AGENT);
+            request.headers(headers -> {
+                headers.put(HttpHeader.ACCEPT_LANGUAGE, HEADER_ACCEPT_LANGUAGE);
+                headers.put(HttpHeader.ACCEPT_ENCODING, HEADER_ACCEPT_ENCODING);
+                headers.put(HttpHeader.ACCEPT, HEADER_ACCEPT);
+            });
 
             if (accountInfo != null) {
-                request = request.header("api_key", apiKey).header(HttpHeader.AUTHORIZATION,
-                        accountInfo.getUserPoolOAuth().getIdToken());
+                request.headers(headers -> {
+                    headers.put("api_key", apiKey);
+                    headers.put(HttpHeader.AUTHORIZATION, accountInfo.getUserPoolOAuth().getIdToken());
+                });
             }
 
             ContentResponse response = request.send();
