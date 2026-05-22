@@ -104,6 +104,11 @@
 				<description>Access code for MyRenault Services.</description>
 				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
+			<parameter name="gigyaApiKey" type="text">
+				<label>Gigya API Key</label>
+				<description>Configure a Gigya API Key to override the hard coded value for your region.</description>
+				<default></default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

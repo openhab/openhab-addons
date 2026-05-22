@@ -91,7 +91,7 @@ public class MyRenaultHttpSession {
 
     private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         final Fields fields = new Fields();
-        fields.add("ApiKey", this.constants.getGigyaApiKey());
+        fields.add("ApiKey", getGigyaApiKey());
         fields.add("loginID", config.myRenaultUsername);
         fields.add("password", config.myRenaultPassword);
         final String url = this.constants.getGigyaRootUrl() + "/accounts.login";
@@ -130,7 +130,7 @@ public class MyRenaultHttpSession {
 
     private void getAccountInfo() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         Fields fields = new Fields();
-        fields.add("ApiKey", this.constants.getGigyaApiKey());
+        fields.add("ApiKey", getGigyaApiKey());
         fields.add("login_token", cookieValue);
         final String url = this.constants.getGigyaRootUrl() + "/accounts.getAccountInfo";
         ContentResponse response = httpClient.FORM(url, fields);
@@ -162,9 +162,21 @@ public class MyRenaultHttpSession {
         }
     }
 
+    /**
+     * Return the gigyaApiKey from configuration if it is used to override the default hard-coded constant.
+     *
+     * @return
+     */
+    private String getGigyaApiKey() {
+        if (!this.config.gigyaApiKey.isBlank()) {
+            return this.config.gigyaApiKey;
+        }
+        return this.constants.getGigyaApiKey();
+    }
+
     private void getJWT() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         final Fields fields = new Fields();
-        fields.add("ApiKey", this.constants.getGigyaApiKey());
+        fields.add("ApiKey", getGigyaApiKey());
         fields.add("login_token", cookieValue);
         fields.add("fields", "data.personId,data.gigyaDataCenter");
         fields.add("personId", personId);

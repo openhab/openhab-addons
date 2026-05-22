@@ -30,6 +30,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | refreshInterval   | Interval the car is polled in minutes.                                     |                               10 |
 | updateDelay       | How long to wait for commands to reach car and update to server in seconds.|                               30 |
 | kamereonApiKey    | Kamereon API Key.                                                          | VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss |
+| gigyaApiKey       | Gigya API Key. Configure to override the hard coded value for your region. | Hard coded region value          |
 
 ## Channels
 
@@ -88,6 +89,7 @@ renault:car:renault "Renault" [
     myRenaultPassword="<my renault password>",
     kamereonApiKey="YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J",
     vin="<your vin>",
+    gigyaApiKey="",
     updateDelay=60,
     refreshInterval=10
   ]
