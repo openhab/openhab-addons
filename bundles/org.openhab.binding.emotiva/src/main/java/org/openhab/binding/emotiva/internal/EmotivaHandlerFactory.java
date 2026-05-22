@@ -16,8 +16,6 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.THING
 
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -30,6 +28,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * The {@link org.openhab.core.thing.binding.ThingHandlerFactory} is responsible for creating things and thing

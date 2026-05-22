@@ -20,10 +20,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
 import org.openhab.binding.mielecloud.internal.webservice.HttpUtil;
 import org.openhab.binding.mielecloud.internal.webservice.exception.AuthorizationFailedException;

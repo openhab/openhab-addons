@@ -25,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.security.Security;
@@ -138,40 +138,40 @@ public class Cloud {
         request.agent("Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G935F Build/NRD90M)");
 
         if (!cloudProvider.proxied().isBlank()) {
-            request.header("Content-Type", "application/json");
+            request.headers(h -> h.add("Content-Type", "application/json"));
         } else {
-            request.header("Content-Type", "application/x-www-form-urlencoded");
+            request.headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"));
         }
 
-        request.header("secretVersion", "1");
+        request.headers(h -> h.add("secretVersion", "1"));
 
         // Add the sign to the header, different for proxied
         if (!cloudProvider.proxied().isBlank()) {
             String sign = security.newSign(json, random);
-            request.header("sign", sign);
+            request.headers(h -> h.add("sign", sign));
         } else {
             if (!Objects.isNull(sessionId) && !sessionId.isBlank()) {
                 data.addProperty("sessionId", sessionId);
             }
             String sign = security.sign(url, data);
             data.addProperty("sign", sign);
-            request.header("sign", sign);
+            request.headers(h -> h.add("sign", sign));
         }
 
-        request.header("random", random);
+        request.headers(h -> h.add("random", random));
 
         // If available, blank if not
-        request.header("accessToken", accessToken);
+        request.headers(h -> h.add("accessToken", accessToken));
 
         logger.debug("Request headers: {}", request.getHeaders().toString());
 
         // Different formats for proxied
         if (!cloudProvider.proxied().isBlank()) {
-            request.content(new StringContentProvider(json));
+            request.body(new StringRequestContent(json));
         } else {
             String body = Utils.getQueryString(data, false);
             logger.debug("Request body: {}", body);
-            request.content(new StringContentProvider(body));
+            request.body(new StringRequestContent(body));
         }
 
         // POST the payload

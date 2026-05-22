@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +34,8 @@ import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.util.SameThreadExecutorService;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Martin Grześlowski - Initial contribution

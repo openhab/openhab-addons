@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class MieleGatewayCommunicationController {
         String requestBody = requestBodyAsJson.toString();
         Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new StringContentProvider(requestBody), "application/json");
+                .body(new StringRequestContent("application/json", requestBody));
 
         String responseData = null;
         try {

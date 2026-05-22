@@ -17,9 +17,6 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,10 +25,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
@@ -134,14 +131,6 @@ public class OpenAPIUtils {
                     request.getQuery() == null ? "no query parameters" : request.getQuery());
             LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(),
                     request.getParams());
-            if (request.getContent() != null) {
-                Iterator<ByteBuffer> iter = request.getContent().iterator();
-                while (iter.hasNext()) {
-                    ByteBuffer buffer = iter.next();
-                    LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
-                }
-            }
-
         }
     }
 

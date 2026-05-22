@@ -34,18 +34,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.twilio.internal.api.TwilioApiClient;
 import org.openhab.binding.twilio.internal.api.TwilioSignatureValidator;
@@ -57,11 +51,17 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link TwilioCallbackServlet} receives webhook callbacks from Twilio
@@ -420,19 +420,30 @@ public class TwilioCallbackServlet extends HttpServlet {
                     .method(HttpMethod.GET) //
                     .timeout(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             // Cap the buffered response size so a runaway source cannot exhaust memory.
-            FutureResponseListener listener = new FutureResponseListener(request, MAX_PROXY_MEDIA_BYTES);
-            request.send(listener);
-            ContentResponse proxyResponse = listener.get(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            CompletableFuture<Result> futureResult = new CompletableFuture<>();
+            BufferingResponseListener bufListener = new BufferingResponseListener(MAX_PROXY_MEDIA_BYTES) {
+                @Override
+                public void onComplete(@Nullable Result r) {
+                    if (r != null && r.isSucceeded()) {
+                        futureResult.complete(r);
+                    } else if (r != null) {
+                        futureResult.completeExceptionally(r.getFailure());
+                    }
+                }
+            };
+            request.send(bufListener);
+            Result proxyResult = futureResult.get(PROXY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-            int status = proxyResponse.getStatus();
+            int status = proxyResult.getResponse().getStatus();
             if (status < 200 || status >= 300) {
                 logger.trace("Proxy response: 502 (source returned {})", status);
                 resp.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Source returned " + status);
                 return;
             }
 
-            byte[] content = proxyResponse.getContent();
-            String contentType = proxyResponse.getMediaType();
+            byte[] content = bufListener.getContent();
+            String rawContentType = proxyResult.getResponse().getHeaders().get("Content-Type");
+            String contentType = rawContentType != null ? rawContentType.split(";")[0].trim() : null;
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }

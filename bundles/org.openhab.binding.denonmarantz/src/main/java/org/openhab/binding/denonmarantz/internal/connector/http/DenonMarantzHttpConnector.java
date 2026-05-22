@@ -26,10 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.UnmarshalException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -37,12 +33,12 @@ import javax.xml.stream.util.StreamReaderDelegate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
@@ -60,6 +56,11 @@ import org.openhab.binding.denonmarantz.internal.xml.dto.commands.CommandTx;
 import org.openhab.binding.denonmarantz.internal.xml.dto.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.UnmarshalException;
 
 /**
  * This class makes the connection to the receiver and manages it.
@@ -195,6 +196,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).send(new Response.CompleteListener() {
             @Override
+            @NonNullByDefault({})
             public void onComplete(@Nullable Result result) {
                 if (result != null && result.getResponse().getStatus() != 200) {
                     logger.warn("Error {} while sending command", result.getResponse().getReason());
@@ -439,7 +441,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             jaxbMarshaller.marshal(request, sw);
 
             Request httpRequest = httpClient.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .content(new StringContentProvider(sw.toString(), StandardCharsets.UTF_8), CONTENT_TYPE_XML)
+                    .body(new StringRequestContent(CONTENT_TYPE_XML, sw.toString(), StandardCharsets.UTF_8))
                     .method(HttpMethod.POST);
 
             ContentResponse contentResponse = httpRequest.send();

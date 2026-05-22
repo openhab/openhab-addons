@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -146,7 +146,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
             // Use response stream instead of doing it the simple synchronous way because the response can be very large
             httpClient.newRequest(address).method(HttpMethod.GET).timeout(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS)
-                    .header(HttpHeader.ACCEPT, "text/html").header(HttpHeader.ACCEPT_CHARSET, "utf-8").send(listener);
+                    .headers(h -> h.add(HttpHeader.ACCEPT, "text/html"))
+                    .headers(h -> h.add(HttpHeader.ACCEPT_CHARSET, "utf-8")).send(listener);
 
             try {
                 response = listener.get(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS);

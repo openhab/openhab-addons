@@ -24,11 +24,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.dwdpollenflug.internal.DWDPollingException;
 import org.openhab.binding.dwdpollenflug.internal.config.DWDPollenflugBridgeConfiguration;
@@ -145,7 +145,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
             @NonNullByDefault({})
             @Override
             public void onComplete(Result result) {
-                final HttpResponse response = (HttpResponse) result.getResponse();
+                final Response response = result.getResponse();
                 if (result.getFailure() != null) {
                     Throwable e = result.getFailure();
                     if (e instanceof SocketTimeoutException || e instanceof TimeoutException) {

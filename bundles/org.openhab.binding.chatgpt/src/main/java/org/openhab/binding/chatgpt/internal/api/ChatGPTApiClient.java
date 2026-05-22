@@ -30,10 +30,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -334,10 +334,10 @@ public class ChatGPTApiClient {
 
         Request request = httpClient.newRequest(baseUrl + PATH_CHAT_COMPLETIONS).method(HttpMethod.POST)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS)
-                .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .content(new StringContentProvider(finalJson, StandardCharsets.UTF_8));
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString()))
+                .body(new StringRequestContent(finalJson, StandardCharsets.UTF_8));
         if (!apiKey.isBlank()) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + apiKey));
         }
 
         logger.debug("Request to {} (POST): payload size = {} bytes", baseUrl + PATH_CHAT_COMPLETIONS,
@@ -422,7 +422,7 @@ public class ChatGPTApiClient {
         Request request = httpClient.newRequest(baseUrl + PATH_MODELS)
                 .timeout(timeoutSeconds != null ? timeoutSeconds : 10, TimeUnit.SECONDS).method(HttpMethod.GET);
         if (!apiKey.isBlank()) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + apiKey);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + apiKey));
         }
 
         logger.debug("Request to {} (GET)", baseUrl + PATH_MODELS);

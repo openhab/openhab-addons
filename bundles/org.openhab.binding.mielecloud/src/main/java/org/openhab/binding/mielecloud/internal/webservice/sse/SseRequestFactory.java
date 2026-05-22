@@ -14,7 +14,7 @@ package org.openhab.binding.mielecloud.internal.webservice.sse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 
 /**
  * Factory that produces configured {@link Request} instances for usage with SSE.

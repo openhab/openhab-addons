@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Result;
 import org.openhab.binding.myuplink.internal.command.AbstractPagingCommand;
 import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;

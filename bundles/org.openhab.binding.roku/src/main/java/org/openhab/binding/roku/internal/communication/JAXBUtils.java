@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.roku.internal.communication;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +24,9 @@ import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Implementation for a static use of JAXBContext as singleton instance.
