@@ -24,10 +24,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.millheat.internal.MillheatCommunicationException;
@@ -343,18 +343,32 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
         final Request request = httpClient.newRequest(serviceEndpoint + req.getRequestUrl());
 
-        return addStandardHeadersAndPayload(request, req).header("X-Zc-Timestamp", timestamp)
-                .header("X-Zc-Timeout", REQUEST_TIMEOUT).header("X-Zc-Nonce", nonce).header("X-Zc-User-Id", userId)
-                .header("X-Zc-User-Signature", signature).header("X-Zc-Content-Length", "" + reqJson.length());
+        addStandardHeadersAndPayload(request, req);
+        request.headers(h -> {
+            h.add("X-Zc-Timestamp", timestamp);
+            h.add("X-Zc-Timeout", REQUEST_TIMEOUT);
+            h.add("X-Zc-Nonce", nonce);
+            h.add("X-Zc-User-Id", userId);
+            h.add("X-Zc-User-Signature", signature);
+            h.add("X-Zc-Content-Length", "" + reqJson.length());
+        });
+        return request;
     }
 
     private Request addStandardHeadersAndPayload(final Request req, final AbstractRequest payload) {
         requestLogger.listenTo(req);
 
-        return req.header("Connection", "Keep-Alive").header("X-Zc-Major-Domain", "seanywell")
-                .header("X-Zc-Msg-Name", "millService").header("X-Zc-Sub-Domain", "milltype").header("X-Zc-Seq-Id", "1")
-                .header("X-Zc-Version", "1").method(HttpMethod.POST).timeout(30, TimeUnit.SECONDS)
-                .content(new BytesContentProvider(gson.toJson(payload).getBytes(StandardCharsets.UTF_8)), CONTENT_TYPE);
+        req.headers(h -> {
+            h.add("Connection", "Keep-Alive");
+            h.add("X-Zc-Major-Domain", "seanywell");
+            h.add("X-Zc-Msg-Name", "millService");
+            h.add("X-Zc-Sub-Domain", "milltype");
+            h.add("X-Zc-Seq-Id", "1");
+            h.add("X-Zc-Version", "1");
+        });
+        req.method(HttpMethod.POST).timeout(30, TimeUnit.SECONDS);
+        req.body(new BytesRequestContent(CONTENT_TYPE, gson.toJson(payload).getBytes(StandardCharsets.UTF_8)));
+        return req;
     }
 
     public void updateRoomTemperature(final Long roomId, final Command command, final ModeType mode) {

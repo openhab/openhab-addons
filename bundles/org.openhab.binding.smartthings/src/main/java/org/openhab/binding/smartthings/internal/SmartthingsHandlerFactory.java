@@ -23,9 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
@@ -128,7 +128,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory
         ContentResponse response = httpClient
                 .newRequest(bridgeHandler.getSmartthingsIp(), bridgeHandler.getSmartthingsPort())
                 .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
-                .content(new StringContentProvider(data), "application/json").send();
+                .body(new StringRequestContent("application/json", data)).send();
 
         int status = response.getStatus();
         if (status == 202) {

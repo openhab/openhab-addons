@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
@@ -94,7 +94,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         logger.trace("sendCommand: {}", gson.toJson(command));
-        request.content(new StringContentProvider(gson.toJson(command)));
+        request.body(new StringRequestContent(gson.toJson(command)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -113,7 +113,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         logger.trace("sendCalendar: {}", gson.toJson(calendar));
-        request.content(new StringContentProvider(gson.toJson(calendar)));
+        request.body(new StringRequestContent(gson.toJson(calendar)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -128,7 +128,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         logger.trace("sendSettings: {}", gson.toJson(settings));
-        request.content(new StringContentProvider(gson.toJson(settings)));
+        request.body(new StringRequestContent(gson.toJson(settings)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -166,7 +166,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.PATCH);
 
         logger.trace("sendStayOutZone: {}", gson.toJson(zoneRequest));
-        request.content(new StringContentProvider(gson.toJson(zoneRequest)));
+        request.body(new StringRequestContent(gson.toJson(zoneRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -181,7 +181,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.PATCH);
 
         logger.trace("sendWorkArea: {}", gson.toJson(workAreaRequest));
-        request.content(new StringContentProvider(gson.toJson(workAreaRequest)));
+        request.body(new StringRequestContent(gson.toJson(workAreaRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -192,10 +192,12 @@ public class AutomowerConnectApi extends HusqvarnaApi {
             throws AutomowerCommunicationException {
         request.timeout(10, TimeUnit.SECONDS);
 
-        request.header("Authorization-Provider", "husqvarna");
-        request.header("Authorization", "Bearer " + token);
-        request.header("X-Api-Key", appKey);
-        request.header("Content-Type", "application/vnd.api+json");
+        request.headers(headers -> {
+            headers.put("Authorization-Provider", "husqvarna");
+            headers.put("Authorization", "Bearer " + token);
+            headers.put("X-Api-Key", appKey);
+            headers.put("Content-Type", "application/vnd.api+json");
+        });
 
         ContentResponse response;
         try {

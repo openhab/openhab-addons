@@ -30,10 +30,10 @@ import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -126,7 +126,7 @@ public class SenseEnergyApi {
         fields.put("password", password);
 
         Request request = httpClient.newRequest(APIURL_AUTHENTICATE).method(HttpMethod.POST)
-                .content(new FormContentProvider(fields));
+                .body(new FormRequestContent(fields));
 
         ContentResponse response = sendRequest(request, false);
 
@@ -155,7 +155,7 @@ public class SenseEnergyApi {
         fields.add("refresh_token", this.refreshToken);
 
         Request request = httpClient.newRequest(APIURL_RENEW).method(HttpMethod.POST)
-                .content(new FormContentProvider(fields));
+                .body(new FormRequestContent(fields));
 
         ContentResponse response = sendRequest(request, false);
 
@@ -284,9 +284,9 @@ public class SenseEnergyApi {
     }
 
     private Request setHeaders(Request request) {
-        request.header(HttpHeader.HOST, "api.sense.com");
+        request.headers(h -> h.add(HttpHeader.HOST, "api.sense.com"));
         if (!accessToken.isEmpty()) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken));
         }
         request.timeout(API_TIMEOUT, TimeUnit.SECONDS);
         return request;

@@ -23,11 +23,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
@@ -126,6 +126,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * Log request success
      */
     @Override
+    @NonNullByDefault({})
     public final void onSuccess(Response response) {
         super.onSuccess(response);
         communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
@@ -162,6 +163,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * just for logging of content
      */
     @Override
+    @NonNullByDefault({})
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
         String contentAsString = getContentAsString();
@@ -252,8 +254,10 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
                 TimeUnit.SECONDS);
 
         // we want to send and receive json only, so explicitely set this!
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.CONTENT_TYPE, "application/json");
+        });
 
         // this should be the default for Easee Cloud API
         request.followRedirects(false);
@@ -261,7 +265,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         // add authentication data for every request. Handling this here makes it obsolete to implement for each and
         // every command
         if (!accessToken.isBlank()) {
-            request.header(HttpHeader.AUTHORIZATION, WEB_REQUEST_BEARER_TOKEN_PREFIX + accessToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, WEB_REQUEST_BEARER_TOKEN_PREFIX + accessToken));
         }
 
         prepareRequest(request).send(this);

@@ -15,7 +15,7 @@ package org.openhab.binding.easee.internal.command.charger;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.COMMANDS_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;

@@ -20,11 +20,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -35,12 +30,17 @@ import org.openhab.binding.nuki.internal.dto.NukiHttpServerStatusResponseDto;
 import org.openhab.binding.nuki.internal.handler.AbstractNukiDeviceHandler;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
 import org.openhab.core.thing.Thing;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link NukiApiServlet} class is responsible for handling the callbacks from the Nuki Bridge.
@@ -101,6 +101,7 @@ public class NukiApiServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.debug("Servlet Request at URI[{}] request[{}]", request.getRequestURI(), request);
         BridgeApiLockStateRequestDto bridgeApiLockStateRequestDto = getBridgeApiLockStateRequestDto(request);

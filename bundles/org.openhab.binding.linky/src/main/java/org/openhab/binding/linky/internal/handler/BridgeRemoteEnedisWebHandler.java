@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import java.net.HttpCookie;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -22,11 +21,10 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.linky.internal.config.LinkyBridgeWebConfiguration;
@@ -38,14 +36,16 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * {@link BridgeRemoteEnedisHandler} is the base handler to access enedis data.
@@ -262,8 +262,10 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             // ======================================================
             uri = URL_MON_COMPTE + "/auth/json/authenticate?realm=/enedis&goto=" + gotoUri;
 
-            result = httpClient.POST(uri).header("X-NoSession", "true").header("X-Password", "anonymous")
-                    .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
+            result = httpClient.POST(uri).headers(h -> h.add("X-NoSession", "true"))
+                    .headers(h -> h.add("X-Password", "anonymous"))
+                    .headers(h -> h.add("X-Requested-With", "XMLHttpRequest"))
+                    .headers(h -> h.add("X-Username", "anonymous")).send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
@@ -283,10 +285,11 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
             // ======================================================
             logger.debug("Step 3: auth2 - send the auth data");
             // ======================================================
-            result = httpClient.POST(uri).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .header("X-NoSession", "true").header("X-Password", "anonymous")
-                    .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
-                    .content(new StringContentProvider(gson.toJson(authData))).send();
+            result = httpClient.POST(uri).headers(h -> h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON))
+                    .headers(h -> h.add("X-NoSession", "true")).headers(h -> h.add("X-Password", "anonymous"))
+                    .headers(h -> h.add("X-Requested-With", "XMLHttpRequest"))
+                    .headers(h -> h.add("X-Username", "anonymous"))
+                    .body(new StringRequestContent(gson.toJson(authData))).send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
             }
@@ -348,7 +351,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
                 throw new LinkyException("Connection failed step 5, missing cookieKey");
             }
 
-            List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+            List<HttpCookie> lCookie = httpClient.getHttpCookieStore().all();
             Optional<HttpCookie> cookie = lCookie.stream().filter(it -> it.getName().contains(cookieKey)).findFirst();
 
             String cookieVal = cookie.map(HttpCookie::getValue)

@@ -23,10 +23,9 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
 
@@ -112,7 +111,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
 
@@ -188,7 +187,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(any(String.class))).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(any(Long.class), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders);
         when(mockRequest.send()).thenReturn(mockResponse);
 

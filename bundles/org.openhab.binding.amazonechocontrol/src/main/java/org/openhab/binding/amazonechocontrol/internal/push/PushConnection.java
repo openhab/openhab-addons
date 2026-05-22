@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http2.ErrorCode;
@@ -36,7 +37,7 @@ import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushCommandTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.push.PushMessageTO;
 import org.slf4j.Logger;
@@ -114,7 +115,7 @@ public class PushConnection implements PushSessionHandler.Listener, PushStreamAd
             }
             return null;
         });
-        http2Client.connect(http2Client.getBean(SslContextFactory.class), address, sessionHandler, sessionPromise);
+        http2Client.connect(http2Client.getBean(Client.class), address, sessionHandler, sessionPromise);
     }
 
     public void sendPing() {
@@ -143,10 +144,10 @@ public class PushConnection implements PushSessionHandler.Listener, PushStreamAd
     }
 
     private void openPushStream(Session session, String host, String accessToken) {
-        HttpFields headerFields = new HttpFields();
+        Mutable headerFields = HttpFields.build();
         headerFields.put(USER_AGENT, "okhttp/4.3.2-SNAPSHOT");
         headerFields.put(AUTHORIZATION, "Bearer " + accessToken);
-        HttpURI uri = new HttpURI("https://" + host + "/v20160207/directives");
+        HttpURI uri = HttpURI.from("https://" + host + "/v20160207/directives");
         HeadersFrame headers = new HeadersFrame(new MetaData.Request(GET.asString(), uri, HTTP_2, headerFields), null,
                 false);
 

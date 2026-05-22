@@ -18,9 +18,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
@@ -57,8 +57,7 @@ public class Login extends AbstractCommand {
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        StringContentProvider cp = new StringContentProvider(gson.toJson(loginData));
-        requestToPrepare.content(cp);
+        requestToPrepare.body(new StringRequestContent("application/json", gson.toJson(loginData)));
         requestToPrepare.method(HttpMethod.POST);
 
         return requestToPrepare;

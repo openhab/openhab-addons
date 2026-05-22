@@ -21,11 +21,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.InputStreamRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.ntfy.internal.NtfyConnectionConfiguration;
@@ -73,12 +73,12 @@ public class NtfySender {
         NtfyConnectionConfiguration connectionConfiguration = getConfiguration();
 
         Request request = httpClient.newRequest(buildRequestURI(connectionConfiguration)).method(HttpMethod.POST)
-                .content(new StringContentProvider(ntfyMessage.getMessage()))
+                .body(new StringRequestContent(ntfyMessage.getMessage()))
                 .timeout(connectionConfiguration.connectionTimeout, TimeUnit.MILLISECONDS);
 
         if (connectionConfiguration.isAuthHeaderNeeded()) {
             String authHeader = connectionConfiguration.buildAuthHeader();
-            request.header("Authorization", authHeader);
+            request.headers(h -> h.add("Authorization", authHeader));
         }
 
         new NtfyMessageHeaderBuilder(ntfyMessage, request).build();
@@ -131,13 +131,12 @@ public class NtfySender {
 
         if (connectionConfiguration.isAuthHeaderNeeded()) {
             String authHeader = connectionConfiguration.buildAuthHeader();
-            request.header("Authorization", authHeader);
+            request.headers(h -> h.add("Authorization", authHeader));
         }
 
         java.nio.file.Path path = java.nio.file.Path.of(file);
-        try (InputStreamContentProvider contentProvider = new InputStreamContentProvider(
-                java.nio.file.Files.newInputStream(path))) {
-            request.content(contentProvider);
+        try (java.io.InputStream inputStream = java.nio.file.Files.newInputStream(path)) {
+            request.body(new InputStreamRequestContent(inputStream));
             ContentResponse response = request.send();
             if (HttpStatus.isSuccess(response.getStatus())) {
                 return GsonDeserializer.deserialize(response.getContentAsString(), MessageEvent.class);
@@ -174,7 +173,7 @@ public class NtfySender {
 
         if (connectionConfiguration.isAuthHeaderNeeded()) {
             String authHeader = connectionConfiguration.buildAuthHeader();
-            request.header("Authorization", authHeader);
+            request.headers(h -> h.add("Authorization", authHeader));
         }
 
         try {

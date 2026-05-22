@@ -30,9 +30,9 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -137,7 +137,7 @@ public class MSpaPool extends BaseThingHandler {
                     commandBody.put("device_id", config.deviceId);
                     commandBody.put("product_id", config.productId);
                     Request commandRequest = acc.getRequest(HttpMethod.POST, ENDPOINT_COMMAND);
-                    commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
+                    commandRequest.body(new StringRequestContent(commandBody.toString()));
                     try {
                         ContentResponse cr = commandRequest.timeout(10, TimeUnit.SECONDS).send();
                         int status = cr.getStatus();
@@ -216,7 +216,7 @@ public class MSpaPool extends BaseThingHandler {
             JSONObject body = new JSONObject();
             body.put("device_id", config.deviceId);
             body.put("product_id", config.productId);
-            dataRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+            dataRequest.body(new StringRequestContent(body.toString()));
             try {
                 ContentResponse cr = dataRequest.timeout(10, TimeUnit.SECONDS).send();
                 int status = cr.getStatus();

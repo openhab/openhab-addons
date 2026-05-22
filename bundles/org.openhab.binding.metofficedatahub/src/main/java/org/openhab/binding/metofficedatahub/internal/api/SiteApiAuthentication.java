@@ -19,8 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +103,8 @@ public class SiteApiAuthentication {
         if (apiKey.isBlank()) {
             throw new AuthTokenException();
         }
-        return req.header(GET_FORECAST_API_KEY_HEADER, apiKey);
+        req.headers(h -> h.add(GET_FORECAST_API_KEY_HEADER, apiKey));
+        return req;
     }
 
     /**

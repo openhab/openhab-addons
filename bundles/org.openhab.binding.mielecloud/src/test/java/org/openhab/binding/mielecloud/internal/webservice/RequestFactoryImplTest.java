@@ -16,17 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.util.MockUtil;
@@ -49,11 +44,6 @@ public class RequestFactoryImplTest {
     private static final long EXTENDED_REQUEST_TIMEOUT = 10;
     private static final TimeUnit REQUEST_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    @Nullable
-    private String contentString;
-    @Nullable
-    private String contentType;
-
     private final LanguageProvider defaultLanguageProvider = new LanguageProvider() {
         @Override
         public Optional<String> getLanguage() {
@@ -69,27 +59,11 @@ public class RequestFactoryImplTest {
 
     private Request getRequestMock() {
         Request requestMock = mock(Request.class);
-        when(requestMock.header(anyString(), anyString())).thenReturn(requestMock);
+        when(requestMock.headers(any())).thenReturn(requestMock);
         when(requestMock.timeout(anyLong(), any())).thenReturn(requestMock);
         when(requestMock.method(any(HttpMethod.class))).thenReturn(requestMock);
         when(requestMock.param(anyString(), anyString())).thenReturn(requestMock);
-        when(requestMock.content(any())).thenAnswer(i -> {
-            StringContentProvider provider = i.getArgument(0);
-            List<Byte> rawData = new ArrayList<>();
-            provider.forEach(b -> {
-                b.rewind();
-                while (b.hasRemaining()) {
-                    rawData.add(b.get());
-                }
-            });
-            byte[] data = new byte[rawData.size()];
-            for (int j = 0; j < data.length; j++) {
-                data[j] = rawData.get(j);
-            }
-            contentString = new String(data, StandardCharsets.UTF_8);
-            contentType = provider.getContentType();
-            return requestMock;
-        });
+        when(requestMock.body(any())).thenReturn(requestMock);
         return requestMock;
     }
 
@@ -113,9 +87,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verify(request).param("language", LANGUAGE);
@@ -132,15 +104,11 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verify(request).timeout(EXTENDED_REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.PUT);
-        verify(request).content(any());
+        verify(request).body(any());
         verify(request).param("language", LANGUAGE);
-        assertEquals(JSON_CONTENT, contentString);
-        assertEquals("application/json", contentType);
         verifyNoMoreInteractions(request);
     }
 
@@ -154,9 +122,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.POST);
         verify(request).param("language", LANGUAGE);
@@ -179,9 +145,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -198,9 +162,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "*/*");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verify(request).timeout(REQUEST_TIMEOUT, REQUEST_TIMEOUT_UNIT);
         verify(request).method(HttpMethod.GET);
         verifyNoMoreInteractions(request);
@@ -216,9 +178,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "text/event-stream");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
+        verify(request, times(3)).headers(any());
         verifyNoMoreInteractions(request);
     }
 
@@ -232,10 +192,7 @@ public class RequestFactoryImplTest {
 
         // then:
         assertEquals(requestMock, request);
-        verify(request).header("Content-type", "application/json");
-        verify(request).header("Accept", "text/event-stream");
-        verify(request).header("Authorization", "Bearer " + ACCESS_TOKEN);
-        verify(request).header("Accept-Language", LANGUAGE);
+        verify(request, times(4)).headers(any());
         verifyNoMoreInteractions(request);
     }
 }

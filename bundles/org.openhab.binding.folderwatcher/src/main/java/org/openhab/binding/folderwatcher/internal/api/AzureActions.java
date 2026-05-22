@@ -32,9 +32,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.openhab.binding.folderwatcher.internal.api.auth.Azure4SignerForAuthorizationHeader;
 import org.openhab.binding.folderwatcher.internal.api.exception.AuthException;
 import org.openhab.binding.folderwatcher.internal.api.util.HttpUtilException;
@@ -108,7 +108,7 @@ public class AzureActions {
                 .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS); //
 
         for (String headerKey : headers.keySet()) {
-            request.header(headerKey, headers.get(headerKey));
+            request.headers(h -> h.add(headerKey, headers.get(headerKey)));
         }
         for (String paramKey : params.keySet()) {
             request.param(paramKey, params.get(paramKey));
