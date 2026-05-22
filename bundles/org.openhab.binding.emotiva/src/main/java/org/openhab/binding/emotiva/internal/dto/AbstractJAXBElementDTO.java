@@ -14,10 +14,11 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
+
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * Defines elements used by common request DTO classes.

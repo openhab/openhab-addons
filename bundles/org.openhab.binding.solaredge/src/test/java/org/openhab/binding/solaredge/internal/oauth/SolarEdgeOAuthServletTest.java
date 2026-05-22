@@ -19,12 +19,12 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeGenericHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Tests invalidation of pending OAuth callbacks.

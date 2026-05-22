@@ -16,9 +16,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.LocalDate;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * {@link AtmoFranceApi} class defines paths used to interact with server api

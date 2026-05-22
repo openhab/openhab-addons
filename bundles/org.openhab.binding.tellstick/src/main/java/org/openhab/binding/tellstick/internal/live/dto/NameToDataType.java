@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tellstick.internal.live.dto;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Class used to deserialize XML from Telldus Live.

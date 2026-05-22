@@ -21,8 +21,8 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.salus.internal.rest.exceptions.HttpSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
@@ -53,7 +53,7 @@ public class HttpClient implements RestClient {
             throws SalusApiException {
         var request = requireNonNull(client.POST(url));
         if (content != null) {
-            request.content(new StringContentProvider(content.body()), content.type());
+            request.body(new StringRequestContent(content.type(), content.body()));
         }
         return execute(request, headers, url);
     }
@@ -67,7 +67,7 @@ public class HttpClient implements RestClient {
                         continue;
                     }
                     for (var value : header.values()) {
-                        request.header(header.name(), value);
+                        request.headers(h -> h.add(header.name(), value));
                     }
                 }
             }

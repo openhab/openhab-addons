@@ -37,8 +37,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzStateChangedListener;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;

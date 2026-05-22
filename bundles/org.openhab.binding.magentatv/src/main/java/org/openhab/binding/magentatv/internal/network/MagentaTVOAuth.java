@@ -29,14 +29,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.HttpMethod;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
@@ -55,6 +53,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import jakarta.ws.rs.HttpMethod;
 
 /**
  * The {@link MagentaTVOAuth} class implements the OAuth authentication, which
@@ -217,7 +217,7 @@ public class MagentaTVOAuth {
             for (Enumeration<?> e = headers.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
                 String val = (String) headers.get(Objects.requireNonNull(key));
-                request.header(key, val);
+                request.headers(h -> h.add(key, val));
             }
             if (method.equals(HttpMethod.POST)) {
                 fillPostData(request, data);
@@ -228,7 +228,8 @@ public class MagentaTVOAuth {
                 for (HttpCookie c : cookies) {
                     cookieValue = cookieValue + substringBefore(c.getValue(), ";") + "; ";
                 }
-                request.header("Cookie", substringBeforeLast(cookieValue, ";"));
+                final String cookieHeader = substringBeforeLast(cookieValue, ";");
+                request.headers(h -> h.add("Cookie", cookieHeader));
             }
             logger.debug("OAuth: HTTP Request\n\tHTTP {} {}\n\tData={}", method, url, data.isEmpty() ? "<none>" : data);
             logger.trace("\n\tHeaders={}\tCookies={}", request.getHeaders(), request.getCookies());
@@ -272,17 +273,14 @@ public class MagentaTVOAuth {
 
     private void fillPostData(Request request, String data) {
         if (!data.isEmpty()) {
-            StringContentProvider postData;
+            String contentType;
             if (request.getHeaders().contains(HttpHeader.CONTENT_TYPE)) {
-                String contentType = request.getHeaders().get(HttpHeader.CONTENT_TYPE);
-                postData = new StringContentProvider(contentType, data, StandardCharsets.UTF_8);
+                contentType = request.getHeaders().get(HttpHeader.CONTENT_TYPE);
             } else {
                 boolean json = data.startsWith("{");
-                postData = new StringContentProvider(json ? "application/json" : "application/x-www-form-urlencoded",
-                        data, StandardCharsets.UTF_8);
+                contentType = json ? "application/json" : "application/x-www-form-urlencoded";
             }
-            request.content(postData);
-            request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+            request.body(new StringRequestContent(contentType, data, StandardCharsets.UTF_8));
         }
     }
 

@@ -104,7 +104,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     public CloudService(final @Reference HttpClientFactory httpClientFactory,
             final @Reference ItemRegistry itemRegistry, final @Reference EventPublisher eventPublisher) {
         this.httpClient = httpClientFactory.createHttpClient(HTTPCLIENT_NAME);
-        this.httpClient.setStopTimeout(0);
         this.httpClient.setMaxConnectionsPerDestination(DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS);
         this.httpClient.setConnectTimeout(DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT);
         this.httpClient.setFollowRedirects(false);

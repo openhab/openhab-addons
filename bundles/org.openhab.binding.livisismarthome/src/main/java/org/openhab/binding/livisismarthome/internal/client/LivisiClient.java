@@ -190,7 +190,7 @@ public class LivisiClient {
     }
 
     /**
-     * Handles errors from the {@link org.eclipse.jetty.client.api.ContentResponse} and throws the following errors:
+     * Handles errors from the {@link org.eclipse.jetty.client.ContentResponse} and throws the following errors:
      *
      * @param connection connection
      * @param responseContent response content

@@ -26,9 +26,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
@@ -54,7 +59,8 @@ import inet.ipaddr.mac.MACAddress;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WebSocketManager extends RestManager implements WebSocketListener {
+@WebSocket
+public class WebSocketManager extends RestManager {
     private static final String HOST_UNREACHABLE = "lan_host_l3addr_unreachable";
     private static final String HOST_REACHABLE = "lan_host_l3addr_reachable";
     private static final String VM_CHANGED = "vm_state_changed";
@@ -166,22 +172,18 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    @Override
+    @OnWebSocketOpen
     public void onWebSocketConnect(@NonNullByDefault({}) Session wsSession) {
         this.wsSession = wsSession;
         logger.debug("Websocket connection establisehd");
-        try {
-            wsSession.getRemote().sendString(activeRegistration);
-        } catch (IOException e) {
-            logger.warn("Error registering to websocket: {}", e.getMessage());
-        }
+        wsSession.sendText(activeRegistration, Callback.NOOP);
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketText(@NonNullByDefault({}) String message) {
         logger.debug("Websocket received: {}", message);
         if (message.toLowerCase(Locale.US).contains("bye") && wsSession instanceof Session session) {
-            session.close(StatusCode.NORMAL, "Thanks");
+            session.close(StatusCode.NORMAL, "Thanks", Callback.NOOP);
             return;
         }
 
@@ -229,18 +231,18 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    @Override
+    @OnWebSocketClose
     public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
         logger.debug("Socket Closed: [{}] - reason {}", statusCode, reason);
         this.wsSession = null;
     }
 
-    @Override
+    @OnWebSocketError
     public void onWebSocketError(@NonNullByDefault({}) Throwable cause) {
         logger.warn("Error on websocket: {}", cause.getMessage());
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
         /* do nothing */
     }

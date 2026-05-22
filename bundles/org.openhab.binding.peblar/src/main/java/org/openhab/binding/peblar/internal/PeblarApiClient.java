@@ -18,12 +18,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -94,7 +94,7 @@ class PeblarApiClient {
 
     private void patch(String path, JsonObject body) throws PeblarApiException {
         logger.debug("PATCH {} body={}", path, body);
-        send(HttpMethod.PATCH, path, b -> b.content(new StringContentProvider(gson.toJson(body)), "application/json"));
+        send(HttpMethod.PATCH, path, b -> b.body(new StringRequestContent("application/json", gson.toJson(body))));
     }
 
     private Response send(HttpMethod method, String path, Function<Request, Request> builder)
@@ -118,8 +118,9 @@ class PeblarApiClient {
     }
 
     private Request buildRequest(HttpMethod method, String url) {
-        return httpClient.newRequest(url).method(method).header(HttpHeader.AUTHORIZATION, apiToken)
-                .header(HttpHeader.ACCEPT, "application/json").timeout(TIMEOUT_S, TimeUnit.SECONDS);
+        return httpClient.newRequest(url).method(method)
+                .headers(h -> h.add(HttpHeader.AUTHORIZATION, apiToken).add(HttpHeader.ACCEPT, "application/json"))
+                .timeout(TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     private void checkStatus(Response response, String url) throws PeblarApiException {

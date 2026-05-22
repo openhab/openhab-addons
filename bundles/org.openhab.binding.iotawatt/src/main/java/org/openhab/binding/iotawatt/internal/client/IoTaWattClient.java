@@ -21,9 +21,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
@@ -53,7 +53,7 @@ public class IoTaWattClient {
 
     /**
      * Creates an IoTaWattClient
-     * 
+     *
      * @param hostname The hostname of the IoTaWatt device to connect to
      * @param httpClient The HttpClient to use
      * @param gson The Gson decoder to use

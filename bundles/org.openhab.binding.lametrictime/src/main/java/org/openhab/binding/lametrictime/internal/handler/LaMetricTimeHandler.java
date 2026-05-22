@@ -23,8 +23,6 @@ import java.util.SortedMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
@@ -62,6 +60,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link LaMetricTimeHandler} is responsible for handling commands, which are

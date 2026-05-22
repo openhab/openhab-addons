@@ -24,13 +24,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.client.Request;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
@@ -82,10 +81,9 @@ class TestGeneric {
         HttpClient httpMock = mock(HttpClient.class);
         Request requestMock = mock(Request.class);
         when(httpMock.isRunning()).thenReturn(true);
-        when(httpMock.getSslContextFactory()).thenReturn(new SslContextFactory.Client(true));
         when(httpMock.newRequest(anyString())).thenReturn(requestMock);
         when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
-        when(requestMock.header(HttpHeader.AUTHORIZATION, "Bearer 1234")).thenReturn(requestMock);
+        when(requestMock.headers(ArgumentMatchers.any())).thenReturn(requestMock);
 
         ContentResponse response = mock(ContentResponse.class);
         when(response.getStatus()).thenReturn(200);

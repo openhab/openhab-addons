@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.deconz.internal.netutils;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 
 /**
@@ -90,27 +89,19 @@ public class AsyncHttpClient {
         final CompletableFuture<Result> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(address));
         if (body != null) {
-            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());
-                    final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
-                            byteArrayInputStream)) {
-                request.content(inputStreamContentProvider, "application/json");
-            } catch (Exception e) {
-                f.completeExceptionally(e);
-                return f;
-            }
+            request.body(new StringRequestContent("application/json", body, StandardCharsets.UTF_8));
         }
 
         request.method(method).timeout(timeout, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
 
             @Override
-            public void onComplete(@NonNullByDefault({}) org.eclipse.jetty.client.api.Result result) {
-                final HttpResponse response = (HttpResponse) result.getResponse();
+            public void onComplete(@NonNullByDefault({}) org.eclipse.jetty.client.Result result) {
                 if (result.getFailure() != null) {
                     f.completeExceptionally(result.getFailure());
                     return;
                 }
                 String content = getContentAsString();
-                f.complete(new Result(content != null ? content : "", response.getStatus()));
+                f.complete(new Result(content != null ? content : "", result.getResponse().getStatus()));
             }
         });
         return f;

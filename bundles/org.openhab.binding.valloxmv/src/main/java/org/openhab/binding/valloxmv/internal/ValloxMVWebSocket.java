@@ -26,11 +26,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -119,15 +120,11 @@ public class ValloxMVWebSocket {
             this.channelUID = channelUID;
         }
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session session) {
-            try {
-                logger.debug("Connected to: {}", session.getRemoteAddress().getAddress());
-                ByteBuffer buf = generateRequest();
-                session.getRemote().sendBytes(buf);
-            } catch (IOException e) {
-                connectionError(e);
-            }
+            logger.debug("Connected to: {}", session.getRemoteSocketAddress());
+            ByteBuffer buf = generateRequest();
+            session.sendBinary(buf, Callback.NOOP);
         }
 
         /**

@@ -27,18 +27,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
@@ -52,6 +51,9 @@ import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationExce
 import org.openhab.binding.argoclima.internal.exception.ArgoRemoteServerStubStartupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Implements a stub HTTP server which simulates Argo remote APIs
@@ -114,7 +116,7 @@ public class RemoteArgoApiServerStub {
      *
      * @author Mateusz Bronk - Initial contribution
      */
-    public class ArgoDeviceRequestHandler extends AbstractHandler {
+    public class ArgoDeviceRequestHandler extends Handler.Abstract {
         private final DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties;
 
         /**
@@ -134,12 +136,14 @@ public class RemoteArgoApiServerStub {
          * {@inheritDoc}
          */
         @Override
-        public void handle(@Nullable String target, @Nullable Request baseRequest, @Nullable HttpServletRequest request,
-                @Nullable HttpServletResponse response) throws IOException, ServletException {
-            Objects.requireNonNull(target);
+        public boolean handle(@Nullable Request baseRequest, @Nullable Response baseResponse,
+                @Nullable Callback callback) throws Exception {
             Objects.requireNonNull(baseRequest);
-            Objects.requireNonNull(request);
-            Objects.requireNonNull(response);
+            Objects.requireNonNull(baseResponse);
+            Objects.requireNonNull(callback);
+
+            HttpServletRequest request = Objects.requireNonNull(Request.as(baseRequest, HttpServletRequest.class));
+            HttpServletResponse response = Objects.requireNonNull(Response.as(baseResponse, HttpServletResponse.class));
 
             var body = getRequestBodyAsString(baseRequest);
             var requestType = detectRequestType(request, body);
@@ -192,8 +196,8 @@ public class RemoteArgoApiServerStub {
                         var overridenBody = postProcessUpstreamResponse(requestType, upstreamResponse.get(), deviceApi);
                         PassthroughHttpClient.forwardUpstreamResponse(upstreamResponse.get(), response,
                                 Optional.of(overridenBody));
-                        baseRequest.setHandled(true);
-                        return;
+                        callback.succeeded();
+                        return true;
                     }
                 }
             }
@@ -208,10 +212,10 @@ public class RemoteArgoApiServerStub {
             response.setHeader("X-Powered-By", "PHP/5.4.11");
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
 
-            if (baseRequest.getOriginalURI().contains("UI_NTP")) { // a little more lax parsing than request type (just
-                                                                   // in case of syntax variances)
+            if (baseRequest.getHttpURI().toString().contains("UI_NTP")) { // a little more lax parsing than request type
+                                                                          // (just
+                // in case of syntax variances)
                 response.getWriter().println(getNtpResponse(Instant.now()));
             } else if (deviceApi.isPresent() && DeviceRequestType.GET_UI_FLG.equals(requestType)) {
                 // handle GET_UI_FLG always feeding "our" status
@@ -222,6 +226,8 @@ public class RemoteArgoApiServerStub {
                                                                             // device requests (it doesn't seem to care
                                                                             // :))
             }
+            callback.succeeded();
+            return true;
         }
     }
 
@@ -403,7 +409,7 @@ public class RemoteArgoApiServerStub {
      * @throws IOException In case of read errors
      */
     public static String getRequestBodyAsString(Request downstreamHttpRequest) throws IOException {
-        return downstreamHttpRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        return Content.Source.asString(downstreamHttpRequest);
     }
 
     /**
@@ -480,7 +486,7 @@ public class RemoteArgoApiServerStub {
             }
         }
 
-        var commandFromBody = new UrlEncoded(requestBody).getString("CM");
+        var commandFromBody = UrlEncoded.decodeQuery(requestBody).getString("CM");
 
         if ("UI_RT".equalsIgnoreCase(commandFromBody) && "POST".equalsIgnoreCase(request.getMethod())) {
             return DeviceRequestType.POST_UI_RT; // Unknown: POST /UI/UI.php body:

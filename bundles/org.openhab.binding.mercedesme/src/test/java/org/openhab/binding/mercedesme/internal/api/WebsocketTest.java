@@ -24,9 +24,9 @@ import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandlerMock;
@@ -47,10 +47,7 @@ public class WebsocketTest {
         AccountHandlerMock accountHandler = new AccountHandlerMock();
         Websocket ws = new WebsocketMock(accountHandler, mock(HttpClient.class), new AccountConfiguration(),
                 mock(LocaleProvider.class), new VolatileStorageService().getStorage(""));
-        Session sessionMock = mock(Session.class);
-        RemoteEndpoint remoteMock = mock(RemoteEndpoint.class);
-        when(sessionMock.getRemote()).thenReturn(remoteMock);
-        ws.onConnect(sessionMock);
+        ws.onConnect(mock(Session.class));
         return ws;
     }
 
@@ -75,7 +72,7 @@ public class WebsocketTest {
 
         Frame pongFrame = mock(Frame.class);
         when(pongFrame.getType()).thenReturn(Frame.Type.PONG);
-        ws.onFrame(pongFrame);
+        ws.onFrame(pongFrame, Callback.NOOP);
         assertNull(ws.pingSentAt.get(), "handlePong() (via onFrame) must clear pingSentAt once a pong is received");
 
         ws.sendPing();
