@@ -13,8 +13,8 @@
 package org.openhab.binding.mielecloud.internal.webservice;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Response;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.ErrorMessage;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.MieleSyntaxException;
 import org.openhab.binding.mielecloud.internal.webservice.exception.AuthorizationFailedException;
@@ -58,7 +58,7 @@ public final class HttpUtil {
                 throw new AuthorizationFailedException(exceptionMessage);
             case 429:
                 String retryAfter = null;
-                if (response.getHeaders().containsKey(RETRY_AFTER_HEADER_FIELD_NAME)) {
+                if (response.getHeaders().contains(RETRY_AFTER_HEADER_FIELD_NAME)) {
                     retryAfter = response.getHeaders().get(RETRY_AFTER_HEADER_FIELD_NAME);
                 }
                 throw new TooManyRequestsException(exceptionMessage, retryAfter);

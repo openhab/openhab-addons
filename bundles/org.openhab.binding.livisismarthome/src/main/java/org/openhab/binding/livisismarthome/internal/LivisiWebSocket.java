@@ -14,6 +14,7 @@ package org.openhab.binding.livisismarthome.internal;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,9 +23,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.livisismarthome.internal.client.exception.WebSocketConnectException;
@@ -129,7 +130,7 @@ public class LivisiWebSocket {
         return session != null && session.isOpen();
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         this.closing = false;
         logger.debug("Connected to LIVISI SmartHome webservice.");
@@ -166,7 +167,7 @@ public class LivisiWebSocket {
 
     WebSocketClient createWebSocketClient() {
         WebSocketClient client = new WebSocketClient(httpClient);
-        client.setMaxIdleTimeout(maxIdleTimeout);
+        client.setIdleTimeout(Duration.ofMillis(maxIdleTimeout));
         return client;
     }
 

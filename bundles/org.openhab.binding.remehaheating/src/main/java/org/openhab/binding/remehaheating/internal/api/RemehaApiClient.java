@@ -23,10 +23,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
@@ -149,9 +149,12 @@ public class RemehaApiClient {
             return null;
         }
         try {
+            String authBearer = "Bearer " + accessToken;
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                        h.add("Authorization", authBearer);
+                        h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                    }).send();
             if (response.getStatus() == 401) {
                 logger.debug("Received 401 Unauthorized, token expired");
                 accessToken = null;
@@ -250,8 +253,10 @@ public class RemehaApiClient {
             Request request = httpClient.newRequest(baseUrl).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .param("tx", "StateProperties=" + stateProperties).param("p", "B2C_1A_RPSignUpSignInNewRoomv3.1")
-                    .header("x-csrf-token", csrfToken).header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> {
+                        h.add("x-csrf-token", csrfToken);
+                        h.add("Content-Type", "application/x-www-form-urlencoded");
+                    }).body(new StringRequestContent("application/x-www-form-urlencoded", formData));
 
             ContentResponse response = request.send();
             int status = response.getStatus();
@@ -312,8 +317,8 @@ public class RemehaApiClient {
 
             Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
+                    .body(new StringRequestContent("application/x-www-form-urlencoded", formData));
 
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
@@ -345,11 +350,15 @@ public class RemehaApiClient {
             return false;
         }
         try {
+            String authBearer2 = "Bearer " + accessToken;
             Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                        h.add("Authorization", authBearer2);
+                        h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                        h.add("Content-Type", "application/json");
+                    });
             if (jsonData != null) {
-                request.content(new StringContentProvider(jsonData));
+                request.body(new StringRequestContent("application/json", jsonData));
             }
             int status = request.send().getStatus();
             if (status == 401) {

@@ -52,7 +52,6 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -73,6 +72,7 @@ import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.http2.frames.PingFrame;
 import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.Promise.Completable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.hue.internal.api.dto.clip1.BridgeConfig;
@@ -101,6 +101,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import jakarta.ws.rs.core.MediaType;
+
 /**
  * This class handles HTTP and SSE connections to/from a Hue Bridge running CLIP 2.
  *
@@ -127,7 +129,8 @@ public class Clip2Bridge implements Closeable {
      *
      * <li>onHeaders() HTTP unauthorized codes</li>
      */
-    private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
+    @NonNullByDefault({})
+    private abstract class BaseStreamListenerAdapter<T> implements Stream.Listener {
         protected final CompletableFuture<T> completable = new CompletableFuture<>();
         private String contentType = "UNDEFINED";
         private int status;
@@ -175,13 +178,14 @@ public class Clip2Bridge implements Closeable {
          * Check the reply headers to see whether the request was authorised.
          */
         @Override
-        public void onHeaders(@Nullable Stream stream, @Nullable HeadersFrame frame) {
-            Objects.requireNonNull(stream);
-            Objects.requireNonNull(frame);
+        public void onHeaders(Stream stream, HeadersFrame frame) {
             MetaData metaData = frame.getMetaData();
             if (metaData.isResponse()) {
                 Response responseMetaData = (Response) metaData;
-                contentType = responseMetaData.getFields().get(HttpHeader.CONTENT_TYPE).toLowerCase();
+                String headerContentType = responseMetaData.getHttpFields().get(HttpHeader.CONTENT_TYPE);
+                if (headerContentType != null) {
+                    contentType = headerContentType.toLowerCase();
+                }
                 status = responseMetaData.getStatus();
                 switch (status) {
                     case HttpStatus.UNAUTHORIZED_401:
@@ -190,6 +194,7 @@ public class Clip2Bridge implements Closeable {
                     default:
                 }
             }
+            stream.demand();
         }
     }
 
@@ -205,34 +210,42 @@ public class Clip2Bridge implements Closeable {
      * <li>onIdleTimeout()</li>
      * <li>onTimeout()</li>
      */
+    @NonNullByDefault({})
     private class ContentStreamListenerAdapter extends BaseStreamListenerAdapter<String> {
         private final DataFrameCollector content = new DataFrameCollector();
 
         @Override
-        public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
-            Objects.requireNonNull(frame);
-            Objects.requireNonNull(callback);
+        public void onDataAvailable(Stream stream) {
+            boolean endStream = false;
             synchronized (this) {
-                content.append(frame.getData());
-                if (frame.isEndStream() && !completable.isDone()) {
-                    completable.complete(content.contentAsString().trim());
-                    content.reset();
+                while (true) {
+                    Stream.Data data = stream.readData();
+                    if (data == null) {
+                        break;
+                    }
+                    try {
+                        DataFrame frame = data.frame();
+                        content.append(frame.getByteBuffer());
+                        endStream = frame.isEndStream();
+                    } finally {
+                        data.release();
+                    }
+                    if (endStream) {
+                        if (!completable.isDone()) {
+                            completable.complete(content.contentAsString().trim());
+                            content.reset();
+                        }
+                        return;
+                    }
                 }
             }
-            callback.succeeded();
+            stream.demand();
         }
 
         @Override
-        public boolean onIdleTimeout(@Nullable Stream stream, @Nullable Throwable x) {
-            Objects.requireNonNull(stream);
+        public void onIdleTimeout(Stream stream, TimeoutException x, Promise<Boolean> promise) {
             handleHttp2Error(Http2Error.IDLE, stream.getSession());
-            return true;
-        }
-
-        @Override
-        public void onTimeout(@Nullable Stream stream, @Nullable Throwable x) {
-            Objects.requireNonNull(stream);
-            handleHttp2Error(Http2Error.TIMEOUT, stream.getSession());
+            promise.succeeded(Boolean.TRUE);
         }
     }
 
@@ -244,13 +257,14 @@ public class Clip2Bridge implements Closeable {
         private int usedSize = 0;
 
         public void append(ByteBuffer data) {
-            int dataCapacity = data.capacity();
+            ByteBuffer copy = data.slice();
+            int dataCapacity = copy.remaining();
             int neededSize = usedSize + dataCapacity;
             if (neededSize > buffer.length) {
                 int newSize = (dataCapacity < 4096) ? neededSize : Math.max(2 * buffer.length, neededSize);
                 buffer = Arrays.copyOf(buffer, newSize);
             }
-            data.get(buffer, usedSize, dataCapacity);
+            copy.get(buffer, usedSize, dataCapacity);
             usedSize += dataCapacity;
         }
 
@@ -283,12 +297,12 @@ public class Clip2Bridge implements Closeable {
      * <li>onClosed()</li>
      * <li>onReset()</li>
      */
+    @NonNullByDefault({})
     private class EventStreamListenerAdapter extends BaseStreamListenerAdapter<Boolean> {
         private final DataFrameCollector eventData = new DataFrameCollector();
 
         @Override
-        public void onClosed(@Nullable Stream stream) {
-            Objects.requireNonNull(stream);
+        public void onClosed(Stream stream) {
             if (bridgeHandler.isUpdatingOwnFirmware()) {
                 // stream closes if firmware is updating; this is no error so just complete the future silently
                 if (!completable.isDone()) {
@@ -300,56 +314,70 @@ public class Clip2Bridge implements Closeable {
         }
 
         @Override
-        public void onData(@Nullable Stream stream, @Nullable DataFrame frame, @Nullable Callback callback) {
-            Objects.requireNonNull(frame);
-            Objects.requireNonNull(callback);
+        public void onDataAvailable(Stream stream) {
+            boolean endStream = false;
             synchronized (this) {
-                eventData.append(frame.getData());
-                BufferedReader reader = new BufferedReader(eventData.contentStreamReader());
-                @SuppressWarnings("null")
-                List<String> receivedLines = reader.lines().toList();
-
-                // a blank line marks the end of an SSE message
-                boolean endOfMessage = !receivedLines.isEmpty()
-                        && receivedLines.get(receivedLines.size() - 1).isBlank();
-
-                if (endOfMessage) {
-                    eventData.reset();
-                    // receipt of ANY message means the event stream is established
-                    if (!completable.isDone()) {
-                        completable.complete(Boolean.TRUE);
+                while (true) {
+                    Stream.Data data = stream.readData();
+                    if (data == null) {
+                        break;
                     }
-                    // append any 'data' field values to the event message
-                    StringBuilder eventContent = new StringBuilder();
-                    for (String receivedLine : receivedLines) {
-                        if (receivedLine.startsWith("data:")) {
-                            eventContent.append(receivedLine.substring(5).stripLeading());
+                    try {
+                        DataFrame frame = data.frame();
+                        eventData.append(frame.getByteBuffer());
+                        endStream = frame.isEndStream();
+                    } finally {
+                        data.release();
+                    }
+
+                    BufferedReader reader = new BufferedReader(eventData.contentStreamReader());
+                    @SuppressWarnings("null")
+                    List<String> receivedLines = reader.lines().toList();
+
+                    boolean endOfMessage = !receivedLines.isEmpty()
+                            && receivedLines.get(receivedLines.size() - 1).isBlank();
+
+                    if (endOfMessage) {
+                        eventData.reset();
+                        if (!completable.isDone()) {
+                            completable.complete(Boolean.TRUE);
+                        }
+                        StringBuilder eventContent = new StringBuilder();
+                        for (String receivedLine : receivedLines) {
+                            if (receivedLine.startsWith("data:")) {
+                                eventContent.append(receivedLine.substring(5).stripLeading());
+                            }
+                        }
+                        if (eventContent.length() > 0) {
+                            onEventData(eventContent.toString().trim());
                         }
                     }
-                    if (eventContent.length() > 0) {
-                        onEventData(eventContent.toString().trim());
+
+                    if (endStream) {
+                        return;
                     }
                 }
             }
-            callback.succeeded();
+            stream.demand();
         }
 
         @Override
-        public boolean onIdleTimeout(@Nullable Stream stream, @Nullable Throwable x) {
-            return false;
+        public void onIdleTimeout(Stream stream, TimeoutException x, Promise<Boolean> promise) {
+            promise.succeeded(Boolean.FALSE);
         }
 
         @Override
-        public void onReset(@Nullable Stream stream, @Nullable ResetFrame frame) {
-            Objects.requireNonNull(stream);
+        public void onReset(Stream stream, ResetFrame frame, Callback callback) {
             if (bridgeHandler.isUpdatingOwnFirmware()) {
                 // stream closes if firmware is updating; this is no error so just complete the future silently
                 if (!completable.isDone()) {
                     completable.complete(Boolean.FALSE);
                 }
+                callback.succeeded();
                 return;
             }
             handleHttp2Error(Http2Error.RESET, stream.getSession());
+            callback.succeeded();
         }
     }
 
@@ -394,26 +422,29 @@ public class Clip2Bridge implements Closeable {
      * <li>onGoAway()</li>
      * <li>onReset()</li>
      */
-    private class SessionListenerAdapter extends Session.Listener.Adapter {
+    @NonNullByDefault({})
+    private class SessionListenerAdapter implements Session.Listener {
 
         @Override
-        public void onClose(@Nullable Session session, @Nullable GoAwayFrame frame) {
-            Objects.requireNonNull(session);
+        public void onClose(Session session, GoAwayFrame frame, Callback callback) {
             if (bridgeHandler.isUpdatingOwnFirmware()) {
                 // stream closes if firmware is updating; this is no error so return silently
+                callback.succeeded();
                 return;
             }
             fatalErrorDelayed(this, new Http2Exception(Http2Error.CLOSED), session);
+            callback.succeeded();
         }
 
         @Override
-        public void onFailure(@Nullable Session session, @Nullable Throwable failure) {
-            Objects.requireNonNull(session);
+        public void onFailure(Session session, Throwable failure, Callback callback) {
             if (bridgeHandler.isUpdatingOwnFirmware()) {
                 // stream closes if firmware is updating; this is no error so return silently
+                callback.succeeded();
                 return;
             }
             fatalErrorDelayed(this, new Http2Exception(Http2Error.FAILURE), session);
+            callback.succeeded();
         }
 
         /**
@@ -422,8 +453,7 @@ public class Clip2Bridge implements Closeable {
          * session.
          */
         @Override
-        public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
-            Objects.requireNonNull(session);
+        public void onGoAway(Session session, GoAwayFrame frame) {
             if (session.equals(http2Session)) {
                 Thread recreateThread = new Thread(() -> recreateSession(),
                         "OH-binding-" + bridgeHandler.getThing().getUID() + "-RecreateSession");
@@ -433,14 +463,12 @@ public class Clip2Bridge implements Closeable {
         }
 
         @Override
-        public boolean onIdleTimeout(@Nullable Session session) {
+        public boolean onIdleTimeout(Session session) {
             return false;
         }
 
         @Override
-        public void onPing(@Nullable Session session, @Nullable PingFrame frame) {
-            Objects.requireNonNull(session);
-            Objects.requireNonNull(frame);
+        public void onPing(Session session, PingFrame frame) {
             if (session.equals(http2Session)) {
                 checkAliveOk();
                 if (!frame.isReply()) {
@@ -450,8 +478,7 @@ public class Clip2Bridge implements Closeable {
         }
 
         @Override
-        public void onReset(@Nullable Session session, @Nullable ResetFrame frame) {
-            Objects.requireNonNull(session);
+        public void onReset(Session session, ResetFrame frame) {
             fatalErrorDelayed(this, new Http2Exception(Http2Error.RESET), session);
         }
     }
@@ -1020,7 +1047,7 @@ public class Clip2Bridge implements Closeable {
             String url = getUrl(reference);
             LOGGER.trace("GET {} {}/2", url, HttpProtocol.HTTPS);
             HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON);
-            Completable<@Nullable Stream> streamPromise = new Completable<>();
+            Completable<Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
             session.newStream(headers, streamPromise, contentStreamListener);
             // wait for stream to be opened
@@ -1192,7 +1219,7 @@ public class Clip2Bridge implements Closeable {
         Stream stream = null;
         try {
             HeadersFrame headers = prepareHeaders(eventUrl, MediaType.SERVER_SENT_EVENTS);
-            Completable<@Nullable Stream> streamPromise = new Completable<>();
+            Completable<Stream> streamPromise = new Completable<>();
             EventStreamListenerAdapter eventStreamListener = new EventStreamListenerAdapter();
             session.newStream(headers, streamPromise, eventStreamListener);
             // wait for stream to be opened
@@ -1240,8 +1267,10 @@ public class Clip2Bridge implements Closeable {
         try {
             InetSocketAddress address = new InetSocketAddress(hostName, 443);
             SessionListenerAdapter sessionListener = new SessionListenerAdapter();
-            Completable<@Nullable Session> sessionPromise = new Completable<>();
-            http2Client.connect(http2Client.getBean(SslContextFactory.class), address, sessionListener, sessionPromise);
+            Completable<Session> sessionPromise = new Completable<>();
+            SslContextFactory.Client sslContextFactory = Objects
+                    .requireNonNull(http2Client.getBean(SslContextFactory.Client.class));
+            http2Client.connect(sslContextFactory, address, sessionListener, sessionPromise);
             // wait for the (SSL) session to be opened
             session = Objects.requireNonNull(sessionPromise.get(TIMEOUT_SECONDS, TimeUnit.SECONDS));
             LOGGER.debug("openSession() sessionId:{}", session.hashCode());
@@ -1275,16 +1304,16 @@ public class Clip2Bridge implements Closeable {
      */
     private HeadersFrame prepareHeaders(String url, String acceptContentType, String method, long contentLength,
             @Nullable String contentType) {
-        HttpFields fields = new HttpFields();
+        HttpFields.Mutable fields = HttpFields.build();
         fields.put(HttpHeader.ACCEPT, acceptContentType);
         if (contentType != null) {
             fields.put(HttpHeader.CONTENT_TYPE, contentType);
         }
         if (contentLength >= 0) {
-            fields.putLongField(HttpHeader.CONTENT_LENGTH, contentLength);
+            fields.put(HttpHeader.CONTENT_LENGTH, contentLength);
         }
         fields.put(APPLICATION_KEY, applicationKey);
-        return new HeadersFrame(new MetaData.Request(method, new HttpURI(url), HttpVersion.HTTP_2, fields), null,
+        return new HeadersFrame(new MetaData.Request(method, HttpURI.from(url), HttpVersion.HTTP_2, fields), null,
                 contentLength <= 0);
     }
 
@@ -1309,7 +1338,7 @@ public class Clip2Bridge implements Closeable {
             HeadersFrame headers = prepareHeaders(url, MediaType.APPLICATION_JSON, "PUT", requestBytes.capacity(),
                     MediaType.APPLICATION_JSON);
             LOGGER.trace("PUT {} {}/2 >> {}", url, HttpProtocol.HTTPS, requestJson);
-            Completable<@Nullable Stream> streamPromise = new Completable<>();
+            Completable<Stream> streamPromise = new Completable<>();
             ContentStreamListenerAdapter contentStreamListener = new ContentStreamListenerAdapter();
             session.newStream(headers, streamPromise, contentStreamListener);
             // wait for stream to be opened

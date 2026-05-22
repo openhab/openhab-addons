@@ -17,8 +17,6 @@ import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*
 import java.util.Dictionary;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
 import org.openhab.binding.konnected.internal.servlet.KonnectedHTTPServlet;
@@ -30,13 +28,15 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
 
 /**
  * The {@link KonnectedHandlerFactory} is responsible for creating things and thing

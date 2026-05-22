@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
@@ -134,9 +134,9 @@ public class TeslaPowerwallWebTargets {
         int status = 0;
         String jsonResponse = "";
         try {
-            Request request = httpClient.newRequest(uri).method(method).header(headerKey, headerValue)
+            Request request = httpClient.newRequest(uri).method(method)..headers(h -> h.add(headerKey, headerValue))
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .content(new StringContentProvider(params), "application/json");
+                    .body(new StringRequestContent("application/json", params));
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request for {}", method, uri);
             }

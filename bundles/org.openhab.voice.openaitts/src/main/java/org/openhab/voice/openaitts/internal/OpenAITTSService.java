@@ -25,9 +25,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
@@ -136,9 +136,10 @@ public class OpenAITTSService extends AbstractCachedTTSService {
 
         try {
             ContentResponse response = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Authorization", "Bearer " + config.apiKey).header("Content-Type", "application/json")
-                    .content(new StringContentProvider(queryJson)).send();
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(headers -> {
+                        headers.put("Authorization", "Bearer " + config.apiKey);
+                        headers.put("Content-Type", "application/json");
+                    }).body(new StringRequestContent(queryJson)).send();
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 return new ByteArrayAudioStream(response.getContent(), requestedFormat);

@@ -28,10 +28,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
@@ -107,7 +107,7 @@ public class SurePetcareAPIHelper {
         try {
             Request request = httpClient.POST(LOGIN_URL);
             setConnectionHeaders(request);
-            request.content(new StringContentProvider(SurePetcareConstants.GSON
+            request.body(new StringRequestContent("application/json", SurePetcareConstants.GSON
                     .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString()))));
             ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS)
                     .send();
@@ -370,16 +370,20 @@ public class SurePetcareAPIHelper {
      */
     private void setConnectionHeaders(Request request) throws ProtocolException {
         // headers
-        request.header(HttpHeader.ACCEPT, "application/json, text/plain, */*");
-        request.header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
-        request.header(HttpHeader.AUTHORIZATION, "Bearer " + authenticationToken);
-        request.header(HttpHeader.CONNECTION, "keep-alive");
-        request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-        request.header(HttpHeader.USER_AGENT, userAgent);
-        request.header(HttpHeader.REFERER, "https://surepetcare.io/");
-        request.header("Origin", "https://surepetcare.io");
-        request.header("Referer", "https://surepetcare.io");
-        request.header("X-Requested-With", "com.sureflap.surepetcare");
+        final String authBearerToken = "Bearer " + authenticationToken;
+        final String userAgentVal = userAgent;
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json, text/plain, */*");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+            h.add(HttpHeader.AUTHORIZATION, authBearerToken);
+            h.add(HttpHeader.CONNECTION, "keep-alive");
+            h.add(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+            h.add(HttpHeader.USER_AGENT, userAgentVal);
+            h.add(HttpHeader.REFERER, "https://surepetcare.io/");
+            h.add("Origin", "https://surepetcare.io");
+            h.add("Referer", "https://surepetcare.io");
+            h.add("X-Requested-With", "com.sureflap.surepetcare");
+        });
     }
 
     /**
@@ -435,7 +439,7 @@ public class SurePetcareAPIHelper {
         logger.debug("postDataThroughAPI URL: {}", url);
         logger.debug("postDataThroughAPI Payload: {}", jsonPayload);
         Request request = httpClient.newRequest(url).method(method);
-        request.content(new StringContentProvider(jsonPayload));
+        request.body(new StringRequestContent("application/json", jsonPayload));
         executeAPICall(request);
     }
 

@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingTestConstants;
@@ -253,7 +253,7 @@ public class DefaultMieleWebserviceTest {
     public void test429TooManyRequestsWhilePerformingFetchActionsRequest() throws Exception {
         // given:
         HttpFields headerFields = mock(HttpFields.class);
-        when(headerFields.containsKey(anyString())).thenReturn(false);
+        when(headerFields.contains(anyString())).thenReturn(false);
 
         ContentResponse response = createContentResponseMock(429, "{\"message\": \"Too Many Requests\"}");
         when(response.getHeaders()).thenReturn(headerFields);
@@ -409,7 +409,7 @@ public class DefaultMieleWebserviceTest {
     public void testPutProcessActionThrowsTooManyRequestsExceptionWhenHttpResponseCodeIs429() throws Exception {
         // given:
         HttpFields responseHeaders = mock(HttpFields.class);
-        when(responseHeaders.containsKey(anyString())).thenReturn(false);
+        when(responseHeaders.contains(anyString())).thenReturn(false);
 
         ContentResponse response = createContentResponseMock(429, "{\"message\":\"Too many requests\"}");
         when(response.getHeaders()).thenReturn(responseHeaders);
@@ -485,7 +485,7 @@ public class DefaultMieleWebserviceTest {
     public void testPutLightThrowsTooManyRequestsExceptionWhenHttpResponseCodeIs429() throws Exception {
         // given:
         HttpFields responseHeaders = mock(HttpFields.class);
-        when(responseHeaders.containsKey(anyString())).thenReturn(false);
+        when(responseHeaders.contains(anyString())).thenReturn(false);
 
         ContentResponse response = createContentResponseMock(429, "{\"message\":\"Too many requests\"}");
         when(response.getHeaders()).thenReturn(responseHeaders);
@@ -657,7 +657,7 @@ public class DefaultMieleWebserviceTest {
     public void testPutPowerStateThrowsTooManyRequestsExceptionWhenHttpResponseCodeIs429() throws Exception {
         // given:
         HttpFields responseHeaders = mock(HttpFields.class);
-        when(responseHeaders.containsKey(anyString())).thenReturn(false);
+        when(responseHeaders.contains(anyString())).thenReturn(false);
 
         ContentResponse response = createContentResponseMock(429, "{\"message\":\"Too many requests\"}");
         when(response.getHeaders()).thenReturn(responseHeaders);
@@ -877,7 +877,7 @@ public class DefaultMieleWebserviceTest {
         when(request.send()).thenReturn(response);
 
         var headerFields = mock(HttpFields.class);
-        when(headerFields.containsKey(anyString())).thenReturn(false);
+        when(headerFields.contains(anyString())).thenReturn(false);
         when(response.getHeaders()).thenReturn(headerFields);
 
         var dispatcher = mock(DeviceStateDispatcher.class);

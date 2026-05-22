@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -56,8 +58,11 @@ public class HttpHandlerFactory extends BaseThingHandlerFactory implements HttpC
     public HttpHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference HttpDynamicStateDescriptionProvider httpDynamicStateDescriptionProvider,
             @Reference TimeZoneProvider timeZoneProvider) {
-        this.secureClient = new HttpClient(new SslContextFactory.Client());
-        this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
+        this.secureClient = new HttpClient();
+        SslContextFactory.Client insecureSslContextFactory = new SslContextFactory.Client(true);
+        ClientConnector clientConnector = new ClientConnector();
+        clientConnector.setSslContextFactory(insecureSslContextFactory);
+        this.insecureClient = new HttpClient(new HttpClientTransportDynamic(clientConnector));
         // clear user agent, this needs to be set later in the thing configuration as additional header
         this.secureClient.setUserAgentField(null);
         this.insecureClient.setUserAgentField(null);

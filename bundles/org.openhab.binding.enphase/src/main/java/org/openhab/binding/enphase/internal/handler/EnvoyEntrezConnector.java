@@ -23,9 +23,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
@@ -113,7 +113,7 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
             sessionId = getNewSessionId();
         }
         logger.trace("Retrieving data from '{}' with sessionID '{}'", request.getURI(), sessionId);
-        request.cookie(new HttpCookie(sessionKey, sessionId));
+        request.cookie(org.eclipse.jetty.http.HttpCookie.build(sessionKey, sessionId).build());
     }
 
     private boolean checkSessionId() {
@@ -123,7 +123,8 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
         final URI uri = URI.create(HTTPS + configuration.hostname + LOGIN_URL);
 
         final Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
-                .cookie(new HttpCookie(sessionKey, this.sessionId)).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .cookie(org.eclipse.jetty.http.HttpCookie.build(sessionKey, this.sessionId).build())
+                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         final ContentResponse response;
 
         try {
@@ -168,7 +169,8 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
 
         // Authorization: Bearer
         final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).accept("application/json")
-                .header("Authorization", "Bearer " + jwt).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .headers(h -> h.add("Authorization", "Bearer " + jwt))
+                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         final ContentResponse response = send(request);
 
         if (response.getStatus() == 200 && response.getHeaders().contains(HttpHeader.SET_COOKIE)) {

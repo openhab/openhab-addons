@@ -24,9 +24,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
@@ -93,7 +93,7 @@ public class SecurePassthroughSession {
         httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         /* add request body */
-        httpRequest.content(new StringContentProvider(tapoRequest.toString(), CONTENT_CHARSET), CONTENT_TYPE_JSON);
+        httpRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, tapoRequest.toString()));
 
         return httpRequest.send();
     }
@@ -202,7 +202,7 @@ public class SecurePassthroughSession {
     }
 
     private void unsetCookie() {
-        spth.httpDelegator.getHttpClient().getCookieStore().removeAll();
+        spth.httpDelegator.getHttpClient().getHttpCookieStore().clear();
         this.cookie = "";
     }
 

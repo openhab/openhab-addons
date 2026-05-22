@@ -35,10 +35,10 @@ import javax.xml.transform.TransformerException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -419,23 +419,25 @@ public final class EcovacsApiImpl implements EcovacsApi {
         if (loginData == null) {
             throw new IllegalStateException("Not logged in");
         }
-        return httpClient.newRequest(url).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + loginData.getToken()) //
-                .header("token", loginData.getToken()) //
-                .header("appid", configuration.getAppId()) //
-                .header("plat", configuration.getAppPlatform()) //
-                .header("userid", loginData.getUserId()) //
-                .header("user-agent", configuration.getAppUserAgent()) //
-                .header("v", configuration.getAppVersion()) //
-                .header("country", configuration.getCountry()) //
-                .header("sign", HashUtil.getSHA256Hash(signContent)) //
-                .header("signType", "sha256") //
+        return httpClient.newRequest(url).method(HttpMethod.GET).headers(h -> {
+            h.add("Authorization", "Bearer " + loginData.getToken());
+            h.add("token", loginData.getToken());
+            h.add("appid", configuration.getAppId());
+            h.add("plat", configuration.getAppPlatform());
+            h.add("userid", loginData.getUserId());
+            h.add("user-agent", configuration.getAppUserAgent());
+            h.add("v", configuration.getAppVersion());
+            h.add("country", configuration.getCountry());
+            h.add("sign", HashUtil.getSHA256Hash(signContent));
+            h.add("signType", "sha256");
+        }) //
                 .param("et1", timestamp);
     }
 
     private Request createJsonRequest(String url, Object data) {
-        return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(gson.toJson(data)));
+        return httpClient.newRequest(url).method(HttpMethod.POST)
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(gson.toJson(data)));
     }
 
     private ContentResponse executeRequest(Request request) throws EcovacsApiException, InterruptedException {

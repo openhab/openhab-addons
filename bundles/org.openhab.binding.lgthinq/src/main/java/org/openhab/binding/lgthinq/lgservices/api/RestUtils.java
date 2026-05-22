@@ -28,20 +28,20 @@ import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.core.i18n.CommunicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link RestUtils} rest utilities
@@ -102,7 +102,7 @@ public class RestUtils {
             params.forEach(request::param);
         }
         if (headers != null) {
-            headers.forEach(request::header);
+            request.headers(h -> headers.forEach(h::add));
         }
 
         if (LOGGER.isTraceEnabled()) {
@@ -123,7 +123,7 @@ public class RestUtils {
     @Nullable
     public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
             String jsonData) {
-        return postCall(httpClient, encodedUrl, headers, new StringContentProvider(jsonData));
+        return postCall(httpClient, encodedUrl, headers, new StringRequestContent(jsonData));
     }
 
     @Nullable
@@ -131,19 +131,19 @@ public class RestUtils {
             Map<String, String> formParams) {
         Fields fields = new Fields();
         formParams.forEach(fields::put);
-        return postCall(httpClient, encodedUrl, headers, new FormContentProvider(fields));
+        return postCall(httpClient, encodedUrl, headers, new FormRequestContent(fields));
     }
 
     @Nullable
     private static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
-            ContentProvider contentProvider) {
+            Request.Content requestContent) {
         try {
-            Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider).timeout(10,
+            Request request = httpClient.newRequest(encodedUrl).method("POST").body(requestContent).timeout(10,
                     TimeUnit.SECONDS);
-            headers.forEach(request::header);
+            request.headers(h -> headers.forEach(h::add));
             LOGGER.trace("POST request to URI: {}", request.getURI());
 
-            ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
+            ContentResponse response = request.send();
 
             LOGGER.trace("POST response: {}", response.getContentAsString());
 

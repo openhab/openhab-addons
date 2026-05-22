@@ -14,9 +14,9 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * A helper class for receiving {@link EmotivaSubscriptionDTO} messages.

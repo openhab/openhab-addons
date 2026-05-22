@@ -30,12 +30,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FutureResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.telegram.internal.TelegramHandler;
@@ -110,7 +110,7 @@ public class TelegramActions implements ThingActions {
         @Override
         public void apply(@Nullable Request request) {
             if (request != null) {
-                request.header(this.header, this.value);
+                request.headers(h -> h.add(this.header, this.value));
             }
         }
 

@@ -34,18 +34,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FutureResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.twilio.internal.api.TwilioApiClient;
 import org.openhab.binding.twilio.internal.api.TwilioSignatureValidator;
@@ -57,11 +51,17 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link TwilioCallbackServlet} receives webhook callbacks from Twilio

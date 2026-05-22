@@ -16,6 +16,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.removeAllMappings;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -29,6 +30,8 @@ import org.openhab.core.test.TestPortUtil;
 import org.openhab.core.test.java.JavaTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.TemplateEngine;
 
 /**
  * The {@link AbstractWireMockTest} implements tests for the {@link RateLimitedHttpClient}
@@ -46,7 +49,12 @@ public abstract class AbstractWireMockTest extends JavaTest {
     public void initAll() throws Exception {
         port = TestPortUtil.findFreePort();
 
+<<<<<<< HEAD
         wireMockServer = new WireMockServer(options().port(port).globalTemplating(false));
+=======
+        wireMockServer = new WireMockServer(options().port(port).extensions(
+                new ResponseTemplateTransformer(TemplateEngine.defaultTemplateEngine(), false, null, List.of())));
+>>>>>>> 928cfad2bb (Migrate to Jakarta EE 10: Jetty 12, Jersey 3.x, Karaf 4.5)
         wireMockServer.start();
 
         httpClient = new HttpClient();

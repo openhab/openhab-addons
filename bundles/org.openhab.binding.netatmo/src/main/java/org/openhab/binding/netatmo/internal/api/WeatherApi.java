@@ -18,8 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
@@ -27,6 +25,8 @@ import org.openhab.binding.netatmo.internal.api.dto.MeasureBodyElem;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain.StationDataResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Base class for all Weather related endpoints

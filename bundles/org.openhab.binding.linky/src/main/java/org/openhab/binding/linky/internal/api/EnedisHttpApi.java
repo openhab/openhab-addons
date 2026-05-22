@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.linky.internal.api;
 
-import java.net.HttpCookie;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Objects;
@@ -21,10 +20,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -74,21 +74,20 @@ public class EnedisHttpApi {
         this.linkyBridgeHandler = linkyBridgeHandler;
     }
 
-    public FormContentProvider getFormContent(String fieldName, String fieldValue) {
+    public FormRequestContent getFormContent(String fieldName, String fieldValue) {
         Fields fields = new Fields();
         fields.put(fieldName, fieldValue);
-        return new FormContentProvider(fields);
+        return new FormRequestContent(fields);
     }
 
     public void addCookie(String key, String value) {
-        HttpCookie cookie = new HttpCookie(key, value);
-        cookie.setDomain(BridgeRemoteEnedisWebHandler.ENEDIS_DOMAIN);
-        cookie.setPath("/");
-        httpClient.getCookieStore().add(BridgeRemoteEnedisWebHandler.COOKIE_URI, cookie);
+        HttpCookie cookie = HttpCookie.build(key, value).domain(BridgeRemoteEnedisWebHandler.ENEDIS_DOMAIN).path("/")
+                .build();
+        httpClient.getHttpCookieStore().add(BridgeRemoteEnedisWebHandler.COOKIE_URI, cookie);
     }
 
     public void removeAllCookie() {
-        httpClient.getCookieStore().removeAll();
+        httpClient.getHttpCookieStore().clear();
     }
 
     public String getLocation(ContentResponse response) {
@@ -111,8 +110,8 @@ public class EnedisHttpApi {
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
             request = request.method(HttpMethod.GET);
             if (!token.isEmpty()) {
-                request = request.header("Authorization", "" + token);
-                request = request.header("Accept", "application/json");
+                request.headers(h -> h.add("Authorization", "" + token));
+                request.headers(h -> h.add("Accept", "application/json"));
             }
 
             ContentResponse result = request.send();

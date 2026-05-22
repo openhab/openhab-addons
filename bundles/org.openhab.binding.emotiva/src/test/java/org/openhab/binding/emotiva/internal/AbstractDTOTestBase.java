@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.emotiva.internal;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Abstract helper class for unit tests.

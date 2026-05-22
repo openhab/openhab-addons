@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.devices.Bridge;
@@ -234,28 +234,26 @@ public class UniFiProtectPrivateWebSocket {
     /**
      * WebSocket adapter to handle messages
      */
-    private class UniFiWebSocketAdapter extends WebSocketAdapter {
+    private class UniFiWebSocketAdapter implements Session.Listener.AutoDemanding {
 
         @Override
-        public void onWebSocketConnect(Session session) {
-            super.onWebSocketConnect(session);
+        public void onWebSocketOpen(Session session) {
             logger.debug("WebSocket session connected");
         }
 
         @Override
-        public void onWebSocketBinary(byte[] payload, int offset, int len) {
+        public void onWebSocketBinary(ByteBuffer payload, Callback callback) {
             try {
-                ByteBuffer buffer = ByteBuffer.wrap(payload, offset, len);
-                parseWebSocketPacket(buffer);
+                parseWebSocketPacket(payload.slice());
             } catch (Exception e) {
                 logger.debug("Error parsing WebSocket binary message", e);
             }
+            callback.succeed();
         }
 
         @Override
         public void onWebSocketText(String message) {
             try {
-                // Sometimes we might get text messages too
                 logger.trace("WebSocket Text Message: {}", message);
                 JsonObject json = JsonParser.parseString(message).getAsJsonObject();
                 processUpdate(json);

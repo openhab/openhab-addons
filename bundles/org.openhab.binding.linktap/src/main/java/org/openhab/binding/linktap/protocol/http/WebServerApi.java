@@ -33,16 +33,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLHandshakeException;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.jsoup.Jsoup;
@@ -56,6 +54,9 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link WebServerApi} defines interactions with the web server interface.
@@ -482,7 +483,7 @@ public final class WebServerApi {
             fields.put(FIELD_ADMIN_USER, username);
             fields.put(FIELD_ADMIN_USER_PWD, password);
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname + "/login.shtml")
-                    .method(HttpMethod.POST).content(new FormContentProvider(fields));
+                    .method(HttpMethod.POST).body(new FormRequestContent(fields));
 
             final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
@@ -528,7 +529,7 @@ public final class WebServerApi {
             final InetAddress address = InetAddress.getByName(hostname);
             logger.trace("API Endpoint: {}", URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
             final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml")
-                    .content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
+                    .body(new StringRequestContent(REQ_HDR_APPLICATION_JSON, requestBody));
 
             final ContentResponse cr = addTraceListener(request).timeout(timeoutSeconds, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
@@ -578,7 +579,7 @@ public final class WebServerApi {
         }
     }
 
-    private org.eclipse.jetty.client.api.Request addTraceListener(final Request request) {
+    private Request addTraceListener(final Request request) {
         if (logger.isTraceEnabled()) {
             return request.onRequestQueued(jettyTraceListener).onRequestBegin(jettyTraceListener)
                     .onRequestSuccess(jettyTraceListener).onRequestFailure(jettyTraceListener);
