@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.lgwebos.internal.handler;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -99,7 +99,7 @@ public class LGWebOSTVMouseSocket {
         try {
             this.client.connect(this, destUri);
             logger.debug("Connecting to: {}", destUri);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn("Unable to connect.", e);
             setState(State.DISCONNECTED);
         }
@@ -122,9 +122,9 @@ public class LGWebOSTVMouseSocket {
         this.session = null;
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
-        logger.debug("WebSocket Connected to: {}", session.getRemoteAddress().getAddress());
+        logger.debug("WebSocket Connected");
         this.session = session;
         setState(State.CONNECTED);
     }
@@ -146,12 +146,12 @@ public class LGWebOSTVMouseSocket {
         try {
             if (s != null) {
                 logger.debug("Message [out]: {}", msg);
-                s.getRemote().sendString(msg);
+                s.sendText(msg, Callback.NOOP);
             } else {
                 logger.warn("No Connection to TV, skipping [out]: {}", msg);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Unable to send message.", e);
         }
     }

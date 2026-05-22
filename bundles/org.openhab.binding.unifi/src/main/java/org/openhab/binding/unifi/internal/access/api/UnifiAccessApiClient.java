@@ -34,20 +34,16 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.client.io.UpgradeListener;
 import org.openhab.binding.unifi.internal.access.dto.Device;
 import org.openhab.binding.unifi.internal.access.dto.DeviceAccessMethodSettings;
 import org.openhab.binding.unifi.internal.access.dto.Door;
@@ -59,6 +55,7 @@ import org.openhab.binding.unifi.internal.access.dto.Notification;
 import org.openhab.binding.unifi.internal.access.dto.UnifiAccessApiException;
 import org.openhab.binding.unifi.internal.api.UniFiException.AuthState;
 import org.openhab.binding.unifi.internal.api.UniFiSession;
+import org.openhab.binding.unifi.internal.api.UniFiWebSocketUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -924,88 +921,98 @@ public final class UnifiAccessApiClient implements Closeable {
             req.setHeader("Upgrade", "websocket");
             req.setHeader("Connection", "Upgrade");
 
-            WebSocketAdapter socket = new WebSocketAdapter() {
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketConnect(Session sess) {
-                    super.onWebSocketConnect(sess);
-                    logger.debug("Notifications WebSocket connected: {}", wsUri);
-                    wsSession = sess;
-                    try {
-                        onOpen.run();
-                    } catch (Exception ignored) {
-                    }
-                    lastHeartbeatEpochMs = System.currentTimeMillis();
-                }
+            Session.Listener.AutoDemanding socket = new NotificationsListener(wsUri, onOpen, onMessage, onError);
 
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketText(String message) {
-                    try {
-                        if (message != null && !message.isEmpty()) {
-                            if (message.charAt(0) == '"') {
-                                lastHeartbeatEpochMs = System.currentTimeMillis();
-                                logger.trace("Notifications heartbeat received: {}", message.trim());
-                                return;
-                            } else {
-                                Notification note = gson.fromJson(message, Notification.class);
-                                if (note != null) {
-                                    onMessage.accept(note);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.debug("Notifications handler failed: {}", e.getMessage());
-                        try {
-                            if (!closed) {
-                                onError.accept(e);
-                            }
-                        } catch (Exception callbackEx) {
-                            logger.debug("Error in onError callback: {}", callbackEx.getMessage());
-                        }
-                    }
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketError(Throwable cause) {
-                    logger.debug("Notifications WebSocket error: {}", cause.getMessage(), cause);
-                    try {
-                        onError.accept(cause);
-                    } catch (Exception callbackEx) {
-                        logger.debug("Error in onError callback: {}", callbackEx.getMessage());
-                    }
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onWebSocketClose(int statusCode, String reason) {
-                    logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
-                    stopWsMonitor();
-                    notifyClosedOnce(statusCode, reason != null ? reason : "");
-                }
-            };
-
-            // The upgrade HTTP status is delivered here directly; a 401 means an expired session cookie.
-            UpgradeListener upgradeListener = new UpgradeListener() {
-                @Override
-                @NonNullByDefault({})
-                public void onHandshakeRequest(UpgradeRequest request) {
-                }
-
-                @Override
-                @NonNullByDefault({})
-                public void onHandshakeResponse(UpgradeResponse response) {
-                    int status = response.getStatusCode();
-                    logger.debug("Notifications WebSocket upgrade response: {}", status);
-                    if (allowReauth && status == HttpStatus.UNAUTHORIZED_401) {
+            // In Jetty 12 UpgradeListener was removed; a failed upgrade (e.g. HTTP 401) surfaces as an
+            // exceptional completion of the Future returned by connect().
+            wsClient.connect(socket, wsUri, req).whenComplete((session, throwable) -> {
+                if (throwable != null) {
+                    logger.debug("Notifications WebSocket upgrade failed: {}", throwable.getMessage());
+                    if (allowReauth && UniFiWebSocketUtil.isUnauthorizedUpgrade(throwable)) {
                         executorService.execute(() -> reauthenticateAndReconnect(onOpen, onMessage, onError));
                     }
                 }
-            };
-            wsClient.connect(socket, wsUri, req, upgradeListener);
+            });
         } catch (IOException e) {
             throw new UnifiAccessApiException("WebSocket connect failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Listener for the notifications WebSocket. A named public class, as Jetty 12 looks up the callbacks via
+     * {@code MethodHandles.publicLookup()}, which cannot access anonymous classes.
+     */
+    public class NotificationsListener implements Session.Listener.AutoDemanding {
+        private final URI wsUri;
+        private final Runnable onOpen;
+        private final Consumer<Notification> onMessage;
+        private final Consumer<Throwable> onError;
+
+        NotificationsListener(URI wsUri, Runnable onOpen, Consumer<Notification> onMessage,
+                Consumer<Throwable> onError) {
+            this.wsUri = wsUri;
+            this.onOpen = onOpen;
+            this.onMessage = onMessage;
+            this.onError = onError;
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketOpen(Session sess) {
+            logger.debug("Notifications WebSocket connected: {}", wsUri);
+            wsSession = sess;
+            try {
+                onOpen.run();
+            } catch (Exception ignored) {
+            }
+            lastHeartbeatEpochMs = System.currentTimeMillis();
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketText(String message) {
+            try {
+                if (message != null && !message.isEmpty()) {
+                    if (message.charAt(0) == '"') {
+                        lastHeartbeatEpochMs = System.currentTimeMillis();
+                        logger.trace("Notifications heartbeat received: {}", message.trim());
+                        return;
+                    } else {
+                        Notification note = gson.fromJson(message, Notification.class);
+                        if (note != null) {
+                            onMessage.accept(note);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Notifications handler failed: {}", e.getMessage());
+                try {
+                    if (!closed) {
+                        onError.accept(e);
+                    }
+                } catch (Exception callbackEx) {
+                    logger.debug("Error in onError callback: {}", callbackEx.getMessage());
+                }
+            }
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketError(Throwable cause) {
+            logger.debug("Notifications WebSocket error: {}", cause.getMessage(), cause);
+            try {
+                onError.accept(cause);
+            } catch (Exception callbackEx) {
+                logger.debug("Error in onError callback: {}", callbackEx.getMessage());
+            }
+        }
+
+        @Override
+        @NonNullByDefault({})
+        public void onWebSocketClose(int statusCode, String reason) {
+            logger.debug("Notifications WebSocket closed: {} - {}", statusCode, reason);
+            stopWsMonitor();
+            notifyClosedOnce(statusCode, reason != null ? reason : "");
         }
     }
 
@@ -1058,12 +1065,12 @@ public final class UnifiAccessApiClient implements Closeable {
             throws UnifiAccessApiException {
         try {
             URI uri = baseUri(path);
-            Request req = httpClient.newRequest(uri).method(HttpMethod.POST)
-                    .header(HttpHeader.ACCEPT, "application/json").header("X-API-KEY", token)
-                    .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request req = httpClient.newRequest(uri).method(HttpMethod.POST).headers(h -> {
+                h.add(HttpHeader.ACCEPT, "application/json");
+                h.add("X-API-KEY", token);
+            }).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (body != null) {
-                req.header(HttpHeader.CONTENT_TYPE, "application/json");
-                req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+                req.body(new StringRequestContent("application/json", body, StandardCharsets.UTF_8));
             }
             logger.debug("Developer POST {}", uri);
             ContentResponse resp = req.send();
@@ -1090,14 +1097,15 @@ public final class UnifiAccessApiClient implements Closeable {
     private Request newAuthenticatedRequest(HttpMethod method, String path, @Nullable String body)
             throws UnifiAccessApiException {
         URI uri = baseUri(path);
-        Request req = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, "application/json")
+        Request req = httpClient.newRequest(uri).method(method)
+                .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
                 .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         unifiSession.addAuthHeaders(req);
 
         if (body != null) {
-            req.header(HttpHeader.CONTENT_TYPE, "application/json");
-            req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+            req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+            req.body(new StringRequestContent(body, StandardCharsets.UTF_8));
         }
 
         logger.debug("{} {}", method, uri);

@@ -30,11 +30,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,7 +119,7 @@ public class ConnectionAuthAgentTest {
 
     @SuppressWarnings("null")
     private Response okJsonResponse(Request request) {
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.add("Content-Type", "application/json");
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);

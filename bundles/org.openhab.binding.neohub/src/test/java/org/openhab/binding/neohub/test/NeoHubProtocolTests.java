@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
@@ -79,7 +81,9 @@ public class NeoHubProtocolTests {
 
             SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
             sslContextFactory.setTrustAll(true);
-            HttpClient httpClient = new HttpClient(sslContextFactory);
+            ClientConnector clientConnector = new ClientConnector();
+            clientConnector.setSslContextFactory(sslContextFactory);
+            HttpClient httpClient = new HttpClient(new HttpClientTransportDynamic(clientConnector));
             WebSocketClient webSocketClient = new WebSocketClient(httpClient);
 
             WebSocketFactory webSocketFactory = mock(WebSocketFactory.class);

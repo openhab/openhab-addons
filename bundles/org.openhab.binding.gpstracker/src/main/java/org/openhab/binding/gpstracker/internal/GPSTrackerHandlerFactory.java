@@ -18,11 +18,10 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.ServletException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,14 +41,16 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
 
 /**
  * Main component
@@ -85,11 +86,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     private final LocationProvider locationProvider;
 
     /**
-     * HTTP service reference
-     */
-    private final HttpService httpService;
-
-    /**
      * Endpoint called by tracker applications
      */
     private @NonNullByDefault({}) OwnTracksCallbackServlet otHTTPEndpoint;
@@ -114,12 +110,13 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      */
     private final Set<String> regions = new HashSet<>();
 
+    private @Nullable ServiceRegistration<Servlet> ownTracksServletRegistration;
+    private @Nullable ServiceRegistration<Servlet> gpsLoggerServletRegistration;
+
     @Activate
-    public GPSTrackerHandlerFactory(final @Reference HttpService httpService, //
-            final @Reference TrackerDiscoveryService discoveryService, //
+    public GPSTrackerHandlerFactory(final @Reference TrackerDiscoveryService discoveryService, //
             final @Reference UnitProvider unitProvider, //
             final @Reference LocationProvider locationProvider) {
-        this.httpService = httpService;
         this.discoveryService = discoveryService;
         this.unitProvider = unitProvider;
         this.locationProvider = locationProvider;
@@ -173,19 +170,13 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
         super.activate(componentContext);
 
         logger.debug("Initializing callback servlets");
-        try {
-            otHTTPEndpoint = new OwnTracksCallbackServlet(discoveryService, this);
-            this.httpService.registerServlet(otHTTPEndpoint.getPath(), otHTTPEndpoint, null,
-                    this.httpService.createDefaultHttpContext());
-            logger.debug("Started GPSTracker Callback servlet on {}", otHTTPEndpoint.getPath());
+        otHTTPEndpoint = new OwnTracksCallbackServlet(discoveryService, this);
+        ownTracksServletRegistration = registerServlet(otHTTPEndpoint, otHTTPEndpoint.getPath());
+        logger.debug("Started GPSTracker Callback servlet on {}", otHTTPEndpoint.getPath());
 
-            glHTTPEndpoint = new GPSLoggerCallbackServlet(discoveryService, this);
-            this.httpService.registerServlet(glHTTPEndpoint.getPath(), glHTTPEndpoint, null,
-                    this.httpService.createDefaultHttpContext());
-            logger.debug("Started GPSTracker Callback servlet on {}", glHTTPEndpoint.getPath());
-        } catch (NamespaceException | ServletException e) {
-            logger.error("Could not start GPSTracker Callback servlet: {}", e.getMessage(), e);
-        }
+        glHTTPEndpoint = new GPSLoggerCallbackServlet(discoveryService, this);
+        gpsLoggerServletRegistration = registerServlet(glHTTPEndpoint, glHTTPEndpoint.getPath());
+        logger.debug("Started GPSTracker Callback servlet on {}", glHTTPEndpoint.getPath());
     }
 
     /**
@@ -197,13 +188,27 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     protected void deactivate(ComponentContext componentContext) {
         logger.debug("Deactivating GPSTracker Binding");
 
-        this.httpService.unregister(otHTTPEndpoint.getPath());
-        logger.debug("GPSTracker callback servlet stopped on {}", otHTTPEndpoint.getPath());
+        ServiceRegistration<Servlet> ownTracksServletRegistration = this.ownTracksServletRegistration;
+        if (ownTracksServletRegistration != null) {
+            ownTracksServletRegistration.unregister();
+            this.ownTracksServletRegistration = null;
+            logger.debug("GPSTracker callback servlet stopped on {}", otHTTPEndpoint.getPath());
+        }
 
-        this.httpService.unregister(glHTTPEndpoint.getPath());
-        logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
+        ServiceRegistration<Servlet> gpsLoggerServletRegistration = this.gpsLoggerServletRegistration;
+        if (gpsLoggerServletRegistration != null) {
+            gpsLoggerServletRegistration.unregister();
+            this.gpsLoggerServletRegistration = null;
+            logger.debug("GPSTracker callback servlet stopped on {}", glHTTPEndpoint.getPath());
+        }
 
         super.deactivate(componentContext);
+    }
+
+    private ServiceRegistration<Servlet> registerServlet(Servlet servlet, String pattern) {
+        Hashtable<String, Object> servletProperties = new Hashtable<>();
+        servletProperties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, pattern);
+        return bundleContext.registerService(Servlet.class, servlet, servletProperties);
     }
 
     @Override

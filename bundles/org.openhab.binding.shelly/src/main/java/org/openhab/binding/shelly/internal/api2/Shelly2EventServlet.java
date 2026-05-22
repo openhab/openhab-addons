@@ -19,20 +19,17 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.websocket.server.JettyServerUpgradeRequest;
+import org.eclipse.jetty.ee10.websocket.server.JettyServerUpgradeResponse;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketCreator;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
-import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -45,6 +42,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
  * {@link Shelly2EventServlet} implements the WebSocket callback for Gen2 devices
  *
@@ -53,7 +56,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @WebServlet(name = "Shelly2EventServlet", urlPatterns = { SHELLY2_CALLBACK_URI })
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class Shelly2EventServlet extends WebSocketServlet {
+public class Shelly2EventServlet extends JettyWebSocketServlet {
     private static final long serialVersionUID = -1210354558091063207L;
     private final Logger logger = LoggerFactory.getLogger(Shelly2EventServlet.class);
 
@@ -84,6 +87,16 @@ public class Shelly2EventServlet extends WebSocketServlet {
         }
     }
 
+    @Override
+    public void init() throws ServletException {
+        // The OSGi Servlet Whiteboard does not run Jetty's JettyWebSocketServletContainerInitializer, so the
+        // WebSocket components and container JettyWebSocketServlet.init() relies on must be created here
+        ServletContextHandler context = ServletContextHandler.getServletContextHandler(getServletContext());
+        WebSocketServerComponents.ensureWebSocketComponents(context.getServer(), context);
+        JettyWebSocketServerContainer.ensureContainer(getServletContext());
+        super.init();
+    }
+
     /**
      * Servlet handler. WebSocket call.
      */
@@ -109,15 +122,12 @@ public class Shelly2EventServlet extends WebSocketServlet {
      * WebSocket: register Shelly2RpcSocket class
      */
     @Override
-    public void configure(@Nullable WebSocketServletFactory factory) {
-        if (factory != null) {
-            factory.getPolicy().setIdleTimeout(SHELLY_API_TIMEOUT_MS);
-            factory.setCreator(new Shelly2WebSocketCreator(thingTable, webSocketClient));
-            factory.register(Shelly2RpcSocket.class);
-        }
+    @org.eclipse.jdt.annotation.NonNullByDefault({})
+    public void configure(JettyWebSocketServletFactory factory) {
+        factory.addMapping("/*", new Shelly2WebSocketCreator(thingTable, webSocketClient));
     }
 
-    public static class Shelly2WebSocketCreator implements WebSocketCreator {
+    public static class Shelly2WebSocketCreator implements JettyWebSocketCreator {
         private final Logger logger = LoggerFactory.getLogger(Shelly2WebSocketCreator.class);
 
         private final ShellyThingTable thingTable;
@@ -133,9 +143,11 @@ public class Shelly2EventServlet extends WebSocketServlet {
         }
 
         @Override
-        public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
+        public Object createWebSocket(@Nullable JettyServerUpgradeRequest req,
+                @Nullable JettyServerUpgradeResponse resp) throws IOException {
             if (logger.isDebugEnabled()) {
-                logger.debug("WebSocket: Inbound servlet request from {}", req != null ? req.getRemoteHostName() : "");
+                logger.debug("WebSocket: Inbound servlet request from {}",
+                        req != null ? req.getHttpServletRequest().getRemoteHost() : "");
             }
             return new Shelly2RpcSocket(thingTable, true, webSocketClient, scheduler);
         }

@@ -22,9 +22,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollError;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;

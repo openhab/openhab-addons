@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sedif.internal.api;
 
-import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -28,10 +27,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -150,7 +150,7 @@ public class SedifHttpApi {
         // =====================================================================
         // Step 5: Get cookie auth
         // =====================================================================
-        List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+        List<HttpCookie> lCookie = httpClient.getHttpCookieStore().all();
         token = "";
         for (HttpCookie cookie : lCookie) {
             if (cookie.getName().startsWith("__Host-ERIC_")) {
@@ -189,7 +189,7 @@ public class SedifHttpApi {
     }
 
     public void removeAllCookie() {
-        httpClient.getCookieStore().removeAll();
+        httpClient.getHttpCookieStore().clear();
     }
 
     public String getContent(String url) throws SedifException {
@@ -242,7 +242,7 @@ public class SedifHttpApi {
                 String msg = getActionPayload(cmd);
                 fields.put("message", msg);
 
-                request = request.content(new FormContentProvider(fields));
+                request = request.body(new FormRequestContent(fields));
             }
 
             ContentResponse result = request.send();

@@ -21,8 +21,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -60,6 +58,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Various utility functions used by the NEEO Integration

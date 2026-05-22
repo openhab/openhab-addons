@@ -30,15 +30,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeException;
+import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
+import org.eclipse.jetty.websocket.api.exceptions.UpgradeException;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -144,7 +145,7 @@ public class Websocket extends RestApi {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
-                localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.NOOP);
                 logger.trace("Sent acknowledge {}", message.getMsgCase());
             } catch (IOException e) {
                 logger.warn("Error sending acknowledge {} : {}", Utils.maskVinsIn(message.getAllFields().toString()),
@@ -223,7 +224,7 @@ public class Websocket extends RestApi {
                 message.writeTo(baos);
                 Session localSession = session;
                 if (localSession != null) {
-                    localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                    localSession.sendBinary(ByteBuffer.wrap(baos.toByteArray()), Callback.NOOP);
                     logger.trace("Send Message {} done", Utils.maskVinsIn(message.getAllFields().toString()));
                     return true;
                 } else {
@@ -246,7 +247,7 @@ public class Websocket extends RestApi {
         if (!disposed && webSocketClient == null) {
             WebSocketClient localWebSocketClient = new WebSocketClient(httpClient);
             try {
-                localWebSocketClient.setMaxIdleTimeout(WS_IDLE_TIMEOUT_MS);
+                localWebSocketClient.setIdleTimeout(Duration.ofMillis(WS_IDLE_TIMEOUT_MS));
                 ClientUpgradeRequest request = getClientUpgradeRequest();
                 String websocketURL = Utils.getWebsocketServer(config.region);
                 logger.trace("Websocket start {} max message size {}", websocketURL,
@@ -350,7 +351,7 @@ public class Websocket extends RestApi {
         Session localSession = session;
         if (localSession != null) {
             // close session normally
-            localSession.close(1000, "Client shutdown");
+            localSession.close(StatusCode.NORMAL, "Client shutdown", Callback.NOOP);
         }
     }
 
@@ -385,17 +386,13 @@ public class Websocket extends RestApi {
     void sendPing() {
         Session localSession = session;
         if (localSession != null) {
-            try {
-                // keep the timestamp of a still-outstanding ping - handlePong() clears it once answered
-                pingSentAt.compareAndSet(null, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.allocate(0));
-            } catch (IOException e) {
-                logger.warn("Websocket ping failed {}", e.getMessage());
-            }
+            // keep the timestamp of a still-outstanding ping - handlePong() clears it once answered
+            pingSentAt.compareAndSet(null, Instant.now());
+            localSession.sendPing(ByteBuffer.allocate(0), Callback.NOOP);
         }
     }
 
-    private void handlePong(Frame frame) {
+    private void handlePong() {
         if (pingSentAt.getAndSet(null) == null) {
             logger.trace("Websocket received pong without matching ping");
         }
@@ -411,20 +408,6 @@ public class Websocket extends RestApi {
         Instant sent = pingSentAt.get();
         // ">=" - Duration.toMillis() truncates, so the boundary itself must count as overdue
         return sent != null && Duration.between(sent, Instant.now()).toMillis() >= PONG_TIMEOUT_MS;
-    }
-
-    private void handlePing(Frame frame) {
-        Session localSession = session;
-        if (localSession != null) {
-            ByteBuffer buffer = frame.getPayload();
-            try {
-                localSession.getRemote().sendPong(buffer);
-            } catch (IOException e) {
-                logger.warn("Websocket onPing answer exception {}", e.getMessage());
-            }
-        } else {
-            logger.debug("Websocket onPing answer cannot be initiated");
-        }
     }
 
     private ClientUpgradeRequest getClientUpgradeRequest() {
@@ -449,7 +432,14 @@ public class Websocket extends RestApi {
      */
 
     @OnWebSocketMessage
-    public void onByteArray(byte[] blob, int offset, int length) {
+    public void onBinaryMessage(ByteBuffer payload, Callback callback) {
+        byte[] message = new byte[payload.remaining()];
+        payload.get(message);
+        callback.succeed();
+        onByteArray(message, 0, message.length);
+    }
+
+    void onByteArray(byte[] blob, int offset, int length) {
         try {
             byte[] message = blob;
             if (offset != 0) {
@@ -482,16 +472,12 @@ public class Websocket extends RestApi {
         }
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame) {
-        if (Frame.Type.PONG.equals(frame.getType())) {
-            handlePong(frame);
-        } else if (Frame.Type.PING.equals(frame.getType())) {
-            handlePing(frame);
-        }
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        handlePong();
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         this.session = session;
         state = WebsocketState.CONNECTED;

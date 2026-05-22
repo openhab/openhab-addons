@@ -16,30 +16,30 @@ import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBi
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.SLASH;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletUtils.filterOutMessage;
 
-import java.io.IOException;
 import java.io.Serial;
 import java.util.function.Consumer;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServlet;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServletFactory;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.ConfigurationUtils;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils;
 import org.openhab.binding.homeconnectdirect.internal.handler.BaseHomeConnectDirectHandler;
 import org.openhab.binding.homeconnectdirect.internal.handler.model.ApplianceMessage;
 import org.openhab.binding.homeconnectdirect.internal.servlet.model.MessageFilter;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -52,6 +52,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  *
  * Home Connect Direct web socket servlet. Proxy values from the appliance to the web console.
@@ -61,7 +66,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @WebServlet(urlPatterns = { SERVLET_WEB_SOCKET_PATTERN })
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
-public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
+public class HomeConnectDirectWebSocketServlet extends JettyWebSocketServlet {
 
     @Serial
     private static final long serialVersionUID = 3_406_770_341_849_696_274L;
@@ -83,8 +88,19 @@ public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
     }
 
     @Override
-    public void configure(@Nullable WebSocketServletFactory factory) {
+    public void init() throws ServletException {
+        // The OSGi Servlet Whiteboard does not run Jetty's JettyWebSocketServletContainerInitializer, so the
+        // WebSocket components and container JettyWebSocketServlet.init() relies on must be created here
+        ServletContextHandler context = ServletContextHandler.getServletContextHandler(getServletContext());
+        WebSocketServerComponents.ensureWebSocketComponents(context.getServer(), context);
+        JettyWebSocketServerContainer.ensureContainer(getServletContext());
+        super.init();
+    }
+
+    @Override
+    public void configure(@Nullable JettyWebSocketServletFactory factory) {
         if (factory != null) {
+            factory.setIdleTimeout(WebSocketFactory.DEFAULT_IDLE_TIMEOUT);
             factory.setCreator((servletUpgradeRequest, servletUpgradeResponse) -> {
 
                 if (!securityContext.isValidAuthorization(servletUpgradeRequest.getHttpServletRequest(),
@@ -152,7 +168,7 @@ public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
             this.filter = filter;
         }
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session session) {
             this.session = session;
             thingHandler.registerApplianceMessageListener(eventConsumer);
@@ -162,11 +178,7 @@ public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
         @OnWebSocketMessage
         public void onMessage(Session session, String message) {
             if (PING_MESSAGE.equals(message)) {
-                try {
-                    session.getRemote().sendString(PONG_MESSAGE);
-                } catch (IOException e) {
-                    logger.debug("Could not send PONG! error={}", e.getMessage());
-                }
+                session.sendText(PONG_MESSAGE, Callback.NOOP);
             }
         }
 
@@ -186,11 +198,8 @@ public class HomeConnectDirectWebSocketServlet extends WebSocketServlet {
         public void sendMessage(ApplianceMessage message) {
             var currentSession = this.session;
             if (currentSession != null && !filterOutMessage(message, filter)) {
-                try {
-                    currentSession.getRemote().sendString(gson.toJson(message));
-                } catch (IOException e) {
-                    logger.debug("Could not send web socket message! error={}", e.getMessage());
-                }
+                currentSession.sendText(gson.toJson(message), Callback.from(() -> {
+                }, failure -> logger.debug("Could not send web socket message! error={}", failure.getMessage())));
             }
         }
     }

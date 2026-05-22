@@ -21,16 +21,15 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -40,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * {@link Shelly2DebugLogSocket} connects to a Gen2+ device's dedicated {@code /debug/log} WebSocket endpoint
@@ -118,11 +119,11 @@ public class Shelly2DebugLogSocket {
             disconnected = true;
         }
         if (session != null && session.isOpen()) {
-            session.close(StatusCode.NORMAL, "Socket closed");
+            session.close(StatusCode.NORMAL, "Socket closed", Callback.NOOP);
         }
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         boolean abandoned;
         synchronized (this) {
@@ -134,12 +135,12 @@ public class Shelly2DebugLogSocket {
         }
         if (abandoned) {
             logger.debug("{}: Closing Debug Log WebSocket connected after disconnect", thingName);
-            session.close(StatusCode.NORMAL, "Socket closed");
+            session.close(StatusCode.NORMAL, "Socket closed", Callback.NOOP);
             return;
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("{}: Debug Log WebSocket connected {}<-{}", thingName, session.getLocalAddress(),
-                    session.getRemoteAddress());
+            logger.debug("{}: Debug Log WebSocket connected {}<-{}", thingName, session.getLocalSocketAddress(),
+                    session.getRemoteSocketAddress());
         }
     }
 

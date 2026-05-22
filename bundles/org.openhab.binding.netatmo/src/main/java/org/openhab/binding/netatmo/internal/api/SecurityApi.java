@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
@@ -33,6 +31,8 @@ import org.openhab.binding.netatmo.internal.api.dto.Ping;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Base class for all Security related endpoints
