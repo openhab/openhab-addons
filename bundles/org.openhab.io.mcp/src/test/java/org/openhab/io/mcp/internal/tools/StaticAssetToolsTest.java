@@ -29,9 +29,9 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +84,8 @@ class StaticAssetToolsTest {
     void setUp() throws Exception {
         Request r = requireNonNull(request);
         lenient().when(r.method(any(HttpMethod.class))).thenReturn(r);
-        lenient().when(r.header(anyString(), anyString())).thenReturn(r);
+        lenient().when(r.headers(any())).thenReturn(r);
+        lenient().when(r.accept(anyString())).thenReturn(r);
         lenient().when(r.timeout(anyLong(), any(TimeUnit.class))).thenReturn(r);
         lenient().when(r.send()).thenReturn(requireNonNull(response));
         lenient().when(httpClient.newRequest(any(URI.class))).thenReturn(r);

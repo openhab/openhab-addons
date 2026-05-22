@@ -20,12 +20,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -105,9 +105,9 @@ public class MeaterRestAPI {
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN) //
                     .method(HttpMethod.POST) //
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
-                    .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE) //
+                    .headers(h -> h.add(HttpHeader.ACCEPT, JSON_CONTENT_TYPE)) //
                     .agent(userAgent) //
-                    .content(new StringContentProvider(json), JSON_CONTENT_TYPE);
+                    .body(new StringRequestContent(JSON_CONTENT_TYPE, json));
 
             logger.trace("{}", request.toString());
 
@@ -140,9 +140,9 @@ public class MeaterRestAPI {
                     Request request = httpClient.newRequest(API_ENDPOINT + uri) //
                             .method(HttpMethod.GET) //
                             .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                            .header(HttpHeader.AUTHORIZATION, "Bearer " + authToken)
-                            .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE)
-                            .header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage())
+                            .headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + authToken))
+                            .headers(h -> h.add(HttpHeader.ACCEPT, JSON_CONTENT_TYPE))
+                            .headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage()))
                             .agent(userAgent);
 
                     ContentResponse response = request.send();

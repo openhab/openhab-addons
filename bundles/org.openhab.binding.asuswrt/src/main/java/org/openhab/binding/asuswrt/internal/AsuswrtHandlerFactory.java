@@ -53,13 +53,12 @@ public class AsuswrtHandlerFactory extends BaseThingHandlerFactory {
 
     public AsuswrtHandlerFactory() {
         // Set SslContextfactory
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        httpClient = new HttpClient();
+        SslContextFactory.Client sslContextFactory = httpClient.getSslContextFactory();
         if (HTTP_SSL_TRUST_ALL) {
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
         }
-        // Create new httpClient
-        httpClient = new HttpClient(sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
         httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);

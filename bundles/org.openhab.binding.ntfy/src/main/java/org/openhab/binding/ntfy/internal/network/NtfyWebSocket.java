@@ -15,9 +15,9 @@ package org.openhab.binding.ntfy.internal.network;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.openhab.binding.ntfy.internal.models.BaseEvent;
 import org.slf4j.Logger;
@@ -52,10 +52,10 @@ public class NtfyWebSocket {
      *
      * @param session the websocket session
      */
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         listener.connectionEstablished();
-        logger.debug("Connected to: {}", session.getRemoteAddress().getAddress());
+        logger.debug("Connected to: {}", session.getRemoteSocketAddress());
     }
 
     /**

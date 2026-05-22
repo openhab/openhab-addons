@@ -17,11 +17,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Unit tests for EmotivaBarNotify message type.

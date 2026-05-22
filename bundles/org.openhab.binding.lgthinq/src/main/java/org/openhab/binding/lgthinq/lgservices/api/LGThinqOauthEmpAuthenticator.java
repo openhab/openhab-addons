@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,6 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link LGThinqOauthEmpAuthenticator} main service to authenticate against LG Emp Server via Oauth

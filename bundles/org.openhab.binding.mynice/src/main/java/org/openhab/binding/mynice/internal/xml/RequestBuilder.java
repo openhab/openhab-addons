@@ -18,11 +18,11 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.UUID;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.xml.dto.CommandType;
 import org.openhab.binding.mynice.internal.xml.dto.T4Command;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * The {@link RequestBuilder} is responsible for building a string request from the CommandType

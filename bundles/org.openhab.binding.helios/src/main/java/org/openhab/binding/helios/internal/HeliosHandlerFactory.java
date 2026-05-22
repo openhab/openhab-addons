@@ -17,8 +17,6 @@ import static org.openhab.binding.helios.internal.HeliosBindingConstants.HELIOS_
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.openhab.binding.helios.internal.handler.HeliosHandler221;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -28,6 +26,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link HeliosHandlerFactory} is responsible for creating things and thing

@@ -15,12 +15,12 @@ package org.openhab.binding.amazonechocontrol.internal.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Answers.RETURNS_SELF;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -32,19 +32,22 @@ import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBui
 import java.net.CookieManager;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.HttpResponse;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.RequestParams;
@@ -125,8 +128,7 @@ public class HttpRequestBuilderTest {
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
 
-        HttpFields headers = new HttpFields();
-        headers.add("x-amzn-ErrorType", THROTTLING_ERROR_TYPE);
+        HttpFields headers = HttpFields.build().add("x-amzn-ErrorType", THROTTLING_ERROR_TYPE);
 
         CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
         RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
@@ -145,7 +147,7 @@ public class HttpRequestBuilderTest {
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
 
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.add("Location", "https://www.amazon.com/ap/cvf/request?arb=1");
 
         CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
@@ -164,7 +166,7 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
 
         verify(request).agent(BROWSER_USER_AGENT);
-        verify(request, never()).header(eq("User-Agent"), anyString());
+        assertThat(headersOf(request).get(HttpHeader.USER_AGENT), is(nullValue()));
     }
 
     @Test
@@ -174,7 +176,7 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("user-agent", BROWSER_USER_AGENT).send();
 
         verify(request).agent(BROWSER_USER_AGENT);
-        verify(request, never()).header(eq("user-agent"), anyString());
+        assertThat(headersOf(request).get(HttpHeader.USER_AGENT), is(nullValue()));
     }
 
     @Test
@@ -183,9 +185,8 @@ public class HttpRequestBuilderTest {
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("Accept-Language", "de-DE,de;q=0.9").send();
 
-        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "de-DE,de;q=0.9");
-        verify(request, never()).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
-        verify(request, never()).header(eq("Accept-Language"), anyString());
+        // a single value proves the custom one replaced the default instead of being added next to it
+        assertThat(headersOf(request).getValuesList(HttpHeader.ACCEPT_LANGUAGE), is(List.of("de-DE,de;q=0.9")));
     }
 
     @Test
@@ -195,7 +196,19 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
         verify(request).agent(contains("AmazonWebView"));
-        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+        assertThat(headersOf(request).get(HttpHeader.ACCEPT_LANGUAGE), is("en-US"));
+    }
+
+    /**
+     * Replays every header block the builder passed to {@link Request#headers} so the resulting fields can be
+     * asserted on. Jetty 12 has no {@code Request.header(String, String)} left to verify against.
+     */
+    private static HttpFields headersOf(Request request) {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.captor();
+        verify(request, atLeastOnce()).headers(captor.capture());
+        HttpFields.Mutable headers = HttpFields.build();
+        captor.getAllValues().forEach(block -> block.accept(headers));
+        return headers;
     }
 
     private HttpRequestBuilder requestBuilderFor(Request request) {

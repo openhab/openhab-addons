@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.lametrictime.internal.api.cloud;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lametrictime.internal.api.cloud.dto.IconFilter;
 import org.openhab.binding.lametrictime.internal.api.cloud.dto.Icons;
 import org.openhab.binding.lametrictime.internal.api.cloud.impl.LaMetricTimeCloudImpl;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Interface for LaMetric Time cloud.

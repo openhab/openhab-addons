@@ -13,7 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.api.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;

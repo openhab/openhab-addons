@@ -21,7 +21,6 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.miot.MiotParseException;
@@ -75,7 +74,7 @@ public class MiotJsonFileCreator {
             LOGGER.info("Processing: {}", model);
             HttpClient httpClient = null;
             try {
-                httpClient = new HttpClient(new SslContextFactory.Client());
+                httpClient = new HttpClient();
                 httpClient.setFollowRedirects(false);
                 httpClient.start();
                 miotParser = MiotParser.parse(model, httpClient);

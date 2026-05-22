@@ -27,10 +27,10 @@ import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.OpenSprinklerState;
@@ -410,11 +410,11 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         }
 
         private Request withGeneralProperties(Request request) {
-            request.header(HttpHeader.USER_AGENT, USER_AGENT);
+            request.headers(h -> h.add(HttpHeader.USER_AGENT, USER_AGENT));
             if (!config.basicUsername.isEmpty() && !config.basicPassword.isEmpty()) {
                 String encoded = Base64.getEncoder().encodeToString(
                         (config.basicUsername + ":" + config.basicPassword).getBytes(StandardCharsets.UTF_8));
-                request.header(HttpHeader.AUTHORIZATION, "Basic " + encoded);
+                request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Basic " + encoded));
             }
             return request;
         }
@@ -433,7 +433,7 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             ContentResponse response;
             try {
                 response = withGeneralProperties(httpClient.newRequest(url)).method(HttpMethod.POST)
-                        .content(new StringContentProvider(urlParameters)).send();
+                        .body(new StringRequestContent(urlParameters)).send();
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }

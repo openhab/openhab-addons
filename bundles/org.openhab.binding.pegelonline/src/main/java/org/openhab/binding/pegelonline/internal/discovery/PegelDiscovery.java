@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.pegelonline.internal.dto.Station;
 import org.openhab.binding.pegelonline.internal.handler.PegelOnlineHandler;
 import org.openhab.binding.pegelonline.internal.utils.Utils;

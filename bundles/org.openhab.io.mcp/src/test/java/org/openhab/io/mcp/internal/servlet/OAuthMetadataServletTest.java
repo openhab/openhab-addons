@@ -15,12 +15,12 @@ package org.openhab.io.mcp.internal.servlet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.io.mcp.internal.McpCloudWebhookService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Tests that {@link OAuthMetadataServlet} advertises URLs matching the route a request

@@ -24,9 +24,9 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -62,7 +62,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         Request request = httpClient.newRequest(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.headers(h -> h.add(HttpHeader.ACCEPT_ENCODING, "gzip"));
         logger.trace("Sending WLED GET:{}", url);
         try {
             ContentResponse contentResponse = request.send();

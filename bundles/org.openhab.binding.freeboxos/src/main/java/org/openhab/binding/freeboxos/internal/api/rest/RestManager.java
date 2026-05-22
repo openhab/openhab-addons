@@ -17,13 +17,13 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Base class for the various rest managers available through the API

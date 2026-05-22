@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
@@ -86,12 +86,15 @@ final class ThirdGenerationHttpHelper {
             @Nullable String sessionId) throws InterruptedException, TimeoutException, ExecutionException {
         Request response = httpClient.newRequest(String.format("%s/%s%s", url, WEB_API, resource), 80).scheme("http")
                 .agent("Jetty HTTP client").version(HttpVersion.HTTP_1_1).method(HttpMethod.POST)
-                .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.CONTENT_TYPE, "application/json")
                 .timeout(5, TimeUnit.SECONDS);
-        response.content(new StringContentProvider(parameters.toString()));
-        if (sessionId != null) {
-            response.header(HttpHeader.AUTHORIZATION, String.format("Session %s", sessionId));
-        }
+        response.headers(headers -> {
+            headers.put(HttpHeader.ACCEPT, "application/json");
+            headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+            if (sessionId != null) {
+                headers.put(HttpHeader.AUTHORIZATION, String.format("Session %s", sessionId));
+            }
+        });
+        response.body(new StringRequestContent(parameters.toString()));
         return response.send();
     }
 
@@ -128,11 +131,14 @@ final class ThirdGenerationHttpHelper {
             @Nullable String sessionId) throws InterruptedException, TimeoutException, ExecutionException {
         Request response = httpClient.newRequest(String.format("%s/%s%s", url, WEB_API, resource), 80).scheme("http")
                 .agent("Jetty HTTP client").version(HttpVersion.HTTP_1_1).method(HttpMethod.GET)
-                .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.CONTENT_TYPE, "application/json")
                 .timeout(5, TimeUnit.SECONDS);
-        if (sessionId != null) {
-            response.header(HttpHeader.AUTHORIZATION, String.format("Session %s", sessionId));
-        }
+        response.headers(headers -> {
+            headers.put(HttpHeader.ACCEPT, "application/json");
+            headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+            if (sessionId != null) {
+                headers.put(HttpHeader.AUTHORIZATION, String.format("Session %s", sessionId));
+            }
+        });
         return response.send();
     }
 

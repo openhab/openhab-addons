@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.deutschebahn.internal.timetable;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.HttpCallable;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Factory for {@link TimetablesV1Api}.
