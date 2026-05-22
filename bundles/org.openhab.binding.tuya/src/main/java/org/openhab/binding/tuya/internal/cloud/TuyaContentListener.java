@@ -17,10 +17,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -41,6 +41,7 @@ public class TuyaContentListener extends BufferingResponseListener {
     }
 
     @Override
+    @org.eclipse.jdt.annotation.NonNullByDefault({})
     public void onComplete(Result result) {
         Response response = result.getResponse();
         if (logger.isTraceEnabled()) {
@@ -48,8 +49,8 @@ public class TuyaContentListener extends BufferingResponseListener {
         }
         Request request = result.getRequest();
         if (result.isFailed()) {
-            logger.debug("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(),
-                    request.getMethod(), request.getContent(), result.getFailure().getMessage());
+            logger.debug("Requesting '{}' (method='{}') failed: {}", request.getURI(), request.getMethod(),
+                    result.getFailure().getMessage());
             future.completeExceptionally(new ConnectionException("Request failed " + result.getFailure().getMessage()));
         } else {
             switch (response.getStatus()) {
@@ -69,8 +70,8 @@ public class TuyaContentListener extends BufferingResponseListener {
                     }
                     break;
                 default:
-                    logger.debug("Requesting '{}' (method='{}', content='{}') failed: {} {}", request.getURI(),
-                            request.getMethod(), request.getContent(), response.getStatus(), response.getReason());
+                    logger.debug("Requesting '{}' (method='{}') failed: {} {}", request.getURI(), request.getMethod(),
+                            response.getStatus(), response.getReason());
                     future.completeExceptionally(
                             new ConnectionException("Invalid status code " + response.getStatus()));
             }

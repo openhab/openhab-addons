@@ -22,9 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +39,13 @@ import org.slf4j.LoggerFactory;
  * @author Nick Waterton - refactoring
  */
 @NonNullByDefault
-class WebSocketBase extends WebSocketAdapter {
+@WebSocket
+class WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
     final RemoteControllerWebSocket remoteControllerWebSocket;
     final int bufferSize = 1048576; // 1 Mb
+
+    protected @Nullable Session session;
 
     private Optional<Future<?>> sessionFuture = Optional.empty();
     private volatile Optional<ScheduledFuture<?>> pingJob = Optional.empty();
@@ -57,10 +64,19 @@ class WebSocketBase extends WebSocketAdapter {
         this.className = this.getClass().getSimpleName();
     }
 
-    @Override
+    public boolean isConnected() {
+        Session s = session;
+        return s != null && s.isOpen();
+    }
+
+    protected @Nullable Session getSession() {
+        return session;
+    }
+
+    @OnWebSocketClose
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
+        this.session = null;
         logger.debug("{}: {} connection closed: {} - {}", host, className, statusCode, reason);
-        super.onWebSocketClose(statusCode, reason);
         stopPing();
         if (statusCode == 1001) {
             // timeout
@@ -72,10 +88,9 @@ class WebSocketBase extends WebSocketAdapter {
         }
     }
 
-    @Override
+    @OnWebSocketError
     public void onWebSocketError(@Nullable Throwable error) {
         logger.debug("{}: {} connection error {}", host, className, error != null ? error.getMessage() : "");
-        super.onWebSocketError(error);
     }
 
     void reconnect() {
@@ -118,23 +133,20 @@ class WebSocketBase extends WebSocketAdapter {
         }
     }
 
-    @Override
+    @OnWebSocketOpen
     public void onWebSocketConnect(@Nullable Session session) {
+        this.session = session;
         logger.debug("{}: {} connection established: {}", host, className,
-                session != null ? session.getRemoteAddress().getHostString() : "");
+                session != null ? session.getRemoteSocketAddress().toString() : "");
         if (session != null) {
-            final WebSocketPolicy currentPolicy = session.getPolicy();
-            currentPolicy.setInputBufferSize(bufferSize);
-            currentPolicy.setMaxTextMessageSize(bufferSize);
-            currentPolicy.setMaxBinaryMessageSize(bufferSize);
             logger.trace("{}: {} Buffer Size set to {} Mb", host, className,
                     Math.round((bufferSize / 1048576.0) * 100.0) / 100.0);
             // avoid 5 minute idle timeout
             stopPing();
+            final Session s = session;
             pingJob = Optional.of(remoteControllerWebSocket.callback.handler.getScheduler()
-                    .scheduleWithFixedDelay(() -> sendPing(session), 4, 4, TimeUnit.MINUTES));
+                    .scheduleWithFixedDelay(() -> sendPing(s), 4, 4, TimeUnit.MINUTES));
         }
-        super.onWebSocketConnect(session);
         count = 0;
     }
 
@@ -149,11 +161,8 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     private void sendPing(Session session) {
-        try {
-            session.getRemote().sendPing(ByteBuffer.wrap("Ping".getBytes()));
-        } catch (IOException e) {
-            logger.debug("{}: {} ping failed: {}", host, className, e.getMessage());
-        }
+        session.sendPing(ByteBuffer.wrap("Ping".getBytes()), Callback.from(() -> {
+        }, e -> logger.debug("{}: {} ping failed: {}", host, className, e.getMessage())));
     }
 
     private void stopPing() {
@@ -177,24 +186,21 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     void sendCommand(String cmd) {
-        try {
-            if (isConnected()) {
-                getRemote().sendString(cmd);
-                logger.trace("{}: {}: sendCommand: {}", host, className, cmd);
-            } else {
-                logger.debug("{}: {} not connected: {}", host, className, cmd);
-            }
-        } catch (IOException e) {
-            logger.warn("{}: {}: cannot send command: {}", host, className, e.getMessage());
+        Session s = session;
+        if (s != null && s.isOpen()) {
+            s.sendText(cmd, Callback.NOOP);
+            logger.trace("{}: {}: sendCommand: {}", host, className, cmd);
+        } else {
+            logger.debug("{}: {} not connected: {}", host, className, cmd);
         }
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketText(@Nullable String str) {
         logger.trace("{}: {}: onWebSocketText: {}", host, className, str);
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketBinary(byte @Nullable [] arr, int pos, int len) {
         logger.trace("{}: {}: onWebSocketBinary: offset: {}, len: {}", host, className, pos, len);
     }

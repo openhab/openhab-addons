@@ -27,8 +27,8 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.bluelink.internal.dto.ca.ChargeLimitsRequest;
@@ -90,7 +90,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         final String loginUrl = baseUrl + "v2/login";
         final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
                 .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
+                .body(new StringRequestContent(gson.toJson(loginRequest)));
         addStandardHeaders(request);
         return doLogin(request, TokenResponse.class, t -> t.result() != null ? t.result().token() : null);
     }
@@ -118,8 +118,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         final String endpoint = forceRefresh ? "rltmvhclsts" : "lstvhclsts";
         final String url = baseUrl + endpoint;
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider("{}"), APPLICATION_JSON);
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).body(new StringRequestContent("{}"));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
@@ -217,10 +216,11 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         final var payload = new ChargeLimitsRequest(pin, List.of(new ChargeLimitsRequest.TargetSOC(plugType, limit)));
         final String url = baseUrl + "evc/setsoc";
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON).header("from", "SPA")
-                .header("offset", "-8").header("priority", "u=1, i")
-                .header(HttpHeader.REFERER, "https://kiaconnect.ca/remote/");
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).body(new StringRequestContent(gson.toJson(payload)));
+        withHeader(request, "from", "SPA");
+        withHeader(request, "offset", "-8");
+        withHeader(request, "priority", "u=1, i");
+        withHeader(request, HttpHeader.REFERER, "https://kiaconnect.ca/remote/");
         addStandardHeaders(request);
         addAuthHeaders(request);
         addPinAuthHeader(request, vehicle);
@@ -237,7 +237,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         final String url = baseUrl + "vrfypin";
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(new PinRequest(pin))), APPLICATION_JSON);
+                .body(new StringRequestContent(gson.toJson(new PinRequest(pin))));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addVehicleHeaders(request, vehicle);
@@ -259,8 +259,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         ensureAuthenticated();
         final String url = baseUrl + endpoint;
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(payload)), APPLICATION_JSON);
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).body(new StringRequestContent(gson.toJson(payload)));
         addStandardHeaders(request);
         addAuthHeaders(request);
         addPinAuthHeader(request, vehicle);
@@ -271,31 +270,34 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public void addStandardHeaders(final Request request) {
-        request.header(HttpHeader.CONTENT_TYPE, APPLICATION_JSON)
-                .header(HttpHeader.ACCEPT, "application/json, text/plain, */*")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br")
-                .header(HttpHeader.USER_AGENT,
-                        "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.101 Mobile Safari/537.36")
-                .header("from", "CWP").header("language", "0").header("client_id", CLIENT_ID)
-                .header("clientSecret", "CLISCR01AHSPA").header("offset", String.valueOf(getTimeZoneOffset()));
+        withHeader(request, HttpHeader.CONTENT_TYPE, APPLICATION_JSON);
+        withHeader(request, HttpHeader.ACCEPT, "application/json, text/plain, */*");
+        withHeader(request, HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br");
+        withHeader(request, HttpHeader.USER_AGENT,
+                "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.101 Mobile Safari/537.36");
+        withHeader(request, "from", "CWP");
+        withHeader(request, "language", "0");
+        withHeader(request, "client_id", CLIENT_ID);
+        withHeader(request, "clientSecret", "CLISCR01AHSPA");
+        withHeader(request, "offset", String.valueOf(getTimeZoneOffset()));
     }
 
     private void addAuthHeaders(final Request request) {
         final String token = accessToken;
         if (token != null) {
-            request.header("accessToken", token);
+            withHeader(request, "accessToken", token);
         }
     }
 
     private void addPinAuthHeader(final Request request, final IVehicle vehicle) throws BluelinkApiException {
         final String token = getPinToken(vehicle);
-        request.header("pAuth", token);
+        withHeader(request, "pAuth", token);
     }
 
     private void addVehicleHeaders(final Request request, final IVehicle vehicle) {
         final String id = vehicle.id();
         if (id != null) {
-            request.header("vehicleId", id);
+            withHeader(request, "vehicleId", id);
         }
     }
 

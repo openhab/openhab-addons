@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -68,8 +68,9 @@ public class HttpUtils {
 
         ContentResponse response;
         try {
-            response = client.newRequest(url).method(HttpMethod.POST).content(new StringContentProvider(postData))
-                    .timeout(TIMEOUT, TimeUnit.MILLISECONDS).send();
+            response = client.newRequest(url).method(HttpMethod.POST)
+                    .body(new StringRequestContent("text/plain", postData)).timeout(TIMEOUT, TimeUnit.MILLISECONDS)
+                    .send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SqueezeBoxCommunicationException("Jetty http client exception: " + e.getMessage());
         }

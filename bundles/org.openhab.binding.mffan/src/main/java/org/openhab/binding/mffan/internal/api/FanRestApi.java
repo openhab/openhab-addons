@@ -12,20 +12,17 @@
  */
 package org.openhab.binding.mffan.internal.api;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -33,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link FanRestApi} is implements provides access to the smart fan's REST services.
@@ -101,9 +100,9 @@ public class FanRestApi {
             this.logger.debug("Performing Post: 'URL: {}, Payload: '{}'", this.url, payloadJson);
             Request postRequest = this.client.POST(this.url);
             postRequest.timeout(10, TimeUnit.SECONDS);
-            postRequest.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-            postRequest.header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-            postRequest.content(new StringContentProvider(payloadJson, Charset.forName(StandardCharsets.UTF_8.name())));
+            postRequest.headers(h -> h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
+            postRequest.headers(h -> h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON));
+            postRequest.body(new StringRequestContent(payloadJson, StandardCharsets.UTF_8));
             ContentResponse postResponse = postRequest.send();
             this.logger.debug("Response status: {}", postResponse.getStatus());
             if (postResponse.getStatus() == 200) {

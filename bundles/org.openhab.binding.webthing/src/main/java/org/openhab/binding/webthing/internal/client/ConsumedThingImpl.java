@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.binding.webthing.internal.client.dto.WebThingDescription;
@@ -221,8 +221,8 @@ public class ConsumedThingImpl implements ConsumedThing {
                         Map<String, Object> payload = Map.of(propertyName, newValue);
                         var json = gson.toJson(payload);
                         var response = httpClient.newRequest(propertyUri).method("PUT")
-                                .content(new StringContentProvider(json), "application/json")
-                                .timeout(30, TimeUnit.SECONDS).send();
+                                .body(new StringRequestContent("application/json", json)).timeout(30, TimeUnit.SECONDS)
+                                .send();
                         if (response.getStatus() < 200 || response.getStatus() >= 300) {
                             onError("WebThing " + webThingURI + "could not write " + propertyName + " (" + propertyUri
                                     + ") with " + newValue);

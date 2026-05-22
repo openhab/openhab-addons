@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
@@ -138,8 +138,8 @@ public class IpControl {
         synchronized (this) {
             try {
                 ContentResponse reply = httpClient.newRequest(url).method(HttpMethod.POST)
-                        .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.CONNECTION, "close")
-                        .content(new StringContentProvider(body.toString()), "application/json")
+                        .headers(h -> h.put(HttpHeader.ACCEPT, "application/json").put(HttpHeader.CONNECTION, "close"))
+                        .body(new StringRequestContent("application/json", body.toString()))
                         .timeout(timeout, TimeUnit.SECONDS).send();
                 response = reply.getContentAsString();
             } catch (InterruptedException e) {

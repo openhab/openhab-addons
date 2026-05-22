@@ -24,13 +24,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
@@ -552,16 +554,18 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         }
         String apiPath = "/serialnumber".equals(path) ? path : API_PREFIX + path;
         Request request = client.newRequest(URI.create(normalizedBaseUrl() + apiPath))
-                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS).header(HttpHeader.ACCEPT, "application/json");
-        if (authenticated && accessToken != null) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .headers(h -> h.put(HttpHeader.ACCEPT, "application/json"));
+        String token = accessToken;
+        if (authenticated && token != null) {
+            request.headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token));
         }
         if ("POST".equals(method)) {
-            request.method(HttpMethod.POST).content(new StringContentProvider(body == null ? "{}" : body),
-                    "application/json");
+            request.method(HttpMethod.POST)
+                    .body(new StringRequestContent("application/json", body == null ? "{}" : body));
         } else if ("PUT".equals(method)) {
-            request.method(HttpMethod.PUT).content(new StringContentProvider(body == null ? "{}" : body),
-                    "application/json");
+            request.method(HttpMethod.PUT)
+                    .body(new StringRequestContent("application/json", body == null ? "{}" : body));
         } else if ("DELETE".equals(method)) {
             request.method(HttpMethod.DELETE);
         } else {
@@ -609,7 +613,9 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     }
 
     private static HttpClient createHttpClient(boolean verifyCertificate) {
-        return new HttpClient(new SslContextFactory.Client(!verifyCertificate));
+        ClientConnector connector = new ClientConnector();
+        connector.setSslContextFactory(new SslContextFactory.Client(!verifyCertificate));
+        return new HttpClient(new HttpClientTransportOverHTTP(connector));
     }
 
     private void disableAuthenticationProtocolHandler(HttpClient client) {

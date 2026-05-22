@@ -14,7 +14,7 @@ package org.openhab.binding.linktap.protocol.http;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.slf4j.Logger;
 
 /**

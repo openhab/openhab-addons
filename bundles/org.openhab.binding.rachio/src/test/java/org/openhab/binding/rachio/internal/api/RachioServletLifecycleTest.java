@@ -33,26 +33,25 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioHandlerFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.osgi.service.http.HttpContext;
-import org.osgi.service.http.HttpService;
+import org.ops4j.pax.web.service.http.HttpContext;
+import org.ops4j.pax.web.service.http.HttpService;
+
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Tests idempotent manual servlet registration.
@@ -305,7 +304,7 @@ class RachioServletLifecycleTest {
         when(httpClient.newRequest(SERVLET_IMAGE_URL_BASE + imageId)).thenReturn(request);
         when(request.method("GET")).thenReturn(request);
         when(request.timeout(Mockito.anyLong(), Mockito.eq(TimeUnit.MILLISECONDS))).thenReturn(request);
-        when(request.header(Mockito.any(HttpHeader.class), Mockito.anyString())).thenReturn(request);
+        when(request.headers(Mockito.any())).thenReturn(request);
         return request;
     }
 

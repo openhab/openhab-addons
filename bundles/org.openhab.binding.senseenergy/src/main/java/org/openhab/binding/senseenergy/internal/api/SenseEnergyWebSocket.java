@@ -23,10 +23,12 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyWebSocketRealtimeUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 @WebSocket
-public class SenseEnergyWebSocket implements WebSocketListener {
+public class SenseEnergyWebSocket {
     private final Logger logger = LoggerFactory.getLogger(SenseEnergyWebSocket.class);
 
     private static final String WSSURL = "wss://clientrt.sense.com/monitors/%s/realtimefeed?access_token=%s";
@@ -50,7 +52,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     private final SenseEnergyWebSocketListener listener;
     private WebSocketClient client;
     @Nullable
-    private WebSocketSession session;
+    private Session session;
     private boolean closing;
     private long monitorId;
 
@@ -75,7 +77,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         this.monitorId = monitorId;
 
         String url = String.format(WSSURL, monitorId, accessToken);
-        session = (WebSocketSession) client.connect(this, new URI(url)).get();
+        session = client.connect(this, new URI(url)).get();
     }
 
     public void restart(String accessToken)
@@ -100,7 +102,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         closing = true;
         logger.debug("Stopping Sense Energy WebSocket");
 
-        WebSocketSession localSession = session;
+        Session localSession = session;
         if (localSession != null) {
             try {
                 localSession.close();
@@ -115,12 +117,11 @@ public class SenseEnergyWebSocket implements WebSocketListener {
     }
 
     public boolean isRunning() {
-        WebSocketSession localSession = session;
-        return localSession != null && localSession.isRunning();
+        Session localSession = session;
+        return localSession != null && localSession.isOpen();
     }
 
-    /******* WebSocketListener interface ***********/
-    @Override
+    @OnWebSocketClose
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         session = null;
         logger.trace("WebSocket Close: {} - {}", statusCode, reason);
@@ -129,14 +130,14 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         }
     }
 
-    @Override
+    @OnWebSocketOpen
     public void onWebSocketConnect(@Nullable Session session) {
         closing = false;
         logger.debug("Connected to Sense Energy WebSocket");
         listener.onWebSocketConnect();
     }
 
-    @Override
+    @OnWebSocketError
     public void onWebSocketError(@Nullable Throwable cause) {
         String causeMessage = cause != null ? String.valueOf(cause.getMessage()) : "unknown";
         logger.warn("Sense Energy WebSocket error: {}", causeMessage, cause);
@@ -147,12 +148,12 @@ public class SenseEnergyWebSocket implements WebSocketListener {
         }
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
         logger.warn("Unexpected binary message received");
     }
 
-    @Override
+    @OnWebSocketMessage
     public void onWebSocketText(@Nullable String message) {
         if (closing || message == null) {
             return;

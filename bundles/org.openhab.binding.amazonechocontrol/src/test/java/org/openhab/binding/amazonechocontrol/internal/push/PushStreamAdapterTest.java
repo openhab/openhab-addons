@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.amazonechocontrol.internal.push.PushStreamAdapter.spannedFrames;
 
 import java.nio.ByteBuffer;
@@ -67,7 +68,7 @@ public class PushStreamAdapterTest {
     private final Session session = mock(Session.class);
     private final Stream stream = mock(Stream.class);
     private final List<PushMessageTO.RenderingUpdateTO> receivedUpdates = new ArrayList<>();
-    private final AtomicInteger succeededCallbacks = new AtomicInteger();
+    private final AtomicInteger releasedFrames = new AtomicInteger();
 
     private PushStreamAdapter adapter = new PushStreamAdapter(gson, session, receivedUpdates::add);
 
@@ -83,7 +84,7 @@ public class PushStreamAdapterTest {
 
         assertThat(receivedUpdates, hasSize(1));
         assertThat(receivedUpdates.get(0).route, is("DeeAppMessage"));
-        assertThat(succeededCallbacks.get(), is(1));
+        assertThat(releasedFrames.get(), is(1));
     }
 
     @Test
@@ -95,7 +96,7 @@ public class PushStreamAdapterTest {
 
         sendData(MESSAGE_PART.substring(cut));
         assertThat(receivedUpdates, hasSize(1));
-        assertThat(succeededCallbacks.get(), is(2));
+        assertThat(releasedFrames.get(), is(2));
     }
 
     @Test
@@ -156,7 +157,7 @@ public class PushStreamAdapterTest {
         sendData(MESSAGE_PART);
 
         assertThat(receivedUpdates, hasSize(1));
-        assertThat(succeededCallbacks.get(), is(2));
+        assertThat(releasedFrames.get(), is(2));
     }
 
     @Test
@@ -210,7 +211,7 @@ public class PushStreamAdapterTest {
         sendData(MESSAGE_PART);
 
         assertThat(receivedUpdates, hasSize(0));
-        assertThat(succeededCallbacks.get(), is(1));
+        assertThat(releasedFrames.get(), is(1));
     }
 
     @Test
@@ -253,16 +254,19 @@ public class PushStreamAdapterTest {
     }
 
     private void sendData(byte[] content) {
-        adapter.onData(stream, new DataFrame(1, ByteBuffer.wrap(content), false), new Callback() {
+        Stream.Data data = new Stream.Data(new DataFrame(1, ByteBuffer.wrap(content), false)) {
             @Override
-            public void succeeded() {
-                succeededCallbacks.incrementAndGet();
+            public boolean release() {
+                releasedFrames.incrementAndGet();
+                return true;
             }
-        });
+        };
+        when(stream.readData()).thenReturn(data);
+        adapter.onDataAvailable(stream);
     }
 
     private HeadersFrame headersFrame(String contentType) {
-        HttpFields fields = new HttpFields();
+        HttpFields.Mutable fields = HttpFields.build();
         fields.put(HttpHeader.CONTENT_TYPE, contentType);
         return new HeadersFrame(new MetaData(HttpVersion.HTTP_2, fields), null, false);
     }

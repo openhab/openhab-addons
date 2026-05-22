@@ -18,14 +18,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.growatt.internal.handler.GrowattBridgeHandler;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link GrowattHttpServlet} is an HttpServlet to handle data posted by the Grott application.
@@ -58,6 +58,7 @@ public class GrowattHttpServlet extends HttpServlet {
     private final Set<GrowattBridgeHandler> handlers = Collections.synchronizedSet(new HashSet<>());
 
     @Override
+    @NonNullByDefault({})
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.TEXT_HTML);
@@ -66,6 +67,7 @@ public class GrowattHttpServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);

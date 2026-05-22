@@ -14,7 +14,6 @@ package org.openhab.binding.emby.internal.protocol;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.List;
@@ -24,11 +23,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -141,9 +141,9 @@ public class EmbyClientSocket {
                     logger.debug("Cannot send {}, session not open", methodName);
                     return;
                 }
-                s.getRemote().sendString(mapper.toJson(payload));
+                s.sendText(mapper.toJson(payload), Callback.NOOP);
                 logger.debug("Sent command: {}", payload);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Failed sending {}: {}", methodName, e.getMessage(), e);
             }
         });
@@ -151,7 +151,7 @@ public class EmbyClientSocket {
 
     @WebSocket
     public class EmbyWebSocketListener {
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session wssession) {
         }
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 
 /**
  * The {@link NtfyMessageHeaderBuilder} builds the headers of the request
@@ -56,50 +56,50 @@ public class NtfyMessageHeaderBuilder {
      * (priority, click/action headers, attachment, icon, tags, delay and sequence id).
      */
     public void build() {
-        request.header(X_PRIORITY, Integer.toString(ntfyMessage.getPriority()));
+        request.headers(h -> h.add(X_PRIORITY, Integer.toString(ntfyMessage.getPriority())));
 
         if (ntfyMessage.hasClickAction()) {
-            request.header(X_CLICK, ntfyMessage.getClickAction().toString());
+            request.headers(h -> h.add(X_CLICK, ntfyMessage.getClickAction().toString()));
         }
 
         if (ntfyMessage.hasTitle()) {
-            request.header(X_TITLE, ntfyMessage.getTitle());
+            request.headers(h -> h.add(X_TITLE, ntfyMessage.getTitle()));
         }
 
         String tags = String.join(",", ntfyMessage.getTags());
         if (!tags.isEmpty()) {
-            request.header(X_TAGS, tags);
+            request.headers(h -> h.add(X_TAGS, tags));
         }
 
         if (ntfyMessage.hasIcon()) {
-            request.header(X_ICON, ntfyMessage.getIcon().toString());
+            request.headers(h -> h.add(X_ICON, ntfyMessage.getIcon().toString()));
         }
 
         if (ntfyMessage.hasAttachment()) {
-            request.header(X_ATTACH, ntfyMessage.getAttachment().toString());
+            request.headers(h -> h.add(X_ATTACH, ntfyMessage.getAttachment().toString()));
             final @Nullable String filename = ntfyMessage.getAttachmentFilename();
             if (filename != null && !filename.isBlank()) {
-                request.header(X_FILENAME, filename);
+                request.headers(h -> h.add(X_FILENAME, filename));
             }
         }
 
         if (ntfyMessage.hasDelay()) {
             final String delay = ntfyMessage.getDelay();
             if (!delay.isBlank()) {
-                request.header(X_DELAY, delay);
+                request.headers(h -> h.add(X_DELAY, delay));
             }
         }
 
         String actions = ntfyMessage.getActions().stream().map(action -> action.getHeader())
                 .collect(Collectors.joining(";"));
         if (!actions.isBlank()) {
-            request.header(X_ACTIONS, actions);
+            request.headers(h -> h.add(X_ACTIONS, actions));
         }
 
         if (ntfyMessage.hasSequenceId()) {
             String sequenceId = ntfyMessage.getSequenceId();
             if (!sequenceId.isBlank()) {
-                request.header(X_SEQUENCE_ID, sequenceId);
+                request.headers(h -> h.add(X_SEQUENCE_ID, sequenceId));
             }
         }
     }

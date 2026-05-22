@@ -20,10 +20,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.ecobee.internal.dto.oauth.AuthorizeResponseDTO;
 import org.openhab.binding.ecobee.internal.dto.oauth.TokenResponseDTO;
@@ -230,7 +230,7 @@ public class EcobeeAuth {
         Request request = httpClient.newRequest(url);
         request.timeout(apiTimeout, TimeUnit.MILLISECONDS);
         request.method(method);
-        EcobeeApi.HTTP_HEADERS.forEach((k, v) -> request.header((String) k, (String) v));
+        EcobeeApi.HTTP_HEADERS.forEach((k, v) -> request.headers(h -> h.add((String) k, (String) v)));
 
         try {
             ContentResponse contentResponse = request.send();

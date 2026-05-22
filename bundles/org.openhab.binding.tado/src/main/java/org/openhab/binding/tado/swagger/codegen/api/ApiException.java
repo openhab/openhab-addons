@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tado.swagger.codegen.api;
 
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 
 /**
  * Static imported copy of the Java file originally created by Swagger Codegen.

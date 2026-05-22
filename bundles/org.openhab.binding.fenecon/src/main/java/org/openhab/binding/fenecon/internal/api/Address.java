@@ -14,10 +14,10 @@ package org.openhab.binding.fenecon.internal.api;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The {@link Address} is a small helper class to split a REST-API Address in component and channel.

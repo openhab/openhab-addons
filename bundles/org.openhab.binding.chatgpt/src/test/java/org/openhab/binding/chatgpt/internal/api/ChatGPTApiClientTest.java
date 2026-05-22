@@ -25,19 +25,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -101,9 +100,8 @@ public class ChatGPTApiClientTest {
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
-        when(request.header(any(HttpHeader.class), anyString())).thenReturn(request);
-        when(request.header(anyString(), anyString())).thenReturn(request);
-        when(request.content(any())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
+        when(request.body(any())).thenReturn(request);
 
         when(response400.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
         when(response400.getContentAsString()).thenReturn(UNRECOGNIZED_REASONING_EFFORT_RESPONSE);
@@ -125,10 +123,10 @@ public class ChatGPTApiClientTest {
         assertEquals("Hello! How can I help you today?",
                 response.getChoices().getFirst().getChatMessage().getContent());
 
-        ArgumentCaptor<ContentProvider> contentCaptor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request, times(2)).content(contentCaptor.capture());
+        ArgumentCaptor<Request.Content> contentCaptor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request, times(2)).body(contentCaptor.capture());
 
-        List<ContentProvider> capturedProviders = contentCaptor.getAllValues();
+        List<Request.Content> capturedProviders = contentCaptor.getAllValues();
         assertEquals(2, capturedProviders.size());
 
         String firstPayload = extractPayload(capturedProviders.get(0));
@@ -150,9 +148,8 @@ public class ChatGPTApiClientTest {
         when(httpClient.newRequest(anyString())).thenReturn(secondRequest);
         when(secondRequest.method(any(HttpMethod.class))).thenReturn(secondRequest);
         when(secondRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(secondRequest);
-        when(secondRequest.header(any(HttpHeader.class), anyString())).thenReturn(secondRequest);
-        when(secondRequest.header(anyString(), anyString())).thenReturn(secondRequest);
-        when(secondRequest.content(any())).thenReturn(secondRequest);
+        when(secondRequest.headers(any())).thenReturn(secondRequest);
+        when(secondRequest.body(any())).thenReturn(secondRequest);
         when(secondRequest.send()).thenReturn(response200);
 
         ChatResponse response = client.sendPrompt("gpt-4o-mini", "Hello again", null, null, null, null, "medium", 10);
@@ -160,8 +157,8 @@ public class ChatGPTApiClientTest {
         assertNotNull(response);
         verify(secondRequest, times(1)).send();
 
-        ArgumentCaptor<ContentProvider> contentCaptor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(secondRequest, times(1)).content(contentCaptor.capture());
+        ArgumentCaptor<Request.Content> contentCaptor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(secondRequest, times(1)).body(contentCaptor.capture());
 
         String payload = extractPayload(contentCaptor.getValue());
         assertFalse(payload.contains("reasoning_effort"));
@@ -189,13 +186,8 @@ public class ChatGPTApiClientTest {
         verify(request, times(1)).send();
     }
 
-    private String extractPayload(ContentProvider provider) {
-        StringBuilder sb = new StringBuilder();
-        for (ByteBuffer buffer : provider) {
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            sb.append(new String(bytes, StandardCharsets.UTF_8));
-        }
-        return sb.toString();
+    private String extractPayload(Request.Content content) throws IOException {
+        // Jetty 12 request bodies are a Content.Source instead of an Iterable of buffers
+        return Content.Source.asString(content, StandardCharsets.UTF_8);
     }
 }

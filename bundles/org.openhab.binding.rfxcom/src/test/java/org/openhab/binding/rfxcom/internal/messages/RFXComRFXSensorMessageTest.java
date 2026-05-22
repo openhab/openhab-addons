@@ -16,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComRFXSensorMessage.SubType.*;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -25,6 +23,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * Test for RFXCom-binding

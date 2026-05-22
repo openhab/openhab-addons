@@ -18,15 +18,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.openhab.binding.tado.swagger.codegen.api.ApiException;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
@@ -49,7 +48,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class HomeApi {
-    private static final HttpClient CLIENT = new HttpClient(new SslContextFactory.Client());
+    private static final HttpClient CLIENT = new HttpClient();
 
     private String baseUrl;
     private int timeout = 5000;
@@ -129,7 +128,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -164,7 +163,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -203,7 +202,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -242,7 +241,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -281,7 +280,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -315,7 +314,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -361,7 +360,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -407,7 +406,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -453,7 +452,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -499,7 +498,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -544,7 +543,7 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -585,7 +584,7 @@ public class HomeApi {
         Request request = CLIENT.newRequest(baseUrl + path).method(dto == null ? HttpMethod.DELETE : HttpMethod.PUT)
                 .timeout(timeout, TimeUnit.MILLISECONDS);
 
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
@@ -593,7 +592,7 @@ public class HomeApi {
 
         if (dto != null) {
             String serializedBody = gson.toJson(dto);
-            request.content(new StringContentProvider(serializedBody), "application/json");
+            request.body(new StringRequestContent("application/json", serializedBody));
             request.accept("application/json");
         }
 
@@ -638,14 +637,14 @@ public class HomeApi {
                 TimeUnit.MILLISECONDS);
 
         request.accept("application/json");
-        request.header(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0");
+        request.headers(h -> h.add(HttpHeader.USER_AGENT, "openhab/swagger-java/1.0.0"));
 
         if (authorizer != null) {
             authorizer.addAuthorization(request);
         }
 
         String serializedBody = gson.toJson(json);
-        request.content(new StringContentProvider(serializedBody), "application/json");
+        request.body(new StringRequestContent("application/json", serializedBody));
 
         ContentResponse response;
         try {
