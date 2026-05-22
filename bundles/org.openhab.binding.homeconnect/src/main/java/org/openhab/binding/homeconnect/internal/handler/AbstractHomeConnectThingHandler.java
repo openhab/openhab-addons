@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -103,7 +104,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
     private @Nullable ScheduledFuture<?> reinitializationFuture3;
+    private @Nullable Future<?> initializationFuture;
     private boolean ignoreEventSourceClosedEvent;
+    private volatile boolean disposed;
     private @Nullable String programOptionsDelayedUpdate;
 
     private final ConcurrentHashMap<String, EventHandler> eventHandlers;
@@ -135,6 +138,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
+        disposed = false;
         if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
@@ -143,7 +147,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             accessible.set(false);
         } else {
             updateStatus(UNKNOWN);
-            scheduler.submit(() -> {
+            initializationFuture = scheduler.submit(() -> {
+                if (disposed) {
+                    return;
+                }
                 refreshThingStatus(); // set ONLINE / OFFLINE
                 updateSelectedProgramStateDescription();
                 updateChannels();
@@ -156,10 +163,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void dispose() {
-        stopRetryRegistering();
-        stopOfflineMonitor1();
-        stopOfflineMonitor2();
-        unregisterEventListener(true);
+        teardown(true);
     }
 
     @Override
@@ -170,11 +174,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private void reinitialize() {
         logger.debug("Reinitialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
+        teardown(false);
+        initialize();
+    }
+
+    /**
+     * Stop all asynchronous work performed by this handler.
+     *
+     * @param immediate if {@code true} the event listener is unregistered immediately (used during
+     *            {@link #dispose()}); if {@code false} a graceful unregistration is performed (used
+     *            during {@link #reinitialize()}).
+     */
+    private void teardown(boolean immediate) {
+        disposed = true;
+        cancelInitialization();
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
-        unregisterEventListener();
-        initialize();
+        unregisterEventListener(immediate);
+    }
+
+    private void cancelInitialization() {
+        Future<?> future = initializationFuture;
+        if (future != null) {
+            // graceful cancel: do not interrupt a running task, only prevent a queued one from starting
+            future.cancel(false);
+            initializationFuture = null;
+        }
     }
 
     /**
