@@ -25,9 +25,9 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

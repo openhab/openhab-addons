@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,11 +25,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.BytesRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homematic.internal.common.AuthenticationHandler;
@@ -106,7 +107,7 @@ public class XmlRpcClient extends RpcClient<String> {
     private byte[] send(int port, RpcRequest<String> request) throws IOException {
         byte[] ret = new byte[0];
         try {
-            BytesContentProvider content = new BytesContentProvider(
+            BytesRequestContent content = new BytesRequestContent(
                     request.createMessage().getBytes(config.getEncoding()));
             String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
             if (port == config.getGroupPort()) {
@@ -118,19 +119,29 @@ public class XmlRpcClient extends RpcClient<String> {
                 this.authenticationHandler = authenticationHandler = new AuthenticationHandler(config);
             }
 
-            Request req = authenticationHandler.updateAuthenticationInformation(
-                    httpClient.POST(new URI(url)).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
-                            .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()));
+            Request req = authenticationHandler.updateAuthenticationInformation(httpClient.POST(new URI(url))
+                    .body(content).timeout(config.getTimeout(), TimeUnit.SECONDS).headers(headers -> headers
+                            .put(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding())));
 
-            FutureResponseListener listener = new FutureResponseListener(req, config.getBufferSize() * 1024);
-            req.send(listener);
-            ContentResponse response = listener.get(config.getTimeout(), TimeUnit.SECONDS);
+            CompletableFuture<Result> futureResult = new CompletableFuture<>();
+            BufferingResponseListener bufListener = new BufferingResponseListener(config.getBufferSize() * 1024) {
+                @Override
+                public void onComplete(@Nullable Result result) {
+                    if (result != null && result.isSucceeded()) {
+                        futureResult.complete(result);
+                    } else if (result != null) {
+                        futureResult.completeExceptionally(result.getFailure());
+                    }
+                }
+            };
+            req.send(bufListener);
+            Result jettyResult = futureResult.get(config.getTimeout(), TimeUnit.SECONDS);
 
-            if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            if (jettyResult.getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new IOException("Access to Homematic gateway unauthorized");
             }
 
-            ret = response.getContent();
+            ret = bufListener.getContent();
             if (ret == null || ret.length == 0) {
                 throw new IOException("Received no data from the Homematic gateway");
             }

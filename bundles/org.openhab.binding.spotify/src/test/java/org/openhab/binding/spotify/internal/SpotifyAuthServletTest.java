@@ -16,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Tests for {@link SpotifyAuthServlet}, focused on how it determines the scheme (http/https) to use for the Spotify

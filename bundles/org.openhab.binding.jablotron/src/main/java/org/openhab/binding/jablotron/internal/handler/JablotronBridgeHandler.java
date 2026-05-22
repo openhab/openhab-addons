@@ -24,10 +24,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.jablotron.internal.config.JablotronBridgeConfig;
@@ -179,8 +179,8 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String line = "";
         try {
             logger.trace("Request: {} with data: {}", url, urlParameters);
-            ContentResponse resp = createGQLRequest(url)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
+            ContentResponse resp = createGQLRequest(url).body(new StringRequestContent(APPLICATION_JSON, urlParameters))
+                    .send();
 
             line = resp.getContentAsString();
             logger.trace("Response: {}", line);
@@ -213,8 +213,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String line = "";
         try {
             logger.trace("Request: {} with data: {}", url, urlParameters);
-            ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters), encoding)
-                    .send();
+            ContentResponse resp = createRequest(url).body(new StringRequestContent(encoding, urlParameters)).send();
 
             line = resp.getContentAsString();
             logger.trace("Response: {}", line);
@@ -285,8 +284,8 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String urlParameters = "system=" + SYSTEM;
 
         try {
-            ContentResponse resp = createRequest(url)
-                    .content(new StringContentProvider(urlParameters), WWW_FORM_URLENCODED).send();
+            ContentResponse resp = createRequest(url).body(new StringRequestContent(WWW_FORM_URLENCODED, urlParameters))
+                    .send();
 
             if (logger.isTraceEnabled()) {
                 String line = resp.getContentAsString();
@@ -503,18 +502,27 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     }
 
     private Request createRequest(String url) {
-        return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang()).header(HttpHeader.ACCEPT_ENCODING, "*")
-                .header("x-vendor-id", VENDOR).header("x-client-version", CLIENT_VERSION).agent(AGENT)
-                .timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+        Request request = httpClient.newRequest(url).method(HttpMethod.POST).agent(AGENT).timeout(TIMEOUT_SEC,
+                TimeUnit.SECONDS);
+        request.headers(headers -> {
+            headers.put(HttpHeader.ACCEPT, APPLICATION_JSON);
+            headers.put(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang());
+            headers.put(HttpHeader.ACCEPT_ENCODING, "*");
+            headers.put("x-vendor-id", VENDOR);
+            headers.put("x-client-version", CLIENT_VERSION);
+        });
+        return request;
     }
 
     private Request createGQLRequest(String url) {
-        return httpClient.newRequest(url).method(HttpMethod.POST).accept(MULTIPART_MIXED, APPLICATION_JSON)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken)
-                .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang())
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br").agent(AGENT)
-                .timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+        Request request = httpClient.newRequest(url).method(HttpMethod.POST).accept(MULTIPART_MIXED, APPLICATION_JSON)
+                .agent(AGENT).timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
+        request.headers(headers -> {
+            headers.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            headers.put(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang());
+            headers.put(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br");
+        });
+        return request;
     }
 
     private void relogin() {

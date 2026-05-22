@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;

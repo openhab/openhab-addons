@@ -25,9 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
@@ -69,7 +69,6 @@ public class WebSocketConnection {
             int watchdogInterval) {
         this.connectionListener = listener;
         this.client = client;
-        this.client.setMaxIdleTimeout(0);
         this.gson = gson;
         this.socketName = "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
         this.watchdogInterval = watchdogInterval;
@@ -147,10 +146,10 @@ public class WebSocketConnection {
     }
 
     @SuppressWarnings("unused")
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         connectionState = ConnectionState.CONNECTED;
-        logger.debug("{} successfully connected to {}: {}", socketName, session.getRemoteAddress().getAddress(),
+        logger.debug("{} successfully connected to {}: {}", socketName, session.getRemoteSocketAddress(),
                 session.hashCode());
         connectionListener.webSocketConnectionEstablished();
         startOrResetWatchdogTimer();
@@ -221,7 +220,7 @@ public class WebSocketConnection {
         stopWatchdogTimer();
         Session storedSession = this.session;
         if (storedSession != null && storedSession.isOpen()) {
-            storedSession.close(-1, "Processing error");
+            storedSession.close();
         }
     }
 

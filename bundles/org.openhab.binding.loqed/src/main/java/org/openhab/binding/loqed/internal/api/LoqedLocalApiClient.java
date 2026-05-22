@@ -33,9 +33,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -242,11 +242,13 @@ public class LoqedLocalApiClient {
     private ContentResponse sendWebhookRequest(HttpMethod method, String url, @Nullable String body, long timestamp,
             String hash) throws LoqedApiException {
         try {
-            var request = httpClient.newRequest(url).method(method).header("TIMESTAMP", Long.toString(timestamp))
-                    .header("HASH", hash).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            var request = httpClient.newRequest(url).method(method).headers(h -> {
+                h.put("TIMESTAMP", Long.toString(timestamp));
+                h.put("HASH", hash);
+            }).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (body != null) {
-                request.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON)
-                        .content(new StringContentProvider(body, StandardCharsets.UTF_8));
+                request.headers(h -> h.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON))
+                        .body(new StringRequestContent(body, StandardCharsets.UTF_8));
             }
             ContentResponse response = request.send();
             if (!HttpStatus.isSuccess(response.getStatus())) {
@@ -265,7 +267,7 @@ public class LoqedLocalApiClient {
         try {
             var request = httpClient.newRequest(url).method(method).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (body != null) {
-                request.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+                request.body(new StringRequestContent(body, StandardCharsets.UTF_8));
             }
             ContentResponse response = request.send();
             if (!HttpStatus.isSuccess(response.getStatus())) {

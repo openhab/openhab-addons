@@ -16,7 +16,7 @@ import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.i18n.ConfigurationException;
 
@@ -48,6 +48,7 @@ public class AuthenticationHandler {
      * Add or remove the basic auth credentials th the request if needed.
      */
     public Request updateAuthenticationInformation(final Request request) {
-        return useAuthentication ? request.header(HttpHeader.AUTHORIZATION, authValue) : request;
+        return useAuthentication ? request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authValue))
+                : request;
     }
 }

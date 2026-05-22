@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +29,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -85,9 +83,8 @@ public class GeminiApiClientTest {
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
-        when(request.header(any(HttpHeader.class), anyString())).thenReturn(request);
-        when(request.header(anyString(), anyString())).thenReturn(request);
-        when(request.content(any(ContentProvider.class))).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
+        when(request.body(any(Request.Content.class))).thenReturn(request);
         when(request.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(HttpStatus.OK_200);
         when(response.getContentAsString()).thenReturn(RESPONSE_JSON);
@@ -231,14 +228,11 @@ public class GeminiApiClientTest {
     }
 
     private JsonNode captureRequestBody() throws Exception {
-        ArgumentCaptor<ContentProvider> captor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(captor.capture());
+        ArgumentCaptor<Request.Content> captor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(captor.capture());
 
-        StringBuilder body = new StringBuilder();
-        for (ByteBuffer buffer : Objects.requireNonNull(captor.getValue())) {
-            body.append(StandardCharsets.UTF_8.decode(buffer));
-        }
-        JsonNode root = objectMapper.readTree(body.toString());
+        String body = Content.Source.asString(Objects.requireNonNull(captor.getValue()), StandardCharsets.UTF_8);
+        JsonNode root = objectMapper.readTree(body);
         assertTrue(root.has("contents"), "request payload has no contents");
         return root;
     }

@@ -14,7 +14,6 @@ package org.openhab.binding.dirigera.internal.network;
 
 import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -28,14 +27,15 @@ import java.util.UUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.json.JSONObject;
@@ -123,7 +123,6 @@ public class Websocket {
         try {
             pingPongMap.clear();
             WebSocketClient client = new WebSocketClient(httpClient);
-            client.setMaxIdleTimeout(0);
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             request.setHeader("Authorization", "Bearer " + gateway.getToken());
@@ -176,9 +175,9 @@ public class Websocket {
                 // build ping message
                 String pingId = UUID.randomUUID().toString();
                 pingPongMap.put(pingId, Instant.now());
-                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
+                session.sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)), Callback.NOOP);
                 increase(PINGS);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.warn("DIRIGERA WS ping failed with exception {}", e.getMessage());
             }
         }, () -> {
@@ -218,8 +217,8 @@ public class Websocket {
                 logger.trace("DIRIGERA onPing ");
                 ByteBuffer buffer = frame.getPayload();
                 try {
-                    session.getRemote().sendPong(buffer);
-                } catch (IOException e) {
+                    session.sendPong(buffer, Callback.NOOP);
+                } catch (Exception e) {
                     logger.warn("DIRIGERA WS onPing answer exception {}", e.getMessage());
                 }
             }, () -> {
@@ -228,16 +227,15 @@ public class Websocket {
         }
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         logger.debug("DIRIGERA WS onConnect");
         setSession(session);
-        session.setIdleTimeout(-1);
         gateway.websocketConnected(true, "connected");
     }
 
     @OnWebSocketClose
-    public void onDisconnect(Session session, int statusCode, String reason) {
+    public void onDisconnect(int statusCode, String reason) {
         logger.debug("DIRIGERA WS onDisconnect Status {} Reason {}", statusCode, reason);
         setSession(null);
         increase(DISCONNECTS);

@@ -15,7 +15,6 @@ package org.openhab.binding.argoclima.internal.device.passthrough;
 import static org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants.BINDING_ID;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,18 +22,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.HttpCookieStore;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * HTTP client, forwarding (proxy-like) original device's request (downstream) to a remote server
@@ -76,7 +75,7 @@ public class PassthroughHttpClient {
 
         this.rawHttpClient.setFollowRedirects(false);
         this.rawHttpClient.setUserAgentField(null); // The device doesn't set it, and we want to be a transparent proxy
-        this.rawHttpClient.setCookieStore(new HttpCookieStore.Empty());
+        this.rawHttpClient.setHttpCookieStore(new HttpCookieStore.Empty());
 
         this.rawHttpClient.setRequestBufferSize(1024);
         this.rawHttpClient.setResponseBufferSize(1024);
@@ -124,17 +123,20 @@ public class PassthroughHttpClient {
      */
     public ContentResponse passthroughRequest(Request downstreamHttpRequest, String downstreamHttpRequestBody)
             throws InterruptedException, TimeoutException, ExecutionException {
+        String pathQuery = Objects.requireNonNullElse(downstreamHttpRequest.getHttpURI().getPathQuery(),
+                downstreamHttpRequest.getHttpURI().getPath());
         var request = this.rawHttpClient.newRequest(this.upstreamTargetHost, this.upstreamTargetPort)
-                .method(downstreamHttpRequest.getMethod()).path(downstreamHttpRequest.getOriginalURI())
-                .version(downstreamHttpRequest.getHttpVersion())
-                .content(new StringContentProvider(downstreamHttpRequestBody))
+                .method(downstreamHttpRequest.getMethod()).path(pathQuery)
+                .version(downstreamHttpRequest.getConnectionMetaData().getHttpVersion())
+                .body(new StringRequestContent(downstreamHttpRequestBody))
                 .timeout(ArgoClimaBindingConstants.UPSTREAM_PROXY_HTTP_REQUEST_TIMEOUT.toMillis(),
                         TimeUnit.MILLISECONDS);
 
         // re-add headers from downstream request to this one (except explicitly-ignored list)
-        for (var headerName : Collections.list(downstreamHttpRequest.getHeaderNames())) {
+        for (var header : downstreamHttpRequest.getHeaders()) {
+            String headerName = header.getName();
             if (HEADERS_TO_IGNORE.stream().noneMatch(x -> x.equalsIgnoreCase(headerName))) {
-                request.header(headerName, downstreamHttpRequest.getHeader(headerName));
+                request.headers(fields -> fields.put(headerName, header.getValue()));
             }
         }
 

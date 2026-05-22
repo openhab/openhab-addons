@@ -18,8 +18,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
@@ -28,6 +26,8 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link HomeApi} handles general API endpoints not requiring specific scope area

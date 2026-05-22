@@ -14,8 +14,7 @@ package org.openhab.binding.argoclima.internal.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import javax.xml.bind.DatatypeConverter;
+import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -37,7 +36,7 @@ public final class PasswordUtils {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
         byte[] digest = md.digest();
-        return DatatypeConverter.printHexBinary(digest).toLowerCase();
+        return HexFormat.of().formatHex(digest);
     }
 
     /**

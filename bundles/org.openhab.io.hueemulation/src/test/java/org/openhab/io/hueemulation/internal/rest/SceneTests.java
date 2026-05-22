@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;

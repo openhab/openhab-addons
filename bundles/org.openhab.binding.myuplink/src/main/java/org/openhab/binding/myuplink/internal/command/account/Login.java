@@ -19,9 +19,9 @@ import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.FormRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -55,10 +55,10 @@ public class Login extends AbstractCommand {
         Fields fields = new Fields();
         fields.add(LOGIN_FIELD_GRANT_TYPE_KEY, LOGIN_FIELD_GRANT_TYPE_VALUE);
         fields.add(LOGIN_FIELD_SCOPE_KEY, LOGIN_FIELD_SCOPE_VALUE);
-        FormContentProvider cp = new FormContentProvider(fields, StandardCharsets.UTF_8);
+        FormRequestContent cp = new FormRequestContent(fields, StandardCharsets.UTF_8);
 
-        requestToPrepare.header(HttpHeader.AUTHORIZATION, LOGIN_BASIC_AUTH_PREFIX + encodedLogin);
-        requestToPrepare.content(cp);
+        requestToPrepare.headers(h -> h.add(HttpHeader.AUTHORIZATION, LOGIN_BASIC_AUTH_PREFIX + encodedLogin));
+        requestToPrepare.body(cp);
         requestToPrepare.method(HttpMethod.POST);
 
         return requestToPrepare;

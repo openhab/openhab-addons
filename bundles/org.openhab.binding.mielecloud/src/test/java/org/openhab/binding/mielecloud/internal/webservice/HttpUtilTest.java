@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mielecloud.internal.webservice.exception.TooManyRequestsException;
@@ -30,7 +30,7 @@ public class HttpUtilTest {
     public void whenTheResponseHasARetryAfterHeaderThenItIsParsedAndPassedWithTheException() {
         // given:
         HttpFields httpFields = mock(HttpFields.class);
-        when(httpFields.containsKey("Retry-After")).thenReturn(true);
+        when(httpFields.contains("Retry-After")).thenReturn(true);
         when(httpFields.get("Retry-After")).thenReturn("100");
 
         Response response = mock(Response.class);

@@ -24,12 +24,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatHttpException;
 import org.slf4j.Logger;
@@ -127,9 +127,11 @@ public class RadioThermostatConnector {
         try {
             Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
-            request.header(HttpHeader.ACCEPT, "text/plain");
-            request.header(HttpHeader.CONTENT_TYPE, "text/plain");
-            request.content(new StringContentProvider(postJson), "application/json");
+            request.headers(h -> {
+                h.add(HttpHeader.ACCEPT, "text/plain");
+                h.add(HttpHeader.CONTENT_TYPE, "text/plain");
+            });
+            request.body(new StringRequestContent("application/json", postJson));
             logger.trace("Sending POST request to '{}', data: {}", resource, postJson);
 
             ContentResponse contentResponse = request.send();

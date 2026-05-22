@@ -21,15 +21,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,10 +39,8 @@ import org.openhab.core.ui.items.ItemUIRegistry;
 import org.openhab.persistence.rrd4j.internal.RRD4jPersistenceService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.RrdDb;
 import org.rrd4j.core.RrdDb.Builder;
@@ -57,6 +49,12 @@ import org.rrd4j.graph.RrdGraphConstants.FontTag;
 import org.rrd4j.graph.RrdGraphDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 /**
  * This servlet generates time-series charts for a given set of items.
@@ -75,7 +73,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = ChartProvider.class)
+@Component(service = { ChartProvider.class, Servlet.class }, property = {
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=" + RRD4jChartServlet.SERVLET_NAME })
 public class RRD4jChartServlet implements Servlet, ChartProvider {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jChartServlet.class);
@@ -105,38 +104,26 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             entry("Y", Duration.ofDays(365))//
     );
 
-    private final HttpService httpService;
     private final ItemUIRegistry itemUIRegistry;
     private final TimeZoneProvider timeZoneProvider;
     private final PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry;
 
     @Activate
-    public RRD4jChartServlet(final @Reference HttpService httpService, final @Reference ItemUIRegistry itemUIRegistry,
+    public RRD4jChartServlet(final @Reference ItemUIRegistry itemUIRegistry,
             final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference PersistenceServiceConfigurationRegistry persistenceServiceConfigurationRegistry) {
-        this.httpService = httpService;
         this.itemUIRegistry = itemUIRegistry;
         this.timeZoneProvider = timeZoneProvider;
         this.persistenceServiceConfigurationRegistry = persistenceServiceConfigurationRegistry;
-    }
-
-    @Activate
-    protected void activate() {
-        try {
-            logger.debug("Starting up rrd chart servlet at {}", SERVLET_NAME);
-            httpService.registerServlet(SERVLET_NAME, this, new Hashtable<>(), httpService.createDefaultHttpContext());
-        } catch (NamespaceException | ServletException e) {
-            logger.error("Error during servlet startup", e);
-        }
-    }
-
-    @Deactivate
-    protected void deactivate() {
-        httpService.unregister(SERVLET_NAME);
+        logger.debug("Starting up rrd chart servlet at {}", SERVLET_NAME);
     }
 
     @Override
-    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+    public void service(@Nullable ServletRequest req, @Nullable ServletResponse res)
+            throws ServletException, IOException {
+        if (req == null || res == null) {
+            throw new ServletException("Missing request or response");
+        }
         logger.debug("RRD4J received incoming chart request: {}", req);
 
         int width = parseInt(req.getParameter("w"), DEFAULT_WIDTH);

@@ -25,7 +25,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,13 +47,15 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link RemoteopenhabHandlerFactory} is responsible for creating things and thing

@@ -18,10 +18,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -131,10 +131,10 @@ public class EmeraldWebTargets {
 
     private String invokeAws(String uri, String amzTarget, String payload)
             throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
-        Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
-                .header(HttpHeader.CONTENT_TYPE, MIME_TYPE_AMZ_JSON).header(HEADER_AMZ_TARGET, amzTarget)
-                .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new StringContentProvider(payload), MIME_TYPE_AMZ_JSON);
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST).headers(h -> {
+            h.put(HttpHeader.CONTENT_TYPE, MIME_TYPE_AMZ_JSON);
+            h.put(HEADER_AMZ_TARGET, amzTarget);
+        }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).body(new StringRequestContent(MIME_TYPE_AMZ_JSON, payload));
 
         ContentResponse response = request.send();
         if (!HttpStatus.isSuccess(response.getStatus())) {
@@ -168,12 +168,15 @@ public class EmeraldWebTargets {
         String jsonResponse = "";
         synchronized (this) {
             try {
-                Request request = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, ACCEPT_ALL)
-                        .header(HttpHeader.CONTENT_TYPE, MIME_TYPE_JSON)
-                        .header(HttpHeader.USER_AGENT, BROWSER_USER_AGENT)
-                        .header(HttpHeader.ACCEPT_LANGUAGE, BROWSER_LANGUAGE_HEADER).header(headerKey, headerValue)
-                        .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                        .content(new StringContentProvider(params), MIME_TYPE_JSON);
+                Request request = httpClient.newRequest(uri).method(method).headers(h -> {
+                    h.put(HttpHeader.ACCEPT, ACCEPT_ALL);
+                    h.put(HttpHeader.CONTENT_TYPE, MIME_TYPE_JSON);
+                    h.put(HttpHeader.USER_AGENT, BROWSER_USER_AGENT);
+                    h.put(HttpHeader.ACCEPT_LANGUAGE, BROWSER_LANGUAGE_HEADER);
+                    if (headerKey != null && headerValue != null) {
+                        h.put(headerKey, headerValue);
+                    }
+                }).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).body(new StringRequestContent(MIME_TYPE_JSON, params));
                 if (logger.isTraceEnabled() && !jsonResponse.isEmpty() && !GET_TOKEN_URI.equals(uri)) {
                     logger.trace("{} request for {}", method, uri);
                 }

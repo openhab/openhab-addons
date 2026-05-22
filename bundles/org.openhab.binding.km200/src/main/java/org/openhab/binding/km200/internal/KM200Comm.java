@@ -19,9 +19,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -121,7 +121,7 @@ public class KM200Comm<KM200BindingProvider> {
                 // Create a method instance.
                 contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
                         .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
-                        .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
+                        .body(new BytesRequestContent(data)).timeout(5, TimeUnit.SECONDS).send();
                 rCode = contentResponse.getStatus();
                 switch (rCode) {
                     case HttpStatus.NO_CONTENT_204: // The default return value

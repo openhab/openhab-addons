@@ -30,8 +30,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -49,12 +47,14 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.servlet.ServletException;
 
 /**
  * A subclass of {@link BaseBridgeHandler} is responsible for handling commands and discovery for a

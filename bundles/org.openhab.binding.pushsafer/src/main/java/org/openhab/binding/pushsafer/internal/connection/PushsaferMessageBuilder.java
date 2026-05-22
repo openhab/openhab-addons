@@ -24,9 +24,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.MultiPart;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,7 @@ public class PushsaferMessageBuilder {
     public static final String DEFAULT_CONTENT_TYPE = "jpeg";
     public static final String DEFAULT_AUTH = "";
 
-    private final MultiPartContentProvider body = new MultiPartContentProvider();
+    private final MultiPartRequestContent body = new MultiPartRequestContent();
 
     private @Nullable String message;
     private @Nullable String title;
@@ -103,8 +104,8 @@ public class PushsaferMessageBuilder {
     private boolean monospace = false;
 
     private PushsaferMessageBuilder(String apikey, String device) throws PushsaferConfigurationException {
-        body.addFieldPart(MESSAGE_KEY_TOKEN, new StringContentProvider(apikey), null);
-        body.addFieldPart(MESSAGE_KEY_DEVICE, new StringContentProvider(device), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_TOKEN, null, null, new StringRequestContent(apikey)));
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_DEVICE, null, null, new StringRequestContent(device)));
     }
 
     public static PushsaferMessageBuilder getInstance(@Nullable String apikey, @Nullable String device)
@@ -230,13 +231,14 @@ public class PushsaferMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() throws PushsaferCommunicationException {
+    public Request.Content build() throws PushsaferCommunicationException {
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
                         "Skip sending the message as 'message' is longer than %d characters.", MAX_MESSAGE_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_MESSAGE, new StringContentProvider(message), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_MESSAGE, null, null,
+                    new StringRequestContent(message)));
         }
 
         if (title != null) {
@@ -244,38 +246,43 @@ public class PushsaferMessageBuilder {
                 throw new IllegalArgumentException(String
                         .format("Skip sending the message as 'title' is longer than %d characters.", MAX_TITLE_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_TITLE, new StringContentProvider(title), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_TITLE, null, null, new StringRequestContent(title)));
         }
 
         if (device != null) {
             if (device.length() > MAX_DEVICE_LENGTH) {
                 logger.warn("Skip 'device' as it is longer than {} characters. Got: {}.", MAX_DEVICE_LENGTH, device);
             } else {
-                body.addFieldPart(MESSAGE_KEY_DEVICE, new StringContentProvider(device), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_DEVICE, null, null,
+                        new StringRequestContent(device)));
             }
         }
 
         if (priority != DEFAULT_PRIORITY) {
             if (VALID_PRIORITY_LIST.contains(priority)) {
-                body.addFieldPart(MESSAGE_KEY_PRIORITY, new StringContentProvider(String.valueOf(priority)), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_PRIORITY, null, null,
+                        new StringRequestContent(String.valueOf(priority))));
 
                 if (priority == EMERGENCY_PRIORITY) {
                     if (retry < MIN_RETRY_SECONDS) {
                         logger.warn("Retry value of {} is too small. Using default value of {}.", retry,
                                 MIN_RETRY_SECONDS);
-                        body.addFieldPart(MESSAGE_KEY_RETRY,
-                                new StringContentProvider(String.valueOf(MIN_RETRY_SECONDS)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_RETRY, null, null,
+                                new StringRequestContent(String.valueOf(MIN_RETRY_SECONDS))));
                     } else {
-                        body.addFieldPart(MESSAGE_KEY_RETRY, new StringContentProvider(String.valueOf(retry)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_RETRY, null, null,
+                                new StringRequestContent(String.valueOf(retry))));
                     }
 
                     if (0 < expire && expire <= MAX_EXPIRE_SECONDS) {
-                        body.addFieldPart(MESSAGE_KEY_EXPIRE, new StringContentProvider(String.valueOf(expire)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_EXPIRE, null, null,
+                                new StringRequestContent(String.valueOf(expire))));
                     } else {
                         logger.warn("Expire value of {} is invalid. Using default value of {}.", expire,
                                 MAX_EXPIRE_SECONDS);
-                        body.addFieldPart(MESSAGE_KEY_EXPIRE,
-                                new StringContentProvider(String.valueOf(MAX_EXPIRE_SECONDS)), null);
+                        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_EXPIRE, null, null,
+                                new StringRequestContent(String.valueOf(MAX_EXPIRE_SECONDS))));
                     }
                 }
             } else {
@@ -289,7 +296,7 @@ public class PushsaferMessageBuilder {
                 throw new IllegalArgumentException(String
                         .format("Skip sending the message as 'url' is longer than %d characters.", MAX_URL_LENGTH));
             }
-            body.addFieldPart(MESSAGE_KEY_URL, new StringContentProvider(url), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_URL, null, null, new StringRequestContent(url)));
 
             if (urlTitle != null) {
                 if (urlTitle.length() > MAX_URL_TITLE_LENGTH) {
@@ -297,35 +304,45 @@ public class PushsaferMessageBuilder {
                             String.format("Skip sending the message as 'urlTitle' is longer than %d characters.",
                                     MAX_URL_TITLE_LENGTH));
                 }
-                body.addFieldPart(MESSAGE_KEY_URL_TITLE, new StringContentProvider(urlTitle), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_URL_TITLE, null, null,
+                        new StringRequestContent(urlTitle)));
             }
         }
 
         if (sound != null) {
-            body.addFieldPart(MESSAGE_KEY_SOUND, new StringContentProvider(sound), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_SOUND, null, null, new StringRequestContent(sound)));
         }
 
         if (icon != null) {
-            body.addFieldPart(MESSAGE_KEY_ICON, new StringContentProvider(icon), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ICON, null, null, new StringRequestContent(icon)));
         }
 
         if (color != null) {
-            body.addFieldPart(MESSAGE_KEY_COLOR, new StringContentProvider(color), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_COLOR, null, null, new StringRequestContent(color)));
         }
 
         if (vibration != null) {
-            body.addFieldPart(MESSAGE_KEY_VIBRATION, new StringContentProvider(vibration), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_VIBRATION, null, null,
+                    new StringRequestContent(vibration)));
         }
 
-        body.addFieldPart(MESSAGE_KEY_CONFIRM, new StringContentProvider(String.valueOf(confirm)), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_CONFIRM, null, null,
+                new StringRequestContent(String.valueOf(confirm))));
 
-        body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(String.valueOf(answer)), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ANSWER, null, null,
+                new StringRequestContent(String.valueOf(answer))));
 
-        body.addFieldPart(MESSAGE_KEY_ANSWEROPTIONS, new StringContentProvider(String.valueOf(answeroptions)), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ANSWEROPTIONS, null, null,
+                new StringRequestContent(String.valueOf(answeroptions))));
 
-        body.addFieldPart(MESSAGE_KEY_ANSWERFORCE, new StringContentProvider(String.valueOf(answerforce)), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ANSWERFORCE, null, null,
+                new StringRequestContent(String.valueOf(answerforce))));
 
-        body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
+        body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_TIME2LIVE, null, null,
+                new StringRequestContent(String.valueOf(time2live))));
+
         String attachment = this.attachment;
         if (attachment != null) {
             String localAttachment = attachment;
@@ -356,7 +373,8 @@ public class PushsaferMessageBuilder {
                     encodedString = "data:image/" + contentType + ";base64,"
                             + Base64.getEncoder().encodeToString(fileContent);
                 }
-                body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
+                body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_ATTACHMENT, null, null,
+                        new StringRequestContent(encodedString)));
             } catch (IOException e) {
                 logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
                 throw new PushsaferCommunicationException(
@@ -365,9 +383,10 @@ public class PushsaferMessageBuilder {
         }
 
         if (html) {
-            body.addFieldPart(MESSAGE_KEY_HTML, new StringContentProvider("1"), null);
+            body.addPart(new MultiPart.ContentSourcePart(MESSAGE_KEY_HTML, null, null, new StringRequestContent("1")));
         } else if (monospace) {
-            body.addFieldPart(MESSAGE_KEY_MONOSPACE, new StringContentProvider("1"), null);
+            body.addPart(
+                    new MultiPart.ContentSourcePart(MESSAGE_KEY_MONOSPACE, null, null, new StringRequestContent("1")));
         }
 
         body.close();

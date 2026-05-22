@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.wolfsmartset.internal.dto;
 
-import javax.annotation.Generated;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import jakarta.annotation.Generated;
 
 /**
  * generated with https://www.jsonschema2pojo.org/

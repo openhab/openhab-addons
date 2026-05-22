@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -62,7 +63,7 @@ class Shelly2RpcSocketDisposeTest {
     void setUp() {
         socket = new Shelly2RpcSocket("shellyplus1-test", thingTable, DEVICE_ADDRESS, webSocketClient, scheduler);
         socket.addMessageHandler(handler);
-        when(session.getRemoteAddress()).thenReturn(DEVICE_ADDRESS);
+        when(session.getRemoteSocketAddress()).thenReturn(DEVICE_ADDRESS);
         when(session.isOpen()).thenReturn(true);
     }
 
@@ -90,7 +91,7 @@ class Shelly2RpcSocketDisposeTest {
 
         socket.onConnect(session);
 
-        verify(session).close(eq(StatusCode.SHUTDOWN), anyString());
+        verify(session).close(eq(StatusCode.SHUTDOWN), anyString(), any(Callback.class));
         verify(handler, never()).onConnect(any(), anyBoolean());
         verifyNoInteractions(thingTable);
         assertFalse(socket.isConnected());

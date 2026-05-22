@@ -18,15 +18,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraGroupHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
-import org.osgi.service.http.HttpService;
+import org.ops4j.pax.web.service.http.HttpService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link GroupServlet} is responsible for serving files for a rotating feed of multiple cameras back to the Jetty

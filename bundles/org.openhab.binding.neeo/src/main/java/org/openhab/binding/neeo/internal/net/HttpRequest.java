@@ -20,18 +20,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.neeo.internal.NeeoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.ProcessingException;
 
 /**
  * This class represents an HTTP session with a client
@@ -63,7 +62,7 @@ public class HttpRequest implements AutoCloseable {
     public HttpResponse sendGetCommand(String uri) {
         NeeoUtil.requireNotEmpty(uri, "uri cannot be empty");
         try {
-            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(uri);
+            final org.eclipse.jetty.client.Request request = httpClient.newRequest(uri);
             request.method(HttpMethod.GET);
             request.timeout(10, TimeUnit.SECONDS);
             ContentResponse refreshResponse = request.send();
@@ -96,9 +95,9 @@ public class HttpRequest implements AutoCloseable {
                 logger.warn("Absolute URI required but provided URI '{}' is non-absolute. ", uriString);
                 return new HttpResponse(HttpStatus.NOT_ACCEPTABLE_406, "Absolute URI required");
             }
-            final org.eclipse.jetty.client.api.Request request = httpClient.newRequest(targetUri);
-            request.content(new StringContentProvider(body));
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            final org.eclipse.jetty.client.Request request = httpClient.newRequest(targetUri);
+            request.body(new org.eclipse.jetty.client.StringRequestContent(body));
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
             request.method(HttpMethod.POST);
             request.timeout(10, TimeUnit.SECONDS);
             ContentResponse refreshResponse = request.send();

@@ -20,12 +20,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -35,11 +29,17 @@ import org.openhab.binding.linktap.internal.Utils;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.framework.Bundle;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link BindingServlet} defines the request to enable or disable alerts from a given device.

@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -449,8 +448,8 @@ public class ShieldTVMessageParser {
                     logger.debug("{} - Cert Pair Received privLen: {} pubLen: {}", thingId, privLen,
                             msg.length() - privLen - 4);
 
-                    byte[] privKeyB64Byte = DatatypeConverter.parseHexBinary(privKey.toString());
-                    byte[] pubKeyB64Byte = DatatypeConverter.parseHexBinary(pubKey.toString());
+                    byte[] privKeyB64Byte = HexFormat.of().parseHex(privKey);
+                    byte[] pubKeyB64Byte = HexFormat.of().parseHex(pubKey);
 
                     String privKeyB64 = Base64.getEncoder().encodeToString(privKeyB64Byte);
                     String pubKeyB64 = Base64.getEncoder().encodeToString(pubKeyB64Byte);

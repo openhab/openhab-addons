@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
@@ -286,13 +286,15 @@ public class TapoCameraApi {
             throw new IllegalStateException("no httpClient configured");
         }
         Request request = client.newRequest(url).method(HttpMethod.POST).timeout(15, TimeUnit.SECONDS);
-        request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.CONNECTION, "close");
-        request.header("requestByApp", "true");
+        request.headers(f -> {
+            f.put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
+            f.put(HttpHeader.ACCEPT, "application/json");
+            f.put(HttpHeader.CONNECTION, "close");
+            f.put("requestByApp", "true");
+            headers.forEach(f::put);
+        });
         request.agent(USER_AGENT);
-        headers.forEach(request::header);
-        request.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+        request.body(new StringRequestContent(body, StandardCharsets.UTF_8));
         ContentResponse response = request.send();
         String content = response.getContentAsString();
         if (content == null) {

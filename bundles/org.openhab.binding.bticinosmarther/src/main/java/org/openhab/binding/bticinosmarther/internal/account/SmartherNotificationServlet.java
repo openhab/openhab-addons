@@ -15,11 +15,6 @@ package org.openhab.binding.bticinosmarther.internal.account;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -32,6 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@code SmartherNotificationServlet} class acts as the registered endpoint to receive module status notifications

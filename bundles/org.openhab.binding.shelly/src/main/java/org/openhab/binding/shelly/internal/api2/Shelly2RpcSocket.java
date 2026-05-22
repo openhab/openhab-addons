@@ -30,24 +30,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
+import org.eclipse.jetty.websocket.api.Frame;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.OpCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
@@ -62,12 +58,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import jakarta.ws.rs.core.HttpHeaders;
+
 /**
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@WebSocket(maxIdleTime = 7 * 60 * 1000)
-public class Shelly2RpcSocket implements WriteCallback {
+@WebSocket
+public class Shelly2RpcSocket implements Callback {
     private static final long PING_TASK_FREQUENCY_MIN = 2; // = 3 ping before timeout
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
@@ -188,13 +186,13 @@ public class Shelly2RpcSocket implements WriteCallback {
      *
      * @param session Newly created WebSocket connection
      */
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
-        if (session.getRemoteAddress() == null) {
+        if (session.getRemoteSocketAddress() == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: Invalid inbound WebSocket connect (invalid remote ip)", thingName);
             }
-            session.close(StatusCode.ABNORMAL, "Invalid remote IP");
+            session.close(StatusCode.ABNORMAL, "Invalid remote IP", Callback.NOOP);
             return;
         }
 
@@ -206,7 +204,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         InetSocketAddress socketAddr = this.deviceSocketAddr;
         if (socketAddr == null) {
             // This is the inbound event web socket
-            this.deviceSocketAddr = socketAddr = session.getRemoteAddress();
+            this.deviceSocketAddr = socketAddr = (InetSocketAddress) session.getRemoteSocketAddress();
         }
 
         // It's a bit wasteful to retrieve the ThingInterface even if we already have a handler, but we can't call
@@ -219,7 +217,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: Inbound connection request from {}, but unknown/disabled thing - {}, closing socket",
                     thingName, socketAddr, e.getMessage());
-            session.close(StatusCode.SHUTDOWN, "Thing not active");
+            session.close(StatusCode.SHUTDOWN, "Thing not active", Callback.NOOP);
             return;
         }
 
@@ -255,8 +253,8 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalAddress(),
-                    session.getRemoteAddress(), session.getIdleTimeout());
+            logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalSocketAddress(),
+                    session.getRemoteSocketAddress(), session.getIdleTimeout());
         }
         handler.onConnect(socketAddr, true);
 
@@ -265,9 +263,8 @@ public class Shelly2RpcSocket implements WriteCallback {
                 logger.debug("{}: Sending {} queued RPC request{}", thingName, queue.size(),
                         queue.size() > 1 ? "s" : "");
             }
-            RemoteEndpoint remote = session.getRemote();
             for (String msg : queue) {
-                remote.sendString(msg, this);
+                session.sendText(msg, this);
             }
         }
     }
@@ -303,21 +300,20 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
         }
 
-        RemoteEndpoint remote = session.getRemote();
         if (queue != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: Sending {} queued API request{}", thingName, queue.size(),
                         queue.size() > 1 ? "s" : "");
             }
             for (String queued : queue) {
-                remote.sendString(queued, this);
+                session.sendText(queued, this);
             }
         }
 
         if (logger.isTraceEnabled()) {
             logger.trace("{}: Sending RPC message {}", thingName, str);
         }
-        remote.sendString(str, this);
+        session.sendText(str, this);
     }
 
     /**
@@ -334,10 +330,10 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
         if (session != null && session.isOpen()) {
             if (logger.isTraceEnabled()) {
-                logger.trace("{}: Closing WebSocket session ({} -> {})", thingName, session.getLocalAddress(),
-                        session.getRemoteAddress());
+                logger.trace("{}: Closing WebSocket session ({} -> {})", thingName, session.getLocalSocketAddress(),
+                        session.getRemoteSocketAddress());
             }
-            session.close(StatusCode.NORMAL, "Socket closed");
+            session.close(StatusCode.NORMAL, "Socket closed", Callback.NOOP);
         }
     }
 
@@ -362,7 +358,7 @@ public class Shelly2RpcSocket implements WriteCallback {
 
     private void closeDisposedSession(Session session) {
         logger.debug("{}: WebSocket connected after the Thing was disposed, closing session", thingName);
-        session.close(StatusCode.SHUTDOWN, "Thing disposed");
+        session.close(StatusCode.SHUTDOWN, "Thing disposed", Callback.NOOP);
     }
 
     /**
@@ -542,15 +538,15 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     @OnWebSocketFrame
-    public void onFrame(Frame frame) {
-        switch (frame.getOpCode()) {
-            case OpCode.PING:
+    public void onFrame(Frame frame, Callback callback) {
+        switch (frame.getType()) {
+            case PING:
                 // Jetty auto-responds with PONG by default
                 if (logger.isTraceEnabled()) {
                     logger.trace("{}: WebSocket PING received", thingName);
                 }
                 break;
-            case OpCode.PONG:
+            case PONG:
                 if (logger.isTraceEnabled()) {
                     logger.trace("{}: WebSocket PONG received", thingName);
                 }
@@ -562,7 +558,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                     websocketHandler.onPong();
                 }
                 break;
+            default:
+                break;
         }
+        callback.succeed();
     }
 
     /**
@@ -587,7 +586,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Asynchronous write completed with error
      */
     @Override
-    public void writeFailed(@Nullable Throwable x) {
+    public void fail(@Nullable Throwable x) {
         if (logger.isDebugEnabled()) {
             if (x == null) {
                 logger.debug("{}: Sending RPC Message failed", thingName);
@@ -601,7 +600,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Asynchronous write completed with success
      */
     @Override
-    public void writeSuccess() {
+    public void succeed() {
         // Nothing to do
     }
 
@@ -634,17 +633,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                 session = this.session;
             }
             if (session.isOpen()) {
-                RemoteEndpoint remote = session.getRemote();
+                InetSocketAddress remoteAddr = (InetSocketAddress) session.getRemoteSocketAddress();
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending WebSocket ping to {}", remote.getInetSocketAddress().getHostString());
+                    logger.trace("Sending WebSocket ping to {}",
+                            remoteAddr != null ? remoteAddr.getHostString() : "unknown");
                 }
-                try {
-                    remote.sendPing(ByteBuffer.allocate(0));
-                } catch (IOException e) {
-                    logger.debug("Faied to send WebSocket ping to {}: {}",
-                            remote.getInetSocketAddress().getHostString(), e.getMessage());
-                    logger.trace("", e);
-                }
+                session.sendPing(ByteBuffer.allocate(0), Callback.NOOP);
             }
         }
     }
