@@ -32,9 +32,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -898,7 +898,8 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     protected <T extends BoschSHCServiceState> @Nullable T getState(BoschHttpClient httpClient, String url,
             Class<T> stateClass) throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
+        Request request = httpClient.createRequest(url, GET);
+        request.headers(headers -> headers.put("Accept", "application/json"));
 
         ContentResponse contentResponse = request.send();
 

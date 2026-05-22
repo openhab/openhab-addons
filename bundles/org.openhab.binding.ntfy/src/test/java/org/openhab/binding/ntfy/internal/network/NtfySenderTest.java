@@ -26,9 +26,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,7 +76,7 @@ public class NtfySenderTest {
 
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(HttpMethod.POST)).thenReturn(request);
-        when(request.content(any())).thenReturn(request);
+        when(request.body(any())).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         when(request.send()).thenReturn(response);
 
@@ -141,7 +141,7 @@ public class NtfySenderTest {
 
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(HttpMethod.POST)).thenReturn(request);
-        when(request.content(any())).thenReturn(request);
+        when(request.body(any())).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         when(request.send()).thenThrow(new ExecutionException(new RuntimeException("boom")));
 
@@ -174,7 +174,7 @@ public class NtfySenderTest {
 
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(HttpMethod.PUT)).thenReturn(request);
-        when(request.content(any())).thenReturn(request);
+        when(request.body(any())).thenReturn(request);
         when(request.send()).thenReturn(response);
 
         String json = "{\"sequence_id\":\"seq-file-1\",\"message\":\"uploaded\",\"priority\":4,\"event\":\"message\"}";

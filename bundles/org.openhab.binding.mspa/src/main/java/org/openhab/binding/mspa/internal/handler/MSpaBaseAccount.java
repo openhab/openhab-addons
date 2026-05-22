@@ -25,9 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -263,16 +263,21 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
             return httpClient.newRequest(HOSTS.get(region) + endPoint);
         }
 
-        request.header("push_type", "Android");
-        request.header("appid", APP_IDS.get(region));
-        request.header("nonce", nonce);
-        request.header("ts", String.valueOf(timestamp));
-        request.header("sign", MSpaUtils.getSignature(nonce, timestamp, region));
-        request.header(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-        request.header(HttpHeader.USER_AGENT, "okhttp/4.9.0");
+        String appId = APP_IDS.get(region);
+        String sign = MSpaUtils.getSignature(nonce, timestamp, region);
+        request.headers(h -> {
+            h.add("push_type", "Android");
+            h.add("appid", appId);
+            h.add("nonce", nonce);
+            h.add("ts", String.valueOf(timestamp));
+            h.add("sign", sign);
+            h.add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
+            h.add(HttpHeader.USER_AGENT, "okhttp/4.9.0");
+        });
         if (!ENDPOINT_TOKEN.equals(endPoint) && !ENDPOINT_VISITOR.equals(endPoint)) {
             // no authorization header if token shall be requested
-            request.header(HttpHeader.AUTHORIZATION, "token " + getToken());
+            String token = "token " + getToken();
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, token));
         }
         return request;
     }

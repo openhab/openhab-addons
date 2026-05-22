@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.matter.internal.client;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +37,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -85,7 +85,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class MatterWebsocketClient implements WebSocketListener, MatterWebsocketService.NodeProcessListener {
+public class MatterWebsocketClient implements Session.Listener, MatterWebsocketService.NodeProcessListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -145,12 +145,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             pendingRequests.clear();
 
             if (session != null && session.isOpen()) {
-                session.disconnect();
                 session.close();
                 session = null;
             }
-        } catch (IOException e) {
-            logger.debug("Error trying to disconnect", e);
         } finally {
             try {
                 client.stop();
@@ -230,12 +227,8 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         if (session != null) {
-            final WebSocketPolicy currentPolicy = session.getPolicy();
-            currentPolicy.setInputBufferSize(BUFFER_SIZE);
-            currentPolicy.setMaxTextMessageSize(BUFFER_SIZE);
-            currentPolicy.setMaxBinaryMessageSize(BUFFER_SIZE);
             this.session = session;
             for (MatterClientListener listener : clientListeners) {
                 listener.onConnect();
@@ -412,8 +405,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     }
 
     @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(@NonNullByDefault({}) ByteBuffer payload, @NonNullByDefault({}) Callback callback) {
         logger.debug("onWebSocketBinary data, not supported");
+        callback.succeed();
     }
 
     protected CompletableFuture<JsonElement> sendMessage(String namespace, String functionName,
@@ -437,7 +431,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Request message = new Request(requestId, namespace, functionName, args);
         String jsonMessage = gson.toJson(message);
         logger.debug("sendMessage: {}", jsonMessage);
-        session.getRemote().sendStringByFuture(jsonMessage);
+        session.sendText(jsonMessage, Callback.NOOP);
 
         // timeout handling
         scheduler.schedule(() -> {
@@ -463,7 +457,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
 
         logger.debug("Connecting {}", dest);
         WebSocketClient client = new WebSocketClient();
-        client.setMaxIdleTimeout(Long.MAX_VALUE);
+        client.setIdleTimeout(Duration.ofSeconds(Long.MAX_VALUE / 1000));
         client.start();
         URI uri = new URI(dest);
         client.connect(this, uri, new ClientUpgradeRequest()).get();

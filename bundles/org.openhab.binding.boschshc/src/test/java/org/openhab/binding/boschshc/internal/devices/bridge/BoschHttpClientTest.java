@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -25,9 +26,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -180,22 +182,22 @@ class BoschHttpClientTest {
     }
 
     @Test
-    void createRequestWithObject() {
+    void createRequestWithObject() throws IOException {
         UserStateServiceState userState = new UserStateServiceState();
         userState.setState(true);
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, userState);
         assertNotNull(request);
-        assertEquals("true", StandardCharsets.UTF_8.decode(request.getContent().iterator().next()).toString());
+        assertEquals("true", Content.Source.asString(request.getBody(), StandardCharsets.UTF_8));
     }
 
     @Test
-    void createRequestForUserDefinedState() {
+    void createRequestForUserDefinedState() throws IOException {
         BinarySwitchServiceState binarySwitchState = new BinarySwitchServiceState();
         binarySwitchState.on = true;
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, binarySwitchState);
         assertNotNull(request);
         assertEquals("{\"on\":true,\"stateType\":\"binarySwitchState\",\"@type\":\"binarySwitchState\"}",
-                StandardCharsets.UTF_8.decode(request.getContent().iterator().next()).toString());
+                Content.Source.asString(request.getBody(), StandardCharsets.UTF_8));
     }
 
     @Test

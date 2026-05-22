@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -32,6 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.auth.AuthenticationException;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Tests for {@link McpAuthenticator}.
@@ -137,13 +137,12 @@ class McpAuthenticatorTest {
         lenient().when(req.getMethod()).thenReturn("POST");
         lenient().when(req.getRequestURI()).thenReturn("/mcp");
 
-        org.eclipse.jetty.client.api.Request jettyRequest = mock(org.eclipse.jetty.client.api.Request.class);
-        org.eclipse.jetty.client.api.ContentResponse response = mock(
-                org.eclipse.jetty.client.api.ContentResponse.class);
+        org.eclipse.jetty.client.Request jettyRequest = mock(org.eclipse.jetty.client.Request.class);
+        org.eclipse.jetty.client.ContentResponse response = mock(org.eclipse.jetty.client.ContentResponse.class);
 
         when(Objects.requireNonNull(httpClient).newRequest(anyString())).thenReturn(jettyRequest);
         when(jettyRequest.method(any(org.eclipse.jetty.http.HttpMethod.class))).thenReturn(jettyRequest);
-        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
+        when(jettyRequest.headers(any())).thenReturn(jettyRequest);
         when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
         when(jettyRequest.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(200);
@@ -158,13 +157,12 @@ class McpAuthenticatorTest {
         lenient().when(req.getMethod()).thenReturn("POST");
         lenient().when(req.getRequestURI()).thenReturn("/mcp");
 
-        org.eclipse.jetty.client.api.Request jettyRequest = mock(org.eclipse.jetty.client.api.Request.class);
-        org.eclipse.jetty.client.api.ContentResponse response = mock(
-                org.eclipse.jetty.client.api.ContentResponse.class);
+        org.eclipse.jetty.client.Request jettyRequest = mock(org.eclipse.jetty.client.Request.class);
+        org.eclipse.jetty.client.ContentResponse response = mock(org.eclipse.jetty.client.ContentResponse.class);
 
         when(Objects.requireNonNull(httpClient).newRequest(anyString())).thenReturn(jettyRequest);
         when(jettyRequest.method(any(org.eclipse.jetty.http.HttpMethod.class))).thenReturn(jettyRequest);
-        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
+        when(jettyRequest.headers(any())).thenReturn(jettyRequest);
         when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
         when(jettyRequest.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(401);

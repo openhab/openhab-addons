@@ -37,15 +37,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.InputStreamRequestContent;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -89,11 +86,14 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.service.http.HttpService;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * {@link ApiBridgeHandler} is the handler for a Netatmo API and connects it to the framework.
@@ -330,7 +330,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 prepareReconnection("@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
-            connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
+            connectApi.getAuthorization()
+                    .ifPresent(auth -> request.headers(h -> h.add(HttpHeader.AUTHORIZATION, auth)));
 
             handlePayload(method, payload, contentType, request);
             handleRequestCounter();
@@ -414,10 +415,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-            request.content(inputStreamContentProvider, contentType);
-            request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-        }
+        request.body(new InputStreamRequestContent(contentType, stream));
+        request.headers(h -> h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
         logger.trace(" -with payload: {} ", payload);
     }
 

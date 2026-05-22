@@ -41,9 +41,9 @@ package org.openhab.binding.lametrictime.internal.api.authentication;
 
 import java.util.Base64;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * Implementation of Basic Http Authentication method (RFC 2617).

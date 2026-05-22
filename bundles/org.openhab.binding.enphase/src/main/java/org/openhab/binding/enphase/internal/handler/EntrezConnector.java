@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -77,8 +77,8 @@ public class EntrezConnector {
         final URI uri = URI.create(TOKEN_URL);
         logger.trace("Retrieving jwt from '{}'", uri);
         final Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
-                .cookie(new HttpCookie(SESSION_COOKIE_NAME, session)).content(new FormContentProvider(fields))
-                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .cookie(org.eclipse.jetty.http.HttpCookie.build(SESSION_COOKIE_NAME, session).build())
+                .body(new FormRequestContent(fields)).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         final ContentResponse response = send(request);
         final String contentAsString = response.getContentAsString();
@@ -121,8 +121,8 @@ public class EntrezConnector {
 
         final URI uri = URI.create(LOGIN_URL);
         logger.trace("Retrieving session id from '{}'", uri);
-        final Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
-                .content(new FormContentProvider(fields)).timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        final Request request = httpClient.newRequest(uri).method(HttpMethod.POST).body(new FormRequestContent(fields))
+                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         final ContentResponse response = send(request);
 
         if (response.getStatus() == 200 && response.getHeaders().contains(HttpHeader.SET_COOKIE)) {

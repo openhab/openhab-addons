@@ -13,7 +13,31 @@
 
   <name>openHAB Add-ons :: Bundles :: LG Thinq Binding</name>
 
+  <properties>
+    <!-- Compiled against Jetty 12.1.8 (WireMock 4.x test requirement) but runtime provides 12.0.23; lower the floor -->
+    <bnd.importpackage>org.eclipse.jetty.*;version="[12.0,13)"</bnd.importpackage>
+  </properties>
+
+  <!-- WireMock 4.x requires Jetty 12.1.8; override parent BOM's 12.0.23 pins for consistency -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-bom</artifactId>
+        <version>12.1.8</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>3.1.0</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.wiremock</groupId>
       <artifactId>wiremock-standalone</artifactId>

@@ -15,8 +15,8 @@ package org.openhab.binding.easee.internal.command.account;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.REFRESH_TOKEN_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
@@ -49,8 +49,7 @@ public class RefreshToken extends Login {
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        StringContentProvider cp = new StringContentProvider(gson.toJson(refreshData));
-        requestToPrepare.content(cp);
+        requestToPrepare.body(new StringRequestContent("application/json", gson.toJson(refreshData)));
         requestToPrepare.method(HttpMethod.POST);
 
         return requestToPrepare;

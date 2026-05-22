@@ -14,8 +14,6 @@ package org.openhab.binding.bondhome.internal.api;
 
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -29,10 +27,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bondhome.internal.BondException;
@@ -179,17 +177,14 @@ public class BondHttpApi {
         if (argument != null) {
             payload = "{\"argument\":" + argument + "}";
         }
-        InputStream content = new ByteArrayInputStream(payload.getBytes());
         logger.debug("HTTP PUT to {} with content {}", url, payload);
 
         final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-        final Request request = httpClient.newRequest(url).method(HttpMethod.PUT)
-                .header("BOND-Token", bridgeHandler.getBridgeToken())
-                .timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-
-        try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(content)) {
-            request.content(inputStreamContentProvider, "application/json");
-        }
+        final Request request = httpClient.newRequest(url).method(HttpMethod.PUT).timeout(BOND_API_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
+        request.headers(headers -> headers.put("BOND-Token", bridgeHandler.getBridgeToken()));
+        request.headers(headers -> headers.put("Content-Type", "application/json"));
+        request.body(new StringRequestContent(payload));
         ContentResponse response;
         try {
             response = request.send();
@@ -215,8 +210,8 @@ public class BondHttpApi {
                 logger.debug("HTTP GET to {}", url);
 
                 final HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-                final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
-                        bridgeHandler.getBridgeToken());
+                final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+                request.headers(headers -> headers.put("BOND-Token", bridgeHandler.getBridgeToken()));
                 ContentResponse response;
                 response = request.timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()

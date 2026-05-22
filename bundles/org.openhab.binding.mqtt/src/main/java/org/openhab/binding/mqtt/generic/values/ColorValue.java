@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
-import javax.ws.rs.NotSupportedException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
@@ -31,6 +29,8 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.NotSupportedException;
 
 /**
  * Implements a color value.

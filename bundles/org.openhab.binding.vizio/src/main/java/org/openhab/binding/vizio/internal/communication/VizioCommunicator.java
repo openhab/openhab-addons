@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vizio.internal.VizioException;
@@ -233,8 +233,8 @@ public class VizioCommunicator {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
             request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            request.header(AUTH_HEADER, authToken);
-            request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+            request.headers(h -> h.add(AUTH_HEADER, authToken));
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE));
 
             final ContentResponse response = request.send();
 
@@ -259,9 +259,9 @@ public class VizioCommunicator {
             final Request request = httpClient.newRequest(url).method(HttpMethod.PUT);
             request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (!url.contains("pairing")) {
-                request.header(AUTH_HEADER, authToken);
+                request.headers(h -> h.add(AUTH_HEADER, authToken));
             }
-            request.content(new StringContentProvider(commandJSON), JSON_CONTENT_TYPE);
+            request.body(new StringRequestContent(JSON_CONTENT_TYPE, commandJSON));
 
             final ContentResponse response = request.send();
 

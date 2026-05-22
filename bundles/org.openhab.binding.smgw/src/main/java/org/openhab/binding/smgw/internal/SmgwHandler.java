@@ -15,8 +15,6 @@ package org.openhab.binding.smgw.internal;
 import static org.openhab.binding.smgw.internal.SmgwBindingConstants.CHANNEL_METER;
 import static org.openhab.binding.smgw.internal.SmgwBindingConstants.CHANNEL_TIMESTAMP;
 
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
@@ -28,14 +26,16 @@ import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.DigestAuthentication;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.jsoup.Jsoup;
@@ -119,8 +119,8 @@ public class SmgwHandler extends BaseThingHandler {
             return;
         }
         // clear cookies
-        CookieStore cookieStore = httpClient.getCookieStore();
-        List<HttpCookie> cookies = cookieStore.get(uri);
+        HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
+        List<HttpCookie> cookies = cookieStore.match(uri);
         cookies.forEach(cookie -> cookieStore.remove(uri, cookie));
 
         // clear auth
@@ -151,7 +151,8 @@ public class SmgwHandler extends BaseThingHandler {
         String tkn = tknElement.val();
         String showMeterValuesForm = "tkn=" + tkn + "&action=meterform";
         CompletableFuture<SmgwResponse> future = new CompletableFuture<>();
-        httpClient.POST(uri).content(new StringContentProvider(showMeterValuesForm)).send(new ResponseListener(future));
+        httpClient.POST(uri).body(new StringRequestContent("text/plain", showMeterValuesForm))
+                .send(new ResponseListener(future));
         return future;
     }
 
@@ -169,8 +170,9 @@ public class SmgwHandler extends BaseThingHandler {
                 + localDate;
 
         CompletableFuture<SmgwResponse> future = new CompletableFuture<>();
-        httpClient.POST(uri).content(new StringContentProvider(showMeterValues))
-                .header(HttpHeader.COOKIE, response.cookies()).send(new ResponseListener(future));
+        final String cookiesVal = response.cookies();
+        httpClient.POST(uri).body(new StringRequestContent("text/plain", showMeterValues))
+                .headers(h -> h.add(HttpHeader.COOKIE, cookiesVal)).send(new ResponseListener(future));
 
         return future;
     }

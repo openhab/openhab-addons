@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -104,7 +104,7 @@ public class TeslascopeWebTargets {
             try {
                 Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (!personalAccessToken.isBlank()) {
-                    request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
+                    request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken));
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("{} request for {}", method, uri);

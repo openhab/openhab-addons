@@ -18,19 +18,19 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.InputStreamRequestContent;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Proxies POSTs to {@code /mcp/oauth/token} onto openHAB core's local
@@ -69,6 +69,7 @@ public class OAuthTokenProxyServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String contentType = request.getContentType();
         if (contentType == null || !contentType.startsWith("application/x-www-form-urlencoded")) {
@@ -86,9 +87,9 @@ public class OAuthTokenProxyServlet extends HttpServlet {
             Request proxy = httpClient.newRequest(URI.create(localTokenEndpoint)).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (contentType != null) {
-                proxy.content(new InputStreamContentProvider(in), contentType);
+                proxy.body(new InputStreamRequestContent(contentType, in));
             } else {
-                proxy.content(new InputStreamContentProvider(in));
+                proxy.body(new InputStreamRequestContent(in));
             }
             ContentResponse resp = proxy.send();
             int status = resp.getStatus();

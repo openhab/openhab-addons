@@ -34,17 +34,14 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.client.io.UpgradeListener;
@@ -907,11 +904,10 @@ public final class UnifiAccessApiClient implements Closeable {
             req.setHeader("Upgrade", "websocket");
             req.setHeader("Connection", "Upgrade");
 
-            WebSocketAdapter socket = new WebSocketAdapter() {
+            Session.Listener.AutoDemanding socket = new Session.Listener.AutoDemanding() {
                 @Override
                 @NonNullByDefault({})
-                public void onWebSocketConnect(Session sess) {
-                    super.onWebSocketConnect(sess);
+                public void onWebSocketOpen(Session sess) {
                     logger.debug("Notifications WebSocket connected: {}", wsUri);
                     wsSession = sess;
                     try {
@@ -1073,14 +1069,15 @@ public final class UnifiAccessApiClient implements Closeable {
     private Request newAuthenticatedRequest(HttpMethod method, String path, @Nullable String body)
             throws UnifiAccessApiException {
         URI uri = baseUri(path);
-        Request req = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, "application/json")
+        Request req = httpClient.newRequest(uri).method(method)
+                .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
                 .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         unifiSession.addAuthHeaders(req);
 
         if (body != null) {
-            req.header(HttpHeader.CONTENT_TYPE, "application/json");
-            req.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+            req.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
+            req.body(new StringRequestContent(body, StandardCharsets.UTF_8));
         }
 
         logger.debug("{} {}", method, uri);

@@ -25,10 +25,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tapocontrol.internal.api.TapoConnectorInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
@@ -103,7 +103,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
         httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         /* add request body */
-        httpRequest.content(new StringContentProvider(tapoRequest.toString(), CONTENT_CHARSET), CONTENT_TYPE_JSON);
+        httpRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, tapoRequest.toString()));
 
         try {
             responseReceived(httpRequest.send(), command);
@@ -193,7 +193,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 httpRequest.param("seq", ivSequence.toString());
 
                 /* add request body */
-                httpRequest.content(new BytesContentProvider(encodedBytes));
+                httpRequest.body(new BytesRequestContent(encodedBytes));
                 ContentResponse response = httpRequest.timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 switch (response.getStatus()) {
                     case 200:
@@ -336,10 +336,10 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
      */
     protected Request setHeaders(Request httpRequest) {
         if (!session.isHandshakeComplete()) {
-            httpRequest.header("Accept", CONTENT_TYPE_JSON);
+            httpRequest.headers(h -> h.add("Accept", CONTENT_TYPE_JSON));
         }
         if (!session.getCookie().isBlank()) {
-            httpRequest.header(HTTP_AUTH_TYPE_COOKIE, session.getCookie());
+            httpRequest.headers(h -> h.add(HTTP_AUTH_TYPE_COOKIE, session.getCookie()));
         }
         return httpRequest;
     }

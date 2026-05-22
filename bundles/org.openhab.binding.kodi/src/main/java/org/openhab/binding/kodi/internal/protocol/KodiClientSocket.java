@@ -19,11 +19,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -110,7 +111,7 @@ public class KodiClientSocket {
     @WebSocket
     public class KodiWebSocketListener {
 
-        @OnWebSocketConnect
+        @OnWebSocketOpen
         public void onConnect(Session wssession) {
             logger.trace("Connected to server");
             session = wssession;
@@ -177,7 +178,7 @@ public class KodiClientSocket {
     private void sendMessage(String str) throws IOException {
         if (isConnected()) {
             logger.trace("send message: {}", str);
-            session.getRemote().sendString(str);
+            session.sendText(str, Callback.NOOP);
         } else {
             throw new IOException("Socket not initialized");
         }

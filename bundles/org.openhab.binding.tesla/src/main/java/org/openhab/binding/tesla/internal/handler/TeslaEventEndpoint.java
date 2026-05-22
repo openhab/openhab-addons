@@ -20,14 +20,14 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPingPongListener;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.tesla.internal.protocol.dto.Event;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -46,7 +46,7 @@ import com.google.gson.Gson;
  *
  * @author Karel Goderis - Initial contribution
  */
-public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongListener {
+public class TeslaEventEndpoint implements Session.Listener.AutoDemanding {
 
     private static final int TIMEOUT_MILLISECONDS = 3000;
     private static final int IDLE_TIMEOUT_MILLISECONDS = 30000;
@@ -67,7 +67,7 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
         client = webSocketFactory.createWebSocketClient(name);
         this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
-        this.client.setMaxIdleTimeout(IDLE_TIMEOUT_MILLISECONDS);
+        this.client.setIdleTimeout(Duration.ofMillis(IDLE_TIMEOUT_MILLISECONDS));
     }
 
     public void close() {
@@ -112,9 +112,9 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         logger.debug("{} : Connected to {} with hash {}", endpointId,
-                (session != null) ? session.getRemoteAddress().getAddress() : "Unknown",
+                (session != null) ? session.getRemoteSocketAddress() : "Unknown",
                 (session != null) ? session.hashCode() : -1);
         connectionState = ConnectionState.CONNECTED;
         this.session = session;
@@ -126,7 +126,7 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
             connectionState = ConnectionState.CLOSING;
             if (session != null && session.isOpen()) {
                 logger.debug("{} : Closing the session", endpointId);
-                session.close(StatusCode.NORMAL, "bye");
+                session.close(StatusCode.NORMAL, "bye", Callback.NOOP);
                 this.session = session;
             }
         } catch (Exception e) {
@@ -144,11 +144,12 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
 
     @Override
     public void onWebSocketText(@Nullable String message) {
-        // NoOp
     }
 
     @Override
-    public void onWebSocketBinary(byte[] payload, int offset, int length) {
+    public void onWebSocketBinary(ByteBuffer payloadBuf, Callback callback) {
+        byte[] payload = new byte[payloadBuf.remaining()];
+        payloadBuf.get(payload);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(new ByteArrayInputStream(payload), StandardCharsets.UTF_8.newDecoder()
                         .onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT)));
@@ -172,6 +173,7 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         } catch (IOException e) {
             logger.error("{} : An exception occurred while receiving raw data : {}", endpointId, e.getMessage());
         }
+        callback.succeed();
     }
 
     @Override
@@ -179,49 +181,34 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
         logger.error("{} : An error occurred in the session : {}", endpointId, cause.getMessage());
         Session session = this.session;
         if (session != null && session.isOpen()) {
-            session.close(StatusCode.ABNORMAL, "Session Error");
+            session.close(StatusCode.ABNORMAL, "Session Error", Callback.NOOP);
         }
     }
 
-    public void sendMessage(String message) throws IOException {
+    public void sendMessage(String message) {
         Session session = this.session;
-        try {
-            if (session != null) {
-                logger.debug("{} : Sending raw data '{}'", endpointId, message);
-                session.getRemote().sendString(message);
-            } else {
-                throw new IOException("Session is not initialized");
-            }
-        } catch (IOException e) {
-            if (session != null && session.isOpen()) {
-                session.close(StatusCode.ABNORMAL, "Send Message Error");
-            }
-            throw e;
+        if (session != null) {
+            logger.debug("{} : Sending raw data '{}'", endpointId, message);
+            session.sendText(message, Callback.NOOP);
+        } else {
+            logger.warn("{} : Session is not initialized, cannot send message", endpointId);
         }
     }
 
     public void ping() {
         Session session = this.session;
-        try {
-            if (session != null) {
-                ByteBuffer buffer = ByteBuffer.allocate(8).putLong(System.nanoTime()).flip();
-                session.getRemote().sendPing(buffer);
-            }
-        } catch (IOException e) {
-            logger.error("{} : An exception occurred while pinging the remote end : {}", endpointId, e.getMessage());
+        if (session != null) {
+            ByteBuffer buffer = ByteBuffer.allocate(8).putLong(System.nanoTime()).flip();
+            session.sendPing(buffer, Callback.NOOP);
         }
     }
 
     @Override
     public void onWebSocketPing(@Nullable ByteBuffer payload) {
-        ByteBuffer buffer = ByteBuffer.allocate(8).putLong(System.nanoTime()).flip();
         Session session = this.session;
-        try {
-            if (session != null) {
-                session.getRemote().sendPing(buffer);
-            }
-        } catch (IOException e) {
-            logger.error("{} : An exception occurred while processing a ping message : {}", endpointId, e.getMessage());
+        if (session != null) {
+            ByteBuffer buffer = ByteBuffer.allocate(8).putLong(System.nanoTime()).flip();
+            session.sendPing(buffer, Callback.NOOP);
         }
     }
 

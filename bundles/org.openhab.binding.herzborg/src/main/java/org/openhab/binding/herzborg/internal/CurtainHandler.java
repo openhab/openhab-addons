@@ -15,10 +15,9 @@ package org.openhab.binding.herzborg.internal;
 import static org.openhab.binding.herzborg.internal.HerzborgBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HexFormat;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -107,7 +106,7 @@ public class CurtainHandler extends BaseThingHandler {
 
                 if (reply != null) {
                     logger.trace("Function {} addr {} reply {}", p.getFunction(), p.getDataAddress(),
-                            DatatypeConverter.printHexBinary(reply.getBuffer()));
+                            HexFormat.of().withUpperCase().formatHex(reply.getBuffer()));
                 }
             }, 0, TimeUnit.MILLISECONDS);
         }
@@ -185,7 +184,7 @@ public class CurtainHandler extends BaseThingHandler {
                 return reply;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid response received: " + DatatypeConverter.printHexBinary(reply.getBuffer()));
+                        "Invalid response received: " + HexFormat.of().withUpperCase().formatHex(reply.getBuffer()));
                 bus.flush();
             }
 

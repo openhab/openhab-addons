@@ -24,15 +24,16 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.AsyncRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.DeferredContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.Callback;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
@@ -191,16 +192,18 @@ public final class DoorbirdAPI {
         }
         String url = buildUrl(auth, "/bha-api/audio-transmit.cgi");
         logger.debug("Executing doorbird API post audio: {}", url);
-        DeferredContentProvider content = new DeferredContentProvider();
+        AsyncRequestContent content = new AsyncRequestContent();
         try {
             // @formatter:off
             client.POST(url)
-                    .header("Authorization", "Basic " + auth.getAuthorization())
-                    .header("Content-Type", "audio/basic")
-                    .header("Content-Length", "9999999")
-                    .header("Connection", "Keep-Alive")
-                    .header("Cache-Control", "no-cache")
-                    .content(content)
+                    .headers(h -> {
+                        h.add("Authorization", "Basic " + auth.getAuthorization());
+                        h.add("Content-Type", "audio/basic");
+                        h.add("Content-Length", "9999999");
+                        h.add("Connection", "Keep-Alive");
+                        h.add("Cache-Control", "no-cache");
+                    })
+                    .body(content)
                     .send(complete);
             // @formatter:on
 
@@ -219,7 +222,7 @@ public final class DoorbirdAPI {
                     long timeToWait = Math.max(0, nextChunkSendTimeStamp - System.currentTimeMillis());
                     Thread.sleep(timeToWait);
                     logger.debug("Sending chunk...");
-                    content.offer(ByteBuffer.wrap(data));
+                    content.write(ByteBuffer.wrap(data), Callback.NOOP);
                 }
                 nextChunkSendTimeStamp = System.currentTimeMillis() + 30;
             } while (nbByteRead != -1);
@@ -266,7 +269,7 @@ public final class DoorbirdAPI {
             logger.debug("Downloading image from doorbird: {}", url);
             Request request = client.newRequest(url);
             request.method(HttpMethod.GET);
-            request.header("Authorization", "Basic " + auth.getAuthorization());
+            request.headers(h -> h.add("Authorization", "Basic " + auth.getAuthorization()));
             request.timeout(API_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             ContentResponse contentResponse = request.send();

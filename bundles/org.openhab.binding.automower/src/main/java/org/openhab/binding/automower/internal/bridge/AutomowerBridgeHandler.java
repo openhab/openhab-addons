@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
@@ -68,7 +68,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private final OAuthFactory oAuthFactory;
-    private @Nullable WebSocketSession webSocketSession;
+    private @Nullable Session webSocketSession;
 
     private @Nullable OAuthClientService oAuthService;
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
@@ -151,11 +151,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         return scheduler;
     }
 
-    public @Nullable WebSocketSession getWebSocketSession() {
+    public @Nullable Session getWebSocketSession() {
         return webSocketSession;
     }
 
-    public void setWebSocketSession(@Nullable WebSocketSession webSocketSession) {
+    public void setWebSocketSession(@Nullable Session webSocketSession) {
         this.webSocketSession = webSocketSession;
     }
 
@@ -217,7 +217,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             bridge = null;
         }
 
-        WebSocketSession webSocketSession = this.webSocketSession;
+        Session webSocketSession = this.webSocketSession;
         if (webSocketSession != null) {
             try {
                 webSocketSession.close();
@@ -323,8 +323,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 String wsUrl = "wss://ws.openapi.husqvarna.dev/v1";
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", "Bearer " + accessToken);
-                webSocketSession = (WebSocketSession) webSocketClient
-                        .connect(webSocketAdapter, URI.create(wsUrl), request).get();
+                webSocketSession = webSocketClient.connect(webSocketAdapter, URI.create(wsUrl), request).get();
             } else {
                 logger.error("Bridge is null, cannot connect WebSocket");
             }

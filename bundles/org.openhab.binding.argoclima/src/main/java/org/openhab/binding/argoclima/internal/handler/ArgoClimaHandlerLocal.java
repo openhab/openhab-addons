@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.MultiException;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationLocal;
@@ -129,11 +128,6 @@ public class ArgoClimaHandlerLocal extends ArgoClimaHandlerBase<ArgoClimaConfigu
                 simulatedServer.start();
             } catch (Exception e1) {
                 var message = e1.getLocalizedMessage();
-                if (e1.getCause() instanceof MultiException multiEx) {
-                    // This may cause multiple exceptions in case multiple bind addresses are in use
-                    var multiCause = Objects.requireNonNull(multiEx.getCause());
-                    message = multiCause.toString(); // deliberately not using getLocalizedMessage, as we want the list
-                }
 
                 throw new ArgoRemoteServerStubStartupException(
                         "[{0} mode] Failed to start RPC server at port: {1,number,#}. Error: {2}",

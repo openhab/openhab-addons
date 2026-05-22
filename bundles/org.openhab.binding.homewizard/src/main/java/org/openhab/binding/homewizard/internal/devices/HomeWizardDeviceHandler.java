@@ -30,13 +30,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
@@ -137,7 +139,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 sslContextFactory.setTrustStore(keyStore);
                 sslContextFactory.setEndpointIdentificationAlgorithm(null);
                 sslContextFactory.setHostnameVerifier((hostname, sslSession) -> true);
-                httpClient = new HttpClient(sslContextFactory);
+                ClientConnector clientConnector = new ClientConnector();
+                clientConnector.setSslContextFactory(sslContextFactory);
+                httpClient = new HttpClient(new HttpClientTransportOverHTTP(clientConnector));
             }
         }
 
@@ -377,7 +381,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     protected @Nullable ContentResponse putDataTo(String url, String data) {
-        var request = httpClient.newRequest(url).method(HttpMethod.PUT).content(new StringContentProvider(data));
+        var request = httpClient.newRequest(url).method(HttpMethod.PUT).body(new StringRequestContent(data));
 
         return sendRequest(request);
     }
@@ -388,8 +392,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     private @Nullable ContentResponse sendRequest(Request request) {
         if (config.isUsingApiVersion2()) {
-            request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
-            request.header(API_VERSION_HEADER, "2");
+            request.headers(headers -> {
+                headers.put(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
+                headers.put(API_VERSION_HEADER, "2");
+            });
         }
         try {
             return request.timeout(20, TimeUnit.SECONDS).send();

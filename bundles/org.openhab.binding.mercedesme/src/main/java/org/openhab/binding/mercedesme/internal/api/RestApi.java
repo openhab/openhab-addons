@@ -18,10 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,7 +64,7 @@ public class RestApi extends Authorization {
         Request poiRequest = httpClient.POST(poiUrl);
         addBasicHeaders(poiRequest);
         addAuthHeaders(poiRequest);
-        poiRequest.content(new StringContentProvider(poi.toString(), "utf-8"), CONTENT_TYPE_JSON);
+        poiRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, poi.toString()));
 
         try {
             ContentResponse cr = send(poiRequest);

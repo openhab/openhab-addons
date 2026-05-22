@@ -16,8 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -30,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class ZoneRegister {
 
-    private final @NotNull Map<Integer, Zone> register = new HashMap<>();
+    private final Map<Integer, Zone> register = new HashMap<>();
 
     /**
      * Stores a new Zone in the register. If a zone exists with the same id, that value is overwritten.

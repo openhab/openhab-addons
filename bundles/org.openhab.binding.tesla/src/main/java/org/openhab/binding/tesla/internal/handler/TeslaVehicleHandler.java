@@ -14,7 +14,6 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
@@ -33,10 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,6 +78,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * The {@link TeslaVehicleHandler} is responsible for handling commands, which are sent
@@ -1235,7 +1235,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                         }
                     }
-                } catch (URISyntaxException | NumberFormatException | IOException e) {
+                } catch (URISyntaxException | NumberFormatException e) {
                     logger.debug("Event : An exception occurred while processing events: '{}'", e.getMessage());
                 }
 
