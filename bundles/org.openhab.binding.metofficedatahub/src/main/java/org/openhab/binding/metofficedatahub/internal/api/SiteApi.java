@@ -18,16 +18,13 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -41,6 +38,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * This provides the communications layer for the Site API
@@ -246,7 +246,7 @@ public class SiteApi {
                 .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString());
 
         final Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
+                .headers(h -> h.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString()))
                 .timeout(GET_FORECAST_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         logger.trace("Requesting using Poll ID \"{}\" URL: \"{}\"", pollId, url);

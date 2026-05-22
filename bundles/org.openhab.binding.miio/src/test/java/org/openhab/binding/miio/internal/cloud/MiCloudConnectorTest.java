@@ -22,8 +22,8 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -123,7 +123,7 @@ public class MiCloudConnectorTest {
     @Test
     public void headersAreLoggedWithoutSecrets() {
         String token = "17a8da0b48bd12902a495c8608eb8a73";
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.add("Content-Type", "application/json");
         headers.add("Set-Cookie", "serviceToken=" + token + "; Path=/");
         headers.add("Set-Cookie", "passToken=" + token + "; Path=/");

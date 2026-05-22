@@ -21,12 +21,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
-import javax.ws.rs.HttpMethod;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -78,7 +78,7 @@ public class StatusFileInterpreter {
 
     public void read() {
         try {
-            String statusPage = HttpUtil.executeUrl(HttpMethod.GET, url, 5000);
+            String statusPage = HttpUtil.executeUrl(HttpMethod.GET.asString(), url, 5000);
             InputStream inputStream = new ByteArrayInputStream(statusPage.getBytes());
             Document document = builder.parse(inputStream);
             document.getDocumentElement().normalize();

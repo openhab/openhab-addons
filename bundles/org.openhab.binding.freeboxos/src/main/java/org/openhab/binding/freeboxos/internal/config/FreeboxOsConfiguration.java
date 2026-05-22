@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.freeboxos.internal.config;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxTlsCertificateProvider;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link FreeboxOsConfiguration} is responsible for holding configuration informations needed to access the Freebox

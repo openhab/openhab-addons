@@ -23,10 +23,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.viessmann.internal.dto.oauth.AuthorizeResponseDTO;
@@ -290,13 +290,13 @@ public class ViessmannAuth {
         String authorization = new String(Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.UTF_8)),
                 StandardCharsets.UTF_8);
         httpClient.getAuthenticationStore().clearAuthentications();
-        httpClient.getCookieStore().removeAll();
+        httpClient.getHttpCookieStore().clear();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Request request = httpClient.newRequest(url).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .method(HttpMethod.GET).header("Authorization", "Basic " + authorization).header("Host", IAM_HOST)
-                .header("Accept", "application/json");
+                .method(HttpMethod.GET).headers(h -> h.add("Authorization", "Basic " + authorization))
+                .headers(h -> h.add("Host", IAM_HOST)).headers(h -> h.add("Accept", "application/json"));
         try {
             ContentResponse contentResponse = request.onResponseContent((resp, buffer) -> {
                 byte[] bytes = new byte[buffer.remaining()];
@@ -347,8 +347,8 @@ public class ViessmannAuth {
 
     private @Nullable String executeUrlToken(String url) {
         Request request = httpClient.newRequest(url).timeout(API_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .method(HttpMethod.POST).header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Host", IAM_HOST);
+                .method(HttpMethod.POST).headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
+                .headers(h -> h.add("Host", IAM_HOST));
         try {
             ContentResponse contentResponse = request.send();
             switch (contentResponse.getStatus()) {

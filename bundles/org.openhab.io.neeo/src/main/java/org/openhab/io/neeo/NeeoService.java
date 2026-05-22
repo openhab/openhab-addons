@@ -22,8 +22,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,15 +53,17 @@ import org.openhab.io.neeo.internal.discovery.BrainDiscovery;
 import org.openhab.io.neeo.internal.discovery.DiscoveryListener;
 import org.openhab.io.neeo.internal.discovery.MdnsBrainDiscovery;
 import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
 
 /**
  * The main entry point for the integration service. The integration service will listen for brain broadcasts, connect

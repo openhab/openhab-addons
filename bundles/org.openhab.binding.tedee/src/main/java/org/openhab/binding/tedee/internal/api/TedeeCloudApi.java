@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -149,8 +149,10 @@ public class TedeeCloudApi implements TedeeClient {
 
     private void operation(String path) throws TedeeApiException {
         Request request = client.newRequest(BASE + path).method(HttpMethod.POST);
-        request.header(HttpHeader.CONTENT_TYPE, JSON_PATCH_CONTENT_TYPE);
-        request.header(HttpHeader.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+        request.headers(h -> {
+            h.put(HttpHeader.CONTENT_TYPE, JSON_PATCH_CONTENT_TYPE);
+            h.put(HttpHeader.CONTENT_LENGTH, EMPTY_CONTENT_LENGTH);
+        });
         ContentResponse response = execute(request);
         if (response.getStatus() < HttpStatus.OK_200 || response.getStatus() >= HttpStatus.MULTIPLE_CHOICES_300) {
             throw error(response);
@@ -158,8 +160,10 @@ public class TedeeCloudApi implements TedeeClient {
     }
 
     private ContentResponse execute(Request request) throws TedeeApiException {
-        request.header(HttpHeader.AUTHORIZATION, PERSONAL_KEY_AUTHORIZATION_SCHEME + " " + personalAccessKey);
-        request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
+        request.headers(h -> {
+            h.put(HttpHeader.AUTHORIZATION, PERSONAL_KEY_AUTHORIZATION_SCHEME + " " + personalAccessKey);
+            h.put(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
+        });
         try {
             return request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (InterruptedException e) {

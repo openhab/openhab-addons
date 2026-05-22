@@ -15,11 +15,11 @@ package org.openhab.binding.emotiva.internal.dto;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Unit tests for EmotivaTransponder message type.

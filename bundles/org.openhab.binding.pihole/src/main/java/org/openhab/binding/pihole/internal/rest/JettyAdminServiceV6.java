@@ -20,12 +20,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.pihole.internal.PiHoleException;
@@ -48,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * @author Gaël L'hopital - Initial contribution
@@ -84,7 +84,7 @@ public class JettyAdminServiceV6 extends AdminService {
     private String updateSid() throws PiHoleException {
         logger.debug("Get or update session ID");
         var request = client.newRequest(authURI).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
-                .header(HttpHeader.ACCEPT, "application/json").content(new StringContentProvider(tokenJson));
+                .headers(h -> h.add(HttpHeader.ACCEPT, "application/json")).body(new StringRequestContent(tokenJson));
         var content = send(request).getContentAsString();
         logger.debug("Session update request answer: {}", content);
 
@@ -157,15 +157,21 @@ public class JettyAdminServiceV6 extends AdminService {
     }
 
     private void post(URI targetURI, Object object) throws PiHoleException {
+        String sid = getSid();
         var request = client.newRequest(targetURI).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
-                .header(HttpHeader.ACCEPT, "application/json").header("sid", getSid())
-                .content(new StringContentProvider(gson.toJson(object)));
+                .headers(h -> {
+                    h.add(HttpHeader.ACCEPT, "application/json");
+                    h.add("sid", sid);
+                }).body(new StringRequestContent(gson.toJson(object)));
         send(request);
     }
 
     private <T> T get(URI targetURI, Class<T> clazz, @Nullable Object... params) throws PiHoleException {
-        var request = client.newRequest(targetURI).timeout(TIMEOUT_SECONDS, SECONDS)
-                .header(HttpHeader.ACCEPT, "application/json").header("sid", getSid());
+        String sid = getSid();
+        var request = client.newRequest(targetURI).timeout(TIMEOUT_SECONDS, SECONDS).headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add("sid", sid);
+        });
 
         if (params.length % 2 != 0) {
             throw new IllegalArgumentException("params count must be even");

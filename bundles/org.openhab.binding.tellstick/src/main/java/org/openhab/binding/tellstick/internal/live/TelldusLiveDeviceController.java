@@ -21,8 +21,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -59,6 +57,9 @@ import org.tellstick.device.iface.Device;
 import org.tellstick.device.iface.DeviceChangeListener;
 import org.tellstick.device.iface.SensorListener;
 import org.tellstick.device.iface.SwitchableDevice;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 /**
  * {@link TelldusLiveDeviceController} is the communication with Telldus Live service (Tellstick.NET and ZNET)

@@ -14,29 +14,30 @@ package org.openhab.binding.rachio.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,20 +56,20 @@ class RachioHttpTest {
     private HttpClient httpClient = Mockito.mock(HttpClient.class);
     private Request request = Mockito.mock(Request.class);
     private ContentResponse response = Mockito.mock(ContentResponse.class);
-    private HttpFields responseHeaders = new HttpFields();
+    private HttpFields.Mutable responseHeaders = HttpFields.build();
 
     @BeforeEach
     void setUp() throws Exception {
         httpClient = Mockito.mock(HttpClient.class);
         request = Mockito.mock(Request.class);
         response = Mockito.mock(ContentResponse.class);
-        responseHeaders = new HttpFields();
+        responseHeaders = HttpFields.build();
 
         when(httpClient.newRequest(Mockito.any(URI.class))).thenReturn(request);
         when(request.method(Mockito.anyString())).thenReturn(request);
         when(request.timeout(Mockito.anyLong(), Mockito.eq(TimeUnit.MILLISECONDS))).thenReturn(request);
-        when(request.header(Mockito.any(HttpHeader.class), Mockito.anyString())).thenReturn(request);
-        when(request.content(Mockito.any(ContentProvider.class), Mockito.anyString())).thenReturn(request);
+        when(request.headers(Mockito.any())).thenReturn(request);
+        when(request.body(Mockito.any(Request.Content.class))).thenReturn(request);
         when(request.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(HttpStatus.OK_200);
         when(response.getHeaders()).thenReturn(responseHeaders);
@@ -88,9 +89,10 @@ class RachioHttpTest {
         verify(httpClient).newRequest(URI.create("https://api.example.test/device?id=123"));
         verify(request).method("GET");
         verify(request).timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        verify(request).header(HttpHeader.AUTHORIZATION, "Bearer api-key");
-        verify(request).header(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT);
-        verify(request).header(HttpHeader.CONTENT_TYPE, SERVLET_WEBHOOK_APPLICATION_JSON);
+        HttpFields sentHeaders = headersOf(request);
+        assertEquals("Bearer api-key", sentHeaders.get(HttpHeader.AUTHORIZATION));
+        assertEquals(SERVLET_WEBHOOK_USER_AGENT, sentHeaders.get(HttpHeader.USER_AGENT));
+        assertEquals(SERVLET_WEBHOOK_APPLICATION_JSON, sentHeaders.get(HttpHeader.CONTENT_TYPE));
         assertEquals(HttpStatus.OK_200, result.responseCode);
         assertEquals("{\"name\":\"El\u0151kert\"}", result.resultString);
         assertEquals(1, result.apiCalls);
@@ -112,11 +114,14 @@ class RachioHttpTest {
         }
 
         verify(request).method(method);
-        verify(request, never()).header(HttpHeader.CONTENT_TYPE, SERVLET_WEBHOOK_APPLICATION_JSON);
-        ArgumentCaptor<ContentProvider> contentCaptor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(contentCaptor.capture(), Mockito.eq(SERVLET_WEBHOOK_APPLICATION_JSON));
-        assertEquals(body.getBytes(StandardCharsets.UTF_8).length, contentCaptor.getValue().getLength());
-        assertEquals(body, contentAsString(contentCaptor.getValue()));
+        // the content type must come from the body alone, not also as a header
+        assertNull(headersOf(request).get(HttpHeader.CONTENT_TYPE));
+        ArgumentCaptor<Request.Content> contentCaptor = ArgumentCaptor.captor();
+        verify(request).body(contentCaptor.capture());
+        Request.Content sentBody = contentCaptor.getValue();
+        assertEquals(SERVLET_WEBHOOK_APPLICATION_JSON, sentBody.getContentType());
+        assertEquals(body.getBytes(StandardCharsets.UTF_8).length, sentBody.getLength());
+        assertEquals(body, Content.Source.asString(sentBody, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -180,11 +185,12 @@ class RachioHttpTest {
         assertInstanceOf(UnknownHostException.class, exception.getCause());
     }
 
-    private String contentAsString(ContentProvider contentProvider) {
-        StringBuilder body = new StringBuilder();
-        for (ByteBuffer buffer : contentProvider) {
-            body.append(StandardCharsets.UTF_8.decode(buffer.slice()));
-        }
-        return body.toString();
+    /** Replays the header blocks passed to {@link Request#headers} so the resulting fields can be asserted on. */
+    private static HttpFields headersOf(Request request) {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.captor();
+        verify(request, atLeastOnce()).headers(captor.capture());
+        HttpFields.Mutable headers = HttpFields.build();
+        captor.getAllValues().forEach(block -> block.accept(headers));
+        return headers;
     }
 }

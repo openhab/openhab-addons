@@ -18,14 +18,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,11 +34,10 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * The {@code SmartherAccountService} class manages the servlets and bind authorization servlet to Bridges.
@@ -63,41 +58,17 @@ public class SmartherAccountService {
 
     private final Set<SmartherAccountHandler> handlers = ConcurrentHashMap.newKeySet();
 
-    private @Nullable HttpService httpService;
     private @Nullable BundleContext bundleContext;
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
-        try {
-            this.bundleContext = componentContext.getBundleContext();
-
-            final HttpService localHttpService = this.httpService;
-            if (localHttpService != null) {
-                // Register the authorization servlet
-                localHttpService.registerServlet(AUTH_SERVLET_ALIAS, createAuthorizationServlet(), new Hashtable<>(),
-                        localHttpService.createDefaultHttpContext());
-                localHttpService.registerResources(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS, IMAGE_PATH, null);
-
-                // Register the notification servlet
-                localHttpService.registerServlet(NOTIFY_SERVLET_ALIAS, createNotificationServlet(), new Hashtable<>(),
-                        localHttpService.createDefaultHttpContext());
-            }
-        } catch (NamespaceException | ServletException | IOException e) {
-            logger.warn("Error during Smarther servlet startup", e);
-        }
+        this.bundleContext = componentContext.getBundleContext();
+        logger.debug("Smarther account service activated");
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        final HttpService localHttpService = this.httpService;
-        if (localHttpService != null) {
-            // Unregister the authorization servlet
-            localHttpService.unregister(AUTH_SERVLET_ALIAS);
-            localHttpService.unregister(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS);
-
-            // Unregister the notification servlet
-            localHttpService.unregister(NOTIFY_SERVLET_ALIAS);
-        }
+        logger.debug("Smarther account service deactivated");
     }
 
     /**
@@ -278,14 +249,5 @@ public class SmartherAccountService {
         final Optional<SmartherAccountHandler> maybeHandler = handlers.stream().filter(l -> l.hasLocation(plantId))
                 .findFirst();
         return (maybeHandler.isPresent()) ? maybeHandler.get() : null;
-    }
-
-    @Reference
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
     }
 }

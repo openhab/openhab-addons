@@ -24,10 +24,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.pushsafer.internal.config.PushsaferAccountConfiguration;
@@ -154,15 +153,15 @@ public class PushsaferAPIConnection {
     }
 
     private String get(String url) throws PushsaferCommunicationException, PushsaferConfigurationException {
-        return executeRequest(HttpMethod.GET, url, null);
+        return executeRequest(HttpMethod.GET, url, (Request.Content) null);
     }
 
-    private String post(String url, ContentProvider body)
+    private String post(String url, Request.Content body)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
-    private String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
+    private String executeRequest(HttpMethod httpMethod, String url, Request.@Nullable Content body)
             throws PushsaferCommunicationException, PushsaferConfigurationException {
         logger.trace("Pushsafer request: {} - URL = '{}'", httpMethod, uglifyApikey(url));
         try {
@@ -172,7 +171,7 @@ public class PushsaferAPIConnection {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Pushsafer request body: '{}'", body);
                 }
-                request.content(body);
+                request.body(body);
             }
 
             final ContentResponse contentResponse = request.send();

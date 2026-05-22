@@ -20,13 +20,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link AuthenticationApi} handles oAuth2 authentication and token refreshing

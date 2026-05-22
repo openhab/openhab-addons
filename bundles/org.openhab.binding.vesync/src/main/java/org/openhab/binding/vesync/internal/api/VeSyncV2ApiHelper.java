@@ -25,14 +25,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.login.AuthenticatedReq;
@@ -47,6 +45,8 @@ import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author David Goodyear - Initial contribution
@@ -188,12 +188,12 @@ public class VeSyncV2ApiHelper {
                     TimeUnit.SECONDS);
 
             // No headers for login
-            request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(requestData)));
+            request.body(new StringRequestContent(VeSyncConstants.GSON.toJson(requestData)));
 
             logger.debug("{} @ {} with content\r\n{}", requestData.httpMethod, url,
                     VeSyncConstants.GSON.toJson(requestData));
 
-            request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json; utf-8"));
 
             ContentResponse response = request.send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {

@@ -22,10 +22,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
@@ -61,7 +61,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
 
     private Request addAuthorizationHeader(Request sourceRequest) {
         if (!gateway.getToken().isBlank()) {
-            return sourceRequest.header(HttpHeader.AUTHORIZATION, "Bearer " + gateway.getToken());
+            sourceRequest.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + gateway.getToken()));
+            return sourceRequest;
         } else {
             logger.warn("DIRIGERA API Cannot operate with token {}", gateway.getToken());
             return sourceRequest;
@@ -142,10 +143,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         data.put(JSON_KEY_ATTRIBUTES, attributes);
         JSONArray dataArray = new JSONArray();
         dataArray.put(data);
-        StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
+        StringRequestContent stringProvider = new StringRequestContent("application/json", dataArray.toString(),
                 StandardCharsets.UTF_8);
         Request deviceRequest = httpClient.newRequest(url).method("PATCH")
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json")).body(stringProvider);
 
         int responseStatus = 500;
         try {
@@ -170,10 +171,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         // pack attributes into data json and then into an array
         JSONArray dataArray = new JSONArray();
         dataArray.put(data);
-        StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
+        StringRequestContent stringProvider = new StringRequestContent("application/json", dataArray.toString(),
                 StandardCharsets.UTF_8);
         Request deviceRequest = httpClient.newRequest(url).method("PATCH")
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json")).body(stringProvider);
 
         int responseStatus = 500;
         try {
@@ -241,10 +242,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         String url = String.format(SCENES_URL, gateway.getIpAddress());
         String sceneTemplate = ResourceReader.getResource(TEMPLATE_CLICK_SCENE);
         String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
-        StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
+        StringRequestContent stringProvider = new StringRequestContent("application/json", payload,
                 StandardCharsets.UTF_8);
         Request sceneCreateRequest = httpClient.newRequest(url).method("POST")
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json")).body(stringProvider);
 
         int responseStatus = 500;
         String responseUUID = "";

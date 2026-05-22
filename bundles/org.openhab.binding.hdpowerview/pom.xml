@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Hunter Douglas PowerView Binding</name>
 
   <properties>
-    <bnd.importpackage>!jcifs.*</bnd.importpackage>
+    <bnd.importpackage>!jcifs.*,javax.servlet.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>

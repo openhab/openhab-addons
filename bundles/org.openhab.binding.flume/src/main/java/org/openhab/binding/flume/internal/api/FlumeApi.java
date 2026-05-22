@@ -26,14 +26,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiCurrentFlowRate;
@@ -153,7 +151,8 @@ public class FlumeApi {
 
         String url = APIURL_BASE + APIURL_TOKEN;
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .content(new StringContentProvider(gson.toJson(getToken)), MediaType.APPLICATION_JSON);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(gson.toJson(getToken)));
 
         JsonObject jsonResponse = sendAndValidate(request, false);
 
@@ -176,7 +175,8 @@ public class FlumeApi {
 
         String url = APIURL_BASE + APIURL_TOKEN;
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .content(new StringContentProvider(gson.toJson(token)), MediaType.APPLICATION_JSON);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(gson.toJson(token)));
 
         JsonObject jsonResponse = sendAndValidate(request, false);
 
@@ -312,7 +312,8 @@ public class FlumeApi {
 
         String url = APIURL_BASE + String.format(APIURL_QUERYUSAGE, this.userId, deviceID);
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .content(new StringContentProvider(jsonQuery), MediaType.APPLICATION_JSON);
+                .headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(jsonQuery));
 
         logger.debug("METADATA: {}", jsonQuery);
         JsonObject jsonResponse = sendAndValidate(request);
@@ -430,7 +431,7 @@ public class FlumeApi {
 
     private Request setHeaders(Request request) {
         if (!accessToken.isEmpty()) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + accessToken));
         }
         request.timeout(API_TIMEOUT, TimeUnit.SECONDS);
         return request;

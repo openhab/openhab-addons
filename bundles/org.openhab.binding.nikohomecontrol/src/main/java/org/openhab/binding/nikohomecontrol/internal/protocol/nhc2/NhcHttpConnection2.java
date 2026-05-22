@@ -20,9 +20,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.nikohomecontrol.internal.protocol.HttpClientInitializationException;
@@ -79,8 +79,11 @@ public class NhcHttpConnection2 {
         Request request = httpClient.newRequest(url);
         ContentResponse response;
         try {
-            response = request.method(HttpMethod.GET).header(HttpHeader.AUTHORIZATION, "Bearer " + token)
-                    .header(HttpHeader.HOST, hostname).header(HttpHeader.ACCEPT, "application/json")
+            final String tokenHeader = "Bearer " + token;
+            final String hostnameVal = hostname;
+            response = request.method(HttpMethod.GET).headers(h -> h.add(HttpHeader.AUTHORIZATION, tokenHeader))
+                    .headers(h -> h.add(HttpHeader.HOST, hostnameVal))
+                    .headers(h -> h.add(HttpHeader.ACCEPT, "application/json"))
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Error with query {}", url, e);

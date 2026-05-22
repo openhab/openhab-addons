@@ -15,11 +15,11 @@ package org.openhab.binding.airparif.internal.api;
 import java.net.URI;
 import java.util.EnumSet;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * {@link AirParifApi} class defines paths used to interact with server api

@@ -25,10 +25,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Authentication;
 import org.slf4j.Logger;
@@ -110,11 +110,11 @@ public class ApiAccess {
             Request request = httpClient.newRequest(url).method(method);
 
             for (Map.Entry<String, String> header : headers.entrySet()) {
-                request.header(header.getKey(), header.getValue());
+                request.headers(h -> h.add(header.getKey(), header.getValue()));
             }
 
             if (requestData != null) {
-                request.content(new StringContentProvider(requestData), contentType);
+                request.body(new StringRequestContent(contentType, requestData));
             }
 
             ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();

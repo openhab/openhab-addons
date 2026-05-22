@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,8 +80,8 @@ public class SecondGenerationConfigurationHandler {
 
             Request loginPostJsonResponse = httpClient.POST(urlLogin + "?sessionId=" + sessionId)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            loginPostJsonResponse.header(HttpHeader.CONTENT_TYPE, "application/json");
-            loginPostJsonResponse.content(new StringContentProvider(loginPostJsonData));
+            loginPostJsonResponse.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, "application/json"));
+            loginPostJsonResponse.body(new StringRequestContent(loginPostJsonData));
             ContentResponse loginPostJsonDataContentResponse = loginPostJsonResponse.send();
 
             String loginPostResponse = new String(loginPostJsonDataContentResponse.getContent(),
@@ -97,8 +97,8 @@ public class SecondGenerationConfigurationHandler {
 
             Request postJsonDataRequest = httpClient.POST(url + "/api/dxs.json?sessionId=" + sessionId)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            postJsonDataRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
-            postJsonDataRequest.content(new StringContentProvider(postJsonData));
+            postJsonDataRequest.headers(headers -> headers.put(HttpHeader.CONTENT_TYPE, "application/json"));
+            postJsonDataRequest.body(new StringRequestContent(postJsonData));
             postJsonDataRequest.send();
         } catch (JsonIOException getAuthenticateResponseException) {
             logger.debug("Could not read the response: {}", getAuthenticateResponseException.getMessage());
