@@ -91,61 +91,58 @@ public class TiVoHandler extends BaseThingHandler {
             return;
         }
 
-        // Handle search command
-        if (CHANNEL_TIVO_SEARCH.equals(channelUID.getId())) {
-            if (commandParameter.isBlank()) {
-                logger.debug("Search string was blank");
-                return;
-            }
+        switch (channelUID.getId()) {
+            case CHANNEL_TIVO_CHANNEL_FORCE:
+                commandKeyword = "FORCECH";
+                break;
+            case CHANNEL_TIVO_CHANNEL_SET:
+                commandKeyword = "SETCH";
+                break;
+            case CHANNEL_TIVO_TELEPORT:
+                commandKeyword = "TELEPORT";
+                break;
+            case CHANNEL_TIVO_IRCMD:
+                commandKeyword = "IRCODE";
+                break;
+            case CHANNEL_TIVO_KBDCMD:
+                commandKeyword = KEYBOARD;
+                break;
+            case CHANNEL_TIVO_SEARCH:
+                if (commandParameter.isBlank()) {
+                    logger.debug("Search string was blank");
+                    return;
+                }
 
-            try {
-                sendCommand("TELEPORT", "SEARCH", currentStatus);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            // Wait 1 second for the SEARCH screen to load
-            scheduler.schedule(() -> {
                 try {
-                    for (int i = 0; i < commandParameter.length(); i++) {
-                        if (Character.isLetter(commandParameter.charAt(i))) {
-                            sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
-                        } else if (Character.isDigit(commandParameter.charAt(i))) {
-                            sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
-                        } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
-                            sendCommand(KEYBOARD, "SPACE", currentStatus);
-                        } else {
-                            logger.debug("Search character not supported: {}",
-                                    String.valueOf(commandParameter.charAt(i)));
-                        }
-                    }
+                    sendCommand("TELEPORT", "SEARCH", currentStatus);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-            }, 1, TimeUnit.SECONDS);
-            return;
-        } else {
-            switch (channelUID.getId()) {
-                case CHANNEL_TIVO_CHANNEL_FORCE:
-                    commandKeyword = "FORCECH";
-                    break;
-                case CHANNEL_TIVO_CHANNEL_SET:
-                    commandKeyword = "SETCH";
-                    break;
-                case CHANNEL_TIVO_TELEPORT:
-                    commandKeyword = "TELEPORT";
-                    break;
-                case CHANNEL_TIVO_IRCMD:
-                    commandKeyword = "IRCODE";
-                    break;
-                case CHANNEL_TIVO_KBDCMD:
-                    commandKeyword = KEYBOARD;
-                    break;
-                default:
-                    logger.debug("TiVo '{}' ignoring command '{}' for unsupported channel '{}'.", getThing().getUID(),
-                            command, channelUID.getId());
-                    return;
-            }
+
+                // Wait 1 second for the SEARCH screen to load
+                scheduler.schedule(() -> {
+                    try {
+                        for (int i = 0; i < commandParameter.length(); i++) {
+                            if (Character.isLetter(commandParameter.charAt(i))) {
+                                sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
+                            } else if (Character.isDigit(commandParameter.charAt(i))) {
+                                sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
+                            } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
+                                sendCommand(KEYBOARD, "SPACE", currentStatus);
+                            } else {
+                                logger.debug("Search character not supported: {}",
+                                        String.valueOf(commandParameter.charAt(i)));
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }, 1, TimeUnit.SECONDS);
+                return;
+            default:
+                logger.debug("TiVo '{}' ignoring command '{}' for unsupported channel '{}'.", getThing().getUID(),
+                        command, channelUID.getId());
+                return;
         }
         try {
             sendCommand(commandKeyword, commandParameter, currentStatus);
