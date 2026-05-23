@@ -28,7 +28,9 @@ import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANN
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_LOCATION_UPDATED;
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_LOCKED;
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_ODOMETER;
+import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_PAUSE;
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_PLUG_STATUS;
+import static org.openhab.binding.renault.internal.RenaultBindingConstants.HVAC_CHANNELS;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
@@ -57,7 +59,6 @@ import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.Car.LockStatus;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
-import org.openhab.binding.renault.internal.api.exceptions.RenaultAPIGatewayException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.core.cache.ExpiringCache;
@@ -89,15 +90,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RenaultHandler extends BaseThingHandler {
 
-    private interface CommandHandler {
+    private interface RenaultRunner {
         void run() throws RenaultException, InterruptedException, ExecutionException, TimeoutException;
+    }
+
+    private interface RenaultConsumer<T> {
+        void accept(T value) throws RenaultException, InterruptedException, ExecutionException, TimeoutException;
     }
 
     private static final Duration CACHE_INVALIDATION_TIMEOUT_SECONDS = Duration.ofSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(RenaultHandler.class);
 
-    private final ExpireCarCache carCache = new ExpireCarCache(this::getCar);
+    private final ExpireCarCache carCache = new ExpireCarCache(this::refreshCar);
+    private final Object lockObject = new Object();
 
     private final HttpClient httpClient;
 
@@ -145,17 +151,19 @@ public class RenaultHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
         this.httpSession = new MyRenaultHttpSession(this.config, httpClient);
-
         reschedulePollingJob();
     }
 
     private void reschedulePollingJob() {
-        final ScheduledFuture<?> job = pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        synchronized (lockObject) {
+            final ScheduledFuture<?> job = pollingJob;
+            if (job != null) {
+                job.cancel(true);
+            }
+            carCache.reset();
+            pollingJob = scheduler.scheduleWithFixedDelay(carCache::getCar, 0, config.refreshInterval,
+                    TimeUnit.MINUTES);
         }
-        carCache.reset();
-        pollingJob = scheduler.scheduleWithFixedDelay(carCache::getCar, 0, config.refreshInterval, TimeUnit.MINUTES);
     }
 
     @Override
@@ -164,81 +172,72 @@ public class RenaultHandler extends BaseThingHandler {
         if (httpSession == null) {
             return;
         }
-        if (command instanceof RefreshType) {
-            updateChannel(channelUID.getId(), carCache.getCar());
-            return;
-        }
-        // Getting the raw Car object here to not trigger a call to the cloud server if
-        // cache is expired. Because first data is set in the Car object, and than a call
-        // for updated information can be done.
-        final Car car = carCache.getRawCar();
-        switch (channelUID.getId()) {
-            case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
-                if (!car.isDisableHvac()) {
-                    if (command instanceof DecimalType decimalCommand) {
-                        car.setHvacTargetTemperature(decimalCommand.doubleValue());
-                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
-                    } else if (command instanceof QuantityType) {
-                        final @Nullable QuantityType<Temperature> celsius = ((QuantityType<Temperature>) command)
-                                .toUnit(SIUnits.CELSIUS);
-                        if (celsius != null) {
-                            car.setHvacTargetTemperature(celsius.doubleValue());
-                        }
-                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
-                    }
-                }
-                break;
-            case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
-                if (!car.isDisableHvac()) {
-                    if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)) {
-                        // We can only trigger pre-conditioning of the car.
-                        if (run(() -> {
-                            updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
-                            car.resetHVACStatus();
-                            httpSession.initSesssion();
-                            httpSession.actionHvacOn(car.getHvacTargetTemperature());
-                        }, "Error during action HVAC on.", true)) {
-                            carCache.refresh();
+        synchronized (lockObject) {
+            final Car car = carCache.getCar();
+            if (command instanceof RefreshType) {
+                updateChannel(channelUID.getId(), car);
+                return;
+            }
+            switch (channelUID.getId()) {
+                case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
+                    if (!car.isDisableHvac()) {
+                        if (command instanceof DecimalType decimalCommand) {
+                            car.setHvacTargetTemperature(decimalCommand.doubleValue());
+                        } else if (command instanceof QuantityType) {
+                            Optional.ofNullable(((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS))
+                                    .ifPresent(celsius -> car.setHvacTargetTemperature(celsius.doubleValue()));
                         }
                     }
-                }
-                break;
-            case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
-                if (command instanceof StringType) {
-                    try {
-                        final ChargingMode newMode = ChargingMode.valueOf(command.toString());
-                        if ((newMode == ChargingMode.ALWAYS_CHARGING || newMode == ChargingMode.SCHEDULE_MODE)
-                                && run(() -> {
-                                    httpSession.initSesssion();
-                                    httpSession.actionChargeMode(newMode);
-                                    car.setChargeMode(newMode);
-                                    updateState(CHANNEL_CHARGING_MODE, new StringType(newMode.toString()));
-                                }, "Error during action set charge mode.", true)) {
-                            carCache.refresh();
+                    break;
+                case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
+                    if (!car.isDisableHvac()) {
+                        if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)) {
+                            // We can only trigger pre-conditioning of the car.
+                            if (run(() -> {
+                                updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
+                                car.resetHVACStatus();
+                                httpSession.initSesssion();
+                                httpSession.actionHvacOn(car.getHvacTargetTemperature());
+                            }, "Error during action HVAC on.", true)) {
+                                refreshHvac(car);
+                            }
                         }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Invalid ChargingMode {}.", command.toString());
-                        return;
                     }
-                }
-                break;
-            case RenaultBindingConstants.CHANNEL_PAUSE:
-                if (command instanceof StringType) {
-                    try {
-                        if (run(() -> {
-                            httpSession.initSesssion();
-                            httpSession.actionPause(command.toString());
-                        }, "Error during action set pause.", true)) {
-                            carCache.refresh();
+                    break;
+                case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
+                    if (command instanceof StringType) {
+                        try {
+                            final ChargingMode newMode = ChargingMode.valueOf(command.toString());
+                            if ((newMode == ChargingMode.ALWAYS_CHARGING || newMode == ChargingMode.SCHEDULE_MODE)
+                                    && run(() -> {
+                                        httpSession.initSesssion();
+                                        httpSession.actionChargeMode(newMode);
+                                        car.setChargeMode(newMode);
+                                    }, "Error during action set charge mode.", true)) {
+                                refreshBattery(car);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Invalid ChargingMode {}.", command.toString());
+                            return;
                         }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Invalid Pause Mode {}.", command.toString());
-                        return;
                     }
-                }
-                break;
+                    break;
+                case RenaultBindingConstants.CHANNEL_PAUSE:
+                    if (command instanceof StringType) {
+                        try {
+                            if (run(() -> {
+                                httpSession.initSesssion();
+                                httpSession.actionPause(command.toString());
+                            }, "Error during action set pause.", true)) {
+                                refreshBattery(car);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("Invalid Pause Mode {}.", command.toString());
+                            return;
+                        }
+                    }
+                    break;
+            }
         }
     }
 
@@ -251,37 +250,60 @@ public class RenaultHandler extends BaseThingHandler {
         }
     }
 
-    private Car getCar(Car car) {
-        final MyRenaultHttpSession httpSession = this.httpSession;
-        if (httpSession == null) {
+    private void refreshBattery(Car car) {
+        runWithHttpSession(httpSession -> {
+            updateHvac(httpSession, car);
+            HVAC_CHANNELS.forEach(c -> updateChannel(c, car));
+        }, "Battery");
+    }
+
+    private void refreshHvac(Car car) {
+        runWithHttpSession(httpSession -> {
+            updateHvac(httpSession, car);
+            HVAC_CHANNELS.forEach(c -> updateChannel(c, car));
+        }, "HVAC.");
+    }
+
+    private Car refreshCar(Car car) {
+        synchronized (lockObject) {
+            runWithHttpSession(httpSession -> {
+                httpSession.initSesssion();
+                // Only get vehicle image once. Not other data from Vehicle is used.
+                runIfNotDisabled(car.isDisableVehicle() || car.getImageURL() != null, () -> httpSession.getVehicle(car),
+                        () -> car.setDisableVehicle(true), "imageURL");
+                updateHvac(httpSession, car);
+                runIfNotDisabled(car.isDisableLocation(), () -> httpSession.getLocation(car),
+                        () -> car.setDisableLocation(true), "location");
+                runIfNotDisabled(car.isDisableCockpit(), () -> httpSession.getCockpit(car),
+                        () -> car.setDisableCockpit(true), "cockpit");
+                updateBattery(httpSession, car);
+                runIfNotDisabled(car.isDisableLockStatus(), () -> httpSession.getLockStatus(car),
+                        () -> car.setDisableLockStatus(true), "lock");
+
+                ALL_CHANNELS.forEach(c -> updateChannel(c, car));
+                updateStatus(car);
+            }, "all");
             return car;
         }
-        logger.debug("Get Car data from cloud service and update all channels.");
-        try {
-            httpSession.initSesssion();
-            runIfNotDisabled(car.getImageURL() != null, () -> httpSession.getVehicle(car), () -> {
-            }, "imageURL");
-            runIfNotDisabled(car.isDisableHvac(), () -> httpSession.getHvacStatus(car), () -> car.setDisableHvac(true),
-                    "HVAC");
-            runIfNotDisabled(car.isDisableLocation(), () -> httpSession.getLocation(car),
-                    () -> car.setDisableLocation(true), "location");
-            runIfNotDisabled(car.isDisableCockpit(), () -> httpSession.getCockpit(car),
-                    () -> car.setDisableCockpit(true), "cockpit");
-            runIfNotDisabled(car.isDisableBattery(), () -> httpSession.getBatteryStatus(car),
-                    () -> car.setDisableBattery(true), "battery");
-            runIfNotDisabled(car.isDisableLockStatus(), () -> httpSession.getLockStatus(car),
-                    () -> car.setDisableLockStatus(true), "lock");
+    }
 
-            ALL_CHANNELS.forEach(c -> updateChannel(c, car));
-            updateStatus(car);
-        } catch (InterruptedException e) {
-            logger.warn("Error My Renault Http Session.", e);
-            Thread.currentThread().interrupt();
-        } catch (Exception e) {
-            logger.warn("Error My Renault Http Session.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+    private void runWithHttpSession(RenaultConsumer<MyRenaultHttpSession> supplier, String type) {
+        final MyRenaultHttpSession httpSession = this.httpSession;
+        if (httpSession == null) {
+            return;
         }
-        return car;
+        logger.debug("Get Car {} data from cloud service and update channels.", type);
+        run(() -> supplier.accept(httpSession), "Error My Renault Http Session.", true);
+    }
+
+    private void updateHvac(final MyRenaultHttpSession httpSession, Car car) {
+        runIfNotDisabled(car.isDisableHvac(), () -> httpSession.getHvacStatus(car), () -> car.setDisableHvac(true),
+                "HVAC");
+    }
+
+    private void updateBattery(final MyRenaultHttpSession httpSession, Car car) {
+        runIfNotDisabled(car.isDisableBattery(), () -> httpSession.getBatteryStatus(car),
+                () -> car.setDisableBattery(true), "battery");
     }
 
     private void updateStatus(Car car) {
@@ -295,6 +317,9 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void updateChannel(String channelId, Car car) {
+        if (CHANNEL_PAUSE.equals(channelId)) {
+            return; // channel pause is command channel therefore no state set.
+        }
         final @Nullable State state = switch (channelId) {
             case CHANNEL_IMAGE -> stringNotBlank(car.getImageURL());
             // ── Location ─────────────────────────────────────────────────────────
@@ -387,21 +412,21 @@ public class RenaultHandler extends BaseThingHandler {
         return value == null ? UnDefType.UNDEF : new DecimalType(value);
     }
 
-    private void runIfNotDisabled(boolean disabled, CommandHandler handler, Runnable disabler, String type) {
+    private void runIfNotDisabled(boolean disabled, RenaultRunner handler, Runnable disabler, String type) {
         if (disabled) {
             return;
         }
         run(() -> {
             try {
                 handler.run();
-            } catch (RenaultNotImplementedException | RenaultAPIGatewayException e) {
+            } catch (RenaultNotImplementedException e) {
                 logger.debug("Disabling unsupported {} status update", type, e);
                 disabler.run();
             }
         }, String.format("Error updating %s status.", type), false);
     }
 
-    private boolean run(CommandHandler handler, String logWarnMessage, boolean setOffline) {
+    private boolean run(RenaultRunner handler, String logWarnMessage, boolean setOffline) {
         try {
             handler.run();
             return true;
@@ -431,23 +456,6 @@ public class RenaultHandler extends BaseThingHandler {
         public void reset() {
             car = new Car();
             carCache.invalidateValue();
-        }
-
-        /**
-         * Triggers refresh of Car object. Call when action has been send to the car,
-         * and related changed data needs to
-         * be obtained.
-         */
-        public void refresh() {
-            carCache.refreshValue();
-        }
-
-        /**
-         * @return Returns the Car object with latest known value. Only use when setting
-         *         values in Car object.
-         */
-        public Car getRawCar() {
-            return car;
         }
 
         /**

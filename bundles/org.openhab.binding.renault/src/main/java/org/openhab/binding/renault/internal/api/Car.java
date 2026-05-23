@@ -39,6 +39,7 @@ public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
+    private boolean disableVehicle = false;
     private boolean disableLocation = false;
     private boolean disableBattery = false;
     private boolean disableChargeMode = false;
@@ -233,6 +234,10 @@ public class Car {
         }
     }
 
+    public boolean isDisableVehicle() {
+        return disableVehicle;
+    }
+
     public boolean isDisableLocation() {
         return disableLocation;
     }
@@ -315,6 +320,10 @@ public class Car {
 
     public void setHvacTargetTemperature(double hvacTargetTemperature) {
         this.hvacTargetTemperature = hvacTargetTemperature;
+    }
+
+    public void setDisableVehicle(boolean disableVehicle) {
+        this.disableVehicle = disableVehicle;
     }
 
     public void setDisableLocation(boolean disableLocation) {

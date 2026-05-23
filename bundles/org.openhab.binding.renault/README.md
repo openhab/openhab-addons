@@ -85,7 +85,7 @@ renaultcar.things:
 renault:car:renault "Renault" [
     accountType="MYRENAULT",
     locale="<your locale>",
-    myRenaultUsername="<my renault usrname>",
+    myRenaultUsername="<my renault username>",
     myRenaultPassword="<my renault password>",
     kamereonApiKey="YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J",
     vin="<your vin>",

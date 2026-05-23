@@ -58,7 +58,8 @@ public class MyRenaultHttpSession {
     private static final String NOT_BE_THERE = "you should not be there but well done for the effort";
 
     private final Logger logger = LoggerFactory.getLogger(MyRenaultHttpSession.class);
-    // Use a expiring cache to not login again if initSession is called within 3 seconds of the previous call.
+    // Use a expiring cache to not login again if initSession is called within 3
+    // seconds of the previous call.
     private final ExpiringCache<Boolean> initCache = new ExpiringCache<>(Duration.ofSeconds(3), () -> true);
     private final Object lock = new Object();
 
@@ -80,11 +81,11 @@ public class MyRenaultHttpSession {
     public void initSesssion() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         synchronized (lock) {
             if (initCache.isExpired()) {
-                initCache.refreshValue();
                 login();
                 getAccountInfo();
                 getJWT();
                 getAccountID();
+                initCache.refreshValue();
             }
         }
     }
@@ -105,11 +106,11 @@ public class MyRenaultHttpSession {
                 final JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
                 final JsonObject sessionInfoJson = responseJson.getAsJsonObject("sessionInfo");
                 if (sessionInfoJson == null) {
-                    throw new IllegalStateException("@text/error.renault.session.login.no_session_info");
+                    throw new RenaultException("@text/error.renault.session.login.no_session_info");
                 }
                 JsonElement element = sessionInfoJson.get("cookieValue");
                 if (element == null) {
-                    throw new IllegalStateException("@text/error.renault.session.login.no_cookie_value");
+                    throw new RenaultException("@text/error.renault.session.login.no_cookie_value");
                 }
                 cookieValue = element.getAsString();
                 logger.debug("Cookie: {}", cookieValue);
@@ -163,7 +164,8 @@ public class MyRenaultHttpSession {
     }
 
     /**
-     * Return the gigyaApiKey from configuration if it is used to override the default hard-coded constant.
+     * Return the gigyaApiKey from configuration if it is used to override the
+     * default hard-coded constant.
      *
      * @return
      */
@@ -357,6 +359,14 @@ public class MyRenaultHttpSession {
             throws RenaultForbiddenException, RenaultNotImplementedException, RenaultAPIGatewayException {
         switch (response.getStatus()) {
             case HttpStatus.FORBIDDEN_403:
+                try {
+                    final JsonObject json = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                    if ("err.func.privacy.on".equals(getErrorCode(json))) {
+                        throw new RenaultForbiddenException("@text/error.renault.session.kamereon_privacy_on");
+                    }
+                } catch (JsonParseException e) {
+                    logger.debug("Could not parse 403 message: {}", response.getContentAsString());
+                }
                 throw new RenaultForbiddenException("@text/error.renault.session.kamereon_request_forbidden");
             case HttpStatus.NOT_FOUND_404:
                 throw new RenaultNotImplementedException("@text/error.renault.session.kamereon_service_not_found");
@@ -376,5 +386,19 @@ public class MyRenaultHttpSession {
             country = config.locale.substring(3);
         }
         return country;
+    }
+
+    private static String getErrorCode(JsonObject responseJson) {
+        // @formatter:off
+        final @Nullable String errorCode = Optional.ofNullable(responseJson.get("messages"))
+            .map(m -> m.getAsJsonArray())
+            .map(m -> m.asList())
+            .map(m -> m.get(0))
+            .map(m -> m.getAsJsonObject())
+            .map(m -> m.get("code"))
+            .map(m -> m.getAsString())
+            .get();
+        // @formatter:on
+        return errorCode == null ? "" : errorCode;
     }
 }
