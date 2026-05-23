@@ -392,8 +392,8 @@ public class SourceGenerator {
 
         List<ParameterDTO> parameters = new ArrayList<>(parametersType.size());
         for (int i = 0; i < parametersType.size(); i++) {
-            String name = null;
-            String description = null;
+            String name = "param" + i;
+            String description = "";
             if (actionType != null) {
                 try {
                     name = actionType.getInputs().get(i).getName();
