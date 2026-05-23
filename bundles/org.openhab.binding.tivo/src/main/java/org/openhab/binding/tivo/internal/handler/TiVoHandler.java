@@ -103,16 +103,14 @@ public class TiVoHandler extends BaseThingHandler {
                 Thread.sleep(1000);
 
                 for (int i = 0; i < commandParameter.length(); i++) {
-                    final String srchChar = commandParameter.substring(i, i + 1);
-
-                    if (srchChar.matches("[A-Z]")) {
-                        sendCommand(KEYBOARD, srchChar, currentStatus);
-                    } else if (srchChar.matches("[0-9]")) {
-                        sendCommand(KEYBOARD, "NUM" + srchChar, currentStatus);
-                    } else if (" ".equals(srchChar)) {
+                    if (Character.isLetter(commandParameter.charAt(i))) {
+                        sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
+                    } else if (Character.isDigit(commandParameter.charAt(i))) {
+                        sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
+                    } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
                         sendCommand(KEYBOARD, "SPACE", currentStatus);
                     } else {
-                        logger.debug("Search character not supported: {}", srchChar);
+                        logger.debug("Search character not supported: {}", String.valueOf(commandParameter.charAt(i)));
                     }
                 }
             } catch (InterruptedException e) {
@@ -136,6 +134,10 @@ public class TiVoHandler extends BaseThingHandler {
                 case CHANNEL_TIVO_KBDCMD:
                     commandKeyword = KEYBOARD;
                     break;
+                default:
+                    logger.debug("TiVo '{}' ignoring command '{}' for unsupported channel '{}'.", getThing().getUID(),
+                            command, channelUID.getId());
+                    return;
             }
         }
         try {
