@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.handler;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_LOAD;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CPU_TEMP;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DEVICE_WIRELESS_CLIENTS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_IN;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_IF_OUT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ONLINE;
@@ -137,6 +138,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
             case CHANNEL_WAN_OUT -> device.isGateway() ? new DecimalType(device.getWanOut()) : UnDefType.UNDEF;
             case CHANNEL_IF_IN -> new DecimalType(device.getIfIn());
             case CHANNEL_IF_OUT -> new DecimalType(device.getIfOut());
+            case CHANNEL_DEVICE_WIRELESS_CLIENTS -> new DecimalType(device.getDeviceWirelessClients());
             case CHANNEL_SYSLOG_CONNECTED -> OnOffType.from(device.isSyslogConnected());
             case CHANNEL_REBOOT -> OnOffType.OFF;
             default -> UnDefType.NULL;

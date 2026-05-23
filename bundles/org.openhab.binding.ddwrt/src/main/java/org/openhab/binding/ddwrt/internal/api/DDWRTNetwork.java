@@ -82,6 +82,9 @@ public class DDWRTNetwork {
     // Local ARP cache reader (used when useLocalArpCache config is true)
     private final LocalArpReader localArpReader = new LocalArpReader();
 
+    // DHCP event listeners (for bridge-level event channels)
+    private final CopyOnWriteArrayList<DhcpEventListener> dhcpEventListeners = new CopyOnWriteArrayList<>();
+
     // Refresh listeners (e.g., discovery service)
     private final List<RefreshListener> refreshListeners = new CopyOnWriteArrayList<>();
 
@@ -539,5 +542,21 @@ public class DDWRTNetwork {
         }
         long backoff = 10_000L * (1L << Math.min(failureCount - 1, 5));
         return Math.min(backoff, 300_000L);
+    }
+
+    // ---- DHCP Event Listeners ----
+
+    public void addDhcpEventListener(DhcpEventListener listener) {
+        dhcpEventListeners.add(listener);
+    }
+
+    public void removeDhcpEventListener(DhcpEventListener listener) {
+        dhcpEventListeners.remove(listener);
+    }
+
+    public void notifyDhcpEvent(String hostname, String eventMessage) {
+        for (DhcpEventListener listener : dhcpEventListeners) {
+            listener.onDhcpEvent(hostname, eventMessage);
+        }
     }
 }

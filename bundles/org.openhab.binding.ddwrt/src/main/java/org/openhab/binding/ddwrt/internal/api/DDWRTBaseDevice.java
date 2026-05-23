@@ -103,10 +103,6 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             "([\\w.-]+):\\s+STA\\s+([0-9a-fA-F:]{17})\\s+.*?(assoc|disassoc|authenticated|deauthenticated)",
             Pattern.CASE_INSENSITIVE));
 
-    // DHCPACK events: "DHCPACK(br0) 192.168.0.83 9a:2a:33:74:e4:11 Lee-Pixel-8a"
-    private static final Pattern DHCPACK_EVENT = Objects.requireNonNull(Pattern
-            .compile("DHCPACK\\(\\S+\\)\\s+(\\S+)\\s+([0-9a-fA-F:]{17})(?:\\s+(\\S+))?", Pattern.CASE_INSENSITIVE));
-
     // Reusable MAC validation pattern for ARP/neighbor parsing
     protected static final Pattern MAC_PATTERN = Objects
             .requireNonNull(Pattern.compile("^[0-9a-f]{2}(:[0-9a-f]{2}){5}$"));
@@ -149,6 +145,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected long ifIn = 0;
     protected long ifOut = 0;
     protected boolean online = false;
+
+    // Per-device wireless client count (computed at end of each refresh cycle)
+    protected int deviceWirelessClients = 0;
+    protected int dhcpPoolSize = 0;
 
     // Firewall rules
     protected final List<DDWRTFirewallRule> firewallRules = new ArrayList<>();
@@ -881,10 +881,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         lastDhcpEvent = event.message;
         logger.debug("DHCP event: {}", event.message);
 
-        DDWRTThingUpdater u = updater;
-        if (u != null) {
-            u.updateChannel("last-dhcp-event", new StringType(event.message));
-            u.fireTrigger("dhcp-event", event.message);
+        // Notify network-level DHCP event listeners (for bridge event channels)
+        DDWRTNetwork net = network;
+        if (net != null) {
+            net.notifyDhcpEvent(hostname, event.message);
         }
 
         // Invalidate caches so next periodic refresh picks up full state
@@ -893,46 +893,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             hostsCacheValid = false;
         }
 
-        // Try to parse DHCPACK and update cache directly
-        DDWRTNetworkCache cache = networkCache;
-        if (cache != null) {
-            Matcher m = DHCPACK_EVENT.matcher(event.message);
-            if (m.find()) {
-                String ip = Objects.requireNonNull(m.group(1));
-                String clientMac = Objects.requireNonNull(m.group(2)).toLowerCase(Locale.ROOT);
-                String dhcpHostname = m.group(3); // may be null if hostname not in ACK
-
-                // Handle MAC randomization: merge if this hostname exists under a different MAC
-                if (dhcpHostname != null && !dhcpHostname.isEmpty() && !"*".equals(dhcpHostname)) {
-                    cache.mergeRandomizedMac(clientMac, dhcpHostname);
-                }
-
-                final String finalHostname = (dhcpHostname != null && !"*".equals(dhcpHostname)) ? dhcpHostname : "";
-
-                // IP now has a hostname — remove from reverse DNS negative cache
-                if (!finalHostname.isEmpty()) {
-                    dnsNegativeCache.remove(ip);
-                }
-
-                // Update the wireless client directly in the cache
-                cache.computeWirelessClient(clientMac, client -> {
-                    if (!finalHostname.isEmpty() && !finalHostname.equals(client.getHostname())) {
-                        client.setHostname(finalHostname);
-                    }
-                    if (!ip.isEmpty() && !ip.equals(client.getIpAddress())) {
-                        client.setIpAddress(ip);
-                    }
-                    client.setOnline(true);
-                    client.setLastSeen(Instant.now());
-                    return client;
-                });
-                logger.debug("[DHCPACK] {} hostname={} ip={} on {}", clientMac, finalHostname, ip, hostname);
-                // No full refresh needed — cache listeners will notify handlers
-                return;
-            }
-        }
-
-        // Fallback: non-DHCPACK event — schedule full refresh for reconciliation
+        // Schedule immediate refresh — DHCP events may indicate client joining network
+        // or wireless client changing AP association
         scheduleImmediateRefresh();
     }
 
@@ -1143,6 +1105,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         refreshRadios(runner);
         refreshWirelessClients(runner);
         classifyWiredClients();
+        computeDeviceWirelessCount();
+        if (isGateway()) {
+            refreshDhcpPool(runner);
+        }
         performReverseDnsLookups();
         // Firewall rules only apply to gateway devices; APs have firewall disabled
         if (isGateway()) {
@@ -1840,6 +1806,80 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
+     * Compute per-device wireless client count from radio assoclists.
+     */
+    protected void computeDeviceWirelessCount() {
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+        Set<String> wirelessMacs = new HashSet<>();
+        for (DDWRTRadio radio : cache.getRadios()) {
+            if (radio.getParentDeviceMac().equals(mac)) {
+                for (String clientMac : radio.getAssoclist()) {
+                    wirelessMacs.add(clientMac.toLowerCase(Locale.ROOT));
+                }
+            }
+        }
+        deviceWirelessClients = wirelessMacs.size();
+    }
+
+    /**
+     * Fetch DHCP pool size by parsing {@code dhcp-range} from the dnsmasq config.
+     * Works on all firmware types (DD-WRT, OpenWrt, Tomato, generic Linux).
+     * Subclasses may override to use firmware-specific tools (e.g. uci on OpenWrt).
+     */
+    protected void refreshDhcpPool(SshRunner runner) {
+        if (!isGateway()) {
+            return;
+        }
+        // dhcp-range=<start_ip>,<end_ip>[,<netmask>][,<lease_time>]
+        String rangeStr = safeTrim(
+                runner.execStdout("grep -sh '^dhcp-range=' /tmp/dnsmasq.conf /var/etc/dnsmasq.conf*"));
+        if (!rangeStr.isEmpty()) {
+            dhcpPoolSize = parseDhcpRangeSize(rangeStr);
+        }
+    }
+
+    /**
+     * Parse a dnsmasq {@code dhcp-range=start,end,...} line and return the pool size.
+     * Returns 0 if the line cannot be parsed.
+     */
+    protected static int parseDhcpRangeSize(String dhcpRangeLine) {
+        // Strip the key prefix
+        String value = dhcpRangeLine;
+        int eqIdx = value.indexOf('=');
+        if (eqIdx >= 0) {
+            value = value.substring(eqIdx + 1);
+        }
+        String[] parts = value.split(",");
+        if (parts.length >= 2) {
+            try {
+                long start = ipToLong(parts[0].trim());
+                long end = ipToLong(parts[1].trim());
+                if (start > 0 && end >= start) {
+                    return (int) (end - start + 1);
+                }
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return 0;
+    }
+
+    private static long ipToLong(String ip) {
+        String[] octets = ip.split("\\.");
+        if (octets.length != 4) {
+            throw new NumberFormatException("Invalid IP: " + ip);
+        }
+        long result = 0;
+        for (String octet : octets) {
+            result = (result << 8) | Integer.parseInt(octet);
+        }
+        return result;
+    }
+
+    /**
      * Refresh the cached /etc/hosts content for hostname resolution.
      * Only called on gateway devices (those with WAN IP).
      * Only refreshes when cache is invalid (initial load or DHCP events).
@@ -2338,6 +2378,22 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
     public boolean isOnline() {
         return online;
+    }
+
+    public int getDeviceWirelessClients() {
+        return deviceWirelessClients;
+    }
+
+    public int getDhcpPoolSize() {
+        return dhcpPoolSize;
+    }
+
+    public String getLastDhcpEvent() {
+        return lastDhcpEvent;
+    }
+
+    public String getLastWirelessEvent() {
+        return lastWirelessEvent;
     }
 
     public String getWelcomeBanner() {

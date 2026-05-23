@@ -12,22 +12,34 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_EVENT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_LEASES;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_DHCP_REMAINING;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_LAST_DHCP_EVENT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_TOTAL_CLIENTS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRED_CLIENTS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_WIRELESS_CLIENTS;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDiscoveryService;
 import org.openhab.binding.ddwrt.internal.DDWRTNetworkConfiguration;
+import org.openhab.binding.ddwrt.internal.api.DDWRTBaseDevice;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
+import org.openhab.binding.ddwrt.internal.api.DDWRTRadio;
+import org.openhab.binding.ddwrt.internal.api.DhcpEventListener;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -45,9 +57,13 @@ import org.slf4j.LoggerFactory;
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
+public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler implements DhcpEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class);
+
+    // DHCPACK events: "DHCPACK(br0) 192.168.0.83 9a:2a:33:74:e4:11 Lee-Pixel-8a"
+    private static final Pattern DHCPACK_EVENT = Pattern
+            .compile("DHCPACK\\(\\S+\\)\\s+(\\S+)\\s+([0-9a-fA-F:]{17})(?:\\s+(\\S+))?", Pattern.CASE_INSENSITIVE);
 
     private DDWRTNetworkConfiguration config = new DDWRTNetworkConfiguration();
 
@@ -79,6 +95,7 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         network.setBridgeUID(getThing().getUID());
+        network.addDhcpEventListener(this);
 
         // execute setconfig in the background because it can trigger a refresh
         scheduler.schedule(() -> {
@@ -119,12 +136,52 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
     private void updateBridgeChannels() {
         DDWRTNetworkCache cache = network.getCache();
-        int wireless = cache.getTotalWirelessClients();
-        int total = cache.getDhcpLeases().size();
-        int wired = Math.max(0, total - wireless);
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL_CLIENTS), new DecimalType(total));
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRELESS_CLIENTS), new DecimalType(wireless));
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRED_CLIENTS), new DecimalType(wired));
+        // Compute network-wide client counts from cache
+        // Total = active ARP entries + wireless MACs not in ARP
+        int arpActive = 0;
+        for (String mac : cache.getArpMacs()) {
+            if (cache.isArpActive(mac)) {
+                arpActive++;
+            }
+        }
+        int wirelessClients = 0;
+        for (DDWRTBaseDevice device : cache.getDevices()) {
+            wirelessClients += device.getDeviceWirelessClients();
+        }
+        // Count wireless MACs not in ARP to avoid double-counting
+        int wirelessNotInArp = 0;
+        for (DDWRTBaseDevice device : cache.getDevices()) {
+            for (DDWRTRadio radio : cache.getRadios()) {
+                if (radio.getParentDeviceMac().equals(device.getMac())) {
+                    for (String clientMac : radio.getAssoclist()) {
+                        if (!cache.isArpActive(clientMac)) {
+                            wirelessNotInArp++;
+                        }
+                    }
+                }
+            }
+        }
+        int totalClients = arpActive + wirelessNotInArp;
+        int wiredClients = Math.max(0, totalClients - wirelessClients);
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL_CLIENTS), new DecimalType(totalClients));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRELESS_CLIENTS), new DecimalType(wirelessClients));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIRED_CLIENTS), new DecimalType(wiredClients));
+        // DHCP metrics from cache (network-wide)
+        int dhcpLeases = cache.getDhcpLeases().size();
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_LEASES), new DecimalType(dhcpLeases));
+        // DHCP remaining requires pool size from gateway device
+        int dhcpPoolSize = 0;
+        for (DDWRTBaseDevice device : cache.getDevices()) {
+            if (device.isGateway()) {
+                dhcpPoolSize = device.getDhcpPoolSize();
+                break;
+            }
+        }
+        if (dhcpPoolSize > 0) {
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_REMAINING),
+                    new DecimalType(Math.max(0, dhcpPoolSize - dhcpLeases)));
+        }
+        // DHCP event channel is now event-driven via DhcpEventListener, not polled
     }
 
     private void cancelRefreshJob() {
@@ -141,7 +198,52 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        network.removeDhcpEventListener(this);
         cancelRefreshJob();
         network.dispose();
+    }
+
+    @Override
+    public void onDhcpEvent(String hostname, String eventMessage) {
+        // Only process DHCP events from gateway devices
+        DDWRTNetworkCache cache = network.getCache();
+        for (DDWRTBaseDevice device : cache.getDevices()) {
+            if (device.isGateway() && device.getHostname().equals(hostname)) {
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_LAST_DHCP_EVENT),
+                        StringType.valueOf(eventMessage));
+                triggerChannel(new ChannelUID(getThing().getUID(), CHANNEL_DHCP_EVENT), eventMessage);
+
+                // Try to parse DHCPACK and update cache directly
+                java.util.regex.Matcher m = DHCPACK_EVENT.matcher(eventMessage);
+                if (m.find()) {
+                    String ip = Objects.requireNonNull(m.group(1));
+                    String clientMac = Objects.requireNonNull(m.group(2)).toLowerCase(Locale.ROOT);
+                    String dhcpHostname = m.group(3); // may be null if hostname not in ACK
+
+                    // Handle MAC randomization: merge if this hostname exists under a different MAC
+                    if (dhcpHostname != null && !dhcpHostname.isEmpty() && !"*".equals(dhcpHostname)) {
+                        cache.mergeRandomizedMac(clientMac, dhcpHostname);
+                    }
+
+                    final String finalHostname = (dhcpHostname != null && !"*".equals(dhcpHostname)) ? dhcpHostname
+                            : "";
+
+                    // Update the wireless client directly in the cache
+                    cache.computeWirelessClient(clientMac, client -> {
+                        if (!finalHostname.isEmpty() && !finalHostname.equals(client.getHostname())) {
+                            client.setHostname(finalHostname);
+                        }
+                        if (!ip.isEmpty() && !ip.equals(client.getIpAddress())) {
+                            client.setIpAddress(ip);
+                        }
+                        client.setOnline(true);
+                        client.setLastSeen(Instant.now());
+                        return client;
+                    });
+                    logger.debug("[DHCPACK] {} hostname={} ip={} on {}", clientMac, finalHostname, ip, hostname);
+                }
+                break;
+            }
+        }
     }
 }

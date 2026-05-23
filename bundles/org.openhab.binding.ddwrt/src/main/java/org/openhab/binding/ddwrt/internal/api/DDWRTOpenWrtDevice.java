@@ -380,6 +380,25 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
+    protected void refreshDhcpPool(SshRunner runner) {
+        if (!isGateway()) {
+            return;
+        }
+        // OpenWrt: uci dhcp.lan.limit is the number of addresses in the pool
+        String limit = safeTrim(runner.execStdout("uci get dhcp.lan.limit 2>/dev/null"));
+        if (!limit.isEmpty()) {
+            try {
+                dhcpPoolSize = Integer.parseInt(limit);
+                return;
+            } catch (NumberFormatException e) {
+                // fall through
+            }
+        }
+        // Fallback to dnsmasq config parsing
+        super.refreshDhcpPool(runner);
+    }
+
+    @Override
     protected double refreshCpuTemp(SshRunner runner) {
         // OpenWrt: only sysfs thermal zones (no /proc/dmu), skip probing
         cpuTempSource = CpuTempSource.THERMAL_ZONE;

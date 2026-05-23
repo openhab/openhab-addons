@@ -17,6 +17,10 @@
 			<channel id="total-clients" typeId="total-clients"/>
 			<channel id="wireless-clients" typeId="wireless-clients"/>
 			<channel id="wired-clients" typeId="wired-clients"/>
+			<channel id="dhcp-leases" typeId="dhcp-leases"/>
+			<channel id="dhcp-remaining" typeId="dhcp-remaining"/>
+			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
+			<channel id="dhcp-event" typeId="dhcp-event"/>
 		</channels>
 
 		<config-description>
@@ -108,16 +112,15 @@
 			<channel id="if-in" typeId="if-in"/>
 			<channel id="if-out" typeId="if-out"/>
 			<channel id="reboot" typeId="reboot"/>
+			<channel id="device-wireless-clients" typeId="device-wireless-clients"/>
 			<channel id="syslog-connected" typeId="syslog-connected"/>
 			<channel id="last-warning-event" typeId="last-warning-event"/>
 			<channel id="last-error-event" typeId="last-error-event"/>
 			<channel id="warning-events" typeId="warning-events"/>
 			<channel id="error-events" typeId="error-events"/>
-			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
 			<channel id="last-wireless-event" typeId="last-wireless-event"/>
 			<channel id="warning-event" typeId="warning-event"/>
 			<channel id="error-event" typeId="error-event"/>
-			<channel id="dhcp-event" typeId="dhcp-event"/>
 			<channel id="wireless-event" typeId="wireless-event"/>
 		</channels>
 
@@ -447,6 +450,36 @@
 		<tags>
 			<tag>Control</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="device-wireless-clients">
+		<item-type>Number</item-type>
+		<label>Wireless Clients</label>
+		<description>Number of wireless clients associated with radios on this device</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhcp-leases">
+		<item-type>Number</item-type>
+		<label>DHCP Leases</label>
+		<description>Number of active DHCP leases (only available on gateway devices)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhcp-remaining">
+		<item-type>Number</item-type>
+		<label>DHCP Remaining IPs</label>
+		<description>Available IP addresses in the DHCP pool (only available on gateway devices)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Radio -->

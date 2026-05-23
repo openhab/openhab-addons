@@ -52,12 +52,15 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_TOTAL_CLIENTS = "total-clients";
     public static final String CHANNEL_WIRELESS_CLIENTS = "wireless-clients";
     public static final String CHANNEL_WIRED_CLIENTS = "wired-clients";
+    public static final String CHANNEL_DHCP_LEASES = "dhcp-leases";
+    public static final String CHANNEL_DHCP_REMAINING = "dhcp-remaining";
 
     // List of common channel ids
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_UPTIME = "uptime";
 
     // List of device channel ids
+    public static final String CHANNEL_DEVICE_WIRELESS_CLIENTS = "device-wireless-clients";
     public static final String CHANNEL_CPU_LOAD = "cpu-load";
     public static final String CHANNEL_CPU_TEMP = "cpu-temp";
     public static final String CHANNEL_WAN_IP = "wan-ip";
