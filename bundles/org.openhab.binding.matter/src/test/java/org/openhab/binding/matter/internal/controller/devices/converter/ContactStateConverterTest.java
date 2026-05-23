@@ -31,6 +31,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test class for ContactStateConverter.
@@ -58,9 +59,11 @@ class ContactStateConverterTest extends BaseMatterConverterTest {
         ChannelGroupUID thingUID = new ChannelGroupUID("matter:node:test:12345:1");
         Map<Channel, @Nullable StateDescription> channels = contactConverter.createChannels(thingUID);
         assertEquals(1, channels.size());
-        Channel channel = channels.keySet().iterator().next();
-        assertEquals("matter:node:test:12345:1#booleanstate-statevalue", channel.getUID().toString());
-        assertEquals("Contact", channel.getAcceptedItemType());
+
+        Channel contactChannel = channels.keySet().stream()
+                .filter(channel -> channel.getUID().toString().endsWith("#contact-statevalue")).findFirst()
+                .orElseThrow();
+        assertEquals("Contact", contactChannel.getAcceptedItemType());
     }
 
     @Test
@@ -70,7 +73,7 @@ class ContactStateConverterTest extends BaseMatterConverterTest {
         message.path.attributeName = "stateValue";
         message.value = true;
         contactConverter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("booleanstate-statevalue"), eq(OpenClosedType.CLOSED));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("contact-statevalue"), eq(OpenClosedType.CLOSED));
     }
 
     @Test
@@ -80,13 +83,20 @@ class ContactStateConverterTest extends BaseMatterConverterTest {
         message.path.attributeName = "stateValue";
         message.value = false;
         contactConverter.onEvent(message);
-        verify(mockHandler, times(1)).updateState(eq(1), eq("booleanstate-statevalue"), eq(OpenClosedType.OPEN));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("contact-statevalue"), eq(OpenClosedType.OPEN));
     }
 
     @Test
     void testInitState() throws Exception {
         mockCluster.stateValue = true;
         contactConverter.initState();
-        verify(mockHandler, times(1)).updateState(eq(1), eq("booleanstate-statevalue"), eq(OpenClosedType.CLOSED));
+        verify(mockHandler, times(1)).updateState(eq(1), eq("contact-statevalue"), eq(OpenClosedType.CLOSED));
+    }
+
+    @Test
+    void testInitStateNull() throws Exception {
+        mockCluster.stateValue = null;
+        contactConverter.initState();
+        verify(mockHandler, times(1)).updateState(eq(1), eq("contact-statevalue"), eq(UnDefType.NULL));
     }
 }
