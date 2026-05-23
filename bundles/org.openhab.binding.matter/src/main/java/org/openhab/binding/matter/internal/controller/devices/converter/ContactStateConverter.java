@@ -30,6 +30,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for mapping {@link BooleanStateCluster} to Contact semantics.
@@ -48,6 +49,7 @@ public class ContactStateConverter extends GenericConverter<BooleanStateCluster>
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
+        // Keep the existing channel ID for backward compatibility with existing item links.
         Channel channel = ChannelBuilder
                 .create(new ChannelUID(channelGroupUID, CHANNEL_ID_BOOLEANSTATE_STATEVALUE), CoreItemFactory.CONTACT)
                 .withType(CHANNEL_CONTACT_STATEVALUE).build();
@@ -69,7 +71,12 @@ public class ContactStateConverter extends GenericConverter<BooleanStateCluster>
 
     @Override
     public void initState() {
-        updateState(CHANNEL_ID_BOOLEANSTATE_STATEVALUE,
-                initializingCluster.stateValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+        Boolean stateValue = initializingCluster.stateValue;
+        if (stateValue == null) {
+            updateState(CHANNEL_ID_BOOLEANSTATE_STATEVALUE, UnDefType.NULL);
+            return;
+        }
+
+        updateState(CHANNEL_ID_BOOLEANSTATE_STATEVALUE, stateValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
     }
 }
