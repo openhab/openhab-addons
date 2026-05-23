@@ -48,17 +48,17 @@ public class BindingInjector {
     private static final Logger LOGGER = LoggerFactory.getLogger(BindingInjector.class);
 
     /**
-     * Smart injection of bindings value into an object.
+     * Smart injection of binding values into an object.
      *
      * @param sourceScriptClassLoader The Script class loader initiating the execution
-     * @param bindings a bindings maps with value to inject
+     * @param bindings a binding map with values to inject
      * @param objectToInjectInto An object. Its fields will be filled with value from the
      *            bindings if a match is found
      */
     public static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
             Object objectToInjectInto) {
         try {
-            injectBindingsInto(sourceScriptClassLoader, bindings, objectToInjectInto, new HashMap<>());
+            injectBindingsInto(sourceScriptClassLoader, bindings, objectToInjectInto, new HashMap<>(), false);
         } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InstantiationException
                 | InvocationTargetException e) {
             LOGGER.error("Cannot inject bindings or libs", e);
@@ -66,14 +66,14 @@ public class BindingInjector {
     }
 
     private static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
-            Object objectToInjectInto, Map<Class<?>, Object> libAlreadyInstantiated)
+            Object objectToInjectInto, Map<Class<?>, Object> libAlreadyInstantiated, boolean forceOptional)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Class<?> clazz = objectToInjectInto.getClass();
 
         for (Field field : getAllFields(clazz)) {
             if (!field.accessFlags().contains(AccessFlag.FINAL)) { // inject value only in non-final fields
                 Object valueToInject = extractBindingValueForElement(sourceScriptClassLoader, bindings, field,
-                        libAlreadyInstantiated);
+                        libAlreadyInstantiated, forceOptional);
                 if (valueToInject != null) {
                     field.setAccessible(true);
                     field.set(objectToInjectInto, valueToInject);
@@ -93,7 +93,8 @@ public class BindingInjector {
     public static @Nullable Object extractBindingValueForElement(ClassLoader sourceScriptClassLoader,
             Map<String, Object> bindings, AnnotatedElement annotatedElement) {
         try {
-            return extractBindingValueForElement(sourceScriptClassLoader, bindings, annotatedElement, new HashMap<>());
+            return extractBindingValueForElement(sourceScriptClassLoader, bindings, annotatedElement, new HashMap<>(),
+                    false);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             throw new Java223Exception("Cannot extract binding value for an element", e);
@@ -101,7 +102,7 @@ public class BindingInjector {
     }
 
     private static @Nullable Object extractBindingValueForElement(ClassLoader classLoader, Map<String, Object> bindings,
-            AnnotatedElement annotatedElement, Map<Class<?>, Object> libAlreadyInstantiated)
+            AnnotatedElement annotatedElement, Map<Class<?>, Object> libAlreadyInstantiated, boolean forceOptional)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Class<?> fieldType;
         String codeName;
@@ -134,8 +135,15 @@ public class BindingInjector {
                 return null;
             }
             boolean recursive = libraryAnnotation == null || libraryAnnotation.recursive();
+            // Keep a flag for forcing optional. It will be carried and applied recursively
+            if (injectBindingAnnotation.isPresent()) {
+                if (!injectBindingAnnotation.get().mandatory()) {
+                    forceOptional = true;
+                }
+            }
             // has it already been instantiated and stored in the store?
-            return getOrInstantiateObject(classLoader, bindings, libAlreadyInstantiated, fieldType, recursive);
+            return getOrInstantiateObject(classLoader, bindings, libAlreadyInstantiated, fieldType, recursive,
+                    forceOptional);
         }
 
         // second. It's not a library, so we will search value in the binding map.
@@ -213,7 +221,8 @@ public class BindingInjector {
         }
 
         // fourth, check if it is mandatory
-        if (!found && injectBindingAnnotation.isPresent() && injectBindingAnnotation.get().mandatory()) {
+        if (!found && !forceOptional && injectBindingAnnotation.isPresent()
+                && injectBindingAnnotation.get().mandatory()) {
             throw new Java223Exception("There is no value found for parameter/field named " + named
                     + ", but it is mandatory. We cannot inject it");
         } else if (value == null) {
@@ -245,14 +254,14 @@ public class BindingInjector {
     public static <T> T getOrInstantiateObject(ClassLoader classLoader, Map<String, Object> bindings,
             Class<T> fieldType) {
         try {
-            return getOrInstantiateObject(classLoader, bindings, new HashMap<>(), fieldType, true);
+            return getOrInstantiateObject(classLoader, bindings, new HashMap<>(), fieldType, true, false);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new Java223Exception("Cannot instantiate " + fieldType.getName(), e);
         }
     }
 
     private static <T> T getOrInstantiateObject(ClassLoader classLoader, Map<String, Object> bindings,
-            Map<Class<?>, Object> libAlreadyInstantiated, Class<T> fieldType, boolean recursive)
+            Map<Class<?>, Object> libAlreadyInstantiated, Class<T> fieldType, boolean recursive, boolean forceOptional)
             throws InstantiationException, IllegalAccessException, InvocationTargetException {
         Object valueToInject = libAlreadyInstantiated.get(fieldType);
         if (valueToInject == null) { // not instantiated, create it
@@ -261,15 +270,15 @@ public class BindingInjector {
             Constructor<?> constructor = Arrays.stream(constructors).filter(c -> c.getParameterCount() == 0).findFirst()
                     .orElseGet(() -> constructors[0]);
             @Nullable
-            Object[] parameterValues = getParameterValuesFor(classLoader, constructor, bindings,
-                    libAlreadyInstantiated);
+            Object[] parameterValues = getParameterValuesFor(classLoader, constructor, bindings, libAlreadyInstantiated,
+                    forceOptional);
             valueToInject = constructor.newInstance(parameterValues);
             if (valueToInject != null) { // cannot be null, but null-check thinks so
                 // store it to avoid multiple instantiation
                 libAlreadyInstantiated.put(fieldType, valueToInject);
                 if (recursive) {
                     // and then also use injection into it
-                    injectBindingsInto(classLoader, bindings, valueToInject, libAlreadyInstantiated);
+                    injectBindingsInto(classLoader, bindings, valueToInject, libAlreadyInstantiated, forceOptional);
                 }
             }
         }
@@ -300,14 +309,15 @@ public class BindingInjector {
      * @param executable Method or constructor
      * @param bindings The map used to search the appropriate value to inject
      * @param libAlreadyInstantiated To avoid looping the instantiation of libraries
+     * @param forceOptional Set to true to force the optionality of parameters.
      * @return An array of parameter values that fits the executable
      * @throws InstantiationException If instantiation of the parameter doesn't work
      * @throws IllegalAccessException If reflexion fails
      * @throws IllegalArgumentException If reflexion fails
      * @throws InvocationTargetException If reflexion fails
      */
-    public static @Nullable Object[] getParameterValuesFor(ClassLoader classLoader, Executable executable,
-            Map<String, Object> bindings, @Nullable Map<Class<?>, Object> libAlreadyInstantiated)
+    public static Object[] getParameterValuesFor(ClassLoader classLoader, Executable executable,
+            Map<String, Object> bindings, @Nullable Map<Class<?>, Object> libAlreadyInstantiated, boolean forceOptional)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Parameter[] parameters = executable.getParameters();
         @Nullable
@@ -316,7 +326,7 @@ public class BindingInjector {
                 : new HashMap<>();
         for (int i = 0; i < parameters.length; i++) {
             parameterValues[i] = extractBindingValueForElement(classLoader, bindings, parameters[i],
-                    libAlreadyInstantiatedLocal);
+                    libAlreadyInstantiatedLocal, forceOptional);
         }
         return parameterValues;
     }
