@@ -14,6 +14,7 @@ package org.openhab.binding.tivo.internal.handler;
 
 import static org.openhab.binding.tivo.internal.TiVoBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -82,7 +83,7 @@ public class TiVoHandler extends BaseThingHandler {
         TivoStatusData currentStatus = tivoConnection.get().getServiceStatus();
         String commandKeyword = "";
 
-        String commandParameter = command.toString().toUpperCase();
+        String commandParameter = command.toString().toUpperCase(Locale.ENGLISH);
         if (command instanceof RefreshType) {
             // Future enhancement, if we can come up with a sensible set of actions when a REFRESH is issued
             logger.debug("TiVo '{}' skipping REFRESH command for channel: '{}'.", getThing().getUID(),
@@ -90,22 +91,52 @@ public class TiVoHandler extends BaseThingHandler {
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_TIVO_CHANNEL_FORCE:
-                commandKeyword = "FORCECH";
-                break;
-            case CHANNEL_TIVO_CHANNEL_SET:
-                commandKeyword = "SETCH";
-                break;
-            case CHANNEL_TIVO_TELEPORT:
-                commandKeyword = "TELEPORT";
-                break;
-            case CHANNEL_TIVO_IRCMD:
-                commandKeyword = "IRCODE";
-                break;
-            case CHANNEL_TIVO_KBDCMD:
-                commandKeyword = "KEYBOARD";
-                break;
+        // Handle search command
+        if (CHANNEL_TIVO_SEARCH.equals(channelUID.getId())) {
+            if (commandParameter.isBlank()) {
+                logger.debug("Search string was blank");
+                return;
+            }
+
+            try {
+                sendCommand("TELEPORT", "SEARCH", currentStatus);
+                Thread.sleep(1000);
+
+                for (int i = 0; i < commandParameter.length(); i++) {
+                    final String srchChar = commandParameter.substring(i, i + 1);
+
+                    if (srchChar.matches("[A-Z]")) {
+                        sendCommand(KEYBOARD, srchChar, currentStatus);
+                    } else if (srchChar.matches("[0-9]")) {
+                        sendCommand(KEYBOARD, "NUM" + srchChar, currentStatus);
+                    } else if (" ".equals(srchChar)) {
+                        sendCommand(KEYBOARD, "SPACE", currentStatus);
+                    } else {
+                        logger.debug("Search character not supported: {}", srchChar);
+                    }
+                }
+            } catch (InterruptedException e) {
+                // TiVo handler disposed or openHAB exiting, do nothing
+            }
+            return;
+        } else {
+            switch (channelUID.getId()) {
+                case CHANNEL_TIVO_CHANNEL_FORCE:
+                    commandKeyword = "FORCECH";
+                    break;
+                case CHANNEL_TIVO_CHANNEL_SET:
+                    commandKeyword = "SETCH";
+                    break;
+                case CHANNEL_TIVO_TELEPORT:
+                    commandKeyword = "TELEPORT";
+                    break;
+                case CHANNEL_TIVO_IRCMD:
+                    commandKeyword = "IRCODE";
+                    break;
+                case CHANNEL_TIVO_KBDCMD:
+                    commandKeyword = KEYBOARD;
+                    break;
+            }
         }
         try {
             sendCommand(commandKeyword, commandParameter, currentStatus);
