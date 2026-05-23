@@ -604,8 +604,6 @@ public enum KaleidescapeMessageHandler {
     FRIENDLY_NAME {
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            // example: 'Living Room'
-            handler.friendlyName = message;
             handler.updateThingProperty(PROPERTY_FRIENDLY_NAME, message);
         }
     };
