@@ -93,7 +93,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
-    protected String friendlyName = EMPTY;
     protected Object sequenceLock = new Object();
 
     public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
@@ -327,7 +326,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
             if (ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                 // no longer in standby, update the status
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } catch (IllegalArgumentException e) {
             logger.debug("Unhandled message: key {} = {}", evt.getKey(), evt.getValue());
@@ -400,7 +399,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                         return;
                     }
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                     lastEventReceived = System.currentTimeMillis();
                 }
             }
