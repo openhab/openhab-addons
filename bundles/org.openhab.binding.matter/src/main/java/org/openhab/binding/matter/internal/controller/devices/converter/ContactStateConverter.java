@@ -13,7 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_CONTACT_STATEVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_CONTACT_STATEVALUE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_BOOLEANSTATE_STATEVALUE;
 
 import java.util.Collections;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class ContactStateConverter extends GenericConverter<BooleanStateCluster>
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_CONTACT_STATEVALUE), CoreItemFactory.CONTACT)
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_BOOLEANSTATE_STATEVALUE), CoreItemFactory.CONTACT)
                 .withType(CHANNEL_CONTACT_STATEVALUE).build();
         return Collections.singletonMap(channel, null);
     }
@@ -59,7 +59,7 @@ public class ContactStateConverter extends GenericConverter<BooleanStateCluster>
         switch (message.path.attributeName) {
             case BooleanStateCluster.ATTRIBUTE_STATE_VALUE -> {
                 if (message.value instanceof Boolean booleanValue) {
-                    updateState(CHANNEL_ID_CONTACT_STATEVALUE,
+                    updateState(CHANNEL_ID_BOOLEANSTATE_STATEVALUE,
                             booleanValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
                 }
             }
@@ -69,7 +69,7 @@ public class ContactStateConverter extends GenericConverter<BooleanStateCluster>
 
     @Override
     public void initState() {
-        updateState(CHANNEL_ID_CONTACT_STATEVALUE,
+        updateState(CHANNEL_ID_BOOLEANSTATE_STATEVALUE,
                 initializingCluster.stateValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
     }
 }
