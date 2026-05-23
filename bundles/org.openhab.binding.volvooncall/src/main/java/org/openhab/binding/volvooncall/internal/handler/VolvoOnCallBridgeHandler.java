@@ -67,7 +67,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             VocHttpApi vocApi = new VocHttpApi(clientName, configuration, gson, httpClientFactory);
             CustomerAccounts account = vocApi.getURL("customeraccounts/", CustomerAccounts.class);
             if (account.username != null) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, account.username);
+                updateStatus(ThingStatus.ONLINE);
                 this.api = vocApi;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
