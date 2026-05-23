@@ -145,7 +145,7 @@ public class Java223Strategy
                 try {
                     @Nullable
                     Object[] parameterValues = BindingInjector.getParameterValuesFor(classLoader, method, bindings,
-                            null);
+                            null, false);
                     var returnedLocal = method.invoke(instance, parameterValues);
                     // keep arbitrarily only the first returned value
                     // comparing this optional to null is OK. Null value means no method was yet executed.

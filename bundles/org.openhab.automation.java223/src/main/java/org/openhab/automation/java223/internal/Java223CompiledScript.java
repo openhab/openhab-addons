@@ -148,7 +148,8 @@ public class Java223CompiledScript extends JavaCompiledScript {
                         "Cannot get the classloader of " + compiledClass.getName() + ". Should not happen");
             }
             @Nullable
-            Object[] parameterValues = BindingInjector.getParameterValuesFor(classLoader, constructor, bindings, null);
+            Object[] parameterValues = BindingInjector.getParameterValuesFor(classLoader, constructor, bindings, null,
+                    false);
             Object compiledInstance = constructor.newInstance(parameterValues);
             if (compiledInstance == null) { // can't be null, but null-check thinks so
                 throw new Java223Exception("Instantiation of compiledInstance failed. Should not happened");
