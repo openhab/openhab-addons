@@ -100,22 +100,29 @@ public class TiVoHandler extends BaseThingHandler {
 
             try {
                 sendCommand("TELEPORT", "SEARCH", currentStatus);
-                Thread.sleep(1000);
-
-                for (int i = 0; i < commandParameter.length(); i++) {
-                    if (Character.isLetter(commandParameter.charAt(i))) {
-                        sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
-                    } else if (Character.isDigit(commandParameter.charAt(i))) {
-                        sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
-                    } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
-                        sendCommand(KEYBOARD, "SPACE", currentStatus);
-                    } else {
-                        logger.debug("Search character not supported: {}", String.valueOf(commandParameter.charAt(i)));
-                    }
-                }
             } catch (InterruptedException e) {
-                // TiVo handler disposed or openHAB exiting, do nothing
+                Thread.currentThread().interrupt();
             }
+
+            // Wait 1 second for the SEARCH screen to load
+            scheduler.schedule(() -> {
+                try {
+                    for (int i = 0; i < commandParameter.length(); i++) {
+                        if (Character.isLetter(commandParameter.charAt(i))) {
+                            sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
+                        } else if (Character.isDigit(commandParameter.charAt(i))) {
+                            sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
+                        } else if (Character.isSpaceChar(commandParameter.charAt(i))) {
+                            sendCommand(KEYBOARD, "SPACE", currentStatus);
+                        } else {
+                            logger.debug("Search character not supported: {}",
+                                    String.valueOf(commandParameter.charAt(i)));
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }, 1, TimeUnit.SECONDS);
             return;
         } else {
             switch (channelUID.getId()) {
@@ -143,7 +150,7 @@ public class TiVoHandler extends BaseThingHandler {
         try {
             sendCommand(commandKeyword, commandParameter, currentStatus);
         } catch (InterruptedException e) {
-            // TiVo handler disposed or openHAB exiting, do nothing
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -223,7 +230,7 @@ public class TiVoHandler extends BaseThingHandler {
             try {
                 tivoConnection.get().connTivoDisconnect();
             } catch (InterruptedException e) {
-                // TiVo handler disposed or openHAB exiting, do nothing
+                Thread.currentThread().interrupt();
             }
             tivoConnection = Optional.empty();
         }
@@ -240,7 +247,7 @@ public class TiVoHandler extends BaseThingHandler {
                 try {
                     connection.statusRefresh();
                 } catch (InterruptedException e) {
-                    // TiVo handler disposed or openHAB exiting, do nothing
+                    Thread.currentThread().interrupt();
                 }
             });
         };
@@ -262,7 +269,7 @@ public class TiVoHandler extends BaseThingHandler {
                 try {
                     connection.statusRefresh();
                 } catch (InterruptedException e) {
-                    // TiVo handler disposed or openHAB exiting, do nothing
+                    Thread.currentThread().interrupt();
                 }
             });
         }
