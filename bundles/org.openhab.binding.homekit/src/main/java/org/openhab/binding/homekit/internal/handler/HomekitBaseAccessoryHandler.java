@@ -15,6 +15,8 @@ package org.openhab.binding.homekit.internal.handler;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -682,10 +684,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         Service service = new Service();
         service.characteristics = new ArrayList<>();
-        service.characteristics.addAll(getEventedCharacteristics().values().stream().map(cxx -> {
-            cxx.ev = enable;
-            return cxx;
-        }).toList());
+        service.characteristics
+                .addAll(getEventedCharacteristics().values().stream().filter(Characteristic::isValid).map(cxx -> {
+                    cxx.ev = enable;
+                    return cxx;
+                }).toList());
         if (service.characteristics.isEmpty()) {
             return;
         }
@@ -703,7 +706,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
-        List<String> queries = getPolledCharacteristics().values().stream().filter(c -> c.iid != null && c.aid != null)
+        List<String> queries = getPolledCharacteristics().values().stream().filter(Characteristic::isValid)
                 .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
         if (queries.isEmpty()) {
             return;
@@ -966,7 +969,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void onCommunicationError(Exception exception, String i18nSuffix) {
         String message = exception.getMessage();
         logger.debug("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
-        logger.trace("{} stack trace", thing.getUID(), exception);
+        if (logger.isTraceEnabled()) {
+            try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+                exception.printStackTrace(pw);
+                logger.trace("{}", sw.toString().trim());
+            } catch (IOException e) {
+            }
+        }
         String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
         scheduleConnectionAttempt();

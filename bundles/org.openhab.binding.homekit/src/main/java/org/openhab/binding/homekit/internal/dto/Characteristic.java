@@ -982,4 +982,11 @@ public class Characteristic {
     public @Nullable StatusCode getStatusCode() {
         return status instanceof Integer code ? StatusCode.from(code) : null;
     }
+
+    /**
+     * Return true if the characteristic is valid i.e. itself and its aid and iid fields are not null
+     */
+    public static boolean isValid(@Nullable Characteristic characteristic) {
+        return characteristic != null && characteristic.aid != null && characteristic.iid != null;
+    }
 }

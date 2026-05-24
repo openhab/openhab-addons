@@ -790,6 +790,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (aid == null) {
             return;
         }
+        List<Service> services = accessory.services;
+        if (services == null) {
+            return;
+        }
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
@@ -797,7 +801,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 continue; // skip camera snapshot channel
             }
             if (isLinked(channelUID)) {
-                Long iid = 0L;
+                Long iid;
                 boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
                 if (checkChannelLinkByIID && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
                     try {
@@ -805,12 +809,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     } catch (NumberFormatException e) {
                         continue; // error will already have been logged elsewhere
                     }
+                } else {
+                    iid = null;
+                }
+                if (checkChannelLinkByIID && iid == null) {
+                    continue;
                 }
 
                 nestedLoops: // break marker for nested loops below
-                for (Service service : accessory.services) {
+                for (Service service : services) {
+                    if (service == null || service.characteristics == null) {
+                        continue;
+                    }
                     for (Characteristic characteristic : service.characteristics) {
-                        if ((checkChannelLinkByIID && iid.equals(characteristic.iid))
+                        if (Characteristic.isValid(characteristic)
+                                && (checkChannelLinkByIID && characteristic.iid.equals(iid))
                                 || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
                             Characteristic entry = new Characteristic();
                             entry.aid = aid;
