@@ -30,8 +30,8 @@ public class UserRequestException extends Exception {
 
     public UserRequestException(int statusCode, String messageKey, Object... messageArguments) {
         super(messageKey);
-        if (statusCode < 400 || statusCode > 499) {
-            throw new IllegalArgumentException("Status code must be between 400 and 499");
+        if (statusCode < 400 || statusCode > 599) {
+            throw new IllegalArgumentException("Status code must be between 400 and 599");
         }
         this.statusCode = statusCode;
         this.messageKey = messageKey;

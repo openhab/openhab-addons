@@ -15,26 +15,10 @@
   <name>openHAB Add-ons :: Bundles :: RESTify Binding</name>
 
   <properties>
-    <bnd.importpackage>javax.servlet;version="[3.1,4)",javax.servlet.http;version="[3.1,4)",org.osgi.service.http.whiteboard.*,org.graalvm.polyglot;resolution:=optional,org.jspecify.annotations;resolution:=optional,com.fasterxml.jackson.dataformat.yaml;resolution:=optional,*</bnd.importpackage>
+    <bnd.importpackage>javax.servlet;version="[3.1,4)",javax.servlet.http;version="[3.1,4)",org.osgi.service.http.whiteboard.*,*</bnd.importpackage>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>com.networknt</groupId>
-      <artifactId>json-schema-validator</artifactId>
-      <version>2.0.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.graalvm.js</groupId>
-          <artifactId>js</artifactId>
-        </exclusion>
-        <!-- YML is not used -->
-        <exclusion>
-          <groupId>com.fasterxml.jackson.dataformat</groupId>
-          <artifactId>jackson-dataformat-yaml</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <!-- Used for logging -->
       <groupId>org.slf4j</groupId>
@@ -58,31 +42,10 @@
       <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <!-- Used to validate RFC 3339 date and date-time -->
-      <groupId>com.ethlo.time</groupId>
-      <artifactId>itu</artifactId>
-      <version>1.14.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jruby.joni</groupId>
-      <artifactId>joni</artifactId>
-      <version>2.2.6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jruby.jcodings</groupId>
-      <artifactId>jcodings</artifactId>
-      <version>1.0.63</version>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jspecify</groupId>
-      <artifactId>jspecify</artifactId>
-      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>

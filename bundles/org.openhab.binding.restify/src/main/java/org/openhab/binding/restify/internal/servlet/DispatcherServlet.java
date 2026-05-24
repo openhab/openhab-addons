@@ -20,8 +20,12 @@ import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Met
 
 import java.io.IOException;
 import java.io.Serial;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
 import org.openhab.binding.restify.internal.endpoint.RegistrationException;
@@ -45,6 +48,8 @@ import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPatte
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
@@ -58,20 +63,17 @@ public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private final EndpointRegistry registry = new EndpointRegistry();
-    private final JsonEncoder jsonEncoder;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final AuthorizationService authorizationService;
-    private final Engine engine;
 
     @Activate
-    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference TranslationProvider i18nProvider,
-            @Reference AuthorizationService authorizationService, @Reference Engine engine) {
-        this.jsonEncoder = jsonEncoder;
+    public DispatcherServlet(@Reference TranslationProvider i18nProvider,
+            @Reference AuthorizationService authorizationService) {
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.i18nProvider = i18nProvider;
         this.authorizationService = authorizationService;
-        this.engine = engine;
         logger.info("Starting DispatcherServlet");
     }
 
@@ -82,11 +84,11 @@ public class DispatcherServlet extends HttpServlet {
         try {
             var uri = findRequestUri(req);
             logger.debug("Processing {}:{}", method, uri);
-            var json = process(method, uri, req.getHeader("Authorization"));
+            var endpointResponse = process(method, uri, req.getHeader("Authorization"), req);
             resp.setStatus(SC_OK);
-            resp.setContentType("application/json");
+            resp.setContentType(endpointResponse.contentType());
             resp.setCharacterEncoding("UTF-8");
-            resp.getWriter().write(jsonEncoder.encode(json));
+            resp.getWriter().write(endpointResponse.body());
         } catch (UserRequestException e) {
             respondWithError(resp, e, req.getLocale());
         } catch (IllegalArgumentException | IllegalStateException ex) {
@@ -97,7 +99,7 @@ public class DispatcherServlet extends HttpServlet {
         resp.getWriter().close();
     }
 
-    private static @NonNull String findRequestUri(@NonNull HttpServletRequest req) {
+    private static String findRequestUri(HttpServletRequest req) {
         var fullUri = requireNonNull(req.getRequestURI(), "Request URI must not be null");
         if (!fullUri.startsWith(SERVLET_PATH)) {
             throw new IllegalStateException("Request URI must start with " + SERVLET_PATH);
@@ -105,11 +107,56 @@ public class DispatcherServlet extends HttpServlet {
         return fullUri.substring(SERVLET_PATH.length());
     }
 
-    public Json.JsonObject process(Method method, String path, @Nullable String authorization)
-            throws AuthorizationException, NotFoundException, ParameterException {
-        var response = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
-        authorizationService.authorize(response.authorization(), authorization);
-        return engine.evaluate(response.schema());
+    public EndpointResponse process(Method method, String path, @Nullable String authorization, String requestContext)
+            throws AuthorizationException, NotFoundException, TransformationFailedException {
+        var endpoint = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
+        authorizationService.authorize(endpoint.authorization(), authorization);
+        var body = endpoint.transformation().apply(requestContext)
+                .orElseThrow(() -> new TransformationFailedException(path, method));
+        return new EndpointResponse(body, endpoint.contentType());
+    }
+
+    private EndpointResponse process(Method method, String path, @Nullable String authorization,
+            HttpServletRequest request)
+            throws IOException, AuthorizationException, NotFoundException, TransformationFailedException {
+        var endpoint = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
+        authorizationService.authorize(endpoint.authorization(), authorization);
+        var requestContext = createRequestContext(method, path, request);
+        var body = endpoint.transformation().apply(requestContext)
+                .orElseThrow(() -> new TransformationFailedException(path, method));
+        return new EndpointResponse(body, endpoint.contentType());
+    }
+
+    private String createRequestContext(Method method, String path, HttpServletRequest request) throws IOException {
+        Map<String, @Nullable Object> requestContext = new LinkedHashMap<>();
+        requestContext.put("method", method.name());
+        requestContext.put("path", path);
+        requestContext.put("queryString", request.getQueryString());
+        requestContext.put("headers", getHeaders(request));
+        requestContext.put("remoteAddr", request.getRemoteAddr());
+        requestContext.put("body", readBody(request));
+        return objectMapper.writeValueAsString(requestContext);
+    }
+
+    private static Map<String, List<String>> getHeaders(HttpServletRequest request) {
+        var headerNames = request.getHeaderNames();
+        if (headerNames == null) {
+            return Map.of();
+        }
+        Map<String, List<String>> headers = new LinkedHashMap<>();
+        for (String headerName : Collections.list(headerNames)) {
+            var headerValues = request.getHeaders(headerName);
+            headers.put(headerName, headerValues == null ? List.of() : Collections.list(headerValues));
+        }
+        return headers;
+    }
+
+    private static String readBody(HttpServletRequest request) throws IOException {
+        var reader = request.getReader();
+        if (reader == null) {
+            return "";
+        }
+        return reader.lines().collect(Collectors.joining("\n"));
     }
 
     private void respondWithError(HttpServletResponse resp, UserRequestException e, Locale locale) throws IOException {
@@ -126,13 +173,13 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void writeJsonError(HttpServletResponse resp, int statusCode, @Nullable String message) throws IOException {
-        var body = new LinkedHashMap<String, Json>();
-        body.put("code", new Json.NumberValue(statusCode));
-        body.put("error", new Json.StringValue(requireNonNullElse(message, "")));
+        var body = new LinkedHashMap<String, Object>();
+        body.put("code", statusCode);
+        body.put("error", requireNonNullElse(message, ""));
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(jsonEncoder.encode(new Json.JsonObject(body)));
+        resp.getWriter().write(objectMapper.writeValueAsString(body));
     }
 
     @Override
@@ -168,5 +215,8 @@ public class DispatcherServlet extends HttpServlet {
         POST,
         PUT,
         DELETE
+    }
+
+    public record EndpointResponse(String body, String contentType) {
     }
 }

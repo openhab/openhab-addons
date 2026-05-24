@@ -15,11 +15,12 @@ package org.openhab.binding.restify.internal.endpoint;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Authorization;
-import org.openhab.binding.restify.internal.servlet.Response;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public record Endpoint(@Nullable Authorization authorization, Response.JsonResponse schema) {
+public record Endpoint(@Nullable Authorization authorization, ChannelTransformation transformation,
+        String contentType) {
 }
