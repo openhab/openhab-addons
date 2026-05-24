@@ -685,7 +685,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Service service = new Service();
         service.characteristics = new ArrayList<>();
         service.characteristics
-                .addAll(getEventedCharacteristics().values().stream().filter(Characteristic::nonNullAndHasAidAndIid).map(cxx -> {
+                .addAll(getEventedCharacteristics().values().stream().filter(Objects::nonNull).map(cxx -> {
                     cxx.ev = enable;
                     return cxx;
                 }).toList());
@@ -706,8 +706,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
-        List<String> queries = getPolledCharacteristics().values().stream().filter(Characteristic::nonNullAndHasAidAndIid)
-                .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
+        List<String> queries = getPolledCharacteristics().values().stream()
+                .filter(c -> c != null && c.iid != null && c.aid != null).map(c -> "%s.%s".formatted(c.aid, c.iid))
+                .toList();
         if (queries.isEmpty()) {
             return;
         }

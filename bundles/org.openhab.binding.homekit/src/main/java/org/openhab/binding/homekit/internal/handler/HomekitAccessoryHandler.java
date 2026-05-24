@@ -818,23 +818,23 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
                 nestedLoops: // break marker for nested loops below
                 for (Service service : services) {
-                    if (service == null || service.characteristics == null) {
+                    if (service.characteristics == null) {
                         continue;
                     }
                     for (Characteristic characteristic : service.characteristics) {
-                        if (Characteristic.nonNullAndHasAidAndIid(characteristic)
+                        if ((characteristic != null && characteristic.iid != null)
                                 && ((checkChannelLinkByIID && characteristic.iid.equals(iid))
                                         || LIGHT_MODEL_RELEVANT_TYPES
                                                 .contains(characteristic.getCharacteristicType()))) {
                             Characteristic entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
-                            polledCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
+                            polledCharacteristics.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
                             if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
                                 entry = new Characteristic();
                                 entry.aid = aid;
                                 entry.iid = characteristic.iid;
-                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
+                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
                             }
                             if (checkChannelLinkByIID) {
                                 break nestedLoops; // unique match found; continue to next channel
