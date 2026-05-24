@@ -928,6 +928,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.httphook</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.hue</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1804,11 +1809,6 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.resol</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.restify</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
