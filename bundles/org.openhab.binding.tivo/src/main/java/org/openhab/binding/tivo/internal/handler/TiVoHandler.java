@@ -134,7 +134,7 @@ public class TiVoHandler extends BaseThingHandler {
                                 logger.debug("Search character not supported: {}",
                                         String.valueOf(commandParameter.charAt(i)));
                             }
-                            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
+                            TimeUnit.MILLISECONDS.sleep(100);
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
