@@ -117,13 +117,14 @@ public class TiVoHandler extends BaseThingHandler {
                     sendCommand("TELEPORT", "SEARCH", currentStatus);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    return;
                 }
 
                 // Wait 1 second for the SEARCH screen to load
                 scheduler.schedule(() -> {
                     try {
                         for (int i = 0; i < commandParameter.length(); i++) {
-                            if (Character.isLetter(commandParameter.charAt(i))) {
+                            if (commandParameter.charAt(i) >= 'A' && commandParameter.charAt(i) <= 'Z') {
                                 sendCommand(KEYBOARD, String.valueOf(commandParameter.charAt(i)), currentStatus);
                             } else if (Character.isDigit(commandParameter.charAt(i))) {
                                 sendCommand(KEYBOARD, "NUM" + commandParameter.charAt(i), currentStatus);
@@ -133,6 +134,7 @@ public class TiVoHandler extends BaseThingHandler {
                                 logger.debug("Search character not supported: {}",
                                         String.valueOf(commandParameter.charAt(i)));
                             }
+                            TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCmdWaitInterval());
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();

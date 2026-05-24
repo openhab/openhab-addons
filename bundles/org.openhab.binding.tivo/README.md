@@ -60,7 +60,7 @@ All devices support the following channels:
 | irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See below for available IR COMMANDS.                                                                                                                                                            |
 | kbdCommand      | String          | Keyboard Command (KEYBOARD)           | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.                                                                                 |
 | dvrStatus       | String          | TiVo Status                           | Action return code / channel information returned by the TiVo.                                                                                                                                                                                                    |
-| search          | String          | Search                                | Write-only channel that executes a search in the Tivo menu for the given string.                                                                                                                                                                                  |
+| search          | String          | Search                                | Write-only channel that executes a search in the TiVo menu for the given string.                                                                                                                                                                                  |
 
 - To change channels simply post/send the number of the channel to channelSet or channelForce. For OTA channels, a decimal for the sub-channel must be specified (ie: 2.1), for all others just send the channel as a whole number (ie: 100).
 - Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports this command).
@@ -202,12 +202,12 @@ etc...
 
 ### `tivo.rules` Example
 
-- The following rule is no longer needed as the `search` channel implements this functionality internally. It remains here as a reference for sending KEYBOARD commands to the Tivo.
+- The following rule is no longer needed as the `search` channel implements this functionality internally. It remains here as a reference for sending KEYBOARD commands to the TiVo.
 
 ```java
 rule "TiVo Search"
 when
-    Item TiVo_KeyboardStr received update
+    Item TiVo_SearchStr received update
 then
     if (newState != NULL && newState.toString.length > 0) {
 
