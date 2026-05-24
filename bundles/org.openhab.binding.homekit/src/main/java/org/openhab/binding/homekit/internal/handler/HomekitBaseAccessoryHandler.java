@@ -685,7 +685,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Service service = new Service();
         service.characteristics = new ArrayList<>();
         service.characteristics
-                .addAll(getEventedCharacteristics().values().stream().filter(Characteristic::isValid).map(cxx -> {
+                .addAll(getEventedCharacteristics().values().stream().filter(Characteristic::nonNullAndHasAidAndIid).map(cxx -> {
                     cxx.ev = enable;
                     return cxx;
                 }).toList());
@@ -706,7 +706,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
-        List<String> queries = getPolledCharacteristics().values().stream().filter(Characteristic::isValid)
+        List<String> queries = getPolledCharacteristics().values().stream().filter(Characteristic::nonNullAndHasAidAndIid)
                 .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
         if (queries.isEmpty()) {
             return;
@@ -967,7 +967,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *            expanded to the i18n text id "error.event-subscribe-error" for the UI
      */
     protected void onCommunicationError(Exception exception, String i18nSuffix) {
-        String message = exception.getMessage();
+        String message = exception.toString();
         logger.debug("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
         if (logger.isTraceEnabled()) {
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {

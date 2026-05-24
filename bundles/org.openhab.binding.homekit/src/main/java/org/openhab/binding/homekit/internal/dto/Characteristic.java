@@ -937,7 +937,7 @@ public class Characteristic {
 
         ChannelDefinitionBuilder channelDefBuilder = new ChannelDefinitionBuilder(channelDefinitionIdentifier,
                 channelTypeUid).withLabel(getChannelLabel(characteristicType, i18nProvider, bundle))
-                .withProperties(props);
+                        .withProperties(props);
         Optional.ofNullable(getChannelDescription()).ifPresent(d -> channelDefBuilder.withDescription(d));
         return new Content.ChannelDefinition(channelDefBuilder.build());
     }
@@ -984,9 +984,9 @@ public class Characteristic {
     }
 
     /**
-     * Return true if the characteristic is valid i.e. itself and its aid and iid fields are not null
+     * Check if the characteristic is non null and its 'aid' and 'iid' fields are also not null
      */
-    public static boolean isValid(@Nullable Characteristic characteristic) {
+    public static boolean nonNullAndHasAidAndIid(@Nullable Characteristic characteristic) {
         return characteristic != null && characteristic.aid != null && characteristic.iid != null;
     }
 }

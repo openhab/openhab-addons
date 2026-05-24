@@ -822,9 +822,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         continue;
                     }
                     for (Characteristic characteristic : service.characteristics) {
-                        if (Characteristic.isValid(characteristic)
-                                && (checkChannelLinkByIID && characteristic.iid.equals(iid))
-                                || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
+                        if (Characteristic.nonNullAndHasAidAndIid(characteristic)
+                                && ((checkChannelLinkByIID && characteristic.iid.equals(iid))
+                                        || LIGHT_MODEL_RELEVANT_TYPES
+                                                .contains(characteristic.getCharacteristicType()))) {
                             Characteristic entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
