@@ -56,22 +56,22 @@ public class RestifyBinding implements ManagedService, Serializable {
     }
 
     private static boolean getBoolean(Dictionary<String, ?> properties, String key, boolean defaultValue) {
-        var value = properties.get(key);
-        return switch (value) {
-            case Boolean bool -> bool;
-            case String text -> Boolean.parseBoolean(text);
-            default -> defaultValue;
-        };
+        Object value = properties.get(key);
+        if (value instanceof Boolean bool) {
+            return bool;
+        }
+        if (value instanceof String text) {
+            return Boolean.parseBoolean(text);
+        }
+        return defaultValue;
     }
 
     private static @Nullable String getNullableString(Dictionary<String, ?> properties, String key) {
-        var value = properties.get(key);
-        return switch (value) {
-            case String text -> {
-                var trimmed = text.trim();
-                yield trimmed.isEmpty() ? null : trimmed;
-            }
-            default -> null;
-        };
+        Object value = properties.get(key);
+        if (value instanceof String text) {
+            var trimmed = text.trim();
+            return trimmed.isEmpty() ? null : trimmed;
+        }
+        return null;
     }
 }

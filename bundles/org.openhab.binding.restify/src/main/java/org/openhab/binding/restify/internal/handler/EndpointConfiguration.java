@@ -14,8 +14,11 @@ package org.openhab.binding.restify.internal.handler;
 
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.GET;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method;
 
 /**
  * The {@link EndpointConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,16 +28,27 @@ import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 @NonNullByDefault
 public class EndpointConfiguration {
     public String path = "/hello-world";
-    public DispatcherServlet.Method method = GET;
-    public String endpoint = "{\"response\":{ \"message\":\"Hello World\"}}";
+    public @Nullable Method method = GET;
+    public @Nullable List<String> transformationPattern = List.of("JS:hello-world.js");
+    public @Nullable AuthorizationType authorizationType = AuthorizationType.NONE;
+    public String username = "";
+    public String password = "";
+    public String token = "";
+    public String contentType = "application/json";
 
     public EndpointConfiguration() {
     }
 
-    public EndpointConfiguration(String path, DispatcherServlet.Method method, String endpoint) {
+    public EndpointConfiguration(String path, Method method, String transformationPattern) {
         this();
         this.path = path.trim();
         this.method = method;
-        this.endpoint = endpoint.trim();
+        this.transformationPattern = List.of(transformationPattern.trim());
+    }
+
+    public enum AuthorizationType {
+        NONE,
+        BASIC,
+        BEARER
     }
 }

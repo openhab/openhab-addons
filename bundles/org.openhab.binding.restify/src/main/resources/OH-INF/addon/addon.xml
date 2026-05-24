@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>RESTify Binding</name>
-	<description>This is the binding for RESTify.</description>
+	<description>Expose configurable HTTP endpoints backed by transformations.</description>
 	<config-description-ref uri="binding:restify"/>
 
 </addon:addon>

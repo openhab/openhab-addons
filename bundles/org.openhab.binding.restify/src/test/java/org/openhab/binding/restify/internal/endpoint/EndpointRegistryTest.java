@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.restify.internal.endpoint;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
@@ -21,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
-import org.openhab.binding.restify.internal.servlet.Response;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -30,7 +29,7 @@ import org.openhab.binding.restify.internal.servlet.Response;
 class EndpointRegistryTest {
 
     private static Endpoint endpoint() {
-        return new Endpoint(null, new Response.JsonResponse(emptyMap()));
+        return new Endpoint(null, new ChannelTransformation("JS:status.js"), "application/json");
     }
 
     @ParameterizedTest(name = "register/find returns endpoint for matching method [{index}]")

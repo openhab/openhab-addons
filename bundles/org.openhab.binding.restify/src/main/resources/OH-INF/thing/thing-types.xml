@@ -6,7 +6,7 @@
 
 	<thing-type id="endpoint">
 		<label>RESTify Endpoint</label>
-		<description>Configurable REST endpoint that returns a JSON response from a script.</description>
+		<description>Configurable REST endpoint that returns the output of a transformation.</description>
 		<config-description>
 			<parameter name="path" type="text" required="true">
 				<label>Context Path</label>
@@ -27,12 +27,55 @@
 					<option value="DELETE">DELETE</option>
 				</options>
 			</parameter>
-			<parameter name="endpoint" type="text" required="true">
-				<context>script</context>
-				<label>Endpoint</label>
+			<parameter name="transformationPattern" type="text" required="true" multiple="true">
+				<label>Transformation Pattern</label>
 				<description>
-					Script that generates the JSON response returned by this endpoint.
+					Transformation pattern that generates the response body. Multiple transformations can be chained by
+					listing each transformation on a separate line, or by separating them with the intersection character ∩.
 				</description>
+			</parameter>
+			<parameter name="contentType" type="text">
+				<label>Content Type</label>
+				<description>MIME content type returned by this endpoint.</description>
+				<default>application/json</default>
+				<options>
+					<option value="application/json">application/json</option>
+					<option value="text/plain">text/plain</option>
+					<option value="text/csv">text/csv</option>
+					<option value="text/html">text/html</option>
+					<option value="application/xml">application/xml</option>
+					<option value="text/xml">text/xml</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="authorizationType" type="text">
+				<label>Authorization Type</label>
+				<description>Authorization required by this endpoint.</description>
+				<default>NONE</default>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="NONE">None</option>
+					<option value="BASIC">Basic</option>
+					<option value="BEARER">Bearer</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Basic authorization username.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Basic authorization password.</description>
+				<context>password</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="token" type="text">
+				<label>Bearer Token</label>
+				<description>Bearer authorization token.</description>
+				<context>password</context>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

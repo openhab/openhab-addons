@@ -20,15 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class ParameterException extends UserRequestException {
+public class TransformationFailedException extends UserRequestException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public ParameterException(String parameterName) {
-        super(460, "servlet.error.parameter", parameterName);
-    }
-
-    protected ParameterException(int statusCode, String messageKey, Object... args) {
-        super(statusCode, messageKey, args);
+    public TransformationFailedException(String path, DispatcherServlet.Method method) {
+        super(500, "servlet.error.transformation.failed", method, path);
     }
 }

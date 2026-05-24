@@ -45,9 +45,6 @@ class DispatcherServletTest {
     private AuthorizationService authorizationService;
 
     @Mock
-    private Engine engine;
-
-    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -57,12 +54,12 @@ class DispatcherServletTest {
     void doGetEscapesTranslatedUserMessageInJsonErrorBody() throws Exception {
         // Given
         var writer = new StringWriter();
-        var sut = new DispatcherServlet(new JsonEncoder(), i18nProvider, authorizationService, engine);
+        var sut = new DispatcherServlet(i18nProvider, authorizationService);
         when(request.getRequestURI()).thenReturn("/restify/missing");
         when(request.getLocale()).thenReturn(Locale.US);
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
         when(i18nProvider.getText(nullable(Bundle.class), eq("servlet.error.not-found"), eq("servlet.error.not-found"),
-                eq(Locale.US), any(), any())).thenReturn("Line \"1\"\nLine 2");
+                eq(Locale.US), any(Object[].class))).thenReturn("Line \"1\"\nLine 2");
 
         // When
         sut.doGet(request, response);
@@ -78,7 +75,7 @@ class DispatcherServletTest {
     void doGetUsesLocalizedExceptionMessage() throws Exception {
         // Given
         var writer = new StringWriter();
-        var sut = new DispatcherServlet(new JsonEncoder(), i18nProvider, authorizationService, engine);
+        var sut = new DispatcherServlet(i18nProvider, authorizationService);
         when(request.getRequestURI()).thenReturn("/invalid");
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
 
