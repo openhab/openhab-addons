@@ -53,6 +53,18 @@ public abstract class ElectricityPriceSubscriptionCache<R> implements Subscripti
         priceMap.entrySet().removeIf(entry -> entry.getKey().isBefore(firstHourStart));
     }
 
+    @Override
+    public boolean put(Map<Instant, BigDecimal> records) {
+        if (priceMap.equals(records)) {
+            return false;
+        }
+
+        priceMap.clear();
+        priceMap.putAll(records);
+        flush();
+        return true;
+    }
+
     /**
      * Get map of all cached prices.
      *

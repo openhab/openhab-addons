@@ -36,6 +36,14 @@ public interface SubscriptionDataCache<R> {
     boolean put(R records);
 
     /**
+     * Add key/value pairs to cache.
+     *
+     * @param records Records to add to cache
+     * @return true if the provided records resulted in any cache changes
+     */
+    boolean put(Map<Instant, BigDecimal> records);
+
+    /**
      * Get cached prices.
      *
      * @return Map of cached key/value pairs
