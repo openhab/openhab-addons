@@ -418,7 +418,7 @@ end
 
 rule "Movie Search"
 when
-    Item z1_MovieSearch received update
+    Item z1_Ui_MovieSearch received update
 then
     if (newState != NULL && newState.toString.length > 0) {
         z1_Ui_Sendcmd.sendCommand("GO_MOVIE_LIST")
