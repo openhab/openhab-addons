@@ -706,7 +706,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         switch (evt.getType()) {
             case TYPE_VERSION:
-                getThing().setProperty(Thing.PROPERTY_MODEL_ID, updateData);
+                updateProperty(Thing.PROPERTY_MODEL_ID, updateData);
                 // Determine if we are a Grand Concerto or not
                 if (updateData.contains(GC_STR)) {
                     logger.debug("Grand Concerto detected");
