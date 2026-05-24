@@ -112,14 +112,17 @@ public class HomematicDeviceDiscoveryService
     }
 
     @Override
-    public synchronized void stopScan() {
+    public void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
-        disableInstallMode();
-        final HomematicGateway gateway = thingHandler.getGateway();
-        if (gateway != null) {
-            gateway.cancelLoadAllDeviceMetadata();
+        final HomematicGateway gateway;
+        synchronized (this) {
+            disableInstallMode();
+            gateway = thingHandler.getGateway();
+            if (gateway != null) {
+                gateway.cancelLoadAllDeviceMetadata();
+            }
         }
-        waitForScanFinishing();
+        waitForScanFinishing(gateway);
         super.stopScan();
     }
 
@@ -153,8 +156,11 @@ public class HomematicDeviceDiscoveryService
     }
 
     private void waitForLoadDevicesFinished() throws InterruptedException, ExecutionException {
-        Future<?> loadFuture;
-        if ((loadFuture = loadDevicesFuture) != null) {
+        final Future<?> loadFuture;
+        synchronized (this) {
+            loadFuture = this.loadDevicesFuture;
+        }
+        if (loadFuture != null) {
             loadFuture.get();
         }
     }
@@ -162,7 +168,7 @@ public class HomematicDeviceDiscoveryService
     /**
      * Waits for the discovery scan to finish and then returns.
      */
-    public void waitForScanFinishing() {
+    public void waitForScanFinishing(HomematicGateway gateway) {
         logger.debug("Waiting for finishing Homematic device discovery scan");
         try {
             waitForInstallModeFinished(DISCOVER_TIMEOUT_SECONDS * 1000);
@@ -172,8 +178,6 @@ public class HomematicDeviceDiscoveryService
         } catch (Exception ex) {
             logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
         }
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        HomematicGateway gateway = bridgeHandler.getGateway();
         String gatewayId = gateway != null ? gateway.getId() : "UNKNOWN";
         logger.debug("Finished Homematic device discovery scan on gateway '{}'", gatewayId);
     }

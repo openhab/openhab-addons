@@ -121,7 +121,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 // scan for already known devices (new devices will not be discovered,
                 // since installMode==true is only achieved if the bridge is online
                 discoveryService.startScan(null);
-                discoveryService.waitForScanFinishing();
+                discoveryService.waitForScanFinishing(gateway);
 
                 updateStatus(ThingStatus.ONLINE);
                 if (!config.getGatewayInfo().isHomegear()) {
