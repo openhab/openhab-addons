@@ -116,7 +116,7 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
     @Override
     public void channelLinked(ChannelUID channelUID) {
         super.channelLinked(channelUID);
-        if (CHANNEL_GROUP_HOURLY_FORECAST_PREFIX.equals(channelUID.getGroupId())) {
+        if (CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX.equals(channelUID.getGroupId())) {
             forecastChannelLinked = true;
         }
     }
