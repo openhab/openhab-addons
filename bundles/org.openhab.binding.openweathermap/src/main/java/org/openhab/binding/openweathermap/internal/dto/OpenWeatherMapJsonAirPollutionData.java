@@ -23,5 +23,5 @@ import org.openhab.binding.openweathermap.internal.dto.base.Coord;
  */
 public class OpenWeatherMapJsonAirPollutionData {
     public Coord coord;
-    public java.util.List<List> hourly;
+    public java.util.List<List> list;
 }

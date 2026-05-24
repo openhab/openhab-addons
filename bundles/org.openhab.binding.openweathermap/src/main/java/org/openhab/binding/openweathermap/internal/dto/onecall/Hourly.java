@@ -30,6 +30,7 @@ public class Hourly {
     private int humidity;
     @SerializedName("dew_point")
     private double dewPoint;
+    private double uvi;
     private int clouds;
     private int visibility;
     @SerializedName("wind_speed")
@@ -65,6 +66,10 @@ public class Hourly {
 
     public double getDewPoint() {
         return dewPoint;
+    }
+
+    public double getUvi() {
+        return uvi;
     }
 
     public int getClouds() {

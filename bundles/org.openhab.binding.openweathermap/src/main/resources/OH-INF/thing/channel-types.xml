@@ -226,6 +226,7 @@
 			<channel id="wind-direction" typeId="system.wind-direction"/>
 			<channel id="gust-speed" typeId="gust-speed"/>
 			<channel id="cloudiness" typeId="cloudiness"/>
+            <channel id="uvindex" typeId="forecasted-uvindex"/>
 			<channel id="precip-probability" typeId="precip-probability"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>

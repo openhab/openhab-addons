@@ -62,6 +62,7 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
 
     // keeps track of the parsed count
     private int forecastHours = 0;
+    private boolean forecastChannelLinked;
 
     private @Nullable OpenWeatherMapJsonAirPollutionData airPollutionData;
     private @Nullable OpenWeatherMapJsonAirPollutionData airPollutionForecastData;
@@ -113,12 +114,29 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        String channelGroupId = channelUID.getGroupId();
+        if (CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX.equals(channelGroupId)) {
+            forecastChannelLinked = true;
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        forecastChannelLinked = getThing().getChannels().stream().map(c -> c.getUID()).filter(UID -> isLinked(UID))
+                .map(UID -> UID.getGroupId()).filter(groupId -> CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX.equals(groupId))
+                .count() > 0;
+    }
+
+    @Override
     protected boolean requestData(OpenWeatherMapConnection connection)
             throws CommunicationException, ConfigurationException {
         logger.debug("Update air pollution data of thing '{}'.", getThing().getUID());
         try {
             airPollutionData = connection.getAirPollutionData(location);
-            if (forecastHours > 0) {
+            if (forecastHours > 0 || forecastChannelLinked) {
                 airPollutionForecastData = connection.getAirPollutionForecastData(location);
             }
             return true;
@@ -161,8 +179,8 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonAirPollutionData localAirPollutionData = airPollutionData;
-        if (localAirPollutionData != null && !localAirPollutionData.hourly.isEmpty()) {
-            org.openhab.binding.openweathermap.internal.dto.airpollution.List currentData = localAirPollutionData.hourly
+        if (localAirPollutionData != null && !localAirPollutionData.list.isEmpty()) {
+            org.openhab.binding.openweathermap.internal.dto.airpollution.List currentData = localAirPollutionData.list
                     .get(0);
             State state = getStateForChannel(channelUID, currentData);
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -186,8 +204,8 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
             return;
         }
         OpenWeatherMapJsonAirPollutionData localAirPollutionForecastData = airPollutionForecastData;
-        if (localAirPollutionForecastData != null && !localAirPollutionForecastData.hourly.isEmpty()) {
-            List<org.openhab.binding.openweathermap.internal.dto.airpollution.List> forecastData = localAirPollutionForecastData.hourly;
+        if (localAirPollutionForecastData != null && !localAirPollutionForecastData.list.isEmpty()) {
+            List<org.openhab.binding.openweathermap.internal.dto.airpollution.List> forecastData = localAirPollutionForecastData.list;
             TimeSeries timeSeries = new TimeSeries(REPLACE);
             forecastData.forEach(hourlyForecastData -> {
                 Instant timestamp = Instant.ofEpochSecond(hourlyForecastData.dt);
@@ -212,8 +230,8 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonAirPollutionData localAirPollutionForecastData = airPollutionForecastData;
-        if (localAirPollutionForecastData != null && localAirPollutionForecastData.hourly.size() >= count) {
-            org.openhab.binding.openweathermap.internal.dto.airpollution.List forecastData = localAirPollutionForecastData.hourly
+        if (localAirPollutionForecastData != null && localAirPollutionForecastData.list.size() >= count) {
+            org.openhab.binding.openweathermap.internal.dto.airpollution.List forecastData = localAirPollutionForecastData.list
                     .get(count - 1);
             State state = getStateForChannel(channelUID, forecastData);
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
