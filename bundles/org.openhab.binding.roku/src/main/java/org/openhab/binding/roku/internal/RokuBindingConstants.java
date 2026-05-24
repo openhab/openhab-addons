@@ -66,6 +66,7 @@ public class RokuBindingConstants {
     public static final String PROGRAM_RATING = "programRating";
     public static final String POWER = "power";
     public static final String POWER_STATE = "powerState";
+    public static final String SEARCH = "search";
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;

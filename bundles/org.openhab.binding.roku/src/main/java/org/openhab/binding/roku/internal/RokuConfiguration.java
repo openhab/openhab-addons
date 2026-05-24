@@ -26,4 +26,5 @@ public class RokuConfiguration {
     public @Nullable String hostName;
     public Integer port = 8060;
     public Integer refresh = 10;
+    public Integer searchDowns = 2;
 }

@@ -79,6 +79,7 @@ public class RokuHandler extends BaseThingHandler {
     private RokuCommunicator communicator;
     private DeviceInfo deviceInfo = new DeviceInfo();
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
+    private int searchDowns = 2;
     private boolean deviceInfoLoaded = false;
     private boolean tvActive = false;
     private int limitedMode = -1;
@@ -111,6 +112,10 @@ public class RokuHandler extends BaseThingHandler {
 
         if (config.refresh >= 1) {
             refreshInterval = config.refresh;
+        }
+
+        if (config.searchDowns != 2) {
+            searchDowns = config.searchDowns;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -392,77 +397,113 @@ public class RokuHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Unsupported refresh command: {}", command);
-        } else if (channelUID.getId().equals(BUTTON)) {
-            synchronized (sequenceLock) {
-                try {
-                    communicator.keyPress(command.toString());
-                } catch (RokuHttpException e) {
-                    logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command, e.getMessage());
-                    setStatusOffline();
-                }
-            }
-        } else if (channelUID.getId().equals(ACTIVE_APP)) {
-            synchronized (sequenceLock) {
-                try {
-                    String appId = command.toString();
-                    // Roku Home(-1) is not a real appId, just press the home button instead
-                    if (!ROKU_HOME_ID.equals(appId)) {
-                        communicator.launchApp(appId);
-                    } else {
-                        communicator.keyPress(ROKU_HOME_BUTTON);
-                    }
-                } catch (RokuHttpException e) {
-                    logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command, e.getMessage());
-                    setStatusOffline();
-                }
-            }
-        } else if (channelUID.getId().equals(ACTIVE_CHANNEL)) {
-            synchronized (sequenceLock) {
-                try {
-                    communicator.launchTvChannel(command.toString());
-                } catch (RokuHttpException e) {
-                    logger.debug("Unable to change channel on Roku TV, channelNumber: {}, Exception: {}", command,
-                            e.getMessage());
-                    setStatusOffline();
-                }
-            }
-        } else if (POWER.equals(channelUID.getId())) {
-            synchronized (sequenceLock) {
-                if (command instanceof OnOffType) {
+            return;
+        }
+
+        switch (channelUID.getId()) {
+            case BUTTON:
+                synchronized (sequenceLock) {
                     try {
-                        if (command.equals(OnOffType.ON)) {
-                            communicator.keyPress(POWER_ON);
-                        } else {
-                            communicator.keyPress("PowerOff");
-                        }
+                        communicator.keyPress(command.toString());
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
                                 e.getMessage());
                         setStatusOffline();
                     }
                 }
-            }
-        } else if (channelUID.getId().equals(CONTROL)) {
-            synchronized (sequenceLock) {
-                try {
-                    if (command instanceof PlayPauseType) {
-                        communicator.keyPress(ROKU_PLAY_BUTTON);
-                    } else if (command instanceof NextPreviousType) {
-                        if (command == NextPreviousType.NEXT) {
-                            communicator.keyPress(ROKU_NEXT_BUTTON);
-                        } else if (command == NextPreviousType.PREVIOUS) {
-                            communicator.keyPress(ROKU_PREV_BUTTON);
+                break;
+            case ACTIVE_APP:
+                synchronized (sequenceLock) {
+                    try {
+                        String appId = command.toString();
+                        // Roku Home(-1) is not a real appId, just press the home button instead
+                        if (!ROKU_HOME_ID.equals(appId)) {
+                            communicator.launchApp(appId);
+                        } else {
+                            communicator.keyPress(ROKU_HOME_BUTTON);
                         }
-                    } else {
-                        logger.warn("Unknown control command: {}", command);
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command, e.getMessage());
+                        setStatusOffline();
                     }
-                } catch (RokuHttpException e) {
-                    logger.debug("Unable to send control cmd to Roku, cmd: {}, Exception: {}", command, e.getMessage());
-                    setStatusOffline();
                 }
-            }
-        } else {
-            logger.debug("Unsupported command: {}", command);
+                break;
+            case ACTIVE_CHANNEL:
+                synchronized (sequenceLock) {
+                    try {
+                        communicator.launchTvChannel(command.toString());
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to change channel on Roku TV, channelNumber: {}, Exception: {}", command,
+                                e.getMessage());
+                        setStatusOffline();
+                    }
+                }
+                break;
+            case POWER:
+                synchronized (sequenceLock) {
+                    if (command instanceof OnOffType) {
+                        try {
+                            if (command.equals(OnOffType.ON)) {
+                                communicator.keyPress(POWER_ON);
+                            } else {
+                                communicator.keyPress("PowerOff");
+                            }
+                        } catch (RokuHttpException e) {
+                            logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
+                                    e.getMessage());
+                            setStatusOffline();
+                        }
+                    }
+                }
+                break;
+            case CONTROL:
+                synchronized (sequenceLock) {
+                    try {
+                        if (command instanceof PlayPauseType) {
+                            communicator.keyPress(ROKU_PLAY_BUTTON);
+                        } else if (command instanceof NextPreviousType) {
+                            if (command == NextPreviousType.NEXT) {
+                                communicator.keyPress(ROKU_NEXT_BUTTON);
+                            } else if (command == NextPreviousType.PREVIOUS) {
+                                communicator.keyPress(ROKU_PREV_BUTTON);
+                            }
+                        } else {
+                            logger.warn("Unknown control command: {}", command);
+                        }
+                    } catch (RokuHttpException e) {
+                        logger.debug("Unable to send control cmd to Roku, cmd: {}, Exception: {}", command,
+                                e.getMessage());
+                        setStatusOffline();
+                    }
+                }
+                break;
+            case SEARCH:
+                final String srchStr = command.toString();
+
+                if (!srchStr.isBlank()) {
+                    synchronized (sequenceLock) {
+                        try {
+                            // To get to the search page, simulate pressing Home, Down(s) & Select
+                            communicator.keyPress("Home");
+                            for (int i = 0; i < searchDowns; i++) {
+                                communicator.keyPress("Down");
+                            }
+                            communicator.keyPress("Select");
+
+                            for (int i = 0; i < srchStr.length(); i++) {
+                                communicator.keyPress("Lit_"
+                                        + (Character.isSpaceChar(srchStr.charAt(i)) ? "%20" : srchStr.charAt(i)));
+                            }
+                        } catch (RokuHttpException e) {
+                            logger.debug("Unable to send search cmd to Roku, srchStr: {}, Exception: {}", srchStr,
+                                    e.getMessage());
+                            setStatusOffline();
+                        }
+                    }
+                }
+                break;
+            default:
+                logger.debug("Unsupported command: {}", command);
         }
     }
 

@@ -42,6 +42,12 @@
 				<type>roku:endTime</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="search">
+				<type>roku:search</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="roku:roku_tv">
@@ -97,6 +103,12 @@
 			<update-channel id="powerState">
 				<type>roku:powerState</type>
 			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="search">
+				<type>roku:search</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 

@@ -22,6 +22,7 @@
 			<channel id="timeTotal" typeId="timeTotal"/>
 			<channel id="endTime" typeId="endTime"/>
 			<channel id="progress" typeId="progress"/>
+			<channel id="search" typeId="search"/>
 		</channels>
 
 		<properties>
@@ -31,7 +32,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">5</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -49,6 +50,7 @@
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
+			<channel id="powerState" typeId="powerState"/>
 			<channel id="activeApp" typeId="activeApp"/>
 			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="buttonTv"/>
@@ -58,6 +60,7 @@
 			<channel id="timeTotal" typeId="timeTotal"/>
 			<channel id="endTime" typeId="endTime"/>
 			<channel id="progress" typeId="progress"/>
+			<channel id="search" typeId="search"/>
 			<channel id="activeChannel" typeId="activeChannel"/>
 			<channel id="signalMode" typeId="signalMode"/>
 			<channel id="signalQuality" typeId="signalQuality"/>
@@ -65,7 +68,6 @@
 			<channel id="programTitle" typeId="programTitle"/>
 			<channel id="programDescription" typeId="programDescription"/>
 			<channel id="programRating" typeId="programRating"/>
-			<channel id="powerState" typeId="powerState"/>
 		</channels>
 
 		<properties>
@@ -75,7 +77,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
-			<property name="thingTypeVersion">5</property>
+			<property name="thingTypeVersion">6</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -321,5 +323,12 @@
 				<option value="Offline">Offline</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="search">
+		<item-type>String</item-type>
+		<label>Search</label>
+		<description>Executes a search in the UI for the given string (write-only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
