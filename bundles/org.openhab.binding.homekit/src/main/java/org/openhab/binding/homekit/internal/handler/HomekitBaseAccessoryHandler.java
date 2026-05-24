@@ -684,11 +684,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         Service service = new Service();
         service.characteristics = new ArrayList<>();
-        service.characteristics
-                .addAll(getEventedCharacteristics().values().stream().filter(Objects::nonNull).map(cxx -> {
-                    cxx.ev = enable;
-                    return cxx;
-                }).toList());
+        service.characteristics.addAll(getEventedCharacteristics().values().stream().map(cxx -> {
+            cxx.ev = enable;
+            return cxx;
+        }).toList());
         if (service.characteristics.isEmpty()) {
             return;
         }
@@ -707,7 +706,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private synchronized void refresh() {
         List<String> queries = getPolledCharacteristics().values().stream()
-                .filter(c -> c != null && c.iid != null && c.aid != null).map(c -> "%s.%s".formatted(c.aid, c.iid))
+                .filter(cxx -> cxx.iid != null && cxx.aid != null).map(cxx -> "%s.%s".formatted(cxx.aid, cxx.iid))
                 .toList();
         if (queries.isEmpty()) {
             return;

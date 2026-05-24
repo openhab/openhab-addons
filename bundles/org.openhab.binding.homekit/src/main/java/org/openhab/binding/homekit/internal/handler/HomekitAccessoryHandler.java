@@ -788,12 +788,17 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         final Long aid = getAccessoryId();
         if (aid == null) {
+            logger.debug("{} accessory has no ID", thing.getUID());
             return;
         }
-        List<Service> services = accessory.services;
+        final List<Service> services = accessory.services;
         if (services == null) {
+            logger.debug("{} accessory has no services", thing.getUID());
             return;
         }
+
+        Map<String, Characteristic> newEvented = new HashMap<>();
+        Map<String, Characteristic> newPolled = new HashMap<>();
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
@@ -818,10 +823,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
                 nestedLoops: // break marker for nested loops below
                 for (Service service : services) {
-                    if (service.characteristics == null) {
+                    final List<Characteristic> characteristics = service.characteristics;
+                    if (characteristics == null) {
                         continue;
                     }
-                    for (Characteristic characteristic : service.characteristics) {
+                    for (Characteristic characteristic : characteristics) {
                         if ((characteristic != null && characteristic.iid != null)
                                 && ((checkChannelLinkByIID && characteristic.iid.equals(iid))
                                         || LIGHT_MODEL_RELEVANT_TYPES
@@ -829,12 +835,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             Characteristic entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
-                            polledCharacteristics.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
+                            newPolled.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
                             if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
                                 entry = new Characteristic();
                                 entry.aid = aid;
                                 entry.iid = characteristic.iid;
-                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
+                                newEvented.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
                             }
                             if (checkChannelLinkByIID) {
                                 break nestedLoops; // unique match found; continue to next channel
@@ -844,6 +850,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         }
+        polledCharacteristics.putAll(newPolled);
+        eventedCharacteristics.putAll(newEvented);
     }
 
     /**
