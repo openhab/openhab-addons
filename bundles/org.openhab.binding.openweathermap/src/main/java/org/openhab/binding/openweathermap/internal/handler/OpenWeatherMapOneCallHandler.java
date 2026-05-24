@@ -576,9 +576,6 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             case CHANNEL_GUST_SPEED:
                 state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
                 break;
-            case CHANNEL_UVINDEX:
-                state = getDecimalTypeState(forecastData.getUvi());
-                break;
             case CHANNEL_CLOUDINESS:
                 state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
                 break;
