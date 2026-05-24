@@ -22,7 +22,7 @@
 			<default>10</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
-		<parameter name="searchDowns" type="integer" min="1" max="10" required="false">
+		<parameter name="searchDowns" type="integer" min="0" max="10" required="false">
 			<label>Search Downs</label>
 			<description>Number of Down presses to get to the search menu after pressing Home</description>
 			<default>2</default>

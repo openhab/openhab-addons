@@ -113,10 +113,7 @@ public class RokuHandler extends BaseThingHandler {
         if (config.refresh >= 1) {
             refreshInterval = config.refresh;
         }
-
-        if (config.searchDowns != 2) {
-            searchDowns = config.searchDowns;
-        }
+        searchDowns = config.searchDowns;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -480,19 +477,22 @@ public class RokuHandler extends BaseThingHandler {
             case SEARCH:
                 final String srchStr = command.toString();
 
-                if (!srchStr.isBlank()) {
+                if (command instanceof StringType && !srchStr.isBlank() && !"NULL".equals(srchStr)) {
                     synchronized (sequenceLock) {
                         try {
                             // To get to the search page, simulate pressing Home, Down(s) & Select
-                            communicator.keyPress("Home");
+                            communicator.keyPress(ROKU_HOME_BUTTON);
                             for (int i = 0; i < searchDowns; i++) {
                                 communicator.keyPress("Down");
                             }
                             communicator.keyPress("Select");
 
                             for (int i = 0; i < srchStr.length(); i++) {
-                                communicator.keyPress("Lit_"
-                                        + (Character.isSpaceChar(srchStr.charAt(i)) ? "%20" : srchStr.charAt(i)));
+                                if (Character.isLetter(srchStr.charAt(i)) || Character.isDigit(srchStr.charAt(i))) {
+                                    communicator.keyPress("Lit_" + srchStr.charAt(i));
+                                } else if (Character.isSpaceChar(srchStr.charAt(i))) {
+                                    communicator.keyPress("Lit_%20");
+                                }
                             }
                         } catch (RokuHttpException e) {
                             logger.debug("Unable to send search cmd to Roku, srchStr: {}, Exception: {}", srchStr,
