@@ -205,6 +205,7 @@
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
+    <module>org.openhab.binding.httphook</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
@@ -370,7 +371,6 @@
     <module>org.openhab.binding.remoteopenhab</module>
     <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
-    <module>org.openhab.binding.restify</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
