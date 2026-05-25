@@ -130,6 +130,8 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
             thingTypeUID = THING_TYPE_COOKTOP;
         } else if (THING_TYPE_WASHER.getId().equalsIgnoreCase(appliance.getType())) {
             thingTypeUID = THING_TYPE_WASHER;
+        } else if (THING_TYPE_CLEANING_ROBOT.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_CLEANING_ROBOT;
         }
 
         return thingTypeUID;

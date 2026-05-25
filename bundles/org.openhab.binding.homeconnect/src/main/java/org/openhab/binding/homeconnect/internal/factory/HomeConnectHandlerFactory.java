@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectBridgeHandler;
+import org.openhab.binding.homeconnect.internal.handler.HomeConnectCleaningRobotHandler;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectCoffeeMakerHandler;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectCooktopHandler;
 import org.openhab.binding.homeconnect.internal.handler.HomeConnectDishwasherHandler;
@@ -32,6 +33,8 @@ import org.openhab.binding.homeconnect.internal.handler.HomeConnectWasherHandler
 import org.openhab.binding.homeconnect.internal.servlet.HomeConnectServlet;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -60,19 +63,24 @@ public class HomeConnectHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final HomeConnectServlet homeConnectServlet;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
     public HomeConnectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference ClientBuilder clientBuilder, @Reference SseEventSourceFactory eventSourceFactory,
             @Reference OAuthFactory oAuthFactory,
             @Reference HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
-            @Reference HomeConnectServlet homeConnectServlet) {
+            @Reference HomeConnectServlet homeConnectServlet, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.oAuthFactory = oAuthFactory;
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.homeConnectServlet = homeConnectServlet;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -105,6 +113,9 @@ public class HomeConnectHandlerFactory extends BaseThingHandlerFactory {
             return new HomeConnectHoodHandler(thing, dynamicStateDescriptionProvider);
         } else if (THING_TYPE_COOKTOP.equals(thingTypeUID)) {
             return new HomeConnectCooktopHandler(thing, dynamicStateDescriptionProvider);
+        } else if (THING_TYPE_CLEANING_ROBOT.equals(thingTypeUID)) {
+            return new HomeConnectCleaningRobotHandler(thing, dynamicStateDescriptionProvider, i18nProvider,
+                    localeProvider);
         }
 
         return null;

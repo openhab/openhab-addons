@@ -46,6 +46,7 @@ public class HomeConnectBindingConstants {
     public static final ThingTypeUID THING_TYPE_COFFEE_MAKER = new ThingTypeUID(BINDING_ID, "coffeemaker");
     public static final ThingTypeUID THING_TYPE_HOOD = new ThingTypeUID(BINDING_ID, "hood");
     public static final ThingTypeUID THING_TYPE_COOKTOP = new ThingTypeUID(BINDING_ID, "hob");
+    public static final ThingTypeUID THING_TYPE_CLEANING_ROBOT = new ThingTypeUID(BINDING_ID, "cleaningrobot");
 
     // Setting
     public static final String SETTING_POWER_STATE = "BSH.Common.Setting.PowerState";
@@ -59,6 +60,7 @@ public class HomeConnectBindingConstants {
     public static final String SETTING_REFRIGERATOR_SETPOINT_TEMPERATURE = "Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator";
     public static final String SETTING_REFRIGERATOR_SUPER_MODE = "Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator";
     public static final String SETTING_FREEZER_SUPER_MODE = "Refrigeration.FridgeFreezer.Setting.SuperModeFreezer";
+    public static final String SETTING_CURRENT_MAP = "ConsumerProducts.CleaningRobot.Setting.CurrentMap";
 
     // Status
     public static final String STATUS_DOOR_STATE = "BSH.Common.Status.DoorState";
@@ -67,6 +69,7 @@ public class HomeConnectBindingConstants {
     public static final String STATUS_REMOTE_CONTROL_START_ALLOWED = "BSH.Common.Status.RemoteControlStartAllowed";
     public static final String STATUS_REMOTE_CONTROL_ACTIVE = "BSH.Common.Status.RemoteControlActive";
     public static final String STATUS_LOCAL_CONTROL_ACTIVE = "BSH.Common.Status.LocalControlActive";
+    public static final String STATUS_BATTERY_LEVEL = "BSH.Common.Status.BatteryLevel";
 
     // SSE Event types
     public static final String EVENT_ELAPSED_PROGRAM_TIME = "BSH.Common.Option.ElapsedProgramTime";
@@ -106,6 +109,8 @@ public class HomeConnectBindingConstants {
     public static final String EVENT_AMBIENT_LIGHT_BRIGHTNESS_STATE = SETTING_AMBIENT_LIGHT_BRIGHTNESS;
     public static final String EVENT_AMBIENT_LIGHT_COLOR_STATE = SETTING_AMBIENT_LIGHT_COLOR;
     public static final String EVENT_AMBIENT_LIGHT_CUSTOM_COLOR_STATE = SETTING_AMBIENT_LIGHT_CUSTOM_COLOR;
+    public static final String EVENT_BATTERY_LEVEL = STATUS_BATTERY_LEVEL;
+    public static final String EVENT_CURRENT_MAP = SETTING_CURRENT_MAP;
 
     // Channel IDs
     public static final String CHANNEL_DOOR_STATE = "door_state";
@@ -155,16 +160,18 @@ public class HomeConnectBindingConstants {
     public static final String CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE = "ambient_light_brightness_state";
     public static final String CHANNEL_AMBIENT_LIGHT_COLOR_STATE = "ambient_light_color_state";
     public static final String CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE = "ambient_light_custom_color_state";
+    public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
 
     // List of all supported devices
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_BRIDGE,
             THING_TYPE_DISHWASHER, THING_TYPE_OVEN, THING_TYPE_WASHER, THING_TYPE_DRYER, THING_TYPE_WASHER_DRYER,
-            THING_TYPE_FRIDGE_FREEZER, THING_TYPE_COFFEE_MAKER, THING_TYPE_HOOD, THING_TYPE_COOKTOP);
+            THING_TYPE_FRIDGE_FREEZER, THING_TYPE_COFFEE_MAKER, THING_TYPE_HOOD, THING_TYPE_COOKTOP,
+            THING_TYPE_CLEANING_ROBOT);
 
     // Discoverable devices
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_DISHWASHER,
             THING_TYPE_OVEN, THING_TYPE_WASHER, THING_TYPE_DRYER, THING_TYPE_WASHER_DRYER, THING_TYPE_FRIDGE_FREEZER,
-            THING_TYPE_COFFEE_MAKER, THING_TYPE_HOOD, THING_TYPE_COOKTOP);
+            THING_TYPE_COFFEE_MAKER, THING_TYPE_HOOD, THING_TYPE_COOKTOP, THING_TYPE_CLEANING_ROBOT);
 
     // List of state values
     public static final String STATE_POWER_OFF = "BSH.Common.EnumType.PowerState.Off";
@@ -240,6 +247,28 @@ public class HomeConnectBindingConstants {
     public static final String PROGRAM_HOOD_AUTOMATIC = "Cooking.Common.Program.Hood.Automatic";
     public static final String PROGRAM_HOOD_VENTING = "Cooking.Common.Program.Hood.Venting";
     public static final String PROGRAM_HOOD_DELAYED_SHUT_OFF = "Cooking.Common.Program.Hood.DelayedShutOff";
+    public static final String PROGRAM_CLEANING_ROBOT_GO_HOME = "ConsumerProducts.CleaningRobot.Program.Basic.GoHome";
+    public static final String PROGRAM_CLEANING_ROBOT_CLEAN_MAP = "ConsumerProducts.CleaningRobot.Program.Cleaning.CleanMap";
+
+    // Cleaning robot options
+    public static final String OPTION_CLEANING_MODE = "ConsumerProducts.CleaningRobot.Option.CleaningMode";
+    public static final String OPTION_SUCTION_POWER = "ConsumerProducts.CleaningRobot.Option.SuctionPower";
+    public static final String OPTION_WATER_FLOW_RATE = "ConsumerProducts.CleaningRobot.Option.WaterFlowRate";
+    public static final String OPTION_CLEANING_PASSES = "ConsumerProducts.CleaningRobot.Option.CleaningPasses";
+    public static final String OPTION_CARPET_BOOST = "ConsumerProducts.CleaningRobot.Option.CarpetBoostEnabled";
+    public static final String OPTION_CLEANING_SPEED = "ConsumerProducts.CleaningRobot.Option.CleaningSpeed";
+    public static final String OPTION_MOP_EXTENSION = "ConsumerProducts.CleaningRobot.Option.MopExtensionEnabled";
+
+    // Cleaning robot cleaning modes
+    public static final String CLEANING_MODE_PREFIX = "ConsumerProducts.CleaningRobot.EnumType.CleaningMode.";
+    public static final String CLEANING_MODE_SILENT = CLEANING_MODE_PREFIX + "Silent";
+    public static final String CLEANING_MODE_STANDARD = CLEANING_MODE_PREFIX + "Standard";
+    public static final String CLEANING_MODE_POWER = CLEANING_MODE_PREFIX + "Power";
+    public static final String CLEANING_MODE_INTELLIGENT = CLEANING_MODE_PREFIX + "IntelligentMode";
+    public static final String CLEANING_MODE_VACUUM_ONLY = CLEANING_MODE_PREFIX + "VacuumOnly";
+    public static final String CLEANING_MODE_MOP_ONLY = CLEANING_MODE_PREFIX + "MopOnly";
+    public static final String CLEANING_MODE_VACUUM_AND_MOP = CLEANING_MODE_PREFIX + "VacuumAndMop";
+    public static final String CLEANING_MODE_MOP_AFTER_VACUUM = CLEANING_MODE_PREFIX + "MopAfterVacuum";
 
     // Network and oAuth constants
     public static final String API_BASE_URL = "https://api.home-connect.com";
@@ -272,6 +301,23 @@ public class HomeConnectBindingConstants {
     public static final String COMMAND_VENTING_INTENSIVE_2 = "ventingIntensive2";
     public static final String COMMAND_AUTOMATIC = "automatic";
     public static final String COMMAND_DELAYED_SHUT_OFF = "delayed";
+    public static final String COMMAND_PAUSE = "pause";
+    public static final String COMMAND_RESUME = "resume";
+    public static final String COMMAND_GO_HOME = "gohome";
+
+    // Home Connect API commands
+    public static final String API_COMMAND_PAUSE = "BSH.Common.Command.PauseCommand";
+    public static final String API_COMMAND_RESUME = "BSH.Common.Command.ResumeCommand";
+
+    // Channel IDs (cleaning robot)
+    public static final String CHANNEL_CLEANING_MODE_STATE = "cleaning_mode_state";
+    public static final String CHANNEL_SUCTION_POWER_STATE = "suction_power_state";
+    public static final String CHANNEL_WATER_FLOW_RATE_STATE = "water_flow_rate_state";
+    public static final String CHANNEL_CLEANING_PASSES_STATE = "cleaning_passes_state";
+    public static final String CHANNEL_CARPET_BOOST = "carpet_boost";
+    public static final String CHANNEL_CLEANING_SPEED_STATE = "cleaning_speed_state";
+    public static final String CHANNEL_MOP_EXTENSION = "mop_extension";
+    public static final String CHANNEL_CURRENT_MAP = "current_map";
 
     // light
     public static final int BRIGHTNESS_MIN = 10;
