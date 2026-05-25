@@ -797,61 +797,62 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
 
-        Map<String, Characteristic> newEvented = new HashMap<>();
-        Map<String, Characteristic> newPolled = new HashMap<>();
-
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
             if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
                 continue; // skip camera snapshot channel
             }
-            if (isLinked(channelUID)) {
-                Long iid;
-                boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
-                if (checkChannelLinkByIID && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
+            if (!isLinked(channelUID)) {
+                continue; // skip non-linked channels
+            }
+            Long channelIID = null;
+            boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
+            if (checkChannelLinkByIID) {
+                if (channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
                     try {
-                        iid = Long.parseLong(iidProperty);
+                        channelIID = Long.parseLong(iidProperty);
                     } catch (NumberFormatException e) {
                         continue; // error will already have been logged elsewhere
                     }
                 } else {
-                    iid = null;
+                    continue; // error will already have been logged elsewhere
                 }
-                if (checkChannelLinkByIID && iid == null) {
+            }
+
+            boolean iidMatched = false;
+            for (Service service : services) {
+                final List<Characteristic> characteristics = service.characteristics;
+                if (characteristics == null) {
                     continue;
                 }
-
-                nestedLoops: // break marker for nested loops below
-                for (Service service : services) {
-                    final List<Characteristic> characteristics = service.characteristics;
-                    if (characteristics == null) {
+                for (Characteristic characteristic : characteristics) {
+                    if (characteristic.iid == null) {
                         continue;
                     }
-                    for (Characteristic characteristic : characteristics) {
-                        if ((characteristic != null && characteristic.iid != null)
-                                && ((checkChannelLinkByIID && characteristic.iid.equals(iid))
-                                        || LIGHT_MODEL_RELEVANT_TYPES
-                                                .contains(characteristic.getCharacteristicType()))) {
-                            Characteristic entry = new Characteristic();
+                    if (checkChannelLinkByIID ? characteristic.iid.equals(channelIID)
+                            : LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
+                        String key = AID_IID_FORMAT.formatted(aid, characteristic.iid);
+                        Characteristic entry = new Characteristic();
+                        entry.aid = aid;
+                        entry.iid = characteristic.iid;
+                        polledCharacteristics.put(key, entry);
+                        if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
+                            entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
-                            newPolled.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
-                            if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
-                                entry = new Characteristic();
-                                entry.aid = aid;
-                                entry.iid = characteristic.iid;
-                                newEvented.put(AID_IID_FORMAT.formatted(aid, characteristic.iid), entry);
-                            }
-                            if (checkChannelLinkByIID) {
-                                break nestedLoops; // unique match found; continue to next channel
-                            }
+                            eventedCharacteristics.put(key, entry);
+                        }
+                        if (checkChannelLinkByIID) {
+                            iidMatched = true;
+                            break; // unique IID match found; break inner loop; continue to next channel
                         }
                     }
                 }
+                if (iidMatched) {
+                    break; // unique IID match found; continue to next channel
+                }
             }
         }
-        polledCharacteristics.putAll(newPolled);
-        eventedCharacteristics.putAll(newEvented);
     }
 
     /**
