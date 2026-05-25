@@ -12,11 +12,12 @@
 			<channel-group id="price" typeId="price"/>
 			<channel-group id="live" typeId="live"/>
 			<channel-group id="statistics" typeId="statistics"/>
+			<channel-group id="history" typeId="history"/>
 		</channel-groups>
 
 		<properties>
 			<property name="vendor">Tibber</property>
-			<property name="thingTypeVersion">7</property>
+			<property name="thingTypeVersion">8</property>
 		</properties>
 
 		<config-description>
