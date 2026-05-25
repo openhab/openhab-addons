@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_CHANNEL_PREFIX;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_OPTION_PREFIX;
-import static org.openhab.binding.miio.internal.MiIoBindingConstants.I18N_THING_PREFIX;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.File;
 import java.io.FileFilter;
