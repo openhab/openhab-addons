@@ -2,6 +2,7 @@
 
 The Tibber Binding retrieves `prices` from the [Tibber API](https://developer.tibber.com).
 If you have Tibber Pulse hardware, you can also use the [live group](#live-group) and [statistics group](#statistics-group).
+Historical energy data (consumption, cost, and production) is available in the [history group](#history-group) for all users.
 
 ## Supported Things
 
@@ -123,6 +124,49 @@ All values are read-only.
 | total-production      | Number:Energy   | Total energy production measured by Tibber Pulse meter      |
 | daily-production      | Number:Energy   | Net energy produced since midnight in kilowatt-hours        |
 | last-hour-production  | Number:Energy   | Net energy produced since last hour shift in kilowatt-hours |
+
+### `history` group
+
+Historical energy consumption, cost, and production delivered as time series.
+All values are read-only.
+
+The Tibber API only returns **completed** periods — for example, an annual query run in May 2026 returns data up to end of 2025.
+The binding automatically fills the gap for the current incomplete period by aggregating data bottom-up:
+daily entries are summed into the current week, weekly entries into the current month, and monthly entries into the current year.
+These synthetic entries are transient and will be replaced by real API data once the period closes.
+
+| Channel ID          | Type            | Description                          | Time Series |
+|---------------------|-----------------|--------------------------------------|-------------|
+| yearly-consumption  | Number:Energy   | Yearly energy consumption            | yes         |
+| yearly-cost         | Number:Currency | Yearly energy costs                  | yes         |
+| yearly-production   | Number:Energy   | Yearly energy production             | yes         |
+| monthly-consumption | Number:Energy   | Monthly energy consumption           | yes         |
+| monthly-cost        | Number:Currency | Monthly energy costs                 | yes         |
+| monthly-production  | Number:Energy   | Monthly energy production            | yes         |
+| weekly-consumption  | Number:Energy   | Weekly energy consumption            | yes         |
+| weekly-cost         | Number:Currency | Weekly energy costs                  | yes         |
+| weekly-production   | Number:Energy   | Weekly energy production             | yes         |
+| daily-consumption   | Number:Energy   | Daily energy consumption             | yes         |
+| daily-cost          | Number:Currency | Daily energy costs                   | yes         |
+| daily-production    | Number:Energy   | Daily energy production              | yes         |
+
+#### Persistence Requirement
+
+History channels deliver data as time series, which is not supported by the default [rrd4j](https://www.openhab.org/addons/persistence/rrd4j/) persistence.
+Items linked to history channels **must** be configured with a persistence service that supports time series, such as [InfluxDB](https://www.openhab.org/addons/persistence/influxdb/) or [InMemory](https://www.openhab.org/addons/persistence/inmemory/).
+Without a compatible persistence service, history data will not be stored correctly.
+
+#### Initial Fetch on Item Link
+
+When a new item is linked to a history channel, the binding performs an **initial fetch for one time window only** — for example, the last year for yearly channels or the last month for monthly channels.
+This keeps the startup load low and avoids requesting the entire available history from the Tibber API at once.
+
+To populate the full available history (all years, months, weeks, or days), trigger the [`fetchHistory`](#fetchhistory) Thing Action manually after linking the item.
+
+#### Automatic Refresh
+
+Once an item is linked, history data is refreshed automatically once per day at 01:00.
+A full re-fetch for any time window can also be triggered at any time via the [`fetchHistory`](#fetchhistory) Thing Action.
 
 ## Thing Actions
 
@@ -439,6 +483,32 @@ JSON Object `scheduleEntry`
 }
 ```
 
+### `fetchHistory`
+
+Triggers a full history fetch for a specific time window and stores the result persistently.
+Use this action to manually refresh history data, for example after the binding has been offline for an extended period.
+
+#### Parameters
+
+| Name   | Type   | Description                                         | Required |
+|--------|--------|-----------------------------------------------------|----------|
+| window | String | Time window to fetch: `ANNUAL`, `MONTHLY`, `WEEKLY`, `DAILY` | yes |
+
+#### Example
+
+```java
+rule "Tibber Fetch Full History"
+when
+    System started // use your trigger
+then
+    var actions = getActions("tibber","tibber:tibberapi:xyz")
+    actions.fetchHistory("ANNUAL")
+    actions.fetchHistory("MONTHLY")
+    actions.fetchHistory("WEEKLY")
+    actions.fetchHistory("DAILY")
+end
+```
+
 ## Full Example
 
 Full example with `demo.things` and `demo.items`
@@ -478,6 +548,19 @@ Number:Energy               Tibber_API_Last_Hour_Consumption    "Last Hour Consu
 Number:Energy               Tibber_API_Total_Production         "Total Production"           {channel="tibber:tibberapi:xyz:statistics#total-production"}
 Number:Energy               Tibber_API_Daily_Production         "Daily Production"           {channel="tibber:tibberapi:xyz:statistics#daily-production"}
 Number:Energy               Tibber_API_Last_Hour_Production     "Last Hour Production"       {channel="tibber:tibberapi:xyz:statistics#last-hour-production"}
+
+Number:Energy               Tibber_API_Yearly_Consumption       "Yearly Consumption"         {channel="tibber:tibberapi:xyz:history#yearly-consumption"}
+Number:Currency             Tibber_API_Yearly_Cost              "Yearly Cost"                {channel="tibber:tibberapi:xyz:history#yearly-cost"}
+Number:Energy               Tibber_API_Yearly_Production        "Yearly Production"          {channel="tibber:tibberapi:xyz:history#yearly-production"}
+Number:Energy               Tibber_API_Monthly_Consumption      "Monthly Consumption"        {channel="tibber:tibberapi:xyz:history#monthly-consumption"}
+Number:Currency             Tibber_API_Monthly_Cost             "Monthly Cost"               {channel="tibber:tibberapi:xyz:history#monthly-cost"}
+Number:Energy               Tibber_API_Monthly_Production       "Monthly Production"         {channel="tibber:tibberapi:xyz:history#monthly-production"}
+Number:Energy               Tibber_API_Weekly_Consumption       "Weekly Consumption"         {channel="tibber:tibberapi:xyz:history#weekly-consumption"}
+Number:Currency             Tibber_API_Weekly_Cost              "Weekly Cost"                {channel="tibber:tibberapi:xyz:history#weekly-cost"}
+Number:Energy               Tibber_API_Weekly_Production        "Weekly Production"          {channel="tibber:tibberapi:xyz:history#weekly-production"}
+Number:Energy               Tibber_API_History_Daily_Consumption "History Daily Consumption" {channel="tibber:tibberapi:xyz:history#daily-consumption"}
+Number:Currency             Tibber_API_History_Daily_Cost       "History Daily Cost"         {channel="tibber:tibberapi:xyz:history#daily-cost"}
+Number:Energy               Tibber_API_History_Daily_Production "History Daily Production"   {channel="tibber:tibberapi:xyz:history#daily-production"}
 ```
 
 ### Rule listen to day-ahead price update

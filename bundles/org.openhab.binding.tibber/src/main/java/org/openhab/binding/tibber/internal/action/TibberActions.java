@@ -30,6 +30,7 @@ import org.openhab.binding.tibber.internal.dto.ScheduleEntry;
 import org.openhab.binding.tibber.internal.exception.CalculationParameterException;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
+import org.openhab.binding.tibber.internal.history.TibberHistory;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -217,6 +218,26 @@ public class TibberActions implements ThingActions {
             logger.warn("{}", e.getMessage());
             return "";
         }
+    }
+
+    @RuleAction(label = "@text/actionFetchHistoryLabel", description = "@text/actionFetchHistoryDescription")
+    public void fetchHistory(
+            @ActionInput(name = "window", label = "@text/actionInputWindowLabel", type = "java.lang.String") String window) {
+        TibberHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
+            logger.warn("No Thing attached to Actions! Maybe OFFLINE or Thing deactivated.");
+            return;
+        }
+        try {
+            TibberHistory.TimeWindow timeWindow = TibberHistory.TimeWindow.valueOf(window.toUpperCase());
+            thingHandler.fetchHistory(timeWindow);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Unknown history window '{}'. Valid values: ANNUAL, MONTHLY, WEEKLY, DAILY", window);
+        }
+    }
+
+    public static void fetchHistory(ThingActions actions, String window) {
+        ((TibberActions) actions).fetchHistory(window);
     }
 
     public static Instant priceInfoStart(ThingActions actions) {
