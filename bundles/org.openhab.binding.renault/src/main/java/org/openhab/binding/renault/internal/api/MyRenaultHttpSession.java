@@ -110,7 +110,7 @@ public class MyRenaultHttpSession {
                 }
                 JsonElement element = sessionInfoJson.get("cookieValue");
                 if (element == null) {
-                    throw new RenaultException("@text/error.renault.session.login.no_cookie_value");
+                    throw new RenaultException("@text/error.renault.session.login.no_cookie");
                 }
                 cookieValue = element.getAsString();
                 logger.debug("Cookie: {}", cookieValue);
@@ -284,8 +284,8 @@ public class MyRenaultHttpSession {
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
-    public void actionPause(String mode) throws RenaultException {
-        final String apiMode = mode.toLowerCase(Locale.ROOT);
+    public void actionPause(boolean mode) throws RenaultException {
+        final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);
         postKamereonRequest(path,
@@ -397,7 +397,7 @@ public class MyRenaultHttpSession {
             .map(m -> m.getAsJsonObject())
             .map(m -> m.get("code"))
             .map(m -> m.getAsString())
-            .get();
+            .orElse("");
         // @formatter:on
         return errorCode == null ? "" : errorCode;
     }

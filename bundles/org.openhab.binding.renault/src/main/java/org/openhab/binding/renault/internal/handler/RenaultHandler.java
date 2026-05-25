@@ -12,29 +12,10 @@
  */
 package org.openhab.binding.renault.internal.handler;
 
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.ALL_CHANNELS;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_BATTERY_AVAILABLE_ENERGY;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_BATTERY_LEVEL;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_BATTERY_STATUS_UPDATED;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_CHARGING_MODE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_CHARGING_REMAINING_TIME;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_CHARGING_STATUS;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_ESTIMATED_RANGE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_EXTERNAL_TEMPERATURE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_HVAC_STATUS;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_IMAGE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_LOCATION;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_LOCATION_UPDATED;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_LOCKED;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_ODOMETER;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_PAUSE;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.CHANNEL_PLUG_STATUS;
-import static org.openhab.binding.renault.internal.RenaultBindingConstants.HVAC_CHANNELS;
+import static org.openhab.binding.renault.internal.RenaultBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
-import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
-import static org.openhab.core.library.unit.Units.MINUTE;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -223,11 +204,11 @@ public class RenaultHandler extends BaseThingHandler {
                     }
                     break;
                 case RenaultBindingConstants.CHANNEL_PAUSE:
-                    if (command instanceof StringType) {
+                    if (command instanceof OnOffType) {
                         try {
                             if (run(() -> {
                                 httpSession.initSesssion();
-                                httpSession.actionPause(command.toString());
+                                httpSession.actionPause(OnOffType.ON == command);
                             }, "Error during action set pause.", true)) {
                                 refreshBattery(car);
                             }
@@ -248,12 +229,13 @@ public class RenaultHandler extends BaseThingHandler {
             job.cancel(true);
             pollingJob = null;
         }
+        super.dispose();
     }
 
     private void refreshBattery(Car car) {
         runWithHttpSession(httpSession -> {
-            updateHvac(httpSession, car);
-            HVAC_CHANNELS.forEach(c -> updateChannel(c, car));
+            updateBattery(httpSession, car);
+            BATTERY_CHANNELS.forEach(c -> updateChannel(c, car));
         }, "Battery");
     }
 

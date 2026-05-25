@@ -183,18 +183,14 @@
 		</state>
 	</channel-type>
 	<channel-type id="pause">
-		<item-type>String</item-type>
-		<label>Pause/Resume Charge</label>
+		<item-type>Switch</item-type>
+		<label>Pause Charge</label>
 		<description>Pause or resume the charge.</description>
 		<tags>
+			<tag>Switch</tag>
 			<tag>Mode</tag>
 		</tags>
-		<command>
-			<options>
-				<option value="PAUSE">Pause</option>
-				<option value="RESUME">Resume</option>
-			</options>
-		</command>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>
