@@ -104,6 +104,11 @@
 				<description>Access code for MyRenault Services.</description>
 				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
+			<parameter name="gigyaApiKey" type="text">
+				<label>Gigya API Key</label>
+				<description>Configure a Gigya API Key to override the hard coded value for your region.</description>
+				<default></default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -172,7 +177,6 @@
 		</tags>
 		<state readOnly="false">
 			<options>
-				<option value="UNKNOWN">Unknown</option>
 				<option value="SCHEDULE_MODE">Schedule mode</option>
 				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
