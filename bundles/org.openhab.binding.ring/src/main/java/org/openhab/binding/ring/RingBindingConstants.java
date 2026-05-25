@@ -106,7 +106,7 @@ public class RingBindingConstants {
     public static final Set<String> BATTERY_KINDS = Stream
             .of(SPOTLIGHT_CAM_BATTERY_KINDS, STICKUP_CAM_KINDS, STICKUP_CAM_GEN3_KINDS, SPOTLIGHT_CAM_PRO_KINDS,
                     DOORBELL_KINDS, DOORBELL_2_KINDS, DOORBELL_3_KINDS, DOORBELL_3_PLUS_KINDS, DOORBELL_4_KINDS,
-                    DOORBELL_GEN2_KINDS, DOORBELL_BATTERY_KINDS, PEEPHOLE_CAM_KINDS)
+                    DOORBELL_GEN2_KINDS, DOORBELL_BATTERY_KINDS, PEEPHOLE_CAM_KINDS, INTERCOM_KINDS)
             .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     // light kinds
