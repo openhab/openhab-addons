@@ -705,9 +705,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
      */
     private synchronized void refresh() {
-        List<String> queries = getPolledCharacteristics().values().stream()
-                .filter(c -> c.iid != null && c.aid != null).map(c -> "%s.%s".formatted(c.aid, c.iid))
-                .toList();
+        List<String> queries = getPolledCharacteristics().values().stream().filter(c -> c.iid != null && c.aid != null)
+                .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
         if (queries.isEmpty()) {
             return;
         }
