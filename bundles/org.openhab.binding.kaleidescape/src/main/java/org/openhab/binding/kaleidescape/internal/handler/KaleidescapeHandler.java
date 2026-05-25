@@ -264,21 +264,32 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case CHANNEL_TYPE_SEARCH:
                         final String srchStr = command.toString();
 
-                        if (!srchStr.isBlank()) {
-                            connector.sendCommand("GO_MOVIE_LIST");
+                        if (srchStr.isBlank()) {
+                            logger.debug("Search string was blank");
+                            return;
+                        }
 
-                            // Wait .5 seconds for the MOVIE LIST screen to load
-                            scheduler.schedule(() -> {
+                        scheduler.execute(() -> {
+                            synchronized (sequenceLock) {
                                 try {
+                                    connector.sendCommand("GO_MOVIE_LIST");
+
+                                    // Wait .5 seconds for the MOVIE LIST screen to load
+                                    TimeUnit.MILLISECONDS.sleep(500);
+
                                     connector.sendCommand("FILTER_LIST");
                                     for (int i = 0; i < srchStr.length(); i++) {
                                         connector.sendCommand("KEYBOARD_CHARACTER:" + srchStr.charAt(i));
                                     }
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    return;
                                 } catch (KaleidescapeException e) {
                                     logger.debug("Error searching for: {}", srchStr, e);
+                                    return;
                                 }
-                            }, 500, TimeUnit.MILLISECONDS);
-                        }
+                            }
+                        });
                         break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
