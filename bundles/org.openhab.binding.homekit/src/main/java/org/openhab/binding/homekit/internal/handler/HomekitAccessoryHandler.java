@@ -830,7 +830,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         continue;
                     }
                     if (checkChannelLinkByIID ? characteristic.iid.equals(channelIID)
-                            : LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
+                            : requiredByLightModel(characteristic)) {
                         String key = AID_IID_FORMAT.formatted(aid, characteristic.iid);
                         Characteristic entry = new Characteristic();
                         entry.aid = aid;
@@ -853,6 +853,15 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Helper that returns true if the light model requires the given characteristic type.
+     */
+    private boolean requiredByLightModel(Characteristic characteristic) {
+        return characteristic.type instanceof String characteristicType
+                ? LIGHT_MODEL_RELEVANT_TYPES.contains(Characteristic.getCharacteristicType(characteristicType))
+                : false;
     }
 
     /**

@@ -971,7 +971,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (logger.isTraceEnabled()) {
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
                 exception.printStackTrace(pw);
-                logger.trace("{}", sw.toString().trim());
+                logger.trace("{} stack trace:\n{}", thing.getUID(), sw.toString().trim());
             } catch (IOException e) {
             }
         }
