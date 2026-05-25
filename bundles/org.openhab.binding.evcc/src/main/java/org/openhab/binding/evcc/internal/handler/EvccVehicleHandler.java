@@ -73,13 +73,20 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration config = getConfig();
+        Configuration config = thing.getConfiguration();
 
         Object oldId = config.get(PROPERTY_ID);
         Object newId = config.get(PROPERTY_VEHICLE_ID);
 
+        if (newId == null) {
+            System.out.println("newID is null");
+        } else {
+            System.out.println(newId.toString());
+        }
+
         if (oldId != null && newId == null) {
             String migrated = oldId.toString();
+
             config.put(PROPERTY_VEHICLE_ID, migrated);
             config.remove(PROPERTY_ID);
 

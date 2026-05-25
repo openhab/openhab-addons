@@ -15,6 +15,7 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_ID;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_INDEX;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_VEHICLE_ID;
 
@@ -41,6 +42,8 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVehicleHandler> {
+
+    private @Nullable Configuration lastUpdatedConfiguration;
 
     @Override
     protected EvccVehicleHandler createHandler() {
@@ -74,6 +77,11 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
             }
+
+            @Override
+            public void updateConfiguration(Configuration configuration) {
+                lastUpdatedConfiguration = configuration;
+            }
         };
     }
 
@@ -97,6 +105,30 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
         handler.initialize();
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+    }
+
+    @Test
+    public void testMigrationFromIdToVehicleId() {
+        Configuration config = mock(Configuration.class);
+        when(config.get(PROPERTY_ID)).thenReturn("old_vehicle_id");
+        when(config.get(PROPERTY_VEHICLE_ID)).thenReturn(null);
+
+        when(thing.getConfiguration()).thenReturn(config);
+
+        handler = spy(createHandler());
+        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+
+        when(handler.bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+
+        handler.initialize();
+
+        verify(config).put(PROPERTY_VEHICLE_ID, "old_vehicle_id");
+
+        verify(config).remove(PROPERTY_ID);
+
+        assertSame(config, lastUpdatedConfiguration);
+
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 }
