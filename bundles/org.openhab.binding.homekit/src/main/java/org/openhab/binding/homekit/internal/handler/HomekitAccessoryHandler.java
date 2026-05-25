@@ -788,6 +788,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         final Long aid = getAccessoryId();
         if (aid == null) {
+            logger.debug("{} accessory has no ID", thing.getUID());
+            return;
+        }
+        final List<Service> services = accessory.services;
+        if (services == null) {
+            logger.debug("{} accessory has no services", thing.getUID());
             return;
         }
 
@@ -796,40 +802,66 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
                 continue; // skip camera snapshot channel
             }
-            if (isLinked(channelUID)) {
-                Long iid = 0L;
-                boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
-                if (checkChannelLinkByIID && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
+            if (!isLinked(channelUID)) {
+                continue; // skip non-linked channels
+            }
+            Long channelIID = null;
+            boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
+            if (checkChannelLinkByIID) {
+                if (channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
                     try {
-                        iid = Long.parseLong(iidProperty);
+                        channelIID = Long.parseLong(iidProperty);
                     } catch (NumberFormatException e) {
                         continue; // error will already have been logged elsewhere
                     }
+                } else {
+                    continue; // error will already have been logged elsewhere
                 }
+            }
 
-                nestedLoops: // break marker for nested loops below
-                for (Service service : accessory.services) {
-                    for (Characteristic characteristic : service.characteristics) {
-                        if ((checkChannelLinkByIID && iid.equals(characteristic.iid))
-                                || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
-                            Characteristic entry = new Characteristic();
+            boolean iidMatched = false;
+            for (Service service : services) {
+                final List<Characteristic> characteristics = service.characteristics;
+                if (characteristics == null) {
+                    continue;
+                }
+                for (Characteristic characteristic : characteristics) {
+                    if (characteristic.iid == null) {
+                        continue;
+                    }
+                    if (checkChannelLinkByIID ? characteristic.iid.equals(channelIID)
+                            : requiredByLightModel(characteristic)) {
+                        String key = AID_IID_FORMAT.formatted(aid, characteristic.iid);
+                        Characteristic entry = new Characteristic();
+                        entry.aid = aid;
+                        entry.iid = characteristic.iid;
+                        polledCharacteristics.put(key, entry);
+                        if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
+                            entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
-                            polledCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
-                            if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
-                                entry = new Characteristic();
-                                entry.aid = aid;
-                                entry.iid = characteristic.iid;
-                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
-                            }
-                            if (checkChannelLinkByIID) {
-                                break nestedLoops; // unique match found; continue to next channel
-                            }
+                            eventedCharacteristics.put(key, entry);
+                        }
+                        if (checkChannelLinkByIID) {
+                            iidMatched = true;
+                            break; // unique IID match found; break inner loop; continue to next channel
                         }
                     }
                 }
+                if (iidMatched) {
+                    break; // unique IID match found; continue to next channel
+                }
             }
         }
+    }
+
+    /**
+     * Helper that returns true if the light model requires the given characteristic type.
+     */
+    private boolean requiredByLightModel(Characteristic characteristic) {
+        return characteristic.type instanceof String characteristicType
+                ? LIGHT_MODEL_RELEVANT_TYPES.contains(Characteristic.getCharacteristicType(characteristicType))
+                : false;
     }
 
     /**
