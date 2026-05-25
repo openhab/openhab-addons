@@ -706,7 +706,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private synchronized void refresh() {
         List<String> queries = getPolledCharacteristics().values().stream()
-                .filter(cxx -> cxx.iid != null && cxx.aid != null).map(cxx -> "%s.%s".formatted(cxx.aid, cxx.iid))
+                .filter(c -> c.iid != null && c.aid != null).map(c -> "%s.%s".formatted(c.aid, c.iid))
                 .toList();
         if (queries.isEmpty()) {
             return;
