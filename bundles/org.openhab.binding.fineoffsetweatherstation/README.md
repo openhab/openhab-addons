@@ -68,6 +68,7 @@ If you have any issues or feedback, please feel free to [get in touch via the co
   - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
   - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
+  - WS85 - Sensor for wind speed & direction and rainfall
 
 ### Unsupported Devices
 
@@ -156,6 +157,7 @@ Valid sensors:
 - WH35_CH7
 - WH35_CH8
 - WH90
+- WS85
 
 ## Channels
 
