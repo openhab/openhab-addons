@@ -3,6 +3,38 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
+	<thing-type uid="openweathermap:air-pollution">
+		<instruction-set targetVersion="1">
+			<add-channel id="airQualityIndex" groupIds="forecastHourly">
+				<type>openweathermap:air-quality-index</type>
+			</add-channel>
+			<add-channel id="particulateMatter2dot5" groupIds="forecastHourly">
+				<type>openweathermap:particulate-matter-2dot5</type>
+			</add-channel>
+			<add-channel id="particulateMatter10" groupIds="forecastHourly">
+				<type>openweathermap:particulate-matter-10</type>
+			</add-channel>
+			<add-channel id="carbonMonoxide" groupIds="forecastHourly">
+				<type>openweathermap:carbon-monoxide</type>
+			</add-channel>
+			<add-channel id="nitrogenMonoxide" groupIds="forecastHourly">
+				<type>openweathermap:nitrogen-monoxide</type>
+			</add-channel>
+			<add-channel id="nitrogenDioxide" groupIds="forecastHourly">
+				<type>openweathermap:nitrogen-dioxide</type>
+			</add-channel>
+			<add-channel id="ozone" groupIds="forecastHourly">
+				<type>openweathermap:ozone</type>
+			</add-channel>
+			<add-channel id="sulphurDioxide" groupIds="forecastHourly">
+				<type>openweathermap:sulphur-dioxide</type>
+			</add-channel>
+			<add-channel id="ammonia" groupIds="forecastHourly">
+				<type>openweathermap:ammonia</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="openweathermap:onecall">
 		<instruction-set targetVersion="1">
 			<add-channel id="precipitation" groupIds="forecastMinutely">

@@ -26,6 +26,7 @@ If the request fails, all daily forecast channel groups will be removed from the
 Another Thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
 It requires coordinates of the location of your interest.
 Air pollution forecast is available for 5 days with hourly granularity.
+It also supports persisting forecast data using time series support, please read [Persisting Time Series](#persisting-time-series).
 You can add as much `air-pollution` things for different locations to your setup as you like to observe.
 
 #### One Call API Version
@@ -262,6 +263,15 @@ In a future release, the `forecastToday` to `forecastDay7` channel groups won't 
 | current, forecastHours01, forecastHours02, ... forecastHours120 | ozone                  | Number:Density | Current or forecasted concentration of ozone.                            |
 | current, forecastHours01, forecastHours02, ... forecastHours120 | sulphurDioxide         | Number:Density | Current or forecasted concentration of sulphur dioxide.                  |
 | current, forecastHours01, forecastHours02, ... forecastHours120 | ammonia                | Number:Density | Current or forecasted concentration of ammonia.                          |
+
+### Air Pollution Hourly Forecast
+
+The Air Pollution API provides hourly forecasts for 120 hours.
+The Channel Group IDs for those are `forecastHours01` to `forecastHours120`, and `forecastHourly` for channels with time series support.
+See above for a description of the available channels.
+The `forecastHourly` channel group provides all channels as described above with [time series support](#persisting-time-series), except `time-stamp`.
+
+In a future release, the `forecastHours01` to `forecastHours120` channel groups won't be created anymore by default as usage of the time series channels instead is encouraged.
 
 ## Persisting Time Series
 
