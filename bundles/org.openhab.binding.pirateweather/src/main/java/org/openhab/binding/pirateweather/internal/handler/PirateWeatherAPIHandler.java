@@ -86,17 +86,19 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
             return;
         }
 
-        String language = localeProvider.getLocale().getLanguage();
-        if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
-            logger.debug("Language set to '{}'.", language);
-            Configuration editConfig = editConfiguration();
-            editConfig.put(CONFIG_LANGUAGE, language);
-            updateConfiguration(editConfig);
-        } else {
-            logger.debug("Language not supported '{}', Using Default Language '{}'.", language, DEFAULT_LANGUAGE);
-            Configuration editConfig = editConfiguration();
-            editConfig.put(CONFIG_LANGUAGE, DEFAULT_LANGUAGE);
-            updateConfiguration(editConfig);
+        if (config.language == null || config.language.isBlank()) {
+            String language = localeProvider.getLocale().getLanguage();
+            if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
+                logger.debug("Language set to '{}'.", language);
+                Configuration editConfig = editConfiguration();
+                editConfig.put(CONFIG_LANGUAGE, language);
+                updateConfiguration(editConfig);
+            } else {
+                logger.debug("Language not supported '{}', Using Default Language '{}'.", language, DEFAULT_LANGUAGE);
+                Configuration editConfig = editConfiguration();
+                editConfig.put(CONFIG_LANGUAGE, DEFAULT_LANGUAGE);
+                updateConfiguration(editConfig);
+            }
         }
 
         updateStatus(ThingStatus.UNKNOWN);

@@ -113,11 +113,11 @@
 				<description>This is the weather forecast in 24 hours.</description>
 			</channel-group>
 			<channel-group id="forecast-today" typeId="daily-forecast">
-				<label>Todays Forecast</label>
+				<label>Today's Forecast</label>
 				<description>This is the weather forecast for today.</description>
 			</channel-group>
 			<channel-group id="forecast-tomorrow" typeId="daily-forecast">
-				<label>Tomorrows Forecast</label>
+				<label>Tomorrow's Forecast</label>
 				<description>This is the weather forecast for tomorrow.</description>
 			</channel-group>
 			<channel-group id="forecast-day-2" typeId="daily-forecast">

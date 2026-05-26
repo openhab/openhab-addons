@@ -110,8 +110,6 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
                     currentLocation);
             createResults(currentLocation);
             previousLocation = currentLocation;
-        } else {
-            createResults(currentLocation);
         }
     }
 
@@ -123,7 +121,8 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
 
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                .withLabel("Local weather and forecast").withProperty(CONFIG_LOCATION, location)
-                .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
+                .withLabel("@text/discovery.pirateweather.weather-and-forecast.api.local.label")
+                .withProperty(CONFIG_LOCATION, location).withRepresentationProperty(CONFIG_LOCATION)
+                .withBridge(bridgeUID).build());
     }
 }

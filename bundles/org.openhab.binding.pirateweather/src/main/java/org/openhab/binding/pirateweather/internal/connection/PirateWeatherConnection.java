@@ -132,19 +132,23 @@ public class PirateWeatherConnection {
 
     private @Nullable String getResponseFromCache(String url)
             throws PirateWeatherConfigurationException, PirateWeatherCommunicationException {
-        return cache.putIfAbsentAndGet(url, () -> {
-            try {
-                return getResponse(url);
-            } catch (PirateWeatherConfigurationException e) {
-                // Log and handle the exception
-                logger.error("Error fetching response from cache: {}", e.getMessage());
-                return "";
-            } catch (PirateWeatherCommunicationException e) {
-                // Log and handle the exception
-                logger.error("Error fetching response from cache: {}", e.getMessage());
-                return "";
+        try {
+            return cache.putIfAbsentAndGet(url, () -> {
+                try {
+                    return getResponse(url);
+                } catch (PirateWeatherConfigurationException | PirateWeatherCommunicationException e) {
+                    throw new IllegalStateException(e);
+                }
+            });
+        } catch (IllegalStateException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof PirateWeatherConfigurationException configException) {
+                throw configException;
+            } else if (cause instanceof PirateWeatherCommunicationException commException) {
+                throw commException;
             }
-        });
+            throw new PirateWeatherCommunicationException(e);
+        }
     }
 
     private String getResponse(String url)

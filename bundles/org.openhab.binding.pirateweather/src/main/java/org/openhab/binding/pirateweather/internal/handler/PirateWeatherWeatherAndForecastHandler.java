@@ -103,8 +103,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private static final Pattern CHANNEL_GROUP_ALERTS_PREFIX_PATTERN = Pattern
             .compile(CHANNEL_GROUP_ALERTS_PREFIX + "([0-9]*)");
 
-    // keeps track of all jobs
-    private static final Map<String, Job> JOBS = new ConcurrentHashMap<>();
+    private final Map<String, Job> jobs = new ConcurrentHashMap<>();
 
     // keeps track of the parsed location
     protected @Nullable PointType location;
@@ -347,14 +346,6 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return false;
-        } catch (PirateWeatherCommunicationException e) {
-            logger.debug("PirateWeatherCommunicationException occurred during execution: {}", e.getLocalizedMessage(),
-                    e);
-            return false;
-        } catch (PirateWeatherConfigurationException e) {
-            logger.debug("PirateWeatherConfigurationException occurred during execution: {}", e.getLocalizedMessage(),
-                    e);
             return false;
         }
     }
@@ -669,7 +660,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     state = getDateTimeTypeState(forecastData.getSunriseTime());
                     if (count == 0 && state instanceof DateTimeType) {
                         scheduleJob(TRIGGER_SUNRISE,
-                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault()),
+                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(getLocationZoneId()),
                                         sunriseTriggerChannelConfig));
                     }
                     break;
@@ -677,7 +668,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                     state = getDateTimeTypeState(forecastData.getSunsetTime());
                     if (count == 0 && state instanceof DateTimeType) {
                         scheduleJob(TRIGGER_SUNSET,
-                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(ZoneId.systemDefault()),
+                                applyChannelConfig(((DateTimeType) state).getZonedDateTime(getLocationZoneId()),
                                         sunsetTriggerChannelConfig));
                     }
                     break;
@@ -700,7 +691,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         String channelGroupId = channelUID.getGroupId();
         List<AlertsData> alerts = weatherData != null ? weatherData.getAlerts() : null;
         State state = UnDefType.UNDEF;
-        if (alerts != null && alerts.size() > count) {
+        if (alerts != null && alerts.size() >= count) {
             AlertsData alertsData = alerts.get(count - 1);
             switch (channelId) {
                 case CHANNEL_ALERT_TITLE:
@@ -729,8 +720,20 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
         updateState(channelUID, state);
     }
 
+    private ZoneId getLocationZoneId() {
+        PirateWeatherJsonWeatherData data = weatherData;
+        if (data != null && data.getTimezone() != null) {
+            try {
+                return ZoneId.of(data.getTimezone());
+            } catch (Exception e) {
+                logger.debug("Invalid timezone '{}', falling back to system default.", data.getTimezone());
+            }
+        }
+        return ZoneId.systemDefault();
+    }
+
     private State getDateTimeTypeState(int value) {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), ZoneId.systemDefault()));
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), getLocationZoneId()));
     }
 
     private State getDecimalTypeState(int value) {
@@ -803,13 +806,13 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
     private synchronized void scheduleJob(String channelId, ZonedDateTime dateTime) {
         long delay = dateTime.toEpochSecond() - ZonedDateTime.now().toEpochSecond();
         if (delay > 0) {
-            Job job = JOBS.get(channelId);
+            Job job = jobs.get(channelId);
             if (job == null || job.getFuture().isCancelled()) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Schedule job for '{}' in {} s (at '{}').", channelId, delay,
                             dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                 }
-                JOBS.put(channelId, new Job(channelId, delay));
+                jobs.put(channelId, new Job(channelId, delay));
             } else {
                 if (delay != job.getDelay()) {
                     if (logger.isDebugEnabled()) {
@@ -817,7 +820,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                                 dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     job.getFuture().cancel(true);
-                    JOBS.put(channelId, new Job(channelId, delay));
+                    jobs.put(channelId, new Job(channelId, delay));
                 }
             }
         }
@@ -828,7 +831,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      */
     private void cancelAllJobs() {
         logger.debug("Cancel all jobs.");
-        JOBS.keySet().forEach(this::cancelJob);
+        jobs.keySet().forEach(this::cancelJob);
     }
 
     /**
@@ -838,7 +841,7 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     private synchronized void cancelJob(String channelId) {
-        Job job = JOBS.remove(channelId);
+        Job job = jobs.remove(channelId);
         if (job != null && !job.getFuture().isCancelled()) {
             logger.debug("Cancel job for '{}'.", channelId);
             job.getFuture().cancel(true);
