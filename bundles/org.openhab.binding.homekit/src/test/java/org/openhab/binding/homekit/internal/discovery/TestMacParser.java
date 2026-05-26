@@ -17,16 +17,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Method;
 import java.time.Instant;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test cases for the {@link MacResolver} class.
+ * <p>
+ * NOTE: intentionally without {@code @NonNullByDefault} since compiler WARN is better than a compiler ERROR
+ * <p>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@NonNullByDefault
 class TestMacParser {
 
     @BeforeEach
@@ -125,8 +126,10 @@ class TestMacParser {
         MacResolver.clearCacheForTests();
 
         String fakeLine = "192.168.1.77 aa:bb:cc:dd:ee:ff";
+        String prop = System.getProperty("os.name");
+        assertNotNull(prop);
 
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (prop.toLowerCase().contains("win")) {
             runCommand("cmd", "/c", "echo " + fakeLine);
         } else {
             runCommand("echo", fakeLine);
@@ -142,7 +145,7 @@ class TestMacParser {
     private static Object invokePrivate(String method, Class<?> paramType, Object arg) throws Exception {
         Method m = MacResolver.class.getDeclaredMethod(method, paramType);
         m.setAccessible(true);
-        return m.invoke(null, arg);
+        return m.invoke(MacResolver.class, arg);
     }
 
     private static void parseLine(String line) throws Exception {
@@ -164,6 +167,6 @@ class TestMacParser {
     private static void runCommand(String... cmd) throws Exception {
         Method m = MacResolver.class.getDeclaredMethod("runCommandAndParse", String[].class);
         m.setAccessible(true);
-        m.invoke(null, (Object) cmd);
+        m.invoke(MacResolver.class, (Object) cmd);
     }
 }

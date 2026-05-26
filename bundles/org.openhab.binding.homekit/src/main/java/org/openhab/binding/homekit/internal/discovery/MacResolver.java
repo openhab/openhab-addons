@@ -156,7 +156,11 @@ public class MacResolver {
      * Each platform-specific loader handles its own exceptions.
      */
     private static void bulkLoadArpCache() {
-        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        String os = System.getProperty("os.name", "");
+        if (os == null) {
+            os = "";
+        }
+        os = os.toLowerCase(Locale.ROOT);
         if (os.contains("linux")) {
             bulkLoadLinuxArpCache();
         } else if (os.contains("mac") || os.contains("darwin")) {
@@ -278,7 +282,7 @@ public class MacResolver {
      * Checks if a standard format MAC address is valid.
      */
     private static boolean isValidMac(String mac) {
-        return MAC_PATTERN.matcher(mac).matches() && !mac.equalsIgnoreCase("00:00:00:00:00:00");
+        return MAC_PATTERN.matcher(mac).matches() && !"00:00:00:00:00:00".equalsIgnoreCase(mac);
     }
 
     // ================ TEST HOOKS — package private, not exported in OSGi ================
