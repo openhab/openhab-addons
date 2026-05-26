@@ -215,7 +215,7 @@ The way keys interact depends on their data type.
 |-----------|-----------|----------------------------------------------------------------------------------------------------------|
 | Scalar    | Overwrite | A scalar in the final top‑level section replaces the scalar defined at the same path inside the package. |
 | Map       | Merge     | Maps are merged key by key, recursively.                                                                 |
-| List      | Merge     | Lists are concatenated.                                                                                  |
+| List      | Merge     | Lists are concatenated (package values first) and de-duplicated.                                         |
 
 ### Automatic Removal of Empty Values
 
