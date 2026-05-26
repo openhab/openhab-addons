@@ -14,9 +14,10 @@ package org.openhab.binding.homekit.internal.discovery;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
@@ -105,10 +106,10 @@ public class MacResolver {
      * @param ipAddress the IP address (IPv4) to resolve
      * @return the MAC address in format "00:1A:2B:3C:4D:5E", or {@code null} if it could not be resolved
      */
-    public synchronized static @Nullable String getMacFromIp(String ipAddress) {
+    public static synchronized @Nullable String getMacFromIp(String ipAddress) {
         String ip = ipAddress.split(":")[0].trim();
         String mac = getMacFromIpInternal(ip);
-        LOGGER.debug("{} bound to {}", ip, mac);
+        LOGGER.debug("MAC for {} is {}", ip, mac);
         return mac;
     }
 
@@ -141,7 +142,7 @@ public class MacResolver {
             bulkLoadArpCache();
             mac = cacheGet(ip);
         } catch (Exception e) {
-            LOGGER.debug("Ping failed for {}", ip, e);
+            LOGGER.debug("Ping for {} failed", ip, e);
         }
 
         return mac;
@@ -173,7 +174,7 @@ public class MacResolver {
             LOGGER.debug("ARP file {} does not exist", arpFile.getAbsolutePath());
             return;
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(arpFile))) {
+        try (BufferedReader br = Files.newBufferedReader(arpFile.toPath(), StandardCharsets.UTF_8)) {
             br.readLine(); // skip header
             String line;
             while ((line = br.readLine()) != null) {
@@ -203,7 +204,7 @@ public class MacResolver {
      */
     private static void runCommandAndParse(String... command) {
         try {
-            Process p = new ProcessBuilder(command).start();
+            Process p = new ProcessBuilder(command).redirectErrorStream(true).start();// redirect stderr to stdout
             try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
                 String line;
                 while ((line = br.readLine()) != null) {
