@@ -85,52 +85,63 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        if (getThingUID(service) instanceof ThingUID uid) {
-            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
-                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
-            if (ipAddress == null) {
-                return null;
-            }
-
-            Map<String, String> properties = getProperties(service);
-            String uniqueId = properties.get("id"); // unique id
-
-            int port = service.getPort();
-            if (port > 0) {
-                ipAddress = ipAddress + ":" + port;
-            }
-
-            AccessoryCategory category;
-            try {
-                String ci = properties.getOrDefault("ci", ""); // accessory category
-                category = AccessoryCategory.from(Integer.parseInt(ci));
-            } catch (IllegalArgumentException e) {
-                category = null;
-            }
-
-            if (uniqueId != null && category != null) {
-                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
-                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
-                        .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
-                        .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
-                        .withProperty(CONFIG_UNIQUE_ID, uniqueId) //
-                        .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
-                        .withRepresentationProperty(CONFIG_UNIQUE_ID);
-
-                if (properties.get("md") instanceof String model) {
-                    builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
-                }
-                if (properties.get("s#") instanceof String serial) {
-                    builder.withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial);
-                }
-                if (properties.get("pv") instanceof String protocolVersion) {
-                    builder.withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
-                }
-
-                return builder.build();
-            }
+        if (!(getThingUID(service) instanceof ThingUID uid)) {
+            return null;
         }
-        return null;
+
+        String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
+                .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
+        if (ipAddress == null) {
+            return null;
+        }
+
+        Map<String, String> properties = getProperties(service);
+        String uniqueId = properties.get("id"); // unique id
+        if (uniqueId == null) {
+            return null;
+        }
+
+        AccessoryCategory category;
+        try {
+            String ci = properties.getOrDefault("ci", ""); // accessory category
+            category = AccessoryCategory.from(Integer.parseInt(ci));
+        } catch (IllegalArgumentException e) {
+            category = null;
+        }
+        if (category == null) {
+            return null;
+        }
+
+        int port = service.getPort();
+        if (port > 0) {
+            ipAddress = ipAddress + ":" + port;
+        }
+
+        String macAddress = MacResolver.getMacFromIp(ipAddress);
+        if (macAddress == null) {
+            return null;
+        }
+
+        DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
+        builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
+                .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
+                .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
+                .withProperty(CONFIG_UNIQUE_ID, uniqueId) //
+                .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
+                .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
+
+        if (properties.get("md") instanceof String model) {
+            builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
+        }
+        if (properties.get("s#") instanceof String serial) {
+            builder.withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial);
+        }
+        if (properties.get("pv") instanceof String protocolVersion) {
+            builder.withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
+        }
+
+        return builder.build();
     }
 
     @Override

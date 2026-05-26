@@ -47,6 +47,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
+import org.openhab.binding.homekit.internal.discovery.MacResolver;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
@@ -329,6 +330,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (checkedCreateIpTransport(ipAddress, hostName) == null) {
             return false; // transport creation failed
         }
+
+        // transport is created at this point so try to resolve its MAC address and update the property
+        updateMacAddressProperty(ipAddress);
 
         // attempt to verify pairing
         try {
@@ -978,5 +982,26 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
         scheduleConnectionAttempt();
+    }
+
+    /**
+     * Updates the MAC address property of the thing based on the current IP address configuration. This is
+     * called when the thing goes online, and it attempts to resolve the MAC address from the IP address using
+     * the MacResolver utility. If successful, it updates the thing properties with the resolved MAC address.
+     * If it fails to resolve, it leaves the MAC address property unchanged.
+     */
+    private void updateMacAddressProperty(String ipAddress) {
+        if (MacResolver.getMacFromIp(ipAddress.split(":")[0]) instanceof String mac) {
+            thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
+        }
+    }
+
+    /**
+     * TODO remove this temporary debug method that just logs calls to `handleConfigurationUpdate()`
+     */
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> newConfig) {
+        logger.debug("handleConfigurationUpdate() {} processing configuration update {}", thing.getUID(), newConfig);
+        super.handleConfigurationUpdate(newConfig);
     }
 }
