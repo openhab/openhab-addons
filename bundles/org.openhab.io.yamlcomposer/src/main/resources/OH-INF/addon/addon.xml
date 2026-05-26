@@ -5,7 +5,7 @@
 
 	<type>misc</type>
 	<name>YAML Composer</name>
-	<description>This addon processes YAML with extended syntax (includes, packages, variables) and outputs fully resolved
+	<description>This add-on processes YAML with extended syntax (includes, packages, variables) and outputs fully resolved
 		plain YAML for openHAB YAML Configuration.</description>
 	<connection>local</connection>
 

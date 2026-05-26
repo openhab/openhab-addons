@@ -130,7 +130,8 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * This allows for flexible referencing of files
      * within the configuration structure.
      *
-     * If resolution fails, it falls back to resolving relative to the base path's sibling directory.
+     * If no placeholder prefix is used, absolute paths are kept as-is and relative paths are resolved against the
+     * including file's directory.
      *
      * @param includeFileName the file name from the !include statement, which may contain placeholders
      * @param sourceLocation the source location for logging purposes
