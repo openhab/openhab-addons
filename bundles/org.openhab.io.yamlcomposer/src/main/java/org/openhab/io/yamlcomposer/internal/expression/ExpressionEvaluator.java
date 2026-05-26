@@ -52,7 +52,7 @@ public class ExpressionEvaluator {
                         .add(JinjavaInterpreter.OUTPUT_UNDEFINED_VARIABLES_ERROR, FeatureStrategies.ACTIVE).build())
                 .withFailOnUnknownTokens(false) //
                 .withMaxRenderDepth(1) //
-                .withMaxMacroRecursionDepth(0) // We don't use macros, disable recursion limit
+                .withMaxMacroRecursionDepth(0) // We don't use macros; disallow recursion
                 .withEnableRecursiveMacroCalls(false) //
                 .build();
         CONFIG = config;

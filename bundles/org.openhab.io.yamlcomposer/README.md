@@ -287,7 +287,7 @@ The resulting YAML contains:
 - all packages integrated
 - all hidden keys removed
 
-This final compiled YAML is written to `CONF/yaml/composed/`, where openHAB loads it as Things, Items, Metadata, and other configuration elements as defined by the Core YAML Configuration structure.
+This final compiled YAML is written to `OPENHAB_CONF/yaml/composed/`, where openHAB loads it as Things, Items, Metadata, and other configuration elements as defined by the Core YAML Configuration structure.
 
 ## Hidden Keys
 

@@ -1469,6 +1469,20 @@ public class YamlComposerTest {
             }
 
             @Test
+            @DisplayName("Resolves absolute path includes outside the base directory")
+            void resolvesAbsolutePathsCorrectly(@TempDir Path tempDir) throws IOException {
+                assertThat(tempDir, not(equalTo(sharedTempDir)));
+                Path includeFile = tempDir.resolve("level1.inc.yaml");
+                assertTrue(includeFile.isAbsolute());
+                Path main = writeFixture("main.yaml", "toplevel: !include " + includeFile);
+                writeFixture(includeFile.toString(), "data: absolute_include");
+
+                Map<Object, @Nullable Object> data = loadFixture(main);
+
+                assertThat(getNestedValue(data, "toplevel", "data"), equalTo("absolute_include"));
+            }
+
+            @Test
             @DisplayName("Supports parent directory navigation using '..' in file paths")
             void supportsParentDirectoryNavigation() throws IOException {
                 Path main = writeFixture("nested/main.yaml", "cfg: !include ../config.inc.yaml");
@@ -3033,19 +3047,13 @@ public class YamlComposerTest {
     protected Path writeFixture(String fileName, String content) throws IOException {
         Path inputPath = Path.of(fileName);
 
-        if (inputPath.isAbsolute()) {
-            throw new IllegalArgumentException("Include filename must be relative: " + fileName);
-        }
-
         Path includePath = Objects.requireNonNull(sharedTempDir).resolve(inputPath).normalize();
-        if (!includePath.startsWith(sharedTempDir)) {
-            throw new IllegalArgumentException("Target path is outside of the temp directory: " + includePath);
-        }
 
         // Create parent directories if the filename contains a subfolder (e.g.,
         // "includes/file.yaml")
-        if (includePath.getParent() != null) {
-            Files.createDirectories(includePath.getParent());
+        Path parentDir = includePath.getParent();
+        if (parentDir != null && !Files.exists(parentDir)) {
+            Files.createDirectories(parentDir);
         }
 
         Files.writeString(includePath, content);

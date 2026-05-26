@@ -180,7 +180,7 @@ Inside a template:
 
 - Keep template names descriptive and consistent.
 - Prefer the block style when passing multiple variables for readability.
-- Use the `_generated` output to verify template expansion.
+- Use the composed output in `OPENHAB_CONF/yaml/composed/` to verify template expansion.
 
 ---
 

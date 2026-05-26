@@ -95,19 +95,21 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
             return null;
         }
 
-        Path includeFilePath = resolvePathPlaceholder(String.valueOf(fileNameObj), placeholder.sourceLocation());
-        Path includePathRelative = ComposerConfig.configRoot().relativize(includeFilePath);
+        Path includePath = resolvePathPlaceholder(String.valueOf(fileNameObj), placeholder.sourceLocation())
+                .toAbsolutePath().normalize();
+        Path configRoot = ComposerConfig.configRoot();
+        Path includePathRelative = includePath.startsWith(configRoot) ? configRoot.relativize(includePath)
+                : includePath;
 
         // Handle parameters and variables
         Map<String, @Nullable Object> includeVariables = new HashMap<>(recursiveTransformer.getVariables());
         includeVariables.putAll(params.varsMap()); // params override current variables
 
         try {
-            YamlComposer includeComposer = new YamlComposer(includeFilePath, includeVariables, includeStack,
+            YamlComposer includeComposer = new YamlComposer(includePath, includeVariables, includeStack,
                     includeCallback, logger.getLogSession(), includeCache);
-            includeCallback.accept(includeFilePath);
+            includeCallback.accept(includePath);
             return includeComposer.load();
-
         } catch (YamlEngineException | IOException e) {
             logIncludeError(placeholder, String.valueOf(fileNameObj), includePathRelative, e);
             return null;
@@ -124,7 +126,6 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * OPENHAB_CONF that contains the base path.
      * For example, if the base path is "OPENHAB_CONF/yaml/rooms/kitchen.yaml",
      * the top-level directory would be "OPENHAB_CONF/yaml".
-     *
      *
      * This allows for flexible referencing of files
      * within the configuration structure.
@@ -148,7 +149,8 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
             return root.resolve(cleanedPath);
         }
 
-        return basePath.resolve(includeFileName);
+        Path includeFile = Path.of(includeFileName);
+        return includeFile.isAbsolute() ? includeFile.normalize() : basePath.resolve(includeFile);
     }
 
     private void logIncludeError(IncludePlaceholder p, String name, Path path, Exception e) {
