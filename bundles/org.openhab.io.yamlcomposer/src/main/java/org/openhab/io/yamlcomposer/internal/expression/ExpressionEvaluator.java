@@ -178,7 +178,8 @@ public class ExpressionEvaluator {
         }
 
         if (variableName == null) {
-            variableName = error.getMessage().replaceAll(".*'([^']+)'.*", "$1");
+            String message = Objects.requireNonNullElse(error.getMessage(), "");
+            variableName = message.replaceAll(".*'([^']+)'.*", "$1");
         }
         return variableName;
     }
