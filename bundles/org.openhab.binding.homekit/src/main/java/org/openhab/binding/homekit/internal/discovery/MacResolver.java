@@ -15,6 +15,7 @@ package org.openhab.binding.homekit.internal.discovery;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -54,7 +55,9 @@ public class MacResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(MacResolver.class);
 
     private static final Pattern MAC_PATTERN = Pattern.compile("([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}");
-    private static final Pattern IP_PATTERN = Pattern.compile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b");
+
+    private static final Pattern IP_PATTERN = Pattern
+            .compile("\\b((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}" + "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\b");
 
     private static final Map<String, ExpiringMac> CACHE = new ConcurrentHashMap<>();
 
@@ -275,6 +278,31 @@ public class MacResolver {
      * Checks if a standard format MAC address is valid.
      */
     private static boolean isValidMac(String mac) {
-        return mac.length() == 17 && !mac.startsWith("00:00:00:00:00:00");
+        return MAC_PATTERN.matcher(mac).matches() && !mac.equalsIgnoreCase("00:00:00:00:00:00");
+    }
+
+    // ================ TEST HOOKS — package private, not exported in OSGi ================
+
+    static void clearCacheForTests() {
+        CACHE.clear();
+    }
+
+    static @Nullable String getCachedForTests(String ip) {
+        return cacheGet(ip);
+    }
+
+    static void putCachedForTests(String ip, String mac, Instant expires) {
+        ExpiringMac entry = new ExpiringMac(mac);
+        try {
+            Field f = ExpiringMac.class.getDeclaredField("expires");
+            f.setAccessible(true);
+            f.set(entry, expires);
+        } catch (Exception ignored) {
+        }
+        CACHE.put(ip, entry);
+    }
+
+    static boolean cacheIsEmptyForTests() {
+        return CACHE.isEmpty();
     }
 }
