@@ -141,7 +141,7 @@ public class ReadmeHelper {
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (!"unknown".equals(device.getModel())) {
                 String link = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_VACUUM)
-                        ? "robo-rock-vacuum-channels"
+                        ? "roborock-vacuum-channels"
                         : device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
                 Boolean experimental = false;
@@ -258,8 +258,8 @@ public class ReadmeHelper {
         });
 
         // Remove excess newline
-        if (sw.length() > 0) {
-            sw.setLength(sw.length() - 1);
+        if (sw.length() > 1) {
+            sw.setLength(sw.length() - 2);
         }
         return sw;
     }
