@@ -17,6 +17,7 @@ No discovery
 
 ## Thing Configuration
 
+There is a single thing `car`.
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
 
 | Parameter         | Description                                                                | Default                          |
@@ -29,28 +30,29 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | refreshInterval   | Interval the car is polled in minutes.                                     |                               10 |
 | updateDelay       | How long to wait for commands to reach car and update to server in seconds.|                               30 |
 | kamereonApiKey    | Kamereon API Key.                                                          | VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss |
+| gigyaApiKey       | Gigya API Key. Configure to override the hard coded value for your region. | Hard coded region value          |
 
 ## Channels
 
-| Channel ID             | Type               | Description                                     | Read Only |
-|------------------------|--------------------|-------------------------------------------------|-----------|
-| batteryavailableEnergy | Number:Energy      | Battery Energy Available                        | Yes       |
-| batterylevel           | Number             | State of the battery in %                       | Yes       |
-| batterystatusupdated   | DateTime           | Timestamp of the last battery status update     | Yes       |
-| chargingmode           | String             | Charging mode. always_charging or schedule_mode | No        |
-| pause                  | Switch             | Pause the charge.                               | No        |
-| chargingstatus         | String             | Charging status                                 | Yes       |
-| chargingremainingtime  | Number:Time        | Charging time remaining                         | Yes       |
-| plugstatus             | String             | Status of charging plug                         | Yes       |
-| estimatedrange         | Number:Length      | Estimated range of the car                      | Yes       |
-| odometer               | Number:Length      | Total distance travelled                        | Yes       |
-| hvacstatus             | String             | HVAC status HVAC Status (ON, OFF, PENDING)      | No        |
-| hvactargettemperature  | Number:Temperature | HVAC target temperature (19 to 21)              | No        |
-| externaltemperature    | Number:Temperature | Temperature outside of the car                  | Yes       |
-| image                  | String             | Image URL of MyRenault                          | Yes       |
-| location               | Location           | The GPS position of the vehicle                 | Yes       |
-| locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
-| locked                 | Switch             | Locked status of the car                        | Yes       |
+| Channel ID             | Type               | Description                                         | Read Only |
+|------------------------|--------------------|-----------------------------------------------------|-----------|
+| batteryavailableenergy | Number:Energy      | Battery Energy Available                            | Yes       |
+| batterylevel           | Number             | State of the battery in %                           | Yes       |
+| batterystatusupdated   | DateTime           | Timestamp of the last battery status update         | Yes       |
+| chargingmode           | String             | Charging mode. `ALWAYS_CHARGING` or `SCHEDULE_MODE` | No        |
+| pause                  | Switch             | Pause the charge                                    | No        |
+| chargingstatus         | String             | Charging status                                     | Yes       |
+| chargingremainingtime  | Number:Time        | Charging time remaining                             | Yes       |
+| plugstatus             | String             | Status of charging plug                             | Yes       |
+| estimatedrange         | Number:Length      | Estimated range of the car                          | Yes       |
+| odometer               | Number:Length      | Total distance travelled                            | Yes       |
+| hvacstatus             | String             | HVAC status HVAC Status (ON, OFF, PENDING)          | No        |
+| hvactargettemperature  | Number:Temperature | HVAC target temperature (19 to 21)                  | No        |
+| externaltemperature    | Number:Temperature | Temperature outside of the car                      | Yes       |
+| image                  | String             | Image URL of MyRenault                              | Yes       |
+| location               | Location           | The GPS position of the vehicle                     | Yes       |
+| locationupdated        | DateTime           | Timestamp of the last location update               | Yes       |
+| locked                 | Switch             | Locked status of the car                            | Yes       |
 
 ## Limitations
 
@@ -64,11 +66,63 @@ This seams to only allow values 19, 20 and 21 or else the pre-conditioning comma
 The 'pause' and 'chargingmode' may not work on some cars.
 As an example, 'chargingmode' does not work on Dacia Spring cars.
 
+The `odometer` may not work on some cars.
+
 The Kamereon API Key changes periodically, which causes a communication error.
 To fix this error update the API Key in the bindings configuration.
 The new key value can hopefully be found in the renault-api project: [KAMEREON_APIKEY value](https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/const.py) or in the openHAB forums.
 
 ## Example
+
+renaultcar.things:
+
+```java
+renault:car:renault "Renault" [
+    accountType="MYRENAULT",
+    locale="<your locale>",
+    myRenaultUsername="<my renault username>",
+    myRenaultPassword="<my renault password>",
+    kamereonApiKey="YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J",
+    vin="<your vin>",
+    gigyaApiKey="",
+    updateDelay=60,
+    refreshInterval=10
+  ]
+```
+
+renaultcar.items:
+
+```java
+Number:Energy   RenaultCar_BatteryEnergyAvailable    "Battery Energy Available [%.1f %unit%]" <batterylevel>  { channel="renault:car:renault:batteryavailableenergy", unit="kWh" }
+Number          RenaultCar_BatteryLevel              "Battery Level [%d %%]"                  <batterylevel>  { channel="renault:car:renault:batterylevel" }
+DateTime        RenaultCar_BatteryStatusUpdated      "Battery Status Updated [%1$tH:%1$tM]"  <time>          { channel="renault:car:renault:batterystatusupdated" }
+String          RenaultCar_ChargingMode              "Charging Mode [%s]"                     <switch>        { channel="renault:car:renault:chargingmode" }
+String          RenaultCar_Pause                     "Pause/Resume Charge [%s]"               <switch>        { channel="renault:car:renault:pause" }
+String          RenaultCar_ChargingStatus            "Charging Status [%s]"                   <switch>        { channel="renault:car:renault:chargingstatus" }
+Number:Time     RenaultCar_ChargingTimeRemaining     "Charging Time Remaining [%d %unit%]"    <time>          { channel="renault:car:renault:chargingremainingtime", unit="min" }
+String          RenaultCar_PlugStatus                "Plug Status [%s]"                       <poweroutlet>   { channel="renault:car:renault:plugstatus" }
+
+Number:Length   RenaultCar_EstimatedRange            "Estimated Range [%d %unit%]"                            { channel="renault:car:renault:estimatedrange", unit="km" }
+Number:Length   RenaultCar_Odometer                  "Odometer [%d %unit%]"                                   { channel="renault:car:renault:odometer", unit="km" }
+
+String          RenaultCar_HVACStatus                "HVAC Status [%s]"                       <heating>       { channel="renault:car:renault:hvacstatus" }
+Number:Temperature  RenaultCar_HVACTargetTemperature "HVAC Target Temperature [%.0f %unit%]"  <temperature>   { channel="renault:car:renault:hvactargettemperature" }
+Number:Temperature  RenaultCar_ExternalTemperature   "External Temperature [%.1f %unit%]"     <temperature>   { channel="renault:car:renault:externaltemperature" }
+
+String          RenaultCar_ImageURL                  "Car Image URL [%s]"                     <image>         { channel="renault:car:renault:image" }
+Location        RenaultCar_Location                  "Location Car"                           <zoom>          { channel="renault:car:renault:location" }
+DateTime        RenaultCar_LocationUpdate            "Location Updated [%1$tH:%1$tM]"         <time>          { channel="renault:car:renault:locationupdated" }
+Switch          RenaultCar_Locked                    "Locked [%s]"                            <lock>          { channel="renault:car:renault:locked" }
+
+// ------------------------------------------------------------
+// Additional – Charge limit via Dimmer-item
+// Use together with the ChargeRenaultCarLimit rule
+// (see binding-documentation for rule code)
+// ------------------------------------------------------------
+
+// Maximum load percentage (e.g. 80 is 80%)
+Dimmer          RenaultCar_ChargeLimit              "Charge Limit [%d %%]"                   <batterylevel>
+```
 
 renaultcar.sitemap:
 
