@@ -282,6 +282,10 @@ public class RecursiveTransformer {
     }
 
     public void resolveMergeKeys(Map<?, ?> rawMap) {
+        resolveMergeKeys(rawMap, Set.of());
+    }
+
+    public void resolveMergeKeys(Map<?, ?> rawMap, Set<Class<? extends Placeholder>> allowedTypes) {
         @SuppressWarnings("unchecked")
         Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) rawMap;
 
@@ -295,7 +299,7 @@ public class RecursiveTransformer {
             }
         }
 
-        resolveMergeKeys(map, Set.of(), mergeEntries, new IdentityHashMap<>());
+        resolveMergeKeys(map, allowedTypes, mergeEntries, new IdentityHashMap<>());
     }
 
     @SuppressWarnings({ "unchecked" })

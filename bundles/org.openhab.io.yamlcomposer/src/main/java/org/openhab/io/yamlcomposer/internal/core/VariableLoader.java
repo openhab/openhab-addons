@@ -112,7 +112,7 @@ public class VariableLoader {
                 Map<Object, @Nullable Object> mergedVars = new LinkedHashMap<>(existingVariables);
                 Map<Object, @Nullable Object> processedMergeKeys = recursiveTransformer.transform(mergeKeys);
                 mergedVars.putAll(processedMergeKeys);
-                recursiveTransformer.resolveMergeKeys(mergedVars);
+                recursiveTransformer.resolveMergeKeys(mergedVars, ProcessingPhase.STANDARD);
                 existingVariables.clear();
                 mergedVars.forEach((k, v) -> existingVariables.put(String.valueOf(k), v));
             }

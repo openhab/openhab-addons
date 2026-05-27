@@ -52,7 +52,7 @@ public class TemplateLoader {
     public void extractTemplates(@Nullable Object templatesSection) {
         if (templatesSection instanceof java.util.Map<?, ?> templatesMap) {
             templatesMap.keySet().removeIf(Objects::isNull);
-            recursiveTransformer.resolveMergeKeys(templatesMap);
+            recursiveTransformer.resolveMergeKeys(templatesMap, ProcessingPhase.STANDARD);
             templatesMap.forEach((key, value) -> {
                 // Only resolve the key so we can look up the template name in the templates map.
                 // The value substitutions must NOT be resolved here!

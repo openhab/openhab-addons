@@ -414,6 +414,25 @@ public class YamlComposerTest {
             }
 
             @Test
+            @DisplayName("Merge keys at variables TOP-LEVEL with !include placeholder")
+            void mergeKeysAtVariablesMapLevel() throws IOException {
+                writeFixture("base_variables.yaml", """
+                        base_template: from_base
+                        """);
+
+                Path mainFile = writeFixture("main.yaml", """
+                        variables:
+                          <<: !include base_variables.yaml
+
+                        merged_variable: ${base_template}
+                        """);
+
+                Map<Object, @Nullable Object> data = loadFixture(mainFile);
+
+                assertThat(getNestedValue(data, "merged_variable"), equalTo("from_base"));
+            }
+
+            @Test
             @DisplayName("Supports substitution within variables block (Recursive resolution)")
             void supportsSubstitutionWithinVariablesBlock() throws IOException {
                 String yaml = """
@@ -2806,6 +2825,69 @@ public class YamlComposerTest {
                 Map<Object, @Nullable Object> data = loadFixture(main);
                 assertThat(getNestedValue(data, "simple", "type"), equalTo("Light"));
                 assertThat(getNestedValue(data, "simple", "vendor"), equalTo("openHAB"));
+            }
+
+            @Test
+            @DisplayName("Merge keys with !include at template top-level (placeholder-valued merge source)")
+            void mergeKeysWithIncludeAtTemplateTopLevel() throws IOException {
+                writeFixture("base.yaml", """
+                        shared_attr: from_base
+                        """);
+
+                Path main = writeFixture("main.yaml", """
+                        templates:
+                          merged_template:
+                            <<: !include base.yaml
+                            own_attr: from_template
+                        device: !insert merged_template
+                        """);
+
+                Map<Object, @Nullable Object> data = loadFixture(main);
+
+                // merged_template should contain both attributes.
+                assertThat(getNestedValue(data, "device", "shared_attr"), equalTo("from_base"));
+                assertThat(getNestedValue(data, "device", "own_attr"), equalTo("from_template"));
+            }
+
+            @Test
+            @DisplayName("Merge keys with !insert at template top-level (placeholder-valued merge source)")
+            void mergeKeysWithInsertAtTemplateTopLevel() throws IOException {
+                Path main = writeFixture("main.yaml", """
+                        templates:
+                          base_data:
+                            a: 1
+                            b: 2
+                          extended_template:
+                            <<: !insert base_data
+                            c: 3
+                        result: !insert extended_template
+                        """);
+
+                Map<Object, @Nullable Object> data = loadFixture(main);
+
+                // Control case: merge key inside a template value with !insert source.
+                assertThat(getNestedValue(data, "result", "a"), equalTo(1));
+                assertThat(getNestedValue(data, "result", "b"), equalTo(2));
+                assertThat(getNestedValue(data, "result", "c"), equalTo(3));
+            }
+
+            @Test
+            @DisplayName("Merge keys at templates TOP-LEVEL with !include placeholder (demonstrates the bug)")
+            void mergeKeysAtTemplatesMapLevel() throws IOException {
+                writeFixture("base_templates.yaml", """
+                        base_template:
+                          value: from_base
+                        """);
+
+                Path main = writeFixture("main.yaml", """
+                        templates:
+                          <<: !include base_templates.yaml
+                        merged_template: !insert base_template
+                        """);
+
+                Map<Object, @Nullable Object> data = loadFixture(main);
+
+                assertThat(getNestedValue(data, "merged_template", "value"), equalTo("from_base"));
             }
         }
 
