@@ -85,10 +85,10 @@ Accept it, or manually add a thing of type `miio:cloud` with the ID `cloudConnec
 | password           | text    | false    | Xiaomi account password. Only used with `PASSWORD` login method.                                                                                        |
 | country            | text    | false    | Regional server(s) to connect to (e.g. `de`, `sg,de`). Separate multiple values with a comma. Leave blank to try all known servers.                    |
 | cloudDiscoveryMode | text    | false    | Enable cloud-based device discovery: `disabled` (default), `supportedOnly`, or `all`. Useful for devices on a different subnet than openHAB.            |
-| clientId           | text    | false    | *(Advanced)* Unique client identifier — generated automatically on first use. Do not change unless you know what you are doing.                          |
-| userId             | text    | false    | *(Advanced)* Xiaomi user ID — retrieved automatically after successful login. Do not edit manually.                                                     |
-| serviceToken       | text    | false    | *(Advanced)* Xiaomi service token — retrieved automatically after successful login. Do not edit manually.                                               |
-| ssecurity          | text    | false    | *(Advanced)* Xiaomi ssecurity value — retrieved automatically after successful login. Do not edit manually.                                             |
+| clientId           | text    | false    | _(Advanced)_ Unique client identifier — generated automatically on first use. Do not change unless you know what you are doing.                          |
+| userId             | text    | false    | _(Advanced)_ Xiaomi user ID — retrieved automatically after successful login. Do not edit manually.                                                     |
+| serviceToken       | text    | false    | _(Advanced)_ Xiaomi service token — retrieved automatically after successful login. Do not edit manually.                                               |
+| ssecurity          | text    | false    | _(Advanced)_ Xiaomi ssecurity value — retrieved automatically after successful login. Do not edit manually.                                             |
 
 ### Cloud Connector Channels
 
@@ -102,20 +102,20 @@ Accept it, or manually add a thing of type `miio:cloud` with the ID `cloudConnec
 ### Login flow: QR code (default)
 
 1. Add and accept the Cloud Connector thing.
-2. The `logonimage` channel shows an orange hourglass while the QR code is being fetched.
-3. Within about one second a QR code appears in the `logonimage` channel.
-4. Open the **Mi Home** app → Me → tap your account photo → **Sign out** is shown if already signed in, otherwise go to **Settings → Xiaomi Account → Scan QR code**.
-5. Scan the QR code. The thing status changes to ONLINE and device tokens are retrieved automatically.
-6. After a successful login the session credentials are persisted into the thing configuration; subsequent openHAB restarts will reuse the session without requiring a new QR scan.
-7. If the QR code expires (after ~5 minutes) before you scan it, turn the `triggerlogin` channel ON to obtain a fresh QR code.
+1. The `logonimage` channel shows an orange hourglass while the QR code is being fetched.
+1. Within about one second a QR code appears in the `logonimage` channel.
+1. Open the **Mi Home** app → Me → tap your account photo → **Sign out** is shown if already signed in, otherwise go to **Settings → Xiaomi Account → Scan QR code**.
+1. Scan the QR code. The thing status changes to ONLINE and device tokens are retrieved automatically.
+1. After a successful login the session credentials are persisted into the thing configuration; subsequent openHAB restarts will reuse the session without requiring a new QR scan.
+1. If the QR code expires (after ~5 minutes) before you scan it, turn the `triggerlogin` channel ON to obtain a fresh QR code.
 
 ### Login flow: username + password
 
 1. Set `loginMethod` to `PASSWORD` and enter your `username` and `password` in the thing configuration.
-2. The binding attempts to log in automatically.
-3. If a **captcha** is required, the `logonimage` channel shows the captcha image. Send the text you see to the `captcharesponse` channel.
-4. If **two-factor authentication** is required, an e-mail code is sent to your account. Send the code to the `twofa` channel.
-5. After a successful login the session credentials are persisted; subsequent restarts skip the password flow automatically.
+1. The binding attempts to log in automatically.
+1. If a **captcha** is required, the `logonimage` channel shows the captcha image. Send the text you see to the `captcharesponse` channel.
+1. If **two-factor authentication** is required, an e-mail code is sent to your account. Send the code to the `twofa` channel.
+1. After a successful login the session credentials are persisted; subsequent restarts skip the password flow automatically.
 
 ### Migration from binding-level credentials
 
@@ -124,9 +124,9 @@ That mechanism is now **deprecated and ignored**.
 To migrate:
 
 1. Open the openHAB UI and accept the **Cloud Connector** discovery result from the inbox (or add a `miio:cloud` thing manually).
-2. Configure the thing: set `loginMethod`, `username`/`password` (if using password login), and `country`.
-3. Remove the old credentials from the binding configuration page (optional but recommended to avoid confusion).
-4. After a successful login all devices will automatically start using the new cloud connection.
+1. Configure the thing: set `loginMethod`, `username`/`password` (if using password login), and `country`.
+1. Remove the old credentials from the binding configuration page (optional but recommended to avoid confusion).
+1. After a successful login all devices will automatically start using the new cloud connection.
 
 The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet.
 Set `cloudDiscoveryMode` on the Cloud Connector thing to `supportedOnly` or `all` to enable this.
@@ -6405,7 +6405,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | on                         | Switch               | Heater - Power                           |            |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
@@ -6421,7 +6421,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
 | countdown-time             | Number:Time          | Countdown - Countdown Time               |            |
@@ -13336,7 +13336,6 @@ Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:power
 Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
-
 
 ### Country Servers
 
