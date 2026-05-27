@@ -13,11 +13,10 @@
 package org.openhab.binding.miio.internal.cloud;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
 
 /**
- * Interface for a listener on the {@link org.openhab.binding.miio.cloud.MiCloudConnector}.
+ * Interface for a listener on the {@link org.openhab.binding.miio.internal.cloud.MiCloudConnector}.
  * Informs when login information is updated.
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -25,15 +24,16 @@ import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
 @NonNullByDefault
 public interface CloudLogonListener {
     /**
-     * Callback method for the {@link MiIoMessageListener}
+     * Callback method for the {@link CloudLogonListener}
      *
      * @param image the captcha image as jpg byte array
      */
     void onLogonImage(byte[] image);
 
     /**
-     * Callback method for the {@link MiIoMessageListener}
+     * Callback method for the {@link CloudLogonListener}
      *
+     * @param loginState the current login state
      * @param status Status text
      */
     void onStatusUpdated(CloudLoginState loginState, String status);
