@@ -1974,6 +1974,66 @@ public class YamlComposerTest {
             class PackageMergeHelpers {
 
                 @Test
+                @DisplayName("Nested package include can override items using !replace and !remove")
+                void replaceAndRemoveInsideIncludedPackageSourceWork() throws IOException {
+                    writeFixture("nested-items.inc.yaml", """
+                            things:
+                              thing:
+                                label: from_nested_package
+                                config:
+                                  tags:
+                                    - from_nested
+                                  details:
+                                    source: nested
+                                    remove_me: true
+                            items:
+                              target_item:
+                                label: base_label
+                                tags:
+                                  - from_nested
+                                metadata:
+                                  stateDescription:
+                                    value: from_nested
+                                  category:
+                                    value: from_nested
+                              untouched_item:
+                                label: untouched_from_nested
+                            """);
+
+                    writeFixture("pkg-with-overrides.inc.yaml", """
+                            packages:
+                              nested: !include nested-items.inc.yaml
+                            items:
+                              target_item:
+                                tags: !replace
+                                  - from_outer
+                                metadata:
+                                  stateDescription: !remove
+                                  category: !replace
+                                    value: from_outer
+                                    config:
+                                      origin: nested_package_override
+                            """);
+
+                    Path main = writeFixture("main.yaml", """
+                            packages:
+                              p1: !include pkg-with-overrides.inc.yaml
+                            """);
+
+                    Map<Object, @Nullable Object> data = loadFixture(main);
+
+                    assertThat(getNestedValue(data, "items", "target_item", "tags"), equalTo(List.of("from_outer")));
+                    assertThat((Map<?, ?>) getNestedValue(data, "items", "target_item", "metadata"),
+                            not(hasKey("stateDescription")));
+                    assertThat(getNestedValue(data, "items", "target_item", "metadata", "category", "value"),
+                            equalTo("from_outer"));
+                    assertThat(getNestedValue(data, "items", "target_item", "metadata", "category", "config", "origin"),
+                            equalTo("nested_package_override"));
+                    assertThat(getNestedValue(data, "items", "untouched_item", "label"),
+                            equalTo("untouched_from_nested"));
+                }
+
+                @Test
                 @DisplayName("!remove directive deletes specific keys from the merge result")
                 void removeDirectiveWorks() throws IOException {
                     writeFixture("pkg.yaml", """

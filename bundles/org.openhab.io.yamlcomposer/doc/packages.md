@@ -56,8 +56,10 @@ packages:
 - **Uniqueness:**
   Because package sources can be referenced multiple times, use variable substitutions such as `${package_id}` and unique `vars:` variables for entity UIDs in each invocation to avoid collisions.
 
-- **Nesting:**
-  A package source may itself include other files or templates.
+- **Deep Nesting:**
+  A package source may itself include other packages.
+  When a package references another package via `packages:` inside an included file, it creates an inheritance chain.
+  Properties merge downward sequentially from the deepest core file out to the final main file.
 
 ## Package Example
 
@@ -297,79 +299,103 @@ targetkey:
     qux: quux   # from the package
 ```
 
-Recursive merging allows customization at any depth in the mapping.
+recursive merging allows customization at any depth in the mapping.
 
 ### Controlling Package Merge Behavior with Tags
 
-Use these special YAML tags in the main file to override the default merge behavior.
+Use these special YAML tags to explicitly override the default recursive merge behavior.
+These directives can be declared at any point in the configuration pipeline—either within the **main YAML file** or deeply embedded inside an intermediate **include file** acting as a middle-tier package.
 
 #### 1. The `!replace` Tag
 
-The `!replace` tag forces a replacement for maps or lists that would otherwise merge.
-This is useful when you want to discard the package's list or map and start fresh.
+The `!replace` tag forces an absolute replacement for maps or lists that would otherwise merge.
+This acts as a destructive splice, completely discarding any existing inherited data structure beneath that key from upstream sources and starting fresh with the new layout provided.
 
 #### 2. The `!remove` Tag
 
-The `!remove` tag removes the corresponding key from the final configuration.
-This is ideal for excluding specific entities or properties from a generic package.
+The `!remove` tag cleanly deletes the corresponding key and its entire sub-tree from the configuration hierarchy.
+It is ideal for pruning specific components, metadata keys, or configurations exposed by a baseline package that do not apply to the current downstream context.
 
-**Example:**
+---
 
-`main.yaml`:
+### Example: Nested Package Overrides
+
+When packages include other packages, a middle-tier file can surgically modify or strip elements declared by the core baseline configuration before it ever reaches the main composition file.
+
+#### Core Configuration (`nested-items.inc.yaml`)
+
+Provides a core item layout with deep metadata fields:
+
+```yaml
+items:
+  target_item:
+    label: base_label
+    tags:
+      - from_nested
+    metadata:
+      stateDescription:
+        value: from_nested
+      category:
+        value: from_nested
+  untouched_item:
+    label: untouched_from_nested
+```
+
+#### Middle-Tier Override Package (`pkg-with-overrides.inc.yaml`)
+
+This file consumes the core configuration via `!include`, but applies `!replace` and `!remove` tags to selectively adjust properties:
 
 ```yaml
 packages:
-  Number: !include pkg/number.inc.yaml
-
-# Custom overrides
+  nested: !include nested-items.inc.yaml
 items:
-  Number_Item:             # Matches the resulting item name
-    tags: !replace [Power] # Force overwrite, not merge
+  target_item:
+    tags: !replace         # 1. Overwrite the list, discarding 'from_nested'
+      - from_outer
     metadata:
-      stateDescription:
-        config: !replace   # Force overwrite of this map
-          format: "%.1f"
-      widget: !remove      # Remove this key from the result
-```
-
-`pkg/number.inc.yaml`:
-
-```yaml
-items:
-  ${package_id}_Item:
-    type: Number
-    label: Package Label
-    tags: [Measurement]
-    metadata:
-      stateDescription:
+      stateDescription: !remove # 2. Entirely purge this sub-tree key
+      category: !replace   # 3. Swap out the map structure with a fresh one
+        value: from_outer
         config:
-          min: 1
-          pattern: '%.3f'
-      widget:
-        value: oh-card
+          origin: nested_package_override
 ```
 
-Result:
+#### Root Configuration (`main.yaml`)
+
+Loads the middle-tier package:
+
+```yaml
+packages:
+  p1: !include pkg-with-overrides.inc.yaml
+```
+
+#### Final Merged Output
+
+When evaluated by the preprocessor, the downstream overrides successfully neutralize the deep properties inherited from the original package file.
+The `stateDescription` block is erased, lists and maps are replaced cleanly, and unrelated siblings are passed through untouched:
 
 ```yaml
 items:
-  Number_Item:
-    type: Number
-    label: Package Label
-    tags:                # tags from the package was !replaced, not merged
-      - Power
+  target_item:
+    label: base_label
+    tags:
+      - from_outer
     metadata:
-      stateDescription:
-        config:          # config from the package was !replaced, not merged
-          format: '%.1f'
+      category:
+        value: from_outer
+        config:
+          origin: nested_package_override
+  untouched_item:
+    label: untouched_from_nested
 ```
 
 ::: tip Usage Notes
 
-- `!replace` and `!remove` are only valid in the top-level of the **main YAML file**.
-- They are ignored if used inside a package source.
-- `!remove` removes the entire key; it cannot remove individual list items.
-- Use `!replace` to prune unwanted inherited map keys or list items.
+- `!replace` and `!remove` are evaluated locally within each package layer before that package's content is returned and merged into the caller.
+  This allows intermediate include files to cleanly intercept, prune, or completely reset configurations inherited from deeper core packages.
+- They can be declared in the root configuration file or anywhere down an inheritance chain of nested package includes.
+- `!remove` target references apply to entire map keys; individual array elements within a list cannot be targeted for independent removal.
+- Use `!replace` on an array to drop inherited elements and start an array list with entirely new contents.
 
 :::
 
