@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Gwendal Roulleau - Initial contribution
  */
-@Component(service = ServiceGetter.class)
+@Component
 @NonNullByDefault
 @SuppressWarnings("unused")
 public class ServiceGetterImpl implements ServiceGetter {
