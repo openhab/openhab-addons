@@ -77,7 +77,6 @@ public class RecursiveTransformer {
     /**
      * Registers a handler for a specific placeholder type.
      *
-     * @param clazz the placeholder class to handle
      * @param handler the processor that can transform the placeholder
      */
     public void register(PlaceholderProcessor<?> handler) {
