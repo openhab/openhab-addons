@@ -433,3 +433,18 @@ variables:
 | `${thing_uid}`  | `mqtt:topic:living-room-light` | `mqtt:topic:kitchen-light` |
 | `${item_name}`  | `Living_Room_Light`            | `Kitchen_Light`            |
 | `${label}`      | `Living Room Light`            | `Kitchen Light`            |
+
+## Limitation: Top-Level Merge Keys in `packages:`
+
+Top-level YAML merge keys (for example `<<:`) inside the `packages:` map are not supported.
+Each package must be declared explicitly as a direct key under `packages:`.
+
+The following pattern is **not supported**:
+
+```yaml
+packages:
+  <<: !include common-packages.yaml
+```
+
+In this form, the merge key tries to inject package declarations into `packages:` itself.
+The composer does not expand package declarations through top-level merge keys.
