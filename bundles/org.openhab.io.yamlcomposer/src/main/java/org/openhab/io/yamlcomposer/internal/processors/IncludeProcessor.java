@@ -29,7 +29,6 @@ import org.openhab.io.yamlcomposer.internal.YamlComposer;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
-import org.snakeyaml.engine.v2.exceptions.Mark;
 import org.snakeyaml.engine.v2.exceptions.MarkedYamlEngineException;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
 
@@ -152,12 +151,14 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
     }
 
     private void logIncludeError(IncludePlaceholder p, String name, Path path, Exception e) {
-        Mark mark = (e instanceof MarkedYamlEngineException me) ? me.getProblemMark().orElse(null) : null;
-        String location = (mark != null) ? "%d:%d".formatted(mark.getLine() + 1, mark.getColumn() + 1) : "";
+        String location = (e instanceof MarkedYamlEngineException me)
+                ? me.getProblemMark().map(m -> "%d:%d".formatted(m.getLine() + 1, m.getColumn() + 1)).orElse(null)
+                : null;
 
+        String pathWithLocation = (location == null) ? path.toString() : path + ":" + location;
         String msg = (e instanceof IOException ioe) ? getFriendlyMessage(ioe) : e.getMessage();
 
-        logger.warn("{} Failed to process !include '{}'\n{}:{} {}", p.sourceLocation(), name, path, location, msg);
+        logger.warn("{} Failed to process !include '{}'\n{} {}", p.sourceLocation(), name, pathWithLocation, msg);
     }
 
     private static @Nullable String getFriendlyMessage(Exception e) {
