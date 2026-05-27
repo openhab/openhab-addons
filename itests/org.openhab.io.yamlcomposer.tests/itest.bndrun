@@ -68,6 +68,7 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.osgi.service.event;version='[1.4.1,1.4.2)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.3.0,1.3.1)',\
+	org.snakeyaml.engine;version='[3.0.1,3.0.2)',\
 	org.yaml.snakeyaml;version='[2.5.0,2.5.1)',\
 	si-quantity;version='[2.2.3,2.2.4)',\
 	si-units;version='[2.2.3,2.2.4)',\
