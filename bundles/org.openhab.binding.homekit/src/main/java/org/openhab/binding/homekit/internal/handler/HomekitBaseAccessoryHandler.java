@@ -998,7 +998,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
      * MAC. Otherwise it waits until the asynchronous callback `macAddressResolved()` gets called.
      */
     private void updateMacAddressProperty(String ip) {
-        logger.debug("updateMacAddressProperty() {} on {}", thing.getUID(), ip);
         ipPendingMacResolve = ip;
         if (macResolver.resolveMac(ip) instanceof String mac) {
             ipPendingMacResolve = null;
@@ -1017,12 +1016,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
      */
     public synchronized void macAddressResolved(String ip, String mac) {
         String myIp = ipPendingMacResolve;
-        logger.debug("macAddressResolved() {} on {}, offered {}, {}", thing.getUID(), myIp, ip, mac);
         if (myIp != null && myIp.equals(ip)) {
             ipPendingMacResolve = null;
             thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
             macResolver.removeMacResolverListener(this);
-            logger.debug("macAddressResolved() {} on {}, set property {}", thing.getUID(), ip, mac);
+            logger.debug("{} set mac property {}", thing.getUID(), mac);
         }
     }
 

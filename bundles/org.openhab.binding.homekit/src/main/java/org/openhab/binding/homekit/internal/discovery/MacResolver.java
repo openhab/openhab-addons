@@ -123,7 +123,6 @@ public class MacResolver {
             t.setDaemon(true);
             return t;
         });
-        logger.debug("MacResolver activated");
     }
 
     @Deactivate
@@ -132,7 +131,6 @@ public class MacResolver {
         if (executor != null) {
             executor.shutdownNow();
         }
-        logger.debug("MacResolver deactivated");
     }
 
     /**
@@ -156,13 +154,11 @@ public class MacResolver {
         cacheFlush();
         String mac = cacheGet(ip);
         if (mac != null) {
-            logger.debug("{} resolved to {}", ip, mac);
             return mac;
         }
 
         // trigger an asynchronous resolve if not already in-flight for this IP
         if (inflightIPs.add(ip)) {
-            logger.debug("Scheduling resolve for {}", ip);
             Objects.requireNonNull(executor).submit(() -> {
                 try {
                     resolveMacAsync(ip);
@@ -338,13 +334,12 @@ public class MacResolver {
             return;
         }
         try {
-            logger.debug("MAC for {} not found, pinging...", ip);
             InetAddress.getByName(ip).isReachable(PING_TIMEOUT_MILLISEC);
             synchronized (arpLock) {
                 bulkLoadArpCache();
             }
         } catch (Exception e) {
-            logger.debug("Ping for {} failed", ip, e);
+            logger.debug("Ping {} failed", ip, e);
         }
     }
 

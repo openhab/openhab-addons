@@ -134,13 +134,15 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
 
         String mac = macResolver.resolveMac(ip);
         if (mac == null) {
-            logger.debug("createResult() pending mac resolve for {}, {}, {}", uid, ip, mac);
             pendingDiscoveryResults.put(ip, new PendingDiscoveryResult(service, uid));
             return null;
         }
 
-        logger.debug("createResult() calling buildResult() for {}, {}, {}", uid, ip, mac);
-        return buildResult(service, uid, ip, mac);
+        DiscoveryResult result = buildResult(service, uid, ip, mac);
+        if (result != null) {
+            logger.debug("Synch discovery of {}", result);
+        }
+        return result;
     }
 
     /**
@@ -149,13 +151,13 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
      */
     @Override
     public void macAddressResolved(String ip, String mac) {
-        logger.debug("MAC address resolved asynchronously {}, {}", ip, mac);
         PendingDiscoveryResult pendingResult = pendingDiscoveryResults.remove(ip);
         if (pendingResult == null) {
             return;
         }
         DiscoveryResult result = buildResult(pendingResult.service, pendingResult.uid, ip, mac);
         if (result != null) {
+            logger.debug("Async discovery {}", result);
             thingDiscovered(result);
         }
     }
@@ -187,8 +189,6 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
         if (port > 0) {
             ip = ip + ":" + port;
         }
-
-        logger.debug("buildResult() for {}, {}, {}", uid, ip, mac);
 
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
         builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
