@@ -121,11 +121,8 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * and providing detailed logging if resolution fails.
      *
      * Placeholders starting with '@' are resolved relative to OPENHAB_CONF,
-     * while those starting with '$' are resolved relative to the top-level directory
-     * of the base path. The top-level directory is the directory one level below
-     * OPENHAB_CONF that contains the base path.
-     * For example, if the base path is "OPENHAB_CONF/yaml/rooms/kitchen.yaml",
-     * the top-level directory would be "OPENHAB_CONF/yaml".
+     * while those starting with '$' are resolved relative to OPENHAB_CONF/yamlcomposer.
+     * (i.e., {@link ComposerConfig#sourceRoot()}).
      *
      * This allows for flexible referencing of files
      * within the configuration structure.
