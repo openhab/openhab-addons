@@ -76,8 +76,7 @@ import ch.obermuhlner.scriptengine.java.packagelisting.PackageResourceListingStr
  * @author Gwendal Roulleau - Initial contribution
  */
 @SuppressWarnings("unused")
-@Component(service = { ScriptEngineFactory.class, Java223ScriptEngineFactory.class,
-        EventSubscriber.class }, configurationPid = "automation.java223")
+@Component(service = { ScriptEngineFactory.class, EventSubscriber.class }, configurationPid = "automation.java223")
 @NonNullByDefault
 public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
         implements ScriptEngineFactory, EventSubscriber, WatchService.WatchEventListener {
