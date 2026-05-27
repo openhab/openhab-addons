@@ -48,6 +48,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.discovery.MacResolver;
+import org.openhab.binding.homekit.internal.discovery.MacResolverListener;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
@@ -88,7 +89,8 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
+        implements EventListener, MacResolverListener {
 
     private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
     private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
@@ -130,9 +132,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final HomekitTypeProvider typeProvider;
     protected final TranslationProvider i18nProvider;
     protected final Bundle bundle;
+    private final MacResolver macResolver;
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
+
+    private @Nullable String ipPendingMacResolve;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -178,13 +183,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider translationProvider, Bundle bundle,
-            HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+            HomekitMdnsDiscoveryParticipant discoveryParticipant, MacResolver macResolver) {
         super(thing);
         this.typeProvider = typeProvider;
         this.keyStore = keyStore;
         this.i18nProvider = translationProvider;
         this.bundle = bundle;
         this.discoveryParticipant = discoveryParticipant;
+        this.macResolver = macResolver;
     }
 
     @Override
@@ -332,7 +338,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
 
         // transport is created at this point so try to resolve its MAC address and update the property
-        updateMacAddressProperty(ipAddress);
+        macResolver.addMacResolverListener(this);
+        updateMacAddressProperty(ipAddress.split(":")[0]);
 
         // attempt to verify pairing
         try {
@@ -985,14 +992,37 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Updates the MAC address property of the thing based on the current IP address configuration. This is
-     * called when the thing goes online, and it attempts to resolve the MAC address from the IP address using
-     * the MacResolver utility. If successful, it updates the thing properties with the resolved MAC address.
-     * If it fails to resolve, it leaves the MAC address property unchanged.
+     * Updates the MAC address property of the thing based on the given IP address. This is called when
+     * the thing goes online, and it attempts to resolve the MAC address from the IP address using the
+     * {@link MacResolver} component. If it resolves immediately it updates the thing properties with the
+     * MAC. Otherwise it waits until the asynchronous callback `macAddressResolved()` gets called.
      */
-    private void updateMacAddressProperty(String ipAddress) {
-        if (MacResolver.getMacFromIp(ipAddress.split(":")[0]) instanceof String mac) {
+    private void updateMacAddressProperty(String ip) {
+        logger.debug("updateMacAddressProperty() {} on {}", thing.getUID(), ip);
+        ipPendingMacResolve = ip;
+        if (macResolver.resolveMac(ip) instanceof String mac) {
+            ipPendingMacResolve = null;
+            macAddressResolved(ip, mac);
+        }
+    }
+
+    /**
+     * Callback method from the MacResolverListener interface. Called when a MAC address has been resolved for a
+     * given IP address. If the resolved IP address matches the current IP address configuration of the thing,
+     * it updates the thing properties with the resolved MAC address. Otherwise, it ignores the resolved MAC
+     * address.
+     *
+     * @param ip the IP address for which the MAC address has been resolved
+     * @param mac the resolved MAC address
+     */
+    public synchronized void macAddressResolved(String ip, String mac) {
+        String myIp = ipPendingMacResolve;
+        logger.debug("macAddressResolved() {} on {}, offered {}, {}", thing.getUID(), myIp, ip, mac);
+        if (myIp != null && myIp.equals(ip)) {
+            ipPendingMacResolve = null;
             thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
+            macResolver.removeMacResolverListener(this);
+            logger.debug("macAddressResolved() {} on {}, set property {}", thing.getUID(), ip, mac);
         }
     }
 

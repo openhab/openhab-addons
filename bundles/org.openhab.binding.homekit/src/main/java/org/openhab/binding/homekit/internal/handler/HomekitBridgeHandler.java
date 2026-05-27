@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitBridgedAccessoryDiscoveryService;
 import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
+import org.openhab.binding.homekit.internal.discovery.MacResolver;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -51,8 +52,9 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     private @Nullable HomekitBridgedAccessoryDiscoveryService bridgedAccessoryDiscoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
-            TranslationProvider i18nProvider, Bundle bundle, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
-        super(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
+            TranslationProvider i18nProvider, Bundle bundle, HomekitMdnsDiscoveryParticipant discoveryParticipant,
+            MacResolver macResolver) {
+        super(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant, macResolver);
     }
 
     @Override

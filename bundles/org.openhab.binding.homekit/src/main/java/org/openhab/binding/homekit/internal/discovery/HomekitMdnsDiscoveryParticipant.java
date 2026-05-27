@@ -16,6 +16,7 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +28,10 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -37,7 +40,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Discovers new HomeKit server devices.
@@ -59,18 +65,43 @@ import org.osgi.service.component.annotations.Reference;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true, property = { "class.id=homekit" })
-public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant {
+@Component(service = { MDNSDiscoveryParticipant.class, DiscoveryService.class }, immediate = true, property = {
+        "class.id=homekit" })
+public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
+        implements MDNSDiscoveryParticipant, MacResolverListener {
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
+    private final Logger logger = LoggerFactory.getLogger(HomekitMdnsDiscoveryParticipant.class);
     private final Storage<String> suppressedIdStore;
     private final Set<String> suppressedIdCache = ConcurrentHashMap.newKeySet();
+    private final Map<String, PendingDiscoveryResult> pendingDiscoveryResults = new ConcurrentHashMap<>();
+
+    private final MacResolver macResolver;
+
+    private static class PendingDiscoveryResult {
+        protected final ServiceInfo service;
+        protected final ThingUID uid;
+
+        protected PendingDiscoveryResult(ServiceInfo service, ThingUID uid) {
+            this.service = service;
+            this.uid = uid;
+        }
+    }
 
     @Activate
-    public HomekitMdnsDiscoveryParticipant(@Reference StorageService storageService) {
+    public HomekitMdnsDiscoveryParticipant(@Reference StorageService storageService,
+            @Reference MacResolver macResolverArg) {
+        super(Collections.emptySet(), 0, false);
         suppressedIdStore = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
         suppressedIdCache.addAll(suppressedIdStore.getKeys());
+        macResolver = macResolverArg;
+        macResolver.addMacResolverListener(this);
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        macResolver.removeMacResolverListener(this);
     }
 
     @Override
@@ -83,18 +114,58 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         return SERVICE_TYPE;
     }
 
+    /**
+     * Creates a DiscoveryResult for the given ServiceInfo. Returns null if the service properties do not contain a
+     * valid unique id or accessory category, or if the unique id is currently suppressed. If {@link MacResolver}
+     * does not provide a MAC address immediately the discovery result is deferred until the {@link MacResolver}
+     * resolves it asynchronously.
+     */
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (!(getThingUID(service) instanceof ThingUID uid)) {
             return null;
         }
 
-        String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
+        String ip = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
                 .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
-        if (ipAddress == null) {
+        if (ip == null) {
             return null;
         }
 
+        String mac = macResolver.resolveMac(ip);
+        if (mac == null) {
+            logger.debug("createResult() pending mac resolve for {}, {}, {}", uid, ip, mac);
+            pendingDiscoveryResults.put(ip, new PendingDiscoveryResult(service, uid));
+            return null;
+        }
+
+        logger.debug("createResult() calling buildResult() for {}, {}, {}", uid, ip, mac);
+        return buildResult(service, uid, ip, mac);
+    }
+
+    /**
+     * Callback from the MacResolver when a MAC address is resolved asynchronously. The discovery result is built
+     * and published as a Thing if the pending discovery result still exists.
+     */
+    @Override
+    public void macAddressResolved(String ip, String mac) {
+        logger.debug("MAC address resolved asynchronously {}, {}", ip, mac);
+        PendingDiscoveryResult pendingResult = pendingDiscoveryResults.remove(ip);
+        if (pendingResult == null) {
+            return;
+        }
+        DiscoveryResult result = buildResult(pendingResult.service, pendingResult.uid, ip, mac);
+        if (result != null) {
+            thingDiscovered(result);
+        }
+    }
+
+    /**
+     * Builds a DiscoveryResult for the given service, thing UID, IP address, and MAC address. Returns null if
+     * the service properties do not contain a valid unique id or accessory category, or if the unique id is
+     * currently suppressed.
+     */
+    private @Nullable DiscoveryResult buildResult(ServiceInfo service, ThingUID uid, String ip, String mac) {
         Map<String, String> properties = getProperties(service);
         String uniqueId = properties.get("id"); // unique id
         if (uniqueId == null) {
@@ -114,21 +185,18 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
         int port = service.getPort();
         if (port > 0) {
-            ipAddress = ipAddress + ":" + port;
+            ip = ip + ":" + port;
         }
 
-        String macAddress = MacResolver.getMacFromIp(ipAddress);
-        if (macAddress == null) {
-            return null;
-        }
+        logger.debug("buildResult() for {}, {}, {}", uid, ip, mac);
 
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
         builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
                 .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
-                .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
+                .withProperty(CONFIG_IP_ADDRESS, ip) //
                 .withProperty(CONFIG_UNIQUE_ID, uniqueId) //
                 .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
-                .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
+                .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
                 .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
         if (properties.get("md") instanceof String model) {
@@ -144,6 +212,10 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         return builder.build();
     }
 
+    /**
+     * Extracts the ThingUID from the given ServiceInfo. Returns null if the service properties do not contain a valid
+     * unique id or accessory category, or if the unique id is currently suppressed.
+     */
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         Map<String, String> properties = getProperties(service);
@@ -222,5 +294,13 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             suppressedIdCache.remove(uniqueId);
             suppressedIdStore.remove(uniqueId);
         }
+    }
+
+    /**
+     * This discovery participant does not perform active scanning, it relies on the mDNS discovery service.
+     */
+    @Override
+    protected void startScan() {
+        stopScan(); // no active scanning
     }
 }

@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
+import org.openhab.binding.homekit.internal.discovery.MacResolver;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.handler.HomekitAccessoryHandler;
@@ -1773,9 +1774,9 @@ class TestMigrationFromThingToBridge {
                 ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
                 HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
                 ScheduledExecutorService scheduler, ManagedThingProvider thingProvider,
-                HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+                HomekitMdnsDiscoveryParticipant discoveryParticipant, MacResolver macResolver) {
             super(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry, keyStore, i18nProvider, bundle,
-                    thingProvider, discoveryParticipant);
+                    thingProvider, discoveryParticipant, macResolver);
             this.injectedTestScheduler = scheduler;
         }
 
@@ -1853,6 +1854,7 @@ class TestMigrationFromThingToBridge {
         HomekitKeyStore keyStore = mock(HomekitKeyStore.class);
         TranslationProvider translationProvider = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
+        MacResolver macResolver = mock(MacResolver.class);
 
         when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGE, thingId))).thenReturn(null);
         when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, thingId))).thenReturn(null);
@@ -1887,7 +1889,7 @@ class TestMigrationFromThingToBridge {
 
         HomekitAccessoryHandler handler = new TestHomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry,
                 channelGroupTypeRegistry, keyStore, translationProvider, bundle, scheduler, thingProvider,
-                discoveryParticipant);
+                discoveryParticipant, macResolver);
 
         // Inject accessories map
         injectField(handler, "accessories", accessories);
