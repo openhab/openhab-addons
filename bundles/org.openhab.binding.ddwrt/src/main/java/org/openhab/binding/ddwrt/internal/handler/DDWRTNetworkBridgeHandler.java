@@ -230,7 +230,8 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler implements Dhcp
 
                     // Update the wireless client directly in the cache
                     cache.computeWirelessClient(clientMac, client -> {
-                        if (!finalHostname.isEmpty() && !finalHostname.equals(client.getHostname())) {
+                        // Set hostname if empty (allows DHCP to override OUI hostnames)
+                        if (!finalHostname.isEmpty() && client.getHostname().isEmpty()) {
                             client.setHostname(finalHostname);
                         }
                         if (!ip.isEmpty() && !ip.equals(client.getIpAddress())) {

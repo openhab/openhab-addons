@@ -238,9 +238,12 @@ public class DDWRTNetworkCache {
     public void putWirelessClient(String mac, DDWRTClient client) {
         String normalizedMac = normalizeMac(mac);
         wirelessClientsByMac.put(normalizedMac, client);
-        // Maintain hostname index
+        // Maintain hostname index - include both hostname and ouiHostname
         if (!client.getHostname().isEmpty()) {
             hostnameToMac.put(Objects.requireNonNull(client.getHostname().toLowerCase(Locale.ROOT)), normalizedMac);
+        }
+        if (!client.getOuiHostname().isEmpty() && !client.getOuiHostname().equals(client.getHostname())) {
+            hostnameToMac.put(Objects.requireNonNull(client.getOuiHostname().toLowerCase(Locale.ROOT)), normalizedMac);
         }
         fireChange(normalizedMac, client.getHostname());
     }
@@ -254,9 +257,12 @@ public class DDWRTNetworkCache {
         DDWRTClient result = Objects.requireNonNull(wirelessClientsByMac.compute(normalizeMac(mac), (key, existing) -> {
             DDWRTClient client = existing != null ? existing : new DDWRTClient(key);
             DDWRTClient updated = mappingFunction.apply(client);
-            // Maintain hostname index
+            // Maintain hostname index - include both hostname and ouiHostname
             if (!updated.getHostname().isEmpty()) {
                 hostnameToMac.put(Objects.requireNonNull(updated.getHostname().toLowerCase(Locale.ROOT)), key);
+            }
+            if (!updated.getOuiHostname().isEmpty() && !updated.getOuiHostname().equals(updated.getHostname())) {
+                hostnameToMac.put(Objects.requireNonNull(updated.getOuiHostname().toLowerCase(Locale.ROOT)), key);
             }
             return updated;
         }));

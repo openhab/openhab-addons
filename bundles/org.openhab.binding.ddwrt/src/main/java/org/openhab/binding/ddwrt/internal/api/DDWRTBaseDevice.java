@@ -168,9 +168,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     // Cached DHCP leases - only updated on initial load and DHCP events
     private volatile boolean dhcpLeasesCacheValid = false;
 
-    // Negative cache for reverse DNS lookups — IPs that had no PTR record.
-    // Avoids re-querying on every refresh cycle (each lookup can block ~5s on timeout).
-    private final Set<String> dnsNegativeCache = ConcurrentHashMap.newKeySet();
+    // Negative cache for reverse DNS lookups — IPs that had no PTR record or timed out.
+    // Avoids re-querying on every refresh cycle while allowing retry after 300 seconds.
+    private static final Duration DNS_NEGATIVE_CACHE_TTL = Duration.ofSeconds(300);
+    private final Map<String, Instant> dnsNegativeCache = new ConcurrentHashMap<>();
 
     // Configuration
     protected DDWRTDeviceConfiguration config;
@@ -1473,7 +1474,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 // Thread-safe update existing wireless client with DHCP info
                 cache.computeWirelessClient(leaseMac, client -> {
                     boolean changed = false;
-                    if (!finalHostname.isEmpty() && !finalHostname.equals(client.getHostname())) {
+                    // Set hostname if: (1) hostname field is empty, or (2) hostname differs from new hostname
+                    // This allows DHCP to override OUI hostnames when better info becomes available
+                    if (!finalHostname.isEmpty()
+                            && (client.getHostname().isEmpty() || !finalHostname.equals(client.getHostname()))) {
                         client.setHostname(finalHostname);
                         changed = true;
                     }
@@ -1595,6 +1599,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             return;
         }
 
+        int lookupsAttempted = 0;
+        int lookupsSucceeded = 0;
+        int lookupsFailed = 0;
+        int lookupsSkippedNegativeCache = 0;
+
         // Only look up clients associated with THIS device (not the entire shared cache).
         // Each InetAddress.getHostName() can block ~5s on DNS timeout, so we also skip
         // IPs that previously returned no PTR record (negative cache).
@@ -1602,32 +1611,57 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (!mac.equals(client.getApMac())) {
                 continue;
             }
-            if (!client.getIpAddress().isEmpty() && client.getHostname().isEmpty()) {
+            if (!client.getIpAddress().isEmpty() && client.getPrimaryHostname().isEmpty()) {
                 String ip = client.getIpAddress();
-                if (dnsNegativeCache.contains(ip)) {
-                    continue;
+
+                Instant negativeUntil = dnsNegativeCache.get(ip);
+                if (negativeUntil != null) {
+                    if (negativeUntil.isAfter(Instant.now())) {
+                        lookupsSkippedNegativeCache++;
+                        logger.trace("Skipping reverse DNS for {} (negative cache valid until {})", ip, negativeUntil);
+                        continue;
+                    }
+                    dnsNegativeCache.remove(ip);
                 }
+                lookupsAttempted++;
+                logger.debug("Attempting reverse DNS lookup for {} (MAC: {})", ip, client.getMac());
                 try {
                     InetAddress addr = InetAddress.getByName(ip);
                     String fqdn = addr.getHostName();
                     // If getHostName() returned the IP itself, no PTR record exists — skip
                     if (fqdn.equals(ip)) {
-                        dnsNegativeCache.add(ip);
+                        lookupsFailed++;
+                        dnsNegativeCache.put(ip, Instant.now().plus(DNS_NEGATIVE_CACHE_TTL));
+                        logger.debug("Reverse DNS for {} returned IP (no PTR record)", ip);
                         continue;
                     }
                     // Use short hostname only (strip domain suffix)
                     String hostname = fqdn.contains(".") ? fqdn.substring(0, fqdn.indexOf('.')) : fqdn;
                     if (!hostname.isEmpty()) {
-                        logger.debug("Reverse DNS lookup for {}: {}", ip, hostname);
-                        client.setHostname(hostname);
+                        lookupsSucceeded++;
+                        logger.debug("Reverse DNS lookup for {} succeeded: {} (FQDN: {})", ip, hostname, fqdn);
+
+                        // Clear any stale negative-cache entry and set the real hostname.
+                        dnsNegativeCache.remove(ip);
+
+                        // Do not use getHostname() here; it may return an OUI-generated fallback.
+                        if (client.getPrimaryHostname().isEmpty()) {
+                            client.setHostname(hostname);
+                        }
                         // Cache hostname index is maintained by putWirelessClient
                         cache.putWirelessClient(client.getMac(), client);
                     }
                 } catch (UnknownHostException e) {
-                    dnsNegativeCache.add(ip);
-                    logger.trace("No reverse DNS entry for {}", ip);
+                    lookupsFailed++;
+                    dnsNegativeCache.put(ip, Instant.now().plus(DNS_NEGATIVE_CACHE_TTL));
+                    logger.debug("Reverse DNS lookup for {} failed: {}", ip, e.getMessage());
                 }
             }
+        }
+
+        if (lookupsAttempted > 0) {
+            logger.debug("Reverse DNS lookups: {} attempted, {} succeeded, {} failed, {} skipped (negative cache)",
+                    lookupsAttempted, lookupsSucceeded, lookupsFailed, lookupsSkippedNegativeCache);
         }
     }
 
@@ -1744,7 +1778,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     if (client.getHostname().isEmpty() && !OuiDatabase.isRandomizedMac(clientMac)) {
                         String generated = OuiDatabase.generateHostname(clientMac);
                         if (!generated.isEmpty()) {
-                            client.setHostname(generated);
+                            client.setOuiHostname(generated);
                             logger.debug("Generated OUI hostname for {}: {}", clientMac, generated);
                         }
                     }
