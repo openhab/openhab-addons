@@ -222,8 +222,9 @@ public class ExpressionEvaluator {
         int len2 = s2.length();
 
         // If length difference is greater than our threshold, skip expensive math
-        if (Math.abs(len1 - len2) >= threshold)
+        if (Math.abs(len1 - len2) >= threshold) {
             return Integer.MAX_VALUE;
+        }
 
         int[] costs = new int[len2 + 1];
         for (int i = 0; i <= len1; i++) {
@@ -240,8 +241,9 @@ public class ExpressionEvaluator {
                     lastValue = newValue;
                 }
             }
-            if (i > 0)
+            if (i > 0) {
                 costs[len2] = lastValue;
+            }
         }
         return costs[len2];
     }

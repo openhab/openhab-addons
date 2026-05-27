@@ -56,15 +56,17 @@ public class DigFilter implements Filter {
         }
 
         for (Object key : keys) { // Changed to Object to be more flexible
-            if (current == null)
+            if (current == null) {
                 return null;
+            }
 
             if (current instanceof Map) {
                 // Java Maps (like HashMap) can have a null key
                 current = ((Map<?, ?>) current).get(key);
             } else if (current instanceof List) {
-                if (key == null)
+                if (key == null) {
                     return null; // A list index cannot be null
+                }
                 current = getFromList((List<?>) current, key);
             } else {
                 return null;
@@ -83,8 +85,9 @@ public class DigFilter implements Filter {
             }
 
             int size = list.size();
-            if (index < 0)
+            if (index < 0) {
                 index = size + index;
+            }
 
             if (index >= 0 && index < size) {
                 return list.get(index);
