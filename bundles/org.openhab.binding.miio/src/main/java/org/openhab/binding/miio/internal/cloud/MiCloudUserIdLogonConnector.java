@@ -75,6 +75,10 @@ public class MiCloudUserIdLogonConnector extends MiCloudConnector {
 
     @Override
     public synchronized boolean login(String captchaResponse) {
+        if (!userId.isEmpty() && !serviceToken.isEmpty()) {
+            updateLoginState(CloudLoginState.ONLINE);
+            return true;
+        }
         if (!checkCredentials()) {
             return false;
         }

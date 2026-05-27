@@ -71,6 +71,15 @@ public class MiCloudQRConnector extends MiCloudConnector {
         }
     }
 
+    /**
+     * QR code login never requires username or password — authentication is done entirely
+     * via the QR scan. Always returns true so the base constructor does not reject empty credentials.
+     */
+    @Override
+    protected boolean checkCredentials() {
+        return true;
+    }
+
     @Override
     public boolean login(String ignored) {
         return login();

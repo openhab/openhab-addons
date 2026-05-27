@@ -134,7 +134,8 @@ public class MiCloudConnector {
         this.serviceToken = serviceToken != null ? serviceToken : "";
         this.ssecurity = ssecurity != null ? ssecurity : "";
         this.clientId = clientId != null ? clientId : generateClientId();
-        if (!checkCredentials()) {
+        // Only require username/password when TOKEN fields are absent and QR is not being used
+        if (!hasTokenCredentials() && !checkCredentials()) {
             throw new MiCloudException("username or password can't be empty");
         }
     }
@@ -181,6 +182,14 @@ public class MiCloudConnector {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Returns true when all three TOKEN credential fields (userId, serviceToken, ssecurity) are non-empty,
+     * meaning a full cloud session can be restored without username/password.
+     */
+    protected boolean hasTokenCredentials() {
+        return !userId.trim().isEmpty() && !serviceToken.trim().isEmpty() && !ssecurity.trim().isEmpty();
     }
 
     private String getApiUrl(String country) {
@@ -446,13 +455,13 @@ public class MiCloudConnector {
     }
 
     public synchronized boolean login(String captchaResponse) {
-        if (!checkCredentials()) {
-            return false;
-        }
         if (!userId.isEmpty() && !serviceToken.isEmpty()) {
             logger.debug("Xiaomi cloud login using stored token for userId {}", userId);
             updateLoginState(CloudLoginState.ONLINE);
             return true;
+        }
+        if (!checkCredentials()) {
+            return false;
         }
         logger.debug("Xiaomi cloud login with userid {} - no token available", username);
         updateLoginState(CloudLoginState.ACCESS_DENIED);

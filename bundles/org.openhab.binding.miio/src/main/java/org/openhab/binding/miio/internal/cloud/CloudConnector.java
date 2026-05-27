@@ -292,8 +292,8 @@ public class CloudConnector {
     }
 
     private boolean logon() {
-        if (username.isEmpty() || password.isEmpty()) {
-            logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled");
+        if (loginMode == CloudLoginMode.PASSWORD && (username.isEmpty() || password.isEmpty())) {
+            logger.debug("No Xiaomi cloud credentials. Cloud connectivity disabled for PASSWORD mode");
             logger.debug("Logon details: username: '{}', pass: '{}', country: '{}'", username,
                     password.replaceAll(".", "*"), country);
             return connected;
