@@ -1020,7 +1020,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
             ipPendingMacResolve = null;
             thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
             macResolver.removeMacResolverListener(this);
-            logger.debug("{} set mac property {}", thing.getUID(), mac);
+            logger.trace("{} set mac property {}", thing.getUID(), mac);
         }
     }
 

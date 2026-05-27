@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 public class MacResolver {
 
     private static final long PROCESS_WAIT_SECONDS = 2;
-    private static final long CACHE_EXPIRY_SECONDS = 180;
+    private static final long CACHE_EXPIRY_SECONDS = 300;
     private static final int PING_TIMEOUT_MILLISEC = 500;
 
     private static final Pattern MAC_PATTERN = Pattern.compile("([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}");
