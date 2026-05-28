@@ -150,6 +150,11 @@ Files with a normal `.yaml` extension are treated as **main configuration files*
 
 In contrast, `.inc.yaml` files are recognized as include fragments and are only processed when referenced through `!include`.
 
+::: tip Note
+Include fragments and main files are intentionally treated as different roles.
+Using the same file as both a compiled main file and an included fragment is not supported.
+:::
+
 ### Path Resolution
 
 Include file paths may be written as absolute paths or as paths relative to the current file.

@@ -321,3 +321,9 @@ YAML files can be organized freely, but the following conventions improve clarit
 - Keep packages in separate files when they represent reusable device or feature definitions.
 
 These conventions are optional but help keep complex configurations predictable and easy to navigate.
+
+### File naming convention
+
+- Use `*.yaml` or `*.yml` for main source files that produce composed output.
+- Use `*.inc.yaml` or `*.inc.yml` for include fragments referenced by `!include`.
+- Mixed-role files (both main and include) are not supported.
