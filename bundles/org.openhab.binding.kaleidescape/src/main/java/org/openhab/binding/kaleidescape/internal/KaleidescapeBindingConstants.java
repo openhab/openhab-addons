@@ -84,6 +84,7 @@ public class KaleidescapeBindingConstants {
     public static final String USER_INPUT = "ui#user_input";
     public static final String USER_INPUT_PROMPT = "ui#user_input_prompt";
     public static final String CHANNEL_TYPE_SENDCMD = "ui#sendcmd";
+    public static final String CHANNEL_TYPE_SEARCH = "ui#search";
 
     public static final String MUSIC = "music#";
     public static final String MUSIC_CONTROL = "music#control";

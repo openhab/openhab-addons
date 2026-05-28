@@ -48,6 +48,15 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:cinemaone">
@@ -95,6 +104,15 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="c1-alto_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="c1-alto_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:alto">
@@ -133,6 +151,15 @@
 				<type>kaleidescape:running_time</type>
 			</update-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="c1-alto_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="c1-alto_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="kaleidescape:strato">
@@ -170,6 +197,15 @@
 			<update-channel id="running_time" groupIds="detail">
 				<type>kaleidescape:running_time</type>
 			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="sendcmd" groupIds="strato_ui">
+				<type>kaleidescape:sendcmd</type>
+			</update-channel>
+			<add-channel id="search" groupIds="strato_ui">
+				<type>kaleidescape:search</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
