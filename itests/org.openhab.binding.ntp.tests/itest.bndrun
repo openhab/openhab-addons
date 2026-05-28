@@ -62,10 +62,13 @@ Fragment-Host: org.openhab.binding.ntp
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	org.openhab.core.semantics;version='[6.0.0,6.0.1)',\
-	com.sun.activation.jakarta.activation;version='[2.0.0,2.0.1)',\
-	com.sun.xml.bind.jaxb-osgi;version='[3.0.2,3.0.3)',\
+	com.sun.istack.commons-runtime;version='[4.1.2,4.1.3)',\
+	jakarta.activation-api;version='[2.1.4,2.1.5)',\
+	org.glassfish.jaxb.core;version='[4.0.7,4.0.8)',\
+	org.glassfish.jaxb.runtime;version='[4.0.7,4.0.8)',\
+	org.glassfish.jaxb.txw2;version='[4.0.7,4.0.8)',\
 	jakarta.servlet-api;version='[6.1.0,6.1.1)',\
-	jakarta.xml.bind-api;version='[3.0.0,3.0.1)',\
+	jakarta.xml.bind-api;version='[4.0.5,4.0.6)',\
 	org.apache.servicemix.specs.annotation-api-1.3;version='[1.3.0,1.3.1)',\
 	org.eclipse.jetty.ee10.servlet;version='[12.0.23,12.0.24)',\
 	org.eclipse.jetty.http;version='[12.0.23,12.0.24)',\
