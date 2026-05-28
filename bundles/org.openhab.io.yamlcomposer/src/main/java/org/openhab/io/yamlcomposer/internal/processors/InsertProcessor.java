@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
+import org.openhab.io.yamlcomposer.internal.core.ProcessingPhase;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.InsertPlaceholder;
 
@@ -77,7 +78,9 @@ public class InsertProcessor implements PlaceholderProcessor<InsertPlaceholder> 
         // unlike any other processing which uses the main variables map
         Map<String, @Nullable Object> templateVariables = params.varsMap();
         RecursiveTransformer localTransformer = recursiveTransformer.withOverrideVariables(templateVariables);
-        Object resolvedTemplate = localTransformer.transform(templateObj);
+        // Keep package override placeholders (!remove/!replace) intact so they are only
+        // applied in the dedicated PACKAGE_OVERRIDES phase.
+        Object resolvedTemplate = localTransformer.transform(templateObj, ProcessingPhase.STANDARD);
         return resolvedTemplate;
     }
 }

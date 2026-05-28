@@ -2130,6 +2130,37 @@ public class YamlComposerTest {
                     assertThat(getNestedValue(thing, "scalar_to_keep"), equalTo("package"));
                 }
 
+                @Test
+                @DisplayName("!replace and !remove inside !insert templates are applied only after package merge")
+                void insertTemplatePackageOverridesAreDeferredUntilOverridePhase() throws IOException {
+                    writeFixture("pkg.yaml", """
+                            things:
+                              thing:
+                                map1:
+                                  from_package: true
+                                remove_me: from_package
+                            """);
+
+                    Path main = writeFixture("main.yaml", """
+                            templates:
+                              overrides_tpl:
+                                thing:
+                                  map1: !replace
+                                    from_main: true
+                                  remove_me: !remove
+
+                            packages:
+                              p1: !include pkg.yaml
+
+                            things: !insert overrides_tpl
+                            """);
+
+                    Map<Object, @Nullable Object> data = loadFixture(main);
+
+                    assertThat(getNestedValue(data, "things", "thing", "map1"), equalTo(Map.of("from_main", true)));
+                    assertThat((Map<?, ?>) getNestedValue(data, "things", "thing"), not(hasKey("remove_me")));
+                }
+
                 @Nested
                 @DisplayName("Defensive Fallbacks (Outside Package Context)")
                 class DefensiveFallbacks {
