@@ -148,7 +148,7 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
 
         DiscoveryResult result = buildResult(service, mac);
         if (result != null) {
-            logger.trace("Synchronous {}", result);
+            logger.trace("Instant {}", result);
         }
         return result;
     }
@@ -165,7 +165,7 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
         }
         DiscoveryResult result = buildResult(service, mac);
         if (result != null) {
-            logger.trace("Asynchronous {}", result);
+            logger.trace("Delayed {}", result);
             thingDiscovered(result);
         }
     }
