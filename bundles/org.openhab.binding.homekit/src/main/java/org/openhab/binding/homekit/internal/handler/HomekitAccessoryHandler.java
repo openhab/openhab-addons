@@ -1337,7 +1337,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
-        discoveryParticipant.suppressId(uniqueId, true); // suppress re-discovery of existing (now old) thing
+        String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        discoveryParticipant.setTypeMapping(true, uniqueId, mac); // enable mDNS thing type mapping
         logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
                 newThing.getUID());
     }

@@ -2005,7 +2005,7 @@ class TestMigrationFromThingToBridge {
         capturedRunnables.get(0).run();
 
         verify(thingProvider).remove(ArgumentMatchers.any(ThingUID.class));
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
 
         ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
@@ -2062,7 +2062,7 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
     }
 
@@ -2202,7 +2202,7 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
 
         verify(thingProvider, times(2)).add(ArgumentMatchers.any(Thing.class));

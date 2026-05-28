@@ -180,24 +180,24 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     public void initialize() {
         super.initialize();
         /*
-         * If the Bridge was created from an accessory Thing then mDNS re-discovery of accessory Things having
-         * the same id must be suppressed.
+         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery must be informed
+         * to map re-discovered Things to be bridges rather than accessories.
          */
         if (thing.getProperties().get(PROPERTY_CONVERTED_FROM_ACCESSORY) != null
                 && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
-            discoveryParticipant.suppressId(uniqueId, true);
+            discoveryParticipant.setTypeMapping(true, uniqueId, thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS));
         }
     }
 
     @Override
     public void handleRemoval() {
         /*
-         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery of
-         * accessory Things having the same id will have been suppressed. However since this Bridge is
-         * now being removed again, we must make sure that suppression of this id is also removed again.
+         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery will have been
+         * informed to map re-discovered Things to be bridges rather than accessories. However since this Bridge is
+         * now being removed, we must make sure that such mapping is also removed.
          */
         if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
-            discoveryParticipant.suppressId(uniqueId, false);
+            discoveryParticipant.setTypeMapping(false, uniqueId, null);
         }
         super.handleRemoval();
     }

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.jmdns.ServiceInfo;
 
@@ -73,28 +74,21 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitMdnsDiscoveryParticipant.class);
-    private final Storage<String> suppressedIdStore;
-    private final Set<String> suppressedIdCache = ConcurrentHashMap.newKeySet();
-    private final Map<String, PendingDiscoveryResult> pendingDiscoveryResults = new ConcurrentHashMap<>();
+    private final Storage<String> mappedThingIdStore;
+    private final Map<String, String> mappedThingIdCache = new ConcurrentHashMap<>();
+    private final Map<String, ServiceInfo> pendingDiscoveryResults = new ConcurrentHashMap<>();
 
     private final MacResolver macResolver;
-
-    private static class PendingDiscoveryResult {
-        protected final ServiceInfo service;
-        protected final ThingUID uid;
-
-        protected PendingDiscoveryResult(ServiceInfo service, ThingUID uid) {
-            this.service = service;
-            this.uid = uid;
-        }
-    }
 
     @Activate
     public HomekitMdnsDiscoveryParticipant(@Reference StorageService storageService,
             @Reference MacResolver macResolverArg) {
         super(Collections.emptySet(), 0, false);
-        suppressedIdStore = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
-        suppressedIdCache.addAll(suppressedIdStore.getKeys());
+        mappedThingIdStore = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
+        Map<String, String> loaded = mappedThingIdStore.getKeys().stream()
+                .map(k -> Map.entry(k, mappedThingIdStore.get(k))).filter(e -> e.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        mappedThingIdCache.putAll(loaded);
         macResolver = macResolverArg;
         macResolver.addMacResolverListener(this);
     }
@@ -116,29 +110,28 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
 
     /**
      * Creates a DiscoveryResult for the given ServiceInfo. Returns null if the service properties do not contain a
-     * valid unique id or accessory category, or if the unique id is currently suppressed. If {@link MacResolver}
-     * does not provide a MAC address immediately the discovery result is deferred until the {@link MacResolver}
-     * resolves it asynchronously.
+     * valid unique id or accessory category, or IP address. If {@link MacResolver} does not provide a MAC address
+     * immediately the discovery result is deferred until the {@link MacResolver} resolves it asynchronously.
      */
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        if (!(getThingUID(service) instanceof ThingUID uid)) {
+        ThingUID uid = getThingUID(service);
+        if (uid == null) {
             return null;
         }
 
-        String ip = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
-                .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
+        String ip = getIp(service);
         if (ip == null) {
             return null;
         }
 
         String mac = macResolver.resolveMac(ip);
         if (mac == null) {
-            pendingDiscoveryResults.put(ip, new PendingDiscoveryResult(service, uid));
+            pendingDiscoveryResults.put(ip, service);
             return null;
         }
 
-        DiscoveryResult result = buildResult(service, uid, ip, mac);
+        DiscoveryResult result = buildResult(service, mac);
         if (result != null) {
             logger.trace("Synchronous {}", result);
         }
@@ -146,16 +139,16 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
     }
 
     /**
-     * Callback from the MacResolver when a MAC address is resolved asynchronously. The discovery result is built
-     * and published as a Thing if the pending discovery result still exists.
+     * Callback from the MacResolver when a MAC address is resolved asynchronously. The discovery result
+     * is built and published as a Thing if the pending discovery result still exists.
      */
     @Override
     public void macAddressResolved(String ip, String mac) {
-        PendingDiscoveryResult pendingResult = pendingDiscoveryResults.remove(ip);
-        if (pendingResult == null) {
+        ServiceInfo service = pendingDiscoveryResults.remove(ip);
+        if (service == null) {
             return;
         }
-        DiscoveryResult result = buildResult(pendingResult.service, pendingResult.uid, ip, mac);
+        DiscoveryResult result = buildResult(service, mac);
         if (result != null) {
             logger.trace("Asynchronous {}", result);
             thingDiscovered(result);
@@ -163,12 +156,12 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
     }
 
     /**
-     * Builds a DiscoveryResult for the given service, thing UID, IP address, and MAC address. Returns null if
-     * the service properties do not contain a valid unique id or accessory category, or if the unique id is
-     * currently suppressed.
+     * Builds a DiscoveryResult for the given service and MAC address. Returns null if the service properties
+     * do not contain a valid unique id, accessory category, or IP address.
      */
-    private @Nullable DiscoveryResult buildResult(ServiceInfo service, ThingUID uid, String ip, String mac) {
+    private @Nullable DiscoveryResult buildResult(ServiceInfo service, String mac) {
         Map<String, String> properties = getProperties(service);
+
         String uniqueId = properties.get("id"); // unique id
         if (uniqueId == null) {
             return null;
@@ -179,15 +172,22 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
             String ci = properties.getOrDefault("ci", ""); // accessory category
             category = AccessoryCategory.from(Integer.parseInt(ci));
         } catch (IllegalArgumentException e) {
-            category = null;
+            return null;
         }
-        if (category == null) {
+
+        String ip = getIp(service);
+        if (ip == null) {
             return null;
         }
 
         int port = service.getPort();
         if (port > 0) {
             ip = ip + ":" + port;
+        }
+
+        ThingUID uid = getThingUID(service);
+        if (uid == null) {
+            return null;
         }
 
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
@@ -214,27 +214,40 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
 
     /**
      * Extracts the ThingUID from the given ServiceInfo. Returns null if the service properties do not contain a valid
-     * unique id or accessory category, or if the unique id is currently suppressed.
+     * unique id, accessory category, or ip address.
      */
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         Map<String, String> properties = getProperties(service);
 
         String uniqueId = properties.get("id");
+        if (uniqueId == null) {
+            return null;
+        }
+
         AccessoryCategory category;
         try {
             String ci = properties.getOrDefault("ci", "");
             category = AccessoryCategory.from(Integer.parseInt(ci));
         } catch (IllegalArgumentException e) {
-            category = null;
+            return null;
         }
 
-        if (uniqueId != null && category != null && !suppressedIdCache.contains(uniqueId)) {
-            return new ThingUID(AccessoryCategory.BRIDGE == category ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY,
-                    uniqueId.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
+        String ip = getIp(service);
+        if (ip == null) {
+            return null;
         }
 
-        return null;
+        /*
+         * As a general rule the thing type is determined by the accessory category, but to prevent duplicate
+         * discovery of the same device (e.g. when an accessory is migrated to a bridge) the unique id and (if
+         * available) the MAC address are checked against the type mapping cache to determine if the accessory
+         * Thing type should be mapped to Bridge instead.
+         */
+        ThingTypeUID uid = (AccessoryCategory.BRIDGE == category) || isTypeMapped(uniqueId)
+                || isTypeMapped(macResolver.resolveMac(ip)) ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY;
+
+        return new ThingUID(uid, uniqueId.replace(":", "").toLowerCase()); // e.g. "a1b2c3d4e5f6"
     }
 
     /**
@@ -279,21 +292,40 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
     }
 
     /**
-     * Suppresses/enables discovery of accessory Things with the given unique id. When an accessory Thing is
-     * auto-migrated to a Bridge thing then the bridge re-uses the same id as the prior accessory Thing. So
-     * we need to suppress re-discovery of a "duplicate" accessory Thing having the same id and parameters.
-     *
-     * @param uniqueId the Thing uniqueId property for which to suppress or enable discovery
-     * @param suppress true to suppress discovery of that id, false to enable discovery again
+     * Enables/disables mapping of discovered accessory Things to Bridges. When accessory Things are auto-
+     * migrated to Bridges then we need to re-map re-discovery to create Bridges rather than accessory Things.
+     * <p>
+     * NOTE: In prior versions the lookup table was a key-value pair with both fields being the unique id,
+     * however in newer versions the value is now the MAC address.
+     * 
+     * @param enable true to enable mapping, false to disable it
+     * @param uniqueId the Thing uniqueId property for which discovery mapping shall be enabled
+     * @param mac the MAC address of the device for which discovery mapping shall be enabled
      */
-    public void suppressId(String uniqueId, boolean suppress) {
-        if (suppress) {
-            suppressedIdCache.add(uniqueId);
-            suppressedIdStore.put(uniqueId, uniqueId); // persist across restarts
+    public void setTypeMapping(boolean enable, String uniqueId, @Nullable String mac) {
+        if (enable) {
+            mappedThingIdCache.put(uniqueId, mac);
+            mappedThingIdStore.put(uniqueId, mac); // persist across restarts
         } else {
-            suppressedIdCache.remove(uniqueId);
-            suppressedIdStore.remove(uniqueId);
+            mappedThingIdCache.remove(uniqueId);
+            mappedThingIdStore.remove(uniqueId);
         }
+    }
+
+    /**
+     * Helper method to check if the given id is currently associated with discovery thing type mapping. Checks
+     * both unique Id and MAC address.
+     */
+    private boolean isTypeMapped(String id) {
+        return mappedThingIdCache.keySet().contains(id) || mappedThingIdCache.values().contains(id);
+    }
+
+    /**
+     * Helper method to get the first IPv4 address from a ServiceInfo, or null if none found.
+     */
+    private @Nullable String getIp(ServiceInfo service) {
+        return Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull).map(ipv4 -> ipv4.getHostAddress())
+                .findFirst().orElse(null);
     }
 
     /**

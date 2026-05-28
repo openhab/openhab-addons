@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MacResolver.class, immediate = true)
+@Component(service = MacResolver.class)
 public class MacResolver {
 
     private static final long PROCESS_WAIT_SECONDS = 2;
@@ -72,7 +72,7 @@ public class MacResolver {
     private final Logger logger = LoggerFactory.getLogger(MacResolver.class);
 
     // cache of IP / MAC mappings with expiration time stamps; prevents hitting the OS ARP cache too often
-    private final Map<String, ExpiringMac> cache = new ConcurrentHashMap<>();
+    private final Map<String, ExpiringMac> arpCache = new ConcurrentHashMap<>();
 
     // set of listeners that will be notified whenever a new MAC address is resolved
     private final Set<MacResolverListener> listeners = ConcurrentHashMap.newKeySet();
@@ -81,7 +81,7 @@ public class MacResolver {
     private final Set<String> inflightIPs = ConcurrentHashMap.newKeySet();
 
     // lock to serialize the bulk loading of the ARP cache which involves executing external processes
-    private final Object arpLock = new Object();
+    private final Object arpFetchLock = new Object();
 
     private @Nullable ExecutorService executor;
 
@@ -123,6 +123,8 @@ public class MacResolver {
             t.setDaemon(true);
             return t;
         });
+        // try to resolve a dummy IP (see RFC 5737) to initialize the arp cache
+        resolveMac("192.0.2.123");
     }
 
     @Deactivate
@@ -243,20 +245,20 @@ public class MacResolver {
      * Removes all expired entries from the in-memory cache.
      */
     private void cacheFlush() {
-        cache.entrySet().removeIf(e -> e.getValue().isExpired());
+        arpCache.entrySet().removeIf(e -> e.getValue().isExpired());
     }
 
     /**
      * Retrieves a MAC address from the in-memory cache, if present and not expired.
      */
     private @Nullable String cacheGet(String ip) {
-        ExpiringMac entry = cache.get(ip);
+        ExpiringMac entry = arpCache.get(ip);
         if (entry == null) {
             return null;
         }
         String mac = entry.getMac();
         if (mac == null) {
-            cache.remove(ip);
+            arpCache.remove(ip);
         }
         return mac;
     }
@@ -266,7 +268,7 @@ public class MacResolver {
      * same MAC is already cached for this IP, listeners will not be notified again.
      */
     private void cachePut(String ip, String mac) {
-        if (cache.put(ip, new ExpiringMac(mac)) instanceof ExpiringMac previous && mac.equals(previous.getMac())) {
+        if (arpCache.put(ip, new ExpiringMac(mac)) instanceof ExpiringMac previous && mac.equals(previous.getMac())) {
             return; // identical MAC => don't notify
         }
         listeners.forEach(listener -> notify(listener, ip, mac));
@@ -326,7 +328,7 @@ public class MacResolver {
      * not found, ping the IP to populate the ARP table and try again.
      */
     private void resolveMacAsync(String ip) {
-        synchronized (arpLock) {
+        synchronized (arpFetchLock) {
             bulkLoadArpCache();
         }
         String mac = cacheGet(ip);
@@ -335,7 +337,7 @@ public class MacResolver {
         }
         try {
             InetAddress.getByName(ip).isReachable(PING_TIMEOUT_MILLISEC);
-            synchronized (arpLock) {
+            synchronized (arpFetchLock) {
                 bulkLoadArpCache();
             }
         } catch (Exception e) {
@@ -364,7 +366,7 @@ public class MacResolver {
     // ================ TEST HOOKS — package private, not exported in OSGi ================
 
     void testClearCache() {
-        cache.clear();
+        arpCache.clear();
     }
 
     @Nullable
@@ -373,7 +375,7 @@ public class MacResolver {
     }
 
     boolean testCacheIsEmpty() {
-        return cache.isEmpty();
+        return arpCache.isEmpty();
     }
 
     void testPutCached(String ip, String mac, Instant expires) {
@@ -384,6 +386,6 @@ public class MacResolver {
             f.set(entry, expires);
         } catch (Exception ignored) {
         }
-        cache.put(ip, entry);
+        arpCache.put(ip, entry);
     }
 }
