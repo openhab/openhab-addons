@@ -59,9 +59,10 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         try {
             Files.createDirectories(ComposerConfig.sourceRoot());
             Path outputRoot = ComposerConfig.outputRoot();
-            if (!outputRoot.toFile().exists()) {
-                Files.createDirectories(outputRoot);
-                Files.writeString(outputRoot.resolve("readme.txt"), OUTPUT_ROOT_README, StandardCharsets.UTF_8);
+            Files.createDirectories(outputRoot);
+            Path readme = outputRoot.resolve("readme.txt");
+            if (!Files.exists(readme)) {
+                Files.writeString(readme, OUTPUT_ROOT_README, StandardCharsets.UTF_8);
             }
             processDirectory(ComposerConfig.sourceRoot());
         } catch (IOException e) {

@@ -37,6 +37,7 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
         this.logger = logger;
     }
 
+    @Override
     public Class<SubstitutionPlaceholder> getPlaceholderType() {
         return SubstitutionPlaceholder.class;
     }
