@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import javax.jmdns.ServiceInfo;
 
@@ -48,20 +47,29 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Discovers new HomeKit server devices.
+ * <p>
  * HomeKit devices advertise themselves using mDNS with the service type "_hap._tcp.local.".
  * Each device is identified by its unique id, which is included in the mDNS properties.
  * The device category is also included, allowing differentiation between bridges and accessories.
  * The discovery participant creates a ThingUID based on the unique id and device category.
+ * <p>
  * Discovered devices are published as Things of type
  * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_ACCESSORY}
  * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE}.
  * Discovered Things include properties such as model name, protocol version, and IP address.
+ * <p>
  * This class does not perform active scanning; instead, it relies on the central mDNS discovery
  * service to notify it of new services.
- * To prevent duplicate discovery of the same device (e.g. when an accessory is migrated to
- * a bridge) the participant maintains a set of suppressed unique ids. When a unique id is
- * suppressed then discovery results for that id are not created and thus not published as
- * Things. The suppression state is persisted across restarts.
+ * <p>
+ * To prevent mistaken discovery of the same device (e.g. when an accessory is migrated to
+ * a bridge) the participant maintains a set of mapped unique Id's and MAC addresses. When a
+ * unique Id or MAC is mapped then discovery results for that id are created as a Bridge rather
+ * than an accessory Thing. The mapping list is persisted across restarts.
+ * <p>
+ * This class also registers itself as a {@link DiscoveryService}. This means that it can
+ * discover things whose MAC address is not yet known, and persist those things in a pending
+ * list until the MAC is resolved by a {@link MacResolver}, and when that happens it can
+ * asynchronously notify the discovery of the Thing later.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -80,16 +88,23 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
 
     private final MacResolver macResolver;
 
+    /**
+     * Constructor. The discovery participant is activated by the OSGi framework when the bundle is
+     * started. The {@link AbstractDiscoveryService} is initialized to be a non-scanning service having
+     * an empty supported thing type set. The constructor also loads the persisted mapped thing Ids and
+     * finally registers itself as a listener for MAC address resolution.
+     */
     @Activate
-    public HomekitMdnsDiscoveryParticipant(@Reference StorageService storageService,
-            @Reference MacResolver macResolverArg) {
+    public HomekitMdnsDiscoveryParticipant(@Reference StorageService service, @Reference MacResolver resolver) {
         super(Collections.emptySet(), 0, false);
-        mappedThingIdStore = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
-        Map<String, String> loaded = mappedThingIdStore.getKeys().stream()
-                .map(k -> Map.entry(k, mappedThingIdStore.get(k))).filter(e -> e.getValue() != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        mappedThingIdCache.putAll(loaded);
-        macResolver = macResolverArg;
+        mappedThingIdStore = service.getStorage(getClass().getName(), getClass().getClassLoader());
+        for (String k : mappedThingIdStore.getKeys()) {
+            String v = mappedThingIdStore.get(k);
+            if (v != null) {
+                mappedThingIdCache.put(k, v);
+            }
+        }
+        macResolver = resolver;
         macResolver.addMacResolverListener(this);
     }
 
@@ -304,8 +319,8 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
      */
     public void setTypeMapping(boolean enable, String uniqueId, @Nullable String mac) {
         if (enable) {
-            mappedThingIdCache.put(uniqueId, mac);
-            mappedThingIdStore.put(uniqueId, mac); // persist across restarts
+            mappedThingIdCache.put(uniqueId, mac != null ? mac : uniqueId); // cache for quick lookup
+            mappedThingIdStore.put(uniqueId, mac != null ? mac : uniqueId); // persist across restarts
         } else {
             mappedThingIdCache.remove(uniqueId);
             mappedThingIdStore.remove(uniqueId);
@@ -316,8 +331,8 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
      * Helper method to check if the given id is currently associated with discovery thing type mapping. Checks
      * both unique Id and MAC address.
      */
-    private boolean isTypeMapped(String id) {
-        return mappedThingIdCache.keySet().contains(id) || mappedThingIdCache.values().contains(id);
+    private boolean isTypeMapped(@Nullable String id) {
+        return id != null && (mappedThingIdCache.keySet().contains(id) || mappedThingIdCache.values().contains(id));
     }
 
     /**
