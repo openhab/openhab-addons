@@ -146,7 +146,7 @@ things:
 ### Include File Naming
 
 Include files should use a dedicated extension, either `.inc.yaml` or `.inc.yml`.
-Files with a normal `.yaml` extension are treated as **main configuration files** and must contain the full [top‑level structure](index.md) required by the YAML configuration schema.
+Files with a normal `.yaml` extension are treated as **main configuration files** and must contain the full [top‑level structure]({{base}}/configuration/yaml/) required by the YAML configuration schema.
 
 In contrast, `.inc.yaml` files are recognized as include fragments and are only processed when referenced through `!include`.
 

@@ -195,7 +195,7 @@ things:
 
 ## Related Topics
 
-For details on how variables are resolved and how substitution interacts with YAML structures, see [Variables & Substitution — Interpolation and Inserted Content](variables.md#interpolation-and-inserted-content).
+For details on how variables are resolved and how substitution interacts with YAML structures, see [Variables & Substitution — Return Types & Coercion](variables.md#return-types--coercion).
 
 ## Best Practices
 

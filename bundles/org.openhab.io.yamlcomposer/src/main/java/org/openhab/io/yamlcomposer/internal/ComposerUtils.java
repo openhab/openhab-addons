@@ -154,14 +154,14 @@ final class ComposerUtils {
 
     /**
      * Post-processes a YAML string to inject empty lines for improved readability.
-     * *
+     *
      * <p>
      * This method applies two specific spacing rules:
      * <ul>
      * <li><strong>Level 0:</strong> Inserts a newline before every top-level key (except the first line).</li>
      * <li><strong>Level 2:</strong> Inserts a newline between sibling nodes indented by exactly two spaces.</li>
      * </ul>
-     * *
+     *
      * <p>
      * The logic ensures that the first child of a section remains "glued" to its parent header,
      * and it safely handles both Map keys (e.g., {@code   Key:}) and List items (e.g., {@code   - Item}).

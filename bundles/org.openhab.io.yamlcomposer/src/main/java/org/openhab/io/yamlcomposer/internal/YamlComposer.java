@@ -13,7 +13,6 @@
 package org.openhab.io.yamlcomposer.internal;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -271,26 +270,22 @@ public class YamlComposer {
 
     /**
      * Reads the YAML file bytes with caching based on file modification time to optimize repeated loads of the same
-     * file.
-     * The bytes are stored in the instance variable {@code yamlBytes} for subsequent processing.
+     * file. The bytes are cached in {@link #includeCache}.
      *
-     * @throws IOException
+     * @return the YAML file bytes
+     * @throws IOException if there is an error reading the file
      */
     private byte[] readYamlBytes() throws IOException {
-        try {
-            CacheEntry cached = includeCache.get(absolutePath);
-            long currentMtime = Files.getLastModifiedTime(absolutePath).toMillis();
+        CacheEntry cached = includeCache.get(absolutePath);
+        long currentMtime = Files.getLastModifiedTime(absolutePath).toMillis();
 
-            if (cached != null && cached.mtime == currentMtime) {
-                return cached.bytes;
-            }
-
-            byte[] yamlBytes = Files.readAllBytes(absolutePath);
-            includeCache.put(absolutePath, new CacheEntry(yamlBytes, currentMtime));
-            return yamlBytes;
-        } catch (UncheckedIOException e) {
-            throw new IOException(e);
+        if (cached != null && cached.mtime == currentMtime) {
+            return cached.bytes;
         }
+
+        byte[] yamlBytes = Files.readAllBytes(absolutePath);
+        includeCache.put(absolutePath, new CacheEntry(yamlBytes, currentMtime));
+        return yamlBytes;
     }
 
     /**
