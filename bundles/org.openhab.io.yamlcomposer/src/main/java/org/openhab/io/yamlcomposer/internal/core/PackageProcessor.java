@@ -79,6 +79,11 @@ public class PackageProcessor {
     private void mergePackages(Map<?, ?> mainData, Map<?, ?> packages) {
         packages.forEach((pkgKey, pkg) -> {
             Object pkgKeyObj = recursiveTransformer.transform(pkgKey);
+            if (pkgKeyObj == null) {
+                var position = sourceLocator.findPosition(PACKAGES_KEY);
+                logger.warn("{}:{} package key resolved to null; skipping package entry", relativePath, position);
+                return;
+            }
             String packageId = String.valueOf(pkgKeyObj);
 
             // Inject `package_id` into the package context for use in
