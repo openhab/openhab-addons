@@ -33,8 +33,6 @@ import org.openhab.core.test.java.JavaOSGiTest;
  * @author Jimmy Tanagra - Initial contribution
  */
 public class YamlComposerWatchServiceOSGiTest extends JavaOSGiTest {
-    private static final String TEST_DIR_NAME = "yamlcomposer-itest";
-
     private YamlComposerWatchService watchService;
     private Path testSourceDir;
     private Path testOutputDir;
@@ -44,8 +42,8 @@ public class YamlComposerWatchServiceOSGiTest extends JavaOSGiTest {
         watchService = getService(YamlComposerWatchService.class);
         assertNotNull(watchService);
 
-        testSourceDir = ComposerConfig.sourceRoot().resolve(TEST_DIR_NAME);
-        testOutputDir = ComposerConfig.outputRoot().resolve(TEST_DIR_NAME);
+        testSourceDir = ComposerConfig.sourceRoot();
+        testOutputDir = ComposerConfig.outputRoot();
 
         deleteRecursively(testSourceDir);
         deleteRecursively(testOutputDir);
