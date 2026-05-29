@@ -168,7 +168,7 @@ class TestMacResolver {
         try {
             // --- Act ---
             // Simulate ARP output line that parseLine() would see
-            String arpLine = ip + "    aa:bb:cc:dd:ee:ff";
+            String arpLine = ip + "     " + mac.replace(":", "-").toLowerCase() + "     dynamic";
             invokePrivate("parseLine", String.class, arpLine);
 
             // Wait for listener to be notified (async)

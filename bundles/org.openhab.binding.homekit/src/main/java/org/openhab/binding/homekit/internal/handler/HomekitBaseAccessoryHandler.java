@@ -195,6 +195,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
+        macResolver.removeMacResolverListener(this);
         notReadyThings.clear();
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
