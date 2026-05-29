@@ -1,0 +1,178 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.homekit.internal.discovery;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.Map;
+
+import javax.jmdns.ServiceInfo;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
+
+/**
+ * Unit tests for {@link HomekitMdnsDiscoveryParticipant}.
+ * <p>
+ * NOTE: intentionally without {@code @NonNullByDefault} since compiler WARN is better than a compiler ERROR
+ * <p>
+ * 
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
+class TestHomekitMdnsDiscoveryParticipant {
+
+    private MacResolver macResolver;
+    private StorageService storageService;
+    private Storage<String> storage;
+    private TestableHomekitParticipant participant;
+
+    /**
+     * Subclass to expose protected methods and capture discovery results for verification.
+     */
+    class TestableHomekitParticipant extends HomekitMdnsDiscoveryParticipant {
+
+        DiscoveryResult lastDiscovered;
+
+        TestableHomekitParticipant(StorageService storageService, MacResolver resolver) {
+            super(storageService, resolver);
+        }
+
+        @Override
+        protected void thingDiscovered(DiscoveryResult result) {
+            this.lastDiscovered = result;
+            super.thingDiscovered(result);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @BeforeEach
+    void setup() {
+        macResolver = mock(MacResolver.class);
+        storageService = mock(StorageService.class);
+        storage = mock(Storage.class);
+        when(storageService.<String> getStorage(any(), any())).thenReturn(storage);
+        participant = new TestableHomekitParticipant(storageService, macResolver);
+    }
+
+    // ------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------
+
+    private ServiceInfo mockService(String ip, String uniqueId, int category) {
+        ServiceInfo svc = mock(ServiceInfo.class);
+
+        Inet4Address addr = mockInet4(ip);
+        when(svc.getInet4Addresses()).thenReturn(new Inet4Address[] { addr });
+
+        when(svc.getPort()).thenReturn(1234);
+        when(svc.getName()).thenReturn("TestDevice");
+        when(svc.getServer()).thenReturn("test.local.");
+
+        Map<String, String> props = Map.of("id", uniqueId, "ci", Integer.toString(category));
+
+        when(svc.getTextBytes()).thenReturn(buildTxtRecord(props));
+
+        return svc;
+    }
+
+    private Inet4Address mockInet4(String ip) {
+        try {
+            return (Inet4Address) InetAddress.getByName(ip);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] buildTxtRecord(Map<String, String> props) {
+        var baos = new java.io.ByteArrayOutputStream();
+        props.forEach((k, v) -> {
+            byte[] bytes = (k + "=" + v).getBytes();
+            baos.write(bytes.length);
+            baos.writeBytes(bytes);
+        });
+        return baos.toByteArray();
+    }
+
+    // ------------------------------------------------------------
+    // TESTS
+    // ------------------------------------------------------------
+
+    @Test
+    void testImmediateDiscoveryWhenMacCached() {
+        ServiceInfo svc = mockService("10.0.0.2", "AA:BB:CC:DD:EE:FF", 1);
+
+        when(macResolver.resolveMac("10.0.0.2")).thenReturn("AA:BB:CC:DD:EE:FF");
+
+        DiscoveryResult result = participant.createResult(svc);
+
+        assertNotNull(result);
+        assertEquals("AA:BB:CC:DD:EE:FF", result.getProperties().get("macAddress"));
+    }
+
+    @Test
+    void testDeferredDiscoveryWhenMacNotCached() {
+        ServiceInfo svc = mockService("10.0.0.3", "11:22:33:44:55:66", 1);
+
+        when(macResolver.resolveMac("10.0.0.3")).thenReturn(null);
+
+        DiscoveryResult result = participant.createResult(svc);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testAsyncCallbackPublishesResult() {
+        ServiceInfo svc = mockService("10.0.0.4", "22:33:44:55:66:77", 1);
+
+        when(macResolver.resolveMac("10.0.0.4")).thenReturn(null);
+
+        participant.createResult(svc);
+
+        participant.macAddressResolved("10.0.0.4", "22:33:44:55:66:77");
+
+        assertNotNull(participant.lastDiscovered);
+        assertEquals("22:33:44:55:66:77", participant.lastDiscovered.getProperties().get("macAddress"));
+    }
+
+    @Test
+    void testNoDuplicateDiscoveryUnderRace() {
+        ServiceInfo svc = mockService("10.0.0.5", "33:44:55:66:77:88", 1);
+
+        when(macResolver.resolveMac("10.0.0.5")).thenAnswer(inv -> {
+            participant.macAddressResolved("10.0.0.5", "33:44:55:66:77:88");
+            return "33:44:55:66:77:88";
+        });
+
+        participant.createResult(svc);
+
+        assertNotNull(participant.lastDiscovered);
+        assertEquals("33:44:55:66:77:88", participant.lastDiscovered.getProperties().get("macAddress"));
+    }
+
+    @Test
+    void testGetThingUIDPure() {
+        ServiceInfo svc = mockService("10.0.0.6", "44:55:66:77:88:99", 1);
+
+        var uid = participant.getThingUID(svc);
+
+        assertNotNull(uid);
+        assertEquals("445566778899", uid.getId());
+    }
+}
