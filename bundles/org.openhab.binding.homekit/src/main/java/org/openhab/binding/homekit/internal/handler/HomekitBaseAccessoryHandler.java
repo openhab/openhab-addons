@@ -1003,7 +1003,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
      * method directly. Otherwise it waits until the asynchronous mac resolver calls the same method.
      */
     private void updateMacAddressProperty(String ip) {
-        if (ip.equals(lastResolvedIp) && (thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS) != null)) {
+        if (ip.equals(lastResolvedIp) && thing.getProperties().containsKey(Thing.PROPERTY_MAC_ADDRESS)) {
             return; // nothing to do
         }
         if (!ipPendingMacResolve.compareAndSet(null, ip)) {
