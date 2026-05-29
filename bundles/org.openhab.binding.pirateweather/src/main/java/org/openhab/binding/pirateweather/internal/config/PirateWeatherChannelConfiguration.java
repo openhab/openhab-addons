@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,9 +31,6 @@ import org.slf4j.LoggerFactory;
 public class PirateWeatherChannelConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(PirateWeatherChannelConfiguration.class);
-
-    private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
-    private static final String TIME_SEPARATOR = ":";
 
     private int offset;
     private @Nullable String earliest;

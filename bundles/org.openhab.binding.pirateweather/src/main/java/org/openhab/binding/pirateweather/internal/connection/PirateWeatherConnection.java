@@ -116,8 +116,7 @@ public class PirateWeatherConnection {
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
-        return requestParams.entrySet().stream().filter(entry -> entry.getValue() != null)
-                .map(entry -> entry.getKey() + "=" + encodeParam(entry.getValue()))
+        return requestParams.entrySet().stream().map(entry -> entry.getKey() + "=" + encodeParam(entry.getValue()))
                 .collect(joining("&", url + "?", ""));
     }
 
