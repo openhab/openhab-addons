@@ -78,8 +78,9 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      *
      * <p>
      * On success the response always contains HTTP 200 with {@code Content-Type: application/json}
-     * and a body of {@code []} (empty JSON array), optionally containing notification objects.
-     * This conforms to the OwnTracks HTTP protocol specification:
+     * and a JSON array body, possibly empty. The empty case is {@code []}; when notifications are
+     * returned, the array contains notification objects. This conforms to the OwnTracks HTTP
+     * protocol specification:
      * <a href="https://owntracks.org/booklet/tech/http/">https://owntracks.org/booklet/tech/http/</a>
      * </p>
      * <p>
