@@ -83,10 +83,11 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
+        ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             logger.debug("Start Pirate Weather Location background discovery job at interval {} s.",
                     DISCOVERY_INTERVAL_SECONDS);
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::scanForNewLocation, 0, DISCOVERY_INTERVAL_SECONDS,
+            this.discoveryJob = scheduler.scheduleWithFixedDelay(this::scanForNewLocation, 0, DISCOVERY_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
         }
     }
