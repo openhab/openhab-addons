@@ -1532,4 +1532,38 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             localDirectTransport.updateContext(localKey, effectiveLocalHost, config.localPort, endpointPrefix);
         }
     }
+
+    // Q7 helper utils
+    /**
+     * Hardcodes a standard Google Protobuf CommandRequest envelope dynamically
+     * without requiring the full third-party compilation toolchain.
+     */
+    private byte[] encodeQ7CommandBytes(int methodId, int sequenceId) {
+        // Protocol Buffer Tag Encoding:
+        // Field 1 (method_id, type Varint) header identifier byte is 0x08
+        // Field 3 (sequence_id, type Varint) header identifier byte is 0x18
+
+        java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+
+        // Write Field 1 Header
+        stream.write(0x08);
+        writeVarint(stream, methodId);
+
+        // Write Field 3 Header
+        stream.write(0x18);
+        writeVarint(stream, sequenceId);
+
+        return stream.toByteArray();
+    }
+
+    /**
+     * Standard Protocol Buffer base-128 Varint encoder hook
+     */
+    private void writeVarint(java.io.ByteArrayOutputStream stream, int value) {
+        while ((value & 0xFFFFFF80) != 0L) {
+            stream.write((value & 0x7F) | 0x80);
+            value >>>= 7;
+        }
+        stream.write(value & 0x7F);
+    }
 }
