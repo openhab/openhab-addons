@@ -25,5 +25,4 @@ public class PrusaLinkConfiguration {
     public int port = 80;
     public String apiKey = "";
     public int refreshInterval = 30;
-    public String username = "maker";
 }

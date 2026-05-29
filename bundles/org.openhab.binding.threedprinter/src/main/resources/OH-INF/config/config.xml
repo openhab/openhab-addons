@@ -21,11 +21,6 @@
 			<description>PrusaLink API key (found in the printer menu under Settings → Network → PrusaLink).</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="username" type="text">
-			<label>Username</label>
-			<description>Username for digest authentication (typically "maker").</description>
-			<default>maker</default>
-		</parameter>
 		<parameter name="refreshInterval" type="integer" min="5" max="3600" unit="s">
 			<label>Refresh Interval</label>
 			<description>How often to poll the printer for status updates.</description>

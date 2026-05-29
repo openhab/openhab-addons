@@ -103,7 +103,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
             return;
         }
 
-        KlipperObjectsResponse response = gson.fromJson(json, KlipperObjectsResponse.class);
+        KlipperObjectsResponse response = fromJson(json, KlipperObjectsResponse.class);
         if (response == null) {
             markOffline("@text/offline.comm-error-json");
             return;
@@ -183,7 +183,7 @@ public class KlipperHandler extends AbstractPrinterHandler {
         if (metaJson == null) {
             return;
         }
-        KlipperMetadataResponse meta = gson.fromJson(metaJson, KlipperMetadataResponse.class);
+        KlipperMetadataResponse meta = fromJson(metaJson, KlipperMetadataResponse.class);
         if (meta == null) {
             return;
         }
@@ -202,7 +202,8 @@ public class KlipperHandler extends AbstractPrinterHandler {
         }
         // Encode each path segment individually to preserve the directory separator
         String encodedPath = Arrays.stream(best.relativePath.split("/"))
-                .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8)).collect(Collectors.joining("/"));
+                .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20"))
+                .collect(Collectors.joining("/"));
         byte @Nullable [] bytes = httpGetBytes(baseUrl + "/server/files/gcodes/" + encodedPath, apiKey);
         if (bytes != null && bytes.length > 0) {
             updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));

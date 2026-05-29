@@ -29,7 +29,6 @@ Auto-discovery is not supported. Things must be added manually.
 | `hostname`        | Hostname or IP address of the printer.                                          | –       | Yes      |
 | `port`            | HTTP port of the PrusaLink API.                                                 | `80`    | No       |
 | `apiKey`          | API key shown in the printer's settings menu under **Network → API Key**.       | –       | Yes      |
-| `username`        | Username for PrusaLink (not used for authentication, kept for future use).      | `maker` | No       |
 | `refreshInterval` | How often to poll the printer, in seconds.                                      | `30`    | No       |
 
 ### Klipper (`klipper`)
