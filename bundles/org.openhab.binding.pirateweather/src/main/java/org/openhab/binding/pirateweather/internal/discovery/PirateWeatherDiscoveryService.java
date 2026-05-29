@@ -93,10 +93,11 @@ public class PirateWeatherDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
+        ScheduledFuture<?> discoveryJob = this.discoveryJob;
         if (discoveryJob != null && !discoveryJob.isCancelled()) {
             logger.debug("Stop Pirate Weather Location background discovery job.");
             if (discoveryJob.cancel(true)) {
-                discoveryJob = null;
+                this.discoveryJob = null;
             }
         }
     }
