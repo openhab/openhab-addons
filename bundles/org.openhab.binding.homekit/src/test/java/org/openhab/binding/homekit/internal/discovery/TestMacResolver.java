@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-class TestMacParser {
+class TestMacResolver {
 
     final MacResolver macResolver = new MacResolver();
 
