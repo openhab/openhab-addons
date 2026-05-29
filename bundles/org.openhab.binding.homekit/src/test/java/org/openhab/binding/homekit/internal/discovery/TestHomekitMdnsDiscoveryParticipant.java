@@ -96,7 +96,7 @@ class TestHomekitMdnsDiscoveryParticipant {
         try {
             return (Inet4Address) InetAddress.getByName(ip);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
