@@ -441,13 +441,15 @@ public class RokuHandler extends BaseThingHandler {
                             if (command.equals(OnOffType.ON)) {
                                 communicator.keyPress(POWER_ON);
                             } else {
-                                communicator.keyPress("PowerOff");
+                                communicator.keyPress(POWER_OFF); // PowerOff
                             }
                         } catch (RokuHttpException e) {
                             logger.debug("Unable to send keypress to Roku, key: {}, Exception: {}", command,
                                     e.getMessage());
                             setStatusOffline();
                         }
+                    } else {
+                        logger.warn("Unsupported power command: {}", command);
                     }
                 }
                 break;

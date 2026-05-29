@@ -102,8 +102,8 @@ Some Notes:
 
 **Sending characters via button commands:**
 
-- Printable ASCII character code values can be transmitted "as-is" with the "Lit_" prefix. For example, you can send a 'r' with "Lit_r".
-- In addition, any UTF-8 encoded character can be sent by URL-encoding it. For example, the euro symbol can be sent with "Lit_%E2%82%AC".
+- Printable ASCII characters can be transmitted "as-is" with the "Lit_" prefix. For example, you can send a 'r' with "Lit_r".
+- In addition, non-ASCII characters can be sent by URL-encoding their UTF-8 bytes. For example, the euro symbol can be sent with "Lit_%E2%82%AC".
 
 ## Full Example
 
