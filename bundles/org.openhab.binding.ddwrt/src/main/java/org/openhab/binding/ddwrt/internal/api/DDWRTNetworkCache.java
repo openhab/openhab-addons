@@ -116,6 +116,11 @@ public class DDWRTNetworkCache {
     // even when DHCP doesn't provide the hostname (e.g. SSID roaming with per-SSID MAC randomization).
     private final Map<String, String> macToHostnameHint = new ConcurrentHashMap<>();
 
+    @FunctionalInterface
+    public interface WirelessClientMapper {
+        DDWRTClient apply(DDWRTClient client);
+    }
+
     // ---- Listeners ----
 
     /**
@@ -252,8 +257,7 @@ public class DDWRTNetworkCache {
      * Thread-safe update of wireless client using compute pattern.
      * The mapping function is applied atomically with the existing client as input.
      */
-    public DDWRTClient computeWirelessClient(String mac,
-            java.util.function.Function<DDWRTClient, DDWRTClient> mappingFunction) {
+    public DDWRTClient computeWirelessClient(String mac, WirelessClientMapper mappingFunction) {
         DDWRTClient result = Objects.requireNonNull(wirelessClientsByMac.compute(normalizeMac(mac), (key, existing) -> {
             DDWRTClient client = existing != null ? existing : new DDWRTClient(key);
             DDWRTClient updated = mappingFunction.apply(client);

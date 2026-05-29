@@ -14,9 +14,14 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.security.KeyFactory;
+import java.security.Provider;
+import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +38,7 @@ import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.config.keys.FilePasswordProvider;
 import org.apache.sshd.common.future.CancelOption;
 import org.apache.sshd.common.keyprovider.FileKeyPairProvider;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
@@ -96,16 +102,15 @@ public class SshClientManager {
         // Directly instantiate (not via reflection) so the EdDSA classes are loaded by
         // this bundle's classloader, which also sees sshd-osgi. This ensures JCA can
         // resolve EdDSAPublicKeySpec when SSHD decodes Ed25519 keys from known_hosts.
-        // Insert at position 1 so this provider is found before the JDK's built-in SunEC
-        // provider. On Java 17+ SunEC also handles "EdDSA" but does not recognise
-        // net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec — it expects the JDK-native
-        // java.security.spec.EdECPublicKeySpec instead.
-        if (java.security.Security.getProvider(EdDSASecurityProvider.PROVIDER_NAME) == null) {
-            java.security.Security.insertProviderAt(new EdDSASecurityProvider(), 1);
-            logger.debug("Registered EdDSA security provider for Ed25519 support (priority 1)");
-        }
+        // Always remove/re-add the provider. JCA providers are JVM-global and survive
+        // OSGi bundle restarts; otherwise an old provider instance can retain a stale
+        // bundle classloader and later fail with ClassNotFoundException for
+        // net.i2p.crypto.eddsa.KeyFactory.
+        registerEdDsaProvider();
+        logEdDsaRuntimeDiagnostics("after-eddsa-provider-registration");
 
         client = Objects.requireNonNull(SshClient.setUpDefaultClient());
+        logEdDsaRuntimeDiagnostics("after-sshd-client-setup");
         // TOFU: trust on first use, persist to ~/.ssh/known_hosts, reject changed keys
         Path knownHostsPath = getHomeSshDir() != null ? Objects.requireNonNull(getHomeSshDir()).resolve("known_hosts")
                 : Paths.get(ohPrivateKeyDirString, "known_hosts");
@@ -151,6 +156,139 @@ public class SshClientManager {
         }
 
         client.start();
+        logEdDsaRuntimeDiagnostics("after-sshd-client-start");
+    }
+
+    private void registerEdDsaProvider() {
+        Provider existing = Security.getProvider(EdDSASecurityProvider.PROVIDER_NAME);
+        if (existing != null) {
+            logger.debug(
+                    "Removing existing EdDSA security provider before re-registration: provider={}, class={}, "
+                            + "classloader={}",
+                    existing, existing.getClass().getName(), existing.getClass().getClassLoader());
+            Security.removeProvider(EdDSASecurityProvider.PROVIDER_NAME);
+        }
+
+        Provider provider = new EdDSASecurityProvider();
+        Security.insertProviderAt(provider, 1);
+        logger.debug("Registered EdDSA security provider for Ed25519 support: provider={}, class={}, classloader={}",
+                provider, provider.getClass().getName(), provider.getClass().getClassLoader());
+
+        Provider registered = Security.getProvider(EdDSASecurityProvider.PROVIDER_NAME);
+        if (registered != null) {
+            logger.debug("Active EdDSA security provider after registration: provider={}, class={}, classloader={}",
+                    registered, registered.getClass().getName(), registered.getClass().getClassLoader());
+        }
+    }
+
+    /**
+     * Emit runtime diagnostics for Ed25519/EdDSA provider and classloader issues.
+     * This is intentionally DEBUG-level so it can be enabled on a live Karaf system with:
+     * log:set DEBUG org.openhab.binding.ddwrt.internal.api.SshClientManager
+     */
+    private void logEdDsaRuntimeDiagnostics(String phase) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        ClassLoader ownCl = Objects.requireNonNull(SshClientManager.class.getClassLoader());
+        logger.debug(
+                "EdDSA diagnostics [{}]: java.version={}, java.vendor={}, TCCL={}, SshClientManager.classloader={}",
+                phase, System.getProperty("java.version"), System.getProperty("java.vendor"), tccl, ownCl);
+
+        logClassInfo(phase, "net.i2p.crypto.eddsa.EdDSASecurityProvider", ownCl);
+        logClassInfo(phase, "net.i2p.crypto.eddsa.EdDSAKey", ownCl);
+        logClassInfo(phase, "net.i2p.crypto.eddsa.EdDSAPublicKey", ownCl);
+        logClassInfo(phase, "net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec", ownCl);
+        logClassInfo(phase, "org.apache.sshd.common.util.security.SecurityUtils", ownCl);
+        logClassInfo(phase, "org.apache.sshd.common.util.security.eddsa.EdDSASecurityProviderRegistrar", ownCl);
+        logClassInfo(phase, "org.apache.sshd.common.util.security.eddsa.NetI2pCryptoEdDSASupport", ownCl);
+
+        if (tccl != null && !tccl.equals(ownCl)) {
+            logClassInfo(phase + "/tccl", "net.i2p.crypto.eddsa.EdDSAPublicKey", tccl);
+            logClassInfo(phase + "/tccl", "net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec", tccl);
+            logClassInfo(phase + "/tccl", "org.apache.sshd.common.util.security.SecurityUtils", tccl);
+        }
+
+        logJcaProviderDiagnostics(phase);
+        logSshdSecurityUtilsDiagnostics(phase, ownCl);
+    }
+
+    private void logClassInfo(String phase, String className, @Nullable ClassLoader loader) {
+        if (loader == null) {
+            logger.debug("EdDSA diagnostics [{}]: class {} not loadable because classloader is null", phase, className);
+            return;
+        }
+        try {
+            Class<?> clazz = Class.forName(className, false, loader);
+            CodeSource codeSource = clazz.getProtectionDomain().getCodeSource();
+            URL location = codeSource != null ? codeSource.getLocation() : null;
+            logger.debug("EdDSA diagnostics [{}]: class {} loaded by {} from {}", phase, className,
+                    clazz.getClassLoader(), location);
+        } catch (Exception t) {
+            logger.debug("EdDSA diagnostics [{}]: class {} not loadable via {}: {}: {}", phase, className, loader,
+                    t.getClass().getName(), t.getMessage());
+        }
+    }
+
+    private void logJcaProviderDiagnostics(String phase) {
+        Provider[] providers = Security.getProviders();
+        for (int i = 0; i < providers.length; i++) {
+            Provider provider = providers[i];
+            if ("EdDSA".equalsIgnoreCase(provider.getName()) || provider.getService("KeyFactory", "EdDSA") != null
+                    || provider.getService("KeyFactory", "Ed25519") != null
+                    || provider.getService("Signature", "EdDSA") != null
+                    || provider.getService("Signature", "Ed25519") != null) {
+                logger.debug(
+                        "EdDSA diagnostics [{}]: JCA provider[{}] name={}, version={}, class={}, classloader={}, info={}, KeyFactory.EdDSA={}, KeyFactory.Ed25519={}, Signature.EdDSA={}, Signature.Ed25519={}",
+                        phase, i + 1, provider.getName(), provider.getVersionStr(), provider.getClass().getName(),
+                        provider.getClass().getClassLoader(), provider.getInfo(),
+                        provider.getService("KeyFactory", "EdDSA"), provider.getService("KeyFactory", "Ed25519"),
+                        provider.getService("Signature", "EdDSA"), provider.getService("Signature", "Ed25519"));
+            }
+        }
+
+        logKeyFactoryProvider(phase, "EdDSA");
+        logKeyFactoryProvider(phase, "Ed25519");
+        logNamedKeyFactoryProvider(phase, "EdDSA", EdDSASecurityProvider.PROVIDER_NAME);
+    }
+
+    private void logKeyFactoryProvider(String phase, String algorithm) {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+            Provider provider = keyFactory.getProvider();
+            logger.debug("EdDSA diagnostics [{}]: KeyFactory.getInstance({}) resolved to provider {} ({})", phase,
+                    algorithm, provider.getName(), provider.getClass().getName());
+        } catch (Exception e) {
+            logger.debug("EdDSA diagnostics [{}]: KeyFactory.getInstance({}) failed: {}: {}", phase, algorithm,
+                    e.getClass().getName(), e.getMessage());
+        }
+    }
+
+    private void logNamedKeyFactoryProvider(String phase, String algorithm, String providerName) {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm, providerName);
+            Provider provider = keyFactory.getProvider();
+            logger.debug("EdDSA diagnostics [{}]: KeyFactory.getInstance({}, {}) resolved to provider {} ({})", phase,
+                    algorithm, providerName, provider.getName(), provider.getClass().getName());
+        } catch (Exception e) {
+            logger.debug("EdDSA diagnostics [{}]: KeyFactory.getInstance({}, {}) failed: {}: {}", phase, algorithm,
+                    providerName, e.getClass().getName(), e.getMessage());
+        }
+    }
+
+    private void logSshdSecurityUtilsDiagnostics(String phase, ClassLoader loader) {
+        try {
+            Class<?> securityUtils = Class.forName("org.apache.sshd.common.util.security.SecurityUtils", false, loader);
+            logger.debug("EdDSA diagnostics [{}]: {}.isRegistrationCompleted() -> {}", phase, securityUtils.getName(),
+                    SecurityUtils.isRegistrationCompleted());
+            logger.debug("EdDSA diagnostics [{}]: {}.isEDDSACurveSupported() -> {}", phase, securityUtils.getName(),
+                    SecurityUtils.isEDDSACurveSupported());
+        } catch (Exception t) {
+            logger.debug("EdDSA diagnostics [{}]: unable to inspect SSHD SecurityUtils: {}: {}", phase,
+                    t.getClass().getName(), t.getMessage());
+        }
     }
 
     private List<Path> collectKeyPaths(File ohPrivateKeyDir) {
@@ -158,13 +296,10 @@ public class SshClientManager {
 
         if (ohPrivateKeyDir.exists()) {
             logger.debug("Scanning keys directory {}", ohPrivateKeyDir.getPath());
-            File @Nullable [] files = ohPrivateKeyDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (isLikelyPrivateKey(f)) {
-                        keyPaths.add(f.toPath());
-                        logger.debug("Found key: {}", f.getPath());
-                    }
+            for (File f : listFilesOrEmpty(ohPrivateKeyDir)) {
+                if (isLikelyPrivateKey(f)) {
+                    keyPaths.add(f.toPath());
+                    logger.debug("Found key: {}", f.getPath());
                 }
             }
         }
@@ -174,19 +309,20 @@ public class SshClientManager {
             File homeDir = homeSshDir.toFile();
             if (homeDir.exists()) {
                 logger.debug("Scanning keys directory {}", homeDir.getPath());
-                File @Nullable [] homeFiles = homeDir.listFiles();
-                if (homeFiles != null) {
-                    for (File f : homeFiles) {
-                        if (isLikelyPrivateKey(f)) {
-                            keyPaths.add(f.toPath());
-                            logger.debug("Found key: {}", f.getPath());
-                        }
+                for (File f : listFilesOrEmpty(homeDir)) {
+                    if (isLikelyPrivateKey(f)) {
+                        keyPaths.add(f.toPath());
+                        logger.debug("Found key: {}", f.getPath());
                     }
                 }
             }
         }
 
         return keyPaths;
+    }
+
+    private static File[] listFilesOrEmpty(File directory) {
+        return Objects.requireNonNullElseGet(directory.listFiles(), () -> new File[0]);
     }
 
     private static @Nullable Path getHomeSshDir() {
@@ -276,30 +412,40 @@ public class SshClientManager {
         // The config default is "root" but the user can clear it to fall through to
         // ~/.ssh/config or the system username via the HostConfigEntryResolver.
         String effectiveUser = user.isBlank() ? "" : user;
-        logger.debug("Connecting to {} port {} as {}", host, port, effectiveUser);
-        // Port 0 means "not set" — MINA SSHD resolves from ~/.ssh/config or defaults to 22
-        ConnectFuture cf = client.connect(effectiveUser, host, port);
-        cf.verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
-        ClientSession cs = cf.getSession();
+        try {
+            logger.debug("Connecting to {} port {} as {}", host, port, effectiveUser);
+            // Port 0 means "not set" — MINA SSHD resolves from ~/.ssh/config or defaults to 22
+            ConnectFuture cf = client.connect(effectiveUser, host, port);
+            cf.verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
+            ClientSession cs = cf.getSession();
 
-        AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
+            AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
 
-        cs.setUserInteraction(new BannerCapturingUserInteraction(bannerRef));
+            cs.setUserInteraction(new BannerCapturingUserInteraction(bannerRef));
 
-        if (password != null && !password.isBlank()) {
-            cs.addPasswordIdentity(password);
+            if (password != null && !password.isBlank()) {
+                cs.addPasswordIdentity(password);
+            }
+
+            // Keys are registered at the client level (see constructor) so they are
+            // available for all sessions including ProxyJump hops.
+
+            cs.auth().verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
+
+            logger.debug("Connected to the server {}:{} as {}", host, port, cs.getUsername());
+            logger.debug("Server Ident {}", cs.getServerVersion());
+
+            @Nullable
+            String banner = bannerRef.get();
+            return new SshAuthSession(cs, defaultTimeout, (banner == null || banner.isBlank()) ? null : banner, host);
+        } catch (IOException | RuntimeException e) {
+            if (String.valueOf(e.getMessage()).contains("key spec")
+                    || String.valueOf(e.getMessage()).contains("EdDSA")) {
+                logger.warn("SSH EdDSA/key-spec failure while connecting to {}:{} as {}: {}", host, port, effectiveUser,
+                        e.getMessage(), e);
+                logEdDsaRuntimeDiagnostics("openAuthSession-failure");
+            }
+            throw e;
         }
-
-        // Keys are registered at the client level (see constructor) so they are
-        // available for all sessions including ProxyJump hops.
-
-        cs.auth().verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
-
-        logger.debug("Connected to the server {}:{} as {}", host, port, cs.getUsername());
-        logger.debug("Server Ident {}", cs.getServerVersion());
-
-        @Nullable
-        String banner = bannerRef.get();
-        return new SshAuthSession(cs, defaultTimeout, (banner == null || banner.isBlank()) ? null : banner, host);
     }
 }
