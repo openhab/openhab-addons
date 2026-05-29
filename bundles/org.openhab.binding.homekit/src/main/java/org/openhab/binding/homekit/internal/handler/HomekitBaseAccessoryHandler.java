@@ -1023,13 +1023,4 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
             logger.trace("{} set mac property {}", thing.getUID(), mac);
         }
     }
-
-    /**
-     * TODO remove this temporary debug method that just logs calls to `handleConfigurationUpdate()`
-     */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> newConfig) {
-        logger.debug("handleConfigurationUpdate() {} processing configuration update {}", thing.getUID(), newConfig);
-        super.handleConfigurationUpdate(newConfig);
-    }
 }
