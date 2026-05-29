@@ -2038,12 +2038,12 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.tibber</artifactId>
+      <artifactId>org.openhab.binding.threedprinter</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.threedprinter</artifactId>
+      <artifactId>org.openhab.binding.tibber</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

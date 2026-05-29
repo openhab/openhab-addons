@@ -100,7 +100,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             return;
         }
 
-        OctoPrintPrinterResponse printerResponse = gson.fromJson(printerJson, OctoPrintPrinterResponse.class);
+        OctoPrintPrinterResponse printerResponse = fromJson(printerJson, OctoPrintPrinterResponse.class);
         if (printerResponse == null) {
             markOffline("@text/offline.comm-error-json");
             return;
@@ -137,7 +137,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
             return;
         }
 
-        OctoPrintJobResponse jobResponse = gson.fromJson(jobJson, OctoPrintJobResponse.class);
+        OctoPrintJobResponse jobResponse = fromJson(jobJson, OctoPrintJobResponse.class);
         if (jobResponse == null) {
             return;
         }
@@ -161,7 +161,7 @@ public class OctoPrintHandler extends AbstractPrinterHandler {
                 if (!filename.isBlank()) {
                     if (!filename.equals(lastPreviewFilename)) {
                         lastPreviewFilename = filename;
-                        String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8);
+                        String encodedName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
                         byte @Nullable [] bytes = httpGetBytes(
                                 baseUrl + "/plugin/prusaslicerthumbnails/thumbnail/" + encodedName, cfg.apiKey);
                         if (bytes != null && bytes.length > 0) {

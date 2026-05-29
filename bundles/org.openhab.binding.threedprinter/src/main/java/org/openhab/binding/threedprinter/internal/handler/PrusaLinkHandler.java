@@ -97,7 +97,7 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
             return;
         }
 
-        PrusaStatusResponse response = gson.fromJson(json, PrusaStatusResponse.class);
+        PrusaStatusResponse response = fromJson(json, PrusaStatusResponse.class);
         if (response == null) {
             markOffline("@text/offline.comm-error-json");
             return;
@@ -137,7 +137,8 @@ public class PrusaLinkHandler extends AbstractPrinterHandler {
                     String thumbPath = file.path.isBlank() ? "usb/" + file.name
                             : file.path.startsWith("/") ? file.path.substring(1) : file.path;
                     String encodedPath = Arrays.stream(thumbPath.split("/"))
-                            .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8)).collect(Collectors.joining("/"));
+                            .map(s -> URLEncoder.encode(s, StandardCharsets.UTF_8).replace("+", "%20"))
+                            .collect(Collectors.joining("/"));
                     byte[] bytes = httpGetBytes(baseUrl + "/thumb/l/" + encodedPath, cfg.apiKey);
                     if (bytes != null && bytes.length > 0) {
                         updateState(CHANNEL_JOB_PREVIEW, new RawType(bytes, "image/png"));

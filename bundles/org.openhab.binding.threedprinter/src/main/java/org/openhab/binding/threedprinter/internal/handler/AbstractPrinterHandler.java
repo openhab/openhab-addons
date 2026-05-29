@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Base class for all 3D printer handlers providing shared HTTP and scheduling logic.
@@ -169,5 +170,22 @@ public abstract class AbstractPrinterHandler extends BaseThingHandler {
 
     protected void markOffline(String message) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+    }
+
+    /**
+     * Parses a JSON string into the given type, returning null on malformed input instead of throwing. This prevents a
+     * {@link JsonSyntaxException} from propagating out of the scheduled refresh task and silently stopping all future
+     * polling.
+     */
+    protected <T> @Nullable T fromJson(@Nullable String json, Class<T> type) {
+        if (json == null) {
+            return null;
+        }
+        try {
+            return gson.fromJson(json, type);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to parse JSON response: {}", e.getMessage());
+            return null;
+        }
     }
 }
