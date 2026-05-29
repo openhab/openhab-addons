@@ -38,6 +38,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -137,7 +138,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
 
-    private @Nullable String ipPendingMacResolve;
+    private final AtomicReference<@Nullable String> ipPendingMacResolve = new AtomicReference<>();
+    private volatile @Nullable String lastResolvedIp;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -196,6 +198,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
     @Override
     public void dispose() {
         macResolver.removeMacResolverListener(this);
+        ipPendingMacResolve.set(null);
+        lastResolvedIp = null;
         notReadyThings.clear();
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
@@ -337,10 +341,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
         if (checkedCreateIpTransport(ipAddress, hostName) == null) {
             return false; // transport creation failed
         }
-
-        // transport is created at this point so try to resolve its MAC address and update the property
-        macResolver.addMacResolverListener(this);
-        updateMacAddressProperty(ipAddress.split(":")[0]);
 
         // attempt to verify pairing
         try {
@@ -512,6 +512,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
         try {
             IpTransport ipTransport = new IpTransport(ipAddress, hostName, this);
             this.ipTransport = ipTransport;
+            if (!isBridgedAccessory) {
+                String ipOnly = ipAddress.split(":")[0];
+                updateMacAddressProperty(ipOnly);
+            }
             return ipTransport;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -995,13 +999,19 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
     /**
      * Updates the MAC address property of the thing based on the given IP address. This is called when
      * the thing goes online, and it attempts to resolve the MAC address from the IP address using the
-     * {@link MacResolver} component. If it resolves immediately it updates the thing properties with the
-     * MAC. Otherwise it waits until the asynchronous callback `macAddressResolved()` gets called.
+     * {@link MacResolver} component. If it resolves immediately it calls the `macAddressResolved()`
+     * method directly. Otherwise it waits until the asynchronous mac resolver calls the same method.
      */
     private void updateMacAddressProperty(String ip) {
-        ipPendingMacResolve = ip;
-        if (macResolver.resolveMac(ip) instanceof String mac) {
-            ipPendingMacResolve = null;
+        if (ip.equals(lastResolvedIp) && (thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS) != null)) {
+            return; // nothing to do
+        }
+        if (!ipPendingMacResolve.compareAndSet(null, ip)) {
+            return; // resolution already in progress
+        }
+        macResolver.addMacResolverListener(this);
+        String mac = macResolver.resolveMac(ip);
+        if (mac != null) {
             macAddressResolved(ip, mac);
         }
     }
@@ -1015,13 +1025,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler
      * @param ip the IP address for which the MAC address has been resolved
      * @param mac the resolved MAC address
      */
-    public synchronized void macAddressResolved(String ip, String mac) {
-        String myIp = ipPendingMacResolve;
-        if (myIp != null && myIp.equals(ip)) {
-            ipPendingMacResolve = null;
-            thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
-            macResolver.removeMacResolverListener(this);
-            logger.trace("{} set mac property {}", thing.getUID(), mac);
+    public void macAddressResolved(String ip, String mac) {
+        if (!ipPendingMacResolve.compareAndSet(ip, null)) {
+            return; // either no resolution in progress or IP does not match
         }
+        lastResolvedIp = ip;
+        macResolver.removeMacResolverListener(this);
+        thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
+        logger.trace("{} set mac property {}", thing.getUID(), mac);
     }
 }
