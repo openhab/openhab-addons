@@ -8,7 +8,7 @@
 	<bridge-type id="weather-api">
 		<label>Pirate Weather Account</label>
 		<description>Provides access to the Pirate Weather API.</description>
-		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<representation-property>apikey</representation-property>
 		<config-description-ref uri="bridge-type:pirateweather:weather-api"/>
 	</bridge-type>
