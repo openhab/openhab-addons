@@ -72,7 +72,8 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
                 ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
 
                 if (thingTypeUID != null) {
-                    logger.debug("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
+                    logger.debug("Found {} ({}).", appliance.getHaId(),
+                            appliance.getType().toUpperCase(DEFAULT_LOCALE));
 
                     Map<String, Object> properties = Map.of(HA_ID, appliance.getHaId());
                     String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";
@@ -129,6 +130,8 @@ public class HomeConnectDiscoveryService extends AbstractThingHandlerDiscoverySe
             thingTypeUID = THING_TYPE_COOKTOP;
         } else if (THING_TYPE_WASHER.getId().equalsIgnoreCase(appliance.getType())) {
             thingTypeUID = THING_TYPE_WASHER;
+        } else if (THING_TYPE_CLEANING_ROBOT.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_CLEANING_ROBOT;
         }
 
         return thingTypeUID;

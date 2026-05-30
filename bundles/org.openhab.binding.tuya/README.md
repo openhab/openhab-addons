@@ -74,6 +74,9 @@ Battery-powered devices do not announce their presence at all.
 If automatic protocol version detection does not work there is no clear rule how to determine if a device has protocol 3.3 or 3.1.
 In this case it is recommended to start with 3.3 and watch the log file. If 3.3 does not work, try using 3.1.
 
+The `port` defaults to `6668`, which is the TCP port used by Tuya devices.
+Change this only if the device is reached through a NAT/port mapping, e.g. when Tuya/IoT devices are isolated in a separate network and exposed through port forwarding.
+
 Some devices do not automatically refresh channels or only refresh at fairly long intervals even though the data is sampled at a much higher rate (e.g., some power meters only send updates every 10 minutes but sample continuously).
 The `pollingInterval` can be used to adjust how often channels are updated and can be set to `0` (off) or to any integer value of 10 seconds or higher. The default is 10 seconds.
 Note that this has no practical effect on battery powered devices. These only wake up when they have something to say and then go straight back to sleep.

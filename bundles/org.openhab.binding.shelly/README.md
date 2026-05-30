@@ -94,9 +94,10 @@ See section [Discovery](#discovery) for details.
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                                  |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                                              |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                                              |
-| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | S3PL-00112EU                                                              |
+| shellyplusplug       | Shelly Plug-S Gen 3                                      | S3PL-00112EU                                                              |
 | shellyplusplug       | Shelly AZ Plug                                           | S3PL-10112EU                                                              |
 | shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                                              |
+| shellyplusplug       | Shelly Plug M Gen3                                       | S3PL-30110EU                                                              |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
 | shellyplugusg4       | Shelly Plug US Gen4                                      | S4PL-00116US                                                              |
 | shellyplusplugcpm    | Shelly Plus Plug CPM (EU C-type, Gen4)                   | S4PL-00116EU                                                              |

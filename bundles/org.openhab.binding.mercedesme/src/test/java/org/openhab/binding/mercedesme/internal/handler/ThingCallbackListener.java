@@ -94,6 +94,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
                 try {
                     updatesReceived.wait(50);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     fail();
                 }
             }

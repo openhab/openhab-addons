@@ -61,7 +61,6 @@ public class HttpHelper {
     private static final String BEARER = "Bearer ";
     private static final int OAUTH_EXPIRE_BUFFER = 10;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Map<String, Bucket> BUCKET_MAP = new HashMap<>();
     private static final Object AUTHORIZATION_HEADER_MONITOR = new Object();
     private static final Object BUCKET_MONITOR = new Object();
@@ -139,7 +138,7 @@ public class HttpHelper {
     }
 
     public static JsonElement parseString(String json) {
-        return JSON_PARSER.parse(json);
+        return JsonParser.parseString(json);
     }
 
     private static Bucket getBucket(String clientId) {

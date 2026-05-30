@@ -262,7 +262,6 @@ public class CommonCommands {
                                     sender.send(packet);
                                     logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
                                             networkInterface.getDisplayName());
-
                                 } catch (IOException e) {
                                     logger.debug("IO error: {}", e.getMessage());
                                 } catch (Exception e) {

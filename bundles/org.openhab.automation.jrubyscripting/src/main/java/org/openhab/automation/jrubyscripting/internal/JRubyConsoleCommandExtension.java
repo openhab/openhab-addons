@@ -14,6 +14,7 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -500,9 +502,22 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     /*
+     * Configure the engine to redirect output to the provided console.
+     */
+    private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
+        if (console != null) {
+            ScriptContext context = engine.getContext();
+            Writer errorWriter = context.getErrorWriter();
+            if (errorWriter != null) {
+                context.setErrorWriter(new ConsoleWriter(errorWriter));
+            }
+        }
+    }
+
+    /*
      * Create a full openHAB-managed JRuby engine with openHAB scoped variables
      * including any injected required gems.
-     * 
+     *
      * This will run the script with the helper library if configured.
      */
     private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
@@ -516,6 +531,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
         ScriptEngine engine = container.getScriptEngine();
         try {
+            configureEngineConsoleOutput(engine, console);
             printLoadingMessage(console, false);
             return process.apply(engine);
         } catch (ScriptException e) {
@@ -535,6 +551,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             if (engine == null) {
                 throw new ScriptException("Unable to create JRuby script engine.");
             }
+            configureEngineConsoleOutput(engine, console);
             return process.apply(engine);
         } catch (ScriptException e) {
             if (console != null) {
@@ -543,6 +560,70 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 logger.warn("Error: {}", e.getMessage());
             }
             return null;
+        }
+    }
+
+    // ============================================================================
+    // Inner Classes
+    // ============================================================================
+
+    /**
+     * A Writer wrapper that normalizes LF line endings to CRLF while preserving all other characters.
+     */
+    static class ConsoleWriter extends Writer {
+        private final Writer delegate;
+        private boolean previousWasCarriageReturn = false;
+        private boolean closed = false;
+
+        ConsoleWriter(Writer delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void write(char @Nullable [] c, int off, int len) throws IOException {
+            if (closed) {
+                throw new IOException("Writer is closed");
+            }
+            if (c != null) {
+                for (int index = off; index < off + len; index++) {
+                    char ch = c[index];
+                    if (previousWasCarriageReturn) {
+                        if (ch == '\n') {
+                            delegate.write('\r');
+                            delegate.write('\n');
+                            previousWasCarriageReturn = false;
+                            continue;
+                        }
+                        delegate.write('\r');
+                        previousWasCarriageReturn = false;
+                    }
+
+                    if (ch == '\r') {
+                        previousWasCarriageReturn = true;
+                    } else if (ch == '\n') {
+                        delegate.write('\r');
+                        delegate.write('\n');
+                    } else {
+                        delegate.write(ch);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
+            if (previousWasCarriageReturn) {
+                delegate.write('\r');
+                previousWasCarriageReturn = false;
+            }
+            delegate.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            flush();
+            closed = true;
+            delegate.close();
         }
     }
 

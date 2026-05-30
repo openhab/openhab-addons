@@ -20,10 +20,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.calc.moon.LunarArguments;
+import org.openhab.binding.astro.internal.calc.moon.LunationArguments;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.MoonPhaseSet;
-import org.openhab.binding.astro.internal.util.AstroConstants;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Moon Phase Calculator
@@ -31,7 +31,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class MoonPhaseCalc extends AstroCalc {
+public class MoonPhaseCalc {
     public static MoonPhaseSet calculate(InstantSource instantSource, double julianDate, MoonPhaseSet previousMP,
             ZoneId zone) {
         final MoonPhaseSet result;
@@ -58,16 +58,12 @@ public class MoonPhaseCalc extends AstroCalc {
      * Calculates the illumination.
      */
     private static double getIllumination(double jd) {
-        double t = DateTimeUtils.toJulianCenturies(jd);
-        double t2 = t * t;
-        double t3 = t2 * t;
-        double t4 = t3 * t;
-        double d = 297.8502042 + 445267.11151686 * t - .00163 * t2 + t3 / 545868 - t4 / 113065000;
-        double m = AstroConstants.E05_0 + 35999.0502909 * t - .0001536 * t2 + t3 / 24490000;
-        double m1 = 134.9634114 + 477198.8676313 * t + .008997 * t2 + t3 / 69699 - t4 / 14712000;
-        double i = 180 - d - 6.289 * sinDeg(m1) + 2.1 * sinDeg(m) - 1.274 * sinDeg(2 * d - m1) - .658 * sinDeg(2 * d)
-                - .241 * sinDeg(2 * m1) - .110 * sinDeg(d);
-        return (1 + cosDeg(i)) / 2;
+        LunarArguments la = new LunarArguments(jd);
+        double i = Math.PI - la.d - Math.toRadians(6.289) * Math.sin(la.m1) + Math.toRadians(2.1) * Math.sin(la.m)
+                - Math.toRadians(1.274) * Math.sin(2 * la.d - la.m1) - Math.toRadians(0.658) * Math.sin(2 * la.d)
+                - Math.toRadians(0.241) * Math.sin(2 * la.m1) - Math.toRadians(0.110) * Math.sin(la.d);
+
+        return (1 + Math.cos(i)) / 2;
     }
 
     /**
@@ -77,7 +73,7 @@ public class MoonPhaseCalc extends AstroCalc {
         double tz = 0;
         double phaseJd = 0;
         do {
-            double k = varK(jd, tz);
+            double k = LunationArguments.varK(jd, tz);
             tz += forward ? 1 : -1;
             phaseJd = calcMoonPhase(k, phase);
         } while (forward ? phaseJd <= jd : phaseJd > jd);
@@ -88,55 +84,58 @@ public class MoonPhaseCalc extends AstroCalc {
      * Calculates the moon phase.
      */
     private static double calcMoonPhase(double k, MoonPhase phase) {
-        double kMod = Math.floor(k) + phase.cycleProgress;
-        double t = kMod / 1236.85;
-        double e = varE(t);
-        double m = varM(kMod, t);
-        double m1 = varM1(kMod, t);
-        double f = varF(kMod, t);
-        double o = varO(kMod, t);
-        double jd = varJde(kMod, t);
+        LunationArguments la = new LunationArguments(k, phase.cycleProgress);
+        double jd = la.jde;
         switch (phase) {
             case NEW:
-                jd += -.4072 * sinDeg(m1) + .17241 * e * sinDeg(m) + .01608 * sinDeg(2 * m1) + .01039 * sinDeg(2 * f)
-                        + .00739 * e * sinDeg(m1 - m) - .00514 * e * sinDeg(m1 + m) + .00208 * e * e * sinDeg(2 * m)
-                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
-                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
-                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
-                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
-                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
-                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
-                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
-                jd += .00002 * sinDeg(4 * m1);
+                jd += -.4072 * sinDeg(la.m1) + .17241 * la.e * sinDeg(la.m) + .01608 * sinDeg(2 * la.m1)
+                        + .01039 * sinDeg(2 * la.f) + .00739 * la.e * sinDeg(la.m1 - la.m)
+                        - .00514 * la.e * sinDeg(la.m1 + la.m) + .00208 * la.e * la.e * sinDeg(2 * la.m)
+                        - .00111 * sinDeg(la.m1 - 2 * la.f) - .00057 * sinDeg(la.m1 + 2 * la.f);
+                jd += .00056 * la.e * sinDeg(2 * la.m1 + la.m) - .00042 * sinDeg(3 * la.m1)
+                        + .00042 * la.e * sinDeg(la.m + 2 * la.f) + .00038 * la.e * sinDeg(la.m - 2 * la.f)
+                        - .00024 * la.e * sinDeg(2 * la.m1 - la.m) - .00017 * sinDeg(la.o)
+                        - .00007 * sinDeg(la.m1 + 2 * la.m) + .00004 * sinDeg(2 * la.m1 - 2 * la.f);
+                jd += .00004 * sinDeg(3 * la.m) + .00003 * sinDeg(la.m1 + la.m - 2 * la.f)
+                        + .00003 * sinDeg(2 * la.m1 + 2 * la.f) - .00003 * sinDeg(la.m1 + la.m + 2 * la.f)
+                        + .00003 * sinDeg(la.m1 - la.m + 2 * la.f) - .00002 * sinDeg(la.m1 - la.m - 2 * la.f)
+                        - .00002 * sinDeg(3 * la.m1 + la.m);
+                jd += .00002 * sinDeg(4 * la.m1);
                 break;
             case FULL:
-                jd += -.40614 * sinDeg(m1) + .17302 * e * sinDeg(m) + .01614 * sinDeg(2 * m1) + .01043 * sinDeg(2 * f)
-                        + .00734 * e * sinDeg(m1 - m) - .00515 * e * sinDeg(m1 + m) + .00209 * e * e * sinDeg(2 * m)
-                        - .00111 * sinDeg(m1 - 2 * f) - .00057 * sinDeg(m1 + 2 * f);
-                jd += .00056 * e * sinDeg(2 * m1 + m) - .00042 * sinDeg(3 * m1) + .00042 * e * sinDeg(m + 2 * f)
-                        + .00038 * e * sinDeg(m - 2 * f) - .00024 * e * sinDeg(2 * m1 - m) - .00017 * sinDeg(o)
-                        - .00007 * sinDeg(m1 + 2 * m) + .00004 * sinDeg(2 * m1 - 2 * f);
-                jd += .00004 * sinDeg(3 * m) + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(2 * m1 + 2 * f)
-                        - .00003 * sinDeg(m1 + m + 2 * f) + .00003 * sinDeg(m1 - m + 2 * f)
-                        - .00002 * sinDeg(m1 - m - 2 * f) - .00002 * sinDeg(3 * m1 + m);
-                jd += .00002 * sinDeg(4 * m1);
+                jd += -.40614 * sinDeg(la.m1) + .17302 * la.e * sinDeg(la.m) + .01614 * sinDeg(2 * la.m1)
+                        + .01043 * sinDeg(2 * la.f) + .00734 * la.e * sinDeg(la.m1 - la.m)
+                        - .00515 * la.e * sinDeg(la.m1 + la.m) + .00209 * la.e * la.e * sinDeg(2 * la.m)
+                        - .00111 * sinDeg(la.m1 - 2 * la.f) - .00057 * sinDeg(la.m1 + 2 * la.f);
+                jd += .00056 * la.e * sinDeg(2 * la.m1 + la.m) - .00042 * sinDeg(3 * la.m1)
+                        + .00042 * la.e * sinDeg(la.m + 2 * la.f) + .00038 * la.e * sinDeg(la.m - 2 * la.f)
+                        - .00024 * la.e * sinDeg(2 * la.m1 - la.m) - .00017 * sinDeg(la.o)
+                        - .00007 * sinDeg(la.m1 + 2 * la.m) + .00004 * sinDeg(2 * la.m1 - 2 * la.f);
+                jd += .00004 * sinDeg(3 * la.m) + .00003 * sinDeg(la.m1 + la.m - 2 * la.f)
+                        + .00003 * sinDeg(2 * la.m1 + 2 * la.f) - .00003 * sinDeg(la.m1 + la.m + 2 * la.f)
+                        + .00003 * sinDeg(la.m1 - la.m + 2 * la.f) - .00002 * sinDeg(la.m1 - la.m - 2 * la.f)
+                        - .00002 * sinDeg(3 * la.m1 + la.m);
+                jd += .00002 * sinDeg(4 * la.m1);
                 break;
             default:
-                jd += -.62801 * sinDeg(m1) + .17172 * e * sinDeg(m) - .01183 * e * sinDeg(m1 + m)
-                        + .00862 * sinDeg(2 * m1) + .00804 * sinDeg(2 * f) + .00454 * e * sinDeg(m1 - m)
-                        + .00204 * e * e * sinDeg(2 * m) - .0018 * sinDeg(m1 - 2 * f) - .0007 * sinDeg(m1 + 2 * f);
-                jd += -.0004 * sinDeg(3 * m1) - .00034 * e * sinDeg(2 * m1 - m) + .00032 * e * sinDeg(m + 2 * f)
-                        + .00032 * e * sinDeg(m - 2 * f) - .00028 * e * e * sinDeg(m1 + 2 * m)
-                        + .00027 * e * sinDeg(2 * m1 + m) - .00017 * sinDeg(o);
-                jd += -.00005 * sinDeg(m1 - m - 2 * f) + .00004 * sinDeg(2 * m1 + 2 * f)
-                        - .00004 * sinDeg(m1 + m + 2 * f) + .00004 * sinDeg(m1 - 2 * m)
-                        + .00003 * sinDeg(m1 + m - 2 * f) + .00003 * sinDeg(3 * m) + .00002 * sinDeg(2 * m1 - 2 * f);
-                jd += .00002 * sinDeg(m1 - m + 2 * f) - .00002 * sinDeg(3 * m1 + m);
-                double w = .00306 - .00038 * e * cosDeg(m) + .00026 * cosDeg(m1) - .00002 * cosDeg(m1 - m)
-                        + .00002 * cosDeg(m1 + m) + .00002 * cosDeg(2 * f);
+                jd += -.62801 * sinDeg(la.m1) + .17172 * la.e * sinDeg(la.m) - .01183 * la.e * sinDeg(la.m1 + la.m)
+                        + .00862 * sinDeg(2 * la.m1) + .00804 * sinDeg(2 * la.f) + .00454 * la.e * sinDeg(la.m1 - la.m)
+                        + .00204 * la.e * la.e * sinDeg(2 * la.m) - .0018 * sinDeg(la.m1 - 2 * la.f)
+                        - .0007 * sinDeg(la.m1 + 2 * la.f);
+                jd += -.0004 * sinDeg(3 * la.m1) - .00034 * la.e * sinDeg(2 * la.m1 - la.m)
+                        + .00032 * la.e * sinDeg(la.m + 2 * la.f) + .00032 * la.e * sinDeg(la.m - 2 * la.f)
+                        - .00028 * la.e * la.e * sinDeg(la.m1 + 2 * la.m) + .00027 * la.e * sinDeg(2 * la.m1 + la.m)
+                        - .00017 * sinDeg(la.o);
+                jd += -.00005 * sinDeg(la.m1 - la.m - 2 * la.f) + .00004 * sinDeg(2 * la.m1 + 2 * la.f)
+                        - .00004 * sinDeg(la.m1 + la.m + 2 * la.f) + .00004 * sinDeg(la.m1 - 2 * la.m)
+                        + .00003 * sinDeg(la.m1 + la.m - 2 * la.f) + .00003 * sinDeg(3 * la.m)
+                        + .00002 * sinDeg(2 * la.m1 - 2 * la.f);
+                jd += .00002 * sinDeg(la.m1 - la.m + 2 * la.f) - .00002 * sinDeg(3 * la.m1 + la.m);
+                double w = .00306 - .00038 * la.e * cosDeg(la.m) + .00026 * cosDeg(la.m1)
+                        - .00002 * cosDeg(la.m1 - la.m) + .00002 * cosDeg(la.m1 + la.m) + .00002 * cosDeg(2 * la.f);
                 jd += MoonPhase.FIRST_QUARTER.equals(phase) ? w : -w;
         }
-        return moonCorrection(jd, t, kMod);
+        return moonCorrection(jd, la.t, la.kMod);
     }
 
     private static double moonCorrection(double jd, double t, double k) {

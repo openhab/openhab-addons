@@ -17,14 +17,17 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.mspa.internal.MSpaConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mspa.internal.MSpaCommandOptionProvider;
@@ -62,7 +65,7 @@ class TestMessages {
     void testSignature() {
         String fileName = "src/test/resources/Signature.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             JSONObject json = new JSONObject(content);
             String calculatedSignature = MSpaUtils.getSignature(json.getString("nonce"), json.getLong("ts"),
                     ServiceRegion.ROW);
@@ -77,7 +80,7 @@ class TestMessages {
     void testToken() {
         String fileName = "src/test/resources/TokenResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             AccessTokenResponse token = MSpaUtils.decodeNewToken(content);
             assertEquals("test_token", token.getAccessToken(), "Token check");
             assertEquals(86400, token.getExpiresIn(), "Expiration check");
@@ -101,8 +104,10 @@ class TestMessages {
                 storageService.getStorage(BINDING_ID));
         String fileName = "src/test/resources/DevicelistResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
-            account.decodeDevices(content);
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
+            Optional<JSONArray> deviceList = account.extractList(new JSONObject(content));
+            assertTrue(deviceList.isPresent(), "Device list present");
+            account.discovery(deviceList.get());
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);
@@ -121,7 +126,7 @@ class TestMessages {
         pool.setCallback(callback);
         String fileName = "src/test/resources/DataResponse.json";
         try {
-            String content = new String(Files.readAllBytes(Paths.get(fileName)));
+            String content = new String(Files.readAllBytes(Paths.get(fileName)), StandardCharsets.UTF_8);
             pool.distributeData(content);
             assertEquals(10, callback.numberOfUpdates(), "Number of state updates");
 

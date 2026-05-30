@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -71,6 +73,9 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private static final Duration DEFAULT_FORCE_REFRESH_INTERVAL = Duration.ofMinutes(240);
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkVehicleHandler.class);
+
+    private final ReentrantLock refreshLock = new ReentrantLock();
+    private final ReentrantLock forceRefreshLock = new ReentrantLock();
 
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     private volatile @Nullable ScheduledFuture<?> forceRefreshJob;
@@ -101,14 +106,21 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
 
         final Duration refreshInterval = config.refreshInterval >= 1 ? Duration.ofMinutes(config.refreshInterval)
                 : DEFAULT_REFRESH_INTERVAL;
-        final Duration forceRefreshInterval = config.forceRefreshInterval >= 1
-                ? Duration.ofMinutes(config.forceRefreshInterval)
-                : DEFAULT_FORCE_REFRESH_INTERVAL;
-        this.forceRefreshInterval = forceRefreshInterval;
         refreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(false), 5, refreshInterval.toSeconds(),
                 TimeUnit.SECONDS);
-        forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 30,
-                forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+
+        final @Nullable Duration forceRefreshInterval;
+        if (config.forceRefreshInterval == 0) {
+            forceRefreshInterval = null;
+        } else {
+            forceRefreshInterval = config.forceRefreshInterval >= 1 ? Duration.ofMinutes(config.forceRefreshInterval)
+                    : DEFAULT_FORCE_REFRESH_INTERVAL;
+        }
+        this.forceRefreshInterval = forceRefreshInterval;
+        if (forceRefreshInterval != null) {
+            forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 30,
+                    forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
@@ -163,10 +175,59 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     }
 
     @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && vehicle == null) {
+            final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
+            final String vin = config.vin;
+            if (vin != null && !vin.isBlank()) {
+                ScheduledFuture<?> job = initTask;
+                if (job != null) {
+                    job.cancel(true);
+                }
+                initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
+            }
+        }
+    }
+
+    @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
             // we do not force a refresh from the vehicle because of the low rate limit
             refreshVehicleStatus(false);
+            return;
+        }
+
+        final String channelId = channelUID.getIdWithoutGroup();
+        try {
+            if (CHANNEL_CHARGE_LIMIT_DC.equals(channelId)) {
+                if (command instanceof QuantityType<?> qt) {
+                    qt = qt.toUnit(Units.PERCENT);
+                    if (qt != null) {
+                        setChargeLimitDC(qt.intValue());
+                    } else {
+                        logger.debug("Failed to convert QuantityType to PERCENT!");
+                    }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitDC(decimal.intValue());
+                } else {
+                    logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                }
+            } else if (CHANNEL_CHARGE_LIMIT_AC.equals(channelId)) {
+                if (command instanceof QuantityType<?> qt) {
+                    qt = qt.toUnit(Units.PERCENT);
+                    if (qt != null) {
+                        setChargeLimitAC(qt.intValue());
+                    } else {
+                        logger.debug("Failed to convert QuantityType to PERCENT!");
+                    }
+                } else if (command instanceof DecimalType decimal) {
+                    setChargeLimitAC(decimal.intValue());
+                } else {
+                    logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                }
+            }
+        } catch (final BluelinkApiException e) {
+            logger.debug("Failed to set charge limit: {}", e.getMessage());
         }
     }
 
@@ -222,6 +283,40 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         return res;
     }
 
+    public boolean setChargeLimitDC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid DC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
+        final var bridgeHnd = getBridgeHandler();
+        final var vehicle = this.vehicle;
+        if (vehicle == null || bridgeHnd == null) {
+            return false;
+        }
+        final boolean res = bridgeHnd.setChargeLimitDC(vehicle, limit);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
+    }
+
+    public boolean setChargeLimitAC(final int limit) throws BluelinkApiException {
+        if (limit < 50 || limit > 100) {
+            logger.debug("Invalid AC charge limit: {}. Must be between 50 and 100.", limit);
+            return false;
+        }
+        final var bridgeHnd = getBridgeHandler();
+        final var vehicle = this.vehicle;
+        if (vehicle == null || bridgeHnd == null) {
+            return false;
+        }
+        final boolean res = bridgeHnd.setChargeLimitAC(vehicle, limit);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
+    }
+
     public boolean climateStart(final QuantityType<Temperature> temperature, final boolean heat, final boolean defrost,
             final @Nullable Integer igniOnDuration) throws BluelinkApiException {
         final var bridgeHnd = getBridgeHandler();
@@ -230,7 +325,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return false;
         }
 
-        return bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        final boolean res = bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public boolean climateStop() throws BluelinkApiException {
@@ -240,7 +339,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return false;
         }
 
-        return bridgeHnd.climateStop(vehicle);
+        final boolean res = bridgeHnd.climateStop(vehicle);
+        if (res) {
+            scheduleForceRefresh();
+        }
+        return res;
     }
 
     public void refreshVehicleStatus(boolean forceRefresh) {
@@ -250,14 +353,22 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             return;
         }
 
+        final ReentrantLock lock = forceRefresh ? forceRefreshLock : refreshLock;
+        if (!lock.tryLock()) {
+            logger.debug("{} status refresh already in progress, skipping", forceRefresh ? "Forced" : "Vehicle");
+            return;
+        }
+
         try {
-            logger.debug("refreshing vehicle status");
+            logger.debug("Refreshing {}vehicle status", forceRefresh ? "forced " : "");
             if (bridgeHnd.getVehicleStatus(vehicle, forceRefresh, this)) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (final BluelinkApiException e) {
-            logger.debug("Failed to refresh vehicle status: {}", e.getMessage());
+            logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -464,10 +575,13 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         }
         final Set<ChannelUID> currentChannels = getThing().getChannelsOfGroup(group).stream().map(Channel::getUID)
                 .collect(toUnmodifiableSet());
-        final ThingBuilder thingBuilder = editThing();
-        newChannels.stream().map(ChannelBuilder::build).filter(c -> !currentChannels.contains(c.getUID()))
-                .forEach(thingBuilder::withChannel);
-        updateThing(thingBuilder.build());
+        final List<Channel> channelsToAdd = newChannels.stream().map(ChannelBuilder::build)
+                .filter(c -> !currentChannels.contains(c.getUID())).toList();
+        if (!channelsToAdd.isEmpty()) {
+            final ThingBuilder thingBuilder = editThing();
+            channelsToAdd.forEach(thingBuilder::withChannel);
+            updateThing(thingBuilder.build());
+        }
     }
 
     private ChannelBuilder buildChannel(final String group, final String channelId, final String itemType,
@@ -488,14 +602,19 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     /**
      * Reschedule the forced refresh so the first execution starts in 10 seconds.
      */
-    private void scheduleForceRefresh() {
+    private synchronized void scheduleForceRefresh() {
         final ScheduledFuture<?> job = forceRefreshJob;
-        final Duration forceRefreshInterval = this.forceRefreshInterval;
-        if (job == null || forceRefreshInterval == null) {
-            return;
+        if (job != null) {
+            job.cancel(false);
         }
-        job.cancel(false);
-        scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 10, forceRefreshInterval.toSeconds(),
-                TimeUnit.SECONDS);
+        final @Nullable Duration forceRefreshInterval = this.forceRefreshInterval;
+        if (forceRefreshInterval != null) {
+            // schedule a periodic job according to forceRefreshInterval
+            forceRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshVehicleStatus(true), 10,
+                    forceRefreshInterval.toSeconds(), TimeUnit.SECONDS);
+        } else {
+            // schedule a one-shot job if forceRefreshInterval is null
+            forceRefreshJob = scheduler.schedule(() -> refreshVehicleStatus(true), 10, TimeUnit.SECONDS);
+        }
     }
 }

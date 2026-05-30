@@ -120,7 +120,6 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 } else if (command instanceof DecimalType decimalCommand) {
                     handler.setRainDelay(deviceId, decimalCommand.intValue());
                 }
-
             }
         }
     }

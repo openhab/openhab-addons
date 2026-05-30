@@ -16,7 +16,7 @@
 
   <properties>
     <dep.noembedding>javax.json,javax.json-api,netty-common,netty-buffer,netty-transport,netty-handler,netty-codec,netty-codec-http,netty-resolver</dep.noembedding>
-    <bouncycastle.version>1.83</bouncycastle.version>
+    <bouncycastle.version>1.84</bouncycastle.version>
   </properties>
 
   <dependencies>

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -42,6 +43,7 @@ import org.openhab.binding.senseenergy.internal.api.SenseEnergyDatagramListener;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyWebSocket;
 import org.openhab.binding.senseenergy.internal.api.SenseEnergyWebSocketListener;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDevice;
+import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiDeviceTags;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitor;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitorInfo;
 import org.openhab.binding.senseenergy.internal.api.dto.SenseEnergyApiMonitorStatus;
@@ -117,6 +119,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
     // Map of all device types from the api
     private Map<String, SenseEnergyApiDevice> senseDevices = Collections.emptyMap();
+    private final AtomicBoolean senseDevicesDirty = new AtomicBoolean(false);
     // DeviceTypes deduced from the senseDevices
     private Map<String, DeviceType> senseDevicesType = new HashMap<String, DeviceType>();
     // Keep track of which devices are on so we can send trigger when devices are turned on/off
@@ -187,6 +190,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
 
         reconcileDiscoveredDeviceChannels(thingBuilder);
+        senseDevicesDirty.set(false);
         updateThing(thingBuilder.build());
         updateProperties();
 
@@ -215,7 +219,9 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         logger.trace("SenseEnergyMonitorHandler: heartbeat");
         refreshDevices();
-        reconcileDiscoveredDeviceChannels(null);
+        if (senseDevicesDirty.getAndSet(false)) {
+            reconcileDiscoveredDeviceChannels(null);
+        }
 
         if (!webSocket.isRunning()) {
             logger.debug("heartbeat: webSocket not running");
@@ -353,11 +359,17 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      * @return The deduced DeviceType.
      */
     private DeviceType deduceDeviceType(SenseEnergyApiDevice apiDevice) {
-        if (!apiDevice.tags.ssiEnabled) {
+        SenseEnergyApiDeviceTags tags = apiDevice.tags;
+        if (tags == null || !tags.ssiEnabled) {
             return DeviceType.DISCOVERED_DEVICE;
         }
 
-        SenseEnergyProxyDeviceHandler proxyHandler = getProxyDeviceByMAC(apiDevice.tags.deviceID);
+        String deviceId = tags.deviceID;
+        if (deviceId == null) {
+            return DeviceType.SELF_REPORTING_DEVICE;
+        }
+
+        SenseEnergyProxyDeviceHandler proxyHandler = getProxyDeviceByMAC(deviceId);
         return (proxyHandler != null) ? DeviceType.PROXY_DEVICE : DeviceType.SELF_REPORTING_DEVICE;
     }
 
@@ -366,14 +378,25 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      */
     private void refreshDevices() {
         logger.trace("refreshDevices");
-        try {
-            senseDevices = getApi().getDevices(id);
+        Map<String, SenseEnergyApiDevice> newSenseDevices = Collections.emptyMap();
 
-            senseDevices.entrySet().stream() //
+        try {
+            newSenseDevices = getApi().getDevices(id);
+
+            newSenseDevices.entrySet().stream() //
                     .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
         } catch (SenseEnergyApiException e) {
             handleApiException(e);
+            return;
+        }
+
+        if (!newSenseDevices.equals(senseDevices)) {
+            senseDevices = newSenseDevices;
+            senseDevicesDirty.set(true);
+            logger.debug("Device list updated, device count: {}", senseDevices.size());
+        } else {
+            logger.trace("Device list refreshed but no change detected");
         }
     }
 
@@ -391,7 +414,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         Set<String> senseIDs = new HashSet<>(senseDevices.keySet());
         senseIDs.remove("solar"); // don't create solar as a separate channel
 
-        logger.trace("Reconciling channels with Sense device, channel count: {}", senseIDs.size());
+        logger.debug("Reconciling channels with Sense device, channel count: {}", senseIDs.size());
 
         boolean channelsUpdated = false;
         ThingBuilder localBuilder = (thingBuilder != null) ? thingBuilder : editThing();
@@ -430,7 +453,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             }
         }
 
-        if (thingBuilder == null) {
+        if (thingBuilder == null && channelsUpdated) {
             updateThing(localBuilder.build());
         }
 
@@ -680,7 +703,8 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
             // check if device channels need to be updated because there is a new device
             if (!senseDevices.containsKey(device.id)) {
-                reconcileDiscoveredDeviceChannels(null);
+                // Defer reconciliation to heartbeat thread to avoid cross-thread channel mutation.
+                senseDevicesDirty.set(true);
             }
 
             DeviceType deviceType = senseDevicesType.getOrDefault(device.id, DeviceType.DISCOVERED_DEVICE);

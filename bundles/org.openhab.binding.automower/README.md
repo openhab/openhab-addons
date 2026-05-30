@@ -197,12 +197,12 @@ Command channels that trigger actions.
 | channel                           | type     | access mode | description                                                                                            | advanced |
 |-----------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------|----------|
 | command#start                     | Number   | W           | Start the mower for the given duration, overriding the schedule                                        | false    |
-| command#start_in_workarea         | Number   | W           | Start the mower in the given Work Area, overriding the schedule. The mower will continue forever       | false    |
-| command#resume_schedule           | Switch   | W           | Resume the schedule of the mower                                                                       | false    |
+| command#start-in-workarea         | Number   | W           | Start the mower in the given Work Area, overriding the schedule. The mower will continue forever       | false    |
+| command#resume-schedule           | Switch   | W           | Resume the schedule of the mower                                                                       | false    |
 | command#pause                     | Switch   | W           | Pause the mower at the current location until manual resume                                            | false    |
 | command#park                      | Number   | W           | Park the mower for the given duration, overriding the schedule                                         | false    |
-| command#park_until_next_schedule  | Switch   | W           | Park the mower, fully charge it and start afterwards according to the schedule                         | false    |
-| command#park_until_further_notice | Switch   | W           | Park the mower until it is started again by the start action/command or the schedule gets resumed      | false    |
+| command#park-until-next-schedule  | Switch   | W           | Park the mower, fully charge it and start afterwards according to the schedule                         | false    |
+| command#park-until-further-notice | Switch   | W           | Park the mower until it is started again by the start action/command or the schedule gets resumed      | false    |
 
 ## Actions
 
@@ -252,11 +252,11 @@ DateTime Automower_Next_Start_Time            "Next Start Time"                 
 Location Automower_Position                   "Last Position"                      { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:status#position" }
 
 Number   Automower_Command_Start              "Start mowing for duration [%d min]" { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#start" }
-Switch   Automower_Command_Resume             "Resume the schedule"                { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#resume_schedule" }
+Switch   Automower_Command_Resume             "Resume the schedule"                { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#resume-schedule" }
 Switch   Automower_Command_Pause              "Pause the automower"                { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#pause" }
 Number   Automower_Command_Park               "Park for duration [%d min]"         { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#park" }
-Switch   Automower_Command_Park_Next_Schedule "Park until next schedule"           { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#park_until_next_schedule" }
-Switch   Automower_Command_Park_Notice        "Park until further notice"          { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#park_until_further_notice" }
+Switch   Automower_Command_Park_Next_Schedule "Park until next schedule"           { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#park-until-next-schedule" }
+Switch   Automower_Command_Park_Notice        "Park until further notice"          { channel="automower:automower:mybridge:12345678-1234-12ab-1234-123456abcdef:command#park-until-further-notice" }
 ```
 
 ### automower.sitemap

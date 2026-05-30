@@ -80,9 +80,13 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
     private static final int CONNECTION_TIMEOUT_MS = 300000; // 5 minutes to allow for slow devices to connect (like
                                                              // thread powered devices)
+    private static final int DATA_REQUEST_TIMEOUT_MS = 300000;
     private final MatterWebsocketService websocketService;
     // Set of nodes we are waiting to connect to
     private Set<BigInteger> outstandingNodeRequests = Collections.synchronizedSet(new HashSet<>());
+    // Nodes with an existing requestAllNodeData call
+    private final Map<BigInteger, ScheduledFuture<?>> pendingDataRequests = Collections
+            .synchronizedMap(new HashMap<>());
     // Set of nodes we need to try reconnecting to
     private Set<BigInteger> disconnectedNodes = Collections.synchronizedSet(new HashSet<>());
     // Nodes that we have linked to a handler
@@ -122,6 +126,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         client.removeListener(this);
         cancelReconnect();
         outstandingNodeRequests.clear();
+        synchronized (pendingDataRequests) {
+            pendingDataRequests.values().forEach(t -> t.cancel(false));
+            pendingDataRequests.clear();
+        }
         disconnectedNodes.clear();
         linkedNodes.clear();
         client.disconnect();
@@ -201,7 +209,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             case CONNECTED:
                 updateEndpointStatuses(message.nodeId, ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                         translationService.getTranslation(THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA));
-                client.requestAllNodeData(message.nodeId);
+                requestAllNodeData(message.nodeId);
                 break;
             case STRUCTURECHANGED:
                 updateNode(message.nodeId);
@@ -220,6 +228,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             case WAITINGFORDEVICEDISCOVERY:
                 updateEndpointStatuses(message.nodeId, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Node " + message.state);
+                clearPendingDataRequest(message.nodeId);
                 break;
             default:
         }
@@ -248,6 +257,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     @Override
     public void onEvent(NodeDataMessage message) {
         logger.debug("NodeDataMessage onEvent: node {} is {}", message.node.id, message.node);
+        clearPendingDataRequest(message.node.id);
         updateNode(message.node);
     }
 
@@ -301,6 +311,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         logger.debug("removing node {}", nodeId);
         disconnectedNodes.remove(nodeId);
         outstandingNodeRequests.remove(nodeId);
+        clearPendingDataRequest(nodeId);
         linkedNodes.remove(nodeId);
     }
 
@@ -325,7 +336,6 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
 
         return client.initializeNode(id, CONNECTION_TIMEOUT_MS).thenAccept((Void) -> {
             disconnectedNodes.remove(id);
-            client.requestAllNodeData(id);
             logger.debug("updateNode END {}", id);
         }).exceptionally(e -> {
             logger.debug("Could not update node {}", id, e);
@@ -342,8 +352,42 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
     }
 
     /**
-     * Update the endpoints (devices) for a node
+     * Request a full data refresh for a node, deduplicating against any in flight request for the same node.
+     * requestAllData is expensive (reads every attribute of every cluster of every endpoint from the device), so
+     * overlapping calls can overwhelm slow Thread meshes or constrained hardware.
      * 
+     * @param nodeId
+     */
+    private void requestAllNodeData(BigInteger nodeId) {
+        synchronized (pendingDataRequests) {
+            if (pendingDataRequests.containsKey(nodeId)) {
+                logger.debug("requestAllNodeData for {} already in progress, skipping", nodeId);
+                return;
+            }
+            ScheduledFuture<?> timeout = scheduler.schedule(() -> {
+                logger.debug("requestAllNodeData for {} timed out waiting for NodeData, removing request", nodeId);
+                pendingDataRequests.remove(nodeId);
+            }, DATA_REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            pendingDataRequests.put(nodeId, timeout);
+        }
+        client.requestAllNodeData(nodeId).whenComplete((v, e) -> {
+            if (e != null) {
+                logger.debug("requestAllNodeData for {} failed: {}", nodeId, e.getMessage());
+                clearPendingDataRequest(nodeId);
+            }
+        });
+    }
+
+    private void clearPendingDataRequest(BigInteger nodeId) {
+        ScheduledFuture<?> timeout = pendingDataRequests.remove(nodeId);
+        if (timeout != null) {
+            timeout.cancel(false);
+        }
+    }
+
+    /**
+     * Update the endpoints (devices) for a node
+     *
      * @param node
      */
     private synchronized void updateNode(Node node) {

@@ -74,9 +74,9 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
             onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
-            return new GroheOndusSenseGuardHandler(thing, thingCounter++);
+            return new GroheOndusSenseGuardHandler<>(thing, thingCounter++);
         } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
-            return new GroheOndusSenseHandler(thing, thingCounter++);
+            return new GroheOndusSenseHandler<>(thing, thingCounter++);
         }
 
         return null;

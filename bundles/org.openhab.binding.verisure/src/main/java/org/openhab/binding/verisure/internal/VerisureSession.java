@@ -49,6 +49,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
@@ -912,7 +913,8 @@ public class VerisureSession {
             if (climateList != null) {
                 climateList.forEach(climate -> {
                     // If thing is Mouse detection device, then skip it, but fetch temperature from it
-                    String type = climate.getDevice().getGui().getLabel();
+                    Gui gui = climate.getDevice().getGui();
+                    String type = gui != null ? gui.getLabel() : null;
                     if ("MOUSE".equals(type)) {
                         logger.debug("Mouse detection device!");
                         String deviceId = climate.getDevice().getDeviceLabel();

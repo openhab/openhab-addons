@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.kostalinverter.internal.firstgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Christian Schneider - Initial contribution
  */
+@NonNullByDefault
 public class SourceConfig {
-    public String url;
-    public String userName;
-    public String password;
-    public int refreshInterval;
+    public String url = "";
+    public String userName = "";
+    public String password = "";
+    public int refreshInterval = 60;
 }

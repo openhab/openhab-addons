@@ -79,6 +79,12 @@
 				<description>Auto-detected if device is on same subnet or broadcast forwarding configured.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>TCP port used by the device. Change only if the device is reachable through a NAT/port mapping.</description>
+				<default>6668</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="protocol" type="text">
 				<label>Protocol Version</label>
 				<options>

@@ -43,6 +43,7 @@ import dev.digiried.wattpilot.WattpilotClient;
 import dev.digiried.wattpilot.WattpilotClientListener;
 import dev.digiried.wattpilot.WattpilotInfo;
 import dev.digiried.wattpilot.WattpilotStatus;
+import dev.digiried.wattpilot.commands.SetAuthorizationStateCommand;
 import dev.digiried.wattpilot.commands.SetBoostCommand;
 import dev.digiried.wattpilot.commands.SetBoostSoCLimitCommand;
 import dev.digiried.wattpilot.commands.SetChargingCurrentCommand;
@@ -50,6 +51,7 @@ import dev.digiried.wattpilot.commands.SetChargingModeCommand;
 import dev.digiried.wattpilot.commands.SetEnforcedChargingStateCommand;
 import dev.digiried.wattpilot.commands.SetSurplusPowerThresholdCommand;
 import dev.digiried.wattpilot.commands.SetSurplusSoCThresholdCommand;
+import dev.digiried.wattpilot.dto.AuthorizationState;
 import dev.digiried.wattpilot.dto.ChargingMode;
 import dev.digiried.wattpilot.dto.EnforcedChargingState;
 
@@ -66,6 +68,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     private @Nullable FroniusWattpilotConfiguration config;
     private @Nullable ScheduledFuture<?> reconnectJob;
+    private volatile boolean isDisposed = false;
 
     public FroniusWattpilotHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -106,6 +109,14 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     if (command instanceof OnOffType oft) {
                         client.sendCommand(new SetEnforcedChargingStateCommand(
                                 oft == OnOffType.OFF ? EnforcedChargingState.OFF : EnforcedChargingState.NEUTRAL));
+                    } else {
+                        logger.debug("Command has wrong type, OnOffType required!");
+                    }
+                    break;
+                case CHANNEL_CHARGING_AUTHORIZED:
+                    if (command instanceof OnOffType oft) {
+                        client.sendCommand(new SetAuthorizationStateCommand(
+                                oft == OnOffType.ON ? AuthorizationState.AUTHORIZED : AuthorizationState.WAITING));
                     } else {
                         logger.debug("Command has wrong type, OnOffType required!");
                     }
@@ -190,6 +201,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void initialize() {
+        if (isDisposed) {
+            logger.debug("Skipping initialization because handler is already disposed.");
+            return;
+        }
         config = getConfigAs(FroniusWattpilotConfiguration.class);
 
         FroniusWattpilotConfiguration config = this.config;
@@ -221,21 +236,37 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void dispose() {
-        try {
-            client.disconnect().get(3, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("Failed to disconnect", e);
+        isDisposed = true;
+        synchronized (this) {
+            var reconnectJob = this.reconnectJob;
+            if (reconnectJob != null) {
+                reconnectJob.cancel(false);
+                this.reconnectJob = null;
+            }
         }
         client.removeListener(this);
+        try {
+            client.disconnect().get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Failed to disconnect", e);
+        } catch (ExecutionException | TimeoutException e) {
+            logger.error("Failed to disconnect", e);
+        }
     }
 
     @Override
     public void connected(WattpilotInfo info) {
+        if (isDisposed) {
+            return;
+        }
         logger.debug("Connected to Wattpilot.");
-        var reconnectJob = this.reconnectJob;
-        if (reconnectJob != null) {
-            reconnectJob.cancel(false);
-            this.reconnectJob = null;
+        synchronized (this) {
+            var reconnectJob = this.reconnectJob;
+            if (reconnectJob != null) {
+                reconnectJob.cancel(false);
+                this.reconnectJob = null;
+            }
         }
         updateStatus(ThingStatus.ONLINE);
         updateDeviceProperties(info);
@@ -243,17 +274,25 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void disconnected(String reason, @Nullable Throwable cause) {
+        if (isDisposed) {
+            return;
+        }
         logger.debug("Disconnected from Wattpilot: {}", reason, cause);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        var reconnectJob = this.reconnectJob;
-        if (cause != null && reconnectJob == null) {
-            logger.debug("Connection to Wattpilot lost, scheduling reconnection job ...", cause);
-            this.reconnectJob = scheduler.scheduleAtFixedRate(this::initialize, 30L, 60L, TimeUnit.SECONDS);
+        synchronized (this) {
+            var reconnectJob = this.reconnectJob;
+            if (cause != null && reconnectJob == null && !isDisposed) {
+                logger.debug("Connection to Wattpilot lost, scheduling reconnection job ...", cause);
+                this.reconnectJob = scheduler.scheduleAtFixedRate(this::initialize, 30L, 60L, TimeUnit.SECONDS);
+            }
         }
     }
 
     @Override
     public void statusChanged(WattpilotStatus status) {
+        if (isDisposed) {
+            return;
+        }
         updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
@@ -274,6 +313,10 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_ALLOWED);
         updateState(channel,
                 status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_AUTHORIZED);
+        updateState(channel,
+                status.getAuthorizationState() == AuthorizationState.AUTHORIZED ? OnOffType.ON : OnOffType.OFF);
 
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_MODE);
         updateState(channel, new StringType(status.getChargingMode().toString()));

@@ -23,8 +23,10 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
 import org.openhab.automation.pythonscripting.internal.fs.PythonDependencyTracker;
+import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine.ScriptEngineProvider;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
@@ -60,18 +62,17 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
     private final PythonDependencyTracker pythonDependencyTracker;
     private final PythonScriptEngineConfiguration configuration;
 
-    private final @Nullable Language language;
+    private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
+
+    /**
+     * Shared Polyglot {@link Engine} instance to be used by all instances of {@link PythonScriptEngine}.
+     */
+    private final Engine engine;
 
     @Activate
     public PythonScriptEngineFactory(final @Reference PythonDependencyTracker pythonDependencyTracker,
             final @Reference TimeZoneProvider timeZoneProvider, Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
-
-        this.language = PythonScriptEngine.getLanguage();
-        if (this.language == null) {
-            logger.error(
-                    "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
-        }
 
         String defaultTimezone = ZoneId.systemDefault().getId();
         String providerTimezone = timeZoneProvider.getTimeZone().getId();
@@ -84,6 +85,41 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         this.pythonDependencyTracker = pythonDependencyTracker;
         this.configuration = new PythonScriptEngineConfiguration(config);
         this.configuration.init(this);
+
+        Engine.Builder engineBuilder = createEngineBuilder();
+        if (configuration.isDebuggerEnabled()) {
+            engineBuilder //
+                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                    .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
+                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
+                                                             // attach
+                    .option("inspect.Secure", "false"); // Disable TLS
+
+            Engine engine;
+            try {
+                engine = engineBuilder.build();
+                logger.info("Debugger support is enabled for Python Scripting on port {}",
+                        configuration.getDebuggerPort());
+            } catch (RuntimeException e) {
+                logger.error(
+                        "Failed to initialize Graal Python engine with debugger support. Continuing without debugger support.",
+                        e);
+                engine = createEngineBuilder().build();
+            }
+            this.engine = engine;
+        } else {
+            this.engine = createEngineBuilder().build();
+        }
+
+        if (getLanguage() == null) {
+            logger.error(
+                    "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
+        }
+    }
+
+    private Engine.Builder createEngineBuilder() {
+        return Engine.newBuilder().allowExperimentalOptions(true) //
+                .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false));
     }
 
     @Deactivate
@@ -127,10 +163,10 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
 
     @Override
     public @Nullable ScriptEngine createScriptEngine() {
-        if (language == null) {
+        if (getLanguage() == null) {
             return null;
         }
-        return new PythonScriptEngine(configuration, this);
+        return new PythonScriptEngine(configuration, engine, this);
     }
 
     @Override
@@ -140,5 +176,14 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
 
     public PythonScriptEngineConfiguration getConfiguration() {
         return this.configuration;
+    }
+
+    /**
+     * Gets the Graal language of {@link PythonScriptEngine}.
+     *
+     * @return the Graal language of {@link PythonScriptEngine} or {@code null} if not available
+     */
+    public @Nullable Language getLanguage() {
+        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
     }
 }

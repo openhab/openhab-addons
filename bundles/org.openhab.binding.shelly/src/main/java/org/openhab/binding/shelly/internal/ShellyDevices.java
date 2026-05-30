@@ -90,6 +90,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSPLUGSG3 = "S3PL-00112EU"; // Shelly Plug-S G3
     public static final String SHELLYDT_PLUSPLUGSAZ = "S3PL-10112EU"; // Shelly AZ Plug
     public static final String SHELLYDT_PLUSPLUGOUTDOORSG3 = "S3PL-20112EU";
+    public static final String SHELLYDT_PLUSPLUGMG3 = "S3PL-30110EU"; // Shelly Plug M Gen 3
     public static final String SHELLYDT_PLUSPLUGIT = "SNPL-00110IT";
     public static final String SHELLYDT_PLUSPLUGUK = "SNPL-00112UK";
     public static final String SHELLYDT_PLUSPLUGUS = "SNPL-00116US";
@@ -426,6 +427,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSPLUGIT, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGOUTDOORSG3, THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry(SHELLYDT_PLUSPLUGUK, THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry(SHELLYDT_PLUSPLUGMG3, THING_TYPE_SHELLYPLUSPLUGS), // Shelly Plug M G3
             Map.entry(SHELLYDT_PLUSPLUGUS, THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry(SHELLYDT_PLUSPLUGUSG4, THING_TYPE_SHELLYPLUGUSG4),
             Map.entry(SHELLYDT_PLUSPLUGCPM, THING_TYPE_SHELLYPLUSPLUGCPM),
@@ -603,6 +605,7 @@ public class ShellyDevices {
             Map.entry("shellyplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplusplug", THING_TYPE_SHELLYPLUSPLUGS), //
             Map.entry("shellyplugsg3", THING_TYPE_SHELLYPLUSPLUGS),
+            Map.entry("shellyplugmg3", THING_TYPE_SHELLYPLUSPLUGS),
             Map.entry("shellyplusplugus", THING_TYPE_SHELLYPLUSPLUGUS),
             Map.entry("shellyplugusg4", THING_TYPE_SHELLYPLUGUSG4),
             Map.entry("shellyplusplugcpm", THING_TYPE_SHELLYPLUSPLUGCPM),

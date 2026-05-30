@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -86,6 +87,8 @@ public class DahuaEventClient implements Runnable {
     private static final String SNAPSHOT_PATH = "/cgi-bin/snapshot.cgi";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final SSLSocketFactory BC_SSL_SOCKET_FACTORY = buildBcSslSocketFactory();
+    private static final String[] DOWNLOAD_LENGTH_FIELDS = { "length", "fileLength", "fileSize", "size", "totalLength",
+            "totalSize", "dataLen", "dataSize" };
 
     /** Whether to use HTTPS (port 443) or HTTP (port 80) for snapshot and door-open requests. */
     private final boolean httpsAvailable;
@@ -127,7 +130,7 @@ public class DahuaEventClient implements Runnable {
             return sendSnapshotRequest(SNAPSHOT_PATH);
         } catch (DahuaHttpRedirectException e) {
             errorInformer.accept(e.getRedirectMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not retrieve snapshot from {}", host, e);
         }
         return null;
@@ -141,12 +144,37 @@ public class DahuaEventClient implements Runnable {
     public void openDoor(int doorNo) {
         try {
             String path = "/cgi-bin/accessControl.cgi?action=openDoor&UserID=101&Type=Remote&channel=" + doorNo;
-            sendOpenDoorRequest(path);
+            sendAuthenticatedGetRequest(path, "Open Door");
         } catch (DahuaHttpRedirectException e) {
             errorInformer.accept(e.getRedirectMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not open door {} on {}", doorNo, host, e);
         }
+    }
+
+    /**
+     * Applies the audio codec fix required for WebRTC compatibility.
+     * Sets the VTO audio encoding to G.711A / 8 kHz on both main and sub streams via the
+     * Dahua configManager CGI API. This setting resets on device reboot and must be
+     * re-applied after each {@code SIPRegisterResult} event.
+     *
+     * @return {@code true} if the CGI call succeeded (HTTP 200), {@code false} otherwise
+     */
+    public boolean fixAudioCodec() {
+        String path = "/cgi-bin/configManager.cgi?action=setConfig"
+                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Compression=G.711A"
+                + "&Encode%5B0%5D.MainFormat%5B0%5D.Audio.Frequency=8000"
+                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Compression=G.711A"
+                + "&Encode%5B0%5D.ExtraFormat%5B0%5D.Audio.Frequency=8000";
+        try {
+            sendAuthenticatedGetRequest(path, "Audio codec fix");
+            return true;
+        } catch (DahuaHttpRedirectException e) {
+            logger.warn("Audio codec fix redirected on {}: {}", host, e.getMessage());
+        } catch (IOException e) {
+            logger.warn("Audio codec fix failed on {}", host, e);
+        }
+        return false;
     }
 
     /**
@@ -155,7 +183,7 @@ public class DahuaEventClient implements Runnable {
      * Step 1: open connection, get 401 + challenge, close connection.
      * Step 2: open fresh connection, send authenticated request.
      */
-    private byte @Nullable [] sendSnapshotRequest(String path) throws Exception {
+    private byte @Nullable [] sendSnapshotRequest(String path) throws IOException, DahuaHttpRedirectException {
         boolean useHttps = httpsAvailable;
         int port = useHttps ? 443 : 80;
         int maxAttempts = 3;
@@ -237,10 +265,15 @@ public class DahuaEventClient implements Runnable {
     }
 
     /**
-     * Sends an open-door request with Digest auth.
+     * Sends an authenticated GET request with Digest auth.
+     * Used for door open and audio codec fix requests.
      * Same sequential two-connection pattern as sendSnapshotRequest.
+     *
+     * @param path the CGI path to request
+     * @param actionName label used for logging (e.g. "Open Door", "Audio codec fix")
      */
-    private void sendOpenDoorRequest(String path) throws Exception {
+    private void sendAuthenticatedGetRequest(String path, String actionName)
+            throws IOException, DahuaHttpRedirectException {
         boolean useHttps = httpsAvailable;
         int port = useHttps ? 443 : 80;
         int maxAttempts = 3;
@@ -252,7 +285,7 @@ public class DahuaEventClient implements Runnable {
                     writeHttpGet(socket.getOutputStream(), path, null, false);
                     OpenDoorHttpResponse response = parseOpenDoorResponse(socket.getInputStream());
                     if (response.statusCode == HttpStatus.OK_200) {
-                        logger.debug("Open Door Success");
+                        logger.debug("{} succeeded on {}", actionName, host);
                         return;
                     }
                     if (response.statusCode == HttpStatus.UNAUTHORIZED_401) {
@@ -262,10 +295,10 @@ public class DahuaEventClient implements Runnable {
                         }
                     } else {
                         if (response.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
-                            throw new DahuaHttpRedirectException("Open door request to " + host
+                            throw new DahuaHttpRedirectException(actionName + " request to " + host
                                     + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
-                            logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
+                            logger.warn("{} request to {} failed with unexpected HTTP status {}", actionName, host,
                                     response.statusCode);
                         }
                         return;
@@ -280,18 +313,18 @@ public class DahuaEventClient implements Runnable {
                         writeHttpGet(authSocket.getOutputStream(), path, digestHeader, false);
                         OpenDoorHttpResponse authResponse = parseOpenDoorResponse(authSocket.getInputStream());
                         if (authResponse.statusCode == HttpStatus.OK_200) {
-                            logger.debug("Open Door Success (with authentication)");
+                            logger.debug("{} succeeded (with authentication) on {}", actionName, host);
                         } else if (authResponse.statusCode == HttpStatus.MOVED_TEMPORARILY_302) {
-                            throw new DahuaHttpRedirectException("Open door request to " + host
+                            throw new DahuaHttpRedirectException(actionName + " request to " + host
                                     + " redirected (HTTP 302) - device may require HTTPS; enable 'Use HTTPS' in the thing configuration");
                         } else {
-                            logger.warn("Open door request to {} failed with unexpected HTTP status {}", host,
+                            logger.warn("{} request to {} failed with unexpected HTTP status {}", actionName, host,
                                     authResponse.statusCode);
                         }
                         return;
                     }
                 }
-                logger.debug("Open door request failed: no Digest challenge received from {}", host);
+                logger.debug("{} request failed: no Digest challenge received from {}", actionName, host);
                 return;
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
@@ -299,8 +332,8 @@ public class DahuaEventClient implements Runnable {
             } catch (IOException e) {
                 if (attempt < maxAttempts - 1) {
                     long delayMs = 750L * (1 << attempt); // 750 ms, 1.5 s
-                    logger.debug("Open door attempt {}/{} via {} to {} failed ({}), retrying in {} ms", attempt + 1,
-                            maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
+                    logger.debug("{} attempt {}/{} via {} to {} failed ({}), retrying in {} ms", actionName,
+                            attempt + 1, maxAttempts, useHttps ? "HTTPS" : "HTTP", host, e.getMessage(), delayMs);
                     try {
                         Thread.sleep(delayMs);
                     } catch (InterruptedException ie) {
@@ -587,7 +620,7 @@ public class DahuaEventClient implements Runnable {
         return 0;
     }
 
-    private @Nullable String createDigestAuthorizationHeader(String challenge, String requestPath) throws Exception {
+    private @Nullable String createDigestAuthorizationHeader(String challenge, String requestPath) {
         if (!challenge.toLowerCase(Locale.ROOT).startsWith("digest")) {
             return null;
         }
@@ -669,14 +702,18 @@ public class DahuaEventClient implements Runnable {
         return result;
     }
 
-    private String md5Hex(String value) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        byte[] hash = digest.digest(value.getBytes(StandardCharsets.ISO_8859_1));
-        StringBuilder builder = new StringBuilder(hash.length * 2);
-        for (byte b : hash) {
-            builder.append(String.format("%02x", b));
+    private String md5Hex(String value) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(value.getBytes(StandardCharsets.ISO_8859_1));
+            StringBuilder builder = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                builder.append(String.format("%02x", b));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 digest algorithm not available", e);
         }
-        return builder.toString();
     }
 
     private String randomHex(int length) {
@@ -806,102 +843,347 @@ public class DahuaEventClient implements Runnable {
         localSock.getOutputStream().write(buffer.array());
     }
 
-    public ArrayList<String> receive() throws IOException {
-        ArrayList<String> p2pReturnData = new ArrayList<String>();
-        byte[] buffer = new byte[8192];
-        byte[] header = new byte[32];
-        ByteBuffer bbuffer;
-        int lenRecved = 1;
-        int timeout = 5;
+    /**
+     * Downloads a file over the existing DHIP session via FileManager.downloadFile.
+     * No separate login/session is created.
+     *
+     * @param remotePath full file path on VTO SD card (for example /mnt/sd/Record/.../file.dav)
+     * @param timeoutMs socket timeout for this transfer
+     * @return file bytes or null on failure
+     * @throws IOException if the download times out or a socket error occurs
+     */
+    public synchronized byte @Nullable [] downloadFileFromActiveSession(String remotePath, int timeoutMs)
+            throws IOException {
+        if (remotePath.isBlank()) {
+            return null;
+        }
 
+        final Socket localSock = sock;
+        if (localSock == null || localSock.isClosed()) {
+            logger.debug("Cannot download file, DHIP socket is not connected");
+            return null;
+        }
+
+        int oldTimeout = 0;
+        try {
+            oldTimeout = localSock.getSoTimeout();
+            localSock.setSoTimeout(timeoutMs);
+
+            Map<String, Object> queryArgs = new HashMap<>();
+            queryArgs.put("method", "FileManager.downloadFile");
+            queryArgs.put("magic", "0x1234");
+            queryArgs.put("params", Map.of("fileName", remotePath));
+            queryArgs.put("id", this.id);
+            queryArgs.put("session", this.sessionId);
+
+            send(new Gson().toJson(queryArgs));
+
+            ByteArrayOutputStream fileBytes = new ByteArrayOutputStream(64 * 1024);
+            boolean sawBinary = false;
+            Long expectedLength = null;
+            long deadline = System.currentTimeMillis() + timeoutMs;
+
+            while (System.currentTimeMillis() < deadline) {
+                ArrayList<byte[]> payloads;
+                try {
+                    payloads = receiveRawPayloads();
+                } catch (SocketTimeoutException e) {
+                    if (sawBinary) {
+                        break;
+                    }
+                    continue;
+                }
+
+                for (byte[] payload : payloads) {
+                    JsonObject asJson = tryParseJson(payload);
+                    if (asJson != null) {
+                        if (asJson.has("method")
+                                && "client.notifyEventStream".equals(asJson.get("method").getAsString())) {
+                            eventListener.onEvent(asJson);
+                            continue;
+                        }
+                        if (asJson.has("error")) {
+                            logger.debug("DHIP download error for {}: {}", remotePath, asJson.get("error"));
+                            return null;
+                        }
+                        expectedLength = mergeExpectedLength(expectedLength, extractExpectedLength(asJson));
+                        continue;
+                    }
+
+                    int prefixEnd = findJsonPrefixEnd(payload);
+                    if (prefixEnd > 0) {
+                        JsonObject prefixJson = tryParseJson(Arrays.copyOf(payload, prefixEnd));
+                        if (prefixJson != null && prefixJson.has("error")) {
+                            logger.debug("DHIP download prefix error for {}: {}", remotePath, prefixJson.get("error"));
+                            return null;
+                        }
+                        if (prefixJson != null) {
+                            expectedLength = mergeExpectedLength(expectedLength, extractExpectedLength(prefixJson));
+                        }
+                        if (prefixEnd < payload.length) {
+                            fileBytes.write(payload, prefixEnd, payload.length - prefixEnd);
+                            sawBinary = true;
+                        }
+                    } else {
+                        fileBytes.write(payload);
+                        sawBinary = true;
+                    }
+
+                    if (expectedLength != null && fileBytes.size() >= expectedLength) {
+                        return fileBytes.toByteArray();
+                    }
+                }
+            }
+
+            if (!sawBinary) {
+                logger.debug("DHIP download returned no binary payload for {}", remotePath);
+                return null;
+            }
+            if (expectedLength != null && fileBytes.size() < expectedLength) {
+                throw new DahuaDownloadTimeoutException("DHIP download timed out before completion for " + remotePath
+                        + " (received " + fileBytes.size() + " of " + expectedLength + " bytes)");
+            }
+            return fileBytes.toByteArray();
+        } catch (DahuaDownloadTimeoutException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new IOException("DHIP download failed for " + remotePath + ": " + e.getMessage(), e);
+        } finally {
+            try {
+                localSock.setSoTimeout(oldTimeout);
+            } catch (IOException e) {
+                logger.trace("Could not restore socket timeout after DHIP download", e);
+            }
+        }
+    }
+
+    public static class DahuaDownloadTimeoutException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        public DahuaDownloadTimeoutException(String message) {
+            super(message);
+        }
+    }
+
+    private @Nullable JsonObject tryParseJson(byte[] payload) {
+        try {
+            String txt = new String(payload, StandardCharsets.UTF_8).trim();
+            if (txt.isEmpty() || (!txt.startsWith("{") && !txt.startsWith("["))) {
+                return null;
+            }
+            return gson.fromJson(txt, JsonObject.class);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private @Nullable Long extractExpectedLength(JsonObject json) {
+        Long length = extractLengthFromObject(json);
+        if (length != null) {
+            return length;
+        }
+        if (json.has("params") && json.get("params").isJsonObject()) {
+            length = extractLengthFromObject(json.getAsJsonObject("params"));
+            if (length != null) {
+                return length;
+            }
+        }
+        if (json.has("result") && json.get("result").isJsonObject()) {
+            length = extractLengthFromObject(json.getAsJsonObject("result"));
+            if (length != null) {
+                return length;
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long extractLengthFromObject(JsonObject obj) {
+        for (String field : DOWNLOAD_LENGTH_FIELDS) {
+            if (obj.has(field)) {
+                Long value = parseLengthValue(obj.get(field));
+                if (value != null && value > 0) {
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long parseLengthValue(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            if (element.getAsJsonPrimitive().isNumber()) {
+                return element.getAsLong();
+            }
+            if (element.getAsJsonPrimitive().isString()) {
+                try {
+                    return Long.parseLong(element.getAsString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable Long mergeExpectedLength(@Nullable Long current, @Nullable Long candidate) {
+        if (candidate == null) {
+            return current;
+        }
+        if (current == null) {
+            return candidate;
+        }
+        return Math.max(current, candidate);
+    }
+
+    private int findJsonPrefixEnd(byte[] payload) {
+        int start = -1;
+        for (int i = 0; i < payload.length; i++) {
+            byte b = payload[i];
+            if (!Character.isWhitespace((char) (b & 0xff))) {
+                if (b == '{') {
+                    start = i;
+                }
+                break;
+            }
+        }
+        if (start < 0) {
+            return -1;
+        }
+
+        int depth = 0;
+        boolean inString = false;
+        boolean escaping = false;
+        for (int i = start; i < payload.length; i++) {
+            char c = (char) (payload[i] & 0xff);
+            if (escaping) {
+                escaping = false;
+                continue;
+            }
+            if (c == '\\') {
+                if (inString) {
+                    escaping = true;
+                }
+                continue;
+            }
+            if (c == '"') {
+                inString = !inString;
+                continue;
+            }
+            if (inString) {
+                continue;
+            }
+            if (c == '{') {
+                depth++;
+            } else if (c == '}') {
+                depth--;
+                if (depth == 0) {
+                    int end = i + 1;
+                    while (end < payload.length && Character.isWhitespace((char) (payload[end] & 0xff))) {
+                        end++;
+                    }
+                    return end;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Receives one TCP read and extracts complete DHIP payload frames.
+     *
+     * The parser keeps incomplete tail bytes in {@code residualBuffer} and prepends them to the next read.
+     * Each returned entry is the raw payload (header stripped), which may be JSON, binary, or JSON+binary.
+     */
+    private ArrayList<byte[]> receiveRawPayloads() throws IOException {
+        ArrayList<byte[]> payloads = new ArrayList<>();
+
+        final Socket localSock = sock;
+        if (localSock == null) {
+            throw new IOException("Socket is not connected");
+        }
+
+        InputStream input = localSock.getInputStream();
+        byte[] readBuffer = new byte[8192];
+        int bytesRead = input.read(readBuffer);
+        if (bytesRead < 0) {
+            throw new IOException("Connection closed by remote host");
+        }
+
+        ByteBuffer data;
+        if (residualBuffer.hasRemaining()) {
+            ByteBuffer combined = ByteBuffer.allocate(residualBuffer.remaining() + bytesRead);
+            combined.put(residualBuffer);
+            combined.put(readBuffer, 0, bytesRead);
+            combined.flip();
+            data = combined;
+            residualBuffer = ByteBuffer.allocate(0);
+        } else {
+            data = ByteBuffer.wrap(readBuffer, 0, bytesRead);
+        }
+
+        final long magic = 0x2000000044484950L;
+
+        while (data.hasRemaining()) {
+            if (data.remaining() < 32) {
+                residualBuffer = ByteBuffer.allocate(data.remaining());
+                residualBuffer.put(data);
+                residualBuffer.flip();
+                break;
+            }
+            // DHIP Protocol Header Structure (32 bytes):
+            // Offset 0-7: Magic value (0x2000000044484950)
+            // Offset 8-11: Session ID
+            // Offset 12-15: Sequence number
+            // Offset 16-19: Length of received data (lenRecved)
+            // Offset 20-23: Reserved
+            // Offset 24-27: Expected length for multi-part messages
+            // Offset 28-31: Reserved
+            data.order(ByteOrder.BIG_ENDIAN);
+            long foundMagic = data.getLong(data.position());
+            if (foundMagic != magic) {
+                data.get();
+                continue;
+            }
+
+            int frameStart = data.position();
+            ByteBuffer headerView = data.duplicate();
+            headerView.order(ByteOrder.LITTLE_ENDIAN);
+            int payloadLen = headerView.getInt(frameStart + 16);
+            if (payloadLen < 0 || payloadLen > 20 * 1024 * 1024) {
+                data.get();
+                continue;
+            }
+
+            if (data.remaining() < 32 + payloadLen) {
+                residualBuffer = ByteBuffer.allocate(data.remaining());
+                residualBuffer.put(data);
+                residualBuffer.flip();
+                break;
+            }
+
+            data.position(frameStart + 32);
+            byte[] payload = new byte[payloadLen];
+            data.get(payload);
+            payloads.add(payload);
+        }
+
+        return payloads;
+    }
+
+    public ArrayList<String> receive() throws IOException {
         final Socket localSock = sock;
         if (localSock == null) {
             logger.debug("Socket is not connected");
             throw new IOException("Socket is not connected");
         }
 
-        try {
-            localSock.setSoTimeout(timeout * 1000); // Set timeout in milliseconds
-            InputStream input = localSock.getInputStream();
-            int bytesRead = input.read(buffer);
-            if (bytesRead < 0) {
-                // End of stream - connection closed
-                throw new IOException("Connection closed by remote host");
-            }
-
-            // Combine residual buffer with new data
-            if (residualBuffer.hasRemaining()) {
-                ByteBuffer combined = ByteBuffer.allocate(residualBuffer.remaining() + bytesRead);
-                combined.put(residualBuffer);
-                combined.put(buffer, 0, bytesRead);
-                combined.flip();
-                bbuffer = combined;
-                residualBuffer = ByteBuffer.allocate(0); // Clear residual
-            } else {
-                bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            logger.trace("IOException in receive(): {}", e.getMessage());
-            throw e;
+        localSock.setSoTimeout(5000);
+        ArrayList<String> packets = new ArrayList<>();
+        ArrayList<byte[]> payloads = receiveRawPayloads();
+        for (byte[] payload : payloads) {
+            packets.add(new String(payload, StandardCharsets.UTF_8));
         }
-
-        while (bbuffer.hasRemaining()) {
-            // Ensure we have enough bytes for at least the magic value
-            if (bbuffer.remaining() < Long.BYTES) {
-                // Save remaining bytes for next read
-                residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
-                residualBuffer.put(bbuffer);
-                residualBuffer.flip();
-                break;
-            }
-
-            bbuffer.order(ByteOrder.BIG_ENDIAN);
-            if (bbuffer.getLong(bbuffer.position()) == 0x2000000044484950L) {
-                // Ensure we have a full header before reading it
-                if (bbuffer.remaining() < 32) {
-                    // Save remaining bytes for next read
-                    residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
-                    residualBuffer.put(bbuffer);
-                    residualBuffer.flip();
-                    break;
-                }
-                bbuffer.order(ByteOrder.LITTLE_ENDIAN);
-                // DHIP Protocol Header Structure (32 bytes):
-                // Offset 0-7: Magic value (0x2000000044484950)
-                // Offset 8-11: Session ID
-                // Offset 12-15: Sequence number
-                // Offset 16-19: Length of received data (lenRecved)
-                // Offset 20-23: Reserved
-                // Offset 24-27: Expected length for multi-part messages
-                // Offset 28-31: Reserved
-                int frameStart = bbuffer.position();
-                lenRecved = bbuffer.getInt(frameStart + 16);
-                bbuffer.get(header, 0, 32); // advances position by 32 to payload start
-
-            } else {
-                if (lenRecved > 0) {
-                    // Ensure we have the full payload before reading it
-                    if (bbuffer.remaining() < lenRecved) {
-                        // Save from header start to preserve full frame for the next read.
-                        ByteBuffer residualSlice = bbuffer.duplicate();
-                        int headerStartPosition = Math.max(0, bbuffer.position() - 32);
-                        residualSlice.position(headerStartPosition);
-                        residualBuffer = ByteBuffer.allocate(residualSlice.remaining());
-                        residualBuffer.put(residualSlice);
-                        residualBuffer.flip();
-                        break;
-                    }
-                    String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset() + bbuffer.position(), lenRecved,
-                            StandardCharsets.UTF_8);
-                    bbuffer.position(bbuffer.position() + lenRecved);
-                    p2pReturnData.add(p2pData);
-                    lenRecved = 0;
-                } else {
-                    break;
-                }
-            }
-        }
-        return p2pReturnData;
+        return packets;
     }
 
     @SuppressWarnings("unchecked")

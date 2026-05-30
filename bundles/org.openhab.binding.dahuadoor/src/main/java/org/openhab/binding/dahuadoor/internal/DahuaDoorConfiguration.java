@@ -30,5 +30,32 @@ public class DahuaDoorConfiguration {
     public String username = "";
     public String password = "";
     public String snapshotPath = "";
+    public int maxImages = 20;
+    public int maxEvents = 20;
+    public String snapshotMode = "api";
+    public boolean enableDoorRecordingDownload = true;
+    public boolean enableHangupSnapshotDownload = false;
+    public boolean enableUnlockSnapshotDownload = true;
+    public boolean enableVideoMessageDownload = true;
+    public String hangupSnapshotPath = "/var/lib/openhab/door-images/hangup";
+    public String unlockSnapshotPath = "/var/lib/openhab/door-images/unlock";
+    public String recordingPath = "/var/lib/openhab/door-images/recording";
+    public String videoMessagePath = "/var/lib/openhab/door-images/video-message";
     public boolean useHttps = false;
+
+    // WebRTC / go2rtc settings
+    public boolean enableWebRTC = false;
+    public String go2rtcPath = "";
+    public int go2rtcApiPort = 1984;
+    public int webRtcPort = 8555;
+    public String stunServer = "stun.l.google.com:19302";
+    public int rtspChannel = 1;
+    public int rtspSubtype = 0;
+
+    // SIP client settings
+    public boolean enableSip = false;
+    public String sipExtension = "";
+    public String sipPassword = "";
+    public int localSipPort = 5060;
+    public String sipRealm = "VDP";
 }
