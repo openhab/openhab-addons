@@ -84,6 +84,7 @@ public class MatterBridge implements MatterClientListener {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
     protected static final String CONFIG_PID = "org.openhab.matter";
     protected static final String CONFIG_URI = "io:matter";
+    private static final int START_RETRY_DELAY_SECONDS = 2;
 
     // Matter Bridge Device Info *Basic Information Cluster*
     private static final String VENDOR_NAME = "openHAB";
@@ -437,7 +438,11 @@ public class MatterBridge implements MatterClientListener {
         return changed;
     }
 
-    private synchronized void registerItems() {
+    private void registerItems() {
+        doRegisterItems(false);
+    }
+
+    private synchronized void doRegisterItems(boolean isRetry) {
         if (!client.isConnected()) {
             // registerItems() is also scheduled by item/metadata changes (updateModifyFuture). On
             // startup that scheduled run can fire before the bridge websocket is connected; skip it,
@@ -516,6 +521,11 @@ public class MatterBridge implements MatterClientListener {
             updatePairingCodes();
         } catch (InterruptedException | ExecutionException e) {
             logger.debug("Could not start bridge", e);
+            if (!isRetry) {
+                logger.debug("Retrying bridge start in {} seconds", START_RETRY_DELAY_SECONDS);
+                scheduler.schedule(() -> doRegisterItems(true), START_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+                return;
+            }
             updateRunningState(RunningState.Error, e.getMessage());
         }
     }
