@@ -184,7 +184,10 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
             removeNode(handler.getNodeId());
             try {
                 client.disconnectNode(handler.getNodeId()).get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Could not disconnect node {}", handler.getNodeId(), e);
+            } catch (ExecutionException e) {
                 logger.debug("Could not disconnect node {}", handler.getNodeId(), e);
             }
 

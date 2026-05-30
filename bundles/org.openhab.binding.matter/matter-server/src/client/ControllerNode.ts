@@ -14,8 +14,10 @@ const logger = Logger.get("ControllerNode");
 function extractPhysicalProperties(node: PairedNode | undefined): PhysicalDeviceProperties | undefined {
     if (!node) return undefined;
     try {
-        // these are lazy properties, so we need to access them to actuall hydrate our return object
-        return { ...node.deviceInformation };
+        const deviceInformation = node.deviceInformation;
+        if (!deviceInformation) return undefined;
+        // these are lazy properties, so we need to access them to actually hydrate our return object
+        return { ...deviceInformation };
     } catch (e) {
         logger.debug(`Could not read deviceInformation for node ${node.nodeId}: ${e}`);
         return undefined;
@@ -29,6 +31,10 @@ export class ControllerNode {
     private environment: Environment = Environment.default;
     private storageContext?: StorageContext;
     private nodes: Map<NodeId, PairedNode> = new Map();
+    // Per-node observer groups so listeners can be removed in bulk before re-registering,
+    // avoiding duplicate handlers (and duplicate WebSocket events) when the same node instance
+    // is reused across reconnections.
+    private nodeObservers: Map<NodeId, ObserverGroup> = new Map();
     commissioningController?: CommissioningController;
     private observers?: ObserverGroup;
     #services?: SharedEnvironmentServices;
@@ -65,8 +71,36 @@ export class ControllerNode {
      * Closes the controller node
      */
     async close() {
+        for (const observers of this.nodeObservers.values()) {
+            observers.close();
+        }
+        this.nodeObservers.clear();
+        this.observers?.close();
         await this.commissioningController?.close();
         this.nodes.clear();
+    }
+
+    /**
+     * Disposes any existing observer group for the given node and returns a fresh one.
+     * This guarantees that re-registering listeners for the same node instance (e.g. across
+     * reconnections) does not accumulate duplicate handlers.
+     */
+    private resetNodeObservers(nodeId: NodeId): ObserverGroup {
+        this.disposeNodeObservers(nodeId);
+        const observers = new ObserverGroup();
+        this.nodeObservers.set(nodeId, observers);
+        return observers;
+    }
+
+    /**
+     * Removes all listeners registered through the observer group for the given node, if any.
+     */
+    private disposeNodeObservers(nodeId: NodeId): void {
+        const observers = this.nodeObservers.get(nodeId);
+        if (observers !== undefined) {
+            observers.close();
+            this.nodeObservers.delete(nodeId);
+        }
     }
 
     /**
@@ -203,22 +237,27 @@ export class ControllerNode {
             throw new Error(`Node ${nodeId} not connected`);
         }
         this.nodes.set(node.nodeId, node);
-        
-        node.events.stateChanged.on(info => {
+
+        // Remove any listeners left over from a previous registration of this same node instance
+        // (e.g. after a decommission/re-commission cycle) so handlers do not accumulate.
+        const observers = this.resetNodeObservers(node.nodeId);
+
+        observers.on(node.events.stateChanged, info => {
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
                 state: NodeStates[info],
             });
         });
 
-        node.events.structureChanged.on(() => {
+        observers.on(node.events.structureChanged, () => {
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
                 state: NodeState.STRUCTURE_CHANGED,
             });
         });
 
-        node.events.decommissioned.on(() => {
+        observers.on(node.events.decommissioned, () => {
+            this.disposeNodeObservers(node!.nodeId);
             this.nodes.delete(node!.nodeId);
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
@@ -227,14 +266,16 @@ export class ControllerNode {
         });
 
         // attributeChanged and eventTriggered only need to be wired up once initialization completes,
-        // to avoid forwarding the init state updates as user visible updates.
+        // to avoid forwarding the init state updates as user visible updates. Use once() so they are
+        // wired exactly once per registration; the inner handlers are tracked by the observer group
+        // (reset above) so they are still removed in bulk on re-registration or decommission.
         node.events.initializedFromRemote.once(() => {
-            node!.events.attributeChanged.on(data => {
+            observers.on(node!.events.attributeChanged, data => {
                 data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.AttributeChanged, data);
             });
 
-            node!.events.eventTriggered.on(data => {
+            observers.on(node!.events.eventTriggered, data => {
                 data.path.nodeId = node!.nodeId;
                 this.ws.sendEvent(EventType.EventTriggered, data);
             });
@@ -303,6 +344,7 @@ export class ControllerNode {
             } catch (error) {
                 logger.error(`Error decommissioning node ${nodeId}: ${error} force removing node`);
                 await this.commissioningController?.removeNode(NodeId(BigInt(nodeId)), false);
+                this.disposeNodeObservers(node.nodeId);
                 this.nodes.delete(NodeId(BigInt(nodeId)));
             }
         } else {
