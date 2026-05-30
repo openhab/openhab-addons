@@ -264,6 +264,12 @@ function filterDep(e: AnyValueElement) {
 }
 
 /**
+ * Shared cluster types registry, populated once before cluster processing.
+ * Maps "OtherCluster.SomeAlias" to a Java primitive
+ */
+const crossClusterTypedefs = new Map<string, string>();
+
+/**
  * Type mapper attempts to lookup the Java native type for any matter element, this include Integers, Strings, Booleans, etc...
  *
  * If there is no matching type, then the matter element is a complex type, like maps, enums and structs
@@ -276,15 +282,6 @@ function filterDep(e: AnyValueElement) {
  * @param dt - the data type we are operating on
  * @returns the data type which now includes a new field 'mappedType' on all levels of the object
  */
-/**
- * Cross-cluster scalar typedef registry, populated once before per-cluster processing.
- * Maps "OtherCluster.SomeAlias" to its underlying Java primitive (e.g. "Integer") when
- * the alias is a simple scalar typedef (e.g. `Datatype({ name: "VideoStreamID", type: "uint16" })`).
- * Used by typeMapper to resolve cross-cluster scalar references to their primitive Java type
- * instead of emitting a dangling `OtherClusterCluster.SomeAlias` reference.
- */
-const crossClusterTypedefs = new Map<string, string>();
-
 function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueElement): any {
     let mappedType: string | undefined;
     if (
@@ -696,11 +693,7 @@ function resolveInheritance(cluster: ExtendedClusterElement, seen: Set<string> =
 // Apply the merge for every cluster that specifies a parent type.
 clusters.forEach(c => resolveInheritance(c));
 
-// Emit Java code for every cluster. Concrete clusters (with a CLUSTER_ID) compile to a normal
-// class with a public constructor; "definitions" clusters (no id, used in Matter 1.5 to share
-// types like WebRtcTransportDefinitions.WebRTCSessionStruct across provider/requestor pairs)
-// compile to an abstract class holding only the shared inner types. The cluster-class template
-// guards constructor/CLUSTER_ID emission with `{{#if id}}`.
+// Write out the clusters
 clusters.forEach(cluster => {
     const javaCode = clusterTemplate(cluster);
     fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
