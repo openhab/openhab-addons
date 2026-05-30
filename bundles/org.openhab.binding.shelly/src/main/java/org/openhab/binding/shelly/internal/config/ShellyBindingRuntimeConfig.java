@@ -19,10 +19,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
+ * Immutable runtime snapshot derived from {@link ShellyBindingConfiguration} plus
  * Runtime binding configuration derived from {@link ShellyBindingConfiguration}.
+ *
  * Resolves the local IP address (config override wins; falls back to
  * {@link NetworkAddressService}) and carries the HTTP port once the OSGi HTTP
  * service has started. Thread-safe.
+ *
+ * Held as volatile in {@linkShellyHandlerFactory} and {@link ShellyBaseHandler} to
+ * guarantee safe publication after @Modified callbacks.
  *
  * @author Markus Michels - Initial contribution
  */
