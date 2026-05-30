@@ -116,7 +116,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private static final int REQUEST_ID_SYNC_DIRECT_COMPLETED = -2;
     private static final String MAP_DOWNLOAD_REQUEST_METHOD = "downloadRrMap";
     private static final long MAP_DOWNLOAD_TIMEOUT_MS = 30_000L;
-
+    private int sequenceCounter = 1;
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumHandler.class);
 
     private @Nullable RoborockAccountHandler bridgeHandler;
@@ -141,6 +141,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private long lastCloudOnlyPollTimestamp;
     private long lastMapPollTimestamp;
     private boolean supportsRoutines = true;
+    private boolean B01 = false;
+    private boolean Q7 = false;
+    private boolean Q10 = false;
     private boolean cloudMapRefreshDisabledLogged;
     private boolean cloudMetadataRefreshDisabledLogged;
     private volatile boolean vacuumChannelOn;
@@ -220,26 +223,61 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        sendRPCCommand(COMMAND_APP_START);
-                        return;
+                    if (B01 == true) {
+                        if (Q7 == true) {
+                            if (command.equals(OnOffType.ON)) {
+                                sendQ7Command(COMMAND_APP_START);
+                                return;
+                            } else {
+                                sendQ7Command(COMMAND_APP_STOP);
+                                return;
+                            }
+                        } else {
+                            logger.info("Only Q7 commands accepted for now.");
+                        }
                     } else {
-                        sendRPCCommand(COMMAND_APP_STOP);
-                        return;
+                        if (command.equals(OnOffType.ON)) {
+                            sendRPCCommand(COMMAND_APP_START);
+                            return;
+                        } else {
+                            sendRPCCommand(COMMAND_APP_STOP);
+                            return;
+                        }
                     }
                 }
             }
             if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
-                if ("vacuum".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_START);
-                } else if ("spot".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_SPOT);
-                } else if ("pause".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_PAUSE);
-                } else if ("dock".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_CHARGE);
+                if (B01 == true) {
+                    if (Q7 == true) {
+                        if ("vacuum".equals(command.toString())) {
+                            sendQ7Command(COMMAND_APP_START);
+                            return;
+                        } else if ("spot".equals(command.toString())) {
+                            sendQ7Command(COMMAND_APP_SPOT);
+                        } else if ("pause".equals(command.toString())) {
+                            sendQ7Command(COMMAND_APP_PAUSE);
+                            return;
+                        } else if ("dock".equals(command.toString())) {
+                            sendQ7Command(COMMAND_APP_CHARGE);
+                            return;
+                        } else {
+                            logger.warn("Command {} not recognised", command.toString());
+                        }
+                    } else {
+                        logger.info("Only Q7 commands accepted for now.");
+                    }
                 } else {
-                    logger.warn("Command {} not recognised", command.toString());
+                    if ("vacuum".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_START);
+                    } else if ("spot".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_SPOT);
+                    } else if ("pause".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_PAUSE);
+                    } else if ("dock".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_CHARGE);
+                    } else {
+                        logger.warn("Command {} not recognised", command.toString());
+                    }
                 }
                 return;
             }
@@ -335,12 +373,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         refreshTransportContext();
         hasChannelStructure = false;
         applyCloudOnlyCapabilityPolicies();
-
+        B01 = isB01Device();
+        if (Q7 == true) {
+            // sendQ7Command(100);
+        }
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         statusPollTask.setNamePrefix(getThing().getUID().getId());
         updateStatus(ThingStatus.UNKNOWN);
         initTask.schedule(5);
+    }
+
+    private boolean isB01Device() {
+        String protocol = getThing().getProperties().get("protocol");
+        if ("B01".equalsIgnoreCase(protocol)) {
+            String name = getThing().getProperties().get("deviceName");
+            if (name.contains("Q7")) {
+                Q7 = true;
+            } else if (name.contains("Q10")) {
+                Q10 = true;
+            }
+            return true;
+        }
+        return false;
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -431,7 +486,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     localKey = devices[i].localKey;
                     refreshTransportContext();
                 }
-                if (devices[i].online) {
+                if (devices[i].online && !B01) {
                     sendAllMqttCommands();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -552,6 +607,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (currentDirectTransport instanceof LocalDirectTransport localDirect) {
                 connectNonce = localDirect.getConnectNonce();
                 ackNonce = localDirect.getAckNonce();
+            }
+
+            if (B01 == true) {
+                logger.debug("Intercepted unencrypted B01 binary stream for device: {}", config.duid);
+
+                if (Q10 == true) {
+                    decodeQ10BinaryPayload(payload);
+                } else if (Q7 == true) {
+                    decodeQ7RpcResponse(payload);
+                }
+                return; // Exit early to bypass legacy AES decryption and JSON blocks
             }
 
             ProtocolUtils.DecodedMessage decodedMessage = ProtocolUtils.decodeMessage(payload, localKey, nonce,
@@ -1304,6 +1370,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         hasChannelStructure = true;
     }
 
+    private void sendQ7Command(String targetMethod) {
+        if (!targetMethod.isEmpty()) {
+            int seq = ++sequenceCounter;
+            if (sequenceCounter > 50000)
+                sequenceCounter = 1;
+
+            // Generate raw payload bytes via the lean encoder
+            byte[] rawPayload = encodeQ7ProtocolPayload(targetMethod, seq);
+
+            if (bridgeHandler != null) {
+                bridgeHandler.publishBinaryMessage(config.duid, rawPayload);
+            }
+        }
+    }
+
     private int sendRPCCommand(String method) throws UnsupportedEncodingException {
         return sendRPCCommand(method, "[]");
     }
@@ -1538,22 +1619,182 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * Hardcodes a standard Google Protobuf CommandRequest envelope dynamically
      * without requiring the full third-party compilation toolchain.
      */
-    private byte[] encodeQ7CommandBytes(int methodId, int sequenceId) {
-        // Protocol Buffer Tag Encoding:
-        // Field 1 (method_id, type Varint) header identifier byte is 0x08
-        // Field 3 (sequence_id, type Varint) header identifier byte is 0x18
+    /**
+     * Generates the precise binary layout matching the Python B01 Q7 protocol encoder.
+     */
+    /**
+     * Generates the complete binary stream layout matching the python-roborock B01 Q7 channel,
+     * including the mandatory protocol and version tags.
+     *
+     * @param methodName The literal vacuum action string (e.g., "app_start", "app_pause", "app_charge")
+     * @return A raw byte array formatted perfectly for the Roborock MQTT v5 command broker
+     */
+    private byte[] encodeQ7ProtocolPayload(String methodName, int seq) {
+        java.io.ByteArrayOutputStream overallStream = new java.io.ByteArrayOutputStream();
+        java.io.ByteArrayOutputStream innerMsgStream = new java.io.ByteArrayOutputStream();
 
-        java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+        try {
+            // =================================================================
+            // 1. BUILD THE INNER CORE MESSAGE
+            // =================================================================
+            // Field 1 (Tag 0x0A): Method String
+            byte[] methodBytes = methodName.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            innerMsgStream.write(0x0A);
+            writeVarint(innerMsgStream, methodBytes.length);
+            innerMsgStream.write(methodBytes);
 
-        // Write Field 1 Header
-        stream.write(0x08);
-        writeVarint(stream, methodId);
+            // Field 2 (Tag 0x12): Parameter String (Empty JSON array string "[]")
+            byte[] paramBytes = "[]".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            innerMsgStream.write(0x12);
+            writeVarint(innerMsgStream, paramBytes.length);
+            innerMsgStream.write(paramBytes);
 
-        // Write Field 3 Header
-        stream.write(0x18);
-        writeVarint(stream, sequenceId);
+            // =================================================================
+            // 2. PACK INTO THE MANDATORY B01 OUTER TRANSPORT ENVELOPE
+            // =================================================================
+            byte[] innerBytes = innerMsgStream.toByteArray();
 
-        return stream.toByteArray();
+            // Field 1 (Tag 0x0A): Length-Delimited Wrapper holding the inner payload
+            overallStream.write(0x0A);
+            writeVarint(overallStream, innerBytes.length);
+            overallStream.write(innerBytes);
+
+            // Field 2 (Tag 0x10): Sequence ID Tracking Number (Varint)
+            overallStream.write(0x10);
+            writeVarint(overallStream, seq);
+
+            // Field 3 (Tag 0x18): Protocol Identifier. Mapped strictly to 102 (Varint)
+            overallStream.write(0x18);
+            writeVarint(overallStream, 102);
+
+            // Field 4 (Tag 0x22): Protocol Version. String/Length-delimited tag for "B01"
+            // Wire type 2, Field ID 4 -> (4 << 3) | 2 = 0x22
+            byte[] versionBytes = "B01".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            overallStream.write(0x22);
+            writeVarint(overallStream, versionBytes.length);
+            overallStream.write(versionBytes);
+
+            // Field 5 (Tag 0x2A): Data Point Specification (dps). Empty JSON notation array string "[]"
+            // Wire type 2, Field ID 5 -> (5 << 3) | 2 = 0x2A
+            byte[] dpsBytes = "[]".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            overallStream.write(0x2A);
+            writeVarint(overallStream, dpsBytes.length);
+            overallStream.write(dpsBytes);
+
+        } catch (Exception e) {
+            logger.error("Critical failure compiling complete Q7 B01 binary envelope block with DPS parameters", e);
+        }
+
+        return overallStream.toByteArray();
+    }
+
+    /**
+     * Decodes basic telemetry out of a Q7 binary stream using a lightweight tag scanner.
+     */
+    /**
+     * Decodes incoming Q7 B01 RPC notification streams based on the python-roborock architecture.
+     *
+     * @param duid The unique device identifier reporting back
+     * @param payload The raw binary byte array arriving from the MQTT v5 subscription
+     */
+    public void decodeQ7RpcResponse(byte[] payload) {
+        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(payload);
+        byte[] innerMessageBytes = null;
+        int sequenceId = -1;
+
+        try {
+            // --- STEP 1: Unpack Outer B01 Envelope ---
+            while (buffer.hasRemaining()) {
+                int tag = readVarint(buffer);
+                int fieldId = tag >> 3;
+                int wireType = tag & 0x07;
+
+                if (fieldId == 1 && wireType == 2) { // Field 1: Inner Message Payload (Length-Delimited)
+                    int len = readVarint(buffer);
+                    innerMessageBytes = new byte[len];
+                    buffer.get(innerMessageBytes);
+                } else if (fieldId == 2 && wireType == 0) { // Field 2: Sequence ID (Varint)
+                    sequenceId = readVarint(buffer);
+                } else {
+                    skipField(buffer, wireType);
+                }
+            }
+
+            // --- STEP 2: Parse Extracted Inner Message ---
+            if (innerMessageBytes != null) {
+                java.nio.ByteBuffer innerBuffer = java.nio.ByteBuffer.wrap(innerMessageBytes);
+                String responseJson = null;
+
+                while (innerBuffer.hasRemaining()) {
+                    int tag = readVarint(innerBuffer);
+                    int fieldId = tag >> 3;
+                    int wireType = tag & 0x07;
+
+                    if (fieldId == 2 && wireType == 2) { // Inner Field 2: JSON-RPC Data Block (String/Length-Delimited)
+                        int len = readVarint(innerBuffer);
+                        byte[] jsonBytes = new byte[len];
+                        innerBuffer.get(jsonBytes);
+                        responseJson = new String(jsonBytes, java.nio.charset.StandardCharsets.UTF_8);
+                    } else if (wireType == 2) {
+                        int len = readVarint(innerBuffer);
+                        innerBuffer.position(innerBuffer.position() + len);
+                    } else {
+                        skipField(innerBuffer, wireType);
+                    }
+                }
+
+                // --- STEP 3: Forward the nested JSON block to your openHAB channels ---
+                if (responseJson != null && !responseJson.isEmpty()) {
+                    logger.debug("Successfully decoded B01 Q7 telemetry (Seq {}): {}", sequenceId, responseJson);
+
+                    // You can pass this plain string straight into your existing
+                    // processLegacyJson() loop since the payload structure matches.
+                    // this.processLegacyJson(duid, responseJson);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed executing decodeRpcResponse parser logic for device {}", config.duid, e);
+        }
+    }
+
+    /**
+     * Decodes the Q10 Data Point matrix structure.
+     */
+    private void decodeQ10BinaryPayload(byte[] payload) {
+        // The Q10 wraps parameters into a repeated sub-message list of Data Points.
+        // For a simple implementation, you scan the array for the Data Point ID block header,
+        // then extract the immediate next sequence of value bytes.
+        logger.debug("Q10 decoding triggered for payload of length: {} bytes", payload.length);
+
+        // For full implementation, integrate the generated Q10StatusUpdate model snippet
+        // from previous steps to iterate across the .getDatapointsList() array seamlessly.
+    }
+
+    /**
+     * Helper to decode base-128 Varints from the raw inbound ByteBuffer
+     */
+    private int readVarint(java.nio.ByteBuffer buffer) {
+        int value = 0;
+        int shift = 0;
+        while (shift < 32) {
+            byte b = buffer.get();
+            value |= (b & 0x7F) << shift;
+            if ((b & 0x80) == 0) {
+                return value;
+            }
+            shift += 7;
+        }
+        return value;
+    }
+
+    private void skipField(java.nio.ByteBuffer buffer, int wireType) {
+        if (wireType == 1)
+            buffer.getLong(); // 64-bit
+        else if (wireType == 2) { // Length-delimited block
+            int length = readVarint(buffer);
+            buffer.position(buffer.position() + length);
+        } else if (wireType == 5)
+            buffer.getInt(); // 32-bit
     }
 
     /**

@@ -498,6 +498,24 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         this.mqttClient = null;
     }
 
+    public void publishBinaryMessage(String thingID, byte[] rawPayload) {
+        MqttClient localMqttClient = mqttClient;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            try {
+                // Ensure your underlying library (e.g., HiveMQ or Paho) sends the unmodified byte[]
+                MqttMessage message = new MqttMessage(rawPayload);
+                message.setQos(1);
+                message.setRetained(false);
+                String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+
+                localMqttClient.publish(topic, message);
+                logger.debug("Successfully published {} binary bytes to topic: {}", rawPayload.length, topic);
+            } catch (Exception e) {
+                logger.error("Failed to transmit outbound binary B01 payload over MQTT", e);
+            }
+        }
+    }
+
     public int sendRPCCommand(String method, String params, String thingID, String localKey, byte[] nonce, int id)
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
