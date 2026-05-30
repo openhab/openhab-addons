@@ -54,8 +54,8 @@ public class UniFiAppDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     private final Logger logger = LoggerFactory.getLogger(UniFiAppDiscoveryService.class);
 
-    private static final ThingTypeUID ACCESS_BRIDGE = new ThingTypeUID("unifiaccess", "bridge");
-    private static final ThingTypeUID PROTECT_NVR = new ThingTypeUID("unifiprotect", "nvr");
+    private static final ThingTypeUID ACCESS_BRIDGE = new ThingTypeUID("unifi", "bridge");
+    private static final ThingTypeUID PROTECT_NVR = new ThingTypeUID("unifi", "nvr");
     private static final ThingTypeUID NETWORK_SITE = new ThingTypeUID("unifi", "site");
 
     private static final Set<ThingTypeUID> SUPPORTED_TYPES = Set.of(ACCESS_BRIDGE, PROTECT_NVR, NETWORK_SITE);

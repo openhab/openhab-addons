@@ -68,8 +68,6 @@ Bridge unifi:controller:udm "UDM Pro" [
 
 ## Upgrading from earlier UniFi bindings
 
-### Who needs to read this
-
 If you previously ran any of the UniFi Network, UniFi Protect, or UniFi Access bindings, follow these steps after upgrading.
 New installations can skip to the next section.
 
