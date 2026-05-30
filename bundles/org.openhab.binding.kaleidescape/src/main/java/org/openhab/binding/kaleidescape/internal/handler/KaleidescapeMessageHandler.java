@@ -233,8 +233,8 @@ public enum KaleidescapeMessageHandler {
 
             // per API reference rev 3.3.1, ASPECT_RATIO message should not be used
             // the first element of SCREEN_MASK now provides this info
-            if (!message.equals(EMPTY)) {
-                String[] msgSplit = message.split(":", 2);
+            if (!EMPTY.equals(message)) {
+                final String[] msgSplit = message.split(":", 2);
                 handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO, new StringType(
                         KaleidescapeStatusCodes.ASPECT_RATIO.getOrDefault(msgSplit[0], UNKNOWN + msgSplit[0])));
             }
@@ -424,8 +424,7 @@ public enum KaleidescapeMessageHandler {
                             try {
                                 ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
                                         .timeout(10, TimeUnit.SECONDS).send();
-                                int httpStatus = contentResponse.getStatus();
-                                if (httpStatus == OK_200) {
+                                if (contentResponse.getStatus() == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
                                             new RawType(contentResponse.getContent(), "image/jpeg"));
                                 } else {
