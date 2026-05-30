@@ -564,7 +564,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
+|         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                              |
 |         |              |          |           |                                                                                 |
@@ -593,14 +593,14 @@ In this case the is no real measurement based on power consumption, but the Shel
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly 3EM (thing-type: shellyem3)
@@ -625,8 +625,8 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
@@ -634,8 +634,8 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
@@ -643,10 +643,10 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+| nmeter | ncurrent      | Number   | yes       | Neutral current based on N clamp (requires calibration)                           |
 |        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
 |        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
 |        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
@@ -674,7 +674,7 @@ Check the Shelly documentation for details._
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter  | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
 |        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -691,7 +691,7 @@ Check the Shelly documentation for details._
 |        | stopReason   | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                  |
 |        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off               |
 | meter  | currentWatts | Number        | yes       | Current power consumption in Watts                                                    |
-|        | lastPower1   | Number        | yes       | Accumulated energy consumption in Watts for the full last minute                      |
+|        | lastPower1   | Number        | yes       | Average power consumption during the previous minute                                  |
 |        | totalKWH     | Number        | yes       | Total energy consumption in kWh since the device powered up (reset on restart)        |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
 
@@ -773,7 +773,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -855,7 +855,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | temperature  | Number   | r/w       | color temperature (K): 0..100% or 2700..6500                                    |
 |         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption in Watts for a round minute, 1 minute  ago                   |
+|         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -1186,8 +1186,8 @@ If the Shelly Add-On is installed:
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 If the Shelly Add-On is installed:
@@ -1216,8 +1216,8 @@ If the Shelly Add-On is installed:
 |        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter1 | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 | relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
 |        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
@@ -1227,8 +1227,8 @@ If the Shelly Add-On is installed:
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter2 | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Plus 2L (thing-type: shellyplus2l)
@@ -1294,8 +1294,8 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                                |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Plus Power Strip 4 (thing-type: shellyplusstrip)
@@ -1325,18 +1325,18 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
@@ -1353,33 +1353,33 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+| nmeter | ncurrent      | Number   | yes       | Neutral current based on N clamp (requires calibration)                           |
 |        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
 |        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
 |        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
@@ -1402,8 +1402,8 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 `Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
@@ -1483,20 +1483,20 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+|       | frequency    | Number   | yes       | Grid frequency in Hertz (Hz)                                                      |
 
 ### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+|       | frequency    | Number   | yes       | Grid frequency in Hertz (Hz)                                                      |
 
 ### Shelly Plus EM (thing-type: shellyemmini)
 
@@ -1512,19 +1512,19 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 
@@ -1570,8 +1570,8 @@ There are no additional channels besides the device group.
 |       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Pro 1CB (thing-type: shellypro1cb)
@@ -1620,8 +1620,8 @@ There are no additional channels besides the device group.
 |        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter  | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
-|        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
+|        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Pro 2 PM - roller mode (thing-type: shellypro2pm-roller)
@@ -1636,8 +1636,8 @@ There are no additional channels besides the device group.
 |        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off              |
 |        | event        | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
 | meter  | currentWatts | Number        | yes       | Current power consumption in Watts                                                   |
-|        | lastPower1   | Number        | yes       | Energy consumption for a round minute, 1 minute  ago                                 |
-|        | totalKWH     | Number        | yes       | Total energy consumption in kwh since the device powered up (resets on restart)      |
+|        | lastPower1   | Number        | yes       | Average power consumption during the previous minute                                 |
+|        | totalKWH     | Number        | yes       | Total energy consumption in kWh since the device powered up (resets on restart)      |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                    |
 
 ### Shelly Pro 3 (thing-type: shellypro3)
@@ -1671,31 +1671,31 @@ There are no additional channels besides the device group.
 | Group  | Channel       | Type     | read-only | Description                                                                       |
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Pro EM-50 (thing-type: shellyproem50)
@@ -1703,22 +1703,22 @@ There are no additional channels besides the device group.
 | Group  | Channel       | Type     | read-only | Description                                                                       |
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
-|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | relay  | output        | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
 |        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
