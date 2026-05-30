@@ -187,8 +187,7 @@ export class ControllerNode {
                 node?.events.initializedFromRemote.once(() => {
                     logger.info(`Node ${node?.nodeId} initialized from remote`);
                     if (timeoutId) clearTimeout(timeoutId);
-                    // Emit a synthetic Connected event so the client knows the resume completed,
-                    // since matter.js may not fire stateChanged when reusing an already-connected node.
+                    // Send a connected event so the client knows the resume completed
                     this.ws.sendEvent(EventType.NodeStateInformation, {
                         nodeId: node!.nodeId,
                         state: NodeStates[NodeStates.Connected],
@@ -204,10 +203,7 @@ export class ControllerNode {
             throw new Error(`Node ${nodeId} not connected`);
         }
         this.nodes.set(node.nodeId, node);
-
-        // Register state/structure/decommission listeners BEFORE node.connect() so we capture the
-        // WaitingForDeviceDiscovery → Reconnecting → Connected transitions matter.js 0.17 fires
-        // during connect (in 0.16 these fired after initializedFromRemote and were caught below).
+        
         node.events.stateChanged.on(info => {
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
@@ -230,8 +226,8 @@ export class ControllerNode {
             });
         });
 
-        // attributeChanged and eventTriggered only need to be wired up once initial priming completes,
-        // to avoid forwarding the priming burst as user-visible updates.
+        // attributeChanged and eventTriggered only need to be wired up once initialization completes,
+        // to avoid forwarding the init state updates as user visible updates.
         node.events.initializedFromRemote.once(() => {
             node!.events.attributeChanged.on(data => {
                 data.path.nodeId = node!.nodeId;
@@ -243,8 +239,8 @@ export class ControllerNode {
                 this.ws.sendEvent(EventType.EventTriggered, data);
             });
 
-            // Defense in depth: emit a synthetic Connected event in case the stateChanged transition
-            // to Connected was coalesced/missed despite the early listener attachment above.
+            // send a connected event in case the stateChanged transition
+            // to connected was missed despite the early listener attachment above.
             this.ws.sendEvent(EventType.NodeStateInformation, {
                 nodeId: node!.nodeId,
                 state: NodeStates[NodeStates.Connected],

@@ -302,7 +302,6 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
         const ct = dt.children?.[0].type;
         //if the type is cluster.type then its referring to type in another cluster
         if (ct && ct.indexOf(".") > 0) {
-            // Cross-cluster scalar typedef → resolve to underlying primitive
             const resolved = crossClusterTypedefs.get(ct);
             if (resolved) {
                 mappedType = `List<${resolved}>`;
@@ -314,7 +313,6 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
             mappedType = `List<${toUpperCamelCase((ct && mappings.get(ct)) || ct)}>`;
         }
     } else if (mappedType && mappedType.indexOf(".") > 0) {
-        // Cross-cluster scalar typedef → resolve to underlying primitive
         const resolved = crossClusterTypedefs.get(mappedType);
         if (resolved) {
             mappedType = resolved;
@@ -378,8 +376,8 @@ globalDataTypes.forEach(dt => {
         globalTypeMapping.set(dt.name, javaType);
     } else if (dt.type === "struct" || dt.type?.startsWith("enum") || dt.type?.startsWith("map")) {
         // Global enum/struct/bitmap datatypes are emitted as inner classes on BaseCluster.
-        // Subclasses inherit these, so reference them by their camel-cased class name
-        // (e.g. field `type: "currency"` → Java type `Currency`).
+        // Subclasses inherit these, so reference them by their camel cased class name
+        // (e.g. field `type: "currency"` -->  Java type `Currency`).
         globalTypeMapping.set(dt.name, toUpperCamelCase(dt.name));
     }
 });
@@ -390,9 +388,9 @@ globalAttributes.forEach(
     dt => matterNativeTypeToJavaNativeType(dt) && globalTypeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt)),
 );
 
-// Pre-pass: walk every cluster's `datatype` children and register scalar typedef aliases
-// (e.g. "CameraAvStreamManagement.VideoStreamID" → "Integer") in the cross-cluster registry.
-// Done once before per-cluster processing so typeMapper can resolve cross-cluster references
+// walk every cluster's `datatype` children and register scalar typedef aliases
+// (e.g. "CameraAvStreamManagement.VideoStreamID" --> "Integer") in the cluster registry.
+// Done once before per cluster processing so typeMapper can resolve luster references
 // to primitives without depending on the order clusters are visited in.
 (matterData.children as ClusterElement[])
     .filter(c => c.tag === "cluster")
@@ -416,8 +414,8 @@ const clusters: ExtendedClusterElement[] =
             const typeMapping = new Map<string, string | undefined>(globalTypeMapping);
             const dataTypes = (cluster.children || []).filter(c => c.tag === "datatype") as DatatypeElement[];
 
-            // Register cluster-local datatypes (typedef aliases) BEFORE processing structs/attributes/commands
-            // so subsequent typeMapper calls can resolve cluster-local scalar aliases (e.g. VideoStreamID → Integer).
+            // Register cluster local datatypes (typedef aliases) BEFORE processing structs/attributes/commands
+            // so subsequent typeMapper calls can resolve cluster local scalar aliases (e.g. VideoStreamID --> Integer).
             dataTypes?.forEach(dt => {
                 if (dt.type && dt.type.indexOf(".") > 0) {
                     return typeMapping.set(dt.name, dt.type);
@@ -567,9 +565,7 @@ clusters.forEach(cluster => {
     });
 });
 
-// Compile Handlebars templates with `noEscape: true` so `{{...}}` does not HTML-encode values.
-// We are generating Java source code, not HTML — apostrophes, quotes, ampersands and angle
-// brackets should appear verbatim in javadoc comments and string literals.
+// Use `noEscape` so `{{...}}` does not HTML-encode values
 const templateOptions: Parameters<typeof handlebars.compile>[1] = { noEscape: true };
 const clusterSource = fs.readFileSync("src/templates/cluster-class.java.hbs", "utf8");
 const clusterTemplate = handlebars.compile(clusterSource, templateOptions);
@@ -636,7 +632,7 @@ fs.writeFileSync(`out/DeviceTypes.java`, deviceTypeClass);
 // that specify a `type` (i.e. they inherit from another cluster) with their parent cluster.
 // The child cluster should override any definitions from the parent.  We also keep the parent
 // cluster in the array so that other children can still inherit from it if necessary, but we will skip emitting any
-// Java source for clusters that don't have a `CLUSTER_ID` (those are the abstract parent definitions).
+// Java source for clusters that don't have a `CLUSTER_ID` (the abstract parent definitions).
 
 // Helper to merge two lists of schema objects (attributes, commands, etc.) where the child overrides the parent on
 // duplicate `name` values.
@@ -722,7 +718,7 @@ fs.writeFileSync(`out/ClusterRegistry.java`, clusterRegistryClass);
 const clusterConstantsClass = clusterConstantsTemplate({ clusters: concreteClusters });
 fs.writeFileSync(`out/ClusterConstants.java`, clusterConstantsClass);
 
-// Build namespace → tags structure expected by the template
+// Build namespace to tags structure expected by the template
 const namespaces = Object.entries(MatterNode)
     .filter(([name]) => name.endsWith("Tag"))
     .map(([rawName, tagDefs]: [string, any]) => {

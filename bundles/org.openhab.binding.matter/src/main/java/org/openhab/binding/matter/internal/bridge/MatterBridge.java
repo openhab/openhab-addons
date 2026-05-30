@@ -444,8 +444,7 @@ public class MatterBridge implements MatterClientListener {
 
     private synchronized void doRegisterItems(boolean isRetry) {
         if (!client.isConnected()) {
-            // registerItems() is also scheduled by item/metadata changes (updateModifyFuture). On
-            // startup that scheduled run can fire before the bridge websocket is connected; skip it,
+            // on startup that scheduled run can fire before the bridge websocket is connected
             // as onReady() performs a full registration once the connection is established.
             logger.debug("Bridge not connected, deferring item registration");
             return;
