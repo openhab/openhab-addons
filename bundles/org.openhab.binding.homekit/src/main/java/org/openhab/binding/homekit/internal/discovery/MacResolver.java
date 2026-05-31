@@ -276,6 +276,7 @@ public class MacResolver {
         } catch (Exception e) {
             logger.debug("{} ping failed", ip, e);
             completeWithNull(ip, future);
+            return;
         }
         if (!reachable) {
             logger.debug("{} not reachable", ip);

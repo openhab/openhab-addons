@@ -217,7 +217,7 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService im
         }
 
         // slow path: complete later when MAC is resolved
-        macFuture.thenAccept(mac -> {
+        macFuture.whenComplete((mac, ex) -> {
             if (mac != null) {
                 macAddressResolved(info.ip, mac);
             } else {
