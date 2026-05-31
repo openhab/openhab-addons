@@ -19,13 +19,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ValidationError {
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private List<String> loc = new ArrayList<>();
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String msg;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private String type;
 
     /**
