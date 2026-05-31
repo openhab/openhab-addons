@@ -566,7 +566,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
 |         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
-|         | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                              |
+|         | frequency    | Number   | yes       | Grid frequency (Hz) - Gen4 only                                                 |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 | sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)        |
@@ -869,7 +869,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 | white   |              |          |           | Color settings: only valid in WHITE mode                                        |
 |         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -948,7 +948,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |         | effect       | Number   | r/w       | Puts the light into effect mode: 0..3)                                          |
 |         |              |          |           | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                         |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | Average power consumption during the previous minute                            |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
@@ -1518,7 +1518,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
+|        | frequency     | Number   | yes       | Grid frequency (Hz)                                                               |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
@@ -1526,7 +1526,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
-|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
+|        | frequency     | Number   | yes       | Grid frequency (Hz)                                                               |
 
 ## Shelly Pro Series
 

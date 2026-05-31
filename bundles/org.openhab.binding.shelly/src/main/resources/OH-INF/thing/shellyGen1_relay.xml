@@ -564,7 +564,7 @@
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
-		<description>Instantaneous reactive power in VAR</description>
+		<description>Instantaneous reactive power in Watts</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -648,7 +648,7 @@
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description>Power factor (ratio of real to apparent power, range -1.0 to 1.0)</description>
+		<description>Power factor (ratio of real to apparent power)</description>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
