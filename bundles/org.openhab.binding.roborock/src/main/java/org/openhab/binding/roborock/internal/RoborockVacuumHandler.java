@@ -1318,10 +1318,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     thingBuilder.withChannel(channel);
                     cnt++;
                 } else {
-                    logger.debug("ChannelType {} not found (Unexpected). Available types:",
+                    logger.trace("ChannelType {} not found (Unexpected). Available types:",
                             capability.getChannelType());
                     for (ChannelType ct : channelTypeRegistry.getChannelTypes()) {
-                        logger.debug("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
+                        logger.trace("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
                                 ct.getConfigDescriptionURI());
                     }
                 }
