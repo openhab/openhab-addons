@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.jmdns.ServiceInfo;
 
@@ -118,7 +119,7 @@ class TestHomekitMdnsDiscoveryParticipant {
     void testImmediateDiscoveryWhenMacCached() {
         ServiceInfo svc = mockService("10.0.0.2", "AA:BB:CC:DD:EE:FF", 1);
 
-        when(macResolver.resolveMac("10.0.0.2")).thenReturn("AA:BB:CC:DD:EE:FF");
+        when(macResolver.resolveMac("10.0.0.2")).thenReturn(CompletableFuture.completedFuture("AA:BB:CC:DD:EE:FF"));
 
         DiscoveryResult result = participant.createResult(svc);
 
@@ -130,8 +131,11 @@ class TestHomekitMdnsDiscoveryParticipant {
     void testDeferredDiscoveryWhenMacNotCached() {
         ServiceInfo svc = mockService("10.0.0.3", "11:22:33:44:55:66", 1);
 
-        when(macResolver.resolveMac("10.0.0.3")).thenReturn(null);
+        // MAC not cached → return an incomplete future
+        CompletableFuture<String> future = new CompletableFuture<>();
+        when(macResolver.resolveMac("10.0.0.3")).thenReturn(future);
 
+        // createResult should return null because MAC is not yet known
         DiscoveryResult result = participant.createResult(svc);
 
         assertNull(result);
@@ -141,12 +145,19 @@ class TestHomekitMdnsDiscoveryParticipant {
     void testAsyncCallbackPublishesResult() {
         ServiceInfo svc = mockService("10.0.0.4", "22:33:44:55:66:77", 1);
 
-        when(macResolver.resolveMac("10.0.0.4")).thenReturn(null);
+        // Create a future that is NOT completed yet
+        CompletableFuture<String> future = new CompletableFuture<>();
+        when(macResolver.resolveMac("10.0.0.4")).thenReturn(future);
 
-        participant.createResult(svc);
+        // First call: MAC not yet known → no immediate result
+        DiscoveryResult result = participant.createResult(svc);
+        assertNull(result);
+        assertNull(participant.lastDiscovered);
 
-        participant.macAddressResolved("10.0.0.4", "22:33:44:55:66:77");
+        // Now complete the future asynchronously
+        future.complete("22:33:44:55:66:77");
 
+        // The participant should now have published the discovery
         assertNotNull(participant.lastDiscovered);
         assertEquals("22:33:44:55:66:77", participant.lastDiscovered.getProperties().get("macAddress"));
     }
@@ -155,15 +166,28 @@ class TestHomekitMdnsDiscoveryParticipant {
     void testNoDuplicateDiscoveryUnderRace() {
         ServiceInfo svc = mockService("10.0.0.5", "33:44:55:66:77:88", 1);
 
-        when(macResolver.resolveMac("10.0.0.5")).thenAnswer(inv -> {
-            participant.macAddressResolved("10.0.0.5", "33:44:55:66:77:88");
-            return "33:44:55:66:77:88";
-        });
+        // Create a future that we can complete manually
+        CompletableFuture<String> future = new CompletableFuture<>();
+        when(macResolver.resolveMac("10.0.0.5")).thenReturn(future);
 
-        participant.createResult(svc);
+        // First call: MAC not yet known → no immediate result
+        DiscoveryResult result = participant.createResult(svc);
+        assertNull(result);
+        assertNull(participant.lastDiscovered);
 
+        // Complete the future once
+        future.complete("33:44:55:66:77:88");
+
+        // Participant should publish exactly one discovery
         assertNotNull(participant.lastDiscovered);
         assertEquals("33:44:55:66:77:88", participant.lastDiscovered.getProperties().get("macAddress"));
+
+        // Try completing again — should NOT publish a second discovery
+        participant.lastDiscovered = null; // reset to detect duplicates
+        future.complete("33:44:55:66:77:88");
+
+        // No new discovery should be published
+        assertNull(participant.lastDiscovered);
     }
 
     @Test

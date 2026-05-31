@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
@@ -76,8 +77,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = { MDNSDiscoveryParticipant.class, DiscoveryService.class }, immediate = true, property = {
         "class.id=homekit" })
-public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
-        implements MDNSDiscoveryParticipant, MacResolverListener {
+public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
@@ -163,12 +163,10 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
             }
         }
         macResolver = resolver;
-        macResolver.addMacResolverListener(this);
     }
 
     @Deactivate
     protected void deactivate() {
-        macResolver.removeMacResolverListener(this);
         pendingDiscoveryResults.clear();
         mappedThingIdCache.clear();
     }
@@ -196,40 +194,56 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
         if (info == null) {
             return null;
         }
-        if (pendingDiscoveryResults.putIfAbsent(info.ip, info) != null) {
+
+        // if we already have a pending entry, don't start another pipeline
+        DiscoveryInfo existing = pendingDiscoveryResults.putIfAbsent(info.ip, info);
+        if (existing != null) {
             return null;
         }
-        String mac = macResolver.resolveMac(info.ip);
-        if (mac != null) {
-            info = pendingDiscoveryResults.remove(info.ip);
-            if (info == null) {
-                return null;
+
+        CompletableFuture<@Nullable String> macFuture = macResolver.resolveMac(info.ip);
+        // fast path: MAC already cached / future already completed
+        if (macFuture.isDone()) {
+            String mac = macFuture.getNow(null);
+            pendingDiscoveryResults.remove(info.ip);
+            if (mac != null) {
+                DiscoveryResult result = buildDiscoveryResult(info.withMac(mac));
+                if (result != null) {
+                    logger.trace("{}", result);
+                    return result;
+                }
             }
-            DiscoveryResult result = buildDiscoveryResult(info.withMac(mac));
-            if (result != null) {
-                logger.trace("Instant {}", result);
-                return result;
-            }
+            return null;
         }
-        return null;
+
+        // slow path: complete later when MAC is resolved
+        macFuture.thenAccept(mac -> {
+            if (mac != null) {
+                macAddressResolved(info.ip, mac);
+            } else {
+                pendingDiscoveryResults.remove(info.ip);
+                logger.debug("IP {} did not resolve", info.ip);
+            }
+        });
+
+        return null; // no immediate result
     }
 
     /**
-     * Callback from the MacResolver when a MAC address is resolved asynchronously. If the pending
+     * Lambda method called from the MacResolver when a MAC address is resolved asynchronously. If the pending
      * discovery result still exists the discovery result is built and published as a Thing.
      * 
      * @param ip the IP address for which the MAC address was resolved.
      * @param mac the resolved MAC address.
      */
-    @Override
-    public void macAddressResolved(String ip, String mac) {
+    private void macAddressResolved(String ip, String mac) {
         DiscoveryInfo info = pendingDiscoveryResults.remove(ip); // no longer pending
         if (info == null) {
             return;
         }
         DiscoveryResult result = buildDiscoveryResult(info.withMac(mac));
         if (result != null) {
-            logger.trace("Delayed {}", result);
+            logger.trace("{}", result);
             thingDiscovered(result);
         }
     }
@@ -284,7 +298,7 @@ public class HomekitMdnsDiscoveryParticipant extends AbstractDiscoveryService
         if (info == null) {
             return null;
         }
-        String mac = macResolver.resolveMac(info.ip);
+        String mac = macResolver.resolveMac(info.ip).getNow(null);
         if (mac != null) {
             info = info.withMac(mac);
         }

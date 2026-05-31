@@ -14,9 +14,11 @@ package org.openhab.binding.homekit.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.Instant;
-import java.util.concurrent.CountDownLatch;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,6 +39,7 @@ class TestMacResolver {
 
     @BeforeEach
     void setup() throws Exception {
+        macResolver.activate();
         macResolver.testClearCache();
     }
 
@@ -46,17 +49,31 @@ class TestMacResolver {
 
     @Test
     void testNormalizeMac() throws Exception {
-        assertEquals("AA:BB:CC:DD:EE:FF", normalize("aa-bb-cc-dd-ee-ff"));
-        assertEquals("AA:BB:CC:DD:EE:FF", normalize("AA:BB:CC:DD:EE:FF"));
-        assertEquals("AA:BB:CC:DD:EE:FF", normalize("aa:bb:cc:dd:ee:ff"));
+        assertEquals("AA:BB:CC:DD:EE:FF", normalizeMac("aa-bb-cc-dd-ee-ff"));
+        assertEquals("AA:BB:CC:DD:EE:FF", normalizeMac("AA:BB:CC:DD:EE:FF"));
+        assertEquals("AA:BB:CC:DD:EE:FF", normalizeMac("aa:bb:cc:dd:ee:ff"));
     }
 
     @Test
     void testIsValidMac() throws Exception {
-        assertTrue(isValid("AA:BB:CC:DD:EE:FF"));
-        assertFalse(isValid("00:00:00:00:00:00"));
-        assertFalse(isValid("AA:BB:CC:DD:EE")); // too short
-        assertFalse(isValid("GG:HH:II:JJ:KK:LL")); // invalid hex
+        assertTrue(isValidMac("AA:BB:CC:DD:EE:FF"));
+        assertFalse(isValidMac("00:00:00:00:00:00"));
+        assertFalse(isValidMac("AA:BB:CC:DD:EE")); // too short
+        assertFalse(isValidMac("GG:HH:II:JJ:KK:LL")); // invalid hex
+    }
+
+    @Test
+    void testNormalizeIP() throws Exception {
+        assertEquals("192.168.1.1", normalizeIp("192.168.1.1:1234"));
+        assertEquals("192.168.1.1", normalizeIp("192.168.1.1"));
+    }
+
+    @Test
+    void testIsValidIp() throws Exception {
+        assertTrue(isValidIp("192.168.1.1"));
+        assertFalse(isValidIp("192.168.1.1:1234"));
+        assertTrue(isValidIp(normalizeIp("192.168.1.1:1234")));
+        assertFalse(isValidIp("999.999.999.999"));
     }
 
     // -----------------------------
@@ -100,9 +117,9 @@ class TestMacResolver {
     @Test
     void testCacheHitShortCircuitsLookup() throws Exception {
         macResolver.testClearCache();
-        macResolver.testPutCached("10.0.0.5", "AA:BB:CC:DD:EE:FF", Instant.now().plusSeconds(60));
+        macResolver.testPutCached("127.0.0.1", "AA:BB:CC:DD:EE:FF", Instant.now().plusSeconds(60));
 
-        String mac = resolveMac("10.0.0.5");
+        String mac = macResolver.resolveMac("127.0.0.1").get(1, TimeUnit.SECONDS);
 
         assertEquals("AA:BB:CC:DD:EE:FF", mac);
     }
@@ -118,8 +135,8 @@ class TestMacResolver {
 
     @Test
     void testBlankIpReturnsNull() throws Exception {
-        assertNull(resolveMac(""));
-        assertNull(resolveMac("   "));
+        assertNull(macResolver.resolveMac("").get(1, TimeUnit.SECONDS));
+        assertNull(macResolver.resolveMac("   ").get(1, TimeUnit.SECONDS));
     }
 
     // -----------------------------
@@ -147,71 +164,91 @@ class TestMacResolver {
     void testListenerIsNotifiedOnMacResolution() throws Exception {
         macResolver.testClearCache();
 
-        // --- Arrange ---
-        String ip = "192.168.10.20";
+        String ip = "127.0.0.1";
         String mac = "AA:BB:CC:DD:EE:FF";
 
-        // Use a latch to wait for async callback
-        CountDownLatch latch = new CountDownLatch(1);
+        // Simulate ARP output line
+        String arpLine = ip + "     " + mac.replace(":", "-").toLowerCase() + "     dynamic";
+        invokePrivate("parseLine", String.class, arpLine);
 
-        final String[] callbackIp = new String[1];
-        final String[] callbackMac = new String[1];
+        // Now resolveMac should return a completed future
+        CompletableFuture<String> future = macResolver.resolveMac(ip);
 
-        MacResolverListener listener = (resolvedIp, resolvedMac) -> {
-            callbackIp[0] = resolvedIp;
-            callbackMac[0] = resolvedMac;
-            latch.countDown();
-        };
-
-        macResolver.addMacResolverListener(listener);
-
-        try {
-            // --- Act ---
-            // Simulate ARP output line that parseLine() would see
-            String arpLine = ip + "     " + mac.replace(":", "-").toLowerCase() + "     dynamic";
-            invokePrivate("parseLine", String.class, arpLine);
-
-            // Wait for listener to be notified (async)
-            boolean notified = latch.await(1, TimeUnit.SECONDS);
-
-            // --- Assert ---
-            assertTrue(notified, "Listener should have been notified");
-            assertEquals(ip, callbackIp[0]);
-            assertEquals(mac, callbackMac[0]);
-
-        } finally {
-            macResolver.removeMacResolverListener(listener);
-        }
+        assertTrue(future.isDone(), "Future should be completed immediately");
+        assertEquals(mac, future.get(1, TimeUnit.SECONDS));
     }
 
     @Test
     void testListenerNotNotifiedTwiceForSameIp() throws Exception {
         macResolver.testClearCache();
 
-        String ip = "10.0.0.99";
+        String ip = "127.0.0.1";
+        String mac = "AA:BB:CC:DD:EE:FF";
 
+        // First ARP line
+        invokePrivate("parseLine", String.class, ip + " " + mac);
+
+        CompletableFuture<String> future = macResolver.resolveMac(ip);
+        assertEquals(mac, future.get(1, TimeUnit.SECONDS));
+
+        // Reset detection state
         AtomicInteger counter = new AtomicInteger(0);
 
-        MacResolverListener listener = (resolvedIp, resolvedMac) -> counter.incrementAndGet();
-        macResolver.addMacResolverListener(listener);
+        // Wrap resolveMac to count completions
+        CompletableFuture<String> f2 = macResolver.resolveMac(ip).thenApply(m -> {
+            counter.incrementAndGet();
+            return m;
+        });
 
-        try {
-            // Simulate two ARP lines for the same IP
-            invokePrivate("parseLine", String.class, ip + " aa:bb:cc:dd:ee:ff");
-            invokePrivate("parseLine", String.class, ip + " aa:bb:cc:dd:ee:ff");
+        // Second ARP line (duplicate)
+        invokePrivate("parseLine", String.class, ip + " " + mac);
 
-            // Give async notifications time to fire
-            Thread.sleep(100);
+        // Future should still complete only once
+        assertEquals(mac, f2.get(1, TimeUnit.SECONDS));
+        assertEquals(1, counter.get(), "MAC resolution should only complete once");
+    }
 
-            assertEquals(1, counter.get(), "Listener should be notified exactly once");
+    @Test
+    void testParallelResolveMacSharesPendingFutureEntry() throws Exception {
+        macResolver.testClearCache();
 
-        } finally {
-            macResolver.removeMacResolverListener(listener);
-        }
+        // Use a guaranteed-local IP so isOnLocalSubnet(ip) passes
+        String ip = "127.0.0.1";
+
+        // Access private pendingFutures map
+        Field f = MacResolver.class.getDeclaredField("pendingFutures");
+        f.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, CompletableFuture<String>> pending = (Map<String, CompletableFuture<String>>) f.get(macResolver);
+        assertNotNull(pending, "pendingFutures map should not be null");
+
+        // Trigger two parallel resolveMac calls
+        CompletableFuture<String> f1 = macResolver.resolveMac(ip);
+        CompletableFuture<String> f2 = macResolver.resolveMac(ip);
+
+        // Assert: two distinct CompletableFuture objects returned
+        assertNotSame(f1, f2, "resolveMac must return two different CompletableFutures");
+
+        // Assert: pendingFutures contains exactly ONE entry for this IP
+        assertEquals(1, pending.size(), "pendingFutures must contain exactly one shared entry");
+        assertTrue(pending.containsKey(ip), "pendingFutures must contain the IP key");
+
+        // Assert: both returned futures wrap the SAME underlying pending future
+        CompletableFuture<String> shared = pending.get(ip);
+        assertNotNull(shared, "pendingFutures entry must not be null");
+
+        assertFalse(f1.isDone(), "f1 should not be completed yet");
+        assertFalse(f2.isDone(), "f2 should not be completed yet");
+
+        // f1 and f2 should both complete when shared completes
+        shared.complete("AA:BB:CC:DD:EE:FF");
+
+        assertEquals("AA:BB:CC:DD:EE:FF", f1.get(1, TimeUnit.SECONDS));
+        assertEquals("AA:BB:CC:DD:EE:FF", f2.get(1, TimeUnit.SECONDS));
     }
 
     // -------------------------------------------------------
-    // Reflection helpers to call private static methods
+    // Reflection helpers to call private methods
     // -------------------------------------------------------
 
     private Object invokePrivate(String method, Class<?> paramType, Object arg) throws Exception {
@@ -224,16 +261,20 @@ class TestMacResolver {
         invokePrivate("parseLine", String.class, line);
     }
 
-    private String normalize(String mac) throws Exception {
+    private String normalizeMac(String mac) throws Exception {
         return (String) invokePrivate("normalizeMac", String.class, mac);
     }
 
-    private boolean isValid(String mac) throws Exception {
+    private String normalizeIp(String ip) throws Exception {
+        return (String) invokePrivate("normalizeIp", String.class, ip);
+    }
+
+    private boolean isValidMac(String mac) throws Exception {
         return (boolean) invokePrivate("isValidMac", String.class, mac);
     }
 
-    private String resolveMac(String ip) throws Exception {
-        return (String) invokePrivate("resolveMac", String.class, ip);
+    private boolean isValidIp(String ip) throws Exception {
+        return (boolean) invokePrivate("isValidIp", String.class, ip);
     }
 
     private void runCommand(String... cmd) throws Exception {

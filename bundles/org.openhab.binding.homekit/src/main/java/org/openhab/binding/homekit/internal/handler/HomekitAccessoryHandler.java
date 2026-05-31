@@ -1022,21 +1022,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     @Override
-    protected void createProperties() {
-        // remove any inappropriate MAC address property e.g. applied via Thing migration
-        if (isBridgedAccessory && thing.getProperties().containsKey(Thing.PROPERTY_MAC_ADDRESS)) {
-            Map<String, String> props = new HashMap<>(thing.getProperties());
-            if (props.remove(Thing.PROPERTY_MAC_ADDRESS) != null) {
-                ThingBuilder builder = editThing();
-                builder.withProperties(props);
-                updateThing(builder.build());
-            }
-        }
-
-        super.createProperties();
-    }
-
-    @Override
     public void onEvent(String json) {
         updateChannelsFromJson(json);
     }
