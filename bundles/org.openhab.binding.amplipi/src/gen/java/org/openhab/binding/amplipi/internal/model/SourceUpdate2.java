@@ -29,7 +29,7 @@ public class SourceUpdate2 {
     @Schema
     private String input;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer id;
 
     /**
