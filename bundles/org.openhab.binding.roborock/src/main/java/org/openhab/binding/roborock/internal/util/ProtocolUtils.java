@@ -440,7 +440,6 @@ public final class ProtocolUtils {
                         connectNonce, ackNonce);
             } else if (VERSION_B01.equals(header.version) || VERSION_B01_ALT.equals(header.version)) {
                 decryptedResult = decryptB01(payload, localKey, header.random);
-                LOGGER.debug("decryptedResult = {}", new String(decryptedResult, StandardCharsets.UTF_8));
             } else {
                 String encryptionKey = encodeTimestamp(header.timestamp) + localKey + SALT;
                 decryptedResult = decrypt(payload, encryptionKey);

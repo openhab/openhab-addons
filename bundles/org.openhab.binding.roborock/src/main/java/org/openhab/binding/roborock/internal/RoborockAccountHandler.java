@@ -709,6 +709,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Params = Map.of("status", 6);
                 }
                 break;
+            case COMMAND_GET_NETWORK_INFO:
+                b01Method = "service.get_net_info";
+                b01Params = Map.of();
+                break;
             case COMMAND_GET_STATUS:
                 b01Method = "prop.get";
                 com.google.gson.JsonArray statusProps = new com.google.gson.JsonArray();
