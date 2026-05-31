@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ShellyThingConfiguration {
     /*
      * deviceIp vs. deviceAddress - serve different purposes:
-     * deviceIp: IP address, hostname, or `host:port`
+     * deviceIp: IP address, hostname, or host:port
      * deviceAddress: BLU devices only - Bluetooth Device Address
      */
 
