@@ -57,6 +57,10 @@ jobs:
         with:
           commit-message: "Resolve itest dependencies"
           title: "Resolve itest dependencies"
+          body: "PR created by workflow run (resolver.yml)\n\nCI is disabled by default for PRs created by workflow runs. After reviewing the changes, use Close and Reopen to run the CI."
           branch: "gha/resolver/${{ github.ref_name }}"
+          author: openhab-bot <bot@openhab.org>
+          committer: openhab-bot <bot@openhab.org>
           delete-branch: true
           # labels: infrastructure
+          signoff: true
