@@ -378,6 +378,17 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="contact-statevalue">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Indicates a contact state, open or closed.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="wifinetworkdiagnostics-rssi">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal</label>

@@ -235,6 +235,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_BOOLEANSTATE_STATEVALUE = "booleanstate-statevalue";
     public static final ChannelTypeUID CHANNEL_BOOLEANSTATE_STATEVALUE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_BOOLEANSTATE_STATEVALUE);
+    public static final String CHANNEL_ID_CONTACT_STATEVALUE = "contact-statevalue";
+    public static final ChannelTypeUID CHANNEL_CONTACT_STATEVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONTACT_STATEVALUE);
     public static final String CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = "otasoftwareupdaterequestor-updateavailable";
     public static final ChannelTypeUID CHANNEL_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE);
