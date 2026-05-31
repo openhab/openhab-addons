@@ -114,7 +114,7 @@ public class CallMonitor {
                 BufferedReader reader = null;
                 try {
                     logger.debug("Call Monitor thread [{}] attempting connection to FRITZ!Box on {}:{}.",
-                            Thread.currentThread().getId(), ip, MONITOR_PORT);
+                            Thread.currentThread().threadId(), ip, MONITOR_PORT);
                     socket = new Socket(ip, MONITOR_PORT);
                     reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     // reset the retry interval
