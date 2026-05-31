@@ -116,7 +116,7 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
-    public int updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+    public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
 

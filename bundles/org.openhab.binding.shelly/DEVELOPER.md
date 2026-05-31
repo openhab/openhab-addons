@@ -415,7 +415,7 @@ initialize()                      // called by openHAB on thing activation
 
 The polling job fires every `UPDATE_STATUS_INTERVAL_SECONDS` (3 s).
 Most cycles are skipped using `skipCount` (default 20), so a full status update happens
-approximately every 60sec:
+approximately every 60 s:
 
 ```text
 refreshStatus()
@@ -599,7 +599,7 @@ These two flags model the power supply and connectivity expectations:
 - **`hasBattery = true`**: The device _has_ a battery, which may be its sole power
   source or a backup.
   When true, the binding creates battery-level and low-battery channels.
-  A device can have `alwaysOn = true` and `hasBattery = true` (e.g. Shell Motion 2, which
+  A device can have `alwaysOn = true` and `hasBattery = true` (e.g. Shelly Motion 2, which
   has a battery but is always reachable over WiFi).
 
 **`updatePeriod`** reflects these modes:

@@ -16,6 +16,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
+import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
@@ -26,7 +28,7 @@ import org.openhab.core.net.NetworkAddressService;
  * {@link NetworkAddressService}) and carries the HTTP port once the OSGi HTTP
  * service has started. Thread-safe.
  *
- * Held as volatile in {@linkShellyHandlerFactory} and {@link ShellyBaseHandler} to
+ * Held as volatile in {@link ShellyHandlerFactory} and {@link ShellyBaseHandler} to
  * guarantee safe publication after @Modified callbacks.
  *
  * @author Markus Michels - Initial contribution

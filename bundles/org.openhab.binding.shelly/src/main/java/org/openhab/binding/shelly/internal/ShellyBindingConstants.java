@@ -60,7 +60,7 @@ public class ShellyBindingConstants {
     /*
      * Channel Groups Used at Runtime
      *
-     * CHANNEL_GROUP_DEV_STATUS device` Firmware, uptime, WiFi, heartbeat
+     * CHANNEL_GROUP_DEV_STATUS device Firmware, uptime, WiFi, heartbeat
      * CHANNEL_GROUP_RELAY_CONTROL relay1..n Relay output, input, timers
      * CHANNEL_GROUP_ROL_CONTROL roller Rollershutter, position, safety
      * CHANNEL_GROUP_DIMMER_CONTROL dimmer Brightness

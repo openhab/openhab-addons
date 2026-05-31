@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link ShellyManager} implements the Shelly Manager
  *
- * built-in management interface is served at `/shelly/manager` via `ShellyManagerServlet`
+ * built-in management interface is served at /shelly/manager via ShellyManagerServlet
  *
  * It provides:
  *
@@ -52,11 +52,11 @@ import org.slf4j.LoggerFactory;
  * - Per-device control panel: relay toggle, roller position, reboot, factory reset
  * - OTA firmware update trigger with version comparison
  *
- * Pages extend `ShellyManagerPage` and return an `ShellyMgrResponse` containing MIME
+ * Pages extend ShellyManagerPage and return a ShellyMgrResponse containing MIME
  * type and HTML body. The servlet routes to the appropriate page class based on URL path.
  *
- * Handlers expose themselves to the manager via `ShellyManagerInterface`, which
- * `ShellyBaseHandler` implements. `ShellyThingTable` holds the registry of all active
+ * Handlers expose themselves to the manager via ShellyManagerInterface, which
+ * ShellyBaseHandler implements. ShellyThingTable holds the registry of all active
  * handlers, making them accessible from the servlet without direct coupling.
  *
  * @author Markus Michels - Initial contribution

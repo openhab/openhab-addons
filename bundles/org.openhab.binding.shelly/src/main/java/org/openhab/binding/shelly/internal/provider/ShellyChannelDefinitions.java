@@ -128,25 +128,23 @@ public class ShellyChannelDefinitions {
          *
          * This allows:
          *
-         * - Conditional channels based on firmware/settings (e.g. `autoOn` timer only if the
-         * device actually reports `autoOn` in its settings)
-         * - Indexed channels for multi-relay/multi-meter devices (`relay1`, `relay2`, `meter2`)
+         * - Conditional channels based on firmware/settings (e.g. autoOn timer only if the
+         * device actually reports autoOn in its settings)
+         * - Indexed channels for multi-relay/multi-meter devices (relay1, relay2, meter2)
          * - Add-on sensor channels only when an add-on module is physically connected
          *
          *
          * Channel Registry
          *
-         * `CHANNEL_DEFINITIONS` is a static `ChannelMap` populated once at OSGi activation.
-         * Each entry maps a `group#channel` key to a `ShellyChannel` descriptor:
+         * CHANNEL_DEFINITIONS is a static ChannelMap populated once at OSGi activation.
+         * Each entry maps a group#channel key to a ShellyChannel descriptor:
          *
          * new ShellyChannel(translationProvider, groupId, channelId, channelTypeId, itemType)
          *
-         * The `channelTypeId` references either a system channel type (e.g. `system:power`) or
-         * a binding-specific type defined in `device.xml` (e.g. `meterWatts`).
+         * The channelTypeId references either a system channel type (e.g. system:power) or
+         * a binding-specific type defined in device.xml (e.g. meterWatts).
          *
-         * ### Dynamic Channel Creation
-         *
-         * All `createXXX()` methods follow the same pattern:
+         * Dynamic Channel Creation - All createXXX() methods follow the same pattern:
          *
          * public static Map<String, Channel> createRelayChannels(Thing thing,
          * ShellyDeviceProfile profile, ShellySettingsRelay rstatus, int idx) {
@@ -160,20 +158,12 @@ public class ShellyChannelDefinitions {
          * ...
          * return add;
          * }
-         * ```
          *
-         * `addChannel(thing, add, condition, group, channelId)` creates a `Channel` from the
-         * type and item type registered in `CHANNEL_DEFINITIONS`, and inserts it into `add` only
-         * when `condition` is `true` and the channel does not already exist on the thing.
+         * addChannel(thing, add, condition, group, channelId) creates a Channel from the
+         * type and item type registered in CHANNEL_DEFINITIONS, and inserts it into add only
+         * when condition is true and the channel does not already exist on the thing.
          *
-         * The collected maps are merged and applied in `ShellyBaseHandler.updateChannelDefinitions()`:
-         *
-         * ```java
-         * ThingBuilder tb = editThing();
-         * for (Channel ch : dynChannels.values()) {
-         * tb.withChannel(ch);
-         * }
-         * updateThing(tb.build());
+         * The collected maps are merged and applied in ShellyBaseHandler.updateChannelDefinitions():
          */
 
         // Device

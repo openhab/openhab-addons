@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ShellyChannelCache} prevents redundant `updateState()` calls by storing the last
+ * {@link ShellyChannelCache} prevents redundant updateState() calls by storing the last
  * published state per channel:
  *
- * The cache starts **disabled** (all updates pass through). After `N` full update cycles
+ * The cache starts **disabled** (all updates pass through). After N full update cycles
  * it is **enabled**, and subsequent calls are filtered. This ensures all channels are
  * published to openHAB at least once during initialization.
  *
