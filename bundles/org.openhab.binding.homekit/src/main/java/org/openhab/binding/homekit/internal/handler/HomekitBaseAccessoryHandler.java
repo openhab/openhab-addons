@@ -1010,7 +1010,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (Objects.equals(previous, ip)) {
             return; // already resolving this IP
         }
-        macResolver.resolveMac(ip).thenAccept(mac -> {
+        macResolver.resolveMac(ip).whenComplete((mac, ex) -> {
             if (mac != null) {
                 macAddressResolved(ip, mac);
             } else {
