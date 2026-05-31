@@ -130,6 +130,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String localKey = "";
     private String localIP = "";
     private String endpointPrefix = "";
+    private boolean B01 = false;
+    private boolean Q7 = false;
+    private boolean Q10 = false;
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private RoborockCommunicationMode communicationMode = RoborockCommunicationMode.CLOUD;
@@ -328,7 +331,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         bridgeHandler = accountHandler;
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce);
+        B01 = isB01Device();
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, B01, Q7);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;
@@ -341,6 +345,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         statusPollTask.setNamePrefix(getThing().getUID().getId());
         updateStatus(ThingStatus.UNKNOWN);
         initTask.schedule(5);
+    }
+
+    private boolean isB01Device() {
+        String protocol = getThing().getProperties().get("protocol");
+        if ("B01".equalsIgnoreCase(protocol)) {
+            String name = getThing().getProperties().getOrDefault("deviceName", "");
+            if (name.contains("Q7")) {
+                Q7 = true;
+            } else if (name.contains("Q10")) {
+                Q10 = true;
+            }
+            return true;
+        }
+        return false;
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -575,6 +593,17 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonElement rpcPayload = extractRpcPayload(responseJson);
             if (rpcPayload != null && rpcPayload.isJsonPrimitive()) {
                 String jsonString = rpcPayload.getAsString();
+
+                // B01 responses have a different envelope shape — normalise to V1 before dispatching
+                if (B01) {
+                    String normalised = normaliseB01Response(jsonString);
+                    if (normalised == null) {
+                        // unsolicited push or error response — nothing to correlate
+                        return;
+                    }
+                    jsonString = normalised;
+                }
+
                 if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
@@ -1376,7 +1405,77 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dpsJson.has("101")) {
             return dpsJson.get("101");
         }
+        // B01 protocol responses arrive on dps.10001
+        if (dpsJson.has("10001")) {
+            return dpsJson.get("10001");
+        }
         return null;
+    }
+
+    /**
+     * Converts a B01 response envelope into the V1 shape expected by all handleGet* methods,
+     * so no downstream handler needs to be aware of the protocol difference.
+     *
+     * <p>
+     * B01 shape: {@code {"msgId":"12345", "code":0, "method":"prop.get", "data":{...}}}
+     * <p>
+     * V1 shape: {@code {"id":12345, "result":[{...}]}}
+     *
+     * <p>
+     * Also renames B01 field names to their V1 equivalents so existing GSON deserialisation works:
+     * {@code wind}→{@code fan_power}, {@code water}→{@code water_box_mode},
+     * {@code mode}→{@code mop_mode}, {@code quantity}→{@code battery}
+     *
+     * @return normalised V1-shaped JSON string, or {@code null} if the response is an error or unparseable
+     */
+    @Nullable
+    private String normaliseB01Response(String jsonString) {
+        try {
+            JsonObject b01 = JsonParser.parseString(jsonString).getAsJsonObject();
+
+            // Error response — log and discard
+            if (b01.has("code") && b01.get("code").getAsInt() != 0) {
+                logger.debug("B01 error response (code={}): {}", b01.get("code").getAsInt(), jsonString);
+                return null;
+            }
+
+            // msgId is a string in B01 echoing back the int id we sent in the request
+            int id = 0;
+            if (b01.has("msgId")) {
+                try {
+                    id = (int) Long.parseLong(b01.get("msgId").getAsString());
+                } catch (NumberFormatException e) {
+                    logger.debug("Could not parse B01 msgId as int: {}", b01.get("msgId"));
+                }
+            }
+
+            JsonObject data = b01.has("data") ? b01.get("data").getAsJsonObject() : new JsonObject();
+
+            // Rename B01 field names → V1 equivalents for GSON deserialisation compatibility
+            renameField(data, "wind", "fan_power");
+            renameField(data, "water", "water_box_mode");
+            renameField(data, "mode", "mop_mode");
+            renameField(data, "quantity", "battery");
+
+            // Wrap into V1 envelope: {"id": N, "result": [data]}
+            JsonObject v1 = new JsonObject();
+            v1.addProperty("id", id);
+            JsonArray result = new JsonArray();
+            result.add(data);
+            v1.add("result", result);
+
+            return gson.toJson(v1);
+        } catch (Exception e) {
+            logger.debug("Failed to normalise B01 response: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private void renameField(JsonObject obj, String from, String to) {
+        if (obj.has(from)) {
+            obj.add(to, obj.get(from));
+            obj.remove(from);
+        }
     }
 
     private boolean shouldPreRegisterForDirectResponseHandling(String method) {
