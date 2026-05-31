@@ -510,6 +510,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
                 localMqttClient.publish(topic, message);
                 logger.debug("Successfully published {} binary bytes to topic: {}", rawPayload.length, topic);
+                logger.debug("published payload = {}", HexFormat.of().withUpperCase().formatHex(rawPayload));
             } catch (Exception e) {
                 logger.error("Failed to transmit outbound binary B01 payload over MQTT", e);
             }
