@@ -83,8 +83,8 @@ Fragment-Host: org.openhab.automation.jsscriptingnashorn
 	de.focus_shift.jollyday-core;version='[1.9.3,1.9.4)',\
 	de.focus_shift.jollyday-jackson;version='[1.9.3,1.9.4)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.3,2.21.4)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.4,2.21.5)',\
 	org.yaml.snakeyaml;version='[2.5.0,2.5.1)'

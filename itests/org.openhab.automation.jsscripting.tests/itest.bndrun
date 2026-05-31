@@ -23,10 +23,10 @@ Import-Package: \
 	ch.qos.logback.classic;version='[1.5.32,1.5.33)',\
 	ch.qos.logback.core;version='[1.5.32,1.5.33)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.21.3,2.21.4)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.3,2.21.4)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.21.4,2.21.5)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.21.4,2.21.5)',\
 	com.google.gson;version='[2.13.2,2.13.3)',\
 	com.sun.jna;version='[5.18.1,5.18.2)',\
 	com.sun.xml.bind.jaxb-osgi;version='[2.3.9,2.3.10)',\
