@@ -104,7 +104,7 @@ public class MacTTSService extends AbstractCachedTTSService {
      */
     private final Set<Voice> initVoices() {
         try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
+            Process process = Runtime.getRuntime().exec(new String[] { "say", "-v", "?" });
             try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
                 return bufferedReader.lines().map(MacTTSVoice::new).collect(Collectors.toSet());
