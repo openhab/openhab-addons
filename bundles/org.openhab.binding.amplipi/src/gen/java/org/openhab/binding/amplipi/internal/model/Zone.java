@@ -28,7 +28,7 @@ public class Zone {
      **/
     private Integer id;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Friendly name
      **/
