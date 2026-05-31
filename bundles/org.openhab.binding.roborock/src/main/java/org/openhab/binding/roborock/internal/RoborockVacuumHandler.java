@@ -627,7 +627,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             break;
                         case "getRoomMapping":
                         case COMMAND_GET_ROOM_MAPPING:
-                            handleGetRoomMapping(jsonString);
+                            if (!Q7) { // Need to clean-up response so it can be processed
+                                handleGetRoomMapping(jsonString);
+                            }
                             break;
                         case "getNetworkInfo":
                         case COMMAND_GET_NETWORK_INFO:
@@ -1432,6 +1434,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String normaliseB01Response(String jsonString) {
         try {
             JsonObject b01 = JsonParser.parseString(jsonString).getAsJsonObject();
+            logger.debug("B01 jsonString = {}", jsonString); // REMOVE
 
             // Error response — log and discard
             if (b01.has("code") && b01.get("code").getAsInt() != 0) {

@@ -670,7 +670,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         // Translate V1 method names → B01 equivalents.
         // Q7 uses service.set_room_clean for motion control; Q10 uses prop.set {status}.
         switch (method) {
-            case "app_start":
+            case COMMAND_APP_START:
                 if (q7) {
                     b01Method = "service.set_room_clean";
                     b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids",
@@ -680,7 +680,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Params = Map.of("status", 1);
                 }
                 break;
-            case "app_stop":
+            case COMMAND_APP_SPOT:
                 if (q7) {
                     b01Method = "service.set_room_clean";
                     b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids",
@@ -690,7 +690,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Params = Map.of("status", 2);
                 }
                 break;
-            case "app_pause":
+            case COMMAND_APP_PAUSE:
                 if (q7) {
                     b01Method = "service.set_room_clean";
                     b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids",
@@ -700,7 +700,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Params = Map.of("status", 10);
                 }
                 break;
-            case "app_charge":
+            case COMMAND_APP_CHARGE:
                 if (q7) {
                     b01Method = "service.start_recharge";
                     b01Params = Map.of();
@@ -708,6 +708,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Method = "prop.set";
                     b01Params = Map.of("status", 6);
                 }
+                break;
+            case COMMAND_GET_STATUS:
+                b01Method = "prop.get";
+                com.google.gson.JsonArray statusProps = new com.google.gson.JsonArray();
+                for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
+                        "sweep_type", "clean_path_preference", "cloth_state", "time_zone", "language", "cleaning_time",
+                        "cleaning_area", "custom_type", "work_mode", "charge_state", "current_map_id", "map_num",
+                        "dust_action", "quiet_is_open", "clean_finish", "build_map", "dust_frequency", "multi_floor",
+                        "map_save", "green_laser", "dust_bag_used", "back_to_wash", "repeat_state" }) {
+                    statusProps.add(p);
+                }
+                b01Params = buildJsonObject("property", statusProps);
                 break;
             case "get_prop":
                 b01Method = "prop.get";
@@ -757,7 +769,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         payloadMap.put("dps", dps);
 
         String payload = gson.toJson(payloadMap);
-        logger.trace("B01 MQTT payload = {}", payload);
+        logger.debug("B01 MQTT payload = {}", payload); // FIXME, SHOULD be TRACE
 
         byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
