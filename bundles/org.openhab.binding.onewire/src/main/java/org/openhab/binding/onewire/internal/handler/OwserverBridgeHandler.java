@@ -138,7 +138,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
             long now = System.currentTimeMillis();
             if (!refreshable) {
                 logger.trace("refresh requested by thread ID {} denied, as not refresheable",
-                        Thread.currentThread().getId());
+                        Thread.currentThread().threadId());
                 return;
             }
 
@@ -146,8 +146,8 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
             List<Thing> thingList = getThing().getThings();
             int thingCount = thingList.size();
             Iterator<Thing> childListIterator = thingList.iterator();
-            logger.trace("refreshTask with thread ID {} starts at {}, {} childs", Thread.currentThread().getId(), now,
-                    thingCount);
+            logger.trace("refreshTask with thread ID {} starts at {}, {} childs", Thread.currentThread().threadId(),
+                    now, thingCount);
             while (childListIterator.hasNext() && refreshable) {
                 Thing owThing = childListIterator.next();
 
