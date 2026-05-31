@@ -191,4 +191,11 @@ public class StringUtils {
         var json = payload.trim();
         return (json.startsWith("[") && json.endsWith("]"));
     }
+
+    public static String sanitize(@Nullable String input) {
+        if (input == null || input.isBlank()) {
+            return EMPTY_STRING;
+        }
+        return input.replaceAll("[^a-zA-Z0-9._-]", EMPTY_STRING);
+    }
 }

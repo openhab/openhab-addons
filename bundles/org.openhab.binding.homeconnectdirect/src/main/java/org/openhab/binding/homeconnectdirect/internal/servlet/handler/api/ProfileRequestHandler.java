@@ -17,6 +17,7 @@ import static org.openhab.binding.homeconnectdirect.internal.common.utils.String
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.HYPHEN;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.convertToKebabCase;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.isNotBlank;
+import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.sanitize;
 import static org.openhab.binding.homeconnectdirect.internal.common.utils.StringUtils.toLowercase;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_DISPOSITION_VALUE_TEMPLATE;
 import static org.openhab.binding.homeconnectdirect.internal.servlet.ServletConstants.CONTENT_TYPE_ZIP;
@@ -108,10 +109,11 @@ public class ProfileRequestHandler {
             return;
         }
 
-        var type = convertToKebabCase(toLowercase(applianceProfile.type()));
-        var brand = toLowercase(applianceProfile.brand());
-        var vib = toLowercase(applianceProfile.vib());
-        var mac = isNotBlank(applianceProfile.mac()) ? toLowercase(applianceProfile.mac().replace(HYPHEN, EMPTY_STRING))
+        var type = sanitize(convertToKebabCase(toLowercase(applianceProfile.type())));
+        var brand = sanitize(toLowercase(applianceProfile.brand()));
+        var vib = sanitize(toLowercase(applianceProfile.vib()));
+        var mac = isNotBlank(applianceProfile.mac())
+                ? sanitize(toLowercase(applianceProfile.mac().replace(HYPHEN, EMPTY_STRING)))
                 : EMPTY_STRING;
         var filename = String.format(PROFILE_DOWNLOAD_FILENAME_TEMPLATE, type, brand, vib, mac,
                 LocalDateTime.now(ZONE_ID).format(fileNameDateFormatter));

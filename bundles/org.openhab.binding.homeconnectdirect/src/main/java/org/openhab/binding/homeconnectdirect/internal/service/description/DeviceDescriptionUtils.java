@@ -125,7 +125,10 @@ public class DeviceDescriptionUtils {
         return mappedValues;
     }
 
-    public static @Nullable Integer mapObjectToInteger(Object object) {
+    public static @Nullable Integer mapObjectToInteger(@Nullable Object object) {
+        if (object == null) {
+            return null;
+        }
         return switch (object) {
             case Integer intValue -> intValue;
             case Long longValue -> longValue.intValue();

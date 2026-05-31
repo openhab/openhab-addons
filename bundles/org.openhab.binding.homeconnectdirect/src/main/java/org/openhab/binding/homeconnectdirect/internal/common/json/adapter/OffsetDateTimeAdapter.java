@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
@@ -40,7 +41,7 @@ public class OffsetDateTimeAdapter implements JsonSerializer<OffsetDateTime>, Js
     public JsonElement serialize(@Nullable OffsetDateTime src, @Nullable Type typeOfSrc,
             @Nullable JsonSerializationContext context) {
         if (src == null) {
-            return new JsonPrimitive("");
+            return JsonNull.INSTANCE;
         }
         return new JsonPrimitive(src.format(FORMATTER));
     }
@@ -48,9 +49,13 @@ public class OffsetDateTimeAdapter implements JsonSerializer<OffsetDateTime>, Js
     @Override
     public @Nullable OffsetDateTime deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
             @Nullable JsonDeserializationContext context) throws JsonParseException {
-        if (json == null) {
+        if (json == null || json.isJsonNull()) {
             return null;
         }
-        return OffsetDateTime.parse(json.getAsString(), FORMATTER);
+        String value = json.getAsString();
+        if (value.isEmpty()) {
+            return null;
+        }
+        return OffsetDateTime.parse(value, FORMATTER);
     }
 }

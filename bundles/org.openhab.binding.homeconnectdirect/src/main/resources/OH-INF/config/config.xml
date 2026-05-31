@@ -13,7 +13,7 @@
 			<label>Address</label>
 			<description>Address of home appliance (hostname or IP)</description>
 		</parameter>
-		<parameter name="connectionRetryDelay" type="integer" min="1" max="60" required="false" unit="m">
+		<parameter name="connectionRetryDelay" type="integer" min="1" max="60" required="false" unit="min">
 			<context>time</context>
 			<default>1</default>
 			<label>Reconnect Delay</label>

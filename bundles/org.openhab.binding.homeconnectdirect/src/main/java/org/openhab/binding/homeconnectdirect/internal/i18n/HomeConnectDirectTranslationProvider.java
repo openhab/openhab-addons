@@ -29,7 +29,7 @@ import org.osgi.framework.FrameworkUtil;
 @NonNullByDefault
 public class HomeConnectDirectTranslationProvider {
 
-    private final Bundle bundle;
+    private final @Nullable Bundle bundle;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
 
@@ -41,7 +41,11 @@ public class HomeConnectDirectTranslationProvider {
     }
 
     public String getText(String key, @Nullable Object... arguments) {
-        var text = translationProvider.getText(bundle, key, null, localeProvider.getLocale(), arguments);
+        var localBundle = bundle;
+        if (localBundle == null) {
+            return key;
+        }
+        var text = translationProvider.getText(localBundle, key, null, localeProvider.getLocale(), arguments);
         return Objects.requireNonNullElse(text, key);
     }
 }
