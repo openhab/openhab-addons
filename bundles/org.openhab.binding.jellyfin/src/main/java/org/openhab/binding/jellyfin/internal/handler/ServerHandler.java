@@ -28,12 +28,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
-
-import org.eclipse.jetty.http.HttpStatus;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClientWrapper;
@@ -333,7 +332,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             if (generalCommand instanceof GeneralCommand gc) {
                 sessionApi.sendFullGeneralCommand(sessionId, gc);
             } else {
-                logger.warn("Invalid general command type: {}", generalCommand.getClass().getName());
+                logger.warn("Invalid general command type: {}",
+                        generalCommand != null ? generalCommand.getClass().getName() : "null");
             }
         } catch (Exception e) {
             logger.warn("Failed to send general command to session {}: {}", sessionId, e.getMessage());
@@ -594,18 +594,22 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         logger.debug("[STATE] Server state transition: {} -> {} (thing: {})", oldState, newState, thing.getUID());
 
         // Log additional context for specific transitions
-        if (newState == ServerState.CONNECTED) {
-            logger.debug("[STATE] Server fully connected and operational");
-            // Initialize WebSocketTask now that we have an authenticated connection with token
-            initializeWebSocketTask();
-            // Inform the session manager about the full device IDs currently configured in child
-            // Things so it can route short-ID sessions to the correct ClientHandler during the
-            // transition window before ClientDiscoveryService updates the serialNumber config.
-            sessionManager.updateKnownDeviceIds(getConfiguredClientSerialNumbers());
-        } else if (newState == ServerState.ERROR) {
-            logger.warn("[STATE] Server entered ERROR state from {}", oldState);
-        } else if (newState == ServerState.DISPOSED) {
-            logger.debug("[STATE] Server handler disposed, cleanup complete");
+        switch (newState) {
+            case CONNECTED -> {
+                logger.debug("[STATE] Server fully connected and operational");
+                // Initialize WebSocketTask now that we have an authenticated connection with token
+                initializeWebSocketTask();
+                // Inform the session manager about the full device IDs currently configured in child
+                // Things so it can route short-ID sessions to the correct ClientHandler during the
+                // transition window before ClientDiscoveryService updates the serialNumber config.
+                sessionManager.updateKnownDeviceIds(getConfiguredClientSerialNumbers());
+            }
+            case ERROR ->
+                logger.warn("[STATE] Server entered ERROR state from {}", oldState);
+            case DISPOSED ->
+                logger.debug("[STATE] Server handler disposed, cleanup complete");
+            default -> {
+            }
         }
 
         // Update running tasks based on the new state
@@ -657,6 +661,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     public void initialize() {
         try {
             this.errorEventBus.addListener(this);
+            migrateDeprecatedConfig();
             this.configuration = this.getConfigAs(Configuration.class);
             setState(ServerState.INITIALIZING);
             scheduler.execute(initializeHandler());
@@ -665,6 +670,20 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.UNKNOWN_ERROR, ErrorEvent.ErrorSeverity.FATAL,
                     "initialize");
             errorEventBus.publishEvent(event);
+        }
+    }
+
+    /**
+     * Removes deprecated configuration keys that are no longer used by the
+     * binding. This migration runs once on handler initialization and cleans up
+     * persisted config.
+     */
+    private void migrateDeprecatedConfig() {
+        if (getThing().getConfiguration().containsKey("userId")) {
+            logger.debug("Migrating deprecated 'userId' configuration parameter — removing from stored config");
+            var config = editConfiguration();
+            config.remove("userId");
+            updateConfiguration(config);
         }
     }
 
@@ -766,28 +785,32 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
                 URI serverUri = resolveServerUri();
 
-                if (initialState == ServerState.DISCOVERED) {
-                    updateConfiguration(serverUri);
-                } else if (initialState == ServerState.INITIALIZING || initialState == ServerState.NEEDS_AUTHENTICATION
-                        || initialState == ServerState.CONFIGURED) {
-                    updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
-                } else if (initialState == ServerState.ERROR || initialState == ServerState.CONNECTED
-                        || initialState == ServerState.DISPOSED) {
-                    // These states are not applicable during initialization
-                    logger.warn("Unexpected state during initialization: {}", initialState);
+                switch (initialState) {
+                    case DISCOVERED ->
+                        updateConfiguration(serverUri);
+                    case INITIALIZING, NEEDS_AUTHENTICATION, CONFIGURED ->
+                        updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
+                    case ERROR, CONNECTED, DISPOSED ->
+                        // These states are not applicable during initialization
+                        logger.warn("Unexpected state during initialization: {}", initialState);
+                    default -> {
+                    }
                 }
 
                 this.apiClient.updateBaseUri(serverUri.toString());
 
-                if (initialState == ServerState.CONFIGURED) {
-                    // Authenticate with token - tasks have already been started by setState()
-                    this.apiClient.authenticateWithToken(this.configuration.token);
-                } else if (initialState == ServerState.DISCOVERED || initialState == ServerState.NEEDS_AUTHENTICATION) {
-                    // No token, set offline with configuration error
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/error.configuration.no-access-token");
+                switch (initialState) {
+                    case CONFIGURED ->
+                        // Authenticate with token - tasks have already been started by setState()
+                        this.apiClient.authenticateWithToken(this.configuration.token);
+                    case DISCOVERED, NEEDS_AUTHENTICATION ->
+                        // No token, set offline with configuration error
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "@text/error.configuration.no-access-token");
+                    default -> {
+                        // No specific authentication action for other states
+                    }
                 }
-                // No specific authentication action for other states
 
             } catch (Exception e) {
                 this.logger.warn("Error during initialization: {}", e.getMessage(), e);

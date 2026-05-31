@@ -83,15 +83,6 @@ public class Configuration {
      */
     public boolean discoverOtherClients = true;
     /**
-     * User ID
-     *
-     * @deprecated This parameter is no longer used by the binding and is only kept for backward compatibility.
-     *             Existing configurations with this parameter will continue to work, but the value is ignored.
-     */
-    @Deprecated
-    public String userId = "";
-
-    /**
      * Creates a URI from the configuration information stored in this instance.
      * This URI can be used with the API client.
      *
