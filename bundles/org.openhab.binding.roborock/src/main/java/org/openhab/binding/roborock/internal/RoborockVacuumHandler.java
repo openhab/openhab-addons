@@ -1454,11 +1454,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
             JsonObject data = b01.has("data") ? b01.get("data").getAsJsonObject() : new JsonObject();
 
-            // Rename B01 field names → V1 equivalents for GSON deserialisation compatibility
+            // Rename B01 field names → V1/GetStatus equivalents for GSON deserialisation.
+            // B01 name → GetStatus @SerializedName
+            renameField(data, "status", "state");
             renameField(data, "wind", "fan_power");
             renameField(data, "water", "water_box_mode");
             renameField(data, "mode", "mop_mode");
             renameField(data, "quantity", "battery");
+            renameField(data, "fault", "error_code");
+            renameField(data, "tank_state", "water_box_status");
+            renameField(data, "charge_state", "charge_status");
+            renameField(data, "repeat_state", "repeat");
+            renameField(data, "dust_action", "auto_dust_collection");
+            renameField(data, "cleaning_time", "clean_time");
+            renameField(data, "cleaning_area", "clean_area");
+            renameField(data, "multi_floor", "switch_map_mode");
+            renameField(data, "clean_path_preference", "corner_clean_mode");
 
             // Wrap into V1 envelope: {"id": N, "result": [data]}
             JsonObject v1 = new JsonObject();
