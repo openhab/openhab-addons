@@ -47,17 +47,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for resolving MAC addresses from IP addresses via the operating system's ARP cache.
- * If the MAC address is not found in the cache, it triggers an asynchronous resolution process that
- * involves pinging the IP to populate the ARP table and then bulk loading the OS ARP cache. Resolved
- * MAC addresses are cached in-memory with an expiration time to avoid frequent lookups.
+ * Utility class for resolving MAC addresses from IP addresses via the operating system's ARP cache. The main method
+ * {@link #resolveMac(String)} provides an asynchronous API to get the MAC address for a given IP address. If the MAC
+ * address is cached and valid, it returns immediately. Otherwise, it starts a front end process that involves pinging
+ * the IP address to trigger the OS to populate its ARP table, plus a back end process that bulk loads the OS ARP cache
+ * into the in-memory cache and completes the pending future when the MAC address becomes available. The implementation
+ * includes optimizations to avoid unnecessary ARP cache loads for non-local or unreachable IP addresses, and to share
+ * pending resolution tasks for the same IP address to avoid redundant work. Resolved MAC addresses are cached in-memory
+ * with an expiration time to avoid frequent lookups, and the back end process is scheduled to run only when there are
+ * pending resolutions to avoid unnecessary resource usage. This class is designed to be thread-safe and efficient for
+ * typical home network environments where devices may come and go, and ARP cache entries may expire or change over
+ * time.
  * <p>
- * This implementation uses a combination of:
- * <ul>
- * <li>In-memory timed cache</li>
- * <li>Bulk reading of the OS ARP table</li>
- * <li>Ping to populate the ARP cache when needed</li>
- * </ul>
  * Note: This class is a candidate to be integrated into OH Core utilities.
  * <p>
  * 
@@ -70,7 +71,7 @@ public class MacResolver {
     private static final Duration IP_ADDRESS_PING_TIMEOUT = Duration.ofMillis(400);
     private static final Duration RESOLVE_MAC_TIMEOUT = Duration.ofSeconds(4);
     private static final Duration ARP_LOAD_PROCESS_TIMEOUT = Duration.ofMillis(1500);
-    private static final Duration CACHE_VALIDITY_PERIOD = Duration.ofMinutes(7);
+    private static final Duration CACHE_VALIDITY_DURATION = Duration.ofMinutes(7);
     private static final Duration BACKEND_TASK_RUN_INTERVAL = Duration.ofMillis(1200);
 
     private static final Pattern MAC_PATTERN = Pattern.compile("([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}");
@@ -82,8 +83,8 @@ public class MacResolver {
     // cache of IP / MAC mappings with expiration time stamps; prevents hitting the OS ARP cache too often
     private final Map<String, ExpiringMac> arpCache = new ConcurrentHashMap<>();
 
-    // pending resolution tasks for IP addresses that are currently being resolved asynchronously
-    private final Map<String, CompletableFuture<@Nullable String>> pendingFutures = new ConcurrentHashMap<>();
+    // pending MAC resolution futures for IP addresses that are currently being resolved asynchronously
+    private final Map<String, CompletableFuture<@Nullable String>> pendingFutureMacs = new ConcurrentHashMap<>();
 
     private @NonNullByDefault({}) ExecutorService frontEndExecutor;
     private @NonNullByDefault({}) ScheduledExecutorService backEndScheduler;
@@ -102,7 +103,7 @@ public class MacResolver {
          */
         public ExpiringMac(String mac) {
             this.mac = mac;
-            this.expires = Instant.now().plus(CACHE_VALIDITY_PERIOD);
+            this.expires = Instant.now().plus(CACHE_VALIDITY_DURATION);
         }
 
         /**
@@ -129,8 +130,8 @@ public class MacResolver {
     @Deactivate
     protected void deactivate() {
         stopBackEndTaskSchedule();
-        pendingFutures.values().forEach(future -> future.complete(null));
-        pendingFutures.clear();
+        pendingFutureMacs.values().forEach(futureMac -> futureMac.complete(null));
+        pendingFutureMacs.clear();
     }
 
     /**
@@ -162,10 +163,16 @@ public class MacResolver {
     }
 
     /**
-     * Resolves the MAC address for a given IP address. If the MAC address is cached and valid, it is
-     * returned immediately. Otherwise, an asynchronous resolution process is triggered that involves
-     * pinging the IP to populate the ARP table and then bulk loading the ARP table. The returned future
-     * will complete with the resolved MAC address or {@code null} if resolution fails or times out.
+     * Resolves the MAC address for a given IP address. If the MAC address is cached and valid, it is returned
+     * immediately. Otherwise, an asynchronous resolution process is started that involves a front end process that
+     * pings the IP to trigger the OS to populate the ARP table, and a back end process that bulk loads the ARP table
+     * and completes the future when the MAC address becomes available. Concurrent requests for the same IP share the
+     * same resolution process to avoid redundant work, and the future completes with {@code null} if resolution fails
+     * or takes too long. The method also includes optimizations to avoid unnecessary ARP cache loads for invalid,
+     * non-local, or unreachable IP addresses by checking these conditions before scheduling the asynchronous
+     * resolution.
+     * <p>
+     * The returned future will complete with the resolved MAC address or {@code null} if resolution fails or times out.
      * 
      * @param ipAddress the IP address to resolve e.g. "192.168.1.1" or "192.168.1.1:port"
      * @return a future that completes with the resolved MAC address or {@code null} if resolution fails
@@ -178,7 +185,7 @@ public class MacResolver {
             return CompletableFuture.completedFuture(null);
         }
         if (!isOnLocalSubnet(ip)) {
-            logger.debug("{} not on local subnet", ip);
+            logger.debug("{} not on local sub-net", ip);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -196,23 +203,24 @@ public class MacResolver {
          * the future completes with null if resolution takes too long
          * clean up pending futures when done
          */
-        return Objects.requireNonNull(pendingFutures //
+        return Objects.requireNonNull(pendingFutureMacs //
                 .computeIfAbsent(ip, targetIp -> {
-                    CompletableFuture<@Nullable String> baseFuture = new CompletableFuture<>();
+                    CompletableFuture<@Nullable String> baseFutureMac = new CompletableFuture<>();
                     startBackEndTaskSchedule();
-                    frontEndExecutor.submit(() -> resolveMacAsync(targetIp, baseFuture));
-                    return baseFuture;
+                    frontEndExecutor.submit(() -> resolveMacAsync(targetIp, baseFutureMac));
+                    return baseFutureMac;
                 })) //
                 .completeOnTimeout(null, RESOLVE_MAC_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)
                 .whenComplete((mac, ex) -> {
-                    pendingFutures.remove(ip);
-                    ifPendingFuturesEmpty();
+                    pendingFutureMacs.remove(ip);
+                    ifPendingFutureMacsEmpty();
                 });
     }
 
     /**
-     * Checks if the given IP address is on the same local subnet as any of the host's network interfaces. This
-     * avoids ARP cache loads for IP addresses that are not local and therefore cannot be resolved via ARP.
+     * Checks if the given IP address is on the same local sub-net as any of the host's network interfaces. This
+     * avoids ARP cache loads for IP addresses that are not local which therefore cannot be resolved to a MAC address
+     * via the OS ARP table.
      */
     private boolean isOnLocalSubnet(String ip) {
         try {
@@ -241,18 +249,18 @@ public class MacResolver {
                 }
             }
         } catch (Exception ignored) {
-            logger.debug("Subnet check failed for {}", ip, ignored);
+            logger.debug("Sub-net check failed for {}", ip, ignored);
         }
         return false;
     }
 
     /**
-     * Checks if there are no more pending resolution tasks and stops the back end task schedule.
+     * Checks if there are no more pending resolution futures and stops the back end task schedule.
      * 
      * @param return true if pendingFutures is empty, false otherwise
      */
-    private boolean ifPendingFuturesEmpty() {
-        if (pendingFutures.isEmpty()) {
+    private boolean ifPendingFutureMacsEmpty() {
+        if (pendingFutureMacs.isEmpty()) {
             stopBackEndTaskSchedule();
             return true;
         }
@@ -260,77 +268,80 @@ public class MacResolver {
     }
 
     /**
-     * Asynchronous resolution process for a given IP address. It first checks if the IP is reachable and on the
-     * local subnet to avoid unnecessary ARP cache loads for unreachable or non-local addresses. If the IP is
-     * valid, it relies on the periodic ARP cache loader to populate the cache and complete the future when
-     * the MAC address becomes available. If the IP is not reachable or not local, it completes the future
-     * with {@code null} immediately.
+     * Front end asynchronous resolution process for a given IP address. The caller has already checked if the IP is on
+     * the local sub-net, and this method further checks if the IP is reachable via ping to avoid unnecessary ARP cache
+     * loads for unreachable or non-local addresses. The ping triggers the OS to resolve the IP to a MAC address in its
+     * OS ARP table. And after that it relies on the back end periodic scheduler task to load the ARP table into cache
+     * cache and complete the future when the MAC address becomes available. If the IP is not reachable, it completes
+     * the future with {@code null}.
      * 
      * @param ip the IP address to resolve
-     * @param future the future to complete with the resolved MAC address or {@code null}
+     * @param futureMac the future to complete with the resolved MAC address or {@code null}
      */
-    private void resolveMacAsync(String ip, CompletableFuture<@Nullable String> future) {
+    private void resolveMacAsync(String ip, CompletableFuture<@Nullable String> futureMac) {
         boolean reachable = false;
         try {
+            // ping the IP to 1) check if the IP exists, and thus 2) trigger OS ARP MAC table resolution
             reachable = InetAddress.getByName(ip).isReachable((int) IP_ADDRESS_PING_TIMEOUT.toMillis());
         } catch (Exception e) {
             logger.debug("{} ping failed", ip, e);
-            completeWithNull(ip, future);
+            completeWithNull(ip, futureMac);
             return;
         }
         if (!reachable) {
             logger.debug("{} not reachable", ip);
-            completeWithNull(ip, future);
+            completeWithNull(ip, futureMac);
         }
     }
 
     /**
-     * Completes the given future with {@code null} if it is still pending, and removes it from the pending
+     * Helper that completes the given future with {@code null} if it is still pending, and removes it from the pending
      * futures map. This is used to clean up pending resolution tasks that have failed or timed out.
      * 
      * @param ip the IP address associated with the future
-     * @param future the future to complete with {@code null}
+     * @param futureMac the future to complete with {@code null}
      */
-    private void completeWithNull(String ip, CompletableFuture<@Nullable String> future) {
-        if (pendingFutures.remove(ip, future)) {
-            future.complete(null);
+    private void completeWithNull(String ip, CompletableFuture<@Nullable String> futureMac) {
+        if (pendingFutureMacs.remove(ip, futureMac)) {
+            futureMac.complete(null);
         }
-        ifPendingFuturesEmpty();
+        ifPendingFutureMacsEmpty();
     }
 
     /**
-     * Periodic task that loads the ARP cache from the operating system and completes any pending futures for IP
-     * addresses that have been resolved. If there are no more pending futures after processing, the scheduler
-     * is stopped to avoid unnecessary resource usage.
+     * Periodic task that is run by a back end scheduler that loads the ARP cache from the operating system and
+     * completes any pending futures for IP addresses that have been resolved. If there are no more pending futures
+     * after processing, the back end scheduler is stopped to avoid unnecessary resource usage.
      */
     private void backEndTask() {
         // if there are no pending futures, skip loading and stop the scheduler
-        if (ifPendingFuturesEmpty()) {
+        if (ifPendingFutureMacsEmpty()) {
             return;
         }
 
+        // load ARP cache from the operating system into the in-memory cache
         arpCacheLoad();
 
         // complete pending futures for IPs that have been resolved; remove completed futures from the map
-        pendingFutures.entrySet().removeIf(entry -> {
+        pendingFutureMacs.entrySet().removeIf(entry -> {
             String ip = entry.getKey();
-            CompletableFuture<@Nullable String> future = entry.getValue();
+            CompletableFuture<@Nullable String> futureMac = entry.getValue();
             String mac = cacheGet(ip);
-            if (mac != null && !future.isDone()) {
+            if (mac != null && !futureMac.isDone()) {
                 logger.trace("{} -> {} (deferred)", ip, mac);
-                future.complete(mac);
+                futureMac.complete(mac);
                 return true;
             }
             return false;
         });
 
         // again, if there are no pending futures, stop the scheduler
-        ifPendingFuturesEmpty();
+        ifPendingFutureMacsEmpty();
     }
 
     /**
-     * Executes a bulk load of the operating system's ARP cache into the in-memory cache.
-     * Each platform specific loader handles its own exceptions.
+     * Executes a bulk load of the operating system's ARP cache into the in-memory cache. Each platform specific loader
+     * handles its own exceptions.
      */
     private void arpCacheLoad() {
         String os = System.getProperty("os.name", "");
@@ -406,17 +417,17 @@ public class MacResolver {
     }
 
     /**
-     * Stores an IP => MAC mapping in the cache with expiration, and notifies listeners about the update. If the
-     * same MAC is already cached for this IP, listeners will not be notified again.
+     * Stores an IP => MAC mapping in the cache with expiration, and notifies listeners about the update. If the same
+     * MAC is already cached for this IP, listeners will not be notified again.
      */
     private void cachePut(String ip, String mac) {
         arpCache.put(ip, new ExpiringMac(mac));
         // eager execution: check if a running future can be completed early
-        CompletableFuture<@Nullable String> future = pendingFutures.get(ip);
+        CompletableFuture<@Nullable String> future = pendingFutureMacs.get(ip);
         if (future != null && !future.isDone()) {
             logger.trace("{} -> {} (eager)", ip, mac);
             future.complete(mac);
-            pendingFutures.remove(ip, future);
+            pendingFutureMacs.remove(ip, future);
         }
     }
 
@@ -442,8 +453,8 @@ public class MacResolver {
     }
 
     /**
-     * Convert an IP address to the standard format.
-     * For example {@code 192.168.1.1:8080} converts to {@code 192.168.1.1}
+     * Convert an IP address to the standard format. For example {@code 192.168.1.1:8080} converts to
+     * {@code 192.168.1.1}
      */
     private String normalizeIp(String ip) {
         Matcher m = IP_PATTERN.matcher(ip);
@@ -487,7 +498,7 @@ public class MacResolver {
         }
     }
 
-    // ================ TEST HOOKS — package private, not exported in OSGi ================
+    // ================ TEST HOOKS (package private, not exported in OSGi) ================
 
     protected void testClearCache() {
         arpCache.clear();

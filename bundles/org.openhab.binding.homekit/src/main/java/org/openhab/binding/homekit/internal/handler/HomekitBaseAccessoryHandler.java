@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -1021,10 +1020,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Lambda method called by the MacResolver class {@link CompletableFuture}. Called when a MAC address
-     * has been resolved for a given IP address. If the resolved IP address matches the current IP address
-     * configuration of the thing, it updates the thing properties with the resolved MAC address. Otherwise,
-     * it ignores the resolved MAC address.
+     * Lambda method called by the MacResolver class CompletableFuture. Called when a MAC address has been resolved for
+     * a given IP address. If the resolved IP address matches the current IP address configuration of the thing, it
+     * updates the thing properties with the resolved MAC address. Otherwise, it ignores the resolved MAC address.
      *
      * @param ip the IP address for which the MAC address has been resolved
      * @param mac the resolved MAC address

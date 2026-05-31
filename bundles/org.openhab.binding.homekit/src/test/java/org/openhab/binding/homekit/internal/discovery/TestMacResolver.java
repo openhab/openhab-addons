@@ -216,35 +216,36 @@ class TestMacResolver {
         String ip = "127.0.0.1";
 
         // Access private pendingFutures map
-        Field f = MacResolver.class.getDeclaredField("pendingFutures");
+        Field f = MacResolver.class.getDeclaredField("pendingFutureMacs");
         f.setAccessible(true);
         @SuppressWarnings("unchecked")
-        Map<String, CompletableFuture<String>> pending = (Map<String, CompletableFuture<String>>) f.get(macResolver);
-        assertNotNull(pending, "pendingFutures map should not be null");
+        Map<String, CompletableFuture<String>> pendingFutureMacs = (Map<String, CompletableFuture<String>>) f
+                .get(macResolver);
+        assertNotNull(pendingFutureMacs, "pendingFutureMacs map should not be null");
 
         // Trigger two parallel resolveMac calls
-        CompletableFuture<String> f1 = macResolver.resolveMac(ip);
-        CompletableFuture<String> f2 = macResolver.resolveMac(ip);
+        CompletableFuture<String> futureMac1 = macResolver.resolveMac(ip);
+        CompletableFuture<String> futureMac2 = macResolver.resolveMac(ip);
 
         // Assert: two distinct CompletableFuture objects returned
-        assertNotSame(f1, f2, "resolveMac must return two different CompletableFutures");
+        assertNotSame(futureMac1, futureMac2, "resolveMac must return two different CompletableFutures");
 
         // Assert: pendingFutures contains exactly ONE entry for this IP
-        assertEquals(1, pending.size(), "pendingFutures must contain exactly one shared entry");
-        assertTrue(pending.containsKey(ip), "pendingFutures must contain the IP key");
+        assertEquals(1, pendingFutureMacs.size(), "pendingFutureMacss must contain exactly one shared entry");
+        assertTrue(pendingFutureMacs.containsKey(ip), "pendingFutureMacss must contain the IP key");
 
         // Assert: both returned futures wrap the SAME underlying pending future
-        CompletableFuture<String> shared = pending.get(ip);
-        assertNotNull(shared, "pendingFutures entry must not be null");
+        CompletableFuture<String> sharedFutureMac = pendingFutureMacs.get(ip);
+        assertNotNull(sharedFutureMac, "pendingFutureMacs entry must not be null");
 
-        assertFalse(f1.isDone(), "f1 should not be completed yet");
-        assertFalse(f2.isDone(), "f2 should not be completed yet");
+        assertFalse(futureMac1.isDone(), "futureMac1 should not be completed yet");
+        assertFalse(futureMac2.isDone(), "futureMac2 should not be completed yet");
 
         // f1 and f2 should both complete when shared completes
-        shared.complete("AA:BB:CC:DD:EE:FF");
+        sharedFutureMac.complete("AA:BB:CC:DD:EE:FF");
 
-        assertEquals("AA:BB:CC:DD:EE:FF", f1.get(1, TimeUnit.SECONDS));
-        assertEquals("AA:BB:CC:DD:EE:FF", f2.get(1, TimeUnit.SECONDS));
+        assertEquals("AA:BB:CC:DD:EE:FF", futureMac1.get(1, TimeUnit.SECONDS));
+        assertEquals("AA:BB:CC:DD:EE:FF", futureMac2.get(1, TimeUnit.SECONDS));
     }
 
     // -------------------------------------------------------
