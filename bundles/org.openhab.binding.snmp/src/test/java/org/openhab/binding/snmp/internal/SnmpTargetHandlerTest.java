@@ -145,7 +145,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.FLOAT);
         PDU responsePDU = new PDU(PDU.RESPONSE,
                 Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("12.4"))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType("12.4")));
         verifyStatus(ThingStatus.ONLINE);
@@ -159,7 +159,7 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
 
         SnmpMock source = new SnmpMock();
 
-        ResponseEvent event = new ResponseEvent(source, null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>(source, null, null, responsePDU, null, 0L);
 
         thingHandler.onResponse(event);
         assertEquals(1, source.cancelCallCounter);

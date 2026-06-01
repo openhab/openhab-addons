@@ -78,7 +78,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelsProperlyUpdatingOnValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.STRING, "on", "off");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new OctetString("on"))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.ON);
     }
@@ -87,7 +87,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelsProperlyUpdatingOffValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.INT32, "0", "3");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new Integer32(3))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.OFF);
     }
@@ -98,7 +98,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
                 "cc ba 1d");
         PDU responsePDU = new PDU(PDU.RESPONSE,
                 List.of(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aabb11"))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.ON);
     }
@@ -107,7 +107,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelsIgnoresArbitraryValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new Counter64(17))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, never()).stateUpdated(eq(CHANNEL_UID), any());
         verifyStatus(ThingStatus.ONLINE);
@@ -117,7 +117,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelSendsUndefExceptionValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verifyResponse(UnDefType.UNDEF);
     }
@@ -127,7 +127,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223",
                 "OFF");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.OFF);
     }
