@@ -58,9 +58,6 @@ import org.slf4j.LoggerFactory;
  * pending resolutions to avoid unnecessary resource usage. This class is designed to be thread-safe and efficient for
  * typical home network environments where devices may come and go, and ARP cache entries may expire or change over
  * time.
- * <p>
- * Note: This class is a candidate to be integrated into OH Core utilities.
- * <p>
  * 
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -272,8 +269,8 @@ public class MacResolver {
      * the local sub-net, and this method further checks if the IP is reachable via ping to avoid unnecessary ARP cache
      * loads for unreachable or non-local addresses. The ping triggers the OS to resolve the IP to a MAC address in its
      * OS ARP table. And after that it relies on the back end periodic scheduler task to load the ARP table into cache
-     * cache and complete the future when the MAC address becomes available. If the IP is not reachable, it completes
-     * the future with {@code null}.
+     * and completes the future when the MAC address becomes available. If the IP is not reachable, it completes the
+     * future with {@code null}.
      * 
      * @param ip the IP address to resolve
      * @param futureMac the future to complete with the resolved MAC address or {@code null}
@@ -417,17 +414,17 @@ public class MacResolver {
     }
 
     /**
-     * Stores an IP => MAC mapping in the cache with expiration, and notifies listeners about the update. If the same
-     * MAC is already cached for this IP, listeners will not be notified again.
+     * Stores an IP => MAC mapping in the cache with expiration and if possible eagerly resolves any pending MAC
+     * future(s).
      */
     private void cachePut(String ip, String mac) {
         arpCache.put(ip, new ExpiringMac(mac));
         // eager execution: check if a running future can be completed early
-        CompletableFuture<@Nullable String> future = pendingFutureMacs.get(ip);
-        if (future != null && !future.isDone()) {
+        CompletableFuture<@Nullable String> futureMac = pendingFutureMacs.get(ip);
+        if (futureMac != null && !futureMac.isDone()) {
             logger.trace("{} -> {} (eager)", ip, mac);
-            future.complete(mac);
-            pendingFutureMacs.remove(ip, future);
+            futureMac.complete(mac);
+            pendingFutureMacs.remove(ip, futureMac);
         }
     }
 
