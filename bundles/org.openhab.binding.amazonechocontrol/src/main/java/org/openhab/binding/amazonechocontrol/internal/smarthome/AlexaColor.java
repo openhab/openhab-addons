@@ -15,6 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.smarthome;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link AlexaColor} defines the Alexa color names
@@ -63,9 +65,10 @@ public class AlexaColor {
     }
 
     private static double[] getLabFromHSB(HSBType value) {
-        double r = value.getRed().doubleValue() / 100.0;
-        double g = value.getGreen().doubleValue() / 100.0;
-        double b = value.getBlue().doubleValue() / 100.0;
+        PercentType[] rgb = ColorUtil.hsbToRgbPercent(value);
+        double r = rgb[0].doubleValue() / 100.0;
+        double g = rgb[1].doubleValue() / 100.0;
+        double b = rgb[2].doubleValue() / 100.0;
 
         // D65, 10 degree
         double xn = 94.811;
