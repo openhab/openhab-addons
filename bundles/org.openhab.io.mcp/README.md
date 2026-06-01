@@ -391,7 +391,7 @@ Things you can ask once this is enabled (typically combined with UI design):
 
 The tool sanitizes paths (no `..`, no absolute paths, no hidden files), whitelists file extensions to common asset types (PNG/JPG/GIF/WebP/SVG/ICO/CSS/JS/HTML/JSON/TXT/MD), and requires an ADMIN-scoped bearer token on every call — it verifies admin scope by probing an openHAB REST endpoint with the token before touching the filesystem.
 
-> **Heads-up — XSS surface:** files served from `/static/` execute in the browser context of anyone viewing the Main UI when their extension is `.html`, `.svg`, or `.js`. The tool will upload them on request (they're legitimate static assets) but the assistant has been told to confirm with you first before writing any of those types. Treat this flag with the same care as `enableScripting`.
+> **Heads-up — XSS surface:** files served from `/static/` execute in the browser context of anyone viewing the Main UI when their extension is `.html`, `.htm`, `.svg`, or `.js`. The tool will upload them on request (they're legitimate static assets) but the assistant has been told to confirm with you first before writing any of those types. Treat this flag with the same care as `enableScripting`.
 
 ## Real-time subscriptions (advanced)
 

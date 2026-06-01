@@ -264,6 +264,36 @@ class StaticAssetToolsTest {
         assertErrorContains(result, "null byte");
     }
 
+    @Test
+    void rejectsReadThroughSymlinkEscape() throws Exception {
+        // Plant a symlink in the html root that points to a sibling dir outside it, then try to
+        // read a file through the symlink. The textual startsWith guard passes; the real-path check
+        // must reject it.
+        Path root = requireNonNull(tempDir);
+        Path outside = Files.createTempDirectory("static-asset-outside-");
+        try {
+            Files.writeString(outside.resolve("secret.png"), "SECRET");
+            try {
+                Files.createSymbolicLink(root.resolve("escape"), outside);
+            } catch (java.nio.file.FileSystemException e) {
+                // Windows without symlink privileges — skip the test rather than fail spuriously.
+                org.junit.jupiter.api.Assumptions.abort("Symlinks not supported on this filesystem: " + e.getMessage());
+            }
+            CallToolResult getResult = call(tools(), args("action", "get", "path", "escape/secret.png"));
+            assertErrorContains(getResult, "outside the static asset folder");
+
+            // Same defense for put — attacker shouldn't be able to clobber a file outside via a symlink.
+            CallToolResult putResult = call(tools(),
+                    args("action", "put", "path", "escape/poisoned.txt", "content", "x", "encoding", "utf8"));
+            assertErrorContains(putResult, "outside the static asset folder");
+            assertFalse(Files.exists(outside.resolve("poisoned.txt")));
+        } finally {
+            // Best-effort cleanup of the outside dir; the @TempDir cleanup will handle root.
+            Files.deleteIfExists(outside.resolve("secret.png"));
+            Files.deleteIfExists(outside);
+        }
+    }
+
     // ============ delete ============
 
     @Test

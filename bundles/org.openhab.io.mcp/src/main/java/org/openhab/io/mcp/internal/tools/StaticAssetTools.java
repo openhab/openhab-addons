@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -77,6 +78,8 @@ public class StaticAssetTools {
 
     private static final String STATIC_URL_PREFIX = "/static/";
     private static final int MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+    private static final int DEFAULT_LIST_LIMIT = 500;
+    private static final int MAX_LIST_LIMIT = 5000;
     private static final int ADMIN_PROBE_TIMEOUT_SECONDS = 10;
     private static final String ADMIN_PROBE_PATH = "/rest/logging/";
 
@@ -87,6 +90,12 @@ public class StaticAssetTools {
     private final Logger logger = LoggerFactory.getLogger(StaticAssetTools.class);
 
     private final Path htmlRoot;
+    /**
+     * {@link #htmlRoot} canonicalized via {@link Path#toRealPath} (or, when the directory does not exist yet,
+     * its normalized absolute form). Used only for the safety check in {@link #resolveSafe} — file operations
+     * still go through {@link #htmlRoot} so the user-visible path matches their config layout.
+     */
+    private final Path htmlRootReal;
     private final String baseUrl;
     private final HttpClient httpClient;
     private final Function<String, @Nullable String> tokenForSession;
@@ -96,11 +105,23 @@ public class StaticAssetTools {
     public StaticAssetTools(Path htmlRoot, String baseUrl, HttpClient httpClient,
             Function<String, @Nullable String> tokenForSession, McpJsonMapper jsonMapper) {
         this.htmlRoot = htmlRoot;
+        this.htmlRootReal = canonicalize(htmlRoot);
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.httpClient = httpClient;
         this.tokenForSession = tokenForSession;
         this.jsonMapper = jsonMapper;
         this.description = loadDescription();
+    }
+
+    private static Path canonicalize(Path p) {
+        try {
+            if (Files.exists(p)) {
+                return p.toRealPath();
+            }
+        } catch (IOException ignored) {
+            // fall through to absolute-normalized
+        }
+        return p.toAbsolutePath().normalize();
     }
 
     public McpSchema.Tool getManageStaticAssetTool() {
@@ -116,6 +137,10 @@ public class StaticAssetTools {
                 "list-only: scope the listing to a subdirectory (e.g. 'plans/' to only return plan backgrounds)."));
         p.put("recursive", Map.of("type", "boolean", "description",
                 "list-only: walk subdirectories (default true). Set to false for a one-level listing."));
+        p.put("maxEntries",
+                Map.of("type", "integer", "description", "list-only: cap on returned entries (default "
+                        + DEFAULT_LIST_LIMIT + ", max " + MAX_LIST_LIMIT
+                        + "). If the listing is larger the response is truncated and 'truncated: true' is set."));
         p.put("encoding",
                 Map.of("type", "string", "description",
                         "get/put: 'base64' for binary content (default for image/binary extensions), 'utf8' for text.",
@@ -180,12 +205,18 @@ public class StaticAssetTools {
                         "'pathPrefix' '" + prefix + "' does not point to a directory under " + STATIC_URL_PREFIX);
             }
         }
+        int limit = Math.max(1, Math.min(MAX_LIST_LIMIT, getIntArg(args, "maxEntries", DEFAULT_LIST_LIMIT)));
         List<Map<String, Object>> files = new ArrayList<>();
+        int skipped = 0;
         try (Stream<Path> walk = recursive ? Files.walk(scope) : Files.list(scope)) {
             List<Path> sorted = walk.filter(Files::isRegularFile).sorted(Comparator.naturalOrder()).toList();
             for (Path file : sorted) {
                 String name = file.getFileName().toString();
-                if (name.startsWith(".")) {
+                if (name.startsWith(".") || name.contains(".mcp-tmp")) {
+                    continue;
+                }
+                if (files.size() >= limit) {
+                    skipped++;
                     continue;
                 }
                 files.add(describeFile(file));
@@ -196,6 +227,12 @@ public class StaticAssetTools {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("files", files);
         response.put("total", files.size());
+        if (skipped > 0) {
+            response.put("truncated", true);
+            response.put("skipped", skipped);
+            response.put("hint", "Listing capped at maxEntries=" + limit
+                    + ". Narrow with 'pathPrefix' or raise 'maxEntries' (max " + MAX_LIST_LIMIT + ").");
+        }
         if (prefix != null && !prefix.isBlank()) {
             response.put("pathPrefix", prefix);
         }
@@ -265,9 +302,9 @@ public class StaticAssetTools {
         } catch (AssetPathException e) {
             return errorResult(e.getMessage());
         }
-        // Reject oversized payloads before decoding so we never allocate ~7.5 MB of bytes just to error out.
-        // For base64 the encoded length is ~4/3 of the binary; for utf-8 the encoded length equals the byte length
-        // for ASCII and is an upper bound for multi-byte chars (so this is a safe early reject).
+        // Cheap early-reject for grossly oversized payloads so we don't decode a huge base64 string just to
+        // throw the result away. content.length() is UTF-16 code units, not bytes — so for non-ASCII utf8
+        // content this UNDER-estimates the decoded byte count. The post-decode check below is the real cap.
         if (content.length() > MAX_UPLOAD_BYTES * 4L / 3L + 16) {
             return errorResult("Upload exceeds the " + MAX_UPLOAD_BYTES + "-byte per-call cap.");
         }
@@ -287,9 +324,24 @@ public class StaticAssetTools {
         }
         try {
             Files.createDirectories(target.getParent());
-            Path tmp = target.resolveSibling(target.getFileName().toString() + ".mcp-tmp");
-            Files.write(tmp, bytes);
-            Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            // createTempFile gives us an OS-unique sibling so concurrent puts to the same logical path
+            // can't truncate each other's tmp file. The .mcp-tmp suffix lets us spot crash debris.
+            Path tmp = Files.createTempFile(target.getParent(), target.getFileName().toString() + ".", ".mcp-tmp");
+            try {
+                Files.write(tmp, bytes);
+                try {
+                    Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                } catch (AtomicMoveNotSupportedException ame) {
+                    // NTFS, tmpfs, overlay-fs and some Docker mounts don't support atomic + replace; fall back
+                    // to a non-atomic replace. A reader hitting the path during this brief window may see
+                    // either the old or the partially-replaced file — acceptable for static assets.
+                    Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                // Defensive: if move succeeded, tmp is gone and this is a no-op. If it failed, we don't
+                // want to leave a half-written .mcp-tmp behind for the next list call to surface.
+                Files.deleteIfExists(tmp);
+            }
         } catch (IOException e) {
             return errorResult("Failed to write static asset: " + messageOf(e));
         }
@@ -324,6 +376,7 @@ public class StaticAssetTools {
         }
         try {
             Files.delete(target);
+            pruneEmptyParents(target.getParent());
         } catch (IOException e) {
             return errorResult("Failed to delete static asset: " + messageOf(e));
         }
@@ -367,11 +420,59 @@ public class StaticAssetTools {
             }
         }
         Path candidate = htmlRoot.resolve(normalized).normalize();
-        // Guard even after normalization in case a symlink or unusual path slipped through.
+        // First guard: textual containment under the configured root. Defeats `..` and other tricks
+        // before we touch the filesystem.
         if (!candidate.startsWith(htmlRoot)) {
             throw new AssetPathException("'path' resolves outside the static asset folder.");
         }
+        // Second guard: follow any symlinks in the existing portion of the path and verify the resolved
+        // location is still inside the canonicalized root. Path.startsWith is textual only, so without
+        // this a symlink anywhere in the existing tree can point outside conf/html and let the tool
+        // read or clobber arbitrary files. For new files (put), walk up to the first existing ancestor.
+        Path existing = candidate;
+        Path missing = candidate.getFileSystem().getPath("");
+        while (existing != null && !Files.exists(existing)) {
+            Path name = existing.getFileName();
+            missing = name != null ? existing.getFileSystem().getPath(name.toString()).resolve(missing) : missing;
+            existing = existing.getParent();
+        }
+        if (existing == null) {
+            throw new AssetPathException("'path' has no resolvable parent directory.");
+        }
+        Path resolvedReal;
+        try {
+            resolvedReal = existing.toRealPath().resolve(missing).normalize();
+        } catch (IOException e) {
+            throw new AssetPathException("Failed to canonicalize 'path': " + messageOf(e));
+        }
+        if (!resolvedReal.startsWith(htmlRootReal)) {
+            throw new AssetPathException("'path' resolves outside the static asset folder via a symlink.");
+        }
         return candidate;
+    }
+
+    /**
+     * Walks up from {@code start} deleting empty directories until either a non-empty directory or the
+     * canonicalized root is reached. Keeps {@code conf/html} itself in place even if it becomes empty.
+     * Best-effort: any IO failure stops the walk silently — leftover empty dirs are harmless.
+     */
+    private void pruneEmptyParents(@Nullable Path start) {
+        Path current = start;
+        while (current != null && !current.equals(htmlRoot) && current.startsWith(htmlRoot)) {
+            try (Stream<Path> s = Files.list(current)) {
+                if (s.findAny().isPresent()) {
+                    return;
+                }
+            } catch (IOException e) {
+                return;
+            }
+            try {
+                Files.delete(current);
+            } catch (IOException e) {
+                return;
+            }
+            current = current.getParent();
+        }
     }
 
     private Map<String, Object> describeFile(Path file) {
@@ -470,7 +571,7 @@ public class StaticAssetTools {
         try (InputStream in = StaticAssetTools.class
                 .getResourceAsStream("/widgets/descriptions/manage_static_asset.txt")) {
             if (in == null) {
-                logger.warn("Description resource not found at /widgets/descriptions/manage_static_asset.txt; "
+                logger.debug("Description resource not found at /widgets/descriptions/manage_static_asset.txt; "
                         + "using inline fallback.");
                 return "List, read, upload, or delete files in $OPENHAB_CONF/html (the folder served at /static/*). "
                         + "Use to upload plan-page backgrounds, custom widget icons, and CSS overrides referenced "
@@ -478,7 +579,7 @@ public class StaticAssetTools {
             }
             return new String(in.readAllBytes(), StandardCharsets.UTF_8).trim();
         } catch (IOException e) {
-            logger.warn("Failed to load manage_static_asset description: {}", e.getMessage());
+            logger.debug("Failed to load manage_static_asset description: {}", e.getMessage());
             return "manage_static_asset (description unavailable)";
         }
     }

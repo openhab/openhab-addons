@@ -72,11 +72,12 @@
 				<code>/static/*</code> and used for plan-page backgrounds, custom widget icons, CSS overrides, etc.).
 				Useful alongside <code>enableUiDesign</code> so the agent can upload a floor plan and then reference it
 				from a new plan page in the same conversation. Writes go directly to disk &mdash; there is no REST API
-				to gate this &mdash; so the bundle enforces <strong>administrator</strong> role itself by looking up the
-				session's authenticated user. Filenames are sanitized, extensions are whitelisted, and uploads are
-				capped at 10 MB per call. Note that <code>.html</code>, <code>.svg</code>, and <code>.js</code> files
-				served from <code>/static/</code> execute in the browser, so an agent that writes those becomes an XSS
-				vector against your Main UI; the tool description warns about this but the operator should treat this
+				to gate this &mdash; so the bundle enforces <strong>administrator</strong> scope itself by probing an
+				admin-gated REST endpoint with the session's bearer token before each call. Filenames are sanitized
+				(including symlinks pointing outside the root), extensions are whitelisted, and uploads are capped at
+				10 MB per call. Note that <code>.html</code>, <code>.htm</code>, <code>.svg</code>, and <code>.js</code>
+				files served from <code>/static/</code> execute in the browser, so an agent that writes those becomes an
+				XSS vector against your Main UI; the tool description warns about this but the operator should treat this
 				flag like <code>enableScripting</code>.]]></description>
 			<default>false</default>
 		</parameter>
