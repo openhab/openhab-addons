@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -171,7 +172,7 @@ public class LEDStateDTO {
     }
 
     public int getRGB() {
-        return hsbType.getRGB();
+        return ColorUtil.hsbTosRgb(hsbType);
     }
 
     public HSBType getHSB() {
