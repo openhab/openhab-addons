@@ -27,6 +27,7 @@ Every connection must present an openHAB bearer token (see [Authentication](#aut
 | `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in). |
 | `enableScripting`      | `false` | NO       | Let the assistant include JavaScript snippets as rule actions/conditions and run scripts ad-hoc via `execute_script`. Requires the `openhab-automation-jsscripting` add-on. See [Scripting](#scripting-opt-in).       |
 | `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Level changes require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                   |
+| `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for uploading plan-page backgrounds and custom widget icons. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
 | `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.         |
 | `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                    |
 | `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                     |
@@ -372,6 +373,25 @@ The catalog of available components is fetched live from the openhab-webui bundl
 > **UI Design Token Usage:** UI design uses noticeably more of an agent's context window than simple item control. Pages and especially custom widgets are large JSON structures (tens of KB each), and the assistant often reads, edits, and re-reads them several times in one design session. Expect to start fresh chats more often when working on the UI — particularly for big dashboards or multi-widget projects. The assistant has been tuned to keep responses small (minimal write confirmations, in-place edits instead of full rewrites) but the underlying data is inherently large.
 >
 > **Recommended clients for UI design:** because of the above, coding-oriented agents like [Claude Code](https://www.claude.com/product/claude-code), [Codex CLI](https://github.com/openai/codex), or [Cursor](https://cursor.com) work much better here than chat-only clients. They have larger context windows, can spawn sub-agents that each get their own fresh context for focused sub-tasks (e.g. "design this one widget"), and can combine the MCP server with a browser-automation MCP (Claude in Chrome, Playwright MCP) in the same session so the agent can build a page and then screenshot the result to verify it. Chat-only clients like Claude Desktop and ChatGPT still work for small edits, but you'll hit context limits sooner on larger projects.
+
+## Static assets (opt-in)
+
+Setting `enableStaticAssets=true` lets the assistant manage the files in `$OPENHAB_CONF/html` — the folder served at `http://<your-openhab>:8080/static/*` and used for plan-page background images, custom widget icons, CSS overrides, and any other static asset that a Main UI component references by URL. Pairs naturally with `enableUiDesign` so the assistant can upload a floor plan and then drop it onto a new plan page in the same conversation.
+
+Things you can ask once this is enabled (typically combined with UI design):
+
+- _"Use the attached image as the background of a new plan page called 'Upstairs'."_ — the assistant uploads the image to `/static/plans/upstairs.png` and creates an `oh-plan-page` pointing at it.
+- _"What floor plans do I already have?"_ — lists the contents of `plans/` so you can pick one to reuse.
+- _"Replace my custom CSS with this update."_ — reads the current `css/custom.css`, applies the change, writes it back.
+- _"Delete the test floor plan you uploaded yesterday."_
+
+| Tool                  | What it does                                                                                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `manage_static_asset` | List / read / upload / delete files under `$OPENHAB_CONF/html`. Action-dispatched (`action='list'\|'get'\|'put'\|'delete'`). Uploads are capped at 10 MB per call.       |
+
+The tool sanitizes paths (no `..`, no absolute paths, no hidden files), whitelists file extensions to common asset types (PNG/JPG/GIF/WebP/SVG/ICO/CSS/JS/HTML/JSON/TXT/MD), and requires an ADMIN-scoped bearer token on every call — it verifies admin scope by probing an openHAB REST endpoint with the token before touching the filesystem.
+
+> **Heads-up — XSS surface:** files served from `/static/` execute in the browser context of anyone viewing the Main UI when their extension is `.html`, `.svg`, or `.js`. The tool will upload them on request (they're legitimate static assets) but the assistant has been told to confirm with you first before writing any of those types. Treat this flag with the same care as `enableScripting`.
 
 ## Real-time subscriptions (advanced)
 

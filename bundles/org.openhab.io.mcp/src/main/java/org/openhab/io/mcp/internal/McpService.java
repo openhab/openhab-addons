@@ -12,6 +12,7 @@
  */
 package org.openhab.io.mcp.internal;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -28,6 +29,7 @@ import javax.servlet.Servlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.auth.UserRegistry;
 import org.openhab.core.automation.Rule;
 import org.openhab.core.automation.RuleManager;
@@ -58,6 +60,7 @@ import org.openhab.io.mcp.internal.tools.ResourceProvider;
 import org.openhab.io.mcp.internal.tools.RuleTools;
 import org.openhab.io.mcp.internal.tools.ScriptTools;
 import org.openhab.io.mcp.internal.tools.SemanticTools;
+import org.openhab.io.mcp.internal.tools.StaticAssetTools;
 import org.openhab.io.mcp.internal.tools.SystemTools;
 import org.openhab.io.mcp.internal.tools.ThingTools;
 import org.openhab.io.mcp.internal.tools.UiTools;
@@ -206,7 +209,7 @@ public class McpService {
                 || a.maxItemsPerPage != b.maxItemsPerPage || a.resourceCoalesceMs != b.resourceCoalesceMs
                 || a.enableFullApiAccess != b.enableFullApiAccess || a.enableScripting != b.enableScripting
                 || a.enableLoggingAccess != b.enableLoggingAccess || a.enableUiDesign != b.enableUiDesign
-                || a.registerCloudWebhook != b.registerCloudWebhook;
+                || a.enableStaticAssets != b.enableStaticAssets || a.registerCloudWebhook != b.registerCloudWebhook;
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
@@ -363,6 +366,14 @@ public class McpService {
                                 (exchange, req) -> uiTools.handleManageUiComponent(exchange, req))
                         .toolCall(uiTools.getValidateUiComponentTool(),
                                 (exchange, req) -> uiTools.handleValidateUiComponent(req));
+            }
+
+            if (config.enableStaticAssets) {
+                Path htmlRoot = Path.of(OpenHAB.getConfigFolder(), "html");
+                StaticAssetTools assetTools = new StaticAssetTools(htmlRoot, localBaseUrl, httpClient,
+                        transport::getSessionToken, jsonMapper);
+                builder = builder.toolCall(assetTools.getManageStaticAssetTool(),
+                        (exchange, req) -> assetTools.handleManageStaticAsset(exchange, req));
             }
 
             McpSyncServer server = builder.build();
@@ -551,6 +562,19 @@ public class McpService {
                     page-path (e.g. '/page/kitchen') and asking them to verify visually themselves.
                     """);
         }
+        if (config.enableStaticAssets) {
+            sb.append("""
+
+                    For static assets (plan-page backgrounds, custom widget icons, CSS overrides) \
+                    referenced from Main UI components, use manage_static_asset to list/get/put/delete \
+                    files under $OPENHAB_CONF/html (served at /static/*). Upload binaries as base64; \
+                    text files (css, json, svg, …) can use encoding='utf8'. Paths are relative — \
+                    'plans/floor-1.png' lands at /static/plans/floor-1.png. Per-call uploads are \
+                    capped at 10 MB and require an ADMIN-scoped token. Don't upload .html/.svg/.js \
+                    files unless the user explicitly asked for one — they execute in the browser \
+                    context of the Main UI.
+                    """);
+        }
         return sb.toString();
     }
 
@@ -585,6 +609,7 @@ public class McpService {
         cfg.enableScripting = toBoolean(properties.get("enableScripting"), cfg.enableScripting);
         cfg.enableLoggingAccess = toBoolean(properties.get("enableLoggingAccess"), cfg.enableLoggingAccess);
         cfg.enableUiDesign = toBoolean(properties.get("enableUiDesign"), cfg.enableUiDesign);
+        cfg.enableStaticAssets = toBoolean(properties.get("enableStaticAssets"), cfg.enableStaticAssets);
         cfg.registerCloudWebhook = toBoolean(properties.get("registerCloudWebhook"), cfg.registerCloudWebhook);
         Object url = properties.get("webhookUrl");
         if (url instanceof String s) {

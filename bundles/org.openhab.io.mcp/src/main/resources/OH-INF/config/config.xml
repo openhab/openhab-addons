@@ -65,6 +65,21 @@
 				<strong>administrator</strong> scope; reads are gated by this flag alone.]]></description>
 			<default>false</default>
 		</parameter>
+		<parameter name="enableStaticAssets" type="boolean" required="false">
+			<label>Enable Static Asset Management</label>
+			<description><![CDATA[When enabled, the agent gains <code>manage_static_asset</code> for listing, reading,
+				uploading, and deleting files in <code>$OPENHAB_CONF/html</code> (the folder served at
+				<code>/static/*</code> and used for plan-page backgrounds, custom widget icons, CSS overrides, etc.).
+				Useful alongside <code>enableUiDesign</code> so the agent can upload a floor plan and then reference it
+				from a new plan page in the same conversation. Writes go directly to disk &mdash; there is no REST API
+				to gate this &mdash; so the bundle enforces <strong>administrator</strong> role itself by looking up the
+				session's authenticated user. Filenames are sanitized, extensions are whitelisted, and uploads are
+				capped at 10 MB per call. Note that <code>.html</code>, <code>.svg</code>, and <code>.js</code> files
+				served from <code>/static/</code> execute in the browser, so an agent that writes those becomes an XSS
+				vector against your Main UI; the tool description warns about this but the operator should treat this
+				flag like <code>enableScripting</code>.]]></description>
+			<default>false</default>
+		</parameter>
 		<parameter name="exposeUntaggedItems" type="boolean" required="false">
 			<label>Expose Untagged Items</label>
 			<description>Whether to include items that are not part of the semantic model in search results.</description>

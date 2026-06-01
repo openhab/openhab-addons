@@ -60,6 +60,16 @@ public class McpConfiguration {
      */
     public boolean enableUiDesign = false;
     /**
+     * When true, exposes {@code manage_static_asset} so an agent can list, read, write, and
+     * delete files in {@code $OPENHAB_CONF/html} (the folder served at {@code /static/*} and
+     * used for plan-page backgrounds, custom widget icons, and CSS overrides). The tool writes
+     * directly to disk (there is no REST gate to forward to), so the bundle enforces
+     * administrator role itself by looking up the session's authenticated user in the
+     * UserRegistry. Filenames are sanitized against path traversal, extensions are whitelisted,
+     * and per-call uploads are capped at 10 MB. Off by default.
+     */
+    public boolean enableStaticAssets = false;
+    /**
      * When true, registers the {@code /mcp} path with the openHAB Cloud WebhookService
      * so remote MCP clients can reach this server via a stable myopenhab.org URL.
      * Requires the openhabcloud add-on to be installed and connected.
