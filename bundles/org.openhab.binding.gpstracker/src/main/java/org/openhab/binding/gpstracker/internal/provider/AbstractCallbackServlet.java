@@ -74,7 +74,20 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
     protected abstract String getPath();
 
     /**
-     * Process the HTTP requests from tracker applications
+     * Process the HTTP requests from tracker applications.
+     *
+     * <p>
+     * On success the response always contains HTTP 200 with {@code Content-Type: application/json}
+     * and a JSON array body, possibly empty. The empty case is {@code []}; when notifications are
+     * returned, the array contains notification objects. This conforms to the OwnTracks HTTP
+     * protocol specification:
+     * <a href="https://owntracks.org/booklet/tech/http/">https://owntracks.org/booklet/tech/http/</a>
+     * </p>
+     * <p>
+     * OwnTracks Android &ge; 2.5.x strictly parses the response body. An empty body causes a
+     * {@code JsonDecodingException} in the client, which re-queues every sent message indefinitely
+     * and stops location updates from reaching openHAB.
+     * </p>
      *
      * @param req HTTP request
      * @param resp HTTP response
@@ -94,14 +107,19 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
             String json = jb.toString().replaceAll("\\p{Z}", "");
             logger.debug("Post message received from {} tracker: {}", getProvider(), json);
 
+            List<? extends LocationMessage> responseMessages = Collections.emptyList();
             LocationMessage message = messageUtil.fromJson(json);
             if (message != null) {
-                List<? extends LocationMessage> response = processMessage(message);
-                if (response != null) {
-                    resp.getWriter().append(messageUtil.toJson(response)).flush();
-                }
+                responseMessages = processMessage(message);
             }
+
+            // Set status and Content-Type before writing the body (servlet spec requirement).
+            // The OwnTracks HTTP spec mandates "[]" as the response body on HTTP 200, even when
+            // there are no notifications to return.
             resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().append(messageUtil.toJson(responseMessages)).flush();
         } catch (Exception e) {
             logger.error("Error processing location report:", e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
