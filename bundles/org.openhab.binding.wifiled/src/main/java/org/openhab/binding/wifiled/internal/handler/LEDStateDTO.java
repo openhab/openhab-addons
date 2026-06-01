@@ -20,10 +20,10 @@ import java.math.RoundingMode;
 
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.util.ColorUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link LEDStateDTO} class holds the data and the settings for a LED device (i.e. the selected colors, the running
