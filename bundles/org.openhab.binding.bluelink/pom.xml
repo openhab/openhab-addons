@@ -16,9 +16,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.github.tomakehurst</groupId>
+      <groupId>org.wiremock</groupId>
       <artifactId>wiremock-standalone</artifactId>
-      <version>2.27.2</version>
+      <version>${wiremock.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
