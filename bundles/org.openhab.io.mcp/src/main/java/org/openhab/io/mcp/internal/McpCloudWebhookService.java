@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,8 +30,6 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.rest.Webhook;
 import org.openhab.core.io.rest.WebhookService;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +43,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * proxy.
  * <p>
  * The {@link WebhookService} interface lives in {@code org.openhab.core.io.rest}, so no
- * compile-time dependency on the openHAB Cloud add-on is required. The cloud add-on
- * publishes the OSGi service when installed; we look it up via the bundle context and
- * skip registration silently when it isn't present.
+ * compile-time dependency on the openHAB Cloud add-on is required. The provider OSGi
+ * service is injected into {@link McpService} as an optional/dynamic reference and
+ * handed to this class via a supplier; if no provider is installed we skip registration
+ * silently.
  * <p>
  * Registrations have a 30-day TTL on the cloud side; a scheduled daily refresh keeps
  * the mapping alive as long as the MCP bundle is active.
@@ -64,7 +63,7 @@ public class McpCloudWebhookService {
     private final Logger logger = LoggerFactory.getLogger(McpCloudWebhookService.class);
     private final ObjectMapper jackson = McpToolUtils.jackson();
 
-    private final BundleContext bundleContext;
+    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final String localPath;
     private final HttpClient httpClient;
     private final ScheduledExecutorService scheduler;
@@ -74,8 +73,9 @@ public class McpCloudWebhookService {
     private volatile @Nullable String browserBaseUrl;
     private @Nullable ScheduledFuture<?> refreshTask;
 
-    public McpCloudWebhookService(BundleContext bundleContext, String localPath, HttpClient httpClient) {
-        this.bundleContext = bundleContext;
+    public McpCloudWebhookService(Supplier<@Nullable WebhookService> webhookServiceSupplier, String localPath,
+            HttpClient httpClient) {
+        this.webhookServiceSupplier = webhookServiceSupplier;
         this.localPath = localPath;
         this.httpClient = httpClient;
         this.scheduler = ThreadPoolManager.getScheduledPool("mcp-cloud-webhook");
@@ -115,10 +115,10 @@ public class McpCloudWebhookService {
     public void unregister() {
         synchronized (lock) {
             stopRefresh();
-            withWebhookService(ws -> {
+            WebhookService ws = webhookServiceSupplier.get();
+            if (ws != null) {
                 removeHook(ws);
-                return null;
-            });
+            }
             publicUrl = null;
             browserBaseUrl = null;
         }
@@ -213,33 +213,12 @@ public class McpCloudWebhookService {
     }
 
     private @Nullable String fetchWebhookUrl() {
-        return withWebhookService(this::requestHookUrl);
-    }
-
-    /**
-     * Acquires the {@link WebhookService} from the bundle context, applies the given action,
-     * and releases the service reference. Returns {@code null} when the cloud add-on isn't
-     * installed (no service registered).
-     */
-    private <T> @Nullable T withWebhookService(Function<WebhookService, @Nullable T> action) {
-        ServiceReference<WebhookService> ref = bundleContext.getServiceReference(WebhookService.class);
-        if (ref == null) {
-            return null;
-        }
-        WebhookService service = bundleContext.getService(ref);
-        if (service == null) {
+        WebhookService ws = webhookServiceSupplier.get();
+        if (ws == null) {
             return null;
         }
         try {
-            return action.apply(service);
-        } finally {
-            bundleContext.ungetService(ref);
-        }
-    }
-
-    private @Nullable String requestHookUrl(WebhookService webhookService) {
-        try {
-            Webhook hook = webhookService.requestWebhook(localPath).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Webhook hook = ws.requestWebhook(localPath).get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             return hook.url().toString();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

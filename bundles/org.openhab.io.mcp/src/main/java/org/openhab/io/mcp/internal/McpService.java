@@ -38,6 +38,7 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.events.EventSubscriber;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.items.ItemBuilderFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
@@ -73,6 +74,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 import org.osgi.service.log.LogReaderService;
 import org.slf4j.Logger;
@@ -134,6 +137,14 @@ public class McpService {
     private @Nullable LoggingTools loggingTools;
     private volatile McpConfiguration config = new McpConfiguration();
 
+    /**
+     * Optional dynamic reference to the openhab-core {@link WebhookService}; populated by the cloud
+     * add-on (or any other provider) at runtime. Marked OPTIONAL because the MCP bundle is fully
+     * functional on the local network without a cloud webhook. {@link McpCloudWebhookService}
+     * resolves this via a supplier so it always sees the current value.
+     */
+    private volatile @Nullable WebhookService webhookService;
+
     @Activate
     public McpService(@Reference ItemRegistry itemRegistry, @Reference ItemBuilderFactory itemBuilderFactory,
             @Reference MetadataRegistry metadataRegistry, @Reference UserRegistry userRegistry,
@@ -184,7 +195,7 @@ public class McpService {
         // the hook from the Cloud. Normal service/bundle lifecycle restarts do NOT
         // hit this path, so the registered UUID stays stable across deploys.
         if (prev.registerCloudWebhook && !next.registerCloudWebhook) {
-            new McpCloudWebhookService(bundleContext, SERVLET_PATH, httpClient).unregister();
+            new McpCloudWebhookService(() -> webhookService, SERVLET_PATH, httpClient).unregister();
             persistWebhookUrl("");
         }
         startServer();
@@ -196,6 +207,18 @@ public class McpService {
                 || a.enableFullApiAccess != b.enableFullApiAccess || a.enableScripting != b.enableScripting
                 || a.enableLoggingAccess != b.enableLoggingAccess || a.enableUiDesign != b.enableUiDesign
                 || a.registerCloudWebhook != b.registerCloudWebhook;
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    void setWebhookService(WebhookService service) {
+        this.webhookService = service;
+    }
+
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    void unsetWebhookService(WebhookService service) {
+        if (this.webhookService == service) {
+            this.webhookService = null;
+        }
     }
 
     @Deactivate
@@ -221,7 +244,7 @@ public class McpService {
 
             McpCloudWebhookService webhook = null;
             if (config.registerCloudWebhook) {
-                webhook = new McpCloudWebhookService(bundleContext, SERVLET_PATH, httpClient);
+                webhook = new McpCloudWebhookService(() -> webhookService, SERVLET_PATH, httpClient);
                 this.cloudWebhook = webhook;
                 McpCloudWebhookService webhookRef = webhook;
                 scheduler.execute(() -> {
