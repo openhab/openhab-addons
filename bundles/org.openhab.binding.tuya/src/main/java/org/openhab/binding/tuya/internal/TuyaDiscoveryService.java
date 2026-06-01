@@ -72,7 +72,23 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
     }
 
     @Override
-    protected void startScan() {
+    public void initialize() {
+        ((ProjectHandler) thingHandler).setDiscoveryService(this);
+
+        super.initialize();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        removeOlderResults(Instant.now());
+
+        ((ProjectHandler) thingHandler).setDiscoveryService(null);
+    }
+
+    @Override
+    public void startScan() {
         TuyaOpenAPI api = thingHandler.getApi();
         if (!api.isConnected()) {
             logger.debug("Tried to start scan but API for bridge '{}' is not connected.",
@@ -147,12 +163,6 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
         }
         removeOlderResults(getTimestampOfLastScan());
         super.stopScan();
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        removeOlderResults(Instant.now());
     }
 
     @Override
