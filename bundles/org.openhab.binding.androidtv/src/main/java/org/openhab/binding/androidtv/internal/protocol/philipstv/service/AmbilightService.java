@@ -42,7 +42,6 @@ import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.a
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight.AmbilightPowerDTO;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ambilight.AmbilightTopologyDTO;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.util.ColorUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -50,6 +49,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
