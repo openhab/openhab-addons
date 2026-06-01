@@ -20,7 +20,6 @@ import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.util.ColorUtil;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
@@ -29,6 +28,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.PrimitiveType;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,8 +106,8 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL,
                                 gethsb(t1nRawStateRedByte1, t1nRawStateGreenByte2, t1nRawStateBluByte3));
                         int[] rgb = ColorUtil.hsbToRgb(hsbState);
-                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET,
-                                (byte) rgb[0], (byte) rgb[1], (byte) rgb[2]);
+                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET, (byte) rgb[0], (byte) rgb[1],
+                                (byte) rgb[2]);
 
                     } else if (command.equals(OnOffType.ON)) {
                         commandSEND(SoulissProtocolConstants.SOULISS_T1N_ON_CMD);
@@ -130,8 +130,8 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                                 PercentType.valueOf(hsbState.getBrightness().toString()));
                         int[] rgb = ColorUtil.hsbToRgb(localHsbState);
-                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET,
-                                (byte) rgb[0], (byte) rgb[1], (byte) rgb[2]);
+                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET, (byte) rgb[0], (byte) rgb[1],
+                                (byte) rgb[2]);
                     }
                     break;
                 default:
