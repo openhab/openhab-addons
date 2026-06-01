@@ -709,11 +709,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     b01Params = Map.of("status", 6);
                 }
                 break;
-            case COMMAND_GET_NETWORK_INFO:
-                b01Method = "service.get_net_info";
-                b01Params = Map.of();
-                break;
-            case COMMAND_GET_STATUS:
+            case COMMAND_GET_STATUS: {
+                // Request all status properties the Q7 exposes via prop.get
                 b01Method = "prop.get";
                 com.google.gson.JsonArray statusProps = new com.google.gson.JsonArray();
                 for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
@@ -725,6 +722,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 }
                 b01Params = buildJsonObject("property", statusProps);
                 break;
+            }
             case "get_prop":
                 b01Method = "prop.get";
                 // params is a JSON array of property names, e.g. ["status","wind"]
@@ -751,11 +749,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 b01Method = "service.get_map_list";
                 b01Params = Map.of();
                 break;
-            default:
-                // Pass through as prop.set / service.* if already in B01 form
-                b01Method = method;
-                b01Params = JsonParser.parseString(params);
+            case COMMAND_GET_CONSUMABLE:
+                b01Method = "service.get_consumable";
+                b01Params = Map.of();
                 break;
+            case COMMAND_GET_CLEAN_SUMMARY:
+                b01Method = "service.get_record_list";
+                b01Params = Map.of();
+                break;
+            default:
+                // Unknown command — log and bail out rather than sending garbage to the device.
+                // Add an explicit case above when support for this command is implemented.
+                logger.debug("B01 sendB01RPCCommand: unhandled method '{}', ignoring", method);
+                return -1;
         }
 
         // Build the inner payload: { method, msgId, params }

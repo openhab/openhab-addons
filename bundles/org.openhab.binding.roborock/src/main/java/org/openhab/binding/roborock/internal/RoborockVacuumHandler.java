@@ -974,7 +974,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
-            if (historyData.get(3).getAsJsonArray().size() > 0) {
+            if (!B01 && historyData.get(3).getAsJsonArray().size() > 0) {
                 String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
@@ -994,7 +994,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
-            if (cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
+            if (!B01 && cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
                 JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
                 if (!cleanSummaryRecords.isEmpty()) {
                     String lastClean = cleanSummaryRecords.get(0).getAsString();
@@ -1421,12 +1421,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
      * <p>
      * B01 shape: {@code {"msgId":"12345", "code":0, "method":"prop.get", "data":{...}}}
      * <p>
-     * V1 shape: {@code {"id":12345, "result":[{...}]}}
-     *
-     * <p>
-     * Also renames B01 field names to their V1 equivalents so existing GSON deserialisation works:
-     * {@code wind}→{@code fan_power}, {@code water}→{@code water_box_mode},
-     * {@code mode}→{@code mop_mode}, {@code quantity}→{@code battery}
+     * V1 shape varies by method — see inline comments for each case.
      *
      * @return normalised V1-shaped JSON string, or {@code null} if the response is an error or unparseable
      */
@@ -1434,7 +1429,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String normaliseB01Response(String jsonString) {
         try {
             JsonObject b01 = JsonParser.parseString(jsonString).getAsJsonObject();
-            logger.debug("B01 jsonString = {}", jsonString); // REMOVE
 
             // Error response — log and discard
             if (b01.has("code") && b01.get("code").getAsInt() != 0) {
@@ -1452,31 +1446,136 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
             }
 
-            JsonObject data = b01.has("data") ? b01.get("data").getAsJsonObject() : new JsonObject();
+            String method = b01.has("method") ? b01.get("method").getAsString() : "";
+            JsonObject data = b01.has("data") && b01.get("data").isJsonObject() ? b01.get("data").getAsJsonObject()
+                    : new JsonObject();
 
-            // Rename B01 field names → V1/GetStatus equivalents for GSON deserialisation.
-            // B01 name → GetStatus @SerializedName
-            renameField(data, "status", "state");
-            renameField(data, "wind", "fan_power");
-            renameField(data, "water", "water_box_mode");
-            renameField(data, "mode", "mop_mode");
-            renameField(data, "quantity", "battery");
-            renameField(data, "fault", "error_code");
-            renameField(data, "tank_state", "water_box_status");
-            renameField(data, "charge_state", "charge_status");
-            renameField(data, "repeat_state", "repeat");
-            renameField(data, "dust_action", "auto_dust_collection");
-            renameField(data, "cleaning_time", "clean_time");
-            renameField(data, "cleaning_area", "clean_area");
-            renameField(data, "multi_floor", "switch_map_mode");
-            renameField(data, "clean_path_preference", "corner_clean_mode");
-
-            // Wrap into V1 envelope: {"id": N, "result": [data]}
             JsonObject v1 = new JsonObject();
             v1.addProperty("id", id);
-            JsonArray result = new JsonArray();
-            result.add(data);
-            v1.add("result", result);
+
+            switch (method) {
+                case "prop.get": {
+                    // Rename B01 field names → V1/GetStatus @SerializedName equivalents
+                    renameField(data, "status", "state");
+                    renameField(data, "wind", "fan_power");
+                    renameField(data, "water", "water_box_mode");
+                    renameField(data, "mode", "mop_mode");
+                    renameField(data, "quantity", "battery");
+                    renameField(data, "fault", "error_code");
+                    renameField(data, "tank_state", "water_box_status");
+                    renameField(data, "charge_state", "charge_status");
+                    renameField(data, "repeat_state", "repeat");
+                    renameField(data, "dust_action", "auto_dust_collection");
+                    renameField(data, "cleaning_time", "clean_time");
+                    renameField(data, "cleaning_area", "clean_area");
+                    renameField(data, "multi_floor", "switch_map_mode");
+                    renameField(data, "clean_path_preference", "corner_clean_mode");
+                    // Wrap as {"id":N, "result":[data]} for GetStatus GSON deserialisation
+                    JsonArray statusResult = new JsonArray();
+                    statusResult.add(data);
+                    v1.add("result", statusResult);
+                    break;
+                }
+
+                case "service.get_consumable": {
+                    // B01 data: {"main_brush":N, "side_brush":N, "filter":N, "sensor":N} (seconds)
+                    // V1 shape: {"id":N, "result":[{"main_brush_work_time":N, ...}]}
+                    renameField(data, "main_brush", "main_brush_work_time");
+                    renameField(data, "side_brush", "side_brush_work_time");
+                    renameField(data, "filter", "filter_work_time");
+                    renameField(data, "sensor", "sensor_dirty_time");
+                    JsonArray consumableResult = new JsonArray();
+                    consumableResult.add(data);
+                    v1.add("result", consumableResult);
+                    break;
+                }
+
+                case "service.get_record_list": {
+                    // B01 data: {"total_time":N, "total_area":N, "total_count":N, "record_list":[...]}
+                    // V1 clean summary shape: {"id":N, "result":{"clean_time":N, "clean_area":N, "clean_count":N}}
+                    // No follow-up record fetch needed — extract most recent record directly from record_list.
+                    JsonObject summaryResult = new JsonObject();
+                    summaryResult.addProperty("clean_time",
+                            data.has("total_time") ? data.get("total_time").getAsLong() : 0);
+                    summaryResult.addProperty("clean_area",
+                            data.has("total_area") ? data.get("total_area").getAsLong() : 0);
+                    summaryResult.addProperty("clean_count",
+                            data.has("total_count") ? data.get("total_count").getAsLong() : 0);
+                    v1.add("result", summaryResult);
+
+                    // Also synthesise a GetCleanRecord response from the most recent record_list entry
+                    // so handleGetCleanRecord can update history channels without a separate fetch.
+                    if (data.has("record_list") && data.get("record_list").isJsonArray()) {
+                        JsonArray recordList = data.get("record_list").getAsJsonArray();
+                        if (!recordList.isEmpty()) {
+                            // Most recent record is last in the list
+                            JsonElement lastEntry = recordList.get(recordList.size() - 1);
+                            if (lastEntry.isJsonObject() && lastEntry.getAsJsonObject().has("detail")) {
+                                try {
+                                    JsonObject detail = JsonParser
+                                            .parseString(lastEntry.getAsJsonObject().get("detail").getAsString())
+                                            .getAsJsonObject();
+                                    // Map B01 detail fields → GetCleanRecord.Result field names
+                                    JsonObject rec = new JsonObject();
+                                    long startTime = detail.has("record_start_time")
+                                            ? detail.get("record_start_time").getAsLong()
+                                            : 0;
+                                    long useTime = detail.has("record_use_time")
+                                            ? detail.get("record_use_time").getAsLong()
+                                            : 0;
+                                    rec.addProperty("begin", startTime);
+                                    rec.addProperty("end", startTime + useTime);
+                                    rec.addProperty("duration", useTime);
+                                    rec.addProperty("cleaned_area",
+                                            detail.has("record_clean_area") ? detail.get("record_clean_area").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("error",
+                                            detail.has("record_faultcode") ? detail.get("record_faultcode").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("complete",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("finish_reason",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    JsonArray recResult = new JsonArray();
+                                    recResult.add(rec);
+                                    JsonObject cleanRecordV1 = new JsonObject();
+                                    cleanRecordV1.addProperty("id", id);
+                                    cleanRecordV1.add("result", recResult);
+                                    handleGetCleanRecord(gson.toJson(cleanRecordV1));
+                                } catch (Exception e) {
+                                    logger.debug("Failed to synthesise B01 clean record: {}", e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+
+                case "prop.set":
+                case "service.set_room_clean":
+                case "service.start_recharge":
+                case "service.find_device":
+                case "service.reset_consumable": {
+                    // Ack responses — normalise to {"id":N, "result":["ok"]}
+                    JsonArray ack = new JsonArray();
+                    ack.add("ok");
+                    v1.add("result", ack);
+                    break;
+                }
+
+                default: {
+                    // Unknown method — wrap data as-is for best-effort handling
+                    logger.debug("B01 normalise: unhandled method '{}', wrapping data as-is", method);
+                    JsonArray defaultResult = new JsonArray();
+                    defaultResult.add(data);
+                    v1.add("result", defaultResult);
+                    break;
+                }
+            }
 
             return gson.toJson(v1);
         } catch (Exception e) {
