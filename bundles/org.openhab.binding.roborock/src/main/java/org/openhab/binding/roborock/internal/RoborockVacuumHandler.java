@@ -1467,7 +1467,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     renameField(data, "repeat_state", "repeat");
                     renameField(data, "dust_action", "auto_dust_collection");
                     renameField(data, "cleaning_time", "clean_time");
-                    renameField(data, "cleaning_area", "clean_area");
+                    // B01 cleaning_area is in cm²; convert to mm² so / 1000000D in handleGetStatus gives correct m²
+                    if (data.has("cleaning_area")) {
+                        data.addProperty("clean_area", data.get("cleaning_area").getAsLong() * 10000L);
+                        data.remove("cleaning_area");
+                    }
                     renameField(data, "multi_floor", "switch_map_mode");
                     renameField(data, "clean_path_preference", "corner_clean_mode");
                     // Wrap as {"id":N, "result":[data]} for GetStatus GSON deserialisation
@@ -1497,8 +1501,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     JsonObject summaryResult = new JsonObject();
                     summaryResult.addProperty("clean_time",
                             data.has("total_time") ? data.get("total_time").getAsLong() : 0);
+                    // B01 total_area is in cm²; multiply by 10000 to get mm² so the
+                    // existing / 1000000D in handleGetCleanSummary produces correct m²
                     summaryResult.addProperty("clean_area",
-                            data.has("total_area") ? data.get("total_area").getAsLong() : 0);
+                            data.has("total_area") ? data.get("total_area").getAsLong() * 10000L : 0);
                     summaryResult.addProperty("clean_count",
                             data.has("total_count") ? data.get("total_count").getAsLong() : 0);
                     v1.add("result", summaryResult);
@@ -1526,8 +1532,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                                     rec.addProperty("begin", startTime);
                                     rec.addProperty("end", startTime + useTime);
                                     rec.addProperty("duration", useTime);
+                                    // B01 record_clean_area is in cm²; multiply by 10000 to get mm²
+                                    // so the existing / 1000000D in handleGetCleanRecord produces correct m²
                                     rec.addProperty("cleaned_area",
-                                            detail.has("record_clean_area") ? detail.get("record_clean_area").getAsInt()
+                                            detail.has("record_clean_area")
+                                                    ? detail.get("record_clean_area").getAsLong() * 10000L
                                                     : 0);
                                     rec.addProperty("error",
                                             detail.has("record_faultcode") ? detail.get("record_faultcode").getAsInt()
