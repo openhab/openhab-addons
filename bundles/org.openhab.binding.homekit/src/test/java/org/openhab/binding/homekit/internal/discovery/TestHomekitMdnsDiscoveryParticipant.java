@@ -26,6 +26,7 @@ import javax.jmdns.ServiceInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.net.MacResolver;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 
