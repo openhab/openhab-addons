@@ -64,7 +64,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -673,8 +675,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             case COMMAND_APP_START:
                 if (q7) {
                     b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids",
-                            new com.google.gson.JsonArray());
+                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
                 } else {
                     b01Method = "prop.set";
                     b01Params = Map.of("status", 1);
@@ -683,8 +684,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             case COMMAND_APP_SPOT:
                 if (q7) {
                     b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids",
-                            new com.google.gson.JsonArray());
+                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
                 } else {
                     b01Method = "prop.set";
                     b01Params = Map.of("status", 2);
@@ -693,8 +693,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             case COMMAND_APP_PAUSE:
                 if (q7) {
                     b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids",
-                            new com.google.gson.JsonArray());
+                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
                 } else {
                     b01Method = "prop.set";
                     b01Params = Map.of("status", 10);
@@ -712,7 +711,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             case COMMAND_GET_STATUS: {
                 // Request all status properties the Q7 exposes via prop.get
                 b01Method = "prop.get";
-                com.google.gson.JsonArray statusProps = new com.google.gson.JsonArray();
+                JsonArray statusProps = new JsonArray();
                 for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
                         "sweep_type", "clean_path_preference", "cloth_state", "time_zone", "language", "cleaning_time",
                         "cleaning_area", "custom_type", "work_mode", "charge_state", "current_map_id", "map_num",
@@ -882,8 +881,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      * Builds a JsonObject from alternating key/value pairs.
      * Values may be Integer, String, Boolean, or JsonElement.
      */
-    private com.google.gson.JsonObject buildJsonObject(Object... keyValues) {
-        com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
+    private JsonObject buildJsonObject(Object... keyValues) {
+        JsonObject obj = new JsonObject();
         for (int i = 0; i + 1 < keyValues.length; i += 2) {
             String key = keyValues[i].toString();
             Object val = keyValues[i + 1];
@@ -893,7 +892,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 obj.addProperty(key, v);
             } else if (val instanceof Boolean v) {
                 obj.addProperty(key, v);
-            } else if (val instanceof com.google.gson.JsonElement v) {
+            } else if (val instanceof JsonElement v) {
                 obj.add(key, v);
             }
         }
