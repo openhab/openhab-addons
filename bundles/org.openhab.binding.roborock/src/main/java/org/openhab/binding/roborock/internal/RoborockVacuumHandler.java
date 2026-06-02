@@ -130,9 +130,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String localKey = "";
     private String localIP = "";
     private String endpointPrefix = "";
-    private boolean B01 = false;
-    private boolean Q7 = false;
-    private boolean Q10 = false;
+    private boolean b01 = false;
+    private boolean q7 = false;
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private RoborockCommunicationMode communicationMode = RoborockCommunicationMode.CLOUD;
@@ -331,8 +330,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         bridgeHandler = accountHandler;
-        B01 = isB01Device();
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, B01, Q7);
+        b01 = isB01Device();
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;
@@ -348,17 +347,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private boolean isB01Device() {
-        String protocol = getThing().getProperties().get("protocol");
-        if ("B01".equalsIgnoreCase(protocol)) {
-            String name = getThing().getProperties().getOrDefault("deviceName", "");
-            if (name.contains("Q7")) {
-                Q7 = true;
-            } else if (name.contains("Q10")) {
-                Q10 = true;
-            }
-            return true;
+        q7 = false;
+        String protocol = getThing().getProperties().getOrDefault(THING_PROPERTY_PROTOCOL, "");
+        if (!"B01".equalsIgnoreCase(protocol)) {
+            return false;
         }
-        return false;
+        b01 = true;
+        String name = getThing().getProperties().getOrDefault(THING_PROPERTY_DEVICE_NAME, "");
+        String nameUpper = name.toUpperCase();
+        if (nameUpper.contains("Q7")) {
+            q7 = true;
+        }
+        return true;
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -595,7 +595,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 String jsonString = rpcPayload.getAsString();
 
                 // B01 responses have a different envelope shape — normalise to V1 before dispatching
-                if (B01) {
+                if (b01) {
                     String normalised = normaliseB01Response(jsonString);
                     if (normalised == null) {
                         // unsolicited push or error response — nothing to correlate
@@ -627,9 +627,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                             break;
                         case "getRoomMapping":
                         case COMMAND_GET_ROOM_MAPPING:
-                            if (!Q7) { // Need to clean-up response so it can be processed
-                                handleGetRoomMapping(jsonString);
-                            }
+                            handleGetRoomMapping(jsonString);
                             break;
                         case "getNetworkInfo":
                         case COMMAND_GET_NETWORK_INFO:
@@ -974,7 +972,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
-            if (!B01 && historyData.get(3).getAsJsonArray().size() > 0) {
+            if (!b01 && historyData.get(3).getAsJsonArray().size() > 0) {
                 String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
@@ -994,7 +992,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_HISTORY_TOTALAREA,
                     new QuantityType<>(cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
-            if (!B01 && cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
+            if (!b01 && cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
                 JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
                 if (!cleanSummaryRecords.isEmpty()) {
                     String lastClean = cleanSummaryRecords.get(0).getAsString();

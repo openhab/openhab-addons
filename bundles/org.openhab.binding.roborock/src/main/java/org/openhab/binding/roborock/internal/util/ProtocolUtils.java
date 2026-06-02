@@ -195,6 +195,11 @@ public final class ProtocolUtils {
      * @param random the 32-bit random value from the frame header
      */
     public static byte[] encryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
         try {
             SecretKeySpec key = new SecretKeySpec(localKey.getBytes(StandardCharsets.UTF_8), "AES");
             IvParameterSpec iv = deriveB01IV(random);
@@ -214,6 +219,11 @@ public final class ProtocolUtils {
      * @param random the 32-bit random value from the frame header
      */
     public static byte[] decryptB01(byte[] payload, String localKey, int random) throws RoborockException {
+        byte[] keyBytes = localKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length != 16) {
+            throw new RoborockException(
+                    "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
+        }
         try {
             SecretKeySpec key = new SecretKeySpec(localKey.getBytes(StandardCharsets.UTF_8), "AES");
             IvParameterSpec iv = deriveB01IV(random);
@@ -241,9 +251,9 @@ public final class ProtocolUtils {
         return new IvParameterSpec(ivStr.getBytes(StandardCharsets.UTF_8));
     }
 
-private static String bytesToString(byte[] data, int start, int length) {
-    return new String(data, start, length, StandardCharsets.ISO_8859_1);
-}
+    private static String bytesToString(byte[] data, int start, int length) {
+        return new String(data, start, length, StandardCharsets.ISO_8859_1);
+    }
 
     /**
      * Reads a 32-bit big-endian integer from a byte array at a given starting position.

@@ -726,17 +726,39 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             case "get_prop":
                 b01Method = "prop.get";
                 // params is a JSON array of property names, e.g. ["status","wind"]
-                b01Params = Map.of("property", JsonParser.parseString(params));
+                try {
+                    JsonElement properties = JsonParser.parseString(params);
+                    if (!properties.isJsonArray()) {
+                        logger.debug("B01 get_prop expects JSON array params but got: {}", params);
+                        return -1;
+                    }
+                    b01Params = Map.of("property", properties.getAsJsonArray());
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for get_prop: {}", e.getMessage());
+                    return -1;
+                }
                 break;
             case "set_custom_mode": {
                 // fan power: params is [<int>]
-                int wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                final int wind;
+                try {
+                    wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
                 b01Method = "prop.set";
                 b01Params = Map.of("wind", wind);
                 break;
             }
             case "set_water_box_custom_mode": {
-                int water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                final int water;
+                try {
+                    water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_water_box_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
                 b01Method = "prop.set";
                 b01Params = Map.of("water", water);
                 break;
@@ -779,11 +801,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         payloadMap.put("dps", dps);
 
         String payload = gson.toJson(payloadMap);
-        logger.debug("B01 MQTT payload = {}", payload); // FIXME, SHOULD be TRACE
+        logger.trace("B01 MQTT payload = {}", payload);
 
         byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
+        if (messageBytes.length == 0) {
+            logger.debug("Failed to build B01 {} message (empty frame), not publishing", method);
+            return -1;
+        }
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-
         if (localMqttClient != null && localMqttClient.isConnected()) {
             logger.debug("Publishing B01 {} ({}) message to {} (q7={})", method, b01Method, topic, q7);
             try {
