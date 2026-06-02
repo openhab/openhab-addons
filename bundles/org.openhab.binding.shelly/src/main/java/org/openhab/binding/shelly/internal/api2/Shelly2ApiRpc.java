@@ -64,6 +64,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -787,11 +788,58 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(0),
                     Shelly2RGBWStatus.class);
             ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
-            lightChannel.red = ls.rgb[0];
-            lightChannel.green = ls.rgb[1];
-            lightChannel.blue = ls.rgb[2];
+            if (ls.rgb != null && ls.rgb.length >= 3) {
+                lightChannel.red = ls.rgb[0];
+                lightChannel.green = ls.rgb[1];
+                lightChannel.blue = ls.rgb[2];
+            }
             lightChannel.white = ls.white;
-            lightChannel.brightness = ls.brightness.intValue();
+            Double rgbwBrightness = ls.brightness;
+            if (rgbwBrightness != null) {
+                lightChannel.brightness = rgbwBrightness.intValue();
+            }
+
+            ShellyStatusLight status = new ShellyStatusLight();
+            status.lights = new ArrayList<>();
+            status.lights.add(lightChannel);
+            status.ison = ls.output;
+
+            return status;
+        }
+        if (profile.isRGBBulb) {
+            Shelly2RGBStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGB_STATUS).withId(0),
+                    Shelly2RGBStatus.class);
+            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+            if (ls.rgb != null && ls.rgb.length >= 3) {
+                lightChannel.red = ls.rgb[0];
+                lightChannel.green = ls.rgb[1];
+                lightChannel.blue = ls.rgb[2];
+            }
+            lightChannel.white = 0; // no separate white channel; CCT is via ct
+            Double rgbBrightness = ls.brightness;
+            if (rgbBrightness != null) {
+                lightChannel.brightness = rgbBrightness.intValue();
+            }
+            lightChannel.temp = ls.ct; // color temperature in K
+
+            ShellyStatusLight status = new ShellyStatusLight();
+            status.lights = new ArrayList<>();
+            status.lights.add(lightChannel);
+            status.ison = ls.output;
+
+            return status;
+        }
+        if (profile.isDuo && profile.isGen2) {
+            Shelly2DeviceStatusLight ls = apiRequest(
+                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(0),
+                    Shelly2DeviceStatusLight.class);
+            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+            lightChannel.ison = ls.output;
+            Double duoBrightness = ls.brightness;
+            if (duoBrightness != null) {
+                lightChannel.brightness = duoBrightness.intValue();
+            }
+            lightChannel.temp = ls.ct; // color temperature in K (2700-6500)
 
             ShellyStatusLight status = new ShellyStatusLight();
             status.lights = new ArrayList<>();
@@ -813,8 +861,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.ison = ls.output;
         status.hasTimer = ls.timerStartedAt != null;
         status.timerDuration = getDuration(ls.timerStartedAt, ls.timerDuration);
-        if (ls.brightness != null) {
-            status.brightness = ls.brightness.intValue();
+        Double lightBrightness = ls.brightness;
+        if (lightBrightness != null) {
+            status.brightness = lightBrightness.intValue();
         }
         return status;
     }
@@ -1003,12 +1052,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        if (getProfile().isRGBW2) {
-            String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
-            if (brightness != null) {
-                params.brightness = Integer.parseInt(brightness);
-            }
+        params.id = lightIndex;
+        if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
+            params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
+        }
+        String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
+        if (brightness != null) {
+            params.brightness = Integer.parseInt(brightness);
+        }
+        if (profile.isRGBW2) {
             String red = parameters.get(SHELLY_COLOR_RED);
             String green = parameters.get(SHELLY_COLOR_GREEN);
             String blue = parameters.get(SHELLY_COLOR_BLUE);
@@ -1019,14 +1073,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (white != null) {
                 params.white = Integer.parseInt(white);
             }
-            if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
-                params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
-            }
-            params.id = lightIndex;
-
             apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
+        } else if (profile.isRGBBulb) {
+            String red = parameters.get(SHELLY_COLOR_RED);
+            String green = parameters.get(SHELLY_COLOR_GREEN);
+            String blue = parameters.get(SHELLY_COLOR_BLUE);
+            if (red != null && green != null && blue != null) {
+                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+            }
+            String ct = parameters.get(SHELLY_COLOR_TEMP);
+            if (ct != null) {
+                params.ct = Integer.parseInt(ct);
+            }
+            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
+        } else if (profile.isDuo && profile.isGen2) {
+            String ct = parameters.get(SHELLY_COLOR_TEMP);
+            if (ct != null) {
+                params.ct = Integer.parseInt(ct);
+            }
+            apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        } else {
+            throw new ShellyApiException("setLightParms not implemented for this device type");
         }
-        throw new ShellyApiException("API call not implemented");
     }
 
     @Override

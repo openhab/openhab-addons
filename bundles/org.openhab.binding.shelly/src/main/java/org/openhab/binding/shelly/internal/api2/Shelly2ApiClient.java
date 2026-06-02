@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,6 +82,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
@@ -382,6 +382,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.status.lights.add(new ShellySettingsLight());
             fillRgbwSettings(profile, dc);
         }
+        if (profile.isDuo && profile.isGen2) {
+            fillDuoBulbSettings(profile, dc);
+        }
+        if (profile.isRGBBulb) {
+            fillRGBBulbSettings(profile, dc);
+        }
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
 
         if (profile.hasBattery) {
@@ -570,7 +576,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
+        updated |= updateDuoBulbStatus(0, status, result.light0, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
+        updated |= updateRGBBulbStatus(0, status, result.rgb0, channelUpdate);
         if (channelUpdate) {
             updated |= ShellyComponents.updateMeters(getThing(), status);
         }
@@ -1125,17 +1133,49 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected void fillRgbwSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!profile.isRGBW2 || dc.rgbw0 == null) {
+        Shelly2GetConfigLight rgbw0 = dc.rgbw0;
+        if (!profile.isRGBW2 || rgbw0 == null) {
             return;
         }
-
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight ls = lights.get(0);
-            ls.autoOn = dc.rgbw0.autoOnDelay;
-            ls.autoOff = dc.rgbw0.autoOffDelay;
-            ls.name = dc.rgbw0.name;
+            ls.autoOn = rgbw0.autoOnDelay;
+            ls.autoOff = rgbw0.autoOffDelay;
+            ls.name = rgbw0.name;
             lights.set(0, ls);
+        }
+    }
+
+    protected void fillDuoBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (!(profile.isDuo && profile.isGen2)) {
+            return;
+        }
+        applyBulbLightSettings(profile, dc.light0);
+    }
+
+    protected void fillRGBBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
+        if (!profile.isRGBBulb) {
+            return;
+        }
+        applyBulbLightSettings(profile, dc.rgb0);
+    }
+
+    private void applyBulbLightSettings(ShellyDeviceProfile profile, @Nullable Shelly2GetConfigLight cfg) {
+        ArrayList<@Nullable ShellySettingsRgbwLight> lights = new ArrayList<>();
+        ShellySettingsRgbwLight l = new ShellySettingsRgbwLight();
+        if (cfg != null) {
+            l.autoOn = cfg.autoOnDelay;
+            l.autoOff = cfg.autoOffDelay;
+            l.name = cfg.name;
+        }
+        lights.add(l);
+        profile.settings.lights = lights;
+        profile.status.lights = new ArrayList<>();
+        profile.status.lights.add(new ShellySettingsLight());
+        if (profile.numMeters == 0) {
+            profile.numMeters = 1;
+            profile.isEMeter = true;
         }
     }
 
@@ -1145,43 +1185,73 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (!profile.isDimmer || value == null) {
             return false;
         }
-        if (value.id == null) { // fw 1.6.1
-            value.id = id;
-        }
-
-        ShellyShortLightStatus ds = status.dimmers.get(value.id);
-        if (value.brightness != null) {
-            ds.brightness = value.brightness.intValue();
+        Integer rawDimmerId = value.id;
+        int dimmerId = rawDimmerId != null ? rawDimmerId : id;
+        ShellyShortLightStatus ds = status.dimmers.get(dimmerId);
+        Double dimmerBrightness = value.brightness;
+        if (dimmerBrightness != null) {
+            ds.brightness = dimmerBrightness.intValue();
         }
         ds.ison = value.output;
         ds.hasTimer = value.timerStartedAt != null;
         ds.timerDuration = getDuration(value.timerStartedAt, value.timerDuration);
-        status.dimmers.set(value.id, ds);
+        status.dimmers.set(dimmerId, ds);
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
     private boolean updateRGBWStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RGBWStatus value,
             boolean channelUpdate) throws ShellyApiException {
-        ShellyDeviceProfile profile = getProfile();
-        if (!profile.isRGBW2 || value == null) {
+        if (!getProfile().isRGBW2 || value == null) {
             return false;
         }
-        if (value.id == null) {
-            value.id = id;
-        }
+        Integer rawId = value.id;
+        return applyLightStatus(status, rawId != null ? rawId : id, value.output, value.brightness, value.rgb,
+                value.white, null, channelUpdate, true);
+    }
 
-        ShellySettingsLight ds = status.lights.get(value.id);
-        ds.brightness = Objects.requireNonNullElse(value.brightness, ds.brightness).intValue();
-        if (value.rgb != null) {
-            ds.red = value.rgb[0];
-            ds.green = value.rgb[1];
-            ds.blue = value.rgb[2];
+    private boolean updateDuoBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+            boolean channelUpdate) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (!(profile.isDuo && profile.isGen2) || value == null) {
+            return false;
         }
-        ds.white = Objects.requireNonNullElse(value.white, ds.white);
-        ds.ison = value.output;
+        return applyLightStatus(status, 0, value.output, value.brightness, null, null, value.ct, channelUpdate, false);
+    }
 
-        status.lights.set(value.id, ds);
-        return channelUpdate ? ShellyComponents.updateRGBW(getThing(), status) : false;
+    private boolean updateRGBBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RGBStatus value,
+            boolean channelUpdate) throws ShellyApiException {
+        if (!getProfile().isRGBBulb || value == null) {
+            return false;
+        }
+        return applyLightStatus(status, 0, value.output, value.brightness, value.rgb, null, value.ct, channelUpdate,
+                true);
+    }
+
+    private boolean applyLightStatus(ShellySettingsStatus status, int idx, @Nullable Boolean ison,
+            @Nullable Double brightness, @Nullable Integer @Nullable [] rgb, @Nullable Integer white,
+            @Nullable Integer ct, boolean channelUpdate, boolean triggerUpdate) throws ShellyApiException {
+        List<ShellySettingsLight> lights = status.lights;
+        if (lights == null || idx >= lights.size()) {
+            return false;
+        }
+        ShellySettingsLight ds = lights.get(idx);
+        ds.ison = ison;
+        if (brightness != null) {
+            ds.brightness = brightness.intValue();
+        }
+        if (rgb != null && rgb.length >= 3) {
+            ds.red = rgb[0];
+            ds.green = rgb[1];
+            ds.blue = rgb[2];
+        }
+        if (white != null) {
+            ds.white = white;
+        }
+        if (ct != null) {
+            ds.temp = ct;
+        }
+        lights.set(idx, ds);
+        return triggerUpdate && channelUpdate && ShellyComponents.updateRGBW(getThing(), status);
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {

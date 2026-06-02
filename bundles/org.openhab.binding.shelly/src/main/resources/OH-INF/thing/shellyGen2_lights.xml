@@ -4,6 +4,38 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="shellyplusduobulb">
+		<label>Shelly Duo Bulb E27</label>
+		<description>Shelly Duo Bulb E27 - Dimmable Tunable White Bulb with Power Meter</description>
+		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="control" typeId="duoControl"/>
+			<channel-group id="white" typeId="whiteSettings"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:light"/>
+	</thing-type>
+
+	<thing-type id="shellypluscolorbulb">
+		<label>Shelly Multicolor Bulb E27</label>
+		<description>Shelly Multicolor Bulb E27 - Dimmable RGB+CCT Bulb with Power Meter</description>
+		<category>ColorLight</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="control" typeId="rgbwpmColorControl"/>
+			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:rgbw-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplusrgbwpm">
 		<label>Shelly Plus RGBW</label>
 		<description>Shelly Plus RGBW PM - LED Controller with Power Meter</description>
