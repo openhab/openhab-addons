@@ -51,7 +51,7 @@ Some notes:
 - If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.
 - The volume channel is a dimmer (0-100%) that is scaled to the range on the projector, either 0-20 or 0-40 per the maxVolume configuration setting. If your projector uses a different range, then the volume channel will not work.
 - If the projector power is switched to off in the middle of a polling operation, some of the channel values may become undefined until the projector is switched on again.
-- If the binding fails to connect to the projector using the direct IP connection, ensure that a password is supplied if configured on the projctor.
+- If the binding fails to connect to the projector using the direct IP connection, ensure that a password is supplied if configured on the projector.
 
 - On Linux, you may get an error stating the serial port cannot be opened when the epsonprojector binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
