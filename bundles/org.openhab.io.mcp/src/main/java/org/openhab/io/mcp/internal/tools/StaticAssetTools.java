@@ -198,7 +198,7 @@ public class StaticAssetTools {
             try {
                 scope = resolveSafe(prefix, true);
             } catch (AssetPathException e) {
-                return errorResult(e.getMessage());
+                return errorResult(messageOf(e));
             }
             if (!Files.isDirectory(scope)) {
                 return errorResult(
@@ -249,7 +249,7 @@ public class StaticAssetTools {
         try {
             target = resolveSafe(path, false);
         } catch (AssetPathException e) {
-            return errorResult(e.getMessage());
+            return errorResult(messageOf(e));
         }
         if (!Files.isRegularFile(target)) {
             return errorResult("Static asset not found: " + path);
@@ -300,7 +300,7 @@ public class StaticAssetTools {
         try {
             target = resolveSafe(path, false);
         } catch (AssetPathException e) {
-            return errorResult(e.getMessage());
+            return errorResult(messageOf(e));
         }
         // Cheap early-reject for grossly oversized payloads so we don't decode a huge base64 string just to
         // throw the result away. content.length() is UTF-16 code units, not bytes — so for non-ASCII utf8
@@ -369,7 +369,7 @@ public class StaticAssetTools {
         try {
             target = resolveSafe(path, false);
         } catch (AssetPathException e) {
-            return errorResult(e.getMessage());
+            return errorResult(messageOf(e));
         }
         if (!Files.isRegularFile(target)) {
             return errorResult("Static asset not found: " + path);
