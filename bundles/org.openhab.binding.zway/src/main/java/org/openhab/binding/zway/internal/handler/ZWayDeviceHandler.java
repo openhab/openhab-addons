@@ -44,6 +44,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -458,11 +459,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                     }
 
                                     // then set color
-                                    int red = (int) Math.round(255 * (hsb.getRed().doubleValue() / 100));
-                                    int green = (int) Math.round(255 * (hsb.getGreen().doubleValue() / 100));
-                                    int blue = (int) Math.round(255 * (hsb.getBlue().doubleValue() / 100));
-
-                                    device.exact(red, green, blue);
+                                    int[] rgb = ColorUtil.hsbToRgb(hsb);
+                                    device.exact(rgb[0], rgb[1], rgb[2]);
                                 } else {
                                     device.off();
                                 }
