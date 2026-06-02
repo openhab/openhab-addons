@@ -17,6 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link WlanThermoUtil} class provides conversion functions for the WlanThermo
@@ -41,8 +42,8 @@ public class WlanThermoUtil {
     }
 
     public static String toHex(HSBType hsb) {
-        return "#" + String.format("%02X", hsb.getRed().intValue()) + String.format("%02X", hsb.getGreen().intValue())
-                + String.format("%02X", hsb.getBlue().intValue());
+        int[] rgb = ColorUtil.hsbToRgb(hsb);
+        return "#" + String.format("%02X", rgb[0]) + String.format("%02X", rgb[1]) + String.format("%02X", rgb[2]);
     }
 
     public static <T> T requireNonNull(@Nullable T obj) throws WlanThermoInputException {
