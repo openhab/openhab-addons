@@ -241,9 +241,9 @@ public final class ProtocolUtils {
         return new IvParameterSpec(ivStr.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String bytesToString(byte[] data, int start, int length) {
-        return new String(data, start, length, StandardCharsets.UTF_8);
-    }
+private static String bytesToString(byte[] data, int start, int length) {
+    return new String(data, start, length, StandardCharsets.ISO_8859_1);
+}
 
     /**
      * Reads a 32-bit big-endian integer from a byte array at a given starting position.
