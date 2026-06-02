@@ -575,7 +575,7 @@
 
 	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Last Power</label>
+		<label>Last Minute Power</label>
 		<description>Average power consumption during the previous minute</description>
 		<category>Energy</category>
 		<tags>

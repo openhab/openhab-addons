@@ -34,7 +34,8 @@ The binding supports both hardware generations
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
 
-`Note:` Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
+`Note:`
+Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
 See section [Discovery](#discovery) for details.
 
 ### Generation 1
@@ -212,7 +213,7 @@ The binding uses mDNS to discover the Shelly devices.
 They periodically announce their presence, which is used by the binding to find them on the local network.
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
-`Important for Generation 1 Devices`:
+`Important for Generation 1 Devices:`
 It's strongly recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
 Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
 It's recommended to switch the Shelly devices to CoAP peer mode if you have only your openHAB system controlling the device.
@@ -237,8 +238,7 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 - Click the device button again, the binding gets another event and creates the channels and Thing changes status to ONLINE
 - Finally link the channels to the equipment in the model
 
-`Note`:
-
+`Note:`
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
 
@@ -403,32 +403,34 @@ The LED channels are available for the Plug-S with firmware 1.6x and for various
 
 Depending on the firmware release, Shelly devices support two different mechanisms to report sensor updates or events.
 
-1. Action URLs
-    Usually the binding polls the device to update the status and maps the returned values to the various channels.
-    In addition the binding can register so-called Action URLs. Those events are triggered by the device to report special events.
-    You need to disable autoCoIoT in the binding configuration to make specific selections for the Action events.
+Action URLs
+Usually the binding polls the device to update the status and maps the returned values to the various channels.
+In addition the binding can register so-called Action URLs. Those events are triggered by the device to report special events.
+You need to disable autoCoIoT in the binding configuration to make specific selections for the Action events.
 
-    The following event types could be registered when enabled in the Thing configuration:
+The following event types could be registered when enabled in the Thing configuration:
 
-    | Event Type         | Description                                                                                                                 |
-    | ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-    | eventsButton       | This event is triggered when the device is in button mode. The device reports the ON/OFF status of the button.              |
-    | eventsSwitch       | This event reports the status of the relay output. This could change by the button or API calls.                            |
-    | eventsPush         | The device reports the short/longpush events when in  button mode momentary, momentary_on_release, one_button or two_button |
-    | eventsSensorReport | Sensor devices (like H&T) provide sensor updates when this action URL is enabled.                                           |
+| Event Type         | Description                                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| eventsButton       | This event is triggered when the device is in button mode. The device reports the ON/OFF status of the button.              |
+| eventsSwitch       | This event reports the status of the relay output. This could change by the button or API calls.                            |
+| eventsPush         | The device reports the short/longpush events when in  button mode momentary, momentary_on_release, one_button or two_button |
+| eventsSensorReport | Sensor devices (like H&T) provide sensor updates when this action URL is enabled.                                           |
 
-    Important: The binding defaults to CoIoT when firmware 1.6 or newer is detected.
-    This has significant experience improvements and also prevents interfering with other applications, because the device only supports one set of Action URLs.
-1. CoIoT / CoAP
-    Starting with version 1.6 the devices reports most status values via the CoIoT protocol.
-    CoIoT provides near-realtime updates and better event support.
-    Firmware 1.7 adds additional status values, also supported by the binding.
-    Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
+`Important:`
+The binding defaults to CoIoT when firmware 1.6 or newer is detected.
+This has significant experience improvements and also prevents interfering with other applications, because the device only supports one set of Action URLs.
 
-    If there is no specific reason you should enable CoIoT.
-    Check section [Network Settings](doc/AdvancedUsers.md) for more information.
+CoIoT / CoAP
+Starting with version 1.6 the devices reports most status values via the CoIoT protocol.
+CoIoT provides near-realtime updates and better event support.
+Firmware 1.7 adds additional status values, also supported by the binding.
+Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
 
-    Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
+If there is no specific reason you should enable CoIoT.
+Check section [Network Settings](doc/AdvancedUsers.md) for more information.
+
+Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
 
 ### Generation 2: WebSockets
 
@@ -551,7 +553,8 @@ Depending on the device type and firmware release channels might be not availabl
 |         | humidity     | Number   | yes       | Humidity in percent (if connected to temp/hum addon)                              |
 |         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
-Note: The `meter`for the Shelly 1L is kind of fake.
+`Note:`
+The `meter`for the Shelly 1L is kind of fake.
 It doesn't have a real power meter, but you could setup an estimated consumption in the Shelly App, e.g. 60W if you have attached a good old light bulb to the output channel.
 In this case the is no real measurement based on power consumption, but the Shelly reports the configured value when the relay is ON.
 
@@ -605,7 +608,8 @@ In this case the is no real measurement based on power consumption, but the Shel
 
 ### Shelly 3EM (thing-type: shellyem3)
 
-Please note: The product is called Shelly 3EM whereas the device propagates the service under shellyem3.
+`Note:`
+The product is called Shelly 3EM whereas the device propagates the service under shellyem3.
 The Thing id is derived from the service name, so that's the reason why the Thing is named shelly**em3** and not shelly3em.
 
 | Group  | Channel       | Type     | read-only | Description                                                                       |
@@ -651,7 +655,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
 |        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
 
-_Note:
+`Note:`
 You should calibrate the device if you want to use "neutral current" measurements.
 Check the Shelly documentation for details._
 
@@ -677,8 +681,7 @@ Check the Shelly documentation for details._
 |        | lastPower1   | Number   | yes       | Average power consumption during the previous minute                              |
 |        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-
-|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                       |
 
 | Group  | Channel      | Type          | read-only | Description                                                                           |
 | ------ | ------------ | ------------- | --------- | ------------------------------------------------------------------------------------- |
@@ -695,7 +698,8 @@ Check the Shelly documentation for details._
 |        | totalKWH     | Number        | yes       | Total energy consumption in kWh since the device powered up (reset on restart)        |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
 
-_Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set._
+`Note:`
+The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set._
 
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
@@ -777,7 +781,8 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+`Note:`
+The Dimmer should be calibrated using the device Web UI or Shelly App.
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
@@ -838,7 +843,8 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |         | temperature | Number | r/w       | color temperature (K): 0..100% or 3000..6500                           |
 |         | brightness  | Dimmer |           | Brightness: 0..100% or 0..100                                          |
 
-Note: The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
+`Note:`
+The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
 Beside channel `hsb` the binding also offers the `white` channel (hsb as only RGB values).
 Or control each color separately with channels `red`, `blue`, `green` (those are advanced channels).
 
@@ -1003,7 +1009,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 | battery | batteryLevel | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery   | Switch   | yes       | Low battery alert (< 20%)                               |
 
-`Please Note:` If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
+`Note:`
+If you have connected an USB cable to the H&T, but channel charger is off make sure that "Use external power supply" settings is activated in the Shelly App's device settings.
 
 ### Shelly Flood (thing-type: shellyflood)
 
@@ -1032,7 +1039,8 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Motion (thing-type: shellymotion)
 
-Note: You might need to restart the device to enable the discovery mode for 3 minutes(use the Web UI).
+`Note:`
+You might need to restart the device to enable the discovery mode for 3 minutes(use the Web UI).
 As an alternativ you could press the reset button shortly (refer to the manual to locate the reset button).
 While the device is in low power mode (usual operation) it will not respond to discovery requests
 
@@ -1074,7 +1082,8 @@ Using 'sensorSleepTime' you can suppress motion events while leaving the room (e
 
 ### Shelly TRV (thing-type: shellytrv)
 
-Note: You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI).
+`Note:`
+You might need to reboot the device to enable the discovery mode for 3 minutes(use the Web UI).
 As an alternative you could press the reset button shortly (refer to the manual to locate the reset button).
 While the device is in low power mode (usual operation) it will not respond to discovery requests
 
@@ -1406,7 +1415,8 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+`Note:`
+The Dimmer should be calibrated using the device Web UI or Shelly App.
 
 Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
 `true`:  Brightness will be set and device output is powered = light turns on with the new brightness
