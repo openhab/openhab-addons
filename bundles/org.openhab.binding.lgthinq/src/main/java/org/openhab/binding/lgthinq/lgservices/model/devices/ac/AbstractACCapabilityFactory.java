@@ -241,10 +241,10 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         if (HEAT_PUMP.equals(acCap.getDeviceType())) {
             JsonNode supHpAirSwitchNode = valuesNode.path(getHpAirWaterSwitchNodeName()).path(getOptionsMapNodeName());
             if (!supHpAirSwitchNode.isMissingNode()) {
-                //TODO no-op code for future use
-                //supHpAirSwitchNode.properties().forEach(r -> {
-                //    r.getValue().asText();
-                //});
+                // TODO no-op code for future use
+                // supHpAirSwitchNode.properties().forEach(r -> {
+                // r.getValue().asText();
+                // });
             }
         }
 
