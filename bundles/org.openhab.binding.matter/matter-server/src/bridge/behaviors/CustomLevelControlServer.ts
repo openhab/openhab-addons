@@ -1,16 +1,29 @@
+import { MaybePromise } from "@matter/main";
 import { LevelControlServer } from "@matter/main/behaviors";
 import { LevelControl } from "@matter/main/clusters";
-import { TypeFromPartialBitSchema } from "@matter/main/types";
 import { DeviceFunctions } from "../DeviceFunctions";
 
 export class CustomLevelControlServer extends LevelControlServer {
     static readonly DEFAULTS = { currentLevel: 254 } as const;
 
+    override initialize(): MaybePromise {
+        if (this.features.lighting) {
+            const minLevel = this.state.minLevel ?? 1;
+            if (this.state.currentLevel === 0 || this.state.currentLevel === null) {
+                this.state.currentLevel = minLevel;
+            }
+            if (this.state.onLevel === 0) {
+                this.state.onLevel = null;
+            }
+        }
+        return super.initialize();
+    }
+
     override async moveToLevelLogic(
         level: number,
         transitionTime: number | null,
         withOnOff: boolean,
-        options: TypeFromPartialBitSchema<typeof LevelControl.Options>,
+        options: LevelControl.Options = {},
     ) {
         this.env
             .get(DeviceFunctions)

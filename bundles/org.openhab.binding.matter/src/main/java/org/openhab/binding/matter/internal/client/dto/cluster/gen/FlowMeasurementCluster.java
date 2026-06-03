@@ -35,7 +35,7 @@ public class FlowMeasurementCluster extends BaseCluster {
 
     /**
      * Indicates the flow in m^3/h as follows:
-     * MeasuredValue &#x3D; 10 x Flow
+     * MeasuredValue = 10 x Flow
      * The null value indicates that the flow measurement is unknown, otherwise the range shall be as described in
      * Measured Value.
      */

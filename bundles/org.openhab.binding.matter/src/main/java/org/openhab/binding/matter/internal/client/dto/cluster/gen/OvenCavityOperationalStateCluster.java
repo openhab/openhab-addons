@@ -40,17 +40,16 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
     /**
      * Indicates a list of names of different phases that the device can go through for the selected function or mode.
      * The list may not be in sequence order. For example in a washing machine this could include items such as
-     * &quot;pre-soak&quot;, &quot;rinse&quot;, and &quot;spin&quot;. These phases are manufacturer specific and may
-     * change when a different function or mode is selected.
-     * A null value indicates that the device does not present phases during its operation. When this attribute’s value
+     * "pre-soak", "rinse", and "spin". These phases are manufacturer specific and may change when a different function
+     * or mode is selected.
+     * A null value indicates that the device does not present phases during its operation. When this attribute's value
      * is null, the CurrentPhase attribute shall also be set to null.
      */
     public List<String> phaseList; // 0 list R V
     /**
      * This attribute represents the current phase of operation being performed by the server. This shall be the
      * positional index representing the value from the set provided in the PhaseList Attribute, where the first item in
-     * that list is an index of 0. Thus, this attribute shall have a maximum value that is &quot;length(PhaseList) -
-     * 1&quot;.
+     * that list is an index of 0. Thus, this attribute shall have a maximum value that is "length(PhaseList) - 1".
      * Null if the PhaseList attribute is null or if the PhaseList attribute is an empty list.
      */
     public Integer currentPhase; // 1 uint8 R V
@@ -65,7 +64,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
      * - When it changes from null to any other value and vice versa, or
      * - When it increases, or
      * - When there is any increase or decrease in the estimated time remaining that was due to progressing insight of
-     * the server’s control logic, or
+     * the server's control logic, or
      * - When it changes at a rate significantly different from one unit per second.
      * Changes to this attribute merely due to the normal passage of time with no other dynamic change of device state
      * shall NOT be reported.
@@ -90,7 +89,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
     public OperationalStateEnum operationalState; // 4 OperationalStateEnum R V
     /**
      * This attribute shall specify the details of any current error condition being experienced on the device when the
-     * OperationalState attribute is populated with Error. See Section 1.14.4.4, “ErrorStateStruct Type” for general
+     * OperationalState attribute is populated with Error. See Section 1.14.4.4, "ErrorStateStruct Type" for general
      * requirements on the population of this attribute.
      * When there is no error detected, this shall have an ErrorStateID of NoError.
      */
@@ -179,7 +178,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         /**
          * This shall be a human-readable string that provides details about the error condition. As an example, if the
          * ErrorStateID indicates that the device is a Robotic Vacuum that is stuck, the ErrorStateDetails contains
-         * &quot;left wheel blocked&quot;.
+         * "left wheel blocked".
          */
         public String errorStateDetails; // string
 
@@ -292,7 +291,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState and shall take no further
      * action.
      * States are defined as Pause-compatible as follows:
-     * - For states defined in this cluster specification, in Table 3, “Pause Compatibility”.
+     * - For states defined in this cluster specification, in Table 3, "Pause Compatibility".
      * - For states defined by derived cluster specifications, in the corresponding specifications.
      * - For manufacturer-specific states, by the manufacturer.
      * A device that is unable to honor the Pause command for whatever reason shall respond with an
@@ -325,7 +324,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
 
     /**
      * This command shall be supported if the device supports remotely starting the operation. If this command is
-     * supported, the &#x27;Stop command shall also be supported.
+     * supported, the 'Stop command shall also be supported.
      * On receipt of this command, the device shall start its operation if it is safe to do so and the device is in an
      * operational state from which it can be started. There may be either regulatory or manufacturer-imposed safety and
      * security requirements that first necessitate some specific action at the device before a Start command can be
@@ -355,7 +354,7 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState and shall take no further
      * action.
      * States are defined as Resume-compatible as follows:
-     * - For states defined in this cluster specification, in Table 4, “Resume Compatibility”.
+     * - For states defined in this cluster specification, in Table 4, "Resume Compatibility".
      * - For states defined by derived cluster specifications, in the corresponding specifications.
      * - For manufacturer-specific states, by the manufacturer.
      * A device that is unable to honor the Resume command for any other reason shall respond with an

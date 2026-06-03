@@ -43,7 +43,7 @@ public class OzoneConcentrationMeasurementCluster extends BaseCluster {
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue’s unit is
+     * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue's unit is
      * represented by MeasurementUnit.
      * A value of null indicates that the measurement is unknown or outside the valid range.
      * MinMeasuredValue and MaxMeasuredValue define the valid range for MeasuredValue.

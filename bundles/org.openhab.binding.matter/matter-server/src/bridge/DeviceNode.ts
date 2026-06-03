@@ -83,6 +83,8 @@ export class DeviceNode {
 
     public async initializeBridge(resetStorage: boolean = false) {
         await this.close();
+        // Give the OS a moment to release the operational port before re-binding.
+        await new Promise(resolve => setTimeout(resolve, 250));
         logger.info(`Initializing bridge`);
         await this.#init();
         if (resetStorage) {

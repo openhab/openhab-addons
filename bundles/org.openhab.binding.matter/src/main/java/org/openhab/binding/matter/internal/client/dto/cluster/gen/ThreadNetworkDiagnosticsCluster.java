@@ -99,8 +99,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * Indicates the 802.15.4 channel number configured on the Node’s Thread interface (that is, the Active Operational
-     * Dataset’s current Channel value). A value of null shall indicate that the Thread interface is not currently
+     * Indicates the 802.15.4 channel number configured on the Node's Thread interface (that is, the Active Operational
+     * Dataset's current Channel value). A value of null shall indicate that the Thread interface is not currently
      * configured or operational.
      */
     public Integer channel; // 0 uint16 R V
@@ -437,7 +437,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     // Structs
     /**
-     * The ConnectionStatus Event shall indicate that a Node’s connection status to a Thread network has changed.
+     * The ConnectionStatus Event shall indicate that a Node's connection status to a Thread network has changed.
      */
     public static class ConnectionStatus {
         public ConnectionStatusEnum connectionStatus; // ConnectionStatusEnum
@@ -452,13 +452,13 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      */
     public static class NetworkFaultChange {
         /**
-         * This field shall represent the set of faults currently detected, as per Section 11.14.5.1, “NetworkFaultEnum
-         * Type”.
+         * This field shall represent the set of faults currently detected, as per Section 11.14.5.1, "NetworkFaultEnum
+         * Type".
          */
         public List<NetworkFaultEnum> current; // list
         /**
          * This field shall represent the set of faults detected prior to this change event, as per Section 11.14.5.1,
-         * “NetworkFaultEnum Type”.
+         * "NetworkFaultEnum Type".
          */
         public List<NetworkFaultEnum> previous; // list
 
@@ -504,7 +504,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         public Integer lqi; // uint8
         /**
          * This field SHOULD specify the average RSSI across all received frames from the neighboring Node since the
-         * receiving Node’s last reboot. If there is no known received frames this field SHOULD have the value of null.
+         * receiving Node's last reboot. If there is no known received frames this field SHOULD have the value of null.
          * This field shall have the units of dBm, having the range -128 dBm to 0 dBm.
          */
         public Integer averageRssi; // int8
@@ -666,7 +666,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
          */
         public Boolean masterKeyPresent; // bool
         /**
-         * This field shall be True if the Node has the Thread network’s name, else False.
+         * This field shall be True if the Node has the Thread network's name, else False.
          */
         public Boolean networkNamePresent; // bool
         /**

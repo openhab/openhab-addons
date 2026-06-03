@@ -264,6 +264,12 @@ function filterDep(e: AnyValueElement) {
 }
 
 /**
+ * Shared cluster types registry, populated once before cluster processing.
+ * Maps "OtherCluster.SomeAlias" to a Java primitive
+ */
+const crossClusterTypedefs = new Map<string, string>();
+
+/**
  * Type mapper attempts to lookup the Java native type for any matter element, this include Integers, Strings, Booleans, etc...
  *
  * If there is no matching type, then the matter element is a complex type, like maps, enums and structs
@@ -293,15 +299,25 @@ function typeMapper(mappings: Map<string, string | undefined>, dt: AnyValueEleme
         const ct = dt.children?.[0].type;
         //if the type is cluster.type then its referring to type in another cluster
         if (ct && ct.indexOf(".") > 0) {
-            const [otherCluster, otherType] = ct.split(".");
-            mappedType = `List<${toUpperCamelCase(otherCluster + "Cluster")}.${toUpperCamelCase(otherType)}>`;
+            const resolved = crossClusterTypedefs.get(ct);
+            if (resolved) {
+                mappedType = `List<${resolved}>`;
+            } else {
+                const [otherCluster, otherType] = ct.split(".");
+                mappedType = `List<${toUpperCamelCase(otherCluster + "Cluster")}.${toUpperCamelCase(otherType)}>`;
+            }
         } else {
             mappedType = `List<${toUpperCamelCase((ct && mappings.get(ct)) || ct)}>`;
         }
     } else if (mappedType && mappedType.indexOf(".") > 0) {
-        //some types reference other clusters, like MediaPlayback.CharacteristicEnum
-        const [cName, dtName] = mappedType.split(".");
-        mappedType = `${toUpperCamelCase(cName)}Cluster.${toUpperCamelCase(dtName)}`;
+        const resolved = crossClusterTypedefs.get(mappedType);
+        if (resolved) {
+            mappedType = resolved;
+        } else {
+            //some types reference other clusters, like MediaPlayback.CharacteristicEnum
+            const [cName, dtName] = mappedType.split(".");
+            mappedType = `${toUpperCamelCase(cName)}Cluster.${toUpperCamelCase(dtName)}`;
+        }
     } else if (mappings.get(mappedType)) {
         //if the type is already mapped, then use the mapped type
         mappedType = mappings.get(mappedType);
@@ -352,7 +368,15 @@ globalTypeMapping.set("namespace", "Integer");
 globalTypeMapping.set("tag", "Integer");
 
 globalDataTypes.forEach(dt => {
-    matterNativeTypeToJavaNativeType(dt) && globalTypeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt));
+    const javaType = matterNativeTypeToJavaNativeType(dt);
+    if (javaType) {
+        globalTypeMapping.set(dt.name, javaType);
+    } else if (dt.type === "struct" || dt.type?.startsWith("enum") || dt.type?.startsWith("map")) {
+        // Global enum/struct/bitmap datatypes are emitted as inner classes on BaseCluster.
+        // Subclasses inherit these, so reference them by their camel cased class name
+        // (e.g. field `type: "currency"` -->  Java type `Currency`).
+        globalTypeMapping.set(dt.name, toUpperCamelCase(dt.name));
+    }
 });
 //it seems like there is a global data type that overrides the string type
 globalTypeMapping.set("string", "String");
@@ -360,6 +384,23 @@ globalTypeMapping.set("string", "String");
 globalAttributes.forEach(
     dt => matterNativeTypeToJavaNativeType(dt) && globalTypeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt)),
 );
+
+// walk every cluster's `datatype` children and register scalar typedef aliases
+// (e.g. "CameraAvStreamManagement.VideoStreamID" --> "Integer") in the cluster registry.
+// Done once before per cluster processing so typeMapper can resolve luster references
+// to primitives without depending on the order clusters are visited in.
+(matterData.children as ClusterElement[])
+    .filter(c => c.tag === "cluster")
+    .forEach(cluster => {
+        (cluster.children || [])
+            .filter(c => c.tag === "datatype")
+            .forEach(dt => {
+                const javaType = matterNativeTypeToJavaNativeType(dt as AnyElement);
+                if (javaType) {
+                    crossClusterTypedefs.set(`${cluster.name}.${dt.name}`, javaType);
+                }
+            });
+    });
 
 const clusters: ExtendedClusterElement[] =
     (matterData.children as ClusterElement[])
@@ -369,11 +410,9 @@ const clusters: ExtendedClusterElement[] =
             // typeMapping is a map of matter types to Java types
             const typeMapping = new Map<string, string | undefined>(globalTypeMapping);
             const dataTypes = (cluster.children || []).filter(c => c.tag === "datatype") as DatatypeElement[];
-            const maps = (cluster.children || []).filter(c => c.type?.startsWith("map")) as AnyValueElement[];
-            const enums = (cluster.children || []).filter(c => c.type?.startsWith("enum")) as AnyValueElement[];
-            const structs = (cluster.children || [])
-                .filter(dt => dt.type === "struct" || dt.tag === "event")
-                .map(dt => typeMapper(typeMapping, dt as AnyValueElement));
+
+            // Register cluster local datatypes (typedef aliases) BEFORE processing structs/attributes/commands
+            // so subsequent typeMapper calls can resolve cluster local scalar aliases (e.g. VideoStreamID --> Integer).
             dataTypes?.forEach(dt => {
                 if (dt.type && dt.type.indexOf(".") > 0) {
                     return typeMapping.set(dt.name, dt.type);
@@ -383,6 +422,12 @@ const clusters: ExtendedClusterElement[] =
                     typeMapping.set(dt.name, matterNativeTypeToJavaNativeType(dt))
                 );
             });
+
+            const maps = (cluster.children || []).filter(c => c.type?.startsWith("map")) as AnyValueElement[];
+            const enums = (cluster.children || []).filter(c => c.type?.startsWith("enum")) as AnyValueElement[];
+            const structs = (cluster.children || [])
+                .filter(dt => dt.type === "struct" || dt.tag === "event")
+                .map(dt => typeMapper(typeMapping, dt as AnyValueElement));
 
             // if the cluster has a type, then the java class will extend this type (which is another cluster)
             const parent = cluster.type ? matterData.children.find(c => c.name == cluster.type) : undefined;
@@ -517,19 +562,20 @@ clusters.forEach(cluster => {
     });
 });
 
-// Compile Handlebars template
+// Use `noEscape` so `{{...}}` does not HTML-encode values
+const templateOptions: Parameters<typeof handlebars.compile>[1] = { noEscape: true };
 const clusterSource = fs.readFileSync("src/templates/cluster-class.java.hbs", "utf8");
-const clusterTemplate = handlebars.compile(clusterSource);
+const clusterTemplate = handlebars.compile(clusterSource, templateOptions);
 const baseClusterSource = fs.readFileSync("src/templates/base-cluster.java.hbs", "utf8");
-const baseClusterTemplate = handlebars.compile(baseClusterSource);
+const baseClusterTemplate = handlebars.compile(baseClusterSource, templateOptions);
 const deviceTypeSource = fs.readFileSync("src/templates/device-types-class.java.hbs", "utf8");
-const deviceTypeTemplate = handlebars.compile(deviceTypeSource);
+const deviceTypeTemplate = handlebars.compile(deviceTypeSource, templateOptions);
 const clusterRegistrySource = fs.readFileSync("src/templates/cluster-registry.java.hbs", "utf8");
-const clusterRegistryTemplate = handlebars.compile(clusterRegistrySource);
+const clusterRegistryTemplate = handlebars.compile(clusterRegistrySource, templateOptions);
 const clusterConstantsSource = fs.readFileSync("src/templates/cluster-constants.java.hbs", "utf8");
-const clusterConstantsTemplate = handlebars.compile(clusterConstantsSource);
+const clusterConstantsTemplate = handlebars.compile(clusterConstantsSource, templateOptions);
 const semanticTagsSource = fs.readFileSync("src/templates/semantic-tags-class.java.hbs", "utf8");
-const semanticTagsTemplate = handlebars.compile(semanticTagsSource);
+const semanticTagsTemplate = handlebars.compile(semanticTagsSource, templateOptions);
 
 
 // Generate Java code
@@ -583,7 +629,7 @@ fs.writeFileSync(`out/DeviceTypes.java`, deviceTypeClass);
 // that specify a `type` (i.e. they inherit from another cluster) with their parent cluster.
 // The child cluster should override any definitions from the parent.  We also keep the parent
 // cluster in the array so that other children can still inherit from it if necessary, but we will skip emitting any
-// Java source for clusters that don't have a `CLUSTER_ID` (those are the abstract parent definitions).
+// Java source for clusters that don't have a `CLUSTER_ID` (the abstract parent definitions).
 
 // Helper to merge two lists of schema objects (attributes, commands, etc.) where the child overrides the parent on
 // duplicate `name` values.
@@ -647,13 +693,11 @@ function resolveInheritance(cluster: ExtendedClusterElement, seen: Set<string> =
 // Apply the merge for every cluster that specifies a parent type.
 clusters.forEach(c => resolveInheritance(c));
 
-// Emit Java code for concrete clusters only (i.e. those that have a CLUSTER_ID).
-clusters
-    .filter(c => c.id !== undefined && c.id !== null)
-    .forEach(cluster => {
-        const javaCode = clusterTemplate(cluster);
-        fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
-    });
+// Write out the clusters
+clusters.forEach(cluster => {
+    const javaCode = clusterTemplate(cluster);
+    fs.writeFileSync(`out/${cluster.name}Cluster.java`, javaCode);
+});
 
 // Generate ClusterRegistry and ClusterConstants using the merged cluster data. Note that they can still reference
 // clusters without IDs (e.g. abstract definitions), but the templates themselves guard against missing IDs where
@@ -667,7 +711,7 @@ fs.writeFileSync(`out/ClusterRegistry.java`, clusterRegistryClass);
 const clusterConstantsClass = clusterConstantsTemplate({ clusters: concreteClusters });
 fs.writeFileSync(`out/ClusterConstants.java`, clusterConstantsClass);
 
-// Build namespace → tags structure expected by the template
+// Build namespace to tags structure expected by the template
 const namespaces = Object.entries(MatterNode)
     .filter(([name]) => name.endsWith("Tag"))
     .map(([rawName, tagDefs]: [string, any]) => {

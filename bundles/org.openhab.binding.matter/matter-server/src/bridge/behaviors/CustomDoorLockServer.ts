@@ -15,14 +15,14 @@ export class CustomDoorLockServer extends DoorLockServer {
         operatingMode: 0,
     } as const;
 
-    override async lockDoor() {
+    override async lockDoor(request: DoorLock.LockDoorRequest) {
         await this.sendLockState(DoorLock.LockState.Locked);
-        return super.lockDoor();
+        return super.lockDoor(request);
     }
 
-    override async unlockDoor() {
+    override async unlockDoor(request: DoorLock.UnlockDoorRequest) {
         await this.sendLockState(DoorLock.LockState.Unlocked);
-        return super.unlockDoor();
+        return super.unlockDoor(request);
     }
 
     /**

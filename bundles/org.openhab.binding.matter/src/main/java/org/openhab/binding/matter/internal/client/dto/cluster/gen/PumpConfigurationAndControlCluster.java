@@ -211,6 +211,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * The actual operating mode of the pump is a result of the setting of the attributes OperationMode, ControlMode and
      * the optional connection of a remote sensor. The operation and control is prioritized as shown in the scheme
      * below:
+     * !Priority Scheme of Pump Operation and Control.jpg
      * If this attribute is Maximum, Minimum or Local, the OperationMode attribute decides how the pump is operated.
      * If this attribute is Normal and a remote sensor is connected to the pump, the type of the remote sensor decides
      * the control mode of the pump. A connected remote pressure sensor will make the pump run in control mode Constant

@@ -84,6 +84,7 @@ public class MatterBridge implements MatterClientListener {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
     protected static final String CONFIG_PID = "org.openhab.matter";
     protected static final String CONFIG_URI = "io:matter";
+    private static final int START_RETRY_DELAY_SECONDS = 2;
 
     // Matter Bridge Device Info *Basic Information Cluster*
     private static final String VENDOR_NAME = "openHAB";
@@ -102,8 +103,9 @@ public class MatterBridge implements MatterClientListener {
 
     private final ItemRegistryChangeListener itemRegistryChangeListener;
     private final RegistryChangeListener<Metadata> metadataRegistryChangeListener;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+    // Use a dedicated pool rather than the shared common pool: registerItems() makes blocking websocket
+    // calls while holding the instance lock, so it must not be able to starve the common pool.
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("matter.MatterBridge");
     private boolean resetStorage = false;
     private @Nullable ScheduledFuture<?> modifyFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
@@ -321,7 +323,10 @@ public class MatterBridge implements MatterClientListener {
     public void removeFabric(String fabricId) {
         try {
             client.removeFabric(Integer.parseInt(fabricId)).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not remove fabric", e);
+        } catch (ExecutionException e) {
             logger.debug("Could not remove fabric", e);
         }
     }
@@ -437,7 +442,17 @@ public class MatterBridge implements MatterClientListener {
         return changed;
     }
 
-    private synchronized void registerItems() {
+    private void registerItems() {
+        doRegisterItems(false);
+    }
+
+    private synchronized void doRegisterItems(boolean isRetry) {
+        if (!client.isConnected()) {
+            // on startup that scheduled run can fire before the bridge websocket is connected
+            // as onReady() performs a full registration once the connection is established.
+            logger.debug("Bridge not connected, deferring item registration");
+            return;
+        }
         try {
             logger.debug("Initializing bridge, resetStorage: {}", resetStorage);
             client.initializeBridge(resetStorage).get();
@@ -445,7 +460,12 @@ public class MatterBridge implements MatterClientListener {
                 resetStorage = false;
                 updateConfig(Map.of("resetBridge", false));
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not initialize endpoints", e);
+            updateRunningState(RunningState.Error, e.getMessage());
+            return;
+        } catch (ExecutionException e) {
             logger.debug("Could not initialize endpoints", e);
             updateRunningState(RunningState.Error, e.getMessage());
             return;
@@ -495,7 +515,14 @@ public class MatterBridge implements MatterClientListener {
                 logger.debug("Registering endpoint {}", be.id);
                 client.addEndpoint(be).get();
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not register device with bridge", e);
+            updateRunningState(RunningState.Error, e.getMessage());
+            devices.values().forEach(BaseDevice::dispose);
+            devices.clear();
+            return;
+        } catch (ExecutionException e) {
             logger.debug("Could not register device with bridge", e);
             updateRunningState(RunningState.Error, e.getMessage());
             devices.values().forEach(BaseDevice::dispose);
@@ -507,8 +534,22 @@ public class MatterBridge implements MatterClientListener {
             client.startBridge().get();
             updateRunningState(RunningState.Running, null);
             updatePairingCodes();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logger.debug("Could not start bridge", e);
+            if (!isRetry) {
+                logger.debug("Retrying bridge start in {} seconds", START_RETRY_DELAY_SECONDS);
+                scheduler.schedule(() -> doRegisterItems(true), START_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+                return;
+            }
+            updateRunningState(RunningState.Error, e.getMessage());
+        } catch (ExecutionException e) {
+            logger.debug("Could not start bridge", e);
+            if (!isRetry) {
+                logger.debug("Retrying bridge start in {} seconds", START_RETRY_DELAY_SECONDS);
+                scheduler.schedule(() -> doRegisterItems(true), START_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+                return;
+            }
             updateRunningState(RunningState.Error, e.getMessage());
         }
     }
@@ -521,14 +562,20 @@ public class MatterBridge implements MatterClientListener {
             try {
                 client.openCommissioningWindow().get();
                 commissioningWindowOpen = true;
-            } catch (CancellationException | InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Could not open commissioning window", e);
+            } catch (CancellationException | ExecutionException e) {
                 logger.debug("Could not open commissioning window", e);
             }
         } else if (!open && commissioningWindowOpen) {
             try {
                 client.closeCommissioningWindow().get();
                 commissioningWindowOpen = false;
-            } catch (CancellationException | InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Could not close commissioning window", e);
+            } catch (CancellationException | ExecutionException e) {
                 logger.debug("Could not close commissioning window", e);
             }
         }
@@ -541,7 +588,10 @@ public class MatterBridge implements MatterClientListener {
             commissioningWindowOpen = state.commissioningWindowOpen;
             updateConfig(Map.of("manualPairingCode", state.pairingCodes.manualPairingCode, "qrCode",
                     state.pairingCodes.qrPairingCode, "openCommissioningWindow", state.commissioningWindowOpen));
-        } catch (CancellationException | InterruptedException | ExecutionException | JsonParseException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not query codes", e);
+        } catch (CancellationException | ExecutionException | JsonParseException e) {
             logger.debug("Could not query codes", e);
         }
     }
