@@ -110,7 +110,8 @@ public class ColorValue extends Value {
                         return HSBType.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
                                 Integer.parseInt(split[2]));
                     case XYY:
-                        HSBType tempState = HSBType.fromXY(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
+                        HSBType tempState = ColorUtil
+                                .xyToHsb(new double[] { Double.parseDouble(split[0]), Double.parseDouble(split[1]) });
                         return new HSBType(tempState.getHue(), tempState.getSaturation(), new PercentType(split[2]));
                     default:
                         throw new IllegalArgumentException("Non supported color mode");
