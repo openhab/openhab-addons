@@ -42,7 +42,7 @@ public class ServiceAreaCluster extends BaseCluster {
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * This attribute shall contain the list of areas that can be included in the SelectedAreas attribute’s list. Each
+     * This attribute shall contain the list of areas that can be included in the SelectedAreas attribute's list. Each
      * item in this list represents a unique area, as indicated by the AreaID field of AreaStruct.
      * Each entry in this list shall have a unique value for the AreaID field.
      * If the SupportedMaps attribute is not empty, each entry in this list shall have a unique value for the
@@ -50,8 +50,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * If the SupportedMaps attribute is empty, each entry in this list shall have a unique value for the AreaInfo field
      * and shall have the MapID field set to null.
      * An empty value indicates that the device is currently unable to provide the list of supported areas.
-     * &gt; [!NOTE]
-     * &gt; due to the maximum size of this list and to the fact that the entries may include strings (see
+     * > [!NOTE]
+     * > NOTE: due to the maximum size of this list and to the fact that the entries may include strings (see
      * LocationName), care must be taken by implementers to avoid creating a data structure that is overly large, which
      * can result in significant latency in accessing this attribute.
      * The value of this attribute may change at any time via an out-of-band interaction outside of the server, such as
@@ -67,11 +67,11 @@ public class ServiceAreaCluster extends BaseCluster {
      * reduce the impact on the clients, and the potential confusion for the users.
      * A few examples are provided below.
      * Valid list of areas:
-     * - AreaID&#x3D;0, LocationName&#x3D;&quot;yellow bedroom&quot;, MapID&#x3D;null
-     * - AreaID&#x3D;1, LocationName&#x3D;&quot;orange bedroom&quot;, MapID&#x3D;null
+     * - AreaID=0, LocationName="yellow bedroom", MapID=null
+     * - AreaID=1, LocationName="orange bedroom", MapID=null
      * Valid list of areas:
-     * - AreaID&#x3D;5, LocationName&#x3D;&quot;hallway&quot;, MapID&#x3D;1
-     * - AreaID&#x3D;3, LocationName&#x3D;&quot;hallway&quot;, MapID&#x3D;2
+     * - AreaID=5, LocationName="hallway", MapID=1
+     * - AreaID=3, LocationName="hallway", MapID=2
      */
     public List<AreaStruct> supportedAreas; // 0 list R V
     /**
@@ -79,8 +79,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * A map is a full or a partial representation of a home, known to the device. For example:
      * - a single level home may be represented using a single map
      * - a two level home may be represented using two maps, one for each level
-     * - a single level home may be represented using two maps, each including a different set of rooms, such as
-     * &quot;map of living room and kitchen&quot; and &quot;map of bedrooms and hallway&quot;
+     * - a single level home may be represented using two maps, each including a different set of rooms, such as "map of
+     * living room and kitchen" and "map of bedrooms and hallway"
      * - a single level home may be represented using one map for the indoor areas (living room, bedrooms etc.) and one
      * for the outdoor areas (garden, swimming pool etc.)
      * Each map includes one or more areas - see the SupportedAreas attribute. In the context of this cluster
@@ -92,8 +92,8 @@ public class ServiceAreaCluster extends BaseCluster {
      * If empty, that indicates that the device is currently unable to provide this information.
      * Each entry in this list shall have a unique value for the MapID field.
      * Each entry in this list shall have a unique value for the Name field.
-     * &gt; [!NOTE]
-     * &gt; due to the maximum size of this list and to the fact that the entries may include strings (see the Name
+     * > [!NOTE]
+     * > NOTE: due to the maximum size of this list and to the fact that the entries may include strings (see the Name
      * field of the MapStruct data type), care must be taken by implementers to avoid creating a data structure that is
      * overly large, which can result in significant latency in accessing this attribute.
      * The value of this attribute may change at any time via an out-of-band interaction outside of the server, such as
@@ -114,7 +114,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * without operating.
      * If this attribute is empty, the device is not constrained to operate in any specific areas.
      * If this attribute is not empty:
-     * - each item in this list shall match the AreaID field of an entry in the SupportedAreas attribute’s list
+     * - each item in this list shall match the AreaID field of an entry in the SupportedAreas attribute's list
      * - each entry in this list shall have a unique value
      */
     public List<Integer> selectedAreas; // 2 list R V
@@ -125,16 +125,16 @@ public class ServiceAreaCluster extends BaseCluster {
      * area which is currently being serviced, or the area which is currently traversed by the device. For example, a
      * camera device may use this attribute to indicate which area it currently takes video of (serviced area) or which
      * area it currently has in view but not taking video of (e.g. an area which is traversed while panning).
-     * &gt; [!NOTE]
-     * &gt; A device may traverse an area regardless of the status of the area (pending, skipped, or completed).
+     * > [!NOTE]
+     * > NOTE: A device may traverse an area regardless of the status of the area (pending, skipped, or completed).
      * If a device can simultaneously operate at multiple areas, such as in the case of a sensor that can monitor
-     * multiple areas at the same time, the CurrentArea attribute shall NOT be implemented, since it doesn’t apply. Else
+     * multiple areas at the same time, the CurrentArea attribute shall NOT be implemented, since it doesn't apply. Else
      * this attribute shall be optionally implemented.
      * A null value indicates that the device is currently unable to provide this information. For example, the device
      * is traversing an unknown area, or the SupportedAreas attribute was updated and the area where the device is
      * located was removed from that list.
      * If not null, the value of this attribute shall match the AreaID field of an entry on the SupportedAreas
-     * attribute’s list.
+     * attribute's list.
      */
     public Integer currentArea; // 3 uint32 R V
     /**
@@ -150,15 +150,15 @@ public class ServiceAreaCluster extends BaseCluster {
      * - when it changes to or from 0
      * - when it decreases
      * - when it changes to or from null
-     * &gt; [!NOTE]
-     * &gt; If the device is capable of pausing its operation, this attribute may be set to null, to indicate that
+     * > [!NOTE]
+     * > NOTE: If the device is capable of pausing its operation, this attribute may be set to null, to indicate that
      * completion time is unknown, or increment the value while being in the paused state.
      */
     public Integer estimatedEndTime; // 4 epoch-s R V
     /**
      * Indicates the operating status at one or more areas.
      * Each entry in this list shall have a unique value for the AreaID field.
-     * For each entry in this list, the AreaID field shall match an entry on the SupportedAreas attribute’s list.
+     * For each entry in this list, the AreaID field shall match an entry on the SupportedAreas attribute's list.
      * When this attribute is empty, that represents that no progress information is currently available.
      * If the SelectedAreas attribute is empty, indicating the device is not constrained to operate in any specific
      * areas, the Progress attribute list may change while the device operates, due to the device adding new entries
@@ -174,12 +174,12 @@ public class ServiceAreaCluster extends BaseCluster {
      * When the device finishes operating, successfully or not, it shall NOT change the Progress attribute, except in
      * the case of an unexpected end of operation as described above, or due to changes to the SupportedMaps or
      * SupportedAreas attributes, so the clients can retrieve the progress information at that time.
-     * &gt; [!NOTE]
-     * &gt; if the device implements the Operational Status cluster, or a derivation of it, in case the device fails to
-     * service any locations in the SelectedAreas list before ending the operation, it SHOULD use the Operational Status
-     * cluster to indicate that the device was unable to complete the operation (see the UnableToCompleteOperation error
-     * from that cluster specification). The clients SHOULD then read the Progress attribute, and indicate which areas
-     * have been successfully serviced (marked as completed).
+     * > [!NOTE]
+     * > NOTE: if the device implements the Operational Status cluster, or a derivation of it, in case the device fails
+     * to service any locations in the SelectedAreas list before ending the operation, it SHOULD use the Operational
+     * Status cluster to indicate that the device was unable to complete the operation (see the
+     * UnableToCompleteOperation error from that cluster specification). The clients SHOULD then read the Progress
+     * attribute, and indicate which areas have been successfully serviced (marked as completed).
      */
     public List<ProgressStruct> progress; // 5 list R V
 
@@ -196,7 +196,7 @@ public class ServiceAreaCluster extends BaseCluster {
         public Integer landmarkTag; // tag
         /**
          * This field shall identify the position of the area relative to a landmark. This is a static description of a
-         * zone known to the server, and this field never reflects the device’s own proximity or position relative to
+         * zone known to the server, and this field never reflects the device's own proximity or position relative to
          * the landmark, but that of the zone.
          * This field shall be the ID of a relative position semantic tag, located within the Common Relative Position
          * Namespace.
@@ -218,7 +218,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * This data type includes the LocationInfo field, with the following fields: LocationName, FloorNumber, AreaType.
      * Additional semantic data may be available in the LandmarkInfo field.
      * For an area description to be meaningful, it shall have at least one of the following:
-     * - a non-empty name (LocationInfo’s LocationName field)
+     * - a non-empty name (LocationInfo's LocationName field)
      * OR
      * - some semantic data (one or more of these: FloorNumber, AreaType or LandmarkTag) The normative text from the
      * remainder of this section describes these constraints.
@@ -226,25 +226,25 @@ public class ServiceAreaCluster extends BaseCluster {
      * If the LandmarkInfo field is null, the LocationInfo field shall NOT be null.
      * If LocationInfo is not null, and its LocationName field is an empty string, at least one of the following shall
      * NOT be null:
-     * - LocationInfo’s FloorNumber field
-     * - LocationInfo’s AreaType field
+     * - LocationInfo's FloorNumber field
+     * - LocationInfo's AreaType field
      * - LandmarkInfo field
-     * If all three of the following are null, LocationInfo’s LocationName field shall NOT be an empty string:
-     * - LocationInfo’s FloorNumber field
-     * - LocationInfo’s AreaType field
+     * If all three of the following are null, LocationInfo's LocationName field shall NOT be an empty string:
+     * - LocationInfo's FloorNumber field
+     * - LocationInfo's AreaType field
      * - LandmarkInfo field
      */
     public static class AreaInfoStruct {
         /**
          * This field shall indicate the name of the area, floor number and/or area type.
          * A few examples are provided below.
-         * - An area can have LocationInfo’s LocationName field set to &quot;blue room&quot;, and the AreaType field set
-         * to the ID of a &quot;Living Room&quot; semantic tag. Clients wishing to direct the device to operate in (or
-         * service) the living room can use this area.
-         * - An area can have LocationInfo set to null, the LandmarkInfo’s LandmarkTag field set to the ID of the
-         * &quot;Table&quot; landmark semantic tag, and the RelativePositionTag field set to the ID of the
-         * &quot;Under&quot; position semantic tag. With such an area indication, the client can request the device to
-         * operate in (or service) the area located under the table.
+         * - An area can have LocationInfo's LocationName field set to "blue room", and the AreaType field set to the ID
+         * of a "Living Room" semantic tag. Clients wishing to direct the device to operate in (or service) the living
+         * room can use this area.
+         * - An area can have LocationInfo set to null, the LandmarkInfo's LandmarkTag field set to the ID of the
+         * "Table" landmark semantic tag, and the RelativePositionTag field set to the ID of the "Under" position
+         * semantic tag. With such an area indication, the client can request the device to operate in (or service) the
+         * area located under the table.
          */
         public Locationdesc locationInfo; // locationdesc
         /**
@@ -267,12 +267,12 @@ public class ServiceAreaCluster extends BaseCluster {
      */
     public static class MapStruct {
         /**
-         * This field shall represent the map’s identifier.
+         * This field shall represent the map's identifier.
          */
         public Integer mapId; // uint32
         /**
          * This field shall represent a human understandable map description.
-         * For example: &quot;Main Floor&quot;, or &quot;Second Level&quot;.
+         * For example: "Main Floor", or "Second Level".
          */
         public String name; // string
 
@@ -294,16 +294,16 @@ public class ServiceAreaCluster extends BaseCluster {
          * This field shall indicate the map identifier which the area is associated with. A value of null indicates
          * that the area is not associated with a map.
          * If the SupportedMaps attribute is not empty, this field shall match the MapID field of an entry from the
-         * SupportedMaps attribute’s list. If the SupportedMaps attribute is empty, this field shall be null.
+         * SupportedMaps attribute's list. If the SupportedMaps attribute is empty, this field shall be null.
          */
         public Integer mapId; // uint32
         /**
          * This field shall contain data describing the area.
          * This SHOULD be used by clients to determine the name and/or the full, or the partial, semantics of a certain
          * area.
-         * &gt; [!NOTE]
-         * &gt; If any entries on the SupportedAreas attribute’s list have the AreaInfo field missing the semantic data,
-         * the client may remind the user to assign the respective data.
+         * > [!NOTE]
+         * > NOTE: If any entries on the SupportedAreas attribute's list have the AreaInfo field missing the semantic
+         * data, the client may remind the user to assign the respective data.
          */
         public AreaInfoStruct areaInfo; // AreaInfoStruct
 
@@ -320,7 +320,7 @@ public class ServiceAreaCluster extends BaseCluster {
     public static class ProgressStruct {
         /**
          * This field shall indicate the identifier of the area, and the identifier shall be an entry in the
-         * SupportedAreas attribute’s list.
+         * SupportedAreas attribute's list.
          */
         public Integer areaId; // uint32
         /**
