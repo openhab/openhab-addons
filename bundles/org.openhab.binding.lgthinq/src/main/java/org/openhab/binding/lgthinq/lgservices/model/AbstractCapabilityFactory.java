@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.lgservices.model;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,8 +135,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
             return Collections.emptyMap();
         }
         Map<String, CommandDefinition> commands = new HashMap<>();
-        for (Iterator<Map.Entry<String, JsonNode>> it = commandNode.fields(); it.hasNext();) {
-            Map.Entry<String, JsonNode> e = it.next();
+        for (Map.Entry<String, JsonNode> e : commandNode.properties()) {
             String commandName = e.getKey();
             CommandDefinition cd = new CommandDefinition();
             JsonNode thisCommandNode = e.getValue();

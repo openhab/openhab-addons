@@ -48,7 +48,7 @@ public class WasherFeatureDefinition {
         JsonNode valuesMappingNode = featureNode.path("option");
         if (!valuesMappingNode.isMissingNode()) {
             Map<String, String> valuesMapping = new HashMap<>();
-            valuesMappingNode.fields().forEachRemaining(e -> {
+            valuesMappingNode.properties().forEach(e -> {
                 // collect values as:
                 //
                 // "option":{
