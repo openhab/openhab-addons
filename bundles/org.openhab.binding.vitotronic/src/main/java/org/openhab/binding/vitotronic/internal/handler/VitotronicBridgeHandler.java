@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.openhab.binding.vitotronic.internal.VitotronicBindingConfiguration;
 import org.openhab.binding.vitotronic.internal.discovery.VitotronicDiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -33,9 +36,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
