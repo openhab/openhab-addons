@@ -114,18 +114,18 @@ This allows a single thing type to handle device variants without separate XML d
 Where they are shared across threads, thread safety is provided by `synchronized` accessors/mutators and update methods (for example `ShellyBindingRuntimeConfig.update()` and `setHttpPort()`).
 `ShellyBindingConfiguration` is a plain mutable POJO populated by the OH framework; it is not treated as a shared immutable value object.
 
-**Exception handling: **All API errors surface as `ShellyApiException`.
+**Exception handling:** All API errors surface as `ShellyApiException`.
 Handlers catch this at the `refreshStatus()` and `handleCommand()` boundary and call `handleApiException()`, which updates the thing status and schedules retries.
 
-**Utility methods: **Use `ShellyUtils` for all type conversions.
+**Utility methods:** Use `ShellyUtils` for all type conversions.
 Never compare `null` DTO fields directly — use `getBool(Boolean)`, `getDouble(Double)`, `getString(String)`.
 
-**Channel updates: **Always go through `handler.updateChannel(group, channel, state)`, not through `updateState()` directly.
+**Channel updates:** Always go through `handler.updateChannel(group, channel, state)`, not through `updateState()` directly.
 This routes through the deduplication cache.
 
-**Logging: **Use `thingName` as the log prefix in all messages.
+**Logging:** Use `thingName` as the log prefix in all messages.
 
-**Thing properties vs. channels: **Static device facts (MAC, hardware revision, firmware version) belong in thing properties (`updateProperties()`).
+**Thing properties vs. channels:** Static device facts (MAC, hardware revision, firmware version) belong in thing properties (`updateProperties()`).
 Values that change at runtime belong in channels.
 
 ### Quick Reference: Key Files by Task
@@ -530,7 +530,7 @@ These two flags model the power supply and connectivity expectations:
 
 **`updatePeriod`** reflects these modes:
 
-- For always-on devices: set to `UPDATE_SETTINGS_INTERVAL_SECONDS + 10` seconds (a generous watchdog timeout — the device is expected to report frequently)
+- For always-on devices: set to `2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10` seconds (a generous watchdog timeout — the device is expected to report frequently)
 - For battery devices: set from the device's own `sleep_time` setting in `/settings`.
   This is used as the watchdog interval: if no update arrives within `updatePeriod`, the thing transitions to `OFFLINE` (expected during sleep)
 

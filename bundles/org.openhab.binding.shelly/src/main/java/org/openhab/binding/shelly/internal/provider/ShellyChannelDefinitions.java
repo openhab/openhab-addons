@@ -69,7 +69,7 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_ROLLER = "Rollershutter"; // Roller shutter control
     public static final String ITEMT_DIMMER = "Dimmer"; // Brightness (0–100%)
     public static final String ITEMT_LOCATION = "Location";
-    public static final String ITEMT_DATETIME = "DateTime"; //
+    public static final String ITEMT_DATETIME = "DateTime";
     public static final String ITEMT_TEMP = "Number:Temperature"; // Temperature with unit
     public static final String ITEMT_LUX = "Number:Illuminance";
     public static final String ITEMT_POWER = "Number:Power"; // Watts

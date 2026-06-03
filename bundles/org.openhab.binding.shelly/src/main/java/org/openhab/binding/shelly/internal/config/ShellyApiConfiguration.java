@@ -30,8 +30,9 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ShellyApiConfiguration} class contains fields mapping thing configuration parameters.
  * Derived configuration consumed exclusively by the API layer.
- * Not fully immutable (private final fields + getters). Created in
- * {@link ShellyBaseHandler}.initializeThingConfig()
+ *
+ * Thread-safe, mutable configuration (all access is synchronized). Created in
+ * {@link ShellyBaseHandler#initializeThingConfig()}
  *
  * DNS resolution is controlled by the resolveHostname constructor parameter.
  * The handler constructor passes false (no DNS, safe on OSGi framework thread);
