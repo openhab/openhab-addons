@@ -78,6 +78,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 
 /**
  * The {@link MillheatAccountHandler} is responsible for handling commands, which are
@@ -112,7 +113,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
         gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .registerTypeAdapter(Boolean.class, serializer).registerTypeAdapter(boolean.class, serializer)
-                .setLenient().create();
+                .setStrictness(Strictness.LENIENT).create();
         requestLogger = new RequestLogger(bridge.getUID().getId(), gson);
     }
 
