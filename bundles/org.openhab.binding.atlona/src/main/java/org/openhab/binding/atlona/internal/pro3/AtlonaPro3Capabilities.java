@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.atlona.internal.pro3;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,7 +61,7 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
 
         this.nbrPowerPorts = nbrPowerPorts;
         this.nbrAudioPorts = nbrAudioPorts;
-        this.hdmiPorts = Collections.unmodifiableSet(new HashSet<>(hdmiPorts));
+        this.hdmiPorts = Set.copyOf(hdmiPorts);
         this.isUHDModel = isUHDModel;
     }
 

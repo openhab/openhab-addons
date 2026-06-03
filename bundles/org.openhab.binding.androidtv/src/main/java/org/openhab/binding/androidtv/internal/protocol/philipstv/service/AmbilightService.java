@@ -17,11 +17,9 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.Connecti
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,10 +61,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @NonNullByDefault
 public class AmbilightService implements PhilipsTVService {
 
-    private static final List<String> AMBILIGHT_COLOR_CHANNELS = Stream
-            .of(CHANNEL_AMBILIGHT_COLOR, CHANNEL_AMBILIGHT_LEFT_COLOR, CHANNEL_AMBILIGHT_RIGHT_COLOR,
-                    CHANNEL_AMBILIGHT_TOP_COLOR, CHANNEL_AMBILIGHT_BOTTOM_COLOR)
-            .collect(Collectors.toList());
+    private static final Set<String> AMBILIGHT_COLOR_CHANNELS = Set.of(CHANNEL_AMBILIGHT_COLOR,
+            CHANNEL_AMBILIGHT_LEFT_COLOR, CHANNEL_AMBILIGHT_RIGHT_COLOR, CHANNEL_AMBILIGHT_TOP_COLOR,
+            CHANNEL_AMBILIGHT_BOTTOM_COLOR);
     private static final int AMBILIGHT_HUE_NODE_ID = 2131230774;
     private static final int AMBILIGHT_BRIGHTNESS_NODE_ID = 2131230769;
     private static final String AMBILIGHT_MODE_MANUAL = "manual";
@@ -161,7 +158,7 @@ public class AmbilightService implements PhilipsTVService {
         value.setControllable("true");
 
         ValuesDTO values = new ValuesDTO(value);
-        TvSettingsUpdateDTO ambilightHuePower = new TvSettingsUpdateDTO(Collections.singletonList(values));
+        TvSettingsUpdateDTO ambilightHuePower = new TvSettingsUpdateDTO(List.of(values));
 
         String ambilightHuePowerJson = OBJECT_MAPPER.writeValueAsString(ambilightHuePower);
         logger.debug("Post Ambilight hue power state json: {}", ambilightHuePowerJson);

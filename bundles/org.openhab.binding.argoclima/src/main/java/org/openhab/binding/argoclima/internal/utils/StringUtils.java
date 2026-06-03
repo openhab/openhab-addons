@@ -74,6 +74,6 @@ public final class StringUtils {
             return List.of();
         }
 
-        return Arrays.asList(withoutLeadingAndTrailingSeparators.split(multiSeparatorPattern));
+        return Arrays.stream(withoutLeadingAndTrailingSeparators.split(multiSeparatorPattern)).toList();
     }
 }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,8 +35,8 @@ public class PcapUtil {
      */
     public static Set<PcapNetworkInterfaceWrapper> getAllNetworkInterfaces() {
         try {
-            return Collections.unmodifiableSet(Pcaps.findAllDevs().stream().map(PcapNetworkInterfaceWrapper.TRANSFORMER)
-                    .collect(Collectors.toSet()));
+            return Pcaps.findAllDevs().stream().map(PcapNetworkInterfaceWrapper.TRANSFORMER)
+                    .collect(Collectors.toUnmodifiableSet());
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);
         }

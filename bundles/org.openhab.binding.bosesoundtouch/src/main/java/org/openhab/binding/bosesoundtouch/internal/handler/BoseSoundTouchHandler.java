@@ -17,7 +17,6 @@ import static org.openhab.binding.bosesoundtouch.internal.BoseSoundTouchBindingC
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -541,7 +540,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             } else {
                 if (getThing().getThingTypeUID().equals(BST_10_THING_TYPE_UID)) {
                     logger.debug("{}: Stereo Pair was created and this is NOT the master device.", getDeviceName());
-                    updateThing(editThing().withChannels(Collections.emptyList()).build());
+                    updateThing(editThing().withChannels(List.of()).build());
                 } else {
                     logger.debug("{}: Unsupported operation for player of type: {}", getDeviceName(),
                             getThing().getThingTypeUID());
@@ -566,13 +565,13 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     private List<Channel> getAllChannels(ThingTypeUID thingTypeUID) {
         ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         return CHANNEL_IDS.stream()
                 .map(channelId -> callback.createChannelBuilder(new ChannelUID(getThing().getUID(), channelId),
                         createChannelTypeUID(thingTypeUID, channelId)).build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ChannelTypeUID createChannelTypeUID(ThingTypeUID thingTypeUID, String channelId) {

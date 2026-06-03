@@ -15,12 +15,12 @@ package org.openhab.binding.argoclima.internal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -103,7 +103,7 @@ public class ArgoClimaConfigProvider implements ConfigDescriptionProvider {
      */
     @Override
     public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
-        return Collections.emptySet(); // no dynamic values
+        return Set.of(); // no dynamic values
     }
 
     /**

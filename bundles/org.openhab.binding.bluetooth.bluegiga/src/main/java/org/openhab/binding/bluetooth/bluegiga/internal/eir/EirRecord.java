@@ -14,7 +14,6 @@ package org.openhab.binding.bluetooth.bluegiga.internal.eir;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -88,19 +87,19 @@ public class EirRecord {
 
     private Map<Short, int[]> processManufacturer(int[] data) {
         short manufacturer = (short) (((data[2] & 0xFFFF) << 8) | (data[1] & 0xFFFF));
-        return Collections.singletonMap(manufacturer, Arrays.copyOfRange(data, 3, data.length));
+        return Map.of(manufacturer, Arrays.copyOfRange(data, 3, data.length));
     }
 
     private Map<UUID, int[]> processUUID16ServiceData(int[] data) {
-        return Collections.singletonMap(process16BitUUID(data, 1), Arrays.copyOfRange(data, 3, data.length));
+        return Map.of(process16BitUUID(data, 1), Arrays.copyOfRange(data, 3, data.length));
     }
 
     private Map<UUID, int[]> processUUID32ServiceData(int[] data) {
-        return Collections.singletonMap(process32BitUUID(data, 1), Arrays.copyOfRange(data, 5, data.length));
+        return Map.of(process32BitUUID(data, 1), Arrays.copyOfRange(data, 5, data.length));
     }
 
     private Map<UUID, int[]> processUUID128ServiceData(int[] data) {
-        return Collections.singletonMap(process128BitUUID(data, 1), Arrays.copyOfRange(data, 17, data.length));
+        return Map.of(process128BitUUID(data, 1), Arrays.copyOfRange(data, 17, data.length));
     }
 
     private List<UUID> processUuid16(int[] data) {

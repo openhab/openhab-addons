@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +49,7 @@ public class BluetoothChannelUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(BluetoothChannelUtils.class);
 
     public static String encodeFieldID(Field field) {
-        String requirements = Optional.ofNullable(field.getRequirements()).orElse(Collections.emptyList()).stream()
+        String requirements = Optional.ofNullable(field.getRequirements()).orElse(List.of()).stream()
                 .collect(Collectors.joining());
         return encodeFieldName(field.getName() + requirements);
     }

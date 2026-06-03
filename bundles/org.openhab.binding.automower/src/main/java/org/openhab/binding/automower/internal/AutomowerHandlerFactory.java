@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.automower.internal;
 
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,11 +51,10 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.automower", service = ThingHandlerFactory.class)
 public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(AutomowerBridgeHandler.SUPPORTED_THING_TYPES.stream(), AutomowerHandler.SUPPORTED_THING_TYPES.stream(),
-                    AutomowerStayoutZoneHandler.SUPPORTED_THING_TYPES.stream(),
-                    AutomowerWorkAreaHandler.SUPPORTED_THING_TYPES.stream())
-            .flatMap(Function.identity()).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(AutomowerBridgeHandler.SUPPORTED_THING_TYPES, AutomowerHandler.SUPPORTED_THING_TYPES,
+                    AutomowerStayoutZoneHandler.SUPPORTED_THING_TYPES, AutomowerWorkAreaHandler.SUPPORTED_THING_TYPES)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     private final OAuthFactory oAuthFactory;
     protected final @NonNullByDefault({}) HttpClient httpClient;

@@ -14,7 +14,7 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.DataDTO;
@@ -41,7 +41,7 @@ final class ServiceUtil {
     static String createTvSettingsRetrievalJson(int nodeId) throws JsonProcessingException {
         NodesDTO nodes = new NodesDTO();
         nodes.setNodeid(nodeId);
-        TvSettingsCurrentDTO tvSettingCurrent = new TvSettingsCurrentDTO(Collections.singletonList(nodes));
+        TvSettingsCurrentDTO tvSettingCurrent = new TvSettingsCurrentDTO(List.of(nodes));
         return OBJECT_MAPPER.writeValueAsString(tvSettingCurrent);
     }
 
@@ -51,7 +51,7 @@ final class ServiceUtil {
         value.setNodeid(nodeId);
         ValuesDTO values = new ValuesDTO(value);
         values.setValue(value);
-        TvSettingsUpdateDTO tvSetting = new TvSettingsUpdateDTO(Collections.singletonList(values));
+        TvSettingsUpdateDTO tvSetting = new TvSettingsUpdateDTO(List.of(values));
         return OBJECT_MAPPER.writeValueAsString(tvSetting);
     }
 }

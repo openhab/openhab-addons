@@ -15,8 +15,8 @@ package org.openhab.binding.ahawastecollection.internal;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -115,8 +115,8 @@ public class AhaWasteCollectionHandlerTest {
         final Channel channelChristmasTree = mockChannel(thing.getUID(),
                 AhaWasteCollectionBindingConstants.CHRISTMAS_TREE);
 
-        when(thing.getChannels()).thenReturn(Arrays.asList(channelBioWaste, channelGeneralWaste,
-                channelLightweightPackaging, channelPaper, channelChristmasTree));
+        when(thing.getChannels()).thenReturn(List.of(channelBioWaste, channelGeneralWaste, channelLightweightPackaging,
+                channelPaper, channelChristmasTree));
         return thing;
     }
 

@@ -70,7 +70,7 @@ public class ThingTypeTableGenerator {
 
         List<String[]> rows = new ArrayList<>();
         rows.add(headerRow);
-        rows.addAll(thingTypeDataList.stream().map(ThingTypeTableGenerator::toRow).collect(Collectors.toList()));
+        rows.addAll(thingTypeDataList.stream().map(ThingTypeTableGenerator::toRow).toList());
 
         int[] maxColumns = { maxColumnSize(rows, 0), maxColumnSize(rows, 1), maxColumnSize(rows, 2) };
 
@@ -126,6 +126,6 @@ public class ThingTypeTableGenerator {
 
     private static List<GoveeModel> modelsForType(@Nullable String typeUID) {
         return Arrays.stream(GoveeModel.values()).filter(model -> model.getThingTypeUID().getId().equals(typeUID))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

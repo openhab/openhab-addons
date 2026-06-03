@@ -13,7 +13,6 @@
 package org.openhab.automation.pythonscripting.internal;
 
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -58,7 +57,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
     public static final String CONFIG_DESCRIPTION_URI = "automation:pythonscripting";
     public static final String SCRIPT_TYPE = "application/x-python3";
 
-    private final List<String> scriptTypes = Arrays.asList("py", SCRIPT_TYPE);
+    private final List<String> scriptTypes = List.of("py", SCRIPT_TYPE);
     private final PythonDependencyTracker pythonDependencyTracker;
     private final PythonScriptEngineConfiguration configuration;
 

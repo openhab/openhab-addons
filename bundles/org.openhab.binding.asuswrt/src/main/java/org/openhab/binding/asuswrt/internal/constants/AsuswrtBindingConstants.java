@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.asuswrt.internal.constants;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
@@ -40,8 +37,7 @@ public class AsuswrtBindingConstants {
             THING_TYPE_INTERFACE);
 
     // Things with channel groups
-    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
-            .unmodifiableSet(Stream.of(SUPPORTED_THING_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = SUPPORTED_THING_TYPES_UIDS;
 
     /*
      * Channel lists

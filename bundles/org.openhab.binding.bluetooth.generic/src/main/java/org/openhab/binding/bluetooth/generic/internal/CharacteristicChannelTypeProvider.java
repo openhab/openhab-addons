@@ -14,13 +14,11 @@ package org.openhab.binding.bluetooth.generic.internal;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -74,8 +72,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
 
                 if (gattParser.isKnownCharacteristic(characteristicUUID)) {
                     List<Field> fields = gattParser.getFields(characteristicUUID).stream()
-                            .filter(field -> BluetoothChannelUtils.encodeFieldID(field).equals(fieldName))
-                            .collect(Collectors.toList());
+                            .filter(field -> BluetoothChannelUtils.encodeFieldID(field).equals(fieldName)).toList();
 
                     if (fields.size() > 1) {
                         logger.warn("Multiple fields with the same name found: {} / {}. Skipping them.",
@@ -133,7 +130,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         }
 
         if ("Switch".equals(itemType)) {
-            options = Collections.emptyList();
+            options = List.of();
         }
 
         StateDescriptionFragmentBuilder stateDescBuilder = StateDescriptionFragmentBuilder.create()//
@@ -172,7 +169,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
                 .stream()//
                 .flatMap(List::stream)
                 .map(enumeration -> new StateOption(String.valueOf(enumeration.getKey()), enumeration.getValue()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static @Nullable BigDecimal toBigDecimal(@Nullable Double value) {

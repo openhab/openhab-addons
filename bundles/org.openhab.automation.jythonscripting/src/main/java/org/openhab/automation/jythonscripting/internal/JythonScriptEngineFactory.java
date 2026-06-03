@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptEngine;
 
@@ -57,7 +58,7 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
     private static final org.python.jsr223.PyScriptEngineFactory factory = new org.python.jsr223.PyScriptEngineFactory();
 
     public static final String SCRIPT_TYPE = "application/x-python2";
-    private final List<String> scriptTypes = Arrays.asList("jythonpy", SCRIPT_TYPE);
+    private final List<String> scriptTypes = List.of("jythonpy", SCRIPT_TYPE);
 
     @Activate
     public JythonScriptEngineFactory() {
@@ -65,13 +66,13 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
         System.setProperty(PYTHON_HOME, PYTHON_HOME_PATH);
 
-        Set<String> pythonPathList = new TreeSet<>(Arrays.asList(PYTHON_DEFAULT_PATH));
+        Set<String> pythonPathList = new TreeSet<>(List.of(PYTHON_DEFAULT_PATH));
         String existingPythonPath = System.getProperty(PYTHON_PATH);
         if (existingPythonPath != null && !existingPythonPath.isEmpty()) {
-            pythonPathList.addAll(Arrays.asList(existingPythonPath.split(File.pathSeparator)));
+            pythonPathList.addAll(Arrays.stream(existingPythonPath.split(File.pathSeparator)).toList());
         }
-        System.setProperty(PYTHON_PATH, String.join(File.pathSeparator, pythonPathList));
 
+        System.setProperty(PYTHON_PATH, String.join(File.pathSeparator, pythonPathList));
         System.setProperty(PYTHON_CACHEDIR, PYTHON_CACHEDIR_PATH);
 
         logPythonPaths();
@@ -85,7 +86,8 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
         String existingPythonPath = System.getProperty(PYTHON_PATH);
         if (existingPythonPath != null && !existingPythonPath.isEmpty()) {
-            Set<String> newPythonPathList = new TreeSet<>(Arrays.asList(existingPythonPath.split(File.pathSeparator)));
+            Set<String> newPythonPathList = Arrays.stream(existingPythonPath.split(File.pathSeparator))
+                    .collect(Collectors.toCollection(TreeSet::new));
             newPythonPathList.remove(PYTHON_DEFAULT_PATH);
             System.setProperty(PYTHON_PATH, String.join(File.pathSeparator, newPythonPathList));
         }
