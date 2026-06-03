@@ -631,6 +631,30 @@
 		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyprodm2pm">
+		<label>Shelly Pro Dimmer 2PM</label>
+		<description>Shelly Pro Dimmer 2PM - provides 2 dimmable lights and a relay</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="dimmerChannel">
+				<label>Dimmer 1</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="dimmerChannel">
+				<label>Dimmer 2</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplus3em63">
 		<label>Shelly Plus 3EM-63</label>
 		<description>Shelly Plus 3EM-63 - 3 Phase Power Meter, 63 Amp</description>
