@@ -48,6 +48,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ChatGPTHandler} is responsible for handling commands, which are
@@ -158,8 +159,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         chatRequestBody.setTopP(channelConfig.topP);
         chatRequestBody.setMessages(messages);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
+        ObjectMapper objectMapper = JsonMapper.builder().serializationInclusion(Include.NON_NULL).build();
 
         try {
             return objectMapper.writeValueAsString(chatRequestBody);
