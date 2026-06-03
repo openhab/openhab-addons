@@ -40,6 +40,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +289,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
 
     void handleHSBCommand(HSBType color) {
         DeviceAction cAction = DeviceAction.color;
-        cAction.putValue(color.getRGB() & 0xFFFFFF);
+        cAction.putValue(ColorUtil.hsbTosRgb(color) & 0xFFFFFF);
         cAction.putDuration(getDuration());
         DeviceManager.getInstance().doAction(deviceId, cAction);
     }
