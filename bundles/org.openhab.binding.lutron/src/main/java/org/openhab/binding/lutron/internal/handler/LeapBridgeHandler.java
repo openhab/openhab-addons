@@ -251,9 +251,9 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 logger.debug("Assuming client certificate is valid");
                 if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
-                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal().getName());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal().getName());
+                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
             }
@@ -263,8 +263,8 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 logger.debug("Assuming server certificate is valid");
                 if (chain != null && logger.isTraceEnabled()) {
                     for (int cert = 0; cert < chain.length; cert++) {
-                        logger.trace("Subject DN: {}", chain[cert].getSubjectDN());
-                        logger.trace("Issuer DN: {}", chain[cert].getIssuerDN());
+                        logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal().getName());
+                        logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal().getName());
                         logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
