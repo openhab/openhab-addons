@@ -18,7 +18,6 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -132,17 +131,13 @@ public class ApiTools {
         if (paths == null || !paths.isObject()) {
             return textResult(jsonMapper, Map.of("endpoints", endpoints));
         }
-        Iterator<Map.Entry<String, JsonNode>> pathIter = paths.fields();
-        while (pathIter.hasNext()) {
-            Map.Entry<String, JsonNode> pathEntry = pathIter.next();
+        for (Map.Entry<String, JsonNode> pathEntry : paths.properties()) {
             String path = pathEntry.getKey();
             JsonNode methods = pathEntry.getValue();
             if (methods == null || !methods.isObject()) {
                 continue;
             }
-            Iterator<Map.Entry<String, JsonNode>> methodIter = methods.fields();
-            while (methodIter.hasNext()) {
-                Map.Entry<String, JsonNode> methodEntry = methodIter.next();
+            for (Map.Entry<String, JsonNode> methodEntry : methods.properties()) {
                 String method = methodEntry.getKey();
                 if (!isHttpMethod(method)) {
                     continue;
