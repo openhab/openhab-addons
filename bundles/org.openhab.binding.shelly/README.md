@@ -554,7 +554,7 @@ Depending on the device type and firmware release channels might be not availabl
 |         | input1       | Contact  | yes       | Status of the reed contact (OPEN/CLOSE), only with external switch add-on         |
 
 `Note:`
-The `meter`for the Shelly 1L is kind of fake.
+The `meter` for the Shelly 1L is kind of fake.
 It doesn't have a real power meter, but you could setup an estimated consumption in the Shelly App, e.g. 60W if you have attached a good old light bulb to the output channel.
 In this case the is no real measurement based on power consumption, but the Shelly reports the configured value when the relay is ON.
 
@@ -596,14 +596,14 @@ In this case the is no real measurement based on power consumption, but the Shel
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly 3EM (thing-type: shellyem3)
@@ -629,7 +629,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -638,7 +638,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -647,7 +647,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | nmeter | ncurrent      | Number   | yes       | Neutral current based on N clamp (requires calibration)                           |
@@ -657,7 +657,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 
 `Note:`
 You should calibrate the device if you want to use "neutral current" measurements.
-Check the Shelly documentation for details._
+Check the Shelly documentation for details.
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
@@ -699,7 +699,7 @@ Check the Shelly documentation for details._
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
 
 `Note:`
-The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set._
+The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set.
 
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
@@ -1338,14 +1338,14 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
@@ -1367,7 +1367,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1376,7 +1376,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1385,7 +1385,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | nmeter | ncurrent      | Number   | yes       | Neutral current based on N clamp (requires calibration)                           |
@@ -1526,7 +1526,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Grid frequency (Hz)                                                               |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1534,7 +1534,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Grid frequency (Hz)                                                               |
 
@@ -1686,7 +1686,7 @@ There are no additional channels besides the device group.
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1695,7 +1695,7 @@ There are no additional channels besides the device group.
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1704,7 +1704,7 @@ There are no additional channels besides the device group.
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1718,7 +1718,7 @@ There are no additional channels besides the device group.
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
@@ -1727,7 +1727,7 @@ There are no additional channels besides the device group.
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | current       | Number   | yes       | Current in A                                                                      |
-|        | powerFactor   | Number   | yes       | Power factor (-1.0 to 1.0)                                                        |
+|        | powerFactor   | Number   | yes       | Power factor in percent (ratio of real to apparent power)                         |
 |        | resetTotals   | Switch   | no        | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | relay  | output        | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |

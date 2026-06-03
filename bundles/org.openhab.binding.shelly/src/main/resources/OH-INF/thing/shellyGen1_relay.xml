@@ -551,7 +551,7 @@
 	<channel-type id="totalKWH">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy Consumption Device</label>
-		<description>Total energy consumption of the device in kWh since the device powered up</description>
+		<description>Total energy consumption of the device in kWh since the device powered up (resets on restart)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -589,7 +589,7 @@
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy Consumption</label>
-		<description>Total energy consumption in kWh since the device powered up</description>
+		<description>Total energy consumption in kWh since the device powered up (resets on restart)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -648,7 +648,7 @@
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description>Power factor (ratio of real to apparent power)</description>
+		<description>Power factor in percent (ratio of real to apparent power)</description>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
