@@ -14,7 +14,6 @@ package org.openhab.binding.hyperion.internal.handler;
 
 import static org.openhab.binding.hyperion.internal.HyperionBindingConstants.*;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
@@ -59,6 +58,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -436,10 +436,10 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
         if (command instanceof HSBType hsbCommand) {
-            Color c = new Color(hsbCommand.getRGB());
-            int r = c.getRed();
-            int g = c.getGreen();
-            int b = c.getBlue();
+            int[] rgb = ColorUtil.hsbToRgb(hsbCommand);
+            int r = rgb[0];
+            int g = rgb[1];
+            int b = rgb[2];
 
             ColorCommand colorCommand = new ColorCommand(r, g, b, priority);
             colorCommand.setOrigin(origin);
