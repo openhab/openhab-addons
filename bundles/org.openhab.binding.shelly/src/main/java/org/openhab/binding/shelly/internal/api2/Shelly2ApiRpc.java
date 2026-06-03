@@ -62,6 +62,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConf
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2CCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBStatus;
@@ -830,9 +831,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             return status;
         }
         if (profile.isDuo && profile.isGen2) {
-            Shelly2DeviceStatusLight ls = apiRequest(
-                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(0),
-                    Shelly2DeviceStatusLight.class);
+            Shelly2CCTStatus ls = apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_CCT_STATUS).withId(0),
+                    Shelly2CCTStatus.class);
             ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
             lightChannel.ison = ls.output;
             Double duoBrightness = ls.brightness;
@@ -854,7 +854,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public ShellyShortLightStatus getLightStatus(int index) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         ShellyShortLightStatus status = new ShellyShortLightStatus();
+        if (profile.isDuo && profile.isGen2) {
+            Shelly2CCTStatus ls = apiRequest(
+                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_CCT_STATUS).withId(index),
+                    Shelly2CCTStatus.class);
+            status.ison = ls.output;
+            Double brightness = ls.brightness;
+            if (brightness != null) {
+                status.brightness = brightness.intValue();
+            }
+            return status;
+        }
         Shelly2DeviceStatusLight ls = apiRequest(
                 new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_STATUS).withId(index),
                 Shelly2DeviceStatusLight.class);
@@ -870,19 +882,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setBrightness(int id, int brightness, boolean autoOn) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
         params.brightness = brightness;
         params.on = brightness > 0;
-        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        String method = (profile.isDuo && profile.isGen2) ? SHELLYRPC_METHOD_CCT_SET : SHELLYRPC_METHOD_LIGHT_SET;
+        apiRequest(method, params, String.class);
     }
 
     @Override
     public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
         params.on = turnMode.equals(SHELLY_API_ON);
-        apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+        String method = (profile.isDuo && profile.isGen2) ? SHELLYRPC_METHOD_CCT_SET : SHELLYRPC_METHOD_LIGHT_SET;
+        apiRequest(method, params, String.class);
         return getLightStatus(id);
     }
 
@@ -895,8 +911,18 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setAutoTimer(int index, String timerName, double value) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         boolean isLight = profile.isLight || profile.isDimmer;
-        String method = isLight ? SHELLYRPC_METHOD_LIGHT_SETCONFIG : SHELLYRPC_METHOD_SWITCH_SETCONFIG;
-        String component = isLight ? "Light" : "Switch";
+        String method;
+        String component;
+        if (profile.isDuo && profile.isGen2) {
+            method = SHELLYRPC_METHOD_CCT_SETCONFIG;
+            component = "CCT";
+        } else if (isLight) {
+            method = SHELLYRPC_METHOD_LIGHT_SETCONFIG;
+            component = "Light";
+        } else {
+            method = SHELLYRPC_METHOD_SWITCH_SETCONFIG;
+            component = "Switch";
+        }
         Shelly2RpcRequest req = new Shelly2RpcRequest().withMethod(method).withId(index);
         req.params.withConfig();
         req.params.config.name = component + index;
@@ -1091,7 +1117,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (ct != null) {
                 params.ct = Integer.parseInt(ct);
             }
-            apiRequest(SHELLYRPC_METHOD_LIGHT_SET, params, String.class);
+            apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
         } else {
             throw new ShellyApiException("setLightParms not implemented for this device type");
         }

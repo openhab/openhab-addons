@@ -62,6 +62,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_RGB_STATUS = "RGB.GetStatus";
     public static final String SHELLYRPC_METHOD_RGB_SET = "RGB.Set";
+    public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
+    public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
+    public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
@@ -545,6 +548,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("rgb:0")
             public @Nullable Shelly2GetConfigLight rgb0;
 
+            @SerializedName("cct:0")
+            public @Nullable Shelly2GetConfigLight cct0;
+
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
         }
@@ -628,6 +634,17 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Double timerStartedAt;
             @SerializedName("timer_duration")
             public @Nullable Double timerDuration;
+        }
+
+        // Shelly Duo Bulb G3 and other CCT-only devices — component "cct:0"
+        public static class Shelly2CCTStatus {
+            public @Nullable Integer id;
+            public @Nullable String source;
+            public @Nullable Boolean output;
+            public @Nullable Double brightness;
+            public @Nullable Integer ct;
+            public @Nullable Shelly2Energy aenergy;
+            public @Nullable Double apower;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -910,6 +927,9 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("light:1")
             public Shelly2DeviceStatusLight light1;
+
+            @SerializedName("cct:0")
+            public @Nullable Shelly2CCTStatus cct0;
 
             @SerializedName("temperature:0")
             public @Nullable Shelly2DeviceStatusTempId temperature0;
