@@ -119,7 +119,7 @@ public class NeeoBrainService extends DefaultServletService {
         Objects.requireNonNull(context, "context cannot be null");
 
         this.context = context;
-        this.itemConverter = new NeeoItemValueConverter(context);
+        this.itemConverter = new NeeoItemValueConverter();
         this.api = api;
         this.api.addPropertyChangeListener(NeeoApi.CONNECTED, listener);
         scheduler.execute(() -> {
