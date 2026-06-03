@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>3.8.2</version>
+      <version>3.10.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

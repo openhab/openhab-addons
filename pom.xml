@@ -87,6 +87,8 @@
     <kotlin.version>1.9.23</kotlin.version>
     <sat.version>0.18.0</sat.version>
     <slf4j.version>2.0.17</slf4j.version>
+    <!-- WireMock testing framework currently uses the wiremock-standalone artifact; investigate wiremock-jetty12 after Jetty migration -->
+    <wiremock.version>3.13.2</wiremock.version>
     <spotless.version>2.44.3</spotless.version>
     <!-- Eclipse Java formatter version 4.26+ does not check test files -->
     <spotless.eclipse.version>4.25</spotless.eclipse.version>
@@ -422,6 +424,7 @@ Import-Package: \
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED
+              -javaagent:"${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar"
               -Xshare:off</argLine>
             <systemPropertyVariables>
               <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
