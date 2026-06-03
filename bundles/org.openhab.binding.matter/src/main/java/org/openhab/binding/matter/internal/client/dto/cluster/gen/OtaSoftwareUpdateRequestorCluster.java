@@ -56,7 +56,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public Boolean updatePossible; // 1 bool R V
     /**
      * This field shall reflect the current state of the OTA Requestor with regards to obtaining software updates. See
-     * Section 11.20.7.4.2, “UpdateStateEnum Type” for possible values.
+     * Section 11.20.7.4.2, "UpdateStateEnum Type" for possible values.
      * This field SHOULD be updated in a timely manner whenever OTA Requestor internal state updates.
      */
     public UpdateStateEnum updateState; // 2 UpdateStateEnum R V

@@ -434,6 +434,314 @@ public class ClusterConstants {
             "matter:" + CHANNEL_ID_BOOLEANSTATECONFIGURATION_SENSORFAULT);
 
     // BridgedDeviceBasicInformation Cluster
+    // CameraAvSettingsUserLevelManagement Cluster
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPOSITION = "MptzPosition";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPOSITION = "Mptz Position";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPOSITION = "cameraavsettingsuserlevelmanagement-mptzposition";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPOSITION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPOSITION);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MAXPRESETS = "MaxPresets";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MAXPRESETS = "Max Presets";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MAXPRESETS = "cameraavsettingsuserlevelmanagement-maxpresets";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MAXPRESETS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MAXPRESETS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPRESETS = "MptzPresets";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPRESETS = "Mptz Presets";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPRESETS = "cameraavsettingsuserlevelmanagement-mptzpresets";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPRESETS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MPTZPRESETS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_DPTZSTREAMS = "DptzStreams";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_DPTZSTREAMS = "Dptz Streams";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_DPTZSTREAMS = "cameraavsettingsuserlevelmanagement-dptzstreams";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_DPTZSTREAMS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_DPTZSTREAMS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_ZOOMMAX = "ZoomMax";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_ZOOMMAX = "Zoom Max";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_ZOOMMAX = "cameraavsettingsuserlevelmanagement-zoommax";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_ZOOMMAX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_ZOOMMAX);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMIN = "TiltMin";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMIN = "Tilt Min";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMIN = "cameraavsettingsuserlevelmanagement-tiltmin";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMIN = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMIN);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMAX = "TiltMax";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMAX = "Tilt Max";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMAX = "cameraavsettingsuserlevelmanagement-tiltmax";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMAX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_TILTMAX);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMIN = "PanMin";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMIN = "Pan Min";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMIN = "cameraavsettingsuserlevelmanagement-panmin";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMIN = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMIN);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMAX = "PanMax";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMAX = "Pan Max";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMAX = "cameraavsettingsuserlevelmanagement-panmax";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMAX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_PANMAX);
+
+    public static final String CHANNEL_NAME_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MOVEMENTSTATE = "MovementState";
+    public static final String CHANNEL_LABEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MOVEMENTSTATE = "Movement State";
+    public static final String CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MOVEMENTSTATE = "cameraavsettingsuserlevelmanagement-movementstate";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MOVEMENTSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSETTINGSUSERLEVELMANAGEMENT_MOVEMENTSTATE);
+
+    // CameraAvStreamManagement Cluster
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MAXCONCURRENTENCODERS = "MaxConcurrentEncoders";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MAXCONCURRENTENCODERS = "Max Concurrent Encoders";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXCONCURRENTENCODERS = "cameraavstreammanagement-maxconcurrentencoders";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MAXCONCURRENTENCODERS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXCONCURRENTENCODERS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MAXENCODEDPIXELRATE = "MaxEncodedPixelRate";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MAXENCODEDPIXELRATE = "Max Encoded Pixel Rate";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXENCODEDPIXELRATE = "cameraavstreammanagement-maxencodedpixelrate";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MAXENCODEDPIXELRATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXENCODEDPIXELRATE);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_VIDEOSENSORPARAMS = "VideoSensorParams";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_VIDEOSENSORPARAMS = "Video Sensor Params";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_VIDEOSENSORPARAMS = "cameraavstreammanagement-videosensorparams";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_VIDEOSENSORPARAMS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_VIDEOSENSORPARAMS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONUSESINFRARED = "NightVisionUsesInfrared";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONUSESINFRARED = "Night Vision Uses Infrared";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONUSESINFRARED = "cameraavstreammanagement-nightvisionusesinfrared";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONUSESINFRARED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONUSESINFRARED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MINVIEWPORTRESOLUTION = "MinViewportResolution";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MINVIEWPORTRESOLUTION = "Min Viewport Resolution";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MINVIEWPORTRESOLUTION = "cameraavstreammanagement-minviewportresolution";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MINVIEWPORTRESOLUTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MINVIEWPORTRESOLUTION);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_RATEDISTORTIONTRADEOFFPOINTS = "RateDistortionTradeOffPoints";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_RATEDISTORTIONTRADEOFFPOINTS = "Rate Distortion Trade Off Points";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_RATEDISTORTIONTRADEOFFPOINTS = "cameraavstreammanagement-ratedistortiontradeoffpoints";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_RATEDISTORTIONTRADEOFFPOINTS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_RATEDISTORTIONTRADEOFFPOINTS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MAXCONTENTBUFFERSIZE = "MaxContentBufferSize";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MAXCONTENTBUFFERSIZE = "Max Content Buffer Size";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXCONTENTBUFFERSIZE = "cameraavstreammanagement-maxcontentbuffersize";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MAXCONTENTBUFFERSIZE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXCONTENTBUFFERSIZE);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONECAPABILITIES = "MicrophoneCapabilities";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONECAPABILITIES = "Microphone Capabilities";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONECAPABILITIES = "cameraavstreammanagement-microphonecapabilities";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONECAPABILITIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONECAPABILITIES);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SPEAKERCAPABILITIES = "SpeakerCapabilities";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERCAPABILITIES = "Speaker Capabilities";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERCAPABILITIES = "cameraavstreammanagement-speakercapabilities";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERCAPABILITIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERCAPABILITIES);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_TWOWAYTALKSUPPORT = "TwoWayTalkSupport";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_TWOWAYTALKSUPPORT = "Two Way Talk Support";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_TWOWAYTALKSUPPORT = "cameraavstreammanagement-twowaytalksupport";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_TWOWAYTALKSUPPORT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_TWOWAYTALKSUPPORT);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SNAPSHOTCAPABILITIES = "SnapshotCapabilities";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SNAPSHOTCAPABILITIES = "Snapshot Capabilities";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SNAPSHOTCAPABILITIES = "cameraavstreammanagement-snapshotcapabilities";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SNAPSHOTCAPABILITIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SNAPSHOTCAPABILITIES);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MAXNETWORKBANDWIDTH = "MaxNetworkBandwidth";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MAXNETWORKBANDWIDTH = "Max Network Bandwidth";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXNETWORKBANDWIDTH = "cameraavstreammanagement-maxnetworkbandwidth";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MAXNETWORKBANDWIDTH = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MAXNETWORKBANDWIDTH);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_CURRENTFRAMERATE = "CurrentFrameRate";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_CURRENTFRAMERATE = "Current Frame Rate";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_CURRENTFRAMERATE = "cameraavstreammanagement-currentframerate";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_CURRENTFRAMERATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_CURRENTFRAMERATE);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_HDRMODEENABLED = "HdrModeEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_HDRMODEENABLED = "Hdr Mode Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_HDRMODEENABLED = "cameraavstreammanagement-hdrmodeenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_HDRMODEENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_HDRMODEENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SUPPORTEDSTREAMUSAGES = "SupportedStreamUsages";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SUPPORTEDSTREAMUSAGES = "Supported Stream Usages";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SUPPORTEDSTREAMUSAGES = "cameraavstreammanagement-supportedstreamusages";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SUPPORTEDSTREAMUSAGES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SUPPORTEDSTREAMUSAGES);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDVIDEOSTREAMS = "AllocatedVideoStreams";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDVIDEOSTREAMS = "Allocated Video Streams";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDVIDEOSTREAMS = "cameraavstreammanagement-allocatedvideostreams";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDVIDEOSTREAMS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDVIDEOSTREAMS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDAUDIOSTREAMS = "AllocatedAudioStreams";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDAUDIOSTREAMS = "Allocated Audio Streams";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDAUDIOSTREAMS = "cameraavstreammanagement-allocatedaudiostreams";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDAUDIOSTREAMS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDAUDIOSTREAMS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDSNAPSHOTSTREAMS = "AllocatedSnapshotStreams";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDSNAPSHOTSTREAMS = "Allocated Snapshot Streams";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDSNAPSHOTSTREAMS = "cameraavstreammanagement-allocatedsnapshotstreams";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDSNAPSHOTSTREAMS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_ALLOCATEDSNAPSHOTSTREAMS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_STREAMUSAGEPRIORITIES = "StreamUsagePriorities";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_STREAMUSAGEPRIORITIES = "Stream Usage Priorities";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STREAMUSAGEPRIORITIES = "cameraavstreammanagement-streamusagepriorities";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_STREAMUSAGEPRIORITIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STREAMUSAGEPRIORITIES);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SOFTRECORDINGPRIVACYMODEENABLED = "SoftRecordingPrivacyModeEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SOFTRECORDINGPRIVACYMODEENABLED = "Soft Recording Privacy Mode Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SOFTRECORDINGPRIVACYMODEENABLED = "cameraavstreammanagement-softrecordingprivacymodeenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SOFTRECORDINGPRIVACYMODEENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SOFTRECORDINGPRIVACYMODEENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SOFTLIVESTREAMPRIVACYMODEENABLED = "SoftLivestreamPrivacyModeEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SOFTLIVESTREAMPRIVACYMODEENABLED = "Soft Livestream Privacy Mode Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SOFTLIVESTREAMPRIVACYMODEENABLED = "cameraavstreammanagement-softlivestreamprivacymodeenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SOFTLIVESTREAMPRIVACYMODEENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SOFTLIVESTREAMPRIVACYMODEENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_HARDPRIVACYMODEON = "HardPrivacyModeOn";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_HARDPRIVACYMODEON = "Hard Privacy Mode On";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_HARDPRIVACYMODEON = "cameraavstreammanagement-hardprivacymodeon";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_HARDPRIVACYMODEON = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_HARDPRIVACYMODEON);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_NIGHTVISION = "NightVision";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISION = "Night Vision";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISION = "cameraavstreammanagement-nightvision";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISION);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONILLUM = "NightVisionIllum";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONILLUM = "Night Vision Illum";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONILLUM = "cameraavstreammanagement-nightvisionillum";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONILLUM = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_NIGHTVISIONILLUM);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_VIEWPORT = "Viewport";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_VIEWPORT = "Viewport";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_VIEWPORT = "cameraavstreammanagement-viewport";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_VIEWPORT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_VIEWPORT);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SPEAKERMUTED = "SpeakerMuted";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMUTED = "Speaker Muted";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMUTED = "cameraavstreammanagement-speakermuted";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMUTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMUTED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SPEAKERVOLUMELEVEL = "SpeakerVolumeLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERVOLUMELEVEL = "Speaker Volume Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERVOLUMELEVEL = "cameraavstreammanagement-speakervolumelevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERVOLUMELEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERVOLUMELEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SPEAKERMAXLEVEL = "SpeakerMaxLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMAXLEVEL = "Speaker Max Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMAXLEVEL = "cameraavstreammanagement-speakermaxlevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMAXLEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMAXLEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_SPEAKERMINLEVEL = "SpeakerMinLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMINLEVEL = "Speaker Min Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMINLEVEL = "cameraavstreammanagement-speakerminlevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_SPEAKERMINLEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_SPEAKERMINLEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMUTED = "MicrophoneMuted";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMUTED = "Microphone Muted";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMUTED = "cameraavstreammanagement-microphonemuted";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMUTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMUTED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONEVOLUMELEVEL = "MicrophoneVolumeLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEVOLUMELEVEL = "Microphone Volume Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEVOLUMELEVEL = "cameraavstreammanagement-microphonevolumelevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEVOLUMELEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEVOLUMELEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMAXLEVEL = "MicrophoneMaxLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMAXLEVEL = "Microphone Max Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMAXLEVEL = "cameraavstreammanagement-microphonemaxlevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMAXLEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMAXLEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMINLEVEL = "MicrophoneMinLevel";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMINLEVEL = "Microphone Min Level";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMINLEVEL = "cameraavstreammanagement-microphoneminlevel";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMINLEVEL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEMINLEVEL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_MICROPHONEAGCENABLED = "MicrophoneAgcEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEAGCENABLED = "Microphone Agc Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEAGCENABLED = "cameraavstreammanagement-microphoneagcenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_MICROPHONEAGCENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_MICROPHONEAGCENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATION = "ImageRotation";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATION = "Image Rotation";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATION = "cameraavstreammanagement-imagerotation";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATION);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPHORIZONTAL = "ImageFlipHorizontal";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPHORIZONTAL = "Image Flip Horizontal";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPHORIZONTAL = "cameraavstreammanagement-imagefliphorizontal";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPHORIZONTAL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPHORIZONTAL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPVERTICAL = "ImageFlipVertical";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPVERTICAL = "Image Flip Vertical";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPVERTICAL = "cameraavstreammanagement-imageflipvertical";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPVERTICAL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEFLIPVERTICAL);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_LOCALVIDEORECORDINGENABLED = "LocalVideoRecordingEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_LOCALVIDEORECORDINGENABLED = "Local Video Recording Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_LOCALVIDEORECORDINGENABLED = "cameraavstreammanagement-localvideorecordingenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_LOCALVIDEORECORDINGENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_LOCALVIDEORECORDINGENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_LOCALSNAPSHOTRECORDINGENABLED = "LocalSnapshotRecordingEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_LOCALSNAPSHOTRECORDINGENABLED = "Local Snapshot Recording Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_LOCALSNAPSHOTRECORDINGENABLED = "cameraavstreammanagement-localsnapshotrecordingenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_LOCALSNAPSHOTRECORDINGENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_LOCALSNAPSHOTRECORDINGENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTENABLED = "StatusLightEnabled";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTENABLED = "Status Light Enabled";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTENABLED = "cameraavstreammanagement-statuslightenabled";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTENABLED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTENABLED);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = "StatusLightBrightness";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = "Status Light Brightness";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = "cameraavstreammanagement-statuslightbrightness";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS);
+
     // CarbonDioxideConcentrationMeasurement Cluster
     public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
     public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
@@ -586,6 +894,134 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_CHANNEL_CURRENTCHANNEL = "channel-currentchannel";
     public static final ChannelTypeUID CHANNEL_CHANNEL_CURRENTCHANNEL = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_CHANNEL_CURRENTCHANNEL);
+
+    // Chime Cluster
+    public static final String CHANNEL_NAME_CHIME_INSTALLEDCHIMESOUNDS = "InstalledChimeSounds";
+    public static final String CHANNEL_LABEL_CHIME_INSTALLEDCHIMESOUNDS = "Installed Chime Sounds";
+    public static final String CHANNEL_ID_CHIME_INSTALLEDCHIMESOUNDS = "chime-installedchimesounds";
+    public static final ChannelTypeUID CHANNEL_CHIME_INSTALLEDCHIMESOUNDS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CHIME_INSTALLEDCHIMESOUNDS);
+
+    public static final String CHANNEL_NAME_CHIME_SELECTEDCHIME = "SelectedChime";
+    public static final String CHANNEL_LABEL_CHIME_SELECTEDCHIME = "Selected Chime";
+    public static final String CHANNEL_ID_CHIME_SELECTEDCHIME = "chime-selectedchime";
+    public static final ChannelTypeUID CHANNEL_CHIME_SELECTEDCHIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CHIME_SELECTEDCHIME);
+
+    public static final String CHANNEL_NAME_CHIME_ENABLED = "Enabled";
+    public static final String CHANNEL_LABEL_CHIME_ENABLED = "Enabled";
+    public static final String CHANNEL_ID_CHIME_ENABLED = "chime-enabled";
+    public static final ChannelTypeUID CHANNEL_CHIME_ENABLED = new ChannelTypeUID("matter:" + CHANNEL_ID_CHIME_ENABLED);
+
+    // ClosureControl Cluster
+    public static final String CHANNEL_NAME_CLOSURECONTROL_COUNTDOWNTIME = "CountdownTime";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_COUNTDOWNTIME = "Countdown Time";
+    public static final String CHANNEL_ID_CLOSURECONTROL_COUNTDOWNTIME = "closurecontrol-countdowntime";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_COUNTDOWNTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_COUNTDOWNTIME);
+
+    public static final String CHANNEL_NAME_CLOSURECONTROL_MAINSTATE = "MainState";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_MAINSTATE = "Main State";
+    public static final String CHANNEL_ID_CLOSURECONTROL_MAINSTATE = "closurecontrol-mainstate";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_MAINSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_MAINSTATE);
+
+    public static final String CHANNEL_NAME_CLOSURECONTROL_CURRENTERRORLIST = "CurrentErrorList";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_CURRENTERRORLIST = "Current Error List";
+    public static final String CHANNEL_ID_CLOSURECONTROL_CURRENTERRORLIST = "closurecontrol-currenterrorlist";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_CURRENTERRORLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_CURRENTERRORLIST);
+
+    public static final String CHANNEL_NAME_CLOSURECONTROL_OVERALLCURRENTSTATE = "OverallCurrentState";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_OVERALLCURRENTSTATE = "Overall Current State";
+    public static final String CHANNEL_ID_CLOSURECONTROL_OVERALLCURRENTSTATE = "closurecontrol-overallcurrentstate";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_OVERALLCURRENTSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_OVERALLCURRENTSTATE);
+
+    public static final String CHANNEL_NAME_CLOSURECONTROL_OVERALLTARGETSTATE = "OverallTargetState";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_OVERALLTARGETSTATE = "Overall Target State";
+    public static final String CHANNEL_ID_CLOSURECONTROL_OVERALLTARGETSTATE = "closurecontrol-overalltargetstate";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_OVERALLTARGETSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_OVERALLTARGETSTATE);
+
+    public static final String CHANNEL_NAME_CLOSURECONTROL_LATCHCONTROLMODES = "LatchControlModes";
+    public static final String CHANNEL_LABEL_CLOSURECONTROL_LATCHCONTROLMODES = "Latch Control Modes";
+    public static final String CHANNEL_ID_CLOSURECONTROL_LATCHCONTROLMODES = "closurecontrol-latchcontrolmodes";
+    public static final ChannelTypeUID CHANNEL_CLOSURECONTROL_LATCHCONTROLMODES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSURECONTROL_LATCHCONTROLMODES);
+
+    // ClosureDimension Cluster
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_CURRENTSTATE = "CurrentState";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_CURRENTSTATE = "Current State";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_CURRENTSTATE = "closuredimension-currentstate";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_CURRENTSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_CURRENTSTATE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_TARGETSTATE = "TargetState";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_TARGETSTATE = "Target State";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_TARGETSTATE = "closuredimension-targetstate";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_TARGETSTATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_TARGETSTATE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_RESOLUTION = "Resolution";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_RESOLUTION = "Resolution";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_RESOLUTION = "closuredimension-resolution";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_RESOLUTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_RESOLUTION);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_STEPVALUE = "StepValue";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_STEPVALUE = "Step Value";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_STEPVALUE = "closuredimension-stepvalue";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_STEPVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_STEPVALUE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_UNIT = "Unit";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_UNIT = "Unit";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_UNIT = "closuredimension-unit";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_UNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_UNIT);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_UNITRANGE = "UnitRange";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_UNITRANGE = "Unit Range";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_UNITRANGE = "closuredimension-unitrange";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_UNITRANGE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_UNITRANGE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_LIMITRANGE = "LimitRange";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_LIMITRANGE = "Limit Range";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_LIMITRANGE = "closuredimension-limitrange";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_LIMITRANGE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_LIMITRANGE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_TRANSLATIONDIRECTION = "TranslationDirection";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_TRANSLATIONDIRECTION = "Translation Direction";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_TRANSLATIONDIRECTION = "closuredimension-translationdirection";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_TRANSLATIONDIRECTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_TRANSLATIONDIRECTION);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_ROTATIONAXIS = "RotationAxis";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_ROTATIONAXIS = "Rotation Axis";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_ROTATIONAXIS = "closuredimension-rotationaxis";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_ROTATIONAXIS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_ROTATIONAXIS);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_OVERFLOW = "Overflow";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_OVERFLOW = "Overflow";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_OVERFLOW = "closuredimension-overflow";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_OVERFLOW = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_OVERFLOW);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_MODULATIONTYPE = "ModulationType";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_MODULATIONTYPE = "Modulation Type";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_MODULATIONTYPE = "closuredimension-modulationtype";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_MODULATIONTYPE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_MODULATIONTYPE);
+
+    public static final String CHANNEL_NAME_CLOSUREDIMENSION_LATCHCONTROLMODES = "LatchControlModes";
+    public static final String CHANNEL_LABEL_CLOSUREDIMENSION_LATCHCONTROLMODES = "Latch Control Modes";
+    public static final String CHANNEL_ID_CLOSUREDIMENSION_LATCHCONTROLMODES = "closuredimension-latchcontrolmodes";
+    public static final ChannelTypeUID CHANNEL_CLOSUREDIMENSION_LATCHCONTROLMODES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CLOSUREDIMENSION_LATCHCONTROLMODES);
 
     // ColorControl Cluster
     public static final String CHANNEL_NAME_COLORCONTROL_CURRENTHUE = "CurrentHue";
@@ -906,6 +1342,171 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_COMMISSIONERCONTROL_SUPPORTEDDEVICECATEGORIES = "commissionercontrol-supporteddevicecategories";
     public static final ChannelTypeUID CHANNEL_COMMISSIONERCONTROL_SUPPORTEDDEVICECATEGORIES = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_COMMISSIONERCONTROL_SUPPORTEDDEVICECATEGORIES);
+
+    // CommodityMetering Cluster
+    public static final String CHANNEL_NAME_COMMODITYMETERING_METEREDQUANTITY = "MeteredQuantity";
+    public static final String CHANNEL_LABEL_COMMODITYMETERING_METEREDQUANTITY = "Metered Quantity";
+    public static final String CHANNEL_ID_COMMODITYMETERING_METEREDQUANTITY = "commoditymetering-meteredquantity";
+    public static final ChannelTypeUID CHANNEL_COMMODITYMETERING_METEREDQUANTITY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYMETERING_METEREDQUANTITY);
+
+    public static final String CHANNEL_NAME_COMMODITYMETERING_METEREDQUANTITYTIMESTAMP = "MeteredQuantityTimestamp";
+    public static final String CHANNEL_LABEL_COMMODITYMETERING_METEREDQUANTITYTIMESTAMP = "Metered Quantity Timestamp";
+    public static final String CHANNEL_ID_COMMODITYMETERING_METEREDQUANTITYTIMESTAMP = "commoditymetering-meteredquantitytimestamp";
+    public static final ChannelTypeUID CHANNEL_COMMODITYMETERING_METEREDQUANTITYTIMESTAMP = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYMETERING_METEREDQUANTITYTIMESTAMP);
+
+    public static final String CHANNEL_NAME_COMMODITYMETERING_TARIFFUNIT = "TariffUnit";
+    public static final String CHANNEL_LABEL_COMMODITYMETERING_TARIFFUNIT = "Tariff Unit";
+    public static final String CHANNEL_ID_COMMODITYMETERING_TARIFFUNIT = "commoditymetering-tariffunit";
+    public static final ChannelTypeUID CHANNEL_COMMODITYMETERING_TARIFFUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYMETERING_TARIFFUNIT);
+
+    public static final String CHANNEL_NAME_COMMODITYMETERING_MAXIMUMMETEREDQUANTITIES = "MaximumMeteredQuantities";
+    public static final String CHANNEL_LABEL_COMMODITYMETERING_MAXIMUMMETEREDQUANTITIES = "Maximum Metered Quantities";
+    public static final String CHANNEL_ID_COMMODITYMETERING_MAXIMUMMETEREDQUANTITIES = "commoditymetering-maximummeteredquantities";
+    public static final ChannelTypeUID CHANNEL_COMMODITYMETERING_MAXIMUMMETEREDQUANTITIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYMETERING_MAXIMUMMETEREDQUANTITIES);
+
+    // CommodityPrice Cluster
+    public static final String CHANNEL_NAME_COMMODITYPRICE_TARIFFUNIT = "TariffUnit";
+    public static final String CHANNEL_LABEL_COMMODITYPRICE_TARIFFUNIT = "Tariff Unit";
+    public static final String CHANNEL_ID_COMMODITYPRICE_TARIFFUNIT = "commodityprice-tariffunit";
+    public static final ChannelTypeUID CHANNEL_COMMODITYPRICE_TARIFFUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYPRICE_TARIFFUNIT);
+
+    public static final String CHANNEL_NAME_COMMODITYPRICE_CURRENCY = "Currency";
+    public static final String CHANNEL_LABEL_COMMODITYPRICE_CURRENCY = "Currency";
+    public static final String CHANNEL_ID_COMMODITYPRICE_CURRENCY = "commodityprice-currency";
+    public static final ChannelTypeUID CHANNEL_COMMODITYPRICE_CURRENCY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYPRICE_CURRENCY);
+
+    public static final String CHANNEL_NAME_COMMODITYPRICE_CURRENTPRICE = "CurrentPrice";
+    public static final String CHANNEL_LABEL_COMMODITYPRICE_CURRENTPRICE = "Current Price";
+    public static final String CHANNEL_ID_COMMODITYPRICE_CURRENTPRICE = "commodityprice-currentprice";
+    public static final ChannelTypeUID CHANNEL_COMMODITYPRICE_CURRENTPRICE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYPRICE_CURRENTPRICE);
+
+    public static final String CHANNEL_NAME_COMMODITYPRICE_PRICEFORECAST = "PriceForecast";
+    public static final String CHANNEL_LABEL_COMMODITYPRICE_PRICEFORECAST = "Price Forecast";
+    public static final String CHANNEL_ID_COMMODITYPRICE_PRICEFORECAST = "commodityprice-priceforecast";
+    public static final ChannelTypeUID CHANNEL_COMMODITYPRICE_PRICEFORECAST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYPRICE_PRICEFORECAST);
+
+    // CommodityTariff Cluster
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_TARIFFINFO = "TariffInfo";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_TARIFFINFO = "Tariff Info";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_TARIFFINFO = "commoditytariff-tariffinfo";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_TARIFFINFO = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_TARIFFINFO);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_TARIFFUNIT = "TariffUnit";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_TARIFFUNIT = "Tariff Unit";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_TARIFFUNIT = "commoditytariff-tariffunit";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_TARIFFUNIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_TARIFFUNIT);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_STARTDATE = "StartDate";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_STARTDATE = "Start Date";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_STARTDATE = "commoditytariff-startdate";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_STARTDATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_STARTDATE);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_DAYENTRIES = "DayEntries";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_DAYENTRIES = "Day Entries";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_DAYENTRIES = "commoditytariff-dayentries";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_DAYENTRIES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_DAYENTRIES);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_DAYPATTERNS = "DayPatterns";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_DAYPATTERNS = "Day Patterns";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_DAYPATTERNS = "commoditytariff-daypatterns";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_DAYPATTERNS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_DAYPATTERNS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_CALENDARPERIODS = "CalendarPeriods";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_CALENDARPERIODS = "Calendar Periods";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_CALENDARPERIODS = "commoditytariff-calendarperiods";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_CALENDARPERIODS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_CALENDARPERIODS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_INDIVIDUALDAYS = "IndividualDays";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_INDIVIDUALDAYS = "Individual Days";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_INDIVIDUALDAYS = "commoditytariff-individualdays";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_INDIVIDUALDAYS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_INDIVIDUALDAYS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_CURRENTDAY = "CurrentDay";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_CURRENTDAY = "Current Day";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_CURRENTDAY = "commoditytariff-currentday";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_CURRENTDAY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_CURRENTDAY);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_NEXTDAY = "NextDay";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_NEXTDAY = "Next Day";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_NEXTDAY = "commoditytariff-nextday";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_NEXTDAY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_NEXTDAY);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_CURRENTDAYENTRY = "CurrentDayEntry";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_CURRENTDAYENTRY = "Current Day Entry";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_CURRENTDAYENTRY = "commoditytariff-currentdayentry";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_CURRENTDAYENTRY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_CURRENTDAYENTRY);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_CURRENTDAYENTRYDATE = "CurrentDayEntryDate";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_CURRENTDAYENTRYDATE = "Current Day Entry Date";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_CURRENTDAYENTRYDATE = "commoditytariff-currentdayentrydate";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_CURRENTDAYENTRYDATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_CURRENTDAYENTRYDATE);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_NEXTDAYENTRY = "NextDayEntry";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_NEXTDAYENTRY = "Next Day Entry";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_NEXTDAYENTRY = "commoditytariff-nextdayentry";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_NEXTDAYENTRY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_NEXTDAYENTRY);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_NEXTDAYENTRYDATE = "NextDayEntryDate";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_NEXTDAYENTRYDATE = "Next Day Entry Date";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_NEXTDAYENTRYDATE = "commoditytariff-nextdayentrydate";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_NEXTDAYENTRYDATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_NEXTDAYENTRYDATE);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_TARIFFCOMPONENTS = "TariffComponents";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_TARIFFCOMPONENTS = "Tariff Components";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_TARIFFCOMPONENTS = "commoditytariff-tariffcomponents";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_TARIFFCOMPONENTS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_TARIFFCOMPONENTS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_TARIFFPERIODS = "TariffPeriods";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_TARIFFPERIODS = "Tariff Periods";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_TARIFFPERIODS = "commoditytariff-tariffperiods";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_TARIFFPERIODS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_TARIFFPERIODS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_CURRENTTARIFFCOMPONENTS = "CurrentTariffComponents";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_CURRENTTARIFFCOMPONENTS = "Current Tariff Components";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_CURRENTTARIFFCOMPONENTS = "commoditytariff-currenttariffcomponents";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_CURRENTTARIFFCOMPONENTS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_CURRENTTARIFFCOMPONENTS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_NEXTTARIFFCOMPONENTS = "NextTariffComponents";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_NEXTTARIFFCOMPONENTS = "Next Tariff Components";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_NEXTTARIFFCOMPONENTS = "commoditytariff-nexttariffcomponents";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_NEXTTARIFFCOMPONENTS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_NEXTTARIFFCOMPONENTS);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_DEFAULTRANDOMIZATIONOFFSET = "DefaultRandomizationOffset";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_DEFAULTRANDOMIZATIONOFFSET = "Default Randomization Offset";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_DEFAULTRANDOMIZATIONOFFSET = "commoditytariff-defaultrandomizationoffset";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_DEFAULTRANDOMIZATIONOFFSET = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_DEFAULTRANDOMIZATIONOFFSET);
+
+    public static final String CHANNEL_NAME_COMMODITYTARIFF_DEFAULTRANDOMIZATIONTYPE = "DefaultRandomizationType";
+    public static final String CHANNEL_LABEL_COMMODITYTARIFF_DEFAULTRANDOMIZATIONTYPE = "Default Randomization Type";
+    public static final String CHANNEL_ID_COMMODITYTARIFF_DEFAULTRANDOMIZATIONTYPE = "commoditytariff-defaultrandomizationtype";
+    public static final ChannelTypeUID CHANNEL_COMMODITYTARIFF_DEFAULTRANDOMIZATIONTYPE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_COMMODITYTARIFF_DEFAULTRANDOMIZATIONTYPE);
 
     // ContentAppObserver Cluster
     // ContentControl Cluster
@@ -1422,6 +2023,25 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYRESET = "electricalenergymeasurement-cumulativeenergyreset";
     public static final ChannelTypeUID CHANNEL_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYRESET = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYRESET);
+
+    // ElectricalGridConditions Cluster
+    public static final String CHANNEL_NAME_ELECTRICALGRIDCONDITIONS_LOCALGENERATIONAVAILABLE = "LocalGenerationAvailable";
+    public static final String CHANNEL_LABEL_ELECTRICALGRIDCONDITIONS_LOCALGENERATIONAVAILABLE = "Local Generation Available";
+    public static final String CHANNEL_ID_ELECTRICALGRIDCONDITIONS_LOCALGENERATIONAVAILABLE = "electricalgridconditions-localgenerationavailable";
+    public static final ChannelTypeUID CHANNEL_ELECTRICALGRIDCONDITIONS_LOCALGENERATIONAVAILABLE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ELECTRICALGRIDCONDITIONS_LOCALGENERATIONAVAILABLE);
+
+    public static final String CHANNEL_NAME_ELECTRICALGRIDCONDITIONS_CURRENTCONDITIONS = "CurrentConditions";
+    public static final String CHANNEL_LABEL_ELECTRICALGRIDCONDITIONS_CURRENTCONDITIONS = "Current Conditions";
+    public static final String CHANNEL_ID_ELECTRICALGRIDCONDITIONS_CURRENTCONDITIONS = "electricalgridconditions-currentconditions";
+    public static final ChannelTypeUID CHANNEL_ELECTRICALGRIDCONDITIONS_CURRENTCONDITIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ELECTRICALGRIDCONDITIONS_CURRENTCONDITIONS);
+
+    public static final String CHANNEL_NAME_ELECTRICALGRIDCONDITIONS_FORECASTCONDITIONS = "ForecastConditions";
+    public static final String CHANNEL_LABEL_ELECTRICALGRIDCONDITIONS_FORECASTCONDITIONS = "Forecast Conditions";
+    public static final String CHANNEL_ID_ELECTRICALGRIDCONDITIONS_FORECASTCONDITIONS = "electricalgridconditions-forecastconditions";
+    public static final ChannelTypeUID CHANNEL_ELECTRICALGRIDCONDITIONS_FORECASTCONDITIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ELECTRICALGRIDCONDITIONS_FORECASTCONDITIONS);
 
     // ElectricalPowerMeasurement Cluster
     public static final String CHANNEL_NAME_ELECTRICALPOWERMEASUREMENT_POWERMODE = "PowerMode";
@@ -1997,6 +2617,24 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_GENERALCOMMISSIONING_TCUPDATEDEADLINE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_GENERALCOMMISSIONING_TCUPDATEDEADLINE);
 
+    public static final String CHANNEL_NAME_GENERALCOMMISSIONING_RECOVERYIDENTIFIER = "RecoveryIdentifier";
+    public static final String CHANNEL_LABEL_GENERALCOMMISSIONING_RECOVERYIDENTIFIER = "Recovery Identifier";
+    public static final String CHANNEL_ID_GENERALCOMMISSIONING_RECOVERYIDENTIFIER = "generalcommissioning-recoveryidentifier";
+    public static final ChannelTypeUID CHANNEL_GENERALCOMMISSIONING_RECOVERYIDENTIFIER = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GENERALCOMMISSIONING_RECOVERYIDENTIFIER);
+
+    public static final String CHANNEL_NAME_GENERALCOMMISSIONING_NETWORKRECOVERYREASON = "NetworkRecoveryReason";
+    public static final String CHANNEL_LABEL_GENERALCOMMISSIONING_NETWORKRECOVERYREASON = "Network Recovery Reason";
+    public static final String CHANNEL_ID_GENERALCOMMISSIONING_NETWORKRECOVERYREASON = "generalcommissioning-networkrecoveryreason";
+    public static final ChannelTypeUID CHANNEL_GENERALCOMMISSIONING_NETWORKRECOVERYREASON = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GENERALCOMMISSIONING_NETWORKRECOVERYREASON);
+
+    public static final String CHANNEL_NAME_GENERALCOMMISSIONING_ISCOMMISSIONINGWITHOUTPOWER = "IsCommissioningWithoutPower";
+    public static final String CHANNEL_LABEL_GENERALCOMMISSIONING_ISCOMMISSIONINGWITHOUTPOWER = "Is Commissioning Without Power";
+    public static final String CHANNEL_ID_GENERALCOMMISSIONING_ISCOMMISSIONINGWITHOUTPOWER = "generalcommissioning-iscommissioningwithoutpower";
+    public static final ChannelTypeUID CHANNEL_GENERALCOMMISSIONING_ISCOMMISSIONINGWITHOUTPOWER = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GENERALCOMMISSIONING_ISCOMMISSIONINGWITHOUTPOWER);
+
     // GeneralDiagnostics Cluster
     public static final String CHANNEL_NAME_GENERALDIAGNOSTICS_NETWORKINTERFACES = "NetworkInterfaces";
     public static final String CHANNEL_LABEL_GENERALDIAGNOSTICS_NETWORKINTERFACES = "Network Interfaces";
@@ -2536,6 +3174,37 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_MEDIAPLAYBACK_AVAILABLETEXTTRACKS = "mediaplayback-availabletexttracks";
     public static final ChannelTypeUID CHANNEL_MEDIAPLAYBACK_AVAILABLETEXTTRACKS = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_MEDIAPLAYBACK_AVAILABLETEXTTRACKS);
+
+    // MeterIdentification Cluster
+    public static final String CHANNEL_NAME_METERIDENTIFICATION_METERTYPE = "MeterType";
+    public static final String CHANNEL_LABEL_METERIDENTIFICATION_METERTYPE = "Meter Type";
+    public static final String CHANNEL_ID_METERIDENTIFICATION_METERTYPE = "meteridentification-metertype";
+    public static final ChannelTypeUID CHANNEL_METERIDENTIFICATION_METERTYPE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_METERIDENTIFICATION_METERTYPE);
+
+    public static final String CHANNEL_NAME_METERIDENTIFICATION_POINTOFDELIVERY = "PointOfDelivery";
+    public static final String CHANNEL_LABEL_METERIDENTIFICATION_POINTOFDELIVERY = "Point Of Delivery";
+    public static final String CHANNEL_ID_METERIDENTIFICATION_POINTOFDELIVERY = "meteridentification-pointofdelivery";
+    public static final ChannelTypeUID CHANNEL_METERIDENTIFICATION_POINTOFDELIVERY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_METERIDENTIFICATION_POINTOFDELIVERY);
+
+    public static final String CHANNEL_NAME_METERIDENTIFICATION_METERSERIALNUMBER = "MeterSerialNumber";
+    public static final String CHANNEL_LABEL_METERIDENTIFICATION_METERSERIALNUMBER = "Meter Serial Number";
+    public static final String CHANNEL_ID_METERIDENTIFICATION_METERSERIALNUMBER = "meteridentification-meterserialnumber";
+    public static final ChannelTypeUID CHANNEL_METERIDENTIFICATION_METERSERIALNUMBER = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_METERIDENTIFICATION_METERSERIALNUMBER);
+
+    public static final String CHANNEL_NAME_METERIDENTIFICATION_PROTOCOLVERSION = "ProtocolVersion";
+    public static final String CHANNEL_LABEL_METERIDENTIFICATION_PROTOCOLVERSION = "Protocol Version";
+    public static final String CHANNEL_ID_METERIDENTIFICATION_PROTOCOLVERSION = "meteridentification-protocolversion";
+    public static final ChannelTypeUID CHANNEL_METERIDENTIFICATION_PROTOCOLVERSION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_METERIDENTIFICATION_PROTOCOLVERSION);
+
+    public static final String CHANNEL_NAME_METERIDENTIFICATION_POWERTHRESHOLD = "PowerThreshold";
+    public static final String CHANNEL_LABEL_METERIDENTIFICATION_POWERTHRESHOLD = "Power Threshold";
+    public static final String CHANNEL_ID_METERIDENTIFICATION_POWERTHRESHOLD = "meteridentification-powerthreshold";
+    public static final ChannelTypeUID CHANNEL_METERIDENTIFICATION_POWERTHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_METERIDENTIFICATION_POWERTHRESHOLD);
 
     // MicrowaveOvenControl Cluster
     public static final String CHANNEL_NAME_MICROWAVEOVENCONTROL_COOKTIME = "CookTime";
@@ -3685,6 +4354,19 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_PUMPCONFIGURATIONANDCONTROL_CONTROLMODE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_PUMPCONFIGURATIONANDCONTROL_CONTROLMODE);
 
+    // PushAvStreamTransport Cluster
+    public static final String CHANNEL_NAME_PUSHAVSTREAMTRANSPORT_SUPPORTEDFORMATS = "SupportedFormats";
+    public static final String CHANNEL_LABEL_PUSHAVSTREAMTRANSPORT_SUPPORTEDFORMATS = "Supported Formats";
+    public static final String CHANNEL_ID_PUSHAVSTREAMTRANSPORT_SUPPORTEDFORMATS = "pushavstreamtransport-supportedformats";
+    public static final ChannelTypeUID CHANNEL_PUSHAVSTREAMTRANSPORT_SUPPORTEDFORMATS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PUSHAVSTREAMTRANSPORT_SUPPORTEDFORMATS);
+
+    public static final String CHANNEL_NAME_PUSHAVSTREAMTRANSPORT_CURRENTCONNECTIONS = "CurrentConnections";
+    public static final String CHANNEL_LABEL_PUSHAVSTREAMTRANSPORT_CURRENTCONNECTIONS = "Current Connections";
+    public static final String CHANNEL_ID_PUSHAVSTREAMTRANSPORT_CURRENTCONNECTIONS = "pushavstreamtransport-currentconnections";
+    public static final ChannelTypeUID CHANNEL_PUSHAVSTREAMTRANSPORT_CURRENTCONNECTIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_PUSHAVSTREAMTRANSPORT_CURRENTCONNECTIONS);
+
     // RadonConcentrationMeasurement Cluster
     public static final String CHANNEL_NAME_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
     public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
@@ -3990,6 +4672,19 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_SOFTWAREDIAGNOSTICS_CURRENTHEAPHIGHWATERMARK = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_SOFTWAREDIAGNOSTICS_CURRENTHEAPHIGHWATERMARK);
 
+    // SoilMeasurement Cluster
+    public static final String CHANNEL_NAME_SOILMEASUREMENT_SOILMOISTUREMEASUREMENTLIMITS = "SoilMoistureMeasurementLimits";
+    public static final String CHANNEL_LABEL_SOILMEASUREMENT_SOILMOISTUREMEASUREMENTLIMITS = "Soil Moisture Measurement Limits";
+    public static final String CHANNEL_ID_SOILMEASUREMENT_SOILMOISTUREMEASUREMENTLIMITS = "soilmeasurement-soilmoisturemeasurementlimits";
+    public static final ChannelTypeUID CHANNEL_SOILMEASUREMENT_SOILMOISTUREMEASUREMENTLIMITS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_SOILMEASUREMENT_SOILMOISTUREMEASUREMENTLIMITS);
+
+    public static final String CHANNEL_NAME_SOILMEASUREMENT_SOILMOISTUREMEASUREDVALUE = "SoilMoistureMeasuredValue";
+    public static final String CHANNEL_LABEL_SOILMEASUREMENT_SOILMOISTUREMEASUREDVALUE = "Soil Moisture Measured Value";
+    public static final String CHANNEL_ID_SOILMEASUREMENT_SOILMOISTUREMEASUREDVALUE = "soilmeasurement-soilmoisturemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_SOILMEASUREMENT_SOILMOISTUREMEASUREDVALUE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_SOILMEASUREMENT_SOILMOISTUREMEASUREDVALUE);
+
     // Switch Cluster
     public static final String CHANNEL_NAME_SWITCH_NUMBEROFPOSITIONS = "NumberOfPositions";
     public static final String CHANNEL_LABEL_SWITCH_NUMBEROFPOSITIONS = "Number Of Positions";
@@ -4127,18 +4822,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_ABSMAXCOOLSETPOINTLIMIT = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_THERMOSTAT_ABSMAXCOOLSETPOINTLIMIT);
 
-    public static final String CHANNEL_NAME_THERMOSTAT_PICOOLINGDEMAND = "PiCoolingDemand";
-    public static final String CHANNEL_LABEL_THERMOSTAT_PICOOLINGDEMAND = "Pi Cooling Demand";
-    public static final String CHANNEL_ID_THERMOSTAT_PICOOLINGDEMAND = "thermostat-picoolingdemand";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_PICOOLINGDEMAND = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_PICOOLINGDEMAND);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_PIHEATINGDEMAND = "PiHeatingDemand";
-    public static final String CHANNEL_LABEL_THERMOSTAT_PIHEATINGDEMAND = "Pi Heating Demand";
-    public static final String CHANNEL_ID_THERMOSTAT_PIHEATINGDEMAND = "thermostat-piheatingdemand";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_PIHEATINGDEMAND = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_PIHEATINGDEMAND);
-
     public static final String CHANNEL_NAME_THERMOSTAT_LOCALTEMPERATURECALIBRATION = "LocalTemperatureCalibration";
     public static final String CHANNEL_LABEL_THERMOSTAT_LOCALTEMPERATURECALIBRATION = "Local Temperature Calibration";
     public static final String CHANNEL_ID_THERMOSTAT_LOCALTEMPERATURECALIBRATION = "thermostat-localtemperaturecalibration";
@@ -4223,24 +4906,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_THERMOSTATRUNNINGMODE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_THERMOSTAT_THERMOSTATRUNNINGMODE);
 
-    public static final String CHANNEL_NAME_THERMOSTAT_STARTOFWEEK = "StartOfWeek";
-    public static final String CHANNEL_LABEL_THERMOSTAT_STARTOFWEEK = "Start Of Week";
-    public static final String CHANNEL_ID_THERMOSTAT_STARTOFWEEK = "thermostat-startofweek";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_STARTOFWEEK = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_STARTOFWEEK);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_NUMBEROFWEEKLYTRANSITIONS = "NumberOfWeeklyTransitions";
-    public static final String CHANNEL_LABEL_THERMOSTAT_NUMBEROFWEEKLYTRANSITIONS = "Number Of Weekly Transitions";
-    public static final String CHANNEL_ID_THERMOSTAT_NUMBEROFWEEKLYTRANSITIONS = "thermostat-numberofweeklytransitions";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_NUMBEROFWEEKLYTRANSITIONS = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_NUMBEROFWEEKLYTRANSITIONS);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_NUMBEROFDAILYTRANSITIONS = "NumberOfDailyTransitions";
-    public static final String CHANNEL_LABEL_THERMOSTAT_NUMBEROFDAILYTRANSITIONS = "Number Of Daily Transitions";
-    public static final String CHANNEL_ID_THERMOSTAT_NUMBEROFDAILYTRANSITIONS = "thermostat-numberofdailytransitions";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_NUMBEROFDAILYTRANSITIONS = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_NUMBEROFDAILYTRANSITIONS);
-
     public static final String CHANNEL_NAME_THERMOSTAT_TEMPERATURESETPOINTHOLD = "TemperatureSetpointHold";
     public static final String CHANNEL_LABEL_THERMOSTAT_TEMPERATURESETPOINTHOLD = "Temperature Setpoint Hold";
     public static final String CHANNEL_ID_THERMOSTAT_TEMPERATURESETPOINTHOLD = "thermostat-temperaturesetpointhold";
@@ -4252,12 +4917,6 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_THERMOSTAT_TEMPERATURESETPOINTHOLDDURATION = "thermostat-temperaturesetpointholdduration";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_TEMPERATURESETPOINTHOLDDURATION = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_THERMOSTAT_TEMPERATURESETPOINTHOLDDURATION);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_THERMOSTATPROGRAMMINGOPERATIONMODE = "ThermostatProgrammingOperationMode";
-    public static final String CHANNEL_LABEL_THERMOSTAT_THERMOSTATPROGRAMMINGOPERATIONMODE = "Thermostat Programming Operation Mode";
-    public static final String CHANNEL_ID_THERMOSTAT_THERMOSTATPROGRAMMINGOPERATIONMODE = "thermostat-thermostatprogrammingoperationmode";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_THERMOSTATPROGRAMMINGOPERATIONMODE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_THERMOSTATPROGRAMMINGOPERATIONMODE);
 
     public static final String CHANNEL_NAME_THERMOSTAT_THERMOSTATRUNNINGSTATE = "ThermostatRunningState";
     public static final String CHANNEL_LABEL_THERMOSTAT_THERMOSTATRUNNINGSTATE = "Thermostat Running State";
@@ -4282,42 +4941,6 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_THERMOSTAT_SETPOINTCHANGESOURCETIMESTAMP = "thermostat-setpointchangesourcetimestamp";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_SETPOINTCHANGESOURCETIMESTAMP = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_THERMOSTAT_SETPOINTCHANGESOURCETIMESTAMP);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_OCCUPIEDSETBACK = "OccupiedSetback";
-    public static final String CHANNEL_LABEL_THERMOSTAT_OCCUPIEDSETBACK = "Occupied Setback";
-    public static final String CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACK = "thermostat-occupiedsetback";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_OCCUPIEDSETBACK = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACK);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_OCCUPIEDSETBACKMIN = "OccupiedSetbackMin";
-    public static final String CHANNEL_LABEL_THERMOSTAT_OCCUPIEDSETBACKMIN = "Occupied Setback Min";
-    public static final String CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACKMIN = "thermostat-occupiedsetbackmin";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_OCCUPIEDSETBACKMIN = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACKMIN);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_OCCUPIEDSETBACKMAX = "OccupiedSetbackMax";
-    public static final String CHANNEL_LABEL_THERMOSTAT_OCCUPIEDSETBACKMAX = "Occupied Setback Max";
-    public static final String CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACKMAX = "thermostat-occupiedsetbackmax";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_OCCUPIEDSETBACKMAX = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_OCCUPIEDSETBACKMAX);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_UNOCCUPIEDSETBACK = "UnoccupiedSetback";
-    public static final String CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDSETBACK = "Unoccupied Setback";
-    public static final String CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACK = "thermostat-unoccupiedsetback";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_UNOCCUPIEDSETBACK = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACK);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_UNOCCUPIEDSETBACKMIN = "UnoccupiedSetbackMin";
-    public static final String CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDSETBACKMIN = "Unoccupied Setback Min";
-    public static final String CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACKMIN = "thermostat-unoccupiedsetbackmin";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_UNOCCUPIEDSETBACKMIN = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACKMIN);
-
-    public static final String CHANNEL_NAME_THERMOSTAT_UNOCCUPIEDSETBACKMAX = "UnoccupiedSetbackMax";
-    public static final String CHANNEL_LABEL_THERMOSTAT_UNOCCUPIEDSETBACKMAX = "Unoccupied Setback Max";
-    public static final String CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACKMAX = "thermostat-unoccupiedsetbackmax";
-    public static final ChannelTypeUID CHANNEL_THERMOSTAT_UNOCCUPIEDSETBACKMAX = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_THERMOSTAT_UNOCCUPIEDSETBACKMAX);
 
     public static final String CHANNEL_NAME_THERMOSTAT_EMERGENCYHEATDELTA = "EmergencyHeatDelta";
     public static final String CHANNEL_LABEL_THERMOSTAT_EMERGENCYHEATDELTA = "Emergency Heat Delta";
@@ -5003,6 +5626,44 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_TIMESYNCHRONIZATION_SUPPORTSDNSRESOLVE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_TIMESYNCHRONIZATION_SUPPORTSDNSRESOLVE);
 
+    // TlsCertificateManagement Cluster
+    public static final String CHANNEL_NAME_TLSCERTIFICATEMANAGEMENT_MAXROOTCERTIFICATES = "MaxRootCertificates";
+    public static final String CHANNEL_LABEL_TLSCERTIFICATEMANAGEMENT_MAXROOTCERTIFICATES = "Max Root Certificates";
+    public static final String CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_MAXROOTCERTIFICATES = "tlscertificatemanagement-maxrootcertificates";
+    public static final ChannelTypeUID CHANNEL_TLSCERTIFICATEMANAGEMENT_MAXROOTCERTIFICATES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_MAXROOTCERTIFICATES);
+
+    public static final String CHANNEL_NAME_TLSCERTIFICATEMANAGEMENT_PROVISIONEDROOTCERTIFICATES = "ProvisionedRootCertificates";
+    public static final String CHANNEL_LABEL_TLSCERTIFICATEMANAGEMENT_PROVISIONEDROOTCERTIFICATES = "Provisioned Root Certificates";
+    public static final String CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_PROVISIONEDROOTCERTIFICATES = "tlscertificatemanagement-provisionedrootcertificates";
+    public static final ChannelTypeUID CHANNEL_TLSCERTIFICATEMANAGEMENT_PROVISIONEDROOTCERTIFICATES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_PROVISIONEDROOTCERTIFICATES);
+
+    public static final String CHANNEL_NAME_TLSCERTIFICATEMANAGEMENT_MAXCLIENTCERTIFICATES = "MaxClientCertificates";
+    public static final String CHANNEL_LABEL_TLSCERTIFICATEMANAGEMENT_MAXCLIENTCERTIFICATES = "Max Client Certificates";
+    public static final String CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_MAXCLIENTCERTIFICATES = "tlscertificatemanagement-maxclientcertificates";
+    public static final ChannelTypeUID CHANNEL_TLSCERTIFICATEMANAGEMENT_MAXCLIENTCERTIFICATES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_MAXCLIENTCERTIFICATES);
+
+    public static final String CHANNEL_NAME_TLSCERTIFICATEMANAGEMENT_PROVISIONEDCLIENTCERTIFICATES = "ProvisionedClientCertificates";
+    public static final String CHANNEL_LABEL_TLSCERTIFICATEMANAGEMENT_PROVISIONEDCLIENTCERTIFICATES = "Provisioned Client Certificates";
+    public static final String CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_PROVISIONEDCLIENTCERTIFICATES = "tlscertificatemanagement-provisionedclientcertificates";
+    public static final ChannelTypeUID CHANNEL_TLSCERTIFICATEMANAGEMENT_PROVISIONEDCLIENTCERTIFICATES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCERTIFICATEMANAGEMENT_PROVISIONEDCLIENTCERTIFICATES);
+
+    // TlsClientManagement Cluster
+    public static final String CHANNEL_NAME_TLSCLIENTMANAGEMENT_MAXPROVISIONED = "MaxProvisioned";
+    public static final String CHANNEL_LABEL_TLSCLIENTMANAGEMENT_MAXPROVISIONED = "Max Provisioned";
+    public static final String CHANNEL_ID_TLSCLIENTMANAGEMENT_MAXPROVISIONED = "tlsclientmanagement-maxprovisioned";
+    public static final ChannelTypeUID CHANNEL_TLSCLIENTMANAGEMENT_MAXPROVISIONED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCLIENTMANAGEMENT_MAXPROVISIONED);
+
+    public static final String CHANNEL_NAME_TLSCLIENTMANAGEMENT_PROVISIONEDENDPOINTS = "ProvisionedEndpoints";
+    public static final String CHANNEL_LABEL_TLSCLIENTMANAGEMENT_PROVISIONEDENDPOINTS = "Provisioned Endpoints";
+    public static final String CHANNEL_ID_TLSCLIENTMANAGEMENT_PROVISIONEDENDPOINTS = "tlsclientmanagement-provisionedendpoints";
+    public static final ChannelTypeUID CHANNEL_TLSCLIENTMANAGEMENT_PROVISIONEDENDPOINTS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TLSCLIENTMANAGEMENT_PROVISIONEDENDPOINTS);
+
     // TotalVolatileOrganicCompoundsConcentrationMeasurement Cluster
     public static final String CHANNEL_NAME_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
     public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "Measured Value";
@@ -5245,6 +5906,20 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_WATERTANKLEVELMONITORING_REPLACEMENTPRODUCTLIST);
 
+    // WebRtcTransportProvider Cluster
+    public static final String CHANNEL_NAME_WEBRTCTRANSPORTPROVIDER_CURRENTSESSIONS = "CurrentSessions";
+    public static final String CHANNEL_LABEL_WEBRTCTRANSPORTPROVIDER_CURRENTSESSIONS = "Current Sessions";
+    public static final String CHANNEL_ID_WEBRTCTRANSPORTPROVIDER_CURRENTSESSIONS = "webrtctransportprovider-currentsessions";
+    public static final ChannelTypeUID CHANNEL_WEBRTCTRANSPORTPROVIDER_CURRENTSESSIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WEBRTCTRANSPORTPROVIDER_CURRENTSESSIONS);
+
+    // WebRtcTransportRequestor Cluster
+    public static final String CHANNEL_NAME_WEBRTCTRANSPORTREQUESTOR_CURRENTSESSIONS = "CurrentSessions";
+    public static final String CHANNEL_LABEL_WEBRTCTRANSPORTREQUESTOR_CURRENTSESSIONS = "Current Sessions";
+    public static final String CHANNEL_ID_WEBRTCTRANSPORTREQUESTOR_CURRENTSESSIONS = "webrtctransportrequestor-currentsessions";
+    public static final ChannelTypeUID CHANNEL_WEBRTCTRANSPORTREQUESTOR_CURRENTSESSIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_WEBRTCTRANSPORTREQUESTOR_CURRENTSESSIONS);
+
     // WiFiNetworkDiagnostics Cluster
     public static final String CHANNEL_NAME_WIFINETWORKDIAGNOSTICS_BSSID = "Bssid";
     public static final String CHANNEL_LABEL_WIFINETWORKDIAGNOSTICS_BSSID = "Bssid";
@@ -5344,30 +6019,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_TYPE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_WINDOWCOVERING_TYPE);
 
-    public static final String CHANNEL_NAME_WINDOWCOVERING_PHYSICALCLOSEDLIMITLIFT = "PhysicalClosedLimitLift";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_PHYSICALCLOSEDLIMITLIFT = "Physical Closed Limit Lift";
-    public static final String CHANNEL_ID_WINDOWCOVERING_PHYSICALCLOSEDLIMITLIFT = "windowcovering-physicalclosedlimitlift";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_PHYSICALCLOSEDLIMITLIFT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_PHYSICALCLOSEDLIMITLIFT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_PHYSICALCLOSEDLIMITTILT = "PhysicalClosedLimitTilt";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_PHYSICALCLOSEDLIMITTILT = "Physical Closed Limit Tilt";
-    public static final String CHANNEL_ID_WINDOWCOVERING_PHYSICALCLOSEDLIMITTILT = "windowcovering-physicalclosedlimittilt";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_PHYSICALCLOSEDLIMITTILT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_PHYSICALCLOSEDLIMITTILT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_CURRENTPOSITIONLIFT = "CurrentPositionLift";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_CURRENTPOSITIONLIFT = "Current Position Lift";
-    public static final String CHANNEL_ID_WINDOWCOVERING_CURRENTPOSITIONLIFT = "windowcovering-currentpositionlift";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_CURRENTPOSITIONLIFT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_CURRENTPOSITIONLIFT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_CURRENTPOSITIONTILT = "CurrentPositionTilt";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_CURRENTPOSITIONTILT = "Current Position Tilt";
-    public static final String CHANNEL_ID_WINDOWCOVERING_CURRENTPOSITIONTILT = "windowcovering-currentpositiontilt";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_CURRENTPOSITIONTILT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_CURRENTPOSITIONTILT);
-
     public static final String CHANNEL_NAME_WINDOWCOVERING_NUMBEROFACTUATIONSLIFT = "NumberOfActuationsLift";
     public static final String CHANNEL_LABEL_WINDOWCOVERING_NUMBEROFACTUATIONSLIFT = "Number Of Actuations Lift";
     public static final String CHANNEL_ID_WINDOWCOVERING_NUMBEROFACTUATIONSLIFT = "windowcovering-numberofactuationslift";
@@ -5434,30 +6085,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_CURRENTPOSITIONTILTPERCENT100THS = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_WINDOWCOVERING_CURRENTPOSITIONTILTPERCENT100THS);
 
-    public static final String CHANNEL_NAME_WINDOWCOVERING_INSTALLEDOPENLIMITLIFT = "InstalledOpenLimitLift";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_INSTALLEDOPENLIMITLIFT = "Installed Open Limit Lift";
-    public static final String CHANNEL_ID_WINDOWCOVERING_INSTALLEDOPENLIMITLIFT = "windowcovering-installedopenlimitlift";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_INSTALLEDOPENLIMITLIFT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_INSTALLEDOPENLIMITLIFT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_INSTALLEDCLOSEDLIMITLIFT = "InstalledClosedLimitLift";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_INSTALLEDCLOSEDLIMITLIFT = "Installed Closed Limit Lift";
-    public static final String CHANNEL_ID_WINDOWCOVERING_INSTALLEDCLOSEDLIMITLIFT = "windowcovering-installedclosedlimitlift";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_INSTALLEDCLOSEDLIMITLIFT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_INSTALLEDCLOSEDLIMITLIFT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_INSTALLEDOPENLIMITTILT = "InstalledOpenLimitTilt";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_INSTALLEDOPENLIMITTILT = "Installed Open Limit Tilt";
-    public static final String CHANNEL_ID_WINDOWCOVERING_INSTALLEDOPENLIMITTILT = "windowcovering-installedopenlimittilt";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_INSTALLEDOPENLIMITTILT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_INSTALLEDOPENLIMITTILT);
-
-    public static final String CHANNEL_NAME_WINDOWCOVERING_INSTALLEDCLOSEDLIMITTILT = "InstalledClosedLimitTilt";
-    public static final String CHANNEL_LABEL_WINDOWCOVERING_INSTALLEDCLOSEDLIMITTILT = "Installed Closed Limit Tilt";
-    public static final String CHANNEL_ID_WINDOWCOVERING_INSTALLEDCLOSEDLIMITTILT = "windowcovering-installedclosedlimittilt";
-    public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_INSTALLEDCLOSEDLIMITTILT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_WINDOWCOVERING_INSTALLEDCLOSEDLIMITTILT);
-
     public static final String CHANNEL_NAME_WINDOWCOVERING_MODE = "Mode";
     public static final String CHANNEL_LABEL_WINDOWCOVERING_MODE = "Mode";
     public static final String CHANNEL_ID_WINDOWCOVERING_MODE = "windowcovering-mode";
@@ -5469,4 +6096,47 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_WINDOWCOVERING_SAFETYSTATUS = "windowcovering-safetystatus";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_SAFETYSTATUS = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_WINDOWCOVERING_SAFETYSTATUS);
+
+    // ZoneManagement Cluster
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_MAXUSERDEFINEDZONES = "MaxUserDefinedZones";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_MAXUSERDEFINEDZONES = "Max User Defined Zones";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_MAXUSERDEFINEDZONES = "zonemanagement-maxuserdefinedzones";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_MAXUSERDEFINEDZONES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_MAXUSERDEFINEDZONES);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_MAXZONES = "MaxZones";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_MAXZONES = "Max Zones";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_MAXZONES = "zonemanagement-maxzones";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_MAXZONES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_MAXZONES);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_ZONES = "Zones";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_ZONES = "Zones";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_ZONES = "zonemanagement-zones";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_ZONES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_ZONES);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_TRIGGERS = "Triggers";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_TRIGGERS = "Triggers";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_TRIGGERS = "zonemanagement-triggers";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_TRIGGERS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_TRIGGERS);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_SENSITIVITYMAX = "SensitivityMax";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_SENSITIVITYMAX = "Sensitivity Max";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_SENSITIVITYMAX = "zonemanagement-sensitivitymax";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_SENSITIVITYMAX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_SENSITIVITYMAX);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_SENSITIVITY = "Sensitivity";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_SENSITIVITY = "Sensitivity";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_SENSITIVITY = "zonemanagement-sensitivity";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_SENSITIVITY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_SENSITIVITY);
+
+    public static final String CHANNEL_NAME_ZONEMANAGEMENT_TWODCARTESIANMAX = "TwoDCartesianMax";
+    public static final String CHANNEL_LABEL_ZONEMANAGEMENT_TWODCARTESIANMAX = "Two Dcartesian Max";
+    public static final String CHANNEL_ID_ZONEMANAGEMENT_TWODCARTESIANMAX = "zonemanagement-twodcartesianmax";
+    public static final ChannelTypeUID CHANNEL_ZONEMANAGEMENT_TWODCARTESIANMAX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ZONEMANAGEMENT_TWODCARTESIANMAX);
 }

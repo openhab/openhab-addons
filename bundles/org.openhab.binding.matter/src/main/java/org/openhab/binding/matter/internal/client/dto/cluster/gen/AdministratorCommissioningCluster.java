@@ -41,8 +41,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * Indicates whether a new Commissioning window has been opened by an Administrator, using either the
      * OpenCommissioningWindow command or the OpenBasicCommissioningWindow command.
      * This attribute shall revert to WindowNotOpen upon expiry of a commissioning window.
-     * &gt; [!NOTE]
-     * &gt; An initial commissioning window is not opened using either the OpenCommissioningWindow command or the
+     * > [!NOTE]
+     * > NOTE: An initial commissioning window is not opened using either the OpenCommissioningWindow command or the
      * OpenBasicCommissioningWindow command, and therefore this attribute shall be set to WindowNotOpen on initial
      * commissioning.
      */
@@ -140,14 +140,15 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     /**
      * This command is used by a current Administrator to instruct a Node to go into commissioning mode. The Enhanced
      * Commissioning Method specifies a window of time during which an already commissioned Node accepts PASE sessions.
-     * The current Administrator MUST specify a timeout value for the duration of the OpenCommissioningWindow command.
+     * The current Administrator shall specify a timeout value for the duration of the OpenCommissioningWindow command.
      * When the OpenCommissioningWindow command expires or commissioning completes, the Node shall remove the Passcode
      * by deleting the PAKE passcode verifier as well as stop publishing the DNS-SD record corresponding to this command
-     * as described in Section 4.3.1, “Commissionable Node Discovery”. The commissioning into a new Fabric completes
-     * when the Node successfully receives a CommissioningComplete command, see Section 5.5, “Commissioning Flows”.
+     * as described in Section 4.3.1, "Commissionable Node Discovery". The commissioning into a new Fabric completes
+     * when the Node successfully receives a Section 11.10.7.6, "CommissioningComplete" command, see Section 5.5,
+     * "Commissioning Flows".
      * The parameters for OpenCommissioningWindow command are as follows:
      * A current Administrator may invoke this command to put a node in commissioning mode for the next Administrator.
-     * On completion, the command shall return a cluster specific status code from the Section 11.19.6, “Status Codes”
+     * On completion, the command shall return a cluster specific status code from the Section 11.19.6, "Status Codes"
      * below reflecting success or reasons for failure of the operation. The new Administrator shall discover the Node
      * on the IP network using DNS-based Service Discovery (DNS-SD) for commissioning.
      * If any format or validity errors related to the PAKEPasscodeVerifier, Iterations or Salt arguments arise, this
@@ -191,9 +192,9 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * since it is likely that concurrent commissioning operations from multiple separate Commissioners are about to
      * take place.
      * In case of any other parameter error, this command shall fail with a status code of COMMAND_INVALID.
-     * The commissioning into a new Fabric completes when the Node successfully receives a CommissioningComplete
-     * command, see Section 5.5, “Commissioning Flows”. The new Administrator shall discover the Node on the IP network
-     * using DNS-based Service Discovery (DNS-SD) for commissioning.
+     * The commissioning into a new Fabric completes when the Node successfully receives a Section 11.10.7.6,
+     * "CommissioningComplete" command, see Section 5.5, "Commissioning Flows". The new Administrator shall discover the
+     * Node on the IP network using DNS-based Service Discovery (DNS-SD) for commissioning.
      */
     public static ClusterCommand openBasicCommissioningWindow(Integer commissioningTimeout) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -204,16 +205,9 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     }
 
     /**
-     * This command is used by a current Administrator to instruct a Node to revoke any active OpenCommissioningWindow
-     * or OpenBasicCommissioningWindow command. This is an idempotent command and the Node shall (for ECM) delete the
-     * temporary PAKEPasscodeVerifier and associated data, and stop publishing the DNS-SD record associated with the
-     * OpenCommissioningWindow or OpenBasicCommissioningWindow command, see Section 4.3.1, “Commissionable Node
-     * Discovery”.
-     * If no commissioning window was open at time of receipt, this command shall fail with a cluster specific status
-     * code of WindowNotOpen.
-     * If the commissioning window was open and the fail-safe was armed when this command is received, the device shall
-     * immediately expire the fail-safe and perform the cleanup steps outlined in Section 11.10.7.2.2, “Behavior on
-     * expiry of Fail-Safe timer”.
+     * This command is used by a current Administrator to instruct a Node to revoke any active Section 11.19.8.1,
+     * "OpenCommissioningWindow" or Section 11.19.8.2, "OpenBasicCommissioningWindow" command. This is an idempotent
+     * command.
      */
     public static ClusterCommand revokeCommissioning() {
         return new ClusterCommand("revokeCommissioning");

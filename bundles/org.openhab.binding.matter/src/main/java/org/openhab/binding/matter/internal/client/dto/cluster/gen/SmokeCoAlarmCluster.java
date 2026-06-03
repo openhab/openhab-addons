@@ -58,17 +58,17 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      */
     public ExpressedStateEnum expressedState; // 0 ExpressedStateEnum R V
     /**
-     * Indicates whether the device’s smoke sensor is currently triggering a smoke alarm.
+     * Indicates whether the device's smoke sensor is currently triggering a smoke alarm.
      */
     public AlarmStateEnum smokeState; // 1 AlarmStateEnum R V
     /**
-     * Indicates whether the device’s CO sensor is currently triggering a CO alarm.
+     * Indicates whether the device's CO sensor is currently triggering a CO alarm.
      */
     public AlarmStateEnum coState; // 2 AlarmStateEnum R V
     /**
      * Indicates whether the power resource fault detection mechanism is currently triggered at the device. If the
      * detection mechanism is triggered, this attribute shall be set to Warning or Critical, otherwise it shall be set
-     * to Normal. The battery state shall also be reflected in the Power Source cluster representing the device’s
+     * to Normal. The battery state shall also be reflected in the Power Source cluster representing the device's
      * battery using the appropriate supported attributes and events.
      */
     public AlarmStateEnum batteryAlert; // 3 AlarmStateEnum R V

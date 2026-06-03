@@ -33,7 +33,7 @@ public class BooleanStateCluster extends BaseCluster {
     /**
      * This represents a boolean state.
      * The semantics of this boolean state are defined by the device type using this cluster. For example, in a Contact
-     * Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
+     * Sensor device type, FALSE=open or no contact, TRUE=closed or contact.
      */
     public Boolean stateValue; // 0 bool R V
 

@@ -176,7 +176,7 @@
                 <goals>
                   <goal>copy-resources</goal>
                 </goals>
-                <phase>generate-sources</phase>
+                <phase>process-sources</phase>
                 <configuration>
                   <outputDirectory>${generated.code.dir}</outputDirectory>
                   <resources>
@@ -199,7 +199,7 @@
                 <goals>
                   <goal>run</goal>
                 </goals>
-                <phase>generate-sources</phase>
+                <phase>process-sources</phase>
                 <configuration>
                   <target>
                     <delete dir="code-gen/out"/>

@@ -33,10 +33,6 @@ public class WindowCoveringCluster extends BaseCluster {
     public static final String CLUSTER_PREFIX = "windowCovering";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_TYPE = "type";
-    public static final String ATTRIBUTE_PHYSICAL_CLOSED_LIMIT_LIFT = "physicalClosedLimitLift";
-    public static final String ATTRIBUTE_PHYSICAL_CLOSED_LIMIT_TILT = "physicalClosedLimitTilt";
-    public static final String ATTRIBUTE_CURRENT_POSITION_LIFT = "currentPositionLift";
-    public static final String ATTRIBUTE_CURRENT_POSITION_TILT = "currentPositionTilt";
     public static final String ATTRIBUTE_NUMBER_OF_ACTUATIONS_LIFT = "numberOfActuationsLift";
     public static final String ATTRIBUTE_NUMBER_OF_ACTUATIONS_TILT = "numberOfActuationsTilt";
     public static final String ATTRIBUTE_CONFIG_STATUS = "configStatus";
@@ -48,10 +44,6 @@ public class WindowCoveringCluster extends BaseCluster {
     public static final String ATTRIBUTE_END_PRODUCT_TYPE = "endProductType";
     public static final String ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS = "currentPositionLiftPercent100ths";
     public static final String ATTRIBUTE_CURRENT_POSITION_TILT_PERCENT100THS = "currentPositionTiltPercent100ths";
-    public static final String ATTRIBUTE_INSTALLED_OPEN_LIMIT_LIFT = "installedOpenLimitLift";
-    public static final String ATTRIBUTE_INSTALLED_CLOSED_LIMIT_LIFT = "installedClosedLimitLift";
-    public static final String ATTRIBUTE_INSTALLED_OPEN_LIMIT_TILT = "installedOpenLimitTilt";
-    public static final String ATTRIBUTE_INSTALLED_CLOSED_LIMIT_TILT = "installedClosedLimitTilt";
     public static final String ATTRIBUTE_MODE = "mode";
     public static final String ATTRIBUTE_SAFETY_STATUS = "safetyStatus";
 
@@ -65,25 +57,6 @@ public class WindowCoveringCluster extends BaseCluster {
      * If the window covering supports both the LF and TL features, the following types are allowed to be used:
      */
     public TypeEnum type; // 0 TypeEnum R V
-    /**
-     * Indicates the maximum possible encoder position possible (Unit cm, centimeters) to position the height of the
-     * window covering lift.
-     */
-    public Integer physicalClosedLimitLift; // 1 uint16 R V
-    /**
-     * Indicates the maximum possible encoder position possible (Unit 0.1°, tenths of a degree) to position the angle of
-     * the window covering tilt.
-     */
-    public Integer physicalClosedLimitTilt; // 2 uint16 R V
-    /**
-     * Indicates the actual lift position (Unit cm, centimeters) of the window covering from the fully-open position.
-     */
-    public Integer currentPositionLift; // 3 uint16 R V
-    /**
-     * Indicates the actual tilt position (Unit 0.1°, tenths of a degree) of the window covering from the fully-open
-     * position.
-     */
-    public Integer currentPositionTilt; // 4 uint16 R V
     /**
      * Indicates the total number of lift/slide actuations applied to the window covering since the device was
      * installed.
@@ -140,24 +113,6 @@ public class WindowCoveringCluster extends BaseCluster {
      * Indicates the actual position as a percentage with a minimal step of 0.01%. E.g Max 10000 equals 100.00%.
      */
     public Integer currentPositionTiltPercent100ths; // 15 percent100ths R V
-    /**
-     * Indicates the open limit for lifting the window covering whether position (in centimeters) is encoded or timed.
-     */
-    public Integer installedOpenLimitLift; // 16 uint16 R V
-    /**
-     * Indicates the closed limit for lifting the window covering whether position (in centimeters) is encoded or timed.
-     */
-    public Integer installedClosedLimitLift; // 17 uint16 R V
-    /**
-     * Indicates the open limit for tilting the window covering whether position (in tenth of a degree) is encoded or
-     * timed.
-     */
-    public Integer installedOpenLimitTilt; // 18 uint16 R V
-    /**
-     * Indicates the closed limit for tilting the window covering whether position (in tenth of a degree) is encoded or
-     * timed.
-     */
-    public Integer installedClosedLimitTilt; // 19 uint16 R V
     /**
      * The Mode attribute allows configuration of the window covering, such as: reversing the motor direction, placing
      * the window covering into calibration mode, placing the motor into maintenance mode, disabling the network, and
@@ -286,46 +241,46 @@ public class WindowCoveringCluster extends BaseCluster {
         /**
          * Device is operational.
          * This bit shall indicate whether the window covering is operational for regular use:
-         * - 0 &#x3D; Not Operational
-         * - 1 &#x3D; Operational
+         * - 0 = Not Operational
+         * - 1 = Operational
          */
         public boolean operational;
         public boolean onlineReserved;
         /**
          * The lift movement is reversed.
          * This bit shall indicate whether the lift movement is reversed:
-         * - 0 &#x3D; Lift movement is normal
-         * - 1 &#x3D; Lift movement is reversed
+         * - 0 = Lift movement is normal
+         * - 1 = Lift movement is reversed
          */
         public boolean liftMovementReversed;
         /**
          * Supports the PositionAwareLift feature (PA_LF).
          * This bit shall indicate whether the window covering supports the PositionAwareLift feature:
-         * - 0 &#x3D; Lift control is not position aware
-         * - 1 &#x3D; Lift control is position aware (PA_LF)
+         * - 0 = Lift control is not position aware
+         * - 1 = Lift control is position aware (PA_LF)
          */
         public boolean liftPositionAware;
         /**
          * Supports the PositionAwareTilt feature (PA_TL).
          * This bit shall indicate whether the window covering supports the PositionAwareTilt feature:
-         * - 0 &#x3D; Tilt control is not position aware
-         * - 1 &#x3D; Tilt control is position aware (PA_TL)
+         * - 0 = Tilt control is not position aware
+         * - 1 = Tilt control is position aware (PA_TL)
          */
         public boolean tiltPositionAware;
         /**
          * Uses an encoder for lift.
          * This bit shall indicate whether a position aware controlled window covering is employing an encoder for
          * positioning the height of the window covering:
-         * - 0 &#x3D; Timer Controlled
-         * - 1 &#x3D; Encoder Controlled
+         * - 0 = Timer Controlled
+         * - 1 = Encoder Controlled
          */
         public boolean liftEncoderControlled;
         /**
          * Uses an encoder for tilt.
          * This bit shall indicate whether a position aware controlled window covering is employing an encoder for
          * tilting the window covering:
-         * - 0 &#x3D; Timer Controlled
-         * - 1 &#x3D; Encoder Controlled
+         * - 0 = Timer Controlled
+         * - 1 = Encoder Controlled
          */
         public boolean tiltEncoderControlled;
 
@@ -346,29 +301,29 @@ public class WindowCoveringCluster extends BaseCluster {
         /**
          * Reverse the lift direction.
          * This bit shall control the motor direction:
-         * - 0 &#x3D; Lift movement is normal
-         * - 1 &#x3D; Lift movement is reversed
+         * - 0 = Lift movement is normal
+         * - 1 = Lift movement is reversed
          */
         public boolean motorDirectionReversed;
         /**
          * Perform a calibration.
          * This bit shall set the window covering into calibration mode:
-         * - 0 &#x3D; Normal mode
-         * - 1 &#x3D; Calibration mode
+         * - 0 = Normal mode
+         * - 1 = Calibration mode
          */
         public boolean calibrationMode;
         /**
          * Freeze all motions for maintenance.
          * This bit shall set the window covering into maintenance mode:
-         * - 0 &#x3D; Normal mode
-         * - 1 &#x3D; Maintenance mode
+         * - 0 = Normal mode
+         * - 1 = Maintenance mode
          */
         public boolean maintenanceMode;
         /**
          * Control the LEDs feedback.
          * This bit shall control feedback LEDs:
-         * - 0 &#x3D; LEDs are off
-         * - 1 &#x3D; LEDs will display feedback
+         * - 0 = LEDs are off
+         * - 1 = LEDs will display feedback
          */
         public boolean ledFeedback;
 
@@ -384,10 +339,10 @@ public class WindowCoveringCluster extends BaseCluster {
     /**
      * The OperationalStatusBitmap is using several internal operational state fields (composed of 2 bits) following
      * this definition:
-     * - 00b &#x3D; Currently not moving
-     * - 01b &#x3D; Currently opening (e.g. moving from closed to open).
-     * - 10b &#x3D; Currently closing (e.g. moving from open to closed).
-     * - 11b &#x3D; Reserved
+     * - 00b = Currently not moving
+     * - 01b = Currently opening (e.g. moving from closed to open).
+     * - 10b = Currently closing (e.g. moving from open to closed).
+     * - 11b = Reserved
      */
     public static class OperationalStatusBitmap {
         /**
@@ -398,12 +353,12 @@ public class WindowCoveringCluster extends BaseCluster {
         public short global;
         /**
          * Lift operational state.
-         * These bits shall indicate in which direction the covering’s lift is currently moving or if it has stopped.
+         * These bits shall indicate in which direction the covering's lift is currently moving or if it has stopped.
          */
         public short lift;
         /**
          * Tilt operational state.
-         * These bits shall indicate in which direction the covering’s tilt is currently moving or if it has stopped.
+         * These bits shall indicate in which direction the covering's tilt is currently moving or if it has stopped.
          */
         public short tilt;
 
@@ -467,24 +422,14 @@ public class WindowCoveringCluster extends BaseCluster {
         public boolean positionAwareLift;
         /**
          * 
-         * The percentage attributes shall indicate the position as a percentage between the InstalledOpenLimits and
-         * InstalledClosedLimits attributes of the window covering starting at the open (0.00%).
-         * As a general rule, absolute positioning (in centimeters or tenth of a degrees) SHOULD NOT be supported for
-         * new implementations.
-         */
-        public boolean absolutePosition;
-        /**
-         * 
          * Position aware tilt control is supported.
          */
         public boolean positionAwareTilt;
 
-        public FeatureMap(boolean lift, boolean tilt, boolean positionAwareLift, boolean absolutePosition,
-                boolean positionAwareTilt) {
+        public FeatureMap(boolean lift, boolean tilt, boolean positionAwareLift, boolean positionAwareTilt) {
             this.lift = lift;
             this.tilt = tilt;
             this.positionAwareLift = positionAwareLift;
-            this.absolutePosition = absolutePosition;
             this.positionAwareTilt = positionAwareTilt;
         }
     }
@@ -553,18 +498,6 @@ public class WindowCoveringCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to set the target lift position of the window covering to the value specified in the
-     * command.
-     */
-    public static ClusterCommand goToLiftValue(Integer liftValue) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        if (liftValue != null) {
-            map.put("liftValue", liftValue);
-        }
-        return new ClusterCommand("goToLiftValue", map);
-    }
-
-    /**
      * This command is used to set the target lift position of the window covering to the percentage value specified in
      * the command.
      * Upon receipt of this command, the server will adjust the window covering to the lift/slide percentage specified
@@ -585,18 +518,6 @@ public class WindowCoveringCluster extends BaseCluster {
             map.put("liftPercent100thsValue", liftPercent100thsValue);
         }
         return new ClusterCommand("goToLiftPercentage", map);
-    }
-
-    /**
-     * This command is used to set the target tilt position of the window covering to the value specified in the
-     * command.
-     */
-    public static ClusterCommand goToTiltValue(Integer tiltValue) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        if (tiltValue != null) {
-            map.put("tiltValue", tiltValue);
-        }
-        return new ClusterCommand("goToTiltValue", map);
     }
 
     /**
@@ -627,10 +548,6 @@ public class WindowCoveringCluster extends BaseCluster {
         String str = "";
         str += "featureMap : " + featureMap + "\n";
         str += "type : " + type + "\n";
-        str += "physicalClosedLimitLift : " + physicalClosedLimitLift + "\n";
-        str += "physicalClosedLimitTilt : " + physicalClosedLimitTilt + "\n";
-        str += "currentPositionLift : " + currentPositionLift + "\n";
-        str += "currentPositionTilt : " + currentPositionTilt + "\n";
         str += "numberOfActuationsLift : " + numberOfActuationsLift + "\n";
         str += "numberOfActuationsTilt : " + numberOfActuationsTilt + "\n";
         str += "configStatus : " + configStatus + "\n";
@@ -642,10 +559,6 @@ public class WindowCoveringCluster extends BaseCluster {
         str += "endProductType : " + endProductType + "\n";
         str += "currentPositionLiftPercent100ths : " + currentPositionLiftPercent100ths + "\n";
         str += "currentPositionTiltPercent100ths : " + currentPositionTiltPercent100ths + "\n";
-        str += "installedOpenLimitLift : " + installedOpenLimitLift + "\n";
-        str += "installedClosedLimitLift : " + installedClosedLimitLift + "\n";
-        str += "installedOpenLimitTilt : " + installedOpenLimitTilt + "\n";
-        str += "installedClosedLimitTilt : " + installedClosedLimitTilt + "\n";
         str += "mode : " + mode + "\n";
         str += "safetyStatus : " + safetyStatus + "\n";
         return str;

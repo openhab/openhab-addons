@@ -40,6 +40,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
+import org.openhab.binding.matter.internal.client.dto.ws.PhysicalDeviceProperties;
 import org.openhab.binding.matter.internal.config.NodeConfiguration;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.controller.devices.converter.OtaSoftwareUpdateRequestorConverter;
@@ -74,11 +75,25 @@ import org.openhab.core.thing.binding.firmware.ProgressStep;
  */
 @NonNullByDefault
 public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler, FirmwareUpdateHandler {
+    public static final String PROPERTY_SLEEPY = "sleepy";
+    public static final String PROPERTY_IS_THREAD_SLEEPY_END_DEVICE = "isThreadSleepyEndDevice";
+    public static final String PROPERTY_IS_INTERMITTENTLY_CONNECTED = "isIntermittentlyConnected";
+    public static final String PROPERTY_IS_BATTERY_POWERED = "isBatteryPowered";
+
+    /**
+     * Grace period applied before flipping a sleepy/ICD node OFFLINE when the bridge reports
+     * Reconnecting/Disconnected. Sized to ride out a normal sleepy heartbeat-timeout +
+     * CASE session reestablishment (~30-90s) without flapping the Thing.
+     */
+    private static final int OFFLINE_GRACE_SLEEPY_SECONDS = 240;
+    private static final int OFFLINE_GRACE_DEFAULT_SECONDS = 60;
+
     protected BigInteger nodeId = BigInteger.valueOf(0);
     private Integer pollInterval = 0;
     private Map<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
     private volatile @Nullable ProgressCallback progressCallback;
     private volatile UpdateStateEnum lastHandledOtaState = UpdateStateEnum.UNKNOWN;
+    private volatile boolean sleepy = false;
 
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -115,6 +130,60 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     @Override
     public Integer getPollInterval() {
         return pollInterval;
+    }
+
+    /**
+     * Apply physical device properties forwarded by the bridge. Writes Thing properties
+     * so the sleepy classification survives binding restarts, and caches a fast-path
+     * {@link #sleepy} flag for use before properties have been persisted.
+     */
+    protected void applyPhysicalProperties(PhysicalDeviceProperties props) {
+        sleepy = Boolean.TRUE.equals(props.isIntermittentlyConnected)
+                || Boolean.TRUE.equals(props.isThreadSleepyEndDevice);
+        updateProperty(PROPERTY_SLEEPY, String.valueOf(sleepy));
+        updateProperty(PROPERTY_IS_THREAD_SLEEPY_END_DEVICE,
+                String.valueOf(Boolean.TRUE.equals(props.isThreadSleepyEndDevice)));
+        updateProperty(PROPERTY_IS_INTERMITTENTLY_CONNECTED,
+                String.valueOf(Boolean.TRUE.equals(props.isIntermittentlyConnected)));
+        updateProperty(PROPERTY_IS_BATTERY_POWERED, String.valueOf(Boolean.TRUE.equals(props.isBatteryPowered)));
+    }
+
+    /**
+     * Defensive fallback used by {@code IcdManagementConverter} when the bridge does
+     * not forward {@link PhysicalDeviceProperties} (e.g., a stale matter-server build):
+     * presence of the IcdManagement cluster implies the device is intermittently connected.
+     */
+    public void setSleepyFromIcd(boolean value) {
+        if (value && !sleepy) {
+            sleepy = true;
+            updateProperty(PROPERTY_SLEEPY, "true");
+            logger.debug("Node {} classified as sleepy via IcdManagement cluster", nodeId);
+        }
+    }
+
+    /**
+     * Returns true when this node should be treated as Intermittently Connected.
+     * Falls back to the persisted Thing property to cover the window before
+     * {@link #applyPhysicalProperties(PhysicalDeviceProperties)} has fired after a binding restart.
+     */
+    public boolean isSleepy() {
+        if (sleepy) {
+            return true;
+        }
+        return "true".equalsIgnoreCase(getThing().getProperties().get(PROPERTY_SLEEPY));
+    }
+
+    public int getOfflineGraceSeconds() {
+        return isSleepy() ? OFFLINE_GRACE_SLEEPY_SECONDS : OFFLINE_GRACE_DEFAULT_SECONDS;
+    }
+
+    /**
+     * After the first full enumeration, sleepy devices receive attribute updates via
+     * matter.js subscriptions; re-enumerating on every reconnect wastes radio time
+     * and stalls real traffic. Non-sleepy devices retain today's behavior.
+     */
+    public boolean shouldRefreshOnReconnect() {
+        return !isSleepy();
     }
 
     @Override

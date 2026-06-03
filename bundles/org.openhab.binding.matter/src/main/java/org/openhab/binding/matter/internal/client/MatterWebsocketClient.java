@@ -431,6 +431,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();
@@ -657,7 +658,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             if (BaseCluster.MatterEnum.class.isAssignableFrom(rawType) && rawType.isEnum()) {
                 @SuppressWarnings("unchecked")
                 Class<? extends BaseCluster.MatterEnum> enumType = (Class<? extends BaseCluster.MatterEnum>) rawType;
-                return BaseCluster.MatterEnum.fromValue(enumType, value);
+                try {
+                    return BaseCluster.MatterEnum.fromValue(enumType, value);
+                } catch (IllegalArgumentException e) {
+                    // Some devices report values outside the values defined by the Matter spec. Treat these as null
+                    // rather than failing the deserialization of the entire cluster.
+                    logger.debug("Unknown value {} for enum {}, returning null", value, rawType.getSimpleName());
+                    return null;
+                }
             }
 
             throw new JsonParseException("Unable to deserialize " + typeOfT);

@@ -17,7 +17,6 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -287,8 +286,13 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
             }
         }
         lastHSB = new HSBType(lastHSB.getHue(), lastHSB.getSaturation(), ValueUtils.levelToPercent(brightness));
-        lastColorMode = Optional.ofNullable(initializingCluster.enhancedColorMode).orElseGet(
-                () -> MatterEnum.fromValue(EnhancedColorModeEnum.class, initializingCluster.colorMode.getValue()));
+        EnhancedColorModeEnum enhancedColorMode = initializingCluster.enhancedColorMode;
+        ColorControlCluster.ColorModeEnum colorMode = initializingCluster.colorMode;
+        if (enhancedColorMode != null) {
+            lastColorMode = enhancedColorMode;
+        } else if (colorMode != null) {
+            lastColorMode = MatterEnum.fromValue(EnhancedColorModeEnum.class, colorMode.getValue());
+        }
         lastOnOff = onOff;
         lastX = initializingCluster.currentX != null ? initializingCluster.currentX : 0;
         lastY = initializingCluster.currentY != null ? initializingCluster.currentY : 0;

@@ -6,7 +6,7 @@ import { BaseDeviceType } from "./BaseDeviceType";
 export class ThermostatDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
         const thermostatServer = CustomThermostatServer.with(
-            ...CustomThermostatServer.features(clusterValues.thermostat),
+            ...CustomThermostatServer.selectFeatures(clusterValues.thermostat),
         );
 
         const endpoint = new Endpoint(ThermostatDevice.with(thermostatServer, ...this.baseClusterServers), {

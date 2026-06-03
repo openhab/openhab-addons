@@ -57,7 +57,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      */
     public Integer rebootCount; // 1 uint16 R V
     /**
-     * The UpTime attribute shall indicate a best-effort assessment of the length of time, in seconds, since the Node’s
+     * The UpTime attribute shall indicate a best-effort assessment of the length of time, in seconds, since the Node's
      * last reboot. This attribute SHOULD be incremented to account for the periods of time that a Node is in a
      * low-power or sleep state. This attribute shall only be reset upon a device reboot. This attribute shall be based
      * on the same System Time source as those used to fulfill any usage of the systime-us and systime-ms data types
@@ -72,7 +72,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      */
     public Integer totalOperationalHours; // 3 uint32 R V
     /**
-     * The BootReason attribute shall indicate the reason for the Node’s most recent boot.
+     * The BootReason attribute shall indicate the reason for the Node's most recent boot.
      */
     public BootReasonEnum bootReason; // 4 BootReasonEnum R V
     /**
@@ -108,7 +108,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     /**
      * The TestEventTriggersEnabled attribute shall indicate whether the Node has any TestEventTrigger configured. When
      * this attribute is true, the Node has been configured with one or more test event triggers by virtue of the
-     * internally programmed EnableKey value (see Section 11.12.7.1, “TestEventTrigger Command”) being set to a non-zero
+     * internally programmed EnableKey value (see Section 11.12.7.1, "TestEventTrigger Command") being set to a non-zero
      * value. This attribute can be used by Administrators to detect if a device was inadvertently commissioned with
      * test event trigger mode enabled, and take appropriate action (e.g. warn the user and/or offer to remove all
      * fabrics on the Node).
@@ -227,7 +227,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         public List<OctetString> iPv4Addresses; // list
         /**
          * This field shall provide a list of the unicast IPv6 addresses that are currently assigned to the network
-         * interface. This list shall include the Node’s link-local address and SHOULD include any assigned GUA and ULA
+         * interface. This list shall include the Node's link-local address and SHOULD include any assigned GUA and ULA
          * addresses. This list shall NOT include any multicast group addresses to which the Node is subscribed.
          */
         public List<OctetString> iPv6Addresses; // list
@@ -397,7 +397,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
          * This feature indicates support for extended Data Model testing commands, which are required in some
          * situations.
          * This feature shall be supported if the MaxPathsPerInvoke attribute of the Basic Information Cluster has a
-         * value &gt; 1.
+         * value > 1.
          */
         public boolean dataModelTest;
 
@@ -434,9 +434,9 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
 
     /**
      * This command may be used by a client to obtain a correlated view of both System Time, and, if currently
-     * synchronized and supported, &quot;wall clock time&quot; of the server. This can help clients establish time
-     * correlation between their concept of time and the server’s concept of time. This is especially useful when
-     * processing event histories where some events only contain System Time.
+     * synchronized and supported, "wall clock time" of the server. This can help clients establish time correlation
+     * between their concept of time and the server's concept of time. This is especially useful when processing event
+     * histories where some events only contain System Time.
      * Upon command invocation, the server shall respond with a TimeSnapshotResponse.
      */
     public static ClusterCommand timeSnapshot() {
@@ -444,11 +444,11 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     }
 
     /**
-     * This command provides a means for certification tests or manufacturer’s internal tests to validate particular
+     * This command provides a means for certification tests or manufacturer's internal tests to validate particular
      * command handling and encoding constraints by generating a response of a given size.
      * This command shall use the same EnableKey behavior as the TestEventTrigger command, whereby processing of the
      * command is only enabled when the TestEventTriggersEnabled field is true, which shall NOT be true outside of
-     * certification testing or manufacturer’s internal tests.
+     * certification testing or manufacturer's internal tests.
      * The fields for the PayloadTestRequest command are as follows:
      */
     public static ClusterCommand payloadTestRequest(OctetString enableKey, Integer value, Integer count) {

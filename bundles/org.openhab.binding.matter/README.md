@@ -2,7 +2,7 @@
 
 The Matter Binding for openHAB allows seamless integration with Matter-compatible devices.
 
-It currently supports version 1.4.1 of the Matter specification and earlier.
+It currently supports version 1.5.1 of the Matter specification and earlier.
 
 ## Supported functionality
 
@@ -19,7 +19,7 @@ For more information on the Matter specification, see the [Matter Ecosystem Over
 
 ## Matter.JS Runtime
 
-This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the the Matter 1.4.1 protocol.
+This binding uses the excellent [matter.js](https://github.com/project-chip/matter.js) implementation of the Matter 1.5.1 protocol.
 
 As such, this binding requires NodesJS 18+ and will attempt to download and cache an appropriate version when started if a version is not already installed on the system.
 Alpine Linux users (typically docker) and those on older Linux distributions will need to install this manually as the official NodeJS versions are not compatible.
@@ -373,7 +373,7 @@ Possible channels include:
 
 ## Supported Matter Device Types
 
-The following is a list of known Matter device types supported by openHAB as defined in the Matter Device Library Specification Version 1.4.1.
+The following is a list of known Matter device types supported by openHAB as defined in the Matter Device Library Specification Version 1.5.1.
 Other device types may be supported, but with limited or missing functionality.
 
 | Device Type Name              | Matter Device ID | Supported Clusters                                                                                                                                    |
@@ -612,7 +612,7 @@ The following is a list of supported Matter device types and their corresponding
 | Outdoor Temperature | Number                 | thermostat.outdoorTemperature      |                                                                                          |
 | Heating Setpoint    | Number                 | thermostat.occupiedHeatingSetpoint |                                                                                          |
 | Cooling Setpoint    | Number                 | thermostat.occupiedCoolingSetpoint |                                                                                          |
-| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
+| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9]      |
 | Running Mode        | Number, String         | thermostat.runningMode             |                                                                                          |
 
 The following attributes can be set in the options of any thermostat member or on the Group item to set temperature options.

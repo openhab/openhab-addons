@@ -55,7 +55,7 @@ public class ModeSelectCluster extends BaseCluster {
      * standard namespace, and therefore, no standard semantic tags are provided in this cluster instance. Each standard
      * namespace and corresponding values and value meanings shall be defined in another document.
      */
-    public Integer standardNamespace; // 1 namespace R V
+    public Namespace standardNamespace; // 1 namespace R V
     /**
      * This attribute is the list of supported modes that may be selected for the CurrentMode attribute. Each item in
      * this list represents a unique mode as indicated by the Mode field of the ModeOptionStruct. Each entry in this
@@ -71,7 +71,7 @@ public class ModeSelectCluster extends BaseCluster {
      * The StartUpMode attribute value indicates the desired startup mode for the server when it is supplied with power.
      * If this attribute is not null, the CurrentMode attribute shall be set to the StartUpMode value, when the server
      * is powered up, except in the case when the OnMode attribute overrides the StartUpMode attribute (see Section
-     * 1.9.6.6.1, “OnMode with Power Up”).
+     * 1.9.6.6.1, "OnMode with Power Up").
      * This behavior does not apply to reboots associated with OTA. After an OTA restart, the CurrentMode attribute
      * shall return to its value prior to the restart.
      * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
@@ -95,8 +95,8 @@ public class ModeSelectCluster extends BaseCluster {
          * This field shall indicate a manufacturer code (Vendor ID), and the Value field shall indicate a semantic tag
          * defined by the manufacturer. Each manufacturer code supports a single namespace of values. The same
          * manufacturer code and semantic tag value in separate cluster instances are part of the same namespace and
-         * have the same meaning. For example: a manufacturer tag meaning &quot;pinch&quot;, has the same meaning in a
-         * cluster whose purpose is to choose the amount of sugar, or amount of salt.
+         * have the same meaning. For example: a manufacturer tag meaning "pinch", has the same meaning in a cluster
+         * whose purpose is to choose the amount of sugar, or amount of salt.
          */
         public Integer mfgCode; // vendor-id
         /**
@@ -133,8 +133,8 @@ public class ModeSelectCluster extends BaseCluster {
          * A mode option may have more than one semantic tag. A mode option may be mapped to a mixture of standard and
          * manufacturer specific semantic tags.
          * All standard semantic tags are from a single namespace indicated by the StandardNamespace attribute.
-         * For example: A mode labeled &quot;100%&quot; can have both the HIGH (MS) and MAX (standard) semantic tag.
-         * Clients seeking the option for either HIGH or MAX will find the same option in this case.
+         * For example: A mode labeled "100%" can have both the HIGH (MS) and MAX (standard) semantic tag. Clients
+         * seeking the option for either HIGH or MAX will find the same option in this case.
          */
         public List<SemanticTagStruct> semanticTags; // list
 
@@ -150,7 +150,7 @@ public class ModeSelectCluster extends BaseCluster {
         /**
          * 
          * This feature creates a dependency between an OnOff cluster instance and this cluster instance on the same
-         * endpoint. See Section 1.9.6.6, “OnMode Attribute” for more information.
+         * endpoint. See Section 1.9.6.6, "OnMode Attribute" for more information.
          */
         public boolean onOff;
 
