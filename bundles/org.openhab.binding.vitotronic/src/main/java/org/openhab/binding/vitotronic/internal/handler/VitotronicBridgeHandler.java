@@ -257,7 +257,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             logger.trace("Connection error from optolink adapter");
         } catch (ParserConfigurationException | SAXException e) {
-            logger.trace("XML Parser Error");
+            logger.trace("XML Parser Error", e);
 
         }
         updateStatus(ThingStatus.OFFLINE);
