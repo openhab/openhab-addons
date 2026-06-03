@@ -33,13 +33,15 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The {@link VitotronicBridgeHandler} class handles the connection to the
@@ -249,15 +251,16 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
     Runnable socketReceiverRunnable = () -> {
         logger.trace("Start Background Thread for receiving data from adapter");
         try {
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            XMLReader xmlReader = factory.newSAXParser().getXMLReader();
             xmlReader.setContentHandler(new XmlHandler());
             logger.trace("Start Parser for optolink adapter");
             xmlReader.parse(new InputSource(inStream));
 
         } catch (IOException e) {
             logger.trace("Connection error from optolink adapter");
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             logger.trace("XML Parser Error");
 
         }
