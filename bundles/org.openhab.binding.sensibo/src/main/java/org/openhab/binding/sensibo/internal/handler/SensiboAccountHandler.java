@@ -66,6 +66,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.Strictness;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -107,7 +108,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
             public @Nullable ZonedDateTime read(final JsonReader in) throws IOException {
                 return ZonedDateTime.parse(in.nextString());
             }
-        }).setLenient().setPrettyPrinting().create();
+        }).setStrictness(Strictness.LENIENT).setPrettyPrinting().create();
 
         requestLogger = new RequestLogger(bridge.getUID().getId(), gson);
     }
