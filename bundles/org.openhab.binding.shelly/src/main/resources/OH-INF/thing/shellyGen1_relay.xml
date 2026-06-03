@@ -524,8 +524,8 @@
 
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type>Number:Energy</item-type>
-		<label>Accumulated Total Power</label>
-		<description>Accumulated Total Power in kW/h of the device (including all meters)</description>
+		<label>Accumulated Total Energy</label>
+		<description>Accumulated total energy in kWh of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -537,8 +537,8 @@
 
 	<channel-type id="meterAccuReturned" advanced="true">
 		<item-type>Number:Energy</item-type>
-		<label>Accumulated Apparent Power</label>
-		<description>Accumulated Apparent Power in kW/h of the device (including all meters)</description>
+		<label>Accumulated Returned Energy</label>
+		<description>Accumulated returned energy in kWh of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -551,7 +551,7 @@
 	<channel-type id="totalKWH">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy Consumption Device</label>
-		<description>Total energy consumption of the device in kW/h since the device powered up (resets on restart)</description>
+		<description>Total energy consumption of the device in kWh since the device powered up (resets on restart)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -563,8 +563,8 @@
 
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
-		<label>Reactive Energy</label>
-		<description>Instantaneous reactive power in Watts (W)</description>
+		<label>Reactive Power</label>
+		<description>Instantaneous reactive power in Watts</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -575,8 +575,8 @@
 
 	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Last Power</label>
-		<description>Last power consumption #1 - one rounded minute</description>
+		<label>Last Minute Power</label>
+		<description>Average power consumption during the previous minute</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -589,7 +589,7 @@
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Total Energy Consumption</label>
-		<description>Total energy consumption in kW/h since the device powered up (resets on restart)</description>
+		<description>Total energy consumption in kWh since the device powered up (resets on restart)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -601,7 +601,7 @@
 	<channel-type id="meterReturned">
 		<item-type>Number:Energy</item-type>
 		<label>Total Returned Energy</label>
-		<description>Total returned energy in kW/h</description>
+		<description>Total returned energy in kWh</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -640,7 +640,7 @@
 	<channel-type id="meterFrequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
-		<description>Current frequency in Hertz (Hz)</description>
+		<description>Grid frequency in Hertz (Hz)</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -648,7 +648,7 @@
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description>Power Factor in percent for photovoltaic</description>
+		<description>Power factor in percent (ratio of real to apparent power)</description>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>

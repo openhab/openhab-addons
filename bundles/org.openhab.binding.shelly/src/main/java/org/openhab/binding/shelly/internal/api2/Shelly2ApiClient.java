@@ -201,15 +201,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        /*
-         * This is a slightly simplified version of the method with the same name in Shelly2ApiRpc,
-         * which is only used for discovery.
-         *
-         * TODO: Either simplify this much more, to acquire the information necessary for discovery,
-         * or reorganize the two methods so that Shelly2ApiRpc.getDeviceProfile() calls super (this method)
-         * first, and then takes only the extra steps that depends on other methods in Shelly2ApiRpc.
-         */
+        initProfile(this.profile, thingTypeUID, devInfo);
+        this.profile.initialized = true;
+        return this.profile;
+    }
 
+    /**
+     * Populates {@code profile} from a GetConfig API call. Used by both the discovery path
+     * ({@link Shelly2ApiClient}) and the thing-handler path ({@link Shelly2ApiRpc}).
+     * Does NOT set {@code profile.initialized} — callers must do that after any additional
+     * post-init steps (e.g. WebSocket callback setup, initial status fetch).
+     *
+     * @return the raw GetConfig result, made available to subclasses for further processing
+     *         (e.g. BLU gateway setup that needs {@code dc.ble}).
+     */
+    protected Shelly2GetConfigResult initProfile(ShellyDeviceProfile profile, ThingTypeUID thingTypeUID,
+            @Nullable ShellySettingsDevice devInfo) throws ShellyApiException {
         if (devInfo != null) {
             profile.device = devInfo;
         }
@@ -305,9 +312,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         // handle special cases, because there is no indicator for a meter in GetConfig
-        // Pro 3EM has 3 meters
-        // Pro 2 has 2 relays, but no meters
-        // Mini PM has 1 meter, but no relay
+        // Pro 3EM has 3 meters; Pro 2 has 2 relays but no meters; Mini PM has 1 meter but no relay
         Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
         if (numMeters != null) {
             profile.numMeters = numMeters;
@@ -317,6 +322,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.numMeters = 3;
         } else if (dc.em10 != null) {
             profile.numMeters = 2;
+        } else {
+            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
         }
 
         if (profile.numMeters > 0) {
@@ -377,9 +384,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        profile.initialized = true;
-
-        return profile;
+        return dc;
     }
 
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
