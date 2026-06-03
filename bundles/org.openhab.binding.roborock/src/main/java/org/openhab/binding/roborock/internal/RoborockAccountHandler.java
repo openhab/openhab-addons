@@ -395,13 +395,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             localMqttClient.setCallback(this);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(false);
+            connOpts.setCleanSession(true);
             connOpts.setUserName(mqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(30);
-            connOpts.setMaxInflight(100);
 
             localMqttClient.connect(connOpts);
             mqttWatchdog.reset(Instant.now());
