@@ -72,6 +72,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2CCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
@@ -549,7 +550,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateEmStatus(11, status, result.em11, channelUpdate);
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
-        updated |= updateDuoBulbStatus(0, status, result.light0, channelUpdate);
+        updated |= updateDuoBulbStatus(0, status, result.cct0, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
         updated |= updateRGBBulbStatus(0, status, result.rgb0, channelUpdate);
         if (channelUpdate) {
@@ -1066,7 +1067,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (!(profile.isDuo && profile.isGen2)) {
             return;
         }
-        applyBulbLightSettings(profile, dc.light0);
+        applyBulbLightSettings(profile, dc.cct0);
     }
 
     protected void fillRGBBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
@@ -1124,7 +1125,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 value.white, null, channelUpdate, true);
     }
 
-    private boolean updateDuoBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusLight value,
+    private boolean updateDuoBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2CCTStatus value,
             boolean channelUpdate) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (!(profile.isDuo && profile.isGen2) || value == null) {
