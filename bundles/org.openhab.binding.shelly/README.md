@@ -239,6 +239,7 @@ Follow these steps to add the Shelly BLU Device to openHAB:
 - Finally link the channels to the equipment in the model
 
 `Note:`
+
 - During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
 - Shelly BLU Motion: It may take some time until channels like Lux show up.
 
