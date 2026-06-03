@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.anel.internal.state;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -85,7 +84,7 @@ public class AnelStateUpdater {
 
     public Map<String, State> getChannelUpdates(@Nullable AnelState oldState, AnelState newState) {
         if (oldState != null && newState.status.equals(oldState.status)) {
-            return Collections.emptyMap(); // definitely no change!
+            return Map.of(); // definitely no change!
         }
 
         final Map<String, State> updates = new HashMap<>();
