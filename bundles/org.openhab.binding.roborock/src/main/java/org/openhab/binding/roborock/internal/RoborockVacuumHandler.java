@@ -541,19 +541,21 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
             registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-            if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-            } else if (!isCloudMetadataRefreshAllowed()) {
-                disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+            if (!b01) {
+                registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+                if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+                    registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+                } else if (!isCloudMetadataRefreshAllowed()) {
+                    disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+                }
+                registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+                registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+                registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+                registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+                registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+                registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+                registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
             }
-            registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-            registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-            registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-            registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-            registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-            registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-            registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
             requestMapRefreshIfDue(cloudOnlyRefreshDue, "periodic poll cycle");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
