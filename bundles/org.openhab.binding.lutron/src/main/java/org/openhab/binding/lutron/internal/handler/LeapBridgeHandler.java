@@ -253,7 +253,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                     for (int cert = 0; cert < chain.length; cert++) {
                         logger.trace("Subject DN: {}", chain[cert].getSubjectX500Principal().getName());
                         logger.trace("Issuer DN: {}", chain[cert].getIssuerX500Principal().getName());
-                        logger.trace("Serial number {}:", chain[cert].getSerialNumber());
+                        logger.trace("Serial number: {}", chain[cert].getSerialNumber());
                     }
                 }
             }
