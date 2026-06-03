@@ -35,7 +35,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <outputDirectory>${project.build.directory}/import</outputDirectory>
-              <overwrite>true</overwrite>
+              <changeDetection>always</changeDetection>
               <resources>
                 <resource>
                   <directory>../org.openhab.binding.hdpowerview/src/main/java</directory>
