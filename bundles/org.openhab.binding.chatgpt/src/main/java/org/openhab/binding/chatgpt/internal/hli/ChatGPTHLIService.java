@@ -68,6 +68,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ChatGPTHLIService} is responsible for handling the human language interpretation using ChatGPT.
@@ -328,8 +329,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         chatRequestBody.setTools(this.tools);
         chatRequestBody.setMessages(this.messages);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
+        ObjectMapper objectMapper = JsonMapper.builder().serializationInclusion(Include.NON_NULL).build();
 
         try {
             return objectMapper.writeValueAsString(chatRequestBody);
