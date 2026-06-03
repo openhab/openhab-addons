@@ -38,6 +38,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ public class DaliRgbHandler extends BaseThingHandler {
                 boolean queryDeviceState = false;
 
                 if (command instanceof HSBType hsbCommand) {
-                    PercentType[] rgb = hsbCommand.toRGB();
+                    PercentType[] rgb = ColorUtil.hsbToRgbPercent(hsbCommand);
 
                     for (int i = 0; i < 3; i++) {
                         byte dimmValue = (byte) ((rgb[i].floatValue() * DALI_SWITCH_100_PERCENT) / 100);
