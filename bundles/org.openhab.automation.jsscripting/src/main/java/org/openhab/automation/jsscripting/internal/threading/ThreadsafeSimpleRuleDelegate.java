@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal.threading;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,6 +40,8 @@ import org.openhab.core.config.core.Configuration;
 @NonNullByDefault
 class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
 
+    private static final long LOCK_TIMEOUT_MS = 5000L;
+
     private final Lock lock;
     private final SimpleRule delegate;
 
@@ -56,11 +59,24 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
     @Override
     @NonNullByDefault({})
     public Object execute(Action module, Map<String, ?> inputs) {
-        lock.lock();
+        boolean locked;
         try {
-            return delegate.execute(module, inputs);
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
-            lock.unlock();
+            locked = lock.tryLock(LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(
+                    "Interrupted while waiting to acquire the lock for action '" + module.getId() + '\'', e);
+        }
+        if (locked) {
+            try {
+                return delegate.execute(module, inputs);
+            } finally {
+                // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid deadlocks
+                lock.unlock();
+            }
+        } else {
+            throw new RuntimeException("Failed to acquire the lock for action '" + module.getId() + "' within "
+                    + LOCK_TIMEOUT_MS + " ms.");
         }
     }
 
