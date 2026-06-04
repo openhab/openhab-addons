@@ -136,7 +136,7 @@ public class McpService {
     private @Nullable McpSyncServer mcpServer;
     private final List<ServiceRegistration<?>> serviceRegistrations = new ArrayList<>();
     private @Nullable ScheduledFuture<?> cleanupTask;
-    private @Nullable McpCloudWebhookService cloudWebhook;
+    private volatile @Nullable McpCloudWebhookService cloudWebhook;
     private @Nullable LoggingTools loggingTools;
     private volatile McpConfiguration config = new McpConfiguration();
 
@@ -215,6 +215,24 @@ public class McpService {
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     void setWebhookService(WebhookService service) {
         this.webhookService = service;
+        // For OPTIONAL/DYNAMIC references SCR may activate the component before binding the
+        // service, so startServer's initial register() can run with webhookService == null and
+        // give up. Retry now that the service is available.
+        McpCloudWebhookService webhook = cloudWebhook;
+        if (webhook != null && webhook.getPublicUrl() == null) {
+            ThreadPoolManager.getScheduledPool("mcp").execute(() -> {
+                if (webhook.getPublicUrl() != null) {
+                    return;
+                }
+                if (webhook.register()) {
+                    String url = webhook.getPublicUrl();
+                    if (url != null) {
+                        logger.debug("MCP cloud webhook URL registered after WebhookService bound: {}", url);
+                        persistWebhookUrl(url);
+                    }
+                }
+            });
+        }
     }
 
     @SuppressWarnings("PMD.CompareObjectsWithEquals")

@@ -603,8 +603,12 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
     @Override
     public void destroy() {
         isClosing.set(true);
-        closeGracefully().block();
-        super.destroy();
+        try {
+            closeGracefully().block();
+            super.destroy();
+        } finally {
+            isClosing.set(false);
+        }
     }
 
     /**
