@@ -541,21 +541,26 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
             registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            if (!b01) {
-                registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-                if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                    registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-                } else if (!isCloudMetadataRefreshAllowed()) {
-                    disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
-                }
-                registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-                registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-                registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-                registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-                registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-                registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-                registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+            if (!b01 && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+                registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+            } else if (!b01 && !isCloudMetadataRefreshAllowed()) {
+                disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
             }
+            if (!b01)
+                registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+            if (!b01)
+                registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+            if (!b01)
+                registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+            if (!b01)
+                registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+            if (!b01)
+                registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+            if (!b01)
+                registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+            if (!b01)
+                registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
             requestMapRefreshIfDue(cloudOnlyRefreshDue, "periodic poll cycle");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
@@ -1455,7 +1460,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
             switch (method) {
                 case "prop.get": {
-                    // Rename B01 field names → V1/GetStatus @SerializedName equivalents
+                    // B01 prop.get is used for both status and consumables polling.
+                    // Detect consumables response by presence of "main_brush" key.
+                    if (data.has("main_brush")) {
+                        // Consumables response: rename B01 prop names → GetConsumable field names
+                        renameField(data, "main_brush", "main_brush_work_time");
+                        renameField(data, "side_brush", "side_brush_work_time");
+                        renameField(data, "hypa", "filter_work_time");
+                        renameField(data, "main_sensor", "sensor_dirty_time");
+                        JsonArray consumableResult = new JsonArray();
+                        consumableResult.add(data);
+                        v1.add("result", consumableResult);
+                        break;
+                    }
+                    // Status response: rename B01 field names → V1/GetStatus @SerializedName equivalents
                     renameField(data, "status", "state");
                     renameField(data, "wind", "fan_power");
                     renameField(data, "water", "water_box_mode");
@@ -1482,8 +1500,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
 
                 case "service.get_consumable": {
-                    // B01 data: {"main_brush":N, "side_brush":N, "filter":N, "sensor":N} (seconds)
-                    // V1 shape: {"id":N, "result":[{"main_brush_work_time":N, ...}]}
+                    // Fallback path — not used by Q7 (which uses prop.get) but kept for other B01 variants
                     renameField(data, "main_brush", "main_brush_work_time");
                     renameField(data, "side_brush", "side_brush_work_time");
                     renameField(data, "filter", "filter_work_time");

@@ -234,11 +234,6 @@ public final class ProtocolUtils {
             throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
         }
     }
-            return cipher.doFinal(payload);
-        } catch (GeneralSecurityException e) {
-            throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
-        }
-    }
 
     /**
      * Derives the 16-byte IV for B01 encryption/decryption.

@@ -395,12 +395,16 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             localMqttClient.setCallback(this);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
+            // cleanSession=true: discard any persisted in-flight messages on reconnect.
+            // The binding re-subscribes and re-polls on every connect, so session persistence
+            // is not needed and causes stale message floods after binding redeploys.
             connOpts.setCleanSession(true);
             connOpts.setUserName(mqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(30);
+            connOpts.setMaxInflight(100);
 
             localMqttClient.connect(connOpts);
             mqttWatchdog.reset(Instant.now());
@@ -771,9 +775,29 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 b01Method = "service.get_map_list";
                 b01Params = Map.of();
                 break;
-            case COMMAND_GET_CONSUMABLE:
-                b01Method = "service.get_consumable";
+            case COMMAND_GET_NETWORK_INFO:
+                b01Method = "service.get_net_info";
                 b01Params = Map.of();
+                break;
+            case COMMAND_GET_CONSUMABLE:
+                // B01 consumables are fetched via prop.get with specific property names.
+                // Response is a positional array matching the requested property list.
+                b01Method = "prop.get";
+                JsonArray consumableProps = new JsonArray();
+                for (String p : new String[] { "main_brush", "side_brush", "hypa", "main_sensor" }) {
+                    consumableProps.add(p);
+                }
+                b01Params = buildJsonObject("property", consumableProps);
+                break;
+            case COMMAND_GET_DND_TIMER:
+                // B01 consumables are fetched via prop.get with specific property names.
+                // Response is a positional array matching the requested property list.
+                b01Method = "prop.get";
+                JsonArray quietTimeProps = new JsonArray();
+                for (String p : new String[] { "quiet_begin_time", "quiet_end_time" }) {
+                    quietTimeProps.add(p);
+                }
+                b01Params = buildJsonObject("property", quietTimeProps);
                 break;
             case COMMAND_GET_CLEAN_SUMMARY:
                 b01Method = "service.get_record_list";
@@ -845,7 +869,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
      */
     byte[] buildB01(String localKey, byte[] payload) {
         try {
-            int timestamp = (int) Instant.now().getEpochSecond();
+            int timestamp = JsonParser.parseString(new String(payload, StandardCharsets.UTF_8)).getAsJsonObject()
+                    .get("t").getAsInt();
             int randomInt = secureRandom.nextInt(90000) + 10000;
             int seq = secureRandom.nextInt(900000) + 100000;
             int protocol = 101;
