@@ -14,11 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: Jellyfin Binding</name>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -79,24 +74,6 @@
           <compilerArgs combine.children="append">
             <arg>-nowarn:[${project.basedir}/src/3rdparty/java]</arg>
           </compilerArgs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>6.0.0</version>
-        <configuration>
-          <instructions>
-            <Import-Package>*</Import-Package>
-            <Export-Package>org.openhab.binding.jellyfin.*</Export-Package>
-            <_include>-META-INF/versions/11/**,
-              -META-INF/versions/17/**,
-              -META-INF/versions/22/**,
-              -**/*-sources.jar,
-              -**/*-javadoc.jar,
-              -META-INF/maven/**/pom.xml,
-              -META-INF/maven/**/pom.properties</_include>
-          </instructions>
         </configuration>
       </plugin>
     </plugins>
