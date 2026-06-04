@@ -327,7 +327,7 @@ public class WebSocketTask extends AbstractTask implements WebSocketListener {
     @Override
     public void onWebSocketConnect(@Nullable Session session) {
         if (session == null) {
-            logger.warn("[WEBSOCKET] ⚠️ Connected with null session");
+            logger.warn("[WEBSOCKET] Connected with null session");
             return;
         }
 

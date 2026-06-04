@@ -39,11 +39,11 @@
 				<default>8096</default>
 			</parameter>
 			<parameter name="ssl" type="boolean" required="true">
-				<label>🧪 Use HTTPS (Experimental)</label>
+				<label>Use HTTPS (Experimental)</label>
 				<description><![CDATA[
-					<p>⚠️ <b>EXPERIMENTAL</b> — Connect to the Jellyfin server using HTTPS instead of plain HTTP.</p>
+					<p><b>EXPERIMENTAL</b> — Connect to the Jellyfin server using HTTPS instead of plain HTTP.</p>
 					<p>Enable this when the server is behind a reverse proxy with a valid TLS certificate. Make sure the <em>Port</em> is set to the corresponding HTTPS port.</p>
-					<p>This feature has not been fully tested. Your feedback is welcome! 🙏</p>
+					<p>This feature has not been fully tested. Your feedback is welcome!</p>
 				]]></description>
 				<advanced>true</advanced>
 				<default>false</default>
