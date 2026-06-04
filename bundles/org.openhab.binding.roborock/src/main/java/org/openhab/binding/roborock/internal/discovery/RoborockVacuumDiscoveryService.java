@@ -91,7 +91,7 @@ public class RoborockVacuumDiscoveryService extends AbstractThingHandlerDiscover
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         for (int i = 0; i < devices.length; i++) {
             if (("1.0".equals(devices[i].pv))
-                    || ("B01".equals(devices[i].pv) && devices[i].name.toUpperCase().contains("Q7"))) {
+                    || ("B01".equals(devices[i].pv) && devices[i].name.toUpperCase(java.util.Locale.ROOT).contains("Q7"))) {
                 Configuration configuration = new Configuration();
                 configuration.put(THING_CONFIG_DUID, devices[i].duid);
                 configuration.put(THING_PROPERTY_PROTOCOL, devices[i].pv);

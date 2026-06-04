@@ -544,7 +544,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 return id;
             } catch (MqttException e) {
                 // Connection reset during router reboot or brief outage — transient, not a bug
-                logger.warn("MQTT publish failed (transient): {}", e.getMessage());
+                logger.debug("MQTT publish failed (transient): {}", e.getMessage(), e);
                 return -1;
             }
         } else {
@@ -671,7 +671,6 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         Object b01Params;
 
         // Translate V1 method names → B01 equivalents.
-        // Q7 uses service.set_room_clean for motion control; Q10 uses prop.set {status}.
         switch (method) {
             case COMMAND_APP_START:
                 b01Method = "service.set_room_clean";

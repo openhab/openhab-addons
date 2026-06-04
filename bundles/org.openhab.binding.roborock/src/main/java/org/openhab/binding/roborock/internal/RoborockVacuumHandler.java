@@ -539,10 +539,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
             registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
-            registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
             if (!b01) {
+                registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+                registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
                 if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
                     registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
                 } else if (!isCloudMetadataRefreshAllowed()) {
