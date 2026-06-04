@@ -162,7 +162,11 @@ public class WindowCoveringDevice extends BaseDevice {
             }
             setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                     WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not set state", e);
+            return;
+        } catch (ExecutionException e) {
             logger.debug("Could not set state", e);
             return;
         }
@@ -209,7 +213,10 @@ public class WindowCoveringDevice extends BaseDevice {
             setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                     WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
             lastTargetPercent = null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not set target state", e);
+        } catch (ExecutionException e) {
             logger.debug("Could not set target state", e);
         }
     }

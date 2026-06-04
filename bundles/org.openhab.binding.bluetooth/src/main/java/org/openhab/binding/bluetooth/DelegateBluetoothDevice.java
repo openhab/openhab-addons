@@ -13,7 +13,7 @@
 package org.openhab.binding.bluetooth;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +69,7 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     @Override
     public Collection<BluetoothService> getServices() {
         BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getServices() : Collections.emptySet();
+        return delegate != null ? delegate.getServices() : Set.of();
     }
 
     @Override
@@ -165,7 +165,7 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     @Override
     protected Collection<BluetoothDeviceListener> getListeners() {
         BluetoothDevice delegate = getDelegate();
-        return delegate != null ? delegate.getListeners() : Collections.emptySet();
+        return delegate != null ? delegate.getListeners() : Set.of();
     }
 
     @Override

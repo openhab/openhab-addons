@@ -65,7 +65,6 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * home loads, would be classed as a generator. These types of devices shall have this field set to true. When
      * generating its forecast or advertising its PowerAdjustmentCapability, the power values shall be negative to
      * indicate discharging to the loads in the home, and positive to indicate when it is charging its battery.
-     * GRID meter &#x3D; Σ LoadPowers + Σ GeneratorPowers
      * Example:
      */
     public Boolean esaCanGenerate; // 1 bool R V
@@ -80,10 +79,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * Indicates the minimum electrical power that the ESA can consume when switched on. This does not include when in
      * power save or standby modes.
-     * &gt; [!NOTE]
-     * &gt; For Generator ESAs that can discharge an internal battery (such as a battery storage inverter) to loads in
-     * the home, the AbsMinPower will be a negative number representing the maximum power that the ESA can discharge its
-     * internal battery.
+     * > [!NOTE]
+     * > NOTE: For Generator ESAs that can discharge an internal battery (such as a battery storage inverter) to loads
+     * in the home, the AbsMinPower will be a negative number representing the maximum power that the ESA can discharge
+     * its internal battery.
      */
     public BigInteger absMinPower; // 3 power-mW R V
     /**
@@ -301,9 +300,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     /**
-     * This indicates a list of &#x27;slots&#x27; describing the overall timing of the ESA’s planned energy and power
-     * use, with different power and energy demands per slot. For example, slots might be used to describe the distinct
-     * stages of a washing machine cycle.
+     * This indicates a list of 'slots' describing the overall timing of the ESA's planned energy and power use, with
+     * different power and energy demands per slot. For example, slots might be used to describe the distinct stages of
+     * a washing machine cycle.
      * Where an ESA does not know the actual power and energy use of the system, it may support the SFR feature and
      * instead report its internal state.
      */
@@ -373,7 +372,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     /**
-     * This indicates a specific stage of an ESA’s operation.
+     * This indicates a specific stage of an ESA's operation.
      */
     public static class SlotStruct {
         /**
@@ -430,8 +429,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * Manufacturers can use this value to indicate a variety of states in an unspecified way. For example, they may
          * choose to use values between 0-100 as a percentage of compressor modulation, or could use these values as
          * Enum states meaning heating with fan, heating without fan etc.
-         * &gt; [!NOTE]
-         * &gt; An ESA shall always use the same value to represent the same operating state.
+         * > [!NOTE]
+         * > NOTE: An ESA shall always use the same value to represent the same operating state.
          * By providing this information a smart EMS may be able to learn the observed power draw when the ESA is put
          * into a specific state. It can potentially then use the ManufacturerESAState field in the Forecast attribute
          * along with observed power drawn to predict the power draw from the appliance and potentially ask it to modify
@@ -543,7 +542,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public Integer slotIndex; // uint8
         /**
-         * This field shall indicate the new requested power that the ESA shall operate at. It MUST be between the
+         * This field shall indicate the new requested power that the ESA shall operate at. It shall be between the
          * AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it supports PFR.
          * This is a signed value and can be used to indicate charging or discharging.
          * If the ESA does NOT support PFR this value shall be ignored by the ESA.
@@ -551,7 +550,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         public BigInteger nominalPower; // power-mW
         /**
          * This field shall indicate the new requested duration, in seconds, that the ESA shall extend or shorten the
-         * slot duration to. It MUST be between the MinDurationAdjustment and MaxDurationAdjustment for the slot as
+         * slot duration to. It shall be between the MinDurationAdjustment and MaxDurationAdjustment for the slot as
          * advertised by the ESA.
          */
         public Integer duration; // elapsed-s
@@ -572,7 +571,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the start time of the constraint period that the client wishes the ESA to compute a
          * new Forecast.
-         * This value is in UTC and MUST be in the future.
+         * This value is in UTC and shall be in the future.
          */
         public Integer startTime; // epoch-s
         /**
@@ -581,8 +580,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         public Integer duration; // elapsed-s
         /**
          * This field shall indicate the nominal power that client wishes the ESA to operate at during the constrained
-         * period. It MUST be between the AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it supports
-         * PFR.
+         * period. It shall be between the AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it
+         * supports PFR.
          * This is a signed value and can be used to indicate charging or discharging.
          */
         public BigInteger nominalPower; // power-mW
@@ -826,10 +825,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * For Energy Smart Appliances (ESA) the definition of being &#x27;smart&#x27; mandates that they can report
-         * their current power adjustment capability and have an EMS request a temporary adjustment. This may typically
-         * be to curtail power requirements during peak periods, but can also be used to turn on an ESA if there is
-         * excess renewable or local generation (Solar PV).
+         * For Energy Smart Appliances (ESA) the definition of being 'smart' mandates that they can report their current
+         * power adjustment capability and have an EMS request a temporary adjustment. This may typically be to curtail
+         * power requirements during peak periods, but can also be used to turn on an ESA if there is excess renewable
+         * or local generation (Solar PV).
          * For example, a home may have solar PV which often produces more power than the home requires, resulting in
          * the excess power flowing into the grid. This excess power naturally fluctuates when clouds pass overhead and
          * other loads in the home are switched on and off.
@@ -842,17 +841,17 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         public boolean powerAdjustment;
         /**
          * 
-         * For Energy Smart Appliances (ESA) the definition of being &#x27;smart&#x27; implies that they can report
-         * their indicative forecast power demands or generation, to a greater or lesser extent. For some ESAs this is
-         * highly predictable (in terms of both power and time), in other appliances this is more challenging and only a
-         * basic level of forecast is possible.
+         * For Energy Smart Appliances (ESA) the definition of being 'smart' implies that they can report their
+         * indicative forecast power demands or generation, to a greater or lesser extent. For some ESAs this is highly
+         * predictable (in terms of both power and time), in other appliances this is more challenging and only a basic
+         * level of forecast is possible.
          * Forecasts are defined from a current time, using a slot format, where the slot is akin to a relatively
          * constant operating mode.
          * Washing machine example: a washing machine may have stages of a washing cycle: heating, tumbling, rinse and
          * spin stages. At each stage, the approximate minimum and maximum power consumption may be known, as well as
          * the duration of that stage.
          * In some circumstances the ESA may allow the stage to be delayed or paused (subject to safety and
-         * manufacturer’s discretion and user preferences).
+         * manufacturer's discretion and user preferences).
          * Typically, appliances with a heating element cannot have their power consumption adjusted and can only be
          * paused or delayed.
          * Some ESAs may not be flexible other than a delayed cycle start (for example, once the washing cycle has been

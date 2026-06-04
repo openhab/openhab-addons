@@ -216,14 +216,7 @@ See [libraries](#libraries) for more information.
 
 ### `console`
 
-The JS Scripting binding supports the standard `console` object for logging.
-Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
-
-```text
-log:set DEBUG org.openhab.automation.jsscripting
-log:set TRACE org.openhab.automation.jsscripting
-log:set DEFAULT org.openhab.automation.jsscripting
-```
+The JavaScript Scripting add-on supports the standard `console` object for logging.
 
 The default logger name consists of the prefix `org.openhab.automation.jsscripting` and the script’s individual part `.file.<filename>`, `.rule.<ruleUID>`, or `.transformation.<transformationUID>`.
 This logger name can be changed by assigning a new string to the `loggerName` property of the console:
@@ -233,7 +226,7 @@ console.loggerName = 'org.openhab.custom';
 ```
 
 Please be aware that messages do not appear in the logs if the logger name does not start with `org.openhab`.
-This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring a setting for each logger prefix in `$OPENHAB_USERDATA/etc/log4j2.xml` (on openHABian: `/srv/openhab-userdata/etc/log4j2.xml`).
+This behavior is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring a setting for each logger prefix in `$OPENHAB_USERDATA/etc/log4j2.xml` (on openHABian: `/srv/openhab-userdata/etc/log4j2.xml`).
 
 Supported logging functions include:
 
@@ -246,6 +239,14 @@ Supported logging functions include:
 
 Where `obj1 ... objN` is a list of JavaScript objects to output.
 The string representations of each of these objects are appended together in the order listed and output.
+
+Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html), e.g.:
+
+```text
+log:set DEBUG org.openhab.automation.jsscripting.rule.ruleUID
+log:set TRACE org.openhab.automation.jsscripting.file.filename.js
+log:set DEFAULT org.openhab.automation.jsscripting
+```
 
 See <https://developer.mozilla.org/en-US/docs/Web/API/console> for more information about console logging.
 

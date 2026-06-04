@@ -13,7 +13,7 @@ The following things types are available:
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
+| miio:vacuum      | For Xiaomi/Roborock Robot Vacuum products                                                                                         |
 | miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
 | miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
@@ -70,7 +70,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 ## Thing Configuration
 
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Each Xiaomi device (Thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
 The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
@@ -110,7 +110,7 @@ The binding allows to try/test if your new device is working with database files
 
 There are 3 ways to get unsupported devices working:
 
-- by overriding the model with the model of a similar supported device. E.g. this works great for roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
+- by overriding the model with the model of a similar supported device. E.g. this works great for Roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
 - by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
 - by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
@@ -367,59 +367,59 @@ Currently the miio binding supports more than 370 different models.
 | CHINGMI Smart Power Strip v1       | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes          |            |
 | Rockrobo Xiaowa Sweeper v2         | miio:unsupported | roborock.sweeper.e2v2  | No           |            |
 | Rockrobo Xiaowa Sweeper v3         | miio:unsupported | roborock.sweeper.e2v3  | No           |            |
-| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#robo-rock-vacuum-channels) | Yes          |            |
-| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#robo-rock-vacuum-channels) | Yes          |            |
+| Roborock S6 Pure                   | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7 Pro                    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S6 MaxV                   | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7                        | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7S                       | miio:vacuum      | [roborock.vacuum.a14](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7                        | miio:vacuum      | [roborock.vacuum.a15](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S4 Max                    | miio:vacuum      | [roborock.vacuum.a19](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T7S Plus                  | miio:vacuum      | [roborock.vacuum.a23](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pro                  | miio:vacuum      | [roborock.vacuum.a26](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 MaxV                   | miio:vacuum      | [roborock.vacuum.a27](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a29](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10                       | miio:vacuum      | [roborock.vacuum.a30](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q5                        | miio:vacuum      | [roborock.vacuum.a34](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T8                        | miio:vacuum      | [roborock.vacuum.a37](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q7 Max                    | miio:vacuum      | [roborock.vacuum.a38](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q7                        | miio:vacuum      | [roborock.vacuum.a40](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S                      | miio:vacuum      | [roborock.vacuum.a46](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S8                        | miio:vacuum      | [roborock.vacuum.a51](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T8 Plus                   | miio:vacuum      | [roborock.vacuum.a52](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a62](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Pure                 | miio:vacuum      | [roborock.vacuum.a64](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S7 Max Ultra              | miio:vacuum      | [roborock.vacuum.a65](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10 Plus                  | miio:vacuum      | [roborock.vacuum.a66](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G20                       | miio:vacuum      | [roborock.vacuum.a69](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S8 Pro Ultra              | miio:vacuum      | [roborock.vacuum.a70](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q5 Pro                    | miio:vacuum      | [roborock.vacuum.a72](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q8 Max                    | miio:vacuum      | [roborock.vacuum.a73](#roborock-vacuum-channels) | Yes          |            |
+| Roborock P10                       | miio:vacuum      | [roborock.vacuum.a74](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Q Revo                    | miio:vacuum      | [roborock.vacuum.a75](#roborock-vacuum-channels) | Yes          |            |
+| Roborock G10S Auto                 | miio:vacuum      | [roborock.vacuum.a76](#roborock-vacuum-channels) | Yes          |            |
+| Xiaowa C1                          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-channels) | Yes          |            |
 | Roborock Xiaowa E Series Vacuum v2 | miio:unsupported | roborock.vacuum.e2     | No           |            |
-| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#robo-rock-vacuum-channels) | Yes          |            |
-| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#robo-rock-vacuum-channels) | Yes          |            |
-| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#robo-rock-vacuum-channels) | Yes          |            |
+| Mi Robot Vacuum 1S                 | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-channels) | Yes          |            |
+| Roborock P5                        | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S4                        | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S4v2               | miio:vacuum      | [roborock.vacuum.s4v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S5                        | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S5 Max                    | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-channels) | Yes          |            |
+| Roborock S6                        | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T4                        | miio:vacuum      | [roborock.vacuum.t4](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v2              | miio:vacuum      | [roborock.vacuum.t4v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T4 v3              | miio:vacuum      | [roborock.vacuum.t4v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock T6                        | miio:vacuum      | [roborock.vacuum.t6](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v2              | miio:vacuum      | [roborock.vacuum.t6v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T6 v3              | miio:vacuum      | [roborock.vacuum.t6v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7                 | miio:vacuum      | [roborock.vacuum.t7](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7p                | miio:vacuum      | [roborock.vacuum.t7p](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7pv2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7pv3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v2              | miio:vacuum      | [roborock.vacuum.t7v2](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum T7 v3              | miio:vacuum      | [roborock.vacuum.t7v3](#roborock-vacuum-channels) | Yes          |            |
+| Roborock Vacuum S6                 | miio:vacuum      | [rockrobo.vacuum.s6](#roborock-vacuum-channels) | Yes          |            |
+| Mi Robot Vacuum                    | miio:vacuum      | [rockrobo.vacuum.v1](#roborock-vacuum-channels) | Yes          |            |
 | ROIDMI EVE vacuum                  | miio:basic       | [roidmi.vacuum.v60](#roidmi-vacuum-v60) | Yes          |            |
 | ROIDMI EVA                         | miio:basic       | [roidmi.vacuum.v66](#roidmi-vacuum-v66) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | PTX OneKey Switch (WIFI)           | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes          |            |
@@ -631,7 +631,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### Roborock Vacuum Channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -6473,7 +6473,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | lp_autooff_delay           | Number               | Low Power Limit Time                     |            |
 | lp_threshold               | Number               | Low Power Threshold                      |            |
 
-## Example item file Rockrobo vacuum
+## Example item file Roborock vacuum
 
 ```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>

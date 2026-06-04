@@ -65,7 +65,7 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
      * Indicates the desired startup mode for the server when it is supplied with power.
      * If this attribute is not null, the CurrentMode attribute shall be set to the StartUpMode value, when the server
      * is powered up, except in the case when the OnMode attribute overrides the StartUpMode attribute (see Section
-     * 1.10.6.4.1, “OnMode with Power Up”).
+     * 1.10.6.4.1, "OnMode with Power Up").
      * This behavior does not apply to reboots associated with OTA. After an OTA restart, the CurrentMode attribute
      * shall return to its value prior to the restart.
      * The value of this field shall match the Mode field of one of the entries in the SupportedModes attribute.
@@ -87,12 +87,12 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
     public static class ModeTagStruct {
         /**
          * If the MfgCode field exists, the Value field shall be in the manufacturer-specific value range (see Section
-         * 1.10.8, “Mode Namespace”).
-         * This field shall indicate the manufacturer’s VendorID and it shall determine the meaning of the Value field.
+         * 1.10.8, "Mode Namespace").
+         * This field shall indicate the manufacturer's VendorID and it shall determine the meaning of the Value field.
          * The same manufacturer code and mode tag value in separate cluster instances are part of the same namespace
-         * and have the same meaning. For example: a manufacturer tag meaning &quot;pinch&quot; can be used both in a
-         * cluster whose purpose is to choose the amount of sugar, or in a cluster whose purpose is to choose the amount
-         * of salt.
+         * and have the same meaning. For example: a manufacturer tag meaning "pinch" can be used both in a cluster
+         * whose purpose is to choose the amount of sugar, or in a cluster whose purpose is to choose the amount of
+         * salt.
          */
         public Integer mfgCode; // vendor-id
         /**
@@ -136,12 +136,12 @@ public class RefrigeratorAndTemperatureControlledCabinetModeCluster extends Base
          * Each mode tag in this field shall be distinct from other mode tags in this field. For example, a simplified
          * list containing [Auto, Auto] would not be allowed.
          * A few examples are provided below.
-         * - A mode named &quot;100%&quot; can have both the High (manufacturer specific) and Max (standard) mode tag.
-         * Clients seeking the mode for either High or Max will find the same mode in this case.
+         * - A mode named "100%" can have both the High (manufacturer specific) and Max (standard) mode tag. Clients
+         * seeking the mode for either High or Max will find the same mode in this case.
          * - A mode that includes a LowEnergy tag can be displayed by the client using a widget icon that shows a green
          * leaf.
          * - A mode that includes a LowNoise tag may be used by the client when the user wishes for a lower level of
-         * audible sound, less likely to disturb the household’s activities.
+         * audible sound, less likely to disturb the household's activities.
          * - A mode that includes a LowEnergy tag (standard, defined in this cluster specification) and also a Delicate
          * tag (standard, defined in the namespace of a Laundry Mode derived cluster).
          * - A mode that includes both a generic Quick tag (defined here), and Vacuum and Mop tags, (defined in the RVC

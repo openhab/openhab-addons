@@ -36,6 +36,9 @@ updates:
         patterns:
           - "org.apache.ftpserver:*"
           - "*mina-core*"
+      snmp4j:
+        patterns:
+          - "org.snmp4j:snmp4j*"
     allow:
       - dependency-name: "org.apache.maven.plugins:*"
       - dependency-name: "org.codehaus.mojo:*"
@@ -45,7 +48,10 @@ updates:
       - dependency-name: "org.eclipse.jdt:ecj" # eclipse compiler
       - dependency-name: "org.apache.ftpserver:*" # ftpserver
       - dependency-name: "org.apache.mina:mina-core" # ftpserver
+      - dependency-name: "org.jsoup:jsoup" # parser used by several bundles, e.g. jinja transformation
       - dependency-name: "org.rrd4j:rrd4j" # rrd4j persistence
+      - dependency-name: "org.snmp4j:snmp4j*" # snmp4j and snmp4j-unix-transport
+      - dependency-name: "org.wiremock:wiremock*" # used for testing
     ignore:
       - dependency-name: "com.github.jaxb-xew-plugin:jaxb-xew-plugin" # updated with core
       - dependency-name: "com.diffplug.spotless:spotless-maven-plugin" # updated together with SAT

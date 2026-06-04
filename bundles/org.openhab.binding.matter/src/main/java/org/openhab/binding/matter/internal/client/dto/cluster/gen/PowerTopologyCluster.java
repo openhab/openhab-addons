@@ -45,6 +45,35 @@ public class PowerTopologyCluster extends BaseCluster {
      */
     public List<Integer> activeEndpoints; // 1 list R V
 
+    // Structs
+    /**
+     * This indicates a device on the circuit represented by this server.
+     */
+    public static class CircuitNodeStruct {
+        /**
+         * This field shall indicate the ID of a node which is on the electrical circuit represented by this server.
+         */
+        public BigInteger node; // node-id
+        /**
+         * This field shall indicate the endpoint ID of the indicated node which is on the electrical circuit
+         * represented by this server.
+         */
+        public Integer endpoint; // endpoint-no
+        /**
+         * This field shall indicate a friendly name for the node, to be used when the client does not have access to
+         * the node's fabric.
+         */
+        public String label; // string
+        public Integer fabricIndex; // FabricIndex
+
+        public CircuitNodeStruct(BigInteger node, Integer endpoint, String label, Integer fabricIndex) {
+            this.node = node;
+            this.endpoint = endpoint;
+            this.label = label;
+            this.fabricIndex = fabricIndex;
+        }
+    }
+
     // Bitmaps
     public static class FeatureMap {
         /**

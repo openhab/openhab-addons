@@ -13,7 +13,7 @@ The following things types are available:
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
+| miio:vacuum      | For Xiaomi/Roborock Robot Vacuum products                                                                                         |
 | miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
 | miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
 | miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
@@ -110,7 +110,7 @@ The binding allows to try/test if your new device is working with database files
 
 There are 3 ways to get unsupported devices working:
 
-- by overriding the model with the model of a similar supported device. E.g. this works great for roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
+- by overriding the model with the model of a similar supported device. E.g. this works great for Roborock vacuum devices and yeelight devices). See [Substitute model for unsupported devices](#substitute-model-for-unsupported-devices)
 - by switching on the `(experimental) Create channels for new/unsupported devices (MIOT protocol)` channel, this works for most newer devices. See [Create support for new devices based on online published spec database](#create-support-for-new-devices-based-on-online-published-spec-database)
 - by switching on the `(experimental) Create channels / test properties for unsupported devices (legacy protocol)` channel. This works for older / legacy devices. It test all known properties to see which are supported by your device. See [Supported property test for unsupported devices](#supported-property-test-for-unsupported-devices)
 
@@ -229,7 +229,7 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See <https://github.com/marcelrv/XiaomiRobotVacuumProtocol> for all known available commands.
 
-### Robo Rock vacuum Channels
+### Roborock Vacuum Channels
 
 | Type    | Channel                           | Description                |
 |---------|-----------------------------------|----------------------------|
@@ -281,7 +281,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 !!!channelList
 
-## Example item file Rockrobo vacuum
+## Example item file Roborock vacuum
 
 ```java
 Group  gVac     "Xiaomi Robot Vacuum"      <fan>

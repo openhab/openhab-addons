@@ -56,7 +56,7 @@ public class GroupUpdate2 {
      **/
     private Integer volDelta = -79;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer id;
 
     /**

@@ -32,7 +32,7 @@ public class Group {
      **/
     private Integer id;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Friendly name
      **/
@@ -45,7 +45,7 @@ public class Group {
      **/
     private Integer sourceId = 0;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Set of zones belonging to a group
      **/

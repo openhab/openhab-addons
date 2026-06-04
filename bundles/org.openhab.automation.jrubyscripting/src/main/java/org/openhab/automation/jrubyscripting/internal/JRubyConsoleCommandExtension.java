@@ -99,7 +99,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList( //
+        return List.of( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
                 buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
                         "starts an interactive JRuby console"), //

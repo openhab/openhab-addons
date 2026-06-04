@@ -13,7 +13,9 @@
 package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
+import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,6 +37,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +56,13 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
     private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapAirPollutionHandler.class);
 
     private static final String CHANNEL_GROUP_HOURLY_FORECAST_PREFIX = "forecastHours";
+    private static final String CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX = "forecastHourly";
     private static final Pattern CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN = Pattern
             .compile(CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + "([0-9]*)");
 
     // keeps track of the parsed count
     private int forecastHours = 0;
+    private boolean forecastChannelLinked;
 
     private @Nullable OpenWeatherMapJsonAirPollutionData airPollutionData;
     private @Nullable OpenWeatherMapJsonAirPollutionData airPollutionForecastData;
@@ -109,12 +114,28 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+        if (CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX.equals(channelUID.getGroupId())) {
+            forecastChannelLinked = true;
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        super.channelUnlinked(channelUID);
+        forecastChannelLinked = getThing().getChannels().stream().map(c -> c.getUID()).filter(UID -> isLinked(UID))
+                .map(UID -> UID.getGroupId()).filter(groupId -> CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX.equals(groupId))
+                .count() > 0;
+    }
+
+    @Override
     protected boolean requestData(OpenWeatherMapConnection connection)
             throws CommunicationException, ConfigurationException {
         logger.debug("Update air pollution data of thing '{}'.", getThing().getUID());
         try {
             airPollutionData = connection.getAirPollutionData(location);
-            if (forecastHours > 0) {
+            if (forecastHours > 0 || forecastChannelLinked) {
                 airPollutionForecastData = connection.getAirPollutionForecastData(location);
             }
             return true;
@@ -134,6 +155,9 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
         switch (channelGroupId) {
             case CHANNEL_GROUP_CURRENT_AIR_POLLUTION:
                 updateCurrentAirPollutionChannel(channelUID);
+                break;
+            case CHANNEL_GROUP_HOURLY_TIMESERIES_PREFIX:
+                updateHourlyForecastTimeSeries(channelUID);
                 break;
             default:
                 Matcher m = CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN.matcher(channelUID.getGroupId());
@@ -157,50 +181,41 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
         if (localAirPollutionData != null && !localAirPollutionData.list.isEmpty()) {
             org.openhab.binding.openweathermap.internal.dto.airpollution.List currentData = localAirPollutionData.list
                     .get(0);
-            State state = UnDefType.UNDEF;
-            switch (channelId) {
-                case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(currentData.dt);
-                    break;
-                case CHANNEL_AIR_QUALITY_INDEX:
-                    state = new DecimalType(currentData.airQualityIndex.index);
-                    break;
-                case CHANNEL_PARTICULATE_MATTER_2_5:
-                    state = getQuantityTypeState(currentData.measurements.particulateMatter2dot5,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_PARTICULATE_MATTER_10:
-                    state = getQuantityTypeState(currentData.measurements.particulateMatter10,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_CARBON_MONOXIDE:
-                    state = getQuantityTypeState(currentData.measurements.carbonMonoxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_NITROGEN_MONOXIDE:
-                    state = getQuantityTypeState(currentData.measurements.nitrogenMonoxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_NITROGEN_DIOXIDE:
-                    state = getQuantityTypeState(currentData.measurements.nitrogenDioxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_OZONE:
-                    state = getQuantityTypeState(currentData.measurements.ozone, Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_SULPHUR_DIOXIDE:
-                    state = getQuantityTypeState(currentData.measurements.sulphurDioxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_AMMONIA:
-                    state = getQuantityTypeState(currentData.measurements.ammonia, Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-            }
+            State state = getStateForChannel(channelUID, currentData);
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
             updateState(channelUID, state);
         } else {
             logger.debug("No air pollution data available to update channel '{}' of group '{}'.", channelId,
                     channelGroupId);
+        }
+    }
+
+    /**
+     * Update the hourly forecast time series channel from the last OpenWeatherMap data retrieved.
+     *
+     * @param channelUID the id identifying the channel to be updated
+     */
+    private void updateHourlyForecastTimeSeries(ChannelUID channelUID) {
+        String channelId = channelUID.getIdWithoutGroup();
+        String channelGroupId = channelUID.getGroupId();
+        if (channelId.equals(CHANNEL_TIME_STAMP)) {
+            logger.debug("Channel `{}` of group '{}' is no supported time-series channel.", channelId, channelGroupId);
+            return;
+        }
+        OpenWeatherMapJsonAirPollutionData localAirPollutionForecastData = airPollutionForecastData;
+        if (localAirPollutionForecastData != null && !localAirPollutionForecastData.list.isEmpty()) {
+            List<org.openhab.binding.openweathermap.internal.dto.airpollution.List> forecastData = localAirPollutionForecastData.list;
+            TimeSeries timeSeries = new TimeSeries(REPLACE);
+            forecastData.forEach(hourlyForecastData -> {
+                Instant timestamp = Instant.ofEpochSecond(hourlyForecastData.dt);
+                State state = getStateForChannel(channelUID, hourlyForecastData);
+                timeSeries.add(timestamp, state);
+            });
+            logger.debug("Update channel '{}' of group '{}' with new time-series '{}'.", channelId, channelGroupId,
+                    timeSeries);
+            sendTimeSeries(channelUID, timeSeries);
+        } else {
+            logger.debug("No weather data available to update channel '{}'.", channelId);
         }
     }
 
@@ -217,50 +232,54 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
         if (localAirPollutionForecastData != null && localAirPollutionForecastData.list.size() >= count) {
             org.openhab.binding.openweathermap.internal.dto.airpollution.List forecastData = localAirPollutionForecastData.list
                     .get(count - 1);
-            State state = UnDefType.UNDEF;
-            switch (channelId) {
-                case CHANNEL_TIME_STAMP:
-                    state = getDateTimeTypeState(forecastData.dt);
-                    break;
-                case CHANNEL_AIR_QUALITY_INDEX:
-                    state = new DecimalType(forecastData.airQualityIndex.index);
-                    break;
-                case CHANNEL_PARTICULATE_MATTER_2_5:
-                    state = getQuantityTypeState(forecastData.measurements.particulateMatter2dot5,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_PARTICULATE_MATTER_10:
-                    state = getQuantityTypeState(forecastData.measurements.particulateMatter10,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_CARBON_MONOXIDE:
-                    state = getQuantityTypeState(forecastData.measurements.carbonMonoxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_NITROGEN_MONOXIDE:
-                    state = getQuantityTypeState(forecastData.measurements.nitrogenMonoxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_NITROGEN_DIOXIDE:
-                    state = getQuantityTypeState(forecastData.measurements.nitrogenDioxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_OZONE:
-                    state = getQuantityTypeState(forecastData.measurements.ozone, Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_SULPHUR_DIOXIDE:
-                    state = getQuantityTypeState(forecastData.measurements.sulphurDioxide,
-                            Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-                case CHANNEL_AMMONIA:
-                    state = getQuantityTypeState(forecastData.measurements.ammonia, Units.MICROGRAM_PER_CUBICMETRE);
-                    break;
-            }
+            State state = getStateForChannel(channelUID, forecastData);
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
             updateState(channelUID, state);
         } else {
             logger.debug("No air pollution data available to update channel '{}' of group '{}'.", channelId,
                     channelGroupId);
         }
+    }
+
+    private State getStateForChannel(ChannelUID channelUID,
+            org.openhab.binding.openweathermap.internal.dto.airpollution.List forecastData) {
+        String channelId = channelUID.getIdWithoutGroup();
+        State state = UnDefType.UNDEF;
+        switch (channelId) {
+            case CHANNEL_TIME_STAMP:
+                state = getDateTimeTypeState(forecastData.dt);
+                break;
+            case CHANNEL_AIR_QUALITY_INDEX:
+                state = new DecimalType(forecastData.airQualityIndex.index);
+                break;
+            case CHANNEL_PARTICULATE_MATTER_2_5:
+                state = getQuantityTypeState(forecastData.measurements.particulateMatter2dot5,
+                        Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_PARTICULATE_MATTER_10:
+                state = getQuantityTypeState(forecastData.measurements.particulateMatter10,
+                        Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_CARBON_MONOXIDE:
+                state = getQuantityTypeState(forecastData.measurements.carbonMonoxide, Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_NITROGEN_MONOXIDE:
+                state = getQuantityTypeState(forecastData.measurements.nitrogenMonoxide,
+                        Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_NITROGEN_DIOXIDE:
+                state = getQuantityTypeState(forecastData.measurements.nitrogenDioxide, Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_OZONE:
+                state = getQuantityTypeState(forecastData.measurements.ozone, Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_SULPHUR_DIOXIDE:
+                state = getQuantityTypeState(forecastData.measurements.sulphurDioxide, Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+            case CHANNEL_AMMONIA:
+                state = getQuantityTypeState(forecastData.measurements.ammonia, Units.MICROGRAM_PER_CUBICMETRE);
+                break;
+        }
+        return state;
     }
 }

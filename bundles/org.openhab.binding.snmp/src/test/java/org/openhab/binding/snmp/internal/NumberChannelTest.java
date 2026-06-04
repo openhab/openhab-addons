@@ -48,7 +48,7 @@ public class NumberChannelTest extends AbstractSnmpTargetHandlerTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.FLOAT);
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID),
                 new Opaque(new byte[] { (byte) 0x9f, 0x78, 0x04, 0x41, 0x5b, 0x33, 0x33 }))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         final ArgumentCaptor<DecimalType> captor = ArgumentCaptor.forClass(DecimalType.class);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), captor.capture());
@@ -61,7 +61,7 @@ public class NumberChannelTest extends AbstractSnmpTargetHandlerTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.COUNTER64);
         PDU responsePDU = new PDU(PDU.RESPONSE,
                 List.of(new VariableBinding(new OID(TEST_OID), new Counter64(1234567891333L))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType(1234567891333L)));
         verifyStatus(ThingStatus.ONLINE);
@@ -73,7 +73,7 @@ public class NumberChannelTest extends AbstractSnmpTargetHandlerTest {
                 "°C");
         PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID),
                 new Opaque(new byte[] { (byte) 0x9f, 0x78, 0x04, 0x41, 0x5b, 0x33, 0x33 }))));
-        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        ResponseEvent<?> event = new ResponseEvent<>("test", null, null, responsePDU, null, 0L);
         thingHandler.onResponse(event);
         final ArgumentCaptor<QuantityType<?>> captor = ArgumentCaptor.forClass(QuantityType.class);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), captor.capture());

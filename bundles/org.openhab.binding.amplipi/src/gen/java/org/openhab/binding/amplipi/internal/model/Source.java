@@ -26,7 +26,7 @@ public class Source {
      **/
     private Integer id;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     /**
      * Friendly name
      **/
