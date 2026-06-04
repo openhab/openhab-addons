@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -473,7 +472,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     public List<Location> getLocations() {
         final ExpiringCache<List<Location>> localLocationCache = this.locationCache;
         final List<Location> locations = (localLocationCache != null) ? localLocationCache.getValue() : null;
-        return (locations != null) ? locations : Collections.emptyList();
+        return (locations != null) ? locations : List.of();
     }
 
     @Override

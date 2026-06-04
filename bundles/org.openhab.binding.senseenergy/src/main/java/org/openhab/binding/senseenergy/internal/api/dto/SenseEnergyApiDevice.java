@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.senseenergy.internal.api.dto;
 
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SenseEnergyApiDevice } is the dto for the api sense discovered devices
  *
@@ -22,4 +26,22 @@ public class SenseEnergyApiDevice {
     public String name;
     public String icon;
     public SenseEnergyApiDeviceTags tags;
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SenseEnergyApiDevice that = (SenseEnergyApiDevice) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(icon, that.icon)
+                && Objects.equals(tags, that.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, icon, tags);
+    }
 }

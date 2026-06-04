@@ -275,4 +275,6 @@ public class ShellyBindingConstants {
 
     public static final String BUNDLE_RESOURCE_SNIPLETS = "sniplets"; // where to find code sniplets in the bundle
     public static final String BUNDLE_RESOURCE_SCRIPTS = "scripts"; // where to find scrips in the bundle
+
+    public static final int DEFAULT_LOCAL_PORT = 8080;
 }

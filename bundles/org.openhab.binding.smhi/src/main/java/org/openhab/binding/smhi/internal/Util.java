@@ -16,13 +16,23 @@ import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smhi.provider.ParameterMetadata;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.util.UnitUtils;
 
 /**
  * A class with static utility methods to get correct data depending on the parameter
@@ -33,44 +43,72 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class Util {
 
-    public static BigDecimal getMissingValue(String parameter) {
-        return switch (parameter) {
+    public static BigDecimal getMissingValue(ParameterMetadata metadata) {
+        return switch (metadata.name()) {
             case TEMPERATURE, TEMPERATURE_MIN, TEMPERATURE_MAX -> DEFAULT_MISSING_VALUE;
             default -> BigDecimal.valueOf(-1);
         };
     }
 
-    public static State getParameterAsState(String parameter, BigDecimal value) {
-        // TODO: Remove for 6.0 release
-        if (parameter.equals(PMP3G_PRECIPITATION_CATEGORY)) {
-            return new DecimalType(PMP3G_PCAT_BACKWARD_COMP.getOrDefault(value.intValue(), value.intValue()));
+    public static State getParameterAsState(ParameterMetadata metadata, BigDecimal value) {
+        if (metadata.missingValue().equals(value)) {
+            value = getMissingValue(metadata);
         }
-        parameter = PMP3G_BACKWARD_COMP.getOrDefault(parameter, parameter);
-        // TODO: end
+        Unit<?> unit = UNIT_MAP.get(metadata.unit());
 
-        if (DEFAULT_MISSING_VALUE.equals(value)) {
-            value = getMissingValue(parameter);
-        }
-
-        return switch (parameter) {
-            case PRESSURE -> new QuantityType<>(value, MetricPrefix.HECTO(SIUnits.PASCAL));
-            case TEMPERATURE -> new QuantityType<>(value, SIUnits.CELSIUS);
-            case VISIBILITY -> new QuantityType<>(value, MetricPrefix.KILO(SIUnits.METRE));
-            case WIND_DIRECTION -> new QuantityType<>(value, Units.DEGREE_ANGLE);
-            case WIND_SPEED, GUST -> new QuantityType<>(value, Units.METRE_PER_SECOND);
-            case RELATIVE_HUMIDITY, PRECIPITATION_PROBABILITY -> new QuantityType<>(value, Units.PERCENT);
-            case FROZEN_PROBABILITY -> new QuantityType<>(value.multiply(FRACTION_TO_PERCENT), Units.PERCENT);
-            case THUNDER_PROBABILITY -> new QuantityType<>(value, Units.PERCENT);
-            // Smhi returns -9 for precipitation_frozen_part if there's no precipitation, replace with -1
-            case PERCENT_FROZEN -> value.intValue() == -9 ? new QuantityType<>(-1, Units.PERCENT)
-                    : new QuantityType<>(value, Units.PERCENT);
-            case HIGH_CLOUD_COVER, MEDIUM_CLOUD_COVER, LOW_CLOUD_COVER, TOTAL_CLOUD_COVER ->
-                new QuantityType<>(value.multiply(OCTAS_TO_PERCENT), Units.PERCENT);
-            case CLOUD_BASE_ALTITUDE, CLOUD_TOP_ALTITUDE -> new QuantityType<>(value, SIUnits.METRE);
-            case PRECIPITATION_MAX, PRECIPITATION_MEAN, PRECIPITATION_MEDIAN, PRECIPITATION_MIN ->
-                new QuantityType<>(value, Units.MILLIMETRE_PER_HOUR);
-            case PRECIPITATION_TOTAL -> new QuantityType<>(value, MetricPrefix.MILLI(SIUnits.METRE));
-            default -> new DecimalType(value.stripTrailingZeros());
+        value = switch (metadata.unit()) {
+            case "fraction" -> value.multiply(FRACTION_TO_PERCENT);
+            case "octas" -> value.multiply(OCTAS_TO_PERCENT);
+            case "percent" -> value.intValue() == -9 ? BigDecimal.valueOf(-1) : value;
+            default -> value;
         };
+
+        if (unit != null) {
+            return new QuantityType<>(value, unit);
+        } else {
+            return new DecimalType(value.stripTrailingZeros());
+        }
+    }
+
+    public static ChannelType createChannelTypeFromMetadata(ParameterMetadata metadata) {
+        String itemType = CoreItemFactory.NUMBER;
+        Unit<?> unit = UNIT_MAP.get(metadata.unit());
+        if (unit != null) {
+            itemType += ":" + UnitUtils.getDimensionName(unit);
+        }
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, metadata.name());
+        StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, metadata.description(), itemType)
+                .isAdvanced(!STANDARD_CHANNELS.contains(metadata.name())).withTags(DefaultSemanticTags.Point.FORECAST);
+        SemanticTag property = unit != null ? SEMANTIC_PROPERTIES.get(unit) : null;
+        if (property != null) {
+            builder.withTags(property);
+        }
+        if (unit != null) {
+            builder.withUnitHint(unit.toString());
+        }
+        builder.withStateDescriptionFragment(createStateDescription(metadata));
+        return builder.build();
+    }
+
+    private static StateDescriptionFragment createStateDescription(ParameterMetadata metadata) {
+        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create();
+        switch (metadata.unit()) {
+            case "Cel":
+            case "m/s":
+            case "m s**-1":
+            case "km":
+            case "octas":
+            case "hPa":
+            case "kg/m2":
+                builder.withPattern("%.1f %unit%");
+                break;
+            case "degree":
+            case "percent":
+            case "fraction":
+            case "m":
+            case "%":
+                builder.withPattern("%d %unit%");
+        }
+        return builder.build();
     }
 }

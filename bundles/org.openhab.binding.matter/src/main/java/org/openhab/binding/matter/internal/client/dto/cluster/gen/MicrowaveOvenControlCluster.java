@@ -63,7 +63,7 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      * - The default value shall be 100.
      * If the MinPower, MaxPower, and PowerStep attributes are supported:
      * - The value of this attribute shall be between MinPower and MaxPower inclusive.
-     * - The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
+     * - The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep == 0
      */
     public Integer powerSetting; // 2 uint8 R V
     /**
@@ -77,7 +77,7 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     /**
      * Indicates the increment of power that can be set on the server.
      * The value of this attribute shall be between 1 and MaxPower inclusive.
-     * The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep &#x3D;&#x3D; 0
+     * The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep == 0
      * For example, if MinPower is 1, MaxPower is 10, and PowerSetting can be set to any integer between MinPower and
      * MaxPower, PowerStep would be set to 1.
      */

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Configuration for send-only datagram injector thing.
  *
- * @author openHAB Contributors
+ * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
 public class EnOceanDatagramInjectorConfig extends EnOceanBaseConfig {

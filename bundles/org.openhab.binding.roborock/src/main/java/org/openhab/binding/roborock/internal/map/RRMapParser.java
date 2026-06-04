@@ -305,16 +305,11 @@ public final class RRMapParser {
     }
 
     private int readUInt16LE(byte[] bytes, int pos) {
-        int value = bytes[pos] & 0xFF;
-        value |= (bytes[pos + 1] << 8) & 0xFFFF;
-        return value;
+        return (bytes[pos] & 0xFF) | ((bytes[pos + 1] & 0xFF) << 8);
     }
 
     private int readUInt32LE(byte[] bytes, int pos) {
-        int value = bytes[pos] & 0xFF;
-        value |= (bytes[pos + 1] << 8) & 0xFFFF;
-        value |= (bytes[pos + 2] << 16) & 0xFFFFFF;
-        value |= (bytes[pos + 3] << 24) & 0xFFFFFFFF;
-        return value;
+        return (bytes[pos] & 0xFF) | ((bytes[pos + 1] & 0xFF) << 8) | ((bytes[pos + 2] & 0xFF) << 16)
+                | ((bytes[pos + 3] & 0xFF) << 24);
     }
 }

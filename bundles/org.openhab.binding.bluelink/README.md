@@ -63,15 +63,17 @@ The Force Refresh action can be used to refresh on demand.
 
 Vehicle things support the following actions.
 
-| Action          | Parameters                                                 | Description                                                |
-|-----------------|------------------------------------------------------------|------------------------------------------------------------|
-| forceRefresh()  | -                                                          | Fetch up-to-date data from the vehicle and update channels |
-| climateStart()  | temperature, heated features, defrost, engine run duration | Start climate control                                      |
-| climateStop()   | -                                                          | Stop climate control                                       |
-| lock()          | -                                                          | Lock the vehicle                                           |
-| unlock()        | -                                                          | Unlock the vehicle                                         |
-| startCharging() | -                                                          | Start charging the vehicle                                 |
-| stopCharging()  | -                                                          | Stop charging the verhicle                                 |
+| Action             | Parameters                                                 | Description                                                |
+|--------------------|------------------------------------------------------------|------------------------------------------------------------|
+| forceRefresh()     | -                                                          | Fetch up-to-date data from the vehicle and update channels |
+| climateStart()     | temperature, heated features, defrost, engine run duration | Start climate control                                      |
+| climateStop()      | -                                                          | Stop climate control                                       |
+| lock()             | -                                                          | Lock the vehicle                                           |
+| unlock()           | -                                                          | Unlock the vehicle                                         |
+| startCharging()    | -                                                          | Start charging the vehicle (EV only)                       |
+| stopCharging()     | -                                                          | Stop charging the vehicle (EV only)                        |
+| setChargeLimitDC() | limit (integer)                                            | Set the target DC charge limit (50-100%) (EV only)         |
+| setChargeLimitAC() | limit (integer)                                            | Set the target AC charge limit (50-100%) (EV only)         |
 
 ## Channels
 
@@ -147,8 +149,8 @@ This channel group is only available for electric and hybrid vehicles.
 | `soc`                   | Number:Dimensionless | R          | Battery state of charge (%)     |
 | `charging`              | Switch               | R          | Charging status (ON to start)   |
 | `plugged-in`            | Switch               | R          | Charge cable plugged in         |
-| `charge-limit-dc`       | Number:Dimensionless | R          | DC charge limit (%)             |
-| `charge-limit-ac`       | Number:Dimensionless | R          | AC charge limit (%)             |
+| `charge-limit-dc`       | Number:Dimensionless | R/W        | DC charge limit (%)             |
+| `charge-limit-ac`       | Number:Dimensionless | R/W        | AC charge limit (%)             |
 | `time-to-full-current`  | Number:Time          | R          | Time to full (current charger)  |
 | `time-to-full-fast`     | Number:Time          | R          | Time to full (fast charger)     |
 | `time-to-full-portable` | Number:Time          | R          | Time to full (portable charger) |

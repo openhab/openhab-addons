@@ -55,6 +55,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -520,6 +521,8 @@ public class HomematicThingHandler extends BaseThingHandler {
         if (oldStatus == ThingStatus.UNINITIALIZED) {
             return;
         }
+        ThingStatusInfo oldStatusInfo = thing.getStatusInfo();
+        String newDescription = null;
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
@@ -532,12 +535,16 @@ public class HomematicThingHandler extends BaseThingHandler {
         } else if (device.isUnreach()) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.COMMUNICATION_ERROR;
-        } else if (device.isConfigPending() || device.isUpdatePending()) {
+        } else if (device.isConfigPending()) {
             newDetail = ThingStatusDetail.CONFIGURATION_PENDING;
+        } else if (device.isUpdatePending()) {
+            // don't set newStatus or newDetail; just add status description indicating update pending
+            newDescription = "@text/status.update-pending";
         }
 
-        if (thing.getStatus() != newStatus || thing.getStatusInfo().getStatusDetail() != newDetail) {
-            updateStatus(newStatus, newDetail);
+        if (oldStatus != newStatus || oldStatusInfo.getStatusDetail() != newDetail
+                || !Objects.equals(oldStatusInfo.getDescription(), newDescription)) {
+            updateStatus(newStatus, newDetail, newDescription);
         }
         if (oldStatus == ThingStatus.OFFLINE && newStatus == ThingStatus.ONLINE) {
             initialize();

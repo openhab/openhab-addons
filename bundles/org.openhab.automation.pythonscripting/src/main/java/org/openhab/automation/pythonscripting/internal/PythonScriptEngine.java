@@ -45,14 +45,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
 import org.openhab.automation.pythonscripting.internal.context.ContextInput;
 import org.openhab.automation.pythonscripting.internal.context.ContextOutput;
-import org.openhab.automation.pythonscripting.internal.context.ContextOutputLogger;
+import org.openhab.automation.pythonscripting.internal.context.ThreadLocalContextOutputLogger;
 import org.openhab.automation.pythonscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker;
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
@@ -83,10 +82,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     public static final String CONTEXT_KEY_ENGINE_LOGGER_INPUT = "ctx.engine-logger-input";
     private static final String CONTEXT_KEY_SCRIPT_FILENAME = "javax.script.filename";
 
-    private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
-
-    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
-
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
     private static final String PYTHON_OPTION_POSIXMODULEBACKEND = "python.PosixModuleBackend";
@@ -105,16 +100,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final int STACK_TRACE_LENGTH = 5;
 
     private static final String LOGGER_INIT_NAME = "__logger_init__";
-
-    /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
-    private static Engine engine = Engine.newBuilder()
-            // disable warning about fallback runtime (is only available in graalvm)
-            .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false)).build();
-
-    static {
-        // disable warning about missing TruffleAttach library (is only available in graalvm)
-        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
-    }
 
     // private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
@@ -166,12 +151,12 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration,
+    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration, Engine engine,
             PythonScriptEngineFactory pythonScriptEngineFactory) {
         this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
-        this.scriptOutputStream = new ContextOutput(new ContextOutputLogger(logger, Level.INFO));
-        this.scriptErrorStream = new ContextOutput(new ContextOutputLogger(logger, Level.ERROR));
+        this.scriptOutputStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.INFO));
+        this.scriptErrorStream = new ContextOutput(new ThreadLocalContextOutputLogger(logger, Level.ERROR));
         this.scriptInputStream = new ContextInput(null);
 
         this.lifecycleTracker = new LifecycleTracker();
@@ -510,8 +495,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
 
         Logger scriptLogger = LoggerFactory.getLogger("org.openhab.automation.pythonscripting." + identifier);
 
-        scriptOutputStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.INFO));
-        scriptErrorStream.setOutputStream(new ContextOutputLogger(scriptLogger, Level.ERROR));
+        scriptOutputStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.INFO));
+        scriptErrorStream.setOutputStream(new ThreadLocalContextOutputLogger(scriptLogger, Level.ERROR));
     }
 
     private String stringifyThrowable(Throwable throwable) {
@@ -630,9 +615,5 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 + (!value.hasMember("tzinfo") || value.getMember("tzinfo").isNull()
                         ? OffsetDateTime.now().getOffset().getId()
                         : ""));
-    }
-
-    public static @Nullable Language getLanguage() {
-        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
     }
 }
