@@ -14,6 +14,8 @@ package org.openhab.binding.unifi.internal.protect.handler;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +31,7 @@ import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtect
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectContactConfiguration;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectDeviceConfiguration;
+import org.openhab.binding.unifi.internal.protect.util.StaticChannelHelper;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -44,6 +47,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
@@ -58,6 +62,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectModel> extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final ThingTypeRegistry thingTypeRegistry;
     protected @Nullable T device;
     protected String deviceId = "";
     protected Map<String, State> stateCache = new ConcurrentHashMap<>();
@@ -69,8 +74,9 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectMo
         UPDATE
     }
 
-    public UnifiProtectAbstractDeviceHandler(Thing thing) {
+    public UnifiProtectAbstractDeviceHandler(Thing thing, ThingTypeRegistry thingTypeRegistry) {
         super(thing);
+        this.thingTypeRegistry = thingTypeRegistry;
     }
 
     public void refreshFromDevice(T device) {
@@ -86,6 +92,21 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectMo
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         deviceId = getConfigAs(UnifiProtectDeviceConfiguration.class).deviceId;
+        ensureStaticChannels();
+    }
+
+    /**
+     * Adds any statically-defined channels missing from a stored thing (e.g. things migrated during
+     * the unify merge that were persisted before their thing-type was available).
+     */
+    protected void ensureStaticChannels() {
+        List<Channel> missing = StaticChannelHelper.addMissingChannels(getCallback(), thingTypeRegistry, getThing(),
+                logger);
+        if (!missing.isEmpty()) {
+            List<Channel> channels = new ArrayList<>(getThing().getChannels());
+            channels.addAll(missing);
+            updateThing(editThing().withChannels(channels).build());
+        }
     }
 
     @Override

@@ -64,6 +64,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -81,12 +82,18 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     private boolean enableWebRTC = true;
     private final String baseSourceId;
     private final TranslationService translationService;
+    // Channel types must be resolved in the thing's own namespace: a legacy unifiprotect:* thing needs
+    // unifiprotect:* channel types, a canonical unifi:* thing needs unifi:* ones. Hardcoding the
+    // binding id here would stamp unifi:* types onto legacy things, which the UI cannot resolve.
+    private final String channelTypeNamespace;
 
-    public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media, TranslationService translationService) {
-        super(thing);
+    public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media, TranslationService translationService,
+            ThingTypeRegistry thingTypeRegistry) {
+        super(thing, thingTypeRegistry);
         this.media = media;
         this.baseSourceId = thing.getUID().getAsString();
         this.translationService = translationService;
+        this.channelTypeNamespace = thing.getThingTypeUID().getBindingId();
     }
 
     @Override
@@ -1081,7 +1088,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         ChannelUID uid = new ChannelUID(thing.getUID(), channelId);
         activeChannelIds.add(channelId);
         ChannelBuilder builder = ChannelBuilder.create(uid, itemType)
-                .withType(new ChannelTypeUID(BINDING_ID, channelTypeId));
+                .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId));
         if (label != null) {
             builder.withLabel(translationService.getTranslation(label));
         }
@@ -1093,8 +1100,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         ChannelUID uid = new ChannelUID(thing.getUID(), channelId);
         activeChannelIds.add(channelId);
         if (thing.getChannel(uid) == null) {
-            ChannelBuilder cb = ChannelBuilder.create(uid, null).withType(new ChannelTypeUID(BINDING_ID, channelTypeId))
-                    .withKind(ChannelKind.TRIGGER);
+            ChannelBuilder cb = ChannelBuilder.create(uid, null)
+                    .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId)).withKind(ChannelKind.TRIGGER);
             if (label != null) {
                 cb.withLabel(translationService.getTranslation(label));
             }

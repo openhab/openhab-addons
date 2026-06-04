@@ -31,6 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,13 +50,15 @@ public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_CAMERA_LEGACY, THING_TYPE_LIGHT_LEGACY, THING_TYPE_SENSOR_LEGACY, THING_TYPE_DOORLOCK_LEGACY,
             THING_TYPE_CHIME_LEGACY);
     private final TranslationService translationService;
+    private final ThingTypeRegistry thingTypeRegistry;
     private UnifiMediaService media;
 
     @Activate
     public UnifiProtectHandlerFactory(@Reference UnifiMediaService media,
-            @Reference TranslationService translationService) {
+            @Reference TranslationService translationService, @Reference ThingTypeRegistry thingTypeRegistry) {
         this.media = media;
         this.translationService = translationService;
+        this.thingTypeRegistry = thingTypeRegistry;
     }
 
     @Override
@@ -69,17 +72,17 @@ public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
         // and the legacy unifiprotect:* binding IDs.
         switch (thing.getThingTypeUID().getId()) {
             case "nvr":
-                return new UnifiProtectNVRHandler(thing);
+                return new UnifiProtectNVRHandler(thing, thingTypeRegistry);
             case "camera":
-                return new UnifiProtectCameraHandler(thing, media, translationService);
+                return new UnifiProtectCameraHandler(thing, media, translationService, thingTypeRegistry);
             case "light":
-                return new UnifiProtectLightHandler(thing);
+                return new UnifiProtectLightHandler(thing, thingTypeRegistry);
             case "sensor":
-                return new UnifiProtectSensorHandler(thing);
+                return new UnifiProtectSensorHandler(thing, thingTypeRegistry);
             case "doorlock":
-                return new UnifiProtectDoorlockHandler(thing);
+                return new UnifiProtectDoorlockHandler(thing, thingTypeRegistry);
             case "chime":
-                return new UnifiProtectChimeHandler(thing);
+                return new UnifiProtectChimeHandler(thing, thingTypeRegistry);
             default:
                 return null;
         }

@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.protect.handler;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.DeviceTypeAda
 import org.openhab.binding.unifi.internal.protect.api.pub.dto.gson.EventTypeAdapterFactory;
 import org.openhab.binding.unifi.internal.protect.config.UnifiProtectNVRConfiguration;
 import org.openhab.binding.unifi.internal.protect.handler.UnifiProtectAbstractDeviceHandler.WSEventType;
+import org.openhab.binding.unifi.internal.protect.util.StaticChannelHelper;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -64,6 +66,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -71,6 +74,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +90,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(UnifiProtectNVRHandler.class);
+    private final ThingTypeRegistry thingTypeRegistry;
     private volatile @Nullable UniFiProtectHybridClient apiClient;
     private @Nullable ScheduledFuture<?> pollTask;
     private @Nullable ScheduledFuture<?> reconnectTask;
@@ -118,8 +123,9 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         ScheduledFuture<?> maxFuture;
     }
 
-    public UnifiProtectNVRHandler(Thing thing) {
+    public UnifiProtectNVRHandler(Thing thing, ThingTypeRegistry thingTypeRegistry) {
         super((Bridge) thing);
+        this.thingTypeRegistry = thingTypeRegistry;
         gson = new GsonBuilder().registerTypeAdapterFactory(new DeviceTypeAdapterFactory())
                 .registerTypeAdapterFactory(new EventTypeAdapterFactory()).create();
     }
@@ -167,6 +173,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing NVR");
         shuttingDown = false;
+        ensureStaticChannels();
 
         UniFiControllerBridgeHandler parentHandler = getParentHandler();
         if (parentHandler == null) {
@@ -197,6 +204,20 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             }
             scheduler.execute(() -> initializeWithSession(config, httpClient, host, port, session));
         });
+    }
+
+    /**
+     * Adds any statically-defined channels missing from a stored NVR thing (e.g. a thing migrated
+     * during the unify merge that was persisted before its thing-type was available).
+     */
+    private void ensureStaticChannels() {
+        List<Channel> missing = StaticChannelHelper.addMissingChannels(getCallback(), thingTypeRegistry, getThing(),
+                logger);
+        if (!missing.isEmpty()) {
+            List<Channel> channels = new ArrayList<>(getThing().getChannels());
+            channels.addAll(missing);
+            updateThing(editThing().withChannels(channels).build());
+        }
     }
 
     private void initializeWithSession(UnifiProtectNVRConfiguration config, HttpClient httpClient, String host,

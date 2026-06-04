@@ -30,6 +30,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -42,8 +43,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler<Sensor> {
 
-    public UnifiProtectSensorHandler(Thing thing) {
-        super(thing);
+    public UnifiProtectSensorHandler(Thing thing, ThingTypeRegistry thingTypeRegistry) {
+        super(thing, thingTypeRegistry);
     }
 
     @Override

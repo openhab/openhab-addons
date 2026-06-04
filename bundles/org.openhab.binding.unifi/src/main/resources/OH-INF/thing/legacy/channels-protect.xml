@@ -997,7 +997,7 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1010,7 +1010,7 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1022,7 +1022,6 @@
 		<description>Motion detection score (0-100) from the most recent motion event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
@@ -1035,7 +1034,7 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1047,7 +1046,6 @@
 		<description>Smart detection confidence score (0-100) from the most recent event</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d"/>
@@ -1060,7 +1058,6 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1072,7 +1069,6 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1126,17 +1122,6 @@
 		<item-type>Switch</item-type>
 		<label>Recording Active</label>
 		<description>Camera is currently recording</description>
-		<category>Camera</category>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="is-dark">
-		<item-type>Switch</item-type>
-		<label>Scene is Dark</label>
-		<description>Scene is currently dark (low light detected)</description>
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
@@ -1396,7 +1381,7 @@
 		<category>Camera</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Measurement</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"/>
 		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
@@ -1442,7 +1427,6 @@
 		<description>NVR uptime in milliseconds</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%d ms"/>
@@ -1478,7 +1462,6 @@
 		<description>Average CPU load percentage</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
@@ -1502,7 +1485,6 @@
 		<description>Available system memory</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -1514,7 +1496,6 @@
 		<description>Free system memory</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -1526,19 +1507,6 @@
 		<description>Total storage capacity</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Measurement</tag>
-		</tags>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="storage-used">
-		<item-type>Number:DataAmount</item-type>
-		<label>Used Storage</label>
-		<description>Used storage space</description>
-		<category>Status</category>
-		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -1550,7 +1518,6 @@
 		<description>Available storage space</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -1562,7 +1529,6 @@
 		<description>Storage utilization percentage</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
@@ -1585,7 +1551,6 @@
 		<description>Maximum recording retention duration</description>
 		<category>Status</category>
 		<tags>
-			<tag>Status</tag>
 			<tag>Measurement</tag>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>

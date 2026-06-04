@@ -25,6 +25,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -36,8 +37,8 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<Light> {
 
-    public UnifiProtectLightHandler(Thing thing) {
-        super(thing);
+    public UnifiProtectLightHandler(Thing thing, ThingTypeRegistry thingTypeRegistry) {
+        super(thing, thingTypeRegistry);
     }
 
     @Override
