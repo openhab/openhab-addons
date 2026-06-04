@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,15 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,15 +48,41 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
+@Component(immediate = true, service = Servlet.class)
+@HttpWhiteboardServletName(PlayStreamServlet.SERVLET_NAME)
+@HttpWhiteboardServletPattern({ PlayStreamServlet.PATH + "/*", PlayStreamServlet.LEGACY_PATH + "/*" })
 public class PlayStreamServlet extends HttpServlet {
+    // The new path under the unified binding, plus the pre-merge unifiprotect path so media URLs that
+    // existing installs cached before the merge keep resolving. Both patterns map to this one
+    // servlet, which the HTTP whiteboard allows (unlike registering the same class twice manually).
+    public static final String PATH = "/" + UnifiProtectBindingConstants.BINDING_ID + "/media/play";
+    public static final String LEGACY_PATH = "/" + UnifiProtectBindingConstants.LEGACY_BINDING_ID + "/media/play";
+    static final String SERVLET_NAME = "UniFiProtectPlayStreamServlet";
+
     private static final long serialVersionUID = 1L;
     private final UnifiMediaService mediaService;
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(PlayStreamServlet.class);
 
-    public PlayStreamServlet(UnifiMediaService mediaService, HttpClient httpClient) {
-        this.httpClient = httpClient;
+    @Activate
+    public PlayStreamServlet(@Reference UnifiMediaService mediaService,
+            @Reference HttpClientFactory httpClientFactory) {
         this.mediaService = mediaService;
+        this.httpClient = httpClientFactory.createHttpClient("unifiProtectPlay", new SslContextFactory.Client(true));
+        try {
+            this.httpClient.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to start HTTP client", e);
+        }
+    }
+
+    @Deactivate
+    public void deactivate() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Error stopping HTTP client", e);
+        }
     }
 
     @Override

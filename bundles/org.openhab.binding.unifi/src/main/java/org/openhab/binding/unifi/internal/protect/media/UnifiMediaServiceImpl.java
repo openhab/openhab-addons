@@ -19,12 +19,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,8 +40,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,21 +63,6 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
     private final Logger logger = LoggerFactory.getLogger(UnifiMediaServiceImpl.class);
     private final Map<ThingUID, Map<String, List<URI>>> cameraStreams = new ConcurrentHashMap<>();
     private final Map<ThingUID, UnifiProtectCameraHandler> handlers = new ConcurrentHashMap<>();
-    private final String servletBasePath = "/" + UnifiProtectBindingConstants.BINDING_ID + "/media";
-    private final String playBasePath = servletBasePath + "/play";
-    private final String imageBasePath = servletBasePath + "/image";
-
-    // Legacy servlet paths kept registered alongside the new ones so media/snapshot URLs that
-    // existing installs generated under the pre-merge unifiprotect binding keep resolving after
-    // the upgrade to the unified unifi binding. Newly generated URLs use the paths above.
-    private final String legacyServletBasePath = "/" + UnifiProtectBindingConstants.LEGACY_BINDING_ID + "/media";
-    private final String legacyPlayBasePath = legacyServletBasePath + "/play";
-    private final String legacyImageBasePath = legacyServletBasePath + "/image";
-
-    // Aliases we have actually registered, so a partial activation failure can be rolled back and
-    // deactivate only unregisters what exists. Without this, a throw mid-activation leaks the
-    // already-registered servlets and poisons every subsequent activation with a NamespaceException.
-    private final List<String> registeredPaths = new CopyOnWriteArrayList<>();
 
     // Per-camera go2rtc instances and state
     private final Map<ThingUID, Go2RtcManager> managers = new ConcurrentHashMap<>();
@@ -95,17 +74,14 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
     private final AtomicInteger nextWebrtcPort = new AtomicInteger(8555);
 
     private UnifiProtectConfiguration config = new UnifiProtectConfiguration();
-    private HttpService httpService;
     private HttpClient httpClient;
 
     @Activate
-    public UnifiMediaServiceImpl(Map<String, Object> properties, @Reference HttpService httpService,
-            @Reference HttpClientFactory httpClientFactory) {
+    public UnifiMediaServiceImpl(Map<String, Object> properties, @Reference HttpClientFactory httpClientFactory) {
         logger.debug("Initializing with properties: {}", properties.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(", ")));
         config = (new Configuration(properties)).as(UnifiProtectConfiguration.class);
 
-        this.httpService = httpService;
         this.httpClient = httpClientFactory.createHttpClient(UnifiProtectBindingConstants.BINDING_ID,
                 new SslContextFactory.Client(true));
         try {
@@ -121,24 +97,6 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             nativeHelper.ensureGo2Rtc();
         } catch (IOException e) {
             logger.debug("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage(), e);
-        }
-        try {
-            registerServlet(playBasePath, new PlayStreamServlet(this, httpClient));
-            registerServlet(imageBasePath, new ImageServlet(this));
-        } catch (ServletException | NamespaceException e) {
-            unregisterServlets();
-            logger.debug("Failed to activate UnifiMediaServiceImpl", e);
-            throw new IllegalStateException("Failed to activate UnifiMediaServiceImpl", e);
-        }
-        // Legacy aliases are best-effort backward compatibility (the HttpService keys servlets by
-        // class name, hence the dedicated subclasses). A failure here must not take down the media
-        // service, so it is logged and swallowed rather than failing activation.
-        try {
-            registerServlet(legacyPlayBasePath, new LegacyPlayStreamServlet(this, httpClient));
-            registerServlet(legacyImageBasePath, new LegacyImageServlet(this));
-        } catch (ServletException | NamespaceException e) {
-            logger.debug("Could not register legacy media servlets; pre-merge unifiprotect URLs will not resolve: {}",
-                    e.getMessage());
         }
         logger.debug("UnifiMediaServiceImpl activated");
     }
@@ -174,33 +132,6 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
         } catch (Exception e) {
             logger.debug("Error stopping HTTP client", e);
         }
-        unregisterServlets();
-    }
-
-    /**
-     * Registers a servlet under the given alias, tracking it for later cleanup. Any stale
-     * registration left behind by a previously failed activation is dropped first so the alias can
-     * be reclaimed without requiring a full restart.
-     */
-    private void registerServlet(String alias, Servlet servlet) throws ServletException, NamespaceException {
-        try {
-            httpService.unregister(alias);
-        } catch (RuntimeException ignored) {
-            // Nothing was registered under this alias; expected on a clean activation.
-        }
-        httpService.registerServlet(alias, servlet, null, null);
-        registeredPaths.add(alias);
-    }
-
-    private void unregisterServlets() {
-        for (String alias : registeredPaths) {
-            try {
-                httpService.unregister(alias);
-            } catch (Exception e) {
-                logger.debug("Error unregistering servlet {}", alias, e);
-            }
-        }
-        registeredPaths.clear();
     }
 
     @Override
@@ -256,12 +187,12 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
 
     @Override
     public String getPlayBasePath() {
-        return playBasePath;
+        return PlayStreamServlet.PATH;
     }
 
     @Override
     public String getImageBasePath() {
-        return imageBasePath;
+        return ImageServlet.PATH;
     }
 
     private void rebuildAndApplyYaml(ThingUID uid) {

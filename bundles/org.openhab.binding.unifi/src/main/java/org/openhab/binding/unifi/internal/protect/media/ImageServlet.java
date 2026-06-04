@@ -14,14 +14,21 @@ package org.openhab.binding.unifi.internal.protect.media;
 
 import java.io.IOException;
 
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.protect.UnifiProtectBindingConstants;
 import org.openhab.binding.unifi.internal.protect.handler.UnifiProtectCameraHandler;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +38,23 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
+@Component(immediate = true, service = Servlet.class)
+@HttpWhiteboardServletName(ImageServlet.SERVLET_NAME)
+@HttpWhiteboardServletPattern({ ImageServlet.PATH + "/*", ImageServlet.LEGACY_PATH + "/*" })
 public class ImageServlet extends HttpServlet {
+    // The new path under the unified binding, plus the pre-merge unifiprotect path so snapshot URLs
+    // that existing installs cached before the merge keep resolving. Both patterns map to this one
+    // servlet, which the HTTP whiteboard allows (unlike registering the same class twice manually).
+    public static final String PATH = "/" + UnifiProtectBindingConstants.BINDING_ID + "/media/image";
+    public static final String LEGACY_PATH = "/" + UnifiProtectBindingConstants.LEGACY_BINDING_ID + "/media/image";
+    static final String SERVLET_NAME = "UniFiProtectImageServlet";
+
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(ImageServlet.class);
     private final UnifiMediaService mediaService;
 
-    public ImageServlet(UnifiMediaService mediaService) {
+    @Activate
+    public ImageServlet(@Reference UnifiMediaService mediaService) {
         this.mediaService = mediaService;
     }
 
