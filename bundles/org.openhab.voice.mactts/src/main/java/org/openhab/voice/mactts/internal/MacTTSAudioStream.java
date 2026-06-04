@@ -86,8 +86,8 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
 
     private InputStream createInputStream() throws AudioException {
         String outputFile = generateOutputFilename();
-        String command = getCommand(outputFile);
-        logger.debug("Executing on command line: {}", command);
+        String[] command = getCommand(outputFile);
+        logger.debug("Executing on command line: {}", (Object) command);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
@@ -145,19 +145,15 @@ class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
      * @param outputFile The absolute filename of the command's output
      * @return The command used to generate the audio file {@code outputFile}
      */
-    private String getCommand(String outputFile) {
-        StringBuffer stringBuffer = new StringBuffer();
-
-        stringBuffer.append("say");
-
-        stringBuffer.append(" --voice=" + this.voice.getLabel());
-        stringBuffer.append(" --output-file=" + outputFile);
-        stringBuffer.append(" --file-format=" + this.audioFormat.getContainer());
-        stringBuffer.append(" --data-format=LEI" + audioFormat.getBitDepth() + "@" + audioFormat.getFrequency());
-        stringBuffer.append(" --channels=1"); // Mono
-        stringBuffer.append(" " + this.text);
-
-        return stringBuffer.toString();
+    private String[] getCommand(String outputFile) {
+        return new String[] { //
+                "say", //
+                "--voice=" + this.voice.getLabel(), //
+                "--output-file=" + outputFile, //
+                "--file-format=" + this.audioFormat.getContainer(), //
+                "--data-format=LEI" + audioFormat.getBitDepth() + "@" + audioFormat.getFrequency(), //
+                "--channels=1", //
+                this.text };
     }
 
     @Override

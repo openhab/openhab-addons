@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: PPC SMGW Binding</name>
 
-  <properties>
-    <jsoup.version>1.15.3</jsoup.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.jsoup</groupId>

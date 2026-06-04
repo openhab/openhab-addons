@@ -48,7 +48,7 @@ public class PythonScriptEngineConfiguration {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineConfiguration.class);
 
     private static final String SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE = "polyglot.engine.userResourceCache";
-
+    private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
     private static final String SYSTEM_PROPERTY_JAVA_IO_TMPDIR = "java.io.tmpdir";
 
     public static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
@@ -67,12 +67,16 @@ public class PythonScriptEngineConfiguration {
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
 
+    private static final int DEBUGGER_PORT_DEFAULT = 9230;
+
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
         public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
+        public boolean debuggerEnabled = false;
+        public int debuggerPort = DEBUGGER_PORT_DEFAULT;
         public String pipModules = "";
     }
 
@@ -92,6 +96,11 @@ public class PythonScriptEngineConfiguration {
     public static Version parseHelperLibVersion(@Nullable String version) throws IllegalArgumentException {
         // substring(1) => remove leading 'v'
         return Version.parse(version != null && version.startsWith("v") ? version.substring(1) : version);
+    }
+
+    static {
+        // disable warning about missing TruffleAttach library (is only available in graalvm)
+        System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
     }
 
     @Activate
@@ -123,6 +132,7 @@ public class PythonScriptEngineConfiguration {
         Properties props = System.getProperties();
         props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
                 userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+        props.setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
 
         String packageName = PythonScriptEngineConfiguration.class.getPackageName();
         packageName = packageName.substring(0, packageName.lastIndexOf("."));
@@ -153,21 +163,30 @@ public class PythonScriptEngineConfiguration {
     public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
         int oldInjectionEnabled = configuration.injectionEnabled;
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
-
         String oldPipModules = configuration.pipModules;
+        boolean oldDebuggerEnabled = configuration.debuggerEnabled;
+        int oldDebuggerPort = configuration.debuggerPort;
+
         configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+
         if (!oldPipModules.equals(configuration.pipModules)) {
             PythonScriptEngineHelper.initPipModules(this, factory);
         }
 
         if (oldInjectionEnabled != configuration.injectionEnabled) {
-            logger.info(
+            logger.warn(
                     "Changed helper module setting for Python Scripting. Please resave your python scripts to apply this change.");
         }
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
-            logger.info(
+            logger.warn(
                     "{} dependency tracking for Python Scripting. Please resave your python scripts to apply this change.",
                     isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
+        }
+        if (oldDebuggerEnabled != configuration.debuggerEnabled) {
+            logger.warn("{} debugger for Python Scripting. Restart openHAB to apply this change.",
+                    configuration.debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != configuration.debuggerPort) {
+            logger.warn("Reconfigured debugger for Python Scripting. Restart openHAB to apply this change.");
         }
     }
 
@@ -201,6 +220,14 @@ public class PythonScriptEngineConfiguration {
 
     public boolean isJythonEmulation() {
         return configuration.jythonEmulation;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return configuration.debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return configuration.debuggerPort;
     }
 
     public String getPIPModules() {

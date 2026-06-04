@@ -21,7 +21,7 @@ import com.jayway.jsonpath.JsonPath;
  * This class wraps JSONPath document context, insulating clients from needing to understand the underlying
  * JSONPath library and API, and ensuring that parsed JSON is cached where possible.
  *
- * @author Jonathan Gilbert
+ * @author Jonathan Gilbert - Initial contribution
  */
 @NonNullByDefault
 public class DeviceState {

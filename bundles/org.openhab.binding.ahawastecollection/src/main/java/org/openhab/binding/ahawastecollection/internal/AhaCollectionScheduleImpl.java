@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,7 +82,7 @@ final class AhaCollectionScheduleImpl implements AhaCollectionSchedule {
 
         if (table.isEmpty()) {
             logger.warn("No result table found.");
-            return Collections.emptyMap();
+            return Map.of();
         }
 
         final Iterator<Element> rowIt = table.get(0).getElementsByTag("tr").iterator();

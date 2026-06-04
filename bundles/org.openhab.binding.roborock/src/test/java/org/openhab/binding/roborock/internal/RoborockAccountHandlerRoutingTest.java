@@ -14,8 +14,10 @@ package org.openhab.binding.roborock.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+@NonNullByDefault({})
 class RoborockAccountHandlerRoutingTest {
 
     @Test

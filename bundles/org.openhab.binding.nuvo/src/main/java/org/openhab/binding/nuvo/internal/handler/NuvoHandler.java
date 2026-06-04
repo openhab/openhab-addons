@@ -154,7 +154,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private NuvoConnector connector = new NuvoIpConnector();
     private long lastEventReceived = System.currentTimeMillis();
     private int numZones = 1;
-    private String versionString = BLANK;
     private boolean isGConcerto = false;
     private Object sequenceLock = new Object();
 
@@ -702,14 +701,14 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         final String updateData = evt.getValue().trim();
 
         if (this.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
+            updateStatus(ThingStatus.ONLINE);
         }
 
         switch (evt.getType()) {
             case TYPE_VERSION:
-                this.versionString = updateData;
+                updateProperty(Thing.PROPERTY_MODEL_ID, updateData);
                 // Determine if we are a Grand Concerto or not
-                if (this.versionString.contains(GC_STR)) {
+                if (updateData.contains(GC_STR)) {
                     logger.debug("Grand Concerto detected");
                     this.isGConcerto = true;
                     connector.setEssentia(false);

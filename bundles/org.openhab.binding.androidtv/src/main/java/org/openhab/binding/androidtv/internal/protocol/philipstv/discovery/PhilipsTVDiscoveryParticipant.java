@@ -15,7 +15,6 @@ package org.openhab.binding.androidtv.internal.protocol.philipstv.discovery;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,7 @@ public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_PHILIPSTV);
+        return Set.of(THING_TYPE_PHILIPSTV);
     }
 
     @Override

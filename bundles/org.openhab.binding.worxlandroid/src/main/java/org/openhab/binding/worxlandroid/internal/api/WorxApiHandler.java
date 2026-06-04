@@ -26,7 +26,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.worxlandroid.internal.api.dto.ProductItemStatus;
-import org.openhab.binding.worxlandroid.internal.api.dto.UsersMeResponse;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -46,14 +45,11 @@ import com.google.gson.reflect.TypeToken;
 public class WorxApiHandler {
     private static final String URL_BASE = "https://api.worxlandroid.com/api/v2/";
     private static final String URL_PRODUCT_ITEMS = URL_BASE + "product-items";
-    private static final String URL_USERS_ME = URL_BASE + "users/me";
     private static final int TIMEOUT_S = 15;
 
     private static final Type PRODUCT_ITEM_STATUS_LIST = new TypeToken<List<ProductItemStatus>>() {
     }.getType();
     private static final Type PRODUCT_ITEM_STATUS = new TypeToken<ProductItemStatus>() {
-    }.getType();
-    private static final Type USERS_ME = new TypeToken<UsersMeResponse>() {
     }.getType();
 
     private final Logger logger = LoggerFactory.getLogger(WorxApiHandler.class);
@@ -121,10 +117,6 @@ public class WorxApiHandler {
 
     public ProductItemStatus retrieveDeviceStatus(String token, String serialNumber) throws WebApiException {
         return apiGet("%s/%s?status=1".formatted(URL_PRODUCT_ITEMS, serialNumber), token, PRODUCT_ITEM_STATUS);
-    }
-
-    public UsersMeResponse retrieveMe(String token) throws WebApiException {
-        return apiGet(URL_USERS_ME, token, USERS_ME);
     }
 
     public boolean resetBladeTime(String token, String serialNumber) {

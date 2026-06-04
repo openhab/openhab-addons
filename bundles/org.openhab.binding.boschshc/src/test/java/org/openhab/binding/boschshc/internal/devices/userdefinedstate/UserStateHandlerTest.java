@@ -110,7 +110,7 @@ class UserStateHandlerTest extends AbstractBoschSHCHandlerTest<UserStateHandler>
     void initializeWithoutId() {
         when(getThing().getConfiguration()).thenReturn(new Configuration());
 
-        getFixture().initialize();
+        getFixture().thingUpdated(getThing());
 
         verify(getCallback()).statusUpdated(same(getThing()),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)

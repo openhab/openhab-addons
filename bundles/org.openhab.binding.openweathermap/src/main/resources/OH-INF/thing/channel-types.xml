@@ -124,6 +124,22 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="airPollutionHourlyTimeSeries">
+		<label>Air Pollution Hourly Forecast</label>
+		<description>Hourly air pollution forecast.</description>
+		<channels>
+			<channel id="airQualityIndex" typeId="air-quality-index"/>
+			<channel id="particulateMatter2dot5" typeId="particulate-matter-2dot5"/>
+			<channel id="particulateMatter10" typeId="particulate-matter-10"/>
+			<channel id="carbonMonoxide" typeId="carbon-monoxide"/>
+			<channel id="nitrogenMonoxide" typeId="nitrogen-monoxide"/>
+			<channel id="nitrogenDioxide" typeId="nitrogen-dioxide"/>
+			<channel id="ozone" typeId="ozone"/>
+			<channel id="sulphurDioxide" typeId="sulphur-dioxide"/>
+			<channel id="ammonia" typeId="ammonia"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="oneCallCurrent">
 		<label>One Call API Current Weather</label>
 		<description>Current weather data from the One Call API.</description>

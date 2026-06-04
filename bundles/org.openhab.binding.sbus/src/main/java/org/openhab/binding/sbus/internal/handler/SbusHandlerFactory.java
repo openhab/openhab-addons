@@ -43,7 +43,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
             THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR,
-            THING_TYPE_MOTION_SENSOR, THING_TYPE_LUX_SENSOR);
+            THING_TYPE_MOTION_SENSOR, THING_TYPE_LUX_SENSOR, THING_TYPE_DATE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -86,6 +86,9 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_LUX_SENSOR)) {
             logger.debug("Creating Sbus lux sensor handler for thing {}", thing.getUID());
             return new SbusLuxSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_DATE)) {
+            logger.debug("Creating Sbus date/time handler for thing {}", thing.getUID());
+            return new SbusDateTimeHandler(thing);
         }
 
         logger.debug("Unknown thing type: {}", thingTypeUID);

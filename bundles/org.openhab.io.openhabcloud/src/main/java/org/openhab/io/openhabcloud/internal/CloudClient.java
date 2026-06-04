@@ -1051,9 +1051,10 @@ public class CloudClient {
                         try {
                             HttpConversation conversation = request.getConversation();
                             EndPoint endPoint = (EndPoint) conversation.getAttribute(EndPoint.class.getName());
-                            if (endPoint == null)
+                            if (endPoint == null) {
                                 throw new HttpResponseException("Upgrade without " + EndPoint.class.getSimpleName(),
                                         response);
+                            }
                             OpenHABWebSocketConnection ohWebSocketConnection = new OpenHABWebSocketConnection(requestId,
                                     endPoint, response, ioSocketSupplier, client);
                             websocketConnections.put(request, ohWebSocketConnection);
@@ -1281,15 +1282,17 @@ public class CloudClient {
 
         private void acquireNetworkBuffer() {
             try (var l = lock.lock()) {
-                if (networkBuffer == null)
+                if (networkBuffer == null) {
                     networkBuffer = new RetainableByteBuffer(byteBufferPool, getInputBufferSize());
+                }
             }
         }
 
         private void releaseNetworkBuffer() {
             try (var l = lock.lock()) {
-                if (networkBuffer == null)
+                if (networkBuffer == null) {
                     throw new IllegalStateException();
+                }
                 networkBuffer.release();
                 networkBuffer = null;
             }

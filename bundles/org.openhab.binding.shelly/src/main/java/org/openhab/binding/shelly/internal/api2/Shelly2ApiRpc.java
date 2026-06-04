@@ -13,7 +13,6 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,22 +45,12 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
@@ -89,7 +79,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -130,8 +120,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
-        super(thingName, thing);
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+        super(thingName, config, thing);
         this.thingTable = thingTable;
         this.client = webSocketClient;
         this.scheduler = scheduler;
@@ -139,13 +129,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        setConfig(thingName, config);
-
+    public void initialize() {
         if (alwaysOn) {
             disconnect();
-            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
+            InetSocketAddress socketAddr = config.getDeviceSocketAddress();
+            if (socketAddr == null) {
+                logger.warn("{}: Failed to initialize because the IP address is unknown", thingName);
+                return;
+            }
+            Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket(thingName, thingTable, socketAddr, client, scheduler);
             rpcSocket.addMessageHandler(this);
+            this.rpcSocket = rpcSocket;
         }
 
         initialized = true;
@@ -159,194 +153,37 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void startScan() {
         try {
-            if (getProfile().isBlu) {
-                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+            if (!profile.isBlu) { // Do not try for BLU devices
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
+            logger.trace("{}: Unable to start/stop {}", thingName, SHELLY2_BLU_GWSCRIPT);
         }
     }
 
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
+        ShellyDeviceProfile profile = this.profile;
+        boolean firstInit = !profile.initialized;
 
-        if (devInfo != null) {
-            profile.device = devInfo;
-        }
-        if (profile.device.type == null) {
-            profile.device = getDeviceInfo();
-        }
-
-        Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
-        profile.settingsJson = gson.toJson(dc);
-        profile.thingName = thingName;
-        profile.settings.name = profile.status.name = dc.sys.device.name;
-        profile.name = getString(profile.settings.name);
-        profile.settings.timezone = getString(dc.sys.location.tz);
-        profile.settings.discoverable = getBool(dc.sys.device.discoverable);
-        if (dc.wifi != null && dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.wifiAp.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
-        }
-        if (dc.cloud != null) {
-            profile.settings.cloud.enabled = getBool(dc.cloud.enable);
-        }
-        if (dc.mqtt != null) {
-            profile.settings.mqtt.enable = getBool(dc.mqtt.enable);
-        }
-        if (dc.sys.sntp != null) {
-            profile.settings.sntp.server = dc.sys.sntp.server;
-        }
-
-        profile.isRoller = dc.cover0 != null;
-        profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
-        profile.settings.inputs = fillInputSettings(profile, dc);
-        profile.settings.rollers = fillRollerSettings(profile, dc);
-        profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
-
-        profile.isEMeter = true;
-        List<ShellySettingsInput> inputs = profile.settings.inputs;
-        profile.numInputs = inputs != null ? inputs.size() : 0;
-
-        List<ShellySettingsRelay> relays = profile.settings.relays;
-        profile.numRelays = relays != null ? relays.size() : 0;
-
-        List<ShellySettingsRoller> rollers = profile.settings.rollers;
-        profile.numRollers = rollers != null ? rollers.size() : 0;
-        profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
-
-        ShellySettingsDevice device = profile.device;
-        if (config.realm.isBlank()) {
-            config.realm = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as realm", thingName, config.realm);
-        }
-        profile.settings.fw = getString(device.fw);
-        profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
-        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
-                .extractFwVersion(profile.settings.fw);
-        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
-
-        if (dc.eth != null) {
-            profile.settings.ethernet = getBool(dc.eth.enable);
-        }
-        if (dc.ble != null) {
-            profile.settings.bluetooth = getBool(dc.ble.enable);
-        }
-
-        profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
-        profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
-        fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
-        fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
-        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
-        }
-
-        profile.numMeters = 0;
-        if (profile.hasRelays) {
-            profile.status.relays = new ArrayList<>();
-            relayStatus.relays = new ArrayList<>();
-            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
-            for (int i = 0; i < profile.numRelays; i++) {
-                profile.status.relays.add(new ShellySettingsRelay());
-                relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-        }
-
-        if (profile.numInputs > 0) {
-            profile.status.inputs = new ArrayList<>();
-            relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                ShellyInputState input = new ShellyInputState(i);
-                profile.status.inputs.add(input);
-                relayStatus.inputs.add(input);
-            }
-        }
-
-        // handle special cases, because there is no indicator for a meter in GetConfig
-        // Pro 3EM has 3 meters
-        // Pro 2 has 2 relays, but no meters
-        // Mini PM has 1 meter, but no relay
-        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
-        if (numMeters != null) {
-            profile.numMeters = numMeters;
-        } else if (dc.pm10 != null) {
-            profile.numMeters = 1;
-        } else if (dc.em0 != null) {
-            profile.numMeters = 3;
-        } else if (dc.em10 != null) {
-            profile.numMeters = 2;
-        }
-
-        if (profile.numMeters > 0) {
-            profile.status.meters = new ArrayList<>();
-            profile.status.emeters = new ArrayList<>();
-            relayStatus.meters = new ArrayList<>();
-
-            for (int i = 0; i < profile.numMeters; i++) {
-                profile.status.meters.add(new ShellySettingsMeter());
-                profile.status.emeters.add(new ShellySettingsEMeter());
-                relayStatus.meters.add(new ShellySettingsMeter());
-            }
-        }
-
-        if (profile.settings.inputs != null) {
-            relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                relayStatus.inputs.add(new ShellyInputState(0));
-            }
-        }
-
-        if (profile.isRoller) {
-            profile.status.rollers = new ArrayList<>();
-            for (int i = 0; i < profile.numRollers; i++) {
-                ShellyRollerStatus rs = new ShellyRollerStatus();
-                profile.status.rollers.add(rs);
-                rollerStatus.add(rs);
-            }
-        }
-
-        if (profile.isDimmer) {
-            ArrayList<@Nullable ShellySettingsDimmer> dimmers = new ArrayList<>();
-            dimmers.add(new ShellySettingsDimmer());
-            profile.settings.dimmers = dimmers;
-            profile.status.dimmers = new ArrayList<>();
-            profile.status.dimmers.add(new ShellyShortLightStatus());
-            fillDimmerSettings(profile, dc);
-        }
-        profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
-        if (profile.isRGBW2) {
-            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
-            rgbwLights.add(new ShellySettingsRgbwLight());
-            profile.settings.lights = rgbwLights;
-            profile.status.lights = new ArrayList<>();
-            profile.status.lights.add(new ShellySettingsLight());
-            fillRgbwSettings(profile, dc);
-        }
-        profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
+        Shelly2GetConfigResult dc = initProfile(profile, thingTypeUID, devInfo);
 
         if (profile.hasBattery) {
-            profile.settings.sleepMode = new ShellySensorSleepMode();
-            profile.settings.sleepMode.unit = "m";
-            profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
             checkSetWsCallback();
         }
-
-        if (dc.led != null) {
-            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
-        }
-
-        if (!profile.initialized && alwaysOn) {
-            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+        if (firstInit && alwaysOn) {
+            getStatus(); // make sure profile.status is initialized (e.g. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
         profile.initialized = true;
 
         try {
             if (alwaysOn && dc.ble != null) {
+                boolean enableBluGateway = config.getEnableBluGateway();
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
-                        config.enableBluGateway ? "enabled" : "disabled");
-                if (config.enableBluGateway) {
+                        enableBluGateway ? "enabled" : "disabled");
+                if (enableBluGateway) {
                     boolean bluetooth = getBool(dc.ble.enable);
                     boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
                     if (!bluetooth) {
@@ -362,7 +199,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         restart = setBluetooth(true);
                     }
 
-                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+                    installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
 
                     if (restart) {
                         logger.info("{}: Restart device to activate BLU Gateway", thingName);
@@ -380,9 +217,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
-        String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
-        if (!config.localIp.isEmpty() && !getBool(wsConfig.enable)
-                || !url.equalsIgnoreCase(getString(wsConfig.server))) {
+        String url = config.getWebSocketCallback();
+        if (!url.isEmpty() && (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server)))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
             wsConfig.server = url;
@@ -593,9 +429,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onConnect(String deviceIp, boolean connected) {
-        thing = thingTable.getThing(deviceIp);
-        logger.debug("{}: Get thing from thingTable", thingName);
+    public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
+        thing = thingTable.getThing(deviceSocketAddr);
+        logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
     }
 
     @Override
@@ -722,7 +558,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_OTADONE:
                     logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
                     getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
-                            "message.offline.status-error-fwcompleted");
+                            "offline.status-error-fwcompleted");
                     break;
                 case SHELLY2_EVENT_RESTART:
                     logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
@@ -731,7 +567,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     getThing().postEvent(ALARM_TYPE_RESTARTED, true);
                     break;
                 case SHELLY2_EVENT_SLEEP:
-                    logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
+                    logger.debug("{}: Device signaled sleep mode", thingName);
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));
@@ -1052,8 +888,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        params.user = "admin";
-        params.realm = config.realm;
+        params.user = SHELLY2_DEFAULT_USERID;
+        params.realm = config.getRealm();
         params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
         apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
 
@@ -1258,10 +1094,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
-        Shelly2RpcBaseMessage request = buildRequest(method, null);
-        reconnect();
+        if (alwaysOn) {
+            reconnect();
+        }
+
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
+            Shelly2RpcBaseMessage request = buildRequest(method, null);
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
         } else {
             throw new ShellyApiException("RPC socket isn't connected, cannot send async request");

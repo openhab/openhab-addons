@@ -166,7 +166,6 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
      * Configures this thing
      */
     private void configure() {
-
         try {
             disconnect();
         } catch (ExecutionException | InterruptedException e) {
@@ -276,6 +275,8 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
 
     @Override
     public void onUpdateAccepted(String deviceId, String msg) {
+        logger.trace("onUpdateAccepted[{}]: {}", deviceId, msg);
+
         DeviceState partialState = DeviceState.parse(msg);
 
         Collection<ChannelDef> channelDefs = this.channelDefs;

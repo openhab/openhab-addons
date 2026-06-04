@@ -167,7 +167,6 @@ public class NeeoBrainService extends DefaultServletService {
                 handleDirectory(req, resp, pathInfo);
             } else {
                 logger.debug("Unknown/unhandled brain service device route (POST): {}", String.join("/", paths));
-
             }
         } else {
             logger.debug("Unknown/unhandled brain service route (POST): {}", String.join("/", paths));
@@ -228,7 +227,6 @@ public class NeeoBrainService extends DefaultServletService {
                     default:
                         logger.debug("Unknown action: {}", action);
                 }
-
             } else {
                 logger.debug("Unknown/unhandled brain service route (GET): {}", String.join("/", paths));
             }

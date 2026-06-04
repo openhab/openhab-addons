@@ -19,18 +19,33 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TooManyListenersException;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
+import javax.sip.TransportNotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +53,7 @@ import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DHIPEventListene
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.binding.dahuadoor.internal.media.Go2RtcManager;
 import org.openhab.binding.dahuadoor.internal.media.PlayStreamServlet;
+import org.openhab.binding.dahuadoor.internal.media.SipBackchannelRtpRelay;
 import org.openhab.binding.dahuadoor.internal.media.SipBackchannelSession;
 import org.openhab.binding.dahuadoor.internal.sip.SipClient;
 import org.openhab.binding.dahuadoor.internal.sip.SipEventListener;
@@ -61,8 +77,7 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link DahuaDoorBaseHandler} is responsible for handling commands, which
- * are
- * sent to one of the channels.
+ * are sent to one of the channels.
  *
  * @author Sven Schad - Initial contribution
  */
@@ -78,19 +93,56 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     private final PlayStreamServlet playStreamServlet;
     private @Nullable Go2RtcManager go2rtcManager;
+    private @Nullable SipBackchannelRtpRelay sipBackchannelRelay;
     private @Nullable SipClient sipClient;
     private @Nullable Future<?> webRtcStartupJob;
     private @Nullable Future<?> sipStartupJob;
     private @Nullable ScheduledFuture<?> sipReRegisterJob;
+    private volatile List<String> configuredOutgoingExtensions = List.of();
     private final Map<String, String> sessionToClientId = new ConcurrentHashMap<>();
-    private final Map<String, SipClient> sipClients = new ConcurrentHashMap<>();
+    private final Map<String, SipClient> outgoingSipClients = new ConcurrentHashMap<>();
+    private final Map<String, SipBackchannelRtpRelay> outgoingRelays = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> outgoingReRegisterJobs = new ConcurrentHashMap<>();
+    private final Map<String, String> outgoingStreamNames = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> registrationState = new ConcurrentHashMap<>();
     private final Map<String, SipBackchannelSession> backchannelSessionsByHttpSession = new ConcurrentHashMap<>();
-    private static final String[] AVAILABLE_CLIENT_IDS = { "client-1", "client-2", "client-3" };
-    private static final long DOORBELL_EVENT_DEDUP_MS = 1500;
+    private static final int SIP_BACKCHANNEL_LISTEN_PORT_OFFSET = 20000;
+    private static final long SIP_INVITE_DEDUP_MS = 1500;
+    private static final String CALL_SNAP_RING_STATE = "RingState";
+    private static final String CALL_SNAP_IDLE_STATE = "IdleState";
     private static final long SESSION_TTL_MS = TimeUnit.MINUTES.toMillis(30);
     private static final int MAX_SESSION_MAPPINGS = 256;
+    private static final int DHIP_DOWNLOAD_TIMEOUT_MS = 5000;
+    private static final String SNAPSHOT_MODE_API = "api";
+    private static final String SNAPSHOT_MODE_DHIP = "dhip";
+    private static final String REMOTE_PATH_SNAPSHOT_ACCESS_CONTROL = "/mnt/sd/SnapShot/AccessControl/";
+    private static final String REMOTE_PATH_RECORD = "/mnt/sd/Record/";
+    private static final String REMOTE_PATH_SNAPSHOT_CALL = "/mnt/sd/SnapShot/Call/";
+    private static final String REMOTE_PATH_VIDEO_MESSAGE = "/VideoMessage/";
+    private static final String REMOTE_PATH_VIDEO_MESSAGE_UPLOAD = "/VideoMessageUpload/";
+    private static final String FILE_SUFFIX_JPG = ".jpg";
+    private static final String FILE_SUFFIX_DAV = ".dav";
+    private static final String FILE_SUFFIX_IDX = ".idx";
+    private static final String DOORBELL_FILE_PREFIX = "Doorbell_";
+    private static final String DOORBELL_HANGUP_FILE_PREFIX = "Doorbell_hangup_";
+    private static final String DOORBELL_UNLOCK_FILE_PREFIX = "Doorbell_unlock_";
+    private static final String DOORBELL_RECORDING_FILE_PREFIX = "Doorbell_rec_";
+    private static final String DOORBELL_MESSAGE_FILE_PREFIX = "Doorbell_msg_";
+    private static final String LOCALE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DOORBELL_TIMESTAMP_PATTERN = "yyyy-MM-dd_HH-mm-ss";
+    private static final String PRIMARY_SNAPSHOT_SUFFIX = "[0@0][0].jpg";
     private volatile boolean disposed;
-    private volatile long lastDoorbellEventTs = 0L;
+    private volatile long lastSipInviteTs = 0L;
+    private volatile int lastDoorbellLockNumber = 1;
+    private volatile @Nullable String lastCallSnapStatus;
+
+    protected enum NewFileClass {
+        RING_OR_HANGUP_SNAPSHOT,
+        UNLOCK_SNAPSHOT,
+        AUTO_RECORDING,
+        VIDEO_MESSAGE,
+        UNKNOWN
+    }
 
     public DahuaDoorBaseHandler(Thing thing, PlayStreamServlet playStreamServlet) {
         super(thing);
@@ -155,8 +207,16 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
+        if ((localConfig.enableWebRTC || localConfig.enableSip) && !validateBackchannelPorts(localConfig)) {
+            return;
+        }
+
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
+
+        if (localConfig.enableWebRTC && localConfig.enableSip) {
+            startSipBackchannelRelay(localConfig);
+        }
 
         if (localConfig.enableWebRTC) {
             startWebRtc(localConfig);
@@ -167,8 +227,45 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
         }
 
+        restoreLastSnapshots();
+
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
+        if (parseSipExtensions(cfg.sipExtension).isEmpty()) {
+            return;
+        }
+        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
+        if (!isValidPort(listenPort)) {
+            logger.warn(
+                    "SIP backchannel relay port {} is outside valid range (go2rtcApiPort={}, offset={}) - relay disabled",
+                    listenPort, cfg.go2rtcApiPort, SIP_BACKCHANNEL_LISTEN_PORT_OFFSET);
+            return;
+        }
+        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(getThing().getUID() + "/default", listenPort, 0);
+        try {
+            relay.start();
+            int sourcePort = relay.getSourcePort();
+            if (!isValidPort(sourcePort)) {
+                relay.stop();
+                logger.warn("SIP backchannel relay source port {} is outside valid range - relay disabled", sourcePort);
+                return;
+            }
+            sipBackchannelRelay = relay;
+        } catch (IOException e) {
+            sipBackchannelRelay = null;
+            logger.warn("Failed to start SIP backchannel RTP relay on 127.0.0.1:{}: {}", listenPort, e.getMessage(), e);
+        }
+    }
+
+    private void stopSipBackchannelRelay() {
+        SipBackchannelRtpRelay relay = sipBackchannelRelay;
+        sipBackchannelRelay = null;
+        if (relay != null) {
+            relay.stop();
+        }
     }
 
     /**
@@ -178,16 +275,33 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
      * @param cfg current configuration snapshot
      */
     private void startWebRtc(DahuaDoorConfiguration cfg) {
-        // Derive a URL-safe stream name from the thing UID (replace special chars with _)
         String thingUidSafe = getThing().getUID().toString().replace(":", "_").replace("-", "_").replace(".", "_");
-        String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe;
+        String defaultStreamName = GO2RTC_STREAM_PREFIX + thingUidSafe;
+        List<Go2RtcManager.StreamEntry> streamEntries = new ArrayList<>();
+
+        outgoingStreamNames.clear();
+        List<String> extensions = parseSipExtensions(cfg.sipExtension);
+        if (extensions.isEmpty()) {
+            streamEntries.add(new Go2RtcManager.StreamEntry(defaultStreamName,
+                    cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET));
+        } else {
+            for (int i = 0; i < extensions.size(); i++) {
+                String extension = extensions.get(i);
+                int backchannelPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET + i;
+                String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe + "_sip" + i;
+                streamEntries.add(new Go2RtcManager.StreamEntry(streamName, backchannelPort));
+                outgoingStreamNames.put(extension, streamName);
+            }
+        }
+
+        String mainStreamName = streamEntries.getFirst().streamName();
 
         Go2RtcManager manager = new Go2RtcManager(cfg.go2rtcPath, cfg.go2rtcApiPort, cfg.webRtcPort, cfg.stunServer,
-                streamName, cfg.hostname, cfg.username, cfg.password, cfg.rtspChannel, cfg.rtspSubtype);
+                cfg.hostname, cfg.username, cfg.password, cfg.rtspChannel, cfg.rtspSubtype, streamEntries);
         go2rtcManager = manager;
 
-        // Publish the proxy URL immediately so the UI shows the path even before go2rtc is ready
-        String proxyPath = WEBRTC_SERVLET_PATH + "/" + streamName;
+        String proxyPath = WEBRTC_SERVLET_PATH + "/session?thing="
+                + URLEncoder.encode(getThing().getUID().toString(), StandardCharsets.UTF_8);
         updateState(CHANNEL_WEBRTC_URL, new StringType(proxyPath));
 
         webRtcStartupJob = scheduler.submit(() -> {
@@ -204,13 +318,14 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     return;
                 }
 
-                // 3. Register stream with the SDP proxy servlet
-                playStreamServlet.registerStream(streamName, cfg.go2rtcApiPort);
-                logger.info("WebRTC streaming active for {} at {}", streamName, proxyPath);
+                for (Go2RtcManager.StreamEntry streamEntry : streamEntries) {
+                    playStreamServlet.registerStream(streamEntry.streamName(), cfg.go2rtcApiPort, this);
+                }
+                logger.info("WebRTC streaming active for {} at {}", mainStreamName, proxyPath);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (IOException e) {
-                logger.warn("Failed to start WebRTC streaming for {}: {}", streamName, e.getMessage(), e);
+                logger.warn("Failed to start WebRTC streaming for {}: {}", mainStreamName, e.getMessage(), e);
                 if (!disposed && Objects.equals(go2rtcManager, manager)) {
                     updateState(CHANNEL_WEBRTC_URL, UnDefType.UNDEF);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -245,12 +360,23 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         Go2RtcManager localManager = go2rtcManager;
         go2rtcManager = null;
         if (localManager != null) {
-            playStreamServlet.unregisterStream(localManager.getStreamName());
+            for (String streamName : localManager.getStreamNames()) {
+                playStreamServlet.unregisterStream(streamName);
+            }
             localManager.stop();
         }
+        stopSipBackchannelRelay();
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
+        saveSnapshot(buffer, null);
+    }
+
+    public void saveSnapshot(byte @Nullable [] buffer, int lockNumber) {
+        saveSnapshot(buffer, Integer.valueOf(lockNumber));
+    }
+
+    private void saveSnapshot(byte @Nullable [] buffer, @Nullable Integer lockNumber) {
         final DahuaDoorConfiguration localConfig = config;
         if (localConfig == null) {
             logger.warn("Configuration not initialized");
@@ -272,8 +398,10 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).format(new Date());
-        String filename = localConfig.snapshotPath + "/DoorBell_" + timestamp + ".jpg";
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
+        String timestamp = new SimpleDateFormat(DOORBELL_TIMESTAMP_PATTERN, Locale.ROOT).format(new Date());
+        String prefix = "Doorbell" + suffix + "_";
+        String filename = localConfig.snapshotPath + "/" + buildDoorbellFileName(prefix, timestamp, FILE_SUFFIX_JPG);
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
@@ -282,22 +410,404 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
 
         // Write buffer directly to latest snapshot file (avoids copy-from-source failures)
-        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell.jpg";
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell" + suffix + ".jpg";
         try (FileOutputStream fos = new FileOutputStream(new File(latestSnapshotFilename))) {
             fos.write(buffer);
         } catch (IOException e) {
             logger.warn("Could not write latest snapshot to '{}', check permissions and path", latestSnapshotFilename,
                     e);
         }
+
+        cleanupOldSnapshots(lockNumber);
+    }
+
+    private void cleanupOldSnapshots(@Nullable Integer lockNumber) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.snapshotPath.isEmpty() || localConfig.maxImages <= 0) {
+            return;
+        }
+
+        Path snapshotDir = Path.of(localConfig.snapshotPath);
+        if (!Files.isDirectory(snapshotDir)) {
+            return;
+        }
+
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
+        String prefix = "Doorbell" + suffix + "_";
+        List<Path> candidates = new ArrayList<>();
+
+        try (var stream = Files.list(snapshotDir)) {
+            stream.filter(path -> {
+                String name = path.getFileName().toString();
+                return name.startsWith(prefix) && name.endsWith(".jpg");
+            }).forEach(candidates::add);
+        } catch (IOException e) {
+            logger.warn("Could not list snapshot directory '{}', check permissions and path", localConfig.snapshotPath,
+                    e);
+            return;
+        }
+
+        int maxImages = localConfig.maxImages;
+        if (candidates.size() <= maxImages) {
+            return;
+        }
+
+        candidates.sort((left, right) -> left.getFileName().toString().compareTo(right.getFileName().toString()));
+        int deleteCount = candidates.size() - maxImages;
+        for (int i = 0; i < deleteCount; i++) {
+            Path candidate = candidates.get(i);
+            try {
+                Files.deleteIfExists(candidate);
+            } catch (IOException e) {
+                logger.warn("Could not delete snapshot '{}', check permissions and path", candidate, e);
+            }
+        }
+    }
+
+    private void cleanupOldDhipEventFiles(File targetDir, String prefix) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.maxEvents <= 0) {
+            return;
+        }
+
+        Path eventDir = targetDir.toPath();
+        if (!Files.isDirectory(eventDir)) {
+            return;
+        }
+
+        Map<String, List<Path>> groups = new TreeMap<>();
+        try (var stream = Files.list(eventDir)) {
+            stream.filter(Files::isRegularFile).forEach(path -> {
+                String name = path.getFileName().toString();
+                if (!name.startsWith(prefix)) {
+                    return;
+                }
+                String base = stripExtension(name);
+                List<Path> group = groups.get(base);
+                if (group == null) {
+                    group = new ArrayList<>();
+                    groups.put(base, group);
+                }
+                group.add(path);
+            });
+        } catch (IOException e) {
+            logger.warn("Could not list event directory '{}', check permissions and path", eventDir, e);
+            return;
+        }
+
+        int maxEvents = localConfig.maxEvents;
+        if (groups.size() <= maxEvents) {
+            return;
+        }
+
+        int deleteCount = groups.size() - maxEvents;
+        int removedGroups = 0;
+        for (Map.Entry<String, List<Path>> entry : groups.entrySet()) {
+            if (removedGroups >= deleteCount) {
+                break;
+            }
+            for (Path candidate : entry.getValue()) {
+                try {
+                    Files.deleteIfExists(candidate);
+                } catch (IOException e) {
+                    logger.warn("Could not delete event file '{}', check permissions and path", candidate, e);
+                }
+            }
+            removedGroups++;
+        }
+    }
+
+    private static String stripExtension(String name) {
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     private void updateChannelImage(byte @Nullable [] buffer) {
+        updateImageChannel(CHANNEL_DOOR_IMAGE, buffer);
+    }
+
+    protected void updateImageChannel(String channelId, byte @Nullable [] buffer) {
         if (buffer == null || buffer.length == 0) {
-            updateState(CHANNEL_DOOR_IMAGE, UnDefType.UNDEF);
+            updateState(channelId, UnDefType.UNDEF);
             return;
         }
         RawType image = new RawType(buffer, "image/jpeg");
-        updateState(CHANNEL_DOOR_IMAGE, image);
+        updateState(channelId, image);
+    }
+
+    protected byte @Nullable [] readLatestSnapshot() {
+        return readLatestSnapshotInternal(null);
+    }
+
+    protected byte @Nullable [] readLatestSnapshot(int lockNumber) {
+        return readLatestSnapshotInternal(Integer.valueOf(lockNumber));
+    }
+
+    private byte @Nullable [] readLatestSnapshotInternal(@Nullable Integer lockNumber) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.snapshotPath.isEmpty()) {
+            return null;
+        }
+
+        String suffix = lockNumber == null ? "" : "-" + lockNumber;
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell" + suffix + ".jpg";
+        return readSnapshotFile(latestSnapshotFilename);
+    }
+
+    private byte @Nullable [] readSnapshotFile(String filename) {
+        Path path = Path.of(filename);
+        if (!Files.isRegularFile(path)) {
+            return null;
+        }
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            logger.warn("Could not read snapshot from '{}', check permissions and path", filename, e);
+            return null;
+        }
+    }
+
+    protected void restoreLastSnapshots() {
+    }
+
+    protected boolean isDhipSnapshotMode() {
+        DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null) {
+            return false;
+        }
+        String configuredMode = localConfig.snapshotMode;
+        if (SNAPSHOT_MODE_DHIP.equalsIgnoreCase(configuredMode)) {
+            return true;
+        }
+        if (!SNAPSHOT_MODE_API.equalsIgnoreCase(configuredMode)) {
+            logger.debug("Unknown snapshotMode '{}', falling back to '{}'.", configuredMode, SNAPSHOT_MODE_API);
+        }
+        return false;
+    }
+
+    protected void requestApiSnapshotForChannel(String channelId, String sourceLabel) {
+        requestApiSnapshotForChannel(channelId, sourceLabel, null);
+    }
+
+    protected void requestApiSnapshotForChannel(String channelId, String sourceLabel, @Nullable Integer lockNumber) {
+        DahuaEventClient localClient = client;
+        if (localClient == null) {
+            logger.warn("Client not initialized, cannot retrieve {} image", sourceLabel);
+            return;
+        }
+
+        byte[] buffer = localClient.requestImage();
+        if (buffer != null && buffer.length > 0) {
+            updateState(channelId, new RawType(buffer, "image/jpeg"));
+            saveSnapshot(buffer, lockNumber);
+        } else {
+            logger.warn("Received empty or null image buffer from {}", sourceLabel);
+        }
+    }
+
+    private NewFileClass classifyNewFile(String filePath) {
+        if (filePath.contains(REMOTE_PATH_SNAPSHOT_ACCESS_CONTROL) && filePath.endsWith(FILE_SUFFIX_JPG)) {
+            return NewFileClass.UNLOCK_SNAPSHOT;
+        }
+        if (filePath.contains(REMOTE_PATH_RECORD) && filePath.endsWith(FILE_SUFFIX_DAV)) {
+            return NewFileClass.AUTO_RECORDING;
+        }
+        if (filePath.contains(REMOTE_PATH_SNAPSHOT_CALL) && filePath.endsWith(FILE_SUFFIX_JPG)) {
+            return NewFileClass.RING_OR_HANGUP_SNAPSHOT;
+        }
+        if (filePath.contains(REMOTE_PATH_VIDEO_MESSAGE) || filePath.contains(REMOTE_PATH_VIDEO_MESSAGE_UPLOAD)) {
+            return NewFileClass.VIDEO_MESSAGE;
+        }
+        return NewFileClass.UNKNOWN;
+    }
+
+    private boolean isPrimarySnapshotVariant(String filePath) {
+        return filePath.endsWith(PRIMARY_SNAPSHOT_SUFFIX);
+    }
+
+    private boolean isHangupSnapshotByCallState() {
+        return CALL_SNAP_IDLE_STATE.equalsIgnoreCase(lastCallSnapStatus);
+    }
+
+    private static String getBaseName(String remotePath) {
+        int slash = remotePath.lastIndexOf('/');
+        if (slash < 0 || slash + 1 >= remotePath.length()) {
+            return remotePath;
+        }
+        return remotePath.substring(slash + 1);
+    }
+
+    private static @Nullable String deriveRecordingJpgRemotePath(String remoteDavPath) {
+        int slash = remoteDavPath.lastIndexOf('/');
+        if (slash < 0 || !remoteDavPath.endsWith(FILE_SUFFIX_DAV)) {
+            return null;
+        }
+        String name = remoteDavPath.substring(slash + 1, remoteDavPath.length() - FILE_SUFFIX_DAV.length());
+        int dash = name.indexOf('-');
+        if (dash <= 0) {
+            return null;
+        }
+        String start = name.substring(0, dash);
+        return remoteDavPath.substring(0, slash + 1) + start + FILE_SUFFIX_JPG;
+    }
+
+    private static @Nullable String deriveRecordingIdxRemotePath(String remoteDavPath) {
+        if (!remoteDavPath.endsWith(FILE_SUFFIX_DAV)) {
+            return null;
+        }
+        return remoteDavPath.substring(0, remoteDavPath.length() - FILE_SUFFIX_DAV.length()) + FILE_SUFFIX_IDX;
+    }
+
+    private static String deriveFileSuffix(String path) {
+        int dot = path.lastIndexOf('.');
+        if (dot < 0 || dot + 1 >= path.length()) {
+            return "";
+        }
+        return path.substring(dot);
+    }
+
+    private static String buildDoorbellTimestampFromLocaleTime(String localeTime) {
+        SimpleDateFormat targetFormat = new SimpleDateFormat(DOORBELL_TIMESTAMP_PATTERN, Locale.ROOT);
+        if (!"unknown".equals(localeTime)) {
+            try {
+                Date parsed = new SimpleDateFormat(LOCALE_TIME_PATTERN, Locale.ROOT).parse(localeTime);
+                if (parsed != null) {
+                    return targetFormat.format(parsed);
+                }
+            } catch (ParseException e) {
+                // Fall back to current time if device localeTime has an unexpected format.
+            }
+        }
+        return targetFormat.format(new Date());
+    }
+
+    private static String buildDoorbellFileName(String prefix, String timestamp, String suffix) {
+        return prefix + timestamp + suffix;
+    }
+
+    protected String getDoorImageChannelForLock(int lockNumber) {
+        return CHANNEL_DOOR_IMAGE;
+    }
+
+    protected String getDoorbellSnapshotSuffixForLock(int lockNumber) {
+        return "";
+    }
+
+    private void recordLastDoorbellLock(int lockNumber) {
+        lastDoorbellLockNumber = lockNumber;
+    }
+
+    private void writeLatestSnapshot(byte[] buffer, String suffix) {
+        DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || localConfig.snapshotPath.isEmpty()) {
+            return;
+        }
+
+        File snapshotDir = new File(localConfig.snapshotPath);
+        if (!snapshotDir.exists() && !snapshotDir.mkdirs()) {
+            logger.warn("Could not create snapshot directory '{}' for latest snapshot", localConfig.snapshotPath);
+            return;
+        }
+
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell" + suffix + ".jpg";
+        try (FileOutputStream fos = new FileOutputStream(new File(latestSnapshotFilename))) {
+            fos.write(buffer);
+        } catch (IOException e) {
+            logger.warn("Could not write latest snapshot to '{}'", latestSnapshotFilename, e);
+        }
+    }
+
+    private File resolveTargetDirForEvent(NewFileClass eventClass, DahuaDoorConfiguration cfg, boolean hangupSnapshot) {
+        return switch (eventClass) {
+            case AUTO_RECORDING -> new File(cfg.recordingPath);
+            case VIDEO_MESSAGE -> new File(cfg.videoMessagePath);
+            case RING_OR_HANGUP_SNAPSHOT ->
+                hangupSnapshot ? new File(cfg.hangupSnapshotPath) : new File(cfg.snapshotPath);
+            case UNLOCK_SNAPSHOT -> new File(cfg.unlockSnapshotPath);
+            case UNKNOWN -> new File(cfg.snapshotPath);
+        };
+    }
+
+    private boolean downloadAndStoreFile(String remotePath, File targetDir, String logLabel, boolean required,
+            @Nullable String targetFileName) {
+        return downloadAndStoreFileBytes(remotePath, targetDir, logLabel, required, targetFileName) != null;
+    }
+
+    private byte @Nullable [] downloadAndStoreFileBytes(String remotePath, File targetDir, String logLabel,
+            boolean required, @Nullable String targetFileName) {
+        DahuaEventClient localClient = client;
+        if (localClient == null) {
+            logger.warn("Cannot download {}: client not initialized", logLabel);
+            return null;
+        }
+
+        String targetPath = targetDir.getPath();
+        if (targetPath.isBlank()) {
+            if (required) {
+                logger.warn("Skipping {} download: target directory is blank", logLabel);
+            } else {
+                logger.debug("Skipping optional {} download: target directory is blank", logLabel);
+            }
+            return null;
+        }
+
+        if (targetDir.exists() && !targetDir.isDirectory()) {
+            if (required) {
+                logger.warn("Skipping {} download: target path '{}' is not a directory", logLabel, targetDir);
+            } else {
+                logger.debug("Skipping optional {} download: target path '{}' is not a directory", logLabel, targetDir);
+            }
+            return null;
+        }
+
+        if (!targetDir.exists() && !targetDir.mkdirs()) {
+            if (required) {
+                logger.warn("Could not create target directory '{}' for {}", targetDir, logLabel);
+            } else {
+                logger.debug("Could not create optional target directory '{}' for {}", targetDir, logLabel);
+            }
+            return null;
+        }
+
+        byte[] bytes;
+        try {
+            bytes = localClient.downloadFileFromActiveSession(remotePath, DHIP_DOWNLOAD_TIMEOUT_MS);
+        } catch (IOException e) {
+            if (required) {
+                logger.warn("Failed to download {} from {}: {}", logLabel, remotePath, e.getMessage());
+            } else {
+                logger.debug("Optional download failed for {} from {}: {}", logLabel, remotePath, e.getMessage());
+            }
+            return null;
+        }
+        if (bytes == null || bytes.length == 0) {
+            if (required) {
+                logger.warn("Failed to download {} from {}", logLabel, remotePath);
+            } else {
+                logger.debug("Optional download missing for {} from {}", logLabel, remotePath);
+            }
+            return null;
+        }
+
+        File outFile = new File(targetDir, targetFileName != null ? targetFileName : getBaseName(remotePath));
+        try (FileOutputStream fos = new FileOutputStream(outFile)) {
+            fos.write(bytes);
+            logger.debug("Stored {} ({} bytes) to {}", logLabel, bytes.length, outFile);
+            return bytes;
+        } catch (IOException e) {
+            logger.warn("Failed to write {} to {}", logLabel, outFile, e);
+            return null;
+        }
+    }
+
+    private boolean isEventClassEnabled(NewFileClass eventClass, DahuaDoorConfiguration cfg) {
+        return switch (eventClass) {
+            case RING_OR_HANGUP_SNAPSHOT -> true;
+            case UNLOCK_SNAPSHOT -> cfg.enableUnlockSnapshotDownload;
+            case AUTO_RECORDING -> cfg.enableDoorRecordingDownload;
+            case VIDEO_MESSAGE -> cfg.enableVideoMessageDownload;
+            case UNKNOWN -> false;
+        };
     }
 
     protected void handleButtonPressed() {
@@ -538,13 +1048,122 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected void handleNewFile(JsonObject eventList, JsonObject eventData) {
         String action = eventList.has("Action") ? eventList.get("Action").getAsString() : "unknown";
         String file = eventData.has("File") ? eventData.get("File").getAsString() : "unknown";
-        String folder = eventData.has("Filter") ? eventData.get("Filter").getAsString() : "unknown";
+        String folder = eventData.has("Filter") ? eventData.get("Filter").getAsString()
+                : (eventData.has("Folder") ? eventData.get("Folder").getAsString() : "unknown");
         // not a typo: Filter works for folder, seems to be a naming error in the Dahua firmware
         String localeTime = eventData.has("LocaleTime") ? eventData.get("LocaleTime").getAsString() : "unknown";
         String index = eventList.has("Index") ? eventList.get("Index").getAsString() : "unknown";
 
         logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}", action, file, folder,
                 localeTime, index);
+
+        DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null || "unknown".equals(file)) {
+            return;
+        }
+
+        NewFileClass eventClass = classifyNewFile(file);
+        if (!isEventClassEnabled(eventClass, localConfig)) {
+            logger.debug("NewFile ignored by config toggle: class={}, file={}", eventClass, file);
+            return;
+        }
+
+        if ((eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT || eventClass == NewFileClass.UNLOCK_SNAPSHOT)
+                && !isPrimarySnapshotVariant(file)) {
+            logger.debug("NewFile secondary snapshot variant ignored: {}", file);
+            return;
+        }
+
+        if (!isDhipSnapshotMode()) {
+            logger.trace("NewFile class {} accepted but snapshotMode=api (no DHIP file pipeline active): {}",
+                    eventClass, file);
+            return;
+        }
+
+        boolean hangupSnapshot = eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT && isHangupSnapshotByCallState();
+        if (hangupSnapshot && !localConfig.enableHangupSnapshotDownload) {
+            logger.debug("Hangup snapshot ignored (toggle disabled): {}", file);
+            return;
+        }
+
+        String timestamp = buildDoorbellTimestampFromLocaleTime(localeTime);
+
+        File targetDir = resolveTargetDirForEvent(eventClass, localConfig, hangupSnapshot);
+
+        if (eventClass == NewFileClass.AUTO_RECORDING) {
+            boolean davOk = downloadAndStoreFile(file, targetDir, "auto-recording .dav", true,
+                    buildDoorbellFileName(DOORBELL_RECORDING_FILE_PREFIX, timestamp, FILE_SUFFIX_DAV));
+            if (davOk) {
+                String jpgPath = deriveRecordingJpgRemotePath(file);
+                if (jpgPath != null) {
+                    downloadAndStoreFile(jpgPath, targetDir, "auto-recording .jpg", false,
+                            buildDoorbellFileName(DOORBELL_RECORDING_FILE_PREFIX, timestamp, FILE_SUFFIX_JPG));
+                }
+                String idxPath = deriveRecordingIdxRemotePath(file);
+                if (idxPath != null) {
+                    downloadAndStoreFile(idxPath, targetDir, "auto-recording .idx", false,
+                            buildDoorbellFileName(DOORBELL_RECORDING_FILE_PREFIX, timestamp, FILE_SUFFIX_IDX));
+                }
+                cleanupOldDhipEventFiles(targetDir, DOORBELL_RECORDING_FILE_PREFIX);
+            }
+            return;
+        }
+
+        if (eventClass == NewFileClass.UNKNOWN) {
+            logger.trace("Unknown NewFile class in dhip mode, no download attempted: {}", file);
+            return;
+        }
+
+        String snapshotPrefix = DOORBELL_FILE_PREFIX;
+        String latestSnapshotSuffix = "";
+        @Nullable
+        Integer cleanupLockNumber = null;
+
+        if (eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT && !hangupSnapshot) {
+            String lockSuffix = getDoorbellSnapshotSuffixForLock(lastDoorbellLockNumber);
+            latestSnapshotSuffix = lockSuffix;
+            if (!lockSuffix.isEmpty()) {
+                snapshotPrefix = "Doorbell" + lockSuffix + "_";
+                cleanupLockNumber = Integer.valueOf(lastDoorbellLockNumber);
+            }
+        }
+
+        if (eventClass == NewFileClass.UNLOCK_SNAPSHOT) {
+            snapshotPrefix = DOORBELL_UNLOCK_FILE_PREFIX;
+        } else if (eventClass == NewFileClass.VIDEO_MESSAGE) {
+            snapshotPrefix = DOORBELL_MESSAGE_FILE_PREFIX;
+        } else if (eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT && hangupSnapshot) {
+            snapshotPrefix = DOORBELL_HANGUP_FILE_PREFIX;
+        }
+
+        byte[] snapshotBytes = downloadAndStoreFileBytes(file, targetDir, eventClass.name().toLowerCase(Locale.ROOT),
+                true, buildDoorbellFileName(snapshotPrefix, timestamp, deriveFileSuffix(file)));
+        if (snapshotBytes == null) {
+            return;
+        }
+
+        if (eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT && !hangupSnapshot) {
+            updateImageChannel(getDoorImageChannelForLock(lastDoorbellLockNumber), snapshotBytes);
+            writeLatestSnapshot(snapshotBytes, latestSnapshotSuffix);
+        }
+
+        if (eventClass == NewFileClass.RING_OR_HANGUP_SNAPSHOT) {
+            if (hangupSnapshot) {
+                cleanupOldDhipEventFiles(targetDir, DOORBELL_HANGUP_FILE_PREFIX);
+            } else {
+                cleanupOldSnapshots(cleanupLockNumber);
+            }
+            return;
+        }
+
+        if (eventClass == NewFileClass.UNLOCK_SNAPSHOT) {
+            cleanupOldDhipEventFiles(targetDir, DOORBELL_UNLOCK_FILE_PREFIX);
+            return;
+        }
+
+        if (eventClass == NewFileClass.VIDEO_MESSAGE) {
+            cleanupOldDhipEventFiles(targetDir, DOORBELL_MESSAGE_FILE_PREFIX);
+        }
     }
 
     protected void handleProfileAlarmTransit(JsonObject eventList, JsonObject eventData) {
@@ -579,25 +1198,29 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     protected void handleHangup(JsonObject eventList, JsonObject eventData) {
+        lastCallSnapStatus = CALL_SNAP_IDLE_STATE;
         logger.debug("Event: Hangup, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
 
     protected void handleHungupPhone(JsonObject eventList, JsonObject eventData) {
+        lastCallSnapStatus = CALL_SNAP_IDLE_STATE;
         logger.debug("Event: HungupPhone, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
 
     protected void handleHangupPhone(JsonObject eventList, JsonObject eventData) {
+        lastCallSnapStatus = CALL_SNAP_IDLE_STATE;
         logger.debug("Event: HangupPhone, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
 
     protected void handleCallSnap(JsonObject eventData) {
+        String callState = eventData.getAsJsonArray("ChannelStates").get(0).getAsString();
+        lastCallSnapStatus = callState;
         logger.debug("Event: CallSnap, DeviceType {}, RemoteID {}, RemoteIP {}, CallStatus {}",
                 eventData.get("DeviceType").getAsString(), eventData.get("RemoteID").getAsString(),
-                eventData.get("RemoteIP").getAsString(),
-                eventData.getAsJsonArray("ChannelStates").get(0).getAsString());
+                eventData.get("RemoteIP").getAsString(), callState);
     }
 
     protected void handleAccessControl(JsonObject eventData) {
@@ -609,9 +1232,14 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected void handleSIPRegisterResult(JsonObject eventList, JsonObject eventData) {
         if ("Pulse".equals(eventList.get("Action").getAsString())) {
             boolean success = eventData.get("Success").getAsBoolean();
-            updateState(CHANNEL_SIP_REGISTERED, OnOffType.from(success));
+            DahuaDoorConfiguration localConfig = config;
             if (success) {
                 logger.debug("Event SIPRegisterResult, Success");
+                DahuaEventClient localClient = client;
+                if (localConfig != null && localConfig.enableWebRTC && localClient != null
+                        && !parseSipExtensions(localConfig.sipExtension).isEmpty()) {
+                    scheduler.submit(localClient::fixAudioCodec);
+                }
             } else {
                 logger.debug("Event SIPRegisterResult, Failed");
             }
@@ -697,32 +1325,35 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected abstract void onButtonPressed(int lockNumber);
 
     /**
-     * Determines whether DHIP invite events should be processed.
+     * Routes a resolved doorbell event from DHIP to the concrete device handler.
      *
-     * When SIP is enabled, SIP is the single authoritative invite path and DHIP invite events are ignored.
-     * When SIP is disabled, DHIP invite remains active.
+     * DHIP remains lossless and authoritative for LockNum-based button mapping, so no time-based dedup
+     * or SIP gating is applied here.
      *
-     * @return true if DHIP invite handling is active, false otherwise
+     * @param source event source label for logging (for example "DHIP")
+     * @param lockNumber resolved doorbell/button number
      */
-    protected boolean isDhipInviteActive() {
-        DahuaDoorConfiguration localConfig = config;
-        return localConfig == null || !localConfig.enableSip;
+    protected void handleResolvedDoorbellEvent(String source, int lockNumber) {
+        logger.debug("Resolved {} doorbell event for lock {}", source, lockNumber);
+        recordLastDoorbellLock(lockNumber);
+        lastCallSnapStatus = CALL_SNAP_RING_STATE;
+        onButtonPressed(lockNumber);
     }
 
     /**
-     * Deduplicates near-simultaneous doorbell events coming from DHIP and SIP.
+     * Deduplicates SIP INVITE callbacks so UDP retransmits do not spam state updates and logs.
      *
-     * @param source event source label for logging (e.g. "DHIP", "SIP")
+     * @param source event source label for logging (for example "SIP")
      * @return true when caller should continue processing, false when event should be ignored as duplicate
      */
-    protected boolean shouldProcessDoorbellEvent(String source) {
+    protected boolean shouldProcessSipInvite(String source) {
         long now = System.currentTimeMillis();
-        long previous = lastDoorbellEventTs;
-        if (previous > 0 && (now - previous) < DOORBELL_EVENT_DEDUP_MS) {
-            logger.debug("Ignoring duplicate {} doorbell event ({} ms after previous event)", source, now - previous);
+        long previous = lastSipInviteTs;
+        if (previous > 0 && (now - previous) < SIP_INVITE_DEDUP_MS) {
+            logger.debug("Ignoring duplicate {} INVITE ({} ms after previous event)", source, now - previous);
             return false;
         }
-        lastDoorbellEventTs = now;
+        lastSipInviteTs = now;
         return true;
     }
 
@@ -737,8 +1368,11 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
      * @param cfg current configuration snapshot
      */
     private void startSip(DahuaDoorConfiguration cfg) {
-        if (cfg.sipExtension.isBlank()) {
-            logger.warn("SIP enabled but sipExtension not configured - skipping SIP registration");
+        List<String> sipExtensions = parseSipExtensions(cfg.sipExtension);
+        configuredOutgoingExtensions = sipExtensions;
+
+        if (sipExtensions.isEmpty()) {
+            logger.warn("SIP enabled but sipExtension is empty - skipping SIP startup");
             updateState(CHANNEL_SIP_REGISTERED, UnDefType.UNDEF);
             updateState(CHANNEL_SIP_CALL_STATE, UnDefType.UNDEF);
             return;
@@ -753,49 +1387,68 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     return;
                 }
 
-                // Use sipExtension as SIP username (extension == username in Dahua VTO)
-                // Use separate SIP password if provided, otherwise fall back to API password
-                String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
-
-                SipClient newSipClient = new SipClient(cfg.hostname, cfg.sipExtension, cfg.sipExtension, sipPass,
-                        cfg.localSipPort, localIp, cfg.sipRealm, this, this::errorInformer);
-
-                if (disposed) {
-                    newSipClient.dispose();
-                    return;
+                for (int i = 0; i < sipExtensions.size(); i++) {
+                    String extension = sipExtensions.get(i);
+                    int sipPort = cfg.localSipPort + i;
+                    int backchannelPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET + i;
+                    startOutgoingSipClient(cfg, extension, sipPort, backchannelPort, localIp);
                 }
 
-                sipClient = newSipClient;
-                sipClients.put("client-1", newSipClient);
-
-                // initializeSipStack() already called in constructor
-                newSipClient.sendRegister();
-
-                if (disposed || !Objects.equals(sipClient, newSipClient)) {
-                    newSipClient.dispose();
-                    return;
+                if (outgoingSipClients.isEmpty()) {
+                    updateState(CHANNEL_SIP_REGISTERED, UnDefType.UNDEF);
                 }
-
-                // Schedule re-REGISTER every 50 seconds (VTO expires after 60s)
-                sipReRegisterJob = scheduler.scheduleWithFixedDelay(() -> {
-                    SipClient localClient = sipClient;
-                    if (disposed || localClient == null || !Objects.equals(localClient, newSipClient)) {
-                        return;
-                    }
-                    try {
-                        localClient.sendRegister();
-                    } catch (Exception e) {
-                        logger.warn("Failed to re-register SIP client: {}", e.getMessage());
-                    }
-                }, 50, 50, TimeUnit.SECONDS);
-
-                logger.info("SIP client started for extension {} at {}:{}", cfg.sipExtension, localIp,
-                        cfg.localSipPort);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
+                updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+            } catch (RuntimeException e) {
                 logger.warn("Failed to start SIP client: {}", e.getMessage(), e);
                 updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
             }
         });
+    }
+
+    private void startOutgoingSipClient(DahuaDoorConfiguration cfg, String extension, int sipPort, int backchannelPort,
+            String localIp) {
+        SipBackchannelRtpRelay relay = null;
+        try {
+            relay = new SipBackchannelRtpRelay(getThing().getUID() + "/" + extension, backchannelPort, 0);
+            relay.start();
+
+            String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
+            SipClient client = new SipClient(cfg.hostname, extension, extension, sipPass, sipPort, localIp,
+                    cfg.sipRealm, relay.getSourcePort(), relay, new PooledSipAdapter(extension), this::errorInformer);
+
+            outgoingRelays.put(extension, relay);
+            outgoingSipClients.put(extension, client);
+            if (sipClient == null) {
+                sipClient = client;
+            }
+            registrationState.put(extension, false);
+            client.sendRegister();
+
+            ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> {
+                SipClient localClient = outgoingSipClients.get(extension);
+                if (localClient != null && !disposed) {
+                    localClient.sendRegister();
+                }
+            }, 45, 45, TimeUnit.SECONDS);
+            outgoingReRegisterJobs.put(extension, job);
+        } catch (IOException | PeerUnavailableException | TransportNotSupportedException | InvalidArgumentException
+                | ObjectInUseException | TooManyListenersException | RuntimeException e) {
+            logger.warn("Failed to start outgoing SIP client {} on SIP {} / RTP {} ({}): {}", extension, sipPort,
+                    backchannelPort, e.getClass().getSimpleName(), e.getMessage(), e);
+            registrationState.put(extension, false);
+            outgoingSipClients.remove(extension);
+            ScheduledFuture<?> job = outgoingReRegisterJobs.remove(extension);
+            if (job != null) {
+                job.cancel(true);
+            }
+            outgoingStreamNames.remove(extension);
+            if (relay != null) {
+                relay.stop();
+            }
+            outgoingRelays.remove(extension);
+        }
     }
 
     /**
@@ -814,15 +1467,21 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             localJob.cancel(true);
         }
 
-        SipClient localClient = sipClient;
         sipClient = null;
-        if (localClient != null) {
-            localClient.dispose();
-            logger.debug("SIP client stopped");
-        }
+
+        outgoingReRegisterJobs.values().forEach(job -> job.cancel(true));
+        outgoingReRegisterJobs.clear();
+        outgoingSipClients.values().forEach(SipClient::dispose);
+        outgoingSipClients.clear();
+        outgoingRelays.values().forEach(SipBackchannelRtpRelay::stop);
+        outgoingRelays.clear();
+
+        stopSipBackchannelRelay();
+        configuredOutgoingExtensions = List.of();
         sessionToClientId.clear();
         backchannelSessionsByHttpSession.clear();
-        sipClients.clear();
+        outgoingStreamNames.clear();
+        registrationState.clear();
         updateState(CHANNEL_SIP_REGISTERED, UnDefType.UNDEF);
         updateState(CHANNEL_SIP_CALL_STATE, UnDefType.UNDEF);
     }
@@ -833,9 +1492,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
      *
      * @param vtoHostname VTO hostname or IP address
      * @return Local IP address as string
-     * @throws Exception if detection fails
+     * @throws IOException if detection fails
      */
-    private String detectLocalIp(String vtoHostname) throws Exception {
+    private String detectLocalIp(String vtoHostname) throws IOException {
         // Create a UDP socket and "connect" to VTO (doesn't actually send data)
         // This makes the OS select the correct network interface
         try (DatagramSocket socket = new DatagramSocket()) {
@@ -846,6 +1505,87 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
     }
 
+    private static boolean isValidPort(int port) {
+        return port > 0 && port <= 65535;
+    }
+
+    private boolean validateBackchannelPorts(DahuaDoorConfiguration cfg) {
+        List<String> extensions = parseSipExtensions(cfg.sipExtension);
+        boolean useWebRtcBackchannel = cfg.enableWebRTC;
+        boolean useSipBackchannel = cfg.enableSip && !extensions.isEmpty();
+        if (!useWebRtcBackchannel && !useSipBackchannel) {
+            return true;
+        }
+
+        int backchannelCount = useWebRtcBackchannel ? Math.max(1, extensions.size()) : extensions.size();
+        int backchannelBase = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
+        int backchannelMax = backchannelBase + backchannelCount - 1;
+
+        if (!isValidPort(backchannelBase) || !isValidPort(backchannelMax)) {
+            String detail = String.format("Invalid backchannel port range %d-%d (go2rtcApiPort=%d, sipExtensions=%d)",
+                    backchannelBase, backchannelMax, cfg.go2rtcApiPort, extensions.size());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+            logger.warn(detail);
+            return false;
+        }
+
+        if (useSipBackchannel) {
+            int sipBase = cfg.localSipPort;
+            int sipMax = sipBase + extensions.size() - 1;
+            if (!isValidPort(sipBase) || !isValidPort(sipMax)) {
+                String detail = String.format("Invalid SIP port range %d-%d (localSipPort=%d, sipExtensions=%d)",
+                        sipBase, sipMax, cfg.localSipPort, extensions.size());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                logger.warn(detail);
+                return false;
+            }
+
+            if (rangesOverlap(sipBase, sipMax, backchannelBase, backchannelMax)) {
+                String detail = String.format("SIP/backchannel port ranges overlap (sip=%d-%d, backchannel=%d-%d)",
+                        sipBase, sipMax, backchannelBase, backchannelMax);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                logger.warn(detail);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean rangesOverlap(int startA, int endA, int startB, int endB) {
+        return Math.max(startA, startB) <= Math.min(endA, endB);
+    }
+
+    private List<String> parseSipExtensions(String sipExtension) {
+        if (sipExtension.isBlank()) {
+            return List.of();
+        }
+
+        List<String> rawExtensions = Arrays.stream(sipExtension.split(",")).map(String::trim)
+                .filter(entry -> !entry.isBlank()).toList();
+
+        LinkedHashSet<String> uniqueExtensions = new LinkedHashSet<>(rawExtensions);
+        if (uniqueExtensions.size() < rawExtensions.size()) {
+            logger.warn("Duplicate sipExtension entries removed: {}", sipExtension);
+        }
+
+        List<String> limitedExtensions = uniqueExtensions.stream().limit(10).toList();
+        if (limitedExtensions.size() < uniqueExtensions.size()) {
+            logger.warn("sipExtension list capped at 10 entries");
+        }
+        return limitedExtensions;
+    }
+
+    private synchronized void updateRegistrationState(String extension, boolean success) {
+        registrationState.put(extension, success);
+
+        int expectedClients = outgoingSipClients.size();
+        boolean allRegistered = expectedClients > 0 && registrationState.size() >= expectedClients
+                && registrationState.entrySet().stream().filter(entry -> outgoingSipClients.containsKey(entry.getKey()))
+                        .allMatch(Map.Entry::getValue);
+
+        updateState(CHANNEL_SIP_REGISTERED, allRegistered ? OnOffType.ON : OnOffType.OFF);
+    }
+
     // ============================================================================
     // SipEventListener Implementation
     // ============================================================================
@@ -853,102 +1593,165 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     @Override
     public void onRegistrationSuccess() {
         logger.debug("SIP registration successful");
-        updateState(CHANNEL_SIP_REGISTERED, OnOffType.ON);
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onRegistrationFailed(String reason) {
         logger.warn("SIP registration failed: {}", reason);
-        updateState(CHANNEL_SIP_REGISTERED, OnOffType.OFF);
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onInviteReceived(String callerId) {
         logger.info("SIP INVITE received from {}", callerId);
-        if (!shouldProcessDoorbellEvent("SIP")) {
+        if (!shouldProcessSipInvite("SIP")) {
             return;
         }
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.RINGING.name()));
-        // Phase 1: Just trigger the existing doorbell logic
-        // In the future, this could be enhanced to manage dialog state
-        onButtonPressed(1); // Default to button 1 for SIP calls
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onCallCancelled() {
         logger.debug("SIP CANCEL received - transitioning call state to IDLE");
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onCallActive() {
         logger.debug("SIP call is now ACTIVE (ACK received)");
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.ACTIVE.name()));
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onCallTerminating() {
         logger.debug("SIP call is TERMINATING");
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.TERMINATING.name()));
+        updateAggregateSipCallState();
     }
 
     @Override
     public void onCallEnded() {
         logger.debug("SIP call ended, setting state to IDLE");
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(SipClient.SipCallState.IDLE.name()));
+        updateAggregateSipCallState();
     }
 
-    public synchronized String assignClientForSession(String sessionId) {
+    public synchronized @Nullable String assignClientForSession(String sessionId) {
         cleanupExpiredSessions();
 
-        Set<String> availableClientIds = !sipClients.isEmpty() ? new TreeSet<>(sipClients.keySet())
-                : Set.of(AVAILABLE_CLIENT_IDS[0]);
+        List<String> availableClientIds = configuredOutgoingExtensions.stream().filter(outgoingSipClients::containsKey)
+                .toList();
+
+        if (availableClientIds.isEmpty()) {
+            return null;
+        }
 
         @Nullable
         String existingClientId = sessionToClientId.get(sessionId);
         if (existingClientId != null && availableClientIds.contains(existingClientId)) {
-            updateBackchannelSession(sessionId, existingClientId, getSipClientForClientId(existingClientId));
+            updateBackchannelSession(sessionId, existingClientId, getSipClientForExtension(existingClientId));
             return existingClientId;
         }
 
         Set<String> usedClientIds = new HashSet<>(sessionToClientId.values());
+        @Nullable
+        String activeIncomingClientId = findUnassignedActiveClientId(availableClientIds, usedClientIds);
+        if (activeIncomingClientId != null) {
+            sessionToClientId.put(sessionId, activeIncomingClientId);
+            SipClient activeClient = getSipClientForExtension(activeIncomingClientId);
+            logger.debug("Session {} assigned to active SipClient {} (state={})", sessionId, activeIncomingClientId,
+                    activeClient != null ? activeClient.getCallState() : "unknown");
+            updateBackchannelSession(sessionId, activeIncomingClientId, activeClient);
+            return activeIncomingClientId;
+        }
+
         for (String clientId : availableClientIds) {
             if (!usedClientIds.contains(clientId)) {
                 sessionToClientId.put(sessionId, clientId);
-                updateBackchannelSession(sessionId, clientId, getSipClientForClientId(clientId));
+                SipClient idleClient = getSipClientForExtension(clientId);
+                logger.debug("Session {} assigned to idle SipClient {} (state={})", sessionId, clientId,
+                        idleClient != null ? idleClient.getCallState() : "unknown");
+                updateBackchannelSession(sessionId, clientId, idleClient);
                 return clientId;
             }
         }
 
-        String fallbackClientId = availableClientIds.iterator().next();
-        sessionToClientId.put(sessionId, fallbackClientId);
-        updateBackchannelSession(sessionId, fallbackClientId, getSipClientForClientId(fallbackClientId));
-        return fallbackClientId;
+        logger.debug("All {} outgoing extensions are occupied for session {}", availableClientIds.size(), sessionId);
+        return null;
     }
 
-    private @Nullable SipClient getSipClientForClientId(String clientId) {
-        SipClient client = sipClients.get(clientId);
-        if (client != null) {
-            return client;
+    private @Nullable SipClient getSipClientForExtension(String extensionOrClientId) {
+        return outgoingSipClients.get(extensionOrClientId);
+    }
+
+    private @Nullable String findUnassignedActiveClientId(List<String> availableClientIds, Set<String> usedClientIds) {
+        for (SipClient.SipCallState state : List.of(SipClient.SipCallState.RINGING, SipClient.SipCallState.ANSWERING,
+                SipClient.SipCallState.ACTIVE, SipClient.SipCallState.TERMINATING,
+                SipClient.SipCallState.OUTGOING_RINGING)) {
+            for (String clientId : availableClientIds) {
+                if (usedClientIds.contains(clientId)) {
+                    continue;
+                }
+                SipClient client = outgoingSipClients.get(clientId);
+                if (client != null && state.name().equals(client.getCallState())) {
+                    return clientId;
+                }
+            }
         }
-        return sipClients.isEmpty() ? sipClient : null;
+        return null;
+    }
+
+    private void updateAggregateSipCallState() {
+        updateState(CHANNEL_SIP_CALL_STATE, new StringType(determineAggregateSipCallState().name()));
+    }
+
+    private SipClient.SipCallState determineAggregateSipCallState() {
+        List<SipClient.SipCallState> priority = List.of(SipClient.SipCallState.ACTIVE, SipClient.SipCallState.ANSWERING,
+                SipClient.SipCallState.OUTGOING_RINGING, SipClient.SipCallState.RINGING,
+                SipClient.SipCallState.TERMINATING, SipClient.SipCallState.HUNGUP, SipClient.SipCallState.IDLE);
+
+        for (SipClient.SipCallState state : priority) {
+            boolean hasState = outgoingSipClients.values().stream()
+                    .anyMatch(client -> state.name().equals(client.getCallState()));
+            if (hasState) {
+                return state;
+            }
+        }
+        return SipClient.SipCallState.IDLE;
+    }
+
+    public synchronized @Nullable String getAssignedClientForSession(String sessionId) {
+        cleanupExpiredSessions();
+        return sessionToClientId.get(sessionId);
     }
 
     public synchronized String getSipCallStateForSession(String sessionId) {
-        String clientId = assignClientForSession(sessionId);
         @Nullable
-        SipClient client = getSipClientForClientId(clientId);
+        String clientId = sessionToClientId.get(sessionId);
+        if (clientId == null) {
+            clientId = assignClientForSession(sessionId);
+        }
+        if (clientId == null) {
+            return SipClient.SipCallState.IDLE.name();
+        }
+        @Nullable
+        SipClient client = getSipClientForExtension(clientId);
         String state = client != null ? client.getCallState() : SipClient.SipCallState.IDLE.name();
         updateBackchannelSession(sessionId, clientId, client);
         logger.debug("SIP state request: sessionId={}, clientId={}, state={}", sessionId, clientId, state);
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(state));
         return state;
     }
 
     public synchronized @Nullable String getSipCallerForSession(String sessionId) {
-        String clientId = assignClientForSession(sessionId);
         @Nullable
-        SipClient client = getSipClientForClientId(clientId);
+        String clientId = sessionToClientId.get(sessionId);
+        if (clientId == null) {
+            clientId = assignClientForSession(sessionId);
+        }
+        if (clientId == null) {
+            return null;
+        }
+        @Nullable
+        SipClient client = getSipClientForExtension(clientId);
         updateBackchannelSession(sessionId, clientId, client);
         logger.debug("SIP caller request: sessionId={}, clientId={}, hasClient={}", sessionId, clientId,
                 client != null);
@@ -956,9 +1759,13 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     public synchronized boolean answerSipCallForSession(String sessionId) {
-        String clientId = assignClientForSession(sessionId);
         @Nullable
-        SipClient client = getSipClientForClientId(clientId);
+        String clientId = assignClientForSession(sessionId);
+        if (clientId == null) {
+            return false;
+        }
+        @Nullable
+        SipClient client = getSipClientForExtension(clientId);
         if (client == null) {
             logger.debug("SIP answer request: sessionId={}, clientId={} has no assigned client", sessionId, clientId);
             return false;
@@ -967,14 +1774,18 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         updateBackchannelSession(sessionId, clientId, client);
         logger.debug("SIP answer request: sessionId={}, clientId={}, success={}, state={}", sessionId, clientId,
                 success, client.getCallState());
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(client.getCallState()));
+        updateAggregateSipCallState();
         return success;
     }
 
     public synchronized boolean hangupSipCallForSession(String sessionId) {
-        String clientId = assignClientForSession(sessionId);
         @Nullable
-        SipClient client = getSipClientForClientId(clientId);
+        String clientId = assignClientForSession(sessionId);
+        if (clientId == null) {
+            return false;
+        }
+        @Nullable
+        SipClient client = getSipClientForExtension(clientId);
         if (client == null) {
             logger.debug("SIP hangup request: sessionId={}, clientId={} has no assigned client", sessionId, clientId);
             return false;
@@ -983,8 +1794,66 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         updateBackchannelSession(sessionId, clientId, client);
         logger.debug("SIP hangup request: sessionId={}, clientId={}, success={}, state={}", sessionId, clientId,
                 success, client.getCallState());
-        updateState(CHANNEL_SIP_CALL_STATE, new StringType(client.getCallState()));
+        updateAggregateSipCallState();
         return success;
+    }
+
+    public record OutgoingCallResult(boolean success, @Nullable String clientId, String callState) {
+    }
+
+    public synchronized OutgoingCallResult startOutgoingCallForSession(String sessionId, String target) {
+        @Nullable
+        String extension = assignClientForSession(sessionId);
+        if (extension == null) {
+            return new OutgoingCallResult(false, null, "NO_FREE_CLIENT");
+        }
+
+        SipClient client = getSipClientForExtension(extension);
+        if (client == null) {
+            logger.warn("No SIP client for extension {} (session {})", extension, sessionId);
+            return new OutgoingCallResult(false, extension, "UNAVAILABLE");
+        }
+
+        boolean sent = client.sendInvite(target);
+        if (sent) {
+            updateBackchannelSession(sessionId, extension, client);
+        }
+        updateAggregateSipCallState();
+        return new OutgoingCallResult(sent, extension, getSipCallStateForSession(sessionId));
+    }
+
+    public synchronized @Nullable String getWebRtcUrlForClientId(String clientId) {
+        String streamName = getWebRtcStreamNameForClientId(clientId);
+        if (streamName == null) {
+            return null;
+        }
+        return WEBRTC_SERVLET_PATH + "/" + streamName;
+    }
+
+    public synchronized @Nullable String getWebRtcStreamNameForClientId(String clientId) {
+        String streamName = outgoingStreamNames.get(clientId);
+        if (streamName != null) {
+            return streamName;
+        }
+
+        Go2RtcManager localManager = go2rtcManager;
+        if (localManager == null) {
+            return null;
+        }
+        return localManager.getStreamName();
+    }
+
+    public synchronized @Nullable String allocateWebRtcStreamNameForClientId(String clientId) {
+        return getWebRtcStreamNameForClientId(clientId);
+    }
+
+    public synchronized @Nullable String getOrAllocateWebRtcStreamNameForSession(String sessionId, String clientId) {
+        return allocateWebRtcStreamNameForClientId(clientId);
+    }
+
+    public synchronized int getRelayListenPortForClientId(String clientId) {
+        SipBackchannelRtpRelay relay = outgoingRelays.get(clientId);
+        return relay != null ? relay.getListenPort() : -1;
     }
 
     public synchronized @Nullable SipBackchannelSession getSipBackchannelSessionForSession(String sessionId) {
@@ -1048,5 +1917,57 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 getThing().getUID().toString(), callerId, callState, inviteSdp, createdAtMs, now));
 
         cleanupExpiredSessions();
+    }
+
+    private class PooledSipAdapter implements SipEventListener {
+        private final String extension;
+
+        private PooledSipAdapter(String extension) {
+            this.extension = extension;
+        }
+
+        @Override
+        public void onRegistrationSuccess() {
+            logger.debug("Outgoing SIP {} registered", extension);
+            updateRegistrationState(extension, true);
+        }
+
+        @Override
+        public void onRegistrationFailed(String reason) {
+            logger.warn("Outgoing SIP {} registration failed: {}", extension, reason);
+            updateRegistrationState(extension, false);
+        }
+
+        @Override
+        public void onInviteReceived(String callerId) {
+            logger.info("SIP {} received incoming call from {}", extension, callerId);
+            if (shouldProcessSipInvite("SIP " + extension)) {
+                updateAggregateSipCallState();
+            }
+        }
+
+        @Override
+        public void onCallCancelled() {
+            logger.debug("SIP {} call cancelled", extension);
+            updateAggregateSipCallState();
+        }
+
+        @Override
+        public void onCallActive() {
+            logger.debug("SIP {} call active", extension);
+            updateAggregateSipCallState();
+        }
+
+        @Override
+        public void onCallTerminating() {
+            logger.debug("SIP {} call terminating", extension);
+            updateAggregateSipCallState();
+        }
+
+        @Override
+        public void onCallEnded() {
+            logger.debug("SIP {} call ended", extension);
+            updateAggregateSipCallState();
+        }
     }
 }

@@ -60,6 +60,7 @@ All devices support the following channels:
 | irCommand       | String          | Remote Control Button (IRCOMMAND)     | Send a simulated button push from the remote control to the TiVo. See below for available IR COMMANDS.                                                                                                                                                            |
 | kbdCommand      | String          | Keyboard Command (KEYBOARD)           | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.                                                                                 |
 | dvrStatus       | String          | TiVo Status                           | Action return code / channel information returned by the TiVo.                                                                                                                                                                                                    |
+| search          | String          | Search                                | Write-only channel that executes a search in the TiVo menu for the given string.                                                                                                                                                                                  |
 
 - To change channels simply post/send the number of the channel to channelSet or channelForce. For OTA channels, a decimal for the sub-channel must be specified (ie: 2.1), for all others just send the channel as a whole number (ie: 100).
 - Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports this command).
@@ -144,7 +145,7 @@ Number      TiVo_ForceChannel   "Force Channel"   {channel="tivo:sckt:Living_Roo
 Number      TiVo_Recording      "Recording        [MAP(tivo.map):rec-%s]" {channel="tivo:sckt:Living_Room:isRecording"}
 String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand"}
 String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand"}
-String      TiVo_KeyboardStr    "Search String"
+String      TiVo_SearchStr      "Search String"   {channel="tivo:sckt:Living_Room:search"}
 ```
 
 - The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names. The openHAB **MAP** transformation service must also be installed.
@@ -169,7 +170,7 @@ sitemap tivo label="Tivo Central" {
         Switch      item=TiVo_IRCmd           label="Likes"          icon="screen"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
         Switch      item=TiVo_IRCmd           label="Remote"         icon="screen"   mappings=["FIND_REMOTE"="Find Remote"]
         Switch      item=TiVo_IRCmd           label="Standby"        icon="screen"   mappings=["STANDBY"="Standby","TIVO"="Wake Up"]
-        Input       item=TiVo_KeyboardStr     label="Search"         staticIcon=zoom inputHint="text"
+        Input       item=TiVo_SearchStr       label="Search"         staticIcon=zoom inputHint="text"
         Buttongrid  item=TiVo_IRCmd           label="Remote Control" staticIcon=material:tv_remote buttons=[1:1:GUIDE="Guide", 1:2:TIVO="Home", 1:3:LIVETV="LiveTV", 2:2:UP="Up"=f7:arrowtriangle_up, 3:1:LEFT="Left"=f7:arrowtriangle_left, 3:2:SELECT="OK", 3:3:RIGHT="Right"=f7:arrowtriangle_right, 4:2:DOWN="Down"=f7:arrowtriangle_down, 5:1:BACK="Back", 5:2:INFO="Info", 5:3:EXIT="Exit", 6:1:THUMBSUP="Thumbs Up"=f7:hand_thumbsup, 6:3:CHANNELUP="Channel +", 7:1:THUMBSDOWN="Thumbs Down"=f7:hand_thumbsdown, 7:3:CHANNELDOWN="Channel -", 8:2:PLAY="Play"=f7:play, 9:1:REVERSE="Reverse"=f7:backward, 9:2:PAUSE="Pause"=f7:pause, 9:3:FORWARD="Forward"=f7:forward, 10:2:SLOW="Slow"=f7:play_circle, 11:1:REPLAY="Replay", 11:2:RECORD="Record"=f7:circle, 11:3:ADVANCE="Advance", 12:1:ACTION_A="A (Yellow)", 12:2:ACTION_B="B (Blue)", 12:3:ACTION_C="C (Red)", 13:1:ACTION_D="D (Green)", 13:2:CC_ON="CC On",  13:3:CC_OFF="CC Off", 14:1:NUM1="1", 14:2:NUM2="2", 14:3:NUM3="3", 15:1:NUM4="4", 15:2:NUM5="5", 15:3:NUM6="6", 16:1:NUM7="7", 16:2:NUM8="8", 16:3:NUM9="9", 17:1:CLEAR="Clear", 17:2:NUM0="0", 17:3:ENTER="Enter", 18:1:STANDBY="Stand By", 18:3:FIND_REMOTE="Find Remote"]
     }
 }
@@ -201,12 +202,12 @@ etc...
 
 ### `tivo.rules` Example
 
-- The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the Tivo.
+- The following rule is no longer needed as the `search` channel implements this functionality internally. It remains here as a reference for sending KEYBOARD commands to the TiVo.
 
 ```java
 rule "TiVo Search"
 when
-    Item TiVo_KeyboardStr received update
+    Item TiVo_SearchStr received update
 then
     if (newState != NULL && newState.toString.length > 0) {
 

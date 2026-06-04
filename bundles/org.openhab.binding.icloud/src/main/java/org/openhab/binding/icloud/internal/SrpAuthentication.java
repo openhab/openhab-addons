@@ -60,7 +60,7 @@ public class SrpAuthentication {
                     + "7050807005509320424799678417036867928316761272274230314067548291"
                     + "1335824795830614395775593471019617714061736843785227034834953370"
                     + "37655006751328447510550299250924469288819");
-    private final static BigInteger g = BigInteger.valueOf(2L);
+    private static final BigInteger g = BigInteger.valueOf(2L);
 
     // Username
     private String I;
@@ -176,7 +176,12 @@ public class SrpAuthentication {
         requestBody.put("m1", b64Encode(M1));
         requestBody.put("m2", b64Encode(M2));
         requestBody.put("rememberMe", true);
-        requestBody.put("trustTokens", new String[] { httpClient.getTrustToken() });
+        String trustToken = httpClient.getTrustToken();
+        if (trustToken != null && !trustToken.isEmpty()) {
+            requestBody.put("trustTokens", new String[] { trustToken });
+        } else {
+            requestBody.put("trustTokens", new String[] {});
+        }
         httpClient.post(authEndpoint + "/signin/complete?isRememberMeEnabled=true", JsonUtils.toJson(requestBody),
                 sessionHeaders);
     }

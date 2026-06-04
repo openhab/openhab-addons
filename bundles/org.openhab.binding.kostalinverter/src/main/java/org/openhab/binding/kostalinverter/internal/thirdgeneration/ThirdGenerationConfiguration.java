@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ThirdGenerationConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 public class ThirdGenerationConfiguration {
 
-    public String url;
-    public String userPassword;
-    public int refreshInternalInSeconds;
+    public String url = "";
+    public String userPassword = "";
+    public int refreshInternalInSeconds = 30;
 }

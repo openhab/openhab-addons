@@ -27,12 +27,15 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ThirdGenerationEncryptionHelper} is responsible for handling the encryption for the authentication
  * handlers.
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 final class ThirdGenerationEncryptionHelper {
 
     private ThirdGenerationEncryptionHelper() {

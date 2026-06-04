@@ -174,7 +174,8 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
     }
 
     private void info(Console console) {
-        new InfoCmd(pythonScriptEngineConfiguration, console).show(configDescriptionRegistry);
+        new InfoCmd(pythonScriptEngineConfiguration, console, this.pythonScriptEngineFactory.getLanguage())
+                .show(configDescriptionRegistry);
     }
 
     private void startConsole(Console console, String[] args) {
@@ -242,7 +243,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
             console.println("Unknown pip action '" + args[1] + "'");
             console.printUsage(getPipUsage());
         } else {
-            ArrayList<String> params = new ArrayList<String>(Arrays.asList(args));
+            List<String> params = new ArrayList<>(Arrays.asList(args));
 
             if (PIP_UNINSTALL.equals(args[0]) && args.length >= 2) {
                 if (!confirmAction(console, "You are uninstalling python modules.")) {

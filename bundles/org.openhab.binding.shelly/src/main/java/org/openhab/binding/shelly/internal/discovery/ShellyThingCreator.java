@@ -77,7 +77,7 @@ public class ShellyThingCreator {
         }
 
         if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
-                && !serviceNameLowerCase.contains("plugsg3")) {
+                && !serviceNameLowerCase.contains("plugsg3") && !serviceNameLowerCase.contains("plugmg3")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
             if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGS_PREFIX)

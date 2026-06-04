@@ -33,7 +33,32 @@ Once received, update the twofa field and hit save.
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | duid            | N/A           | Yes      | No       | duid (Device UID) of the robot from the Roborock api                                 |
-| refresh         | 5             | No       | Yes      | The frequency with which to refresh information from Roborock specified in minutes   |
+| communication   | cloud         | No       | No       | Command transport mode: `cloud` (default) or `direct`                                |
+| localHost       | N/A           | No       | Yes      | Optional local IP/hostname override, used only in `direct` mode                      |
+| localPort       | 58867         | No       | Yes      | Local port used in `direct` mode communication                                        |
+| cloudMapRefresh | on            | No       | Yes      | Cloud-only map refresh policy in `direct` mode: `on` or `off`                        |
+| cloudMetadataRefresh | on       | No       | Yes      | Cloud-only metadata refresh policy in `direct` mode: `on` or `off`                    |
+| refresh         | 5             | No       | Yes      | Legacy compatibility refresh interval in minutes (existing Thing configs continue to use this) |
+| fastRefreshInterval | 15        | No       | Yes      | Direct-mode status refresh interval in seconds while `status#vacuum` is `ON`         |
+| mapRefreshCloudCleaningInterval | 30 | No | Yes | Map refresh interval in seconds while cleaning when `communication=cloud` (minimum 30) |
+| mapRefreshDirectCleaningInterval | 15 | No | Yes | Map refresh interval in seconds while cleaning when `communication=direct` (minimum 15) |
+| cloudRefreshInterval | refresh interval | No | Yes      | Cloud-only refresh interval in seconds for map/metadata tasks in `direct` mode (falls back to `refresh`, enforced minimum 60s) |
+
+### Communication Modes
+
+- `cloud` (default): uses Roborock cloud transport for command routing and data retrieval.
+- `direct`: uses local direct transport for supported vacuum communication. `localHost` can be set to override the detected local endpoint; `localPort` defaults to `58867`.
+
+Map retrieval/refresh remains cloud-only at this stage, regardless of selected communication mode.
+
+During cleaning, map refresh uses a mode-specific interval:
+
+- `communication=cloud`: `mapRefreshCloudCleaningInterval` (default 30s, minimum 30s)
+- `communication=direct`: `mapRefreshDirectCleaningInterval` (default 15s, minimum 15s)
+- If `communication=direct` and `cloudMapRefresh=off`, channel `cleaning#map` is explicitly set to `UNDEF` and map refresh is skipped.
+- If `communication=direct` and `cloudMetadataRefresh=off`, cloud metadata refresh tasks are skipped and metadata channels (for example routines and room mapping when present) are explicitly set to `UNDEF`.
+
+When `communication=direct` is selected and a capability is cloud-only (for example map retrieval/refresh), it is still routed through cloud transport. If cloud access is not available, those cloud-only capabilities will not refresh/update, while direct-mode supported operations continue to use local direct transport.
 
 ### Channels
 
@@ -102,7 +127,7 @@ In case your vacuum does not support one of these commands, it will show "unsupp
 
 ```java
 Bridge roborock:account:account [ email="xxxx", twofa="xxxx" ] {
-    roborock:vacuum:QrevoS [ refresh=5 ]
+    roborock:vacuum:QrevoS [ refresh=5, cloudRefreshInterval=300 ]
 }
 ```
 
@@ -149,5 +174,5 @@ Number:Area          lastArea         "Last Cleaned Area [%1.0fm²]"   <zoom>   
 Number:Time          lastTime         "Last Clean Time [%1.0f']"      <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-duration"}
 Number               lastError        "Error [%s]"                    <error>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-error" }
 Switch               lastCompleted    "Last Cleaning Completed"                      (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-finish" }
-Image                cleaningMap      "Cleaning Map"                                                 {channel="roborock:vacuum:034F0E45:cleaning#map"}
+Image                cleaningMap      "Cleaning Map"                                 (gVacStat)      {channel="roborock:vacuum:034F0E45:cleaning#map"}
 ```

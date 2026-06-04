@@ -56,6 +56,7 @@ Once the account bridge is configured, the appliances in your account will be di
 | name                            | String             | The name of the appliance                        |
 | pressure                        | Number:Pressure    | The pressure of your water supply                |
 | temperature_guard               | Number:Temperature | The ambient temperature of the appliance         |
+| pause                           | Number:Time        | Pause the appliance for a duration in minutes    |
 | valve_open                      | Switch             | Valve switch                                     |
 | waterconsumption                | Number:Volume      | The amount of water used in a specific timeframe |
 | waterconsumption_since_midnight | Number:Volume      | The amount of water used since midnight          |
@@ -68,8 +69,11 @@ Once the account bridge is configured, the appliances in your account will be di
 | humidity                 | Number:Dimensionless     | The humidity measured by the appliance                |
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
 | battery                  | Number                   | The battery level of the appliance                    |
+| pause                    | Number:Time              | Pause the appliance for a duration in minutes         |
 
 Note: Be aware that the Sense reports data once a day (at most), and that the value posted in the channel - however the latest - may be up to 48 hours old.
+
+The `pause` channel accepts a duration between 0 and 240 minutes. A positive duration activates the pause, while `0 min` cancels it.
 
 ## Full Example
 

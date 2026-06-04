@@ -73,7 +73,7 @@ public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
             ThingUID thingUID = new ThingUID(type, thingHandler.getThing().getUID(), vehicle.vin);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.displayName)
                     .withBridge(thingHandler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
-                    .build();
+                    .withRepresentationProperty(TeslaBindingConstants.VIN).build();
             thingDiscovered(discoveryResult);
         }
     }
