@@ -62,7 +62,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      */
     public Integer channelNumber; // 3 uint16 R V
     /**
-     * Indicates the current RSSI of the Node’s Wi-Fi radio in dBm.
+     * Indicates the current RSSI of the Node's Wi-Fi radio in dBm.
      */
     public Integer rssi; // 4 int8 R V
     /**
@@ -104,14 +104,13 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
 
     // Structs
     /**
-     * The Disconnection Event shall indicate that a Node’s Wi-Fi connection has been disconnected as a result of
+     * The Disconnection Event shall indicate that a Node's Wi-Fi connection has been disconnected as a result of
      * de-authenticated or dis-association and indicates the reason.
      */
     public static class Disconnection {
         /**
          * This field shall contain the Reason Code field value for the Disassociation or Deauthentication event that
-         * caused the disconnection and the value shall align with Table 9-49 &quot;Reason codes&quot; of IEEE
-         * 802.11-2020.
+         * caused the disconnection and the value shall align with Table 9-49 "Reason codes" of IEEE 802.11-2020.
          */
         public Integer reasonCode; // uint16
 
@@ -137,7 +136,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
          * - Association Response (Type 0, Subtype 1)
          * - Reassociation Response (Type 0, Subtype 3)
          * - Authentication (Type 0, Subtype 11)
-         * Table 9-50 &quot;Status codes&quot; of IEEE 802.11-2020 contains a description of all values possible.
+         * Table 9-50 "Status codes" of IEEE 802.11-2020 contains a description of all values possible.
          */
         public Integer status; // uint16
 
@@ -148,7 +147,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
     }
 
     /**
-     * The ConnectionStatus Event shall indicate that a Node’s connection status to a Wi-Fi network has changed.
+     * The ConnectionStatus Event shall indicate that a Node's connection status to a Wi-Fi network has changed.
      * Connected, in this context, shall mean that a Node acting as a Wi-Fi station is successfully associated to a
      * Wi-Fi Access Point.
      */

@@ -181,7 +181,7 @@ public class ArgoDeviceStatus implements IArgoSettingProvider {
      * @throws ArgoApiProtocolViolationException If API response doesn't match protocol format
      */
     public void fromDeviceString(String deviceOutput) throws ArgoApiProtocolViolationException {
-        var values = Arrays.asList(deviceOutput.split(HMI_ELEMENT_SEPARATOR));
+        List<String> values = Arrays.stream(deviceOutput.split(HMI_ELEMENT_SEPARATOR)).toList();
         if (values.size() != HMI_UPDATE_ELEMENT_COUNT) {
             throw new ArgoApiProtocolViolationException(MessageFormat.format(
                     "Invalid device API response: [{0}]. Expected to contain {1} elements while has {2}.", deviceOutput,
@@ -251,7 +251,6 @@ public class ArgoDeviceStatus implements IArgoSettingProvider {
      */
     public List<ArgoApiDataElement<IArgoElement>> getItemsWithPendingUpdates() {
         return this.dataElements.values().stream().filter(x -> x.isUpdatePending())
-                .sorted((x, y) -> Integer.compare(x.statusUpdateRequestIndex, y.statusUpdateRequestIndex))
-                .collect(Collectors.toList());
+                .sorted((x, y) -> Integer.compare(x.statusUpdateRequestIndex, y.statusUpdateRequestIndex)).toList();
     }
 }

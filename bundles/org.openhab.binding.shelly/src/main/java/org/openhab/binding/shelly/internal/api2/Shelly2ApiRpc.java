@@ -13,7 +13,6 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
@@ -46,22 +45,12 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsWiFiNetwork;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
@@ -175,180 +164,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile(thingTypeUID);
+        ShellyDeviceProfile profile = this.profile;
+        boolean firstInit = !profile.initialized;
 
-        if (devInfo != null) {
-            profile.device = devInfo;
-        }
-        if (profile.device.type == null) {
-            profile.device = getDeviceInfo();
-        }
-
-        Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
-        profile.settingsJson = gson.toJson(dc);
-        profile.thingName = thingName;
-        profile.settings.name = profile.status.name = dc.sys.device.name;
-        profile.name = getString(profile.settings.name);
-        profile.settings.timezone = getString(dc.sys.location.tz);
-        profile.settings.discoverable = getBool(dc.sys.device.discoverable);
-        if (dc.wifi != null && dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.wifiAp.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
-        }
-        if (dc.cloud != null) {
-            profile.settings.cloud.enabled = getBool(dc.cloud.enable);
-        }
-        if (dc.mqtt != null) {
-            profile.settings.mqtt.enable = getBool(dc.mqtt.enable);
-        }
-        if (dc.sys.sntp != null) {
-            profile.settings.sntp.server = dc.sys.sntp.server;
-        }
-
-        profile.isRoller = dc.cover0 != null;
-        profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
-        profile.settings.inputs = fillInputSettings(profile, dc);
-        profile.settings.rollers = fillRollerSettings(profile, dc);
-        profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
-
-        profile.isEMeter = true;
-        List<ShellySettingsInput> inputs = profile.settings.inputs;
-        profile.numInputs = inputs != null ? inputs.size() : 0;
-
-        List<ShellySettingsRelay> relays = profile.settings.relays;
-        profile.numRelays = relays != null ? relays.size() : 0;
-
-        List<ShellySettingsRoller> rollers = profile.settings.rollers;
-        profile.numRollers = rollers != null ? rollers.size() : 0;
-        profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
-
-        ShellySettingsDevice device = profile.device;
-        String realm = config.getRealm();
-        if (realm.isBlank()) {
-            config.setRealm(getString(profile.device.hostname));
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}: {} is used as realm", thingName, config.getRealm());
-            }
-        }
-        profile.settings.fw = getString(device.fw);
-        profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
-        profile.fwVersion = profile.status.update.oldVersion = ShellyDeviceProfile
-                .extractFwVersion(profile.settings.fw);
-        profile.status.hasUpdate = profile.status.update.hasUpdate = false;
-
-        if (dc.eth != null) {
-            profile.settings.ethernet = getBool(dc.eth.enable);
-        }
-        if (dc.ble != null) {
-            profile.settings.bluetooth = getBool(dc.ble.enable);
-        }
-
-        profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
-        profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
-        fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
-        fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
-        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
-        }
-
-        profile.numMeters = 0;
-        if (profile.hasRelays) {
-            profile.status.relays = new ArrayList<>();
-            relayStatus.relays = new ArrayList<>();
-            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
-            for (int i = 0; i < profile.numRelays; i++) {
-                profile.status.relays.add(new ShellySettingsRelay());
-                relayStatus.relays.add(new ShellyShortStatusRelay());
-            }
-        }
-
-        if (profile.numInputs > 0) {
-            profile.status.inputs = new ArrayList<>();
-            relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                ShellyInputState input = new ShellyInputState(i);
-                profile.status.inputs.add(input);
-                relayStatus.inputs.add(input);
-            }
-        }
-
-        // handle special cases, because there is no indicator for a meter in GetConfig
-        // Pro 3EM has 3 meters
-        // Pro 2 has 2 relays, but no meters
-        // Mini PM has 1 meter, but no relay
-        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
-        if (numMeters != null) {
-            profile.numMeters = numMeters;
-        } else if (dc.pm10 != null) {
-            profile.numMeters = 1;
-        } else if (dc.em0 != null) {
-            profile.numMeters = 3;
-        } else if (dc.em10 != null) {
-            profile.numMeters = 2;
-        } else {
-            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
-        }
-
-        if (profile.numMeters > 0) {
-            profile.status.meters = new ArrayList<>();
-            profile.status.emeters = new ArrayList<>();
-            relayStatus.meters = new ArrayList<>();
-
-            for (int i = 0; i < profile.numMeters; i++) {
-                profile.status.meters.add(new ShellySettingsMeter());
-                profile.status.emeters.add(new ShellySettingsEMeter());
-                relayStatus.meters.add(new ShellySettingsMeter());
-            }
-        }
-
-        if (profile.settings.inputs != null) {
-            relayStatus.inputs = new ArrayList<>();
-            for (int i = 0; i < profile.numInputs; i++) {
-                relayStatus.inputs.add(new ShellyInputState(0));
-            }
-        }
-
-        if (profile.isRoller) {
-            profile.status.rollers = new ArrayList<>();
-            for (int i = 0; i < profile.numRollers; i++) {
-                ShellyRollerStatus rs = new ShellyRollerStatus();
-                profile.status.rollers.add(rs);
-                rollerStatus.add(rs);
-            }
-        }
-
-        if (profile.isDimmer) {
-            ArrayList<@Nullable ShellySettingsDimmer> dimmers = new ArrayList<>();
-            dimmers.add(new ShellySettingsDimmer());
-            profile.settings.dimmers = dimmers;
-            profile.status.dimmers = new ArrayList<>();
-            profile.status.dimmers.add(new ShellyShortLightStatus());
-            fillDimmerSettings(profile, dc);
-        }
-        profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
-        if (profile.isRGBW2) {
-            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
-            rgbwLights.add(new ShellySettingsRgbwLight());
-            profile.settings.lights = rgbwLights;
-            profile.status.lights = new ArrayList<>();
-            profile.status.lights.add(new ShellySettingsLight());
-            fillRgbwSettings(profile, dc);
-        }
-        profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
+        Shelly2GetConfigResult dc = initProfile(profile, thingTypeUID, devInfo);
 
         if (profile.hasBattery) {
-            profile.settings.sleepMode = new ShellySensorSleepMode();
-            profile.settings.sleepMode.unit = "m";
-            profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
             checkSetWsCallback();
         }
-
-        if (dc.led != null) {
-            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
-        }
-
-        if (!profile.initialized && alwaysOn) {
-            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+        if (firstInit && alwaysOn) {
+            getStatus(); // make sure profile.status is initialized (e.g. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
         profile.initialized = true;

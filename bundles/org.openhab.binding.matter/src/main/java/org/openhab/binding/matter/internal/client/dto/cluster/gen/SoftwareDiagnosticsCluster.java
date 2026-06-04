@@ -151,12 +151,6 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
      * Receipt of this command shall reset the following values which track high and lower watermarks:
      * - The StackFreeMinimum field of the ThreadMetrics attribute
      * - The CurrentHeapHighWatermark attribute
-     * ### Effect on Receipt
-     * On receipt of this command, the Node shall make the following modifications to attributes it supports:
-     * If implemented, the server shall set the value of the CurrentHeapHighWatermark attribute to the value of the
-     * CurrentHeapUsed attribute.
-     * If implemented, the server shall set the value of the StackFreeMinimum field for every thread to the value of the
-     * corresponding thread’s StackFreeCurrent field.
      */
     public static ClusterCommand resetWatermarks() {
         return new ClusterCommand("resetWatermarks");

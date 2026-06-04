@@ -51,15 +51,16 @@ public class TemperatureControlCluster extends BaseCluster {
     public Integer minTemperature; // 1 temperature R V
     /**
      * Indicates the maximum temperature to which the TemperatureSetpoint attribute may be set.
-     * If the Step attribute is supported, this attribute shall be such that MaxTemperature &#x3D; MinTemperature +
-     * (Step * n), where n is an integer and n &gt; 0. If the Step attribute is not supported, this attribute shall be
-     * such that MaxTemperature &gt; MinTemperature.
+     * If the Step attribute is supported, this attribute shall be such that MaxTemperature = MinTemperature + (Step *
+     * n), where n is an integer and n $>$ 0. If the Step attribute is not supported, this attribute shall be such that
+     * MaxTemperature $>$ MinTemperature.
      */
     public Integer maxTemperature; // 2 temperature R V
     /**
      * Indicates the discrete value by which the TemperatureSetpoint attribute can be changed via the SetTemperature
      * command.
-     * For example, if the value of MinTemperature is 25.00C (2500) and the Step value is 0.50C (50), valid values of
+     * > [!NOTE]
+     * > For example, if the value of MinTemperature is 25.00C (2500) and the Step value is 0.50C (50), valid values of
      * the TargetTemperature field of the SetTemperature command would be 25.50C (2550), 26.00C (2600), 26.50C (2650),
      * etc.
      */
@@ -74,7 +75,7 @@ public class TemperatureControlCluster extends BaseCluster {
      * Indicates the list of supported temperature level settings that may be selected via the TargetTemperatureLevel
      * field in the SetTemperature command. Each string is readable text that describes each temperature level setting
      * in a way that can be easily understood by humans. For example, a washing machine can have temperature levels like
-     * &quot;Cold&quot;, &quot;Warm&quot;, and &quot;Hot&quot;. Each string is specified by the manufacturer.
+     * "Cold", "Warm", and "Hot". Each string is specified by the manufacturer.
      * Each item in this list shall represent a unique temperature level. Each entry in this list shall have a unique
      * value. The entries in this list shall appear in order of increasing temperature level with list item 0 being the
      * setting with the lowest temperature level.
