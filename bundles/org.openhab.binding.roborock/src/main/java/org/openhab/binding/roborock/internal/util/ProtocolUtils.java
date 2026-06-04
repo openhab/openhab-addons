@@ -225,10 +225,15 @@ public final class ProtocolUtils {
                     "B01 localKey must be exactly 16 bytes (UTF-8) but was " + keyBytes.length + ".");
         }
         try {
-            SecretKeySpec key = new SecretKeySpec(localKey.getBytes(StandardCharsets.UTF_8), "AES");
+            SecretKeySpec key = new SecretKeySpec(keyBytes, "AES");
             IvParameterSpec iv = deriveB01IV(random);
             Cipher cipher = Cipher.getInstance(AES_CBC_PKCS5_PADDING);
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
+            return cipher.doFinal(payload);
+        } catch (GeneralSecurityException e) {
+            throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
+        }
+    }
             return cipher.doFinal(payload);
         } catch (GeneralSecurityException e) {
             throw new RoborockException("Failed to decrypt data using AES/CBC/PKCS5Padding (B01).", e);
