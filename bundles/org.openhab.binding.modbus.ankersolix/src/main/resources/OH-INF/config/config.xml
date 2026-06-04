@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ankersolix:device">
+		<parameter name="pollInterval" type="integer" required="true" min="500" unit="ms">
+			<label>Poll Interval</label>
+			<description>Time between polling data in milliseconds.</description>
+			<default>5000</default>
+		</parameter>
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries</label>
+			<description>How many times read/write operations are retried when communication fails.</description>
+			<default>3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writeProtectionDurationSeconds" type="integer" min="1" unit="s">
+			<label>Write Protection Duration</label>
+			<description>How long written channel values remain in local shadow state.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="autoThirdPartyControl" type="boolean">
+			<label>Auto Third Party Control</label>
+			<description>Automatically switch Solarbank devices into third party control mode on connect so power
+				setpoint and
+				direction writes take effect. Ignored for non-Solarbank devices.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
