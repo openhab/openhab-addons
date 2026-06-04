@@ -247,12 +247,23 @@
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
 		<label>Light Temperature</label>
-		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K; Duo: 2700K-6500K)</description>
+		<description>Light Temperature (Bulb/RGBW2: 3000K-6500K)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state min="3000" max="6500" step="10" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="whiteTempDuo">
+		<item-type>Dimmer</item-type>
+		<label>Light Temperature</label>
+		<description>Light Temperature (2700K-6500K)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state min="2700" max="6500" step="10" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="whiteBrightness">
