@@ -250,6 +250,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
         logger.trace("Start Background Thread for receiving data from adapter");
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             logger.trace("Start Parser for optolink adapter");
             factory.newSAXParser().parse(new InputSource(inStream), new XmlHandler());
