@@ -335,10 +335,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
             return future;
         }
-        if (cloudClient != null && cloudClient.isConnected()) {
-            cloudClient.registerWebhook(localPath, future);
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.registerWebhook(localPath, future);
         } else {
-            future.completeExceptionally(new IllegalStateException("Cloud connector is not connected"));
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
         }
         return future;
     }
@@ -350,10 +351,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
             return future;
         }
-        if (cloudClient != null && cloudClient.isConnected()) {
-            cloudClient.removeWebhook(localPath, future);
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.removeWebhook(localPath, future);
         } else {
-            future.completeExceptionally(new IllegalStateException("Cloud connector is not connected"));
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
         }
         return future;
     }
