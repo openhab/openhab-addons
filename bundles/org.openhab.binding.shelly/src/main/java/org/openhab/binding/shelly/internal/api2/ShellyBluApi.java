@@ -61,7 +61,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;
     private static final int PID_CYCLE_TRESHHOLD = 50;
-    private double lastEventTimestamp = 0; // epoch seconds of the most recent BLU event from any gateway
 
     /**
      * Regular constructor - called by Thing handler
@@ -141,9 +140,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!connected) {
             throw new ShellyApiException("offline.status-error-blu-not-connected");
         }
-        if (lastEventTimestamp > 0 && (now() - lastEventTimestamp) > getProfile().updatePeriod) {
-            throw new ShellyApiException("offline.status-error-blu-timeout");
-        }
         return deviceStatus;
     }
 
@@ -170,7 +166,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
 
             t.incProtMessages();
-            lastEventTimestamp = now(); // any event from any gateway keeps the watchdog alive
             if (!connected) {
                 connected = true;
                 t.setThingOnline();

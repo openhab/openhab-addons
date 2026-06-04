@@ -364,9 +364,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
                                         // known device — route to the BLU thing's own handler
-                                        Shelly2RpctInterface bluHandler = ((Shelly2ApiRpc) bluThing.getApi())
-                                                .getRpcHandler();
-                                        bluHandler.onNotifyEvent(receivedMessage);
+                                        if (bluThing.getApi() instanceof Shelly2ApiRpc bluApi) {
+                                            bluApi.getRpcHandler().onNotifyEvent(receivedMessage);
+                                        } else {
+                                            logger.debug("{}: BLU thing {} has unexpected API type, skipping event",
+                                                    thingName, address);
+                                        }
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
