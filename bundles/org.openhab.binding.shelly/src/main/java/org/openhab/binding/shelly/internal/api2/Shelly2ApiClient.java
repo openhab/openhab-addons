@@ -86,6 +86,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
@@ -383,7 +384,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.status.lights.add(new ShellySettingsLight());
             fillRgbwSettings(profile, dc);
         }
-        if (profile.isDuo && profile.isGen2) {
+        if (profile.isDuo) {
             fillDuoBulbSettings(profile, dc);
         }
         if (profile.isRGBBulb) {
@@ -577,7 +578,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateRollerStatus(0, status, result.cover0, channelUpdate);
         updated |= updateDimmerStatus(0, status, result.light0, channelUpdate);
         updated |= updateDimmerStatus(1, status, result.light1, channelUpdate);
-        updated |= updateDuoBulbStatus(0, status, result.cct0, channelUpdate);
+        updated |= updateDuoBulbStatus(0, status, result.cct0, result.rgbcct0, channelUpdate);
         updated |= updateRGBWStatus(0, status, result.rgbw0, channelUpdate);
         updated |= updateRGBBulbStatus(0, status, result.rgb0, channelUpdate);
         if (channelUpdate) {
@@ -1149,10 +1150,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected void fillDuoBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (!(profile.isDuo && profile.isGen2)) {
+        if (!profile.isDuo) {
             return;
         }
-        applyBulbLightSettings(profile, dc.cct0);
+        if (dc.rgbcct0 != null) {
+            profile.isRGBCCT = true;
+            applyBulbLightSettings(profile, dc.rgbcct0);
+        } else {
+            applyBulbLightSettings(profile, dc.cct0);
+        }
     }
 
     protected void fillRGBBulbSettings(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
@@ -1210,13 +1216,24 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 value.white, null, channelUpdate, true);
     }
 
-    private boolean updateDuoBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2CCTStatus value,
-            boolean channelUpdate) throws ShellyApiException {
+    private boolean updateDuoBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2CCTStatus cctValue,
+            @Nullable Shelly2RGBCCTStatus rgbcctValue, boolean channelUpdate) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
-        if (!(profile.isDuo && profile.isGen2) || value == null) {
+        if (!profile.isDuo) {
             return false;
         }
-        return applyLightStatus(status, 0, value.output, value.brightness, null, null, value.ct, channelUpdate, false);
+        if (profile.isRGBCCT && rgbcctValue != null) {
+            boolean inColor = "rgb".equals(rgbcctValue.mode);
+            profile.inColor = inColor;
+            profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
+            return applyLightStatus(status, 0, rgbcctValue.output, rgbcctValue.brightness,
+                    inColor ? rgbcctValue.rgb : null, null, inColor ? null : rgbcctValue.ct, channelUpdate, false);
+        }
+        if (cctValue == null) {
+            return false;
+        }
+        return applyLightStatus(status, 0, cctValue.output, cctValue.brightness, null, null, cctValue.ct, channelUpdate,
+                false);
     }
 
     private boolean updateRGBBulbStatus(int id, ShellySettingsStatus status, @Nullable Shelly2RGBStatus value,

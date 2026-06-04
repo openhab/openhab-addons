@@ -7,10 +7,11 @@
 	<thing-type id="shellyplusduobulb">
 		<label>Shelly Duo Bulb E27</label>
 		<description>Shelly Duo Bulb E27 - Dimmable Tunable White Bulb with Power Meter</description>
-		<category>Lightbulb</category>
+		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="control" typeId="duoControl"/>
+			<channel-group id="control" typeId="bulbControl"/>
+			<channel-group id="color" typeId="colorSettingsBulb"/>
 			<channel-group id="white" typeId="whiteSettings"/>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>

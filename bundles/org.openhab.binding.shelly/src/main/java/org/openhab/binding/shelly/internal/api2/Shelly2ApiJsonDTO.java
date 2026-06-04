@@ -65,6 +65,9 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_CCT_STATUS = "CCT.GetStatus";
     public static final String SHELLYRPC_METHOD_CCT_SET = "CCT.Set";
     public static final String SHELLYRPC_METHOD_CCT_SETCONFIG = "CCT.SetConfig";
+    public static final String SHELLYRPC_METHOD_RGBCCT_STATUS = "RGBCCT.GetStatus";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SET = "RGBCCT.Set";
+    public static final String SHELLYRPC_METHOD_RGBCCT_SETCONFIG = "RGBCCT.SetConfig";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
@@ -551,6 +554,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cct:0")
             public @Nullable Shelly2GetConfigLight cct0;
 
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2GetConfigLight rgbcct0;
+
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
         }
@@ -643,6 +649,20 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Boolean output;
             public @Nullable Double brightness;
             public @Nullable Integer ct;
+            public @Nullable Shelly2Energy aenergy;
+            public @Nullable Double apower;
+        }
+
+        // Devices with combined RGB + CCT support — component "rgbcct:0"
+        // mode="cct": ct field valid; mode="rgb": rgb array valid
+        public static class Shelly2RGBCCTStatus {
+            public @Nullable Integer id;
+            public @Nullable String source;
+            public @Nullable String mode; // "cct" or "rgb"
+            public @Nullable Boolean output;
+            public @Nullable Double brightness;
+            public @Nullable Integer[] rgb; // [R, G, B] 0-255, valid when mode="rgb"
+            public @Nullable Integer ct; // color temperature K, valid when mode="cct"
             public @Nullable Shelly2Energy aenergy;
             public @Nullable Double apower;
         }
@@ -931,6 +951,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("cct:0")
             public @Nullable Shelly2CCTStatus cct0;
 
+            @SerializedName("rgbcct:0")
+            public @Nullable Shelly2RGBCCTStatus rgbcct0;
+
             @SerializedName("temperature:0")
             public @Nullable Shelly2DeviceStatusTempId temperature0;
             @SerializedName("temperature:100")
@@ -1151,6 +1174,7 @@ public class Shelly2ApiJsonDTO {
             public Integer toggleAfter;
             public Integer white;
             public Integer[] rgb;
+            public @Nullable String mode; // for RGBCCT mode switching: "rgb" or "cct"
 
             // Shelly.SetAuth
             public String user;
