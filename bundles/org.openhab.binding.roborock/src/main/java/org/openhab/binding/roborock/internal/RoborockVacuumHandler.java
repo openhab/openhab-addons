@@ -542,25 +542,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
             registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-            if (!b01 && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-            } else if (!b01 && !isCloudMetadataRefreshAllowed()) {
-                disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
-            }
-            if (!b01)
+            if (!b01) {
+                if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+                    registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+                } else if (!isCloudMetadataRefreshAllowed()) {
+                    disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+                }
                 registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-            if (!b01)
                 registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-            if (!b01)
                 registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-            if (!b01)
                 registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-            if (!b01)
                 registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-            if (!b01)
                 registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-            if (!b01)
                 registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            }
             requestMapRefreshIfDue(cloudOnlyRefreshDue, "periodic poll cycle");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());

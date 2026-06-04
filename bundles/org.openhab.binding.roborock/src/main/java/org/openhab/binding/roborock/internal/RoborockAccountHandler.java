@@ -395,16 +395,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             localMqttClient.setCallback(this);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            // cleanSession=true: discard any persisted in-flight messages on reconnect.
-            // The binding re-subscribes and re-polls on every connect, so session persistence
-            // is not needed and causes stale message floods after binding redeploys.
             connOpts.setCleanSession(true);
             connOpts.setUserName(mqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(30);
-            connOpts.setMaxInflight(100);
 
             localMqttClient.connect(connOpts);
             mqttWatchdog.reset(Instant.now());
@@ -678,40 +674,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         // Q7 uses service.set_room_clean for motion control; Q10 uses prop.set {status}.
         switch (method) {
             case COMMAND_APP_START:
-                if (q7) {
-                    b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
-                } else {
-                    b01Method = "prop.set";
-                    b01Params = Map.of("status", 1);
-                }
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
                 break;
             case COMMAND_APP_SPOT:
-                if (q7) {
-                    b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
-                } else {
-                    b01Method = "prop.set";
-                    b01Params = Map.of("status", 2);
-                }
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
                 break;
             case COMMAND_APP_PAUSE:
-                if (q7) {
-                    b01Method = "service.set_room_clean";
-                    b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
-                } else {
-                    b01Method = "prop.set";
-                    b01Params = Map.of("status", 10);
-                }
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
                 break;
             case COMMAND_APP_CHARGE:
-                if (q7) {
-                    b01Method = "service.start_recharge";
-                    b01Params = Map.of();
-                } else {
-                    b01Method = "prop.set";
-                    b01Params = Map.of("status", 6);
-                }
+                b01Method = "service.start_recharge";
+                b01Params = Map.of();
                 break;
             case COMMAND_GET_STATUS: {
                 // Request all status properties the Q7 exposes via prop.get
@@ -790,7 +766,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 b01Params = buildJsonObject("property", consumableProps);
                 break;
             case COMMAND_GET_DND_TIMER:
-                // B01 consumables are fetched via prop.get with specific property names.
+                // B01 quiet time parameters are fetched via prop.get with specific property names.
                 // Response is a positional array matching the requested property list.
                 b01Method = "prop.get";
                 JsonArray quietTimeProps = new JsonArray();
