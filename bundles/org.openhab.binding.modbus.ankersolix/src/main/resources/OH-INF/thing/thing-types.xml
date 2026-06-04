@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ankersolix-solarbank4">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Anker SOLIX Solarbank 4 E5000 Pro</label>
+		<description>Anker SOLIX Solarbank 4 E5000 Pro connected through Modbus.</description>
+		<category>Battery</category>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+
+		<channels>
+			<channel id="device-model" typeId="ankersolix-device-model"/>
+			<channel id="device-serial-number" typeId="ankersolix-device-serial-number"/>
+			<channel id="device-sw-version" typeId="ankersolix-device-sw-version"/>
+			<channel id="battery-soc" typeId="ankersolix-battery-soc"/>
+			<channel id="pv-power" typeId="ankersolix-pv-power"/>
+			<channel id="battery-charging-power" typeId="ankersolix-battery-charging-power"/>
+			<channel id="battery-discharging-power" typeId="ankersolix-battery-discharging-power"/>
+			<channel id="load-power" typeId="ankersolix-load-power"/>
+			<channel id="grid-import-power" typeId="ankersolix-grid-import-power"/>
+			<channel id="grid-export-power" typeId="ankersolix-grid-export-power"/>
+			<channel id="ac-grid-output-power" typeId="ankersolix-ac-grid-output-power"/>
+			<channel id="pv-total-generation" typeId="ankersolix-pv-total-generation"/>
+			<channel id="cumulative-charge-energy" typeId="ankersolix-cumulative-charge-energy"/>
+			<channel id="cumulative-discharge-energy" typeId="ankersolix-cumulative-discharge-energy"/>
+			<channel id="operating-mode" typeId="ankersolix-operating-mode"/>
+			<channel id="battery-power-direction" typeId="ankersolix-battery-power-direction"/>
+			<channel id="battery-power-setpoint" typeId="ankersolix-battery-power-setpoint"/>
+		</channels>
+
+		<properties>
+			<property name="uniqueAddress"/>
+			<property name="serialNumber"/>
+			<property name="model"/>
+			<property name="deviceFamily"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ankersolix:device"/>
+	</thing-type>
+
+	<thing-type id="ankersolix-solarbank-ac">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Anker SOLIX Solarbank Max AC / XE AC</label>
+		<description>Anker SOLIX Solarbank Max AC or XE AC connected through Modbus.</description>
+		<category>Battery</category>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+
+		<channels>
+			<channel id="device-model" typeId="ankersolix-device-model"/>
+			<channel id="device-serial-number" typeId="ankersolix-device-serial-number"/>
+			<channel id="device-sw-version" typeId="ankersolix-device-sw-version"/>
+			<channel id="battery-soc" typeId="ankersolix-battery-soc"/>
+			<channel id="pv-power" typeId="ankersolix-pv-power"/>
+			<channel id="battery-charging-power" typeId="ankersolix-battery-charging-power"/>
+			<channel id="battery-discharging-power" typeId="ankersolix-battery-discharging-power"/>
+			<channel id="load-power" typeId="ankersolix-load-power"/>
+			<channel id="grid-import-power" typeId="ankersolix-grid-import-power"/>
+			<channel id="grid-export-power" typeId="ankersolix-grid-export-power"/>
+			<channel id="ac-grid-output-power" typeId="ankersolix-ac-grid-output-power"/>
+			<channel id="pv-total-generation" typeId="ankersolix-pv-total-generation"/>
+			<channel id="cumulative-charge-energy" typeId="ankersolix-cumulative-charge-energy"/>
+			<channel id="cumulative-discharge-energy" typeId="ankersolix-cumulative-discharge-energy"/>
+			<channel id="operating-mode" typeId="ankersolix-operating-mode"/>
+			<channel id="battery-power-direction" typeId="ankersolix-battery-power-direction"/>
+			<channel id="battery-power-setpoint" typeId="ankersolix-battery-power-setpoint"/>
+		</channels>
+
+		<properties>
+			<property name="uniqueAddress"/>
+			<property name="serialNumber"/>
+			<property name="model"/>
+			<property name="deviceFamily"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ankersolix:device"/>
+	</thing-type>
+
+	<thing-type id="ankersolix-smartmeter-gen2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Anker SOLIX Smart Meter Gen 2</label>
+		<description>Anker SOLIX Smart Meter Gen 2 connected through Modbus.</description>
+		<category>Energy</category>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+
+		<channels>
+			<channel id="device-model" typeId="ankersolix-device-model"/>
+			<channel id="device-serial-number" typeId="ankersolix-device-serial-number"/>
+			<channel id="device-sw-version" typeId="ankersolix-device-sw-version"/>
+			<channel id="meter-type" typeId="ankersolix-meter-type"/>
+
+			<channel id="primary-total-active-power" typeId="ankersolix-meter-active-power">
+				<label>Primary Total Active Power</label>
+			</channel>
+			<channel id="primary-phase-1-active-power" typeId="ankersolix-meter-active-power">
+				<label>Primary Phase 1 Active Power</label>
+			</channel>
+			<channel id="primary-phase-1-current" typeId="ankersolix-meter-current">
+				<label>Primary Phase 1 Current</label>
+			</channel>
+			<channel id="primary-phase-1-voltage" typeId="ankersolix-meter-voltage">
+				<label>Primary Phase 1 Voltage</label>
+			</channel>
+
+			<channel id="primary-phase-2-active-power" typeId="ankersolix-meter-active-power">
+				<label>Primary Phase 2 Active Power</label>
+			</channel>
+			<channel id="primary-phase-2-current" typeId="ankersolix-meter-current">
+				<label>Primary Phase 2 Current</label>
+			</channel>
+			<channel id="primary-phase-2-voltage" typeId="ankersolix-meter-voltage">
+				<label>Primary Phase 2 Voltage</label>
+			</channel>
+
+			<channel id="primary-phase-3-active-power" typeId="ankersolix-meter-active-power">
+				<label>Primary Phase 3 Active Power</label>
+			</channel>
+			<channel id="primary-phase-3-current" typeId="ankersolix-meter-current">
+				<label>Primary Phase 3 Current</label>
+			</channel>
+			<channel id="primary-phase-3-voltage" typeId="ankersolix-meter-voltage">
+				<label>Primary Phase 3 Voltage</label>
+			</channel>
+
+			<channel id="secondary-total-active-power" typeId="ankersolix-meter-active-power">
+				<label>Secondary Total Active Power</label>
+			</channel>
+			<channel id="secondary-phase-1-active-power" typeId="ankersolix-meter-active-power">
+				<label>Secondary Phase 1 Active Power</label>
+			</channel>
+			<channel id="secondary-phase-1-current" typeId="ankersolix-meter-current">
+				<label>Secondary Phase 1 Current</label>
+			</channel>
+			<channel id="secondary-phase-1-voltage" typeId="ankersolix-meter-voltage">
+				<label>Secondary Phase 1 Voltage</label>
+			</channel>
+
+			<channel id="secondary-phase-2-active-power" typeId="ankersolix-meter-active-power">
+				<label>Secondary Phase 2 Active Power</label>
+			</channel>
+			<channel id="secondary-phase-2-current" typeId="ankersolix-meter-current">
+				<label>Secondary Phase 2 Current</label>
+			</channel>
+			<channel id="secondary-phase-2-voltage" typeId="ankersolix-meter-voltage">
+				<label>Secondary Phase 2 Voltage</label>
+			</channel>
+
+			<channel id="secondary-phase-3-active-power" typeId="ankersolix-meter-active-power">
+				<label>Secondary Phase 3 Active Power</label>
+			</channel>
+			<channel id="secondary-phase-3-current" typeId="ankersolix-meter-current">
+				<label>Secondary Phase 3 Current</label>
+			</channel>
+			<channel id="secondary-phase-3-voltage" typeId="ankersolix-meter-voltage">
+				<label>Secondary Phase 3 Voltage</label>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="uniqueAddress"/>
+			<property name="serialNumber"/>
+			<property name="model"/>
+			<property name="deviceFamily"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ankersolix:device"/>
+	</thing-type>
+
+	<thing-type id="ankersolix-smartplug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Anker SOLIX Smart Plug</label>
+		<description>Anker SOLIX Smart Plug connected through Modbus.</description>
+		<category>Switch</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+
+		<channels>
+			<channel id="device-model" typeId="ankersolix-device-model"/>
+			<channel id="device-serial-number" typeId="ankersolix-device-serial-number"/>
+			<channel id="real-time-power" typeId="ankersolix-smartplug-power"/>
+			<channel id="voltage" typeId="ankersolix-smartplug-voltage"/>
+			<channel id="current" typeId="ankersolix-smartplug-current"/>
+			<channel id="switch-status" typeId="ankersolix-smartplug-switch-status"/>
+			<channel id="power-switch" typeId="ankersolix-smartplug-power-switch"/>
+		</channels>
+
+		<properties>
+			<property name="uniqueAddress"/>
+			<property name="serialNumber"/>
+			<property name="model"/>
+			<property name="deviceFamily"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ankersolix:device"/>
+	</thing-type>
+
+	<thing-type id="ankersolix-ev-charger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Anker SOLIX V1 Smart EV Charger</label>
+		<description>Anker SOLIX V1 Smart EV Charger connected through Modbus.</description>
+		<category>Energy</category>
+
+		<channels>
+			<channel id="device-model" typeId="ankersolix-device-model">
+				<label>Model Name</label>
+			</channel>
+			<channel id="device-serial-number" typeId="ankersolix-device-serial-number">
+				<label>Serial Number</label>
+			</channel>
+			<channel id="device-sw-version" typeId="ankersolix-device-sw-version">
+				<label>Software Version</label>
+			</channel>
+			<channel id="device-hw-version" typeId="ankersolix-device-hw-version">
+				<label>Hardware Version</label>
+			</channel>
+			<channel id="product-number" typeId="ankersolix-wallbox-product-number"/>
+
+			<channel id="rated-power" typeId="ankersolix-wallbox-power">
+				<label>Rated Power (Pn)</label>
+			</channel>
+			<channel id="minimum-output-current" typeId="ankersolix-wallbox-current">
+				<label>Minimum Output Current</label>
+			</channel>
+			<channel id="maximum-output-current" typeId="ankersolix-wallbox-current">
+				<label>Maximum Output Current</label>
+			</channel>
+
+			<channel id="alarm-information-1" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 1</label>
+			</channel>
+			<channel id="alarm-information-2" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 2</label>
+			</channel>
+			<channel id="alarm-information-3" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 3</label>
+			</channel>
+			<channel id="alarm-information-4" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 4</label>
+			</channel>
+			<channel id="alarm-information-5" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 5</label>
+			</channel>
+			<channel id="alarm-information-6" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 6</label>
+			</channel>
+			<channel id="alarm-information-7" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 7</label>
+			</channel>
+			<channel id="alarm-information-8" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 8</label>
+			</channel>
+			<channel id="alarm-information-9" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 9</label>
+			</channel>
+			<channel id="alarm-information-10" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 10</label>
+			</channel>
+			<channel id="alarm-information-11" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 11</label>
+			</channel>
+			<channel id="alarm-information-12" typeId="ankersolix-wallbox-alarm-word">
+				<label>Alarm Information 12</label>
+			</channel>
+
+			<channel id="l1-n-voltage" typeId="ankersolix-meter-voltage">
+				<label>L1-N Voltage</label>
+			</channel>
+			<channel id="l2-n-voltage" typeId="ankersolix-meter-voltage">
+				<label>L2-N Voltage</label>
+			</channel>
+			<channel id="l3-n-voltage" typeId="ankersolix-meter-voltage">
+				<label>L3-N Voltage</label>
+			</channel>
+			<channel id="l1-l2-voltage" typeId="ankersolix-meter-voltage">
+				<label>L1-L2 Voltage</label>
+			</channel>
+			<channel id="l2-l3-voltage" typeId="ankersolix-meter-voltage">
+				<label>L2-L3 Voltage</label>
+			</channel>
+			<channel id="l3-l1-voltage" typeId="ankersolix-meter-voltage">
+				<label>L3-L1 Voltage</label>
+			</channel>
+
+			<channel id="l1-current" typeId="ankersolix-wallbox-current">
+				<label>L1 Current</label>
+			</channel>
+			<channel id="l2-current" typeId="ankersolix-wallbox-current">
+				<label>L2 Current</label>
+			</channel>
+			<channel id="l3-current" typeId="ankersolix-wallbox-current">
+				<label>L3 Current</label>
+			</channel>
+
+			<channel id="l1-active-power" typeId="ankersolix-wallbox-power">
+				<label>L1 Active Power</label>
+			</channel>
+			<channel id="l2-active-power" typeId="ankersolix-wallbox-power">
+				<label>L2 Active Power</label>
+			</channel>
+			<channel id="l3-active-power" typeId="ankersolix-wallbox-power">
+				<label>L3 Active Power</label>
+			</channel>
+			<channel id="total-charging-active-power" typeId="ankersolix-wallbox-power">
+				<label>Total Charging Active Power</label>
+			</channel>
+			<channel id="l1-reactive-power" typeId="ankersolix-wallbox-power">
+				<label>L1 Reactive Power</label>
+			</channel>
+			<channel id="l2-reactive-power" typeId="ankersolix-wallbox-power">
+				<label>L2 Reactive Power</label>
+			</channel>
+			<channel id="l3-reactive-power" typeId="ankersolix-wallbox-power">
+				<label>L3 Reactive Power</label>
+			</channel>
+			<channel id="l1-apparent-power" typeId="ankersolix-wallbox-power">
+				<label>L1 Apparent Power</label>
+			</channel>
+			<channel id="l2-apparent-power" typeId="ankersolix-wallbox-power">
+				<label>L2 Apparent Power</label>
+			</channel>
+			<channel id="l3-apparent-power" typeId="ankersolix-wallbox-power">
+				<label>L3 Apparent Power</label>
+			</channel>
+
+			<channel id="current-charging-session-duration" typeId="ankersolix-wallbox-session-duration">
+				<label>Current Charging Session Duration</label>
+			</channel>
+			<channel id="current-charging-capacity" typeId="ankersolix-wallbox-energy">
+				<label>Current Charging Capacity</label>
+			</channel>
+
+			<channel id="pwm-enabled-status" typeId="ankersolix-wallbox-state">
+				<label>PWM Enabled Status</label>
+			</channel>
+			<channel id="single-three-phase-operating-mode" typeId="ankersolix-wallbox-state">
+				<label>Single / Three-Phase Operating Mode</label>
+			</channel>
+			<channel id="charging-mode" typeId="ankersolix-wallbox-state">
+				<label>Charging Mode</label>
+			</channel>
+			<channel id="load-balancing-enabled-status" typeId="ankersolix-wallbox-state">
+				<label>Load Balancing Enabled Status</label>
+			</channel>
+			<channel id="solar-power-balancing-enabled-status" typeId="ankersolix-wallbox-state">
+				<label>Solar Power Balancing Enabled Status</label>
+			</channel>
+			<channel id="cp-acquisition-voltage" typeId="ankersolix-wallbox-raw-value">
+				<label>CP Acquisition Voltage</label>
+			</channel>
+			<channel id="cp-signal-status" typeId="ankersolix-wallbox-state">
+				<label>CP Signal Status</label>
+			</channel>
+			<channel id="relay-1-temperature" typeId="ankersolix-wallbox-temperature">
+				<label>Relay 1 Temperature</label>
+			</channel>
+			<channel id="relay-2-temperature" typeId="ankersolix-wallbox-temperature">
+				<label>Relay 2 Temperature</label>
+			</channel>
+			<channel id="boost-mode" typeId="ankersolix-wallbox-state">
+				<label>Boost Mode</label>
+			</channel>
+			<channel id="led-light-brightness" typeId="ankersolix-wallbox-brightness">
+				<label>LED Light Brightness</label>
+			</channel>
+			<channel id="charging-status" typeId="ankersolix-wallbox-state">
+				<label>Charging Status</label>
+			</channel>
+			<channel id="ocpp-connection-status" typeId="ankersolix-wallbox-state">
+				<label>OCPP Connection Status</label>
+			</channel>
+			<channel id="mqtt-connection-status" typeId="ankersolix-wallbox-state">
+				<label>MQTT Connection Status</label>
+			</channel>
+
+			<channel id="charging-command" typeId="ankersolix-wallbox-charging-command"/>
+			<channel id="maximum-current-setting" typeId="ankersolix-wallbox-current-setting"/>
+			<channel id="boost-mode-command" typeId="ankersolix-wallbox-boost-command">
+				<label>Boost Mode</label>
+			</channel>
+			<channel id="set-timeout" typeId="ankersolix-wallbox-timeout-setting"/>
+			<channel id="set-number-of-charging-phases" typeId="ankersolix-wallbox-phase-setting"/>
+		</channels>
+
+		<properties>
+			<property name="uniqueAddress"/>
+			<property name="serialNumber"/>
+			<property name="model"/>
+			<property name="deviceFamily"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ankersolix:device"/>
+	</thing-type>
+
+	<channel-type id="ankersolix-device-model">
+		<item-type>String</item-type>
+		<label>Device Model</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-device-serial-number">
+		<item-type>String</item-type>
+		<label>Device Serial Number</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-device-sw-version">
+		<item-type>String</item-type>
+		<label>Device Firmware Version</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-device-hw-version">
+		<item-type>String</item-type>
+		<label>Device Hardware Version</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-battery-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State of Charge</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-pv-power">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-battery-charging-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charging Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-battery-discharging-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharging Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-load-power">
+		<item-type>Number:Power</item-type>
+		<label>Load Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-grid-import-power">
+		<item-type>Number:Power</item-type>
+		<label>Grid Import Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-grid-export-power">
+		<item-type>Number:Power</item-type>
+		<label>Grid Export Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-ac-grid-output-power">
+		<item-type>Number:Power</item-type>
+		<label>AC Grid Output Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-pv-total-generation">
+		<item-type>Number:Energy</item-type>
+		<label>PV Total Generation</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-cumulative-charge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Cumulative Charge Energy</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-cumulative-discharge-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Cumulative Discharge Energy</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-operating-mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-battery-power-direction">
+		<item-type>String</item-type>
+		<label>Battery Power Direction</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-battery-power-setpoint">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power Setpoint</label>
+		<state min="100" max="10000" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-type">
+		<item-type>String</item-type>
+		<label>Meter Type</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<state pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-power">
+		<item-type>Number:Power</item-type>
+		<label>Real Time Power</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<state pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-switch-status">
+		<item-type>String</item-type>
+		<label>Switch Status</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-power-switch">
+		<item-type>Switch</item-type>
+		<label>Power Switch</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-product-number">
+		<item-type>Number</item-type>
+		<label>Product Number</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-alarm-word">
+		<item-type>Number</item-type>
+		<label>Alarm Word</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-raw-value">
+		<item-type>Number</item-type>
+		<label>Raw Value</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<state pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-brightness">
+		<item-type>Number:Dimensionless</item-type>
+		<label>LED Light Brightness</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-session-duration">
+		<item-type>Number:Time</item-type>
+		<label>Current Charging Session Duration</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Current Charging Capacity</label>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-state">
+		<item-type>String</item-type>
+		<label>State</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-charging-command">
+		<item-type>String</item-type>
+		<label>Charging Command</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-current-setting">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current Setting</label>
+		<state min="0" max="32" step="0.1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-boost-command">
+		<item-type>Switch</item-type>
+		<label>Boost Mode Command</label>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-timeout-setting">
+		<item-type>Number:Time</item-type>
+		<label>Set Timeout</label>
+		<state min="6" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-wallbox-phase-setting">
+		<item-type>String</item-type>
+		<label>Set Number of Charging Phases</label>
+	</channel-type>
+</thing:thing-descriptions>
