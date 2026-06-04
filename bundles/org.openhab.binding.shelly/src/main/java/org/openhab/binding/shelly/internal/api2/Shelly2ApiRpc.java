@@ -821,7 +821,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (inColor) {
                     applyRgbArray(lightChannel, ls.rgb);
                 } else {
-                    lightChannel.temp = ls.ct != null ? ls.ct : (int) profile.minTemp;
+                    lightChannel.temp = ls.ct != null ? getInteger(ls.ct) : profile.minTemp;
                 }
             } else {
                 Shelly2CCTStatus ls = apiRequest(
@@ -829,7 +829,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         Shelly2CCTStatus.class);
                 ison = ls.output;
                 applyBrightness(lightChannel, ls.brightness);
-                lightChannel.temp = ls.ct != null ? ls.ct : (int) profile.minTemp;
+                lightChannel.temp = ls.ct != null ? getInteger(ls.ct) : profile.minTemp;
             }
             return buildSingleLightStatus(lightChannel, ison);
         }

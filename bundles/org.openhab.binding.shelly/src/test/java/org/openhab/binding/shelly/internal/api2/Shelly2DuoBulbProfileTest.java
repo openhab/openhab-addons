@@ -15,6 +15,8 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
@@ -42,7 +44,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"id":0,"output":false,"brightness":50.0,"ct":3200}
                 """;
-        Shelly2CCTStatus status = gson.fromJson(json, Shelly2CCTStatus.class);
+        Shelly2CCTStatus status = Objects.requireNonNull(gson.fromJson(json, Shelly2CCTStatus.class));
         assertThat(status.output, is(false));
         assertThat(status.brightness, is(50.0));
         assertThat(status.ct, is(3200));
@@ -54,7 +56,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"id":0,"output":false,"brightness":0}
                 """;
-        Shelly2CCTStatus status = gson.fromJson(json, Shelly2CCTStatus.class);
+        Shelly2CCTStatus status = Objects.requireNonNull(gson.fromJson(json, Shelly2CCTStatus.class));
         assertThat(status.output, is(false));
         assertThat(status.ct, is(nullValue()));
     }
@@ -64,7 +66,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"id":0,"mode":"cct","output":true,"brightness":75.0,"ct":4000}
                 """;
-        Shelly2RGBCCTStatus status = gson.fromJson(json, Shelly2RGBCCTStatus.class);
+        Shelly2RGBCCTStatus status = Objects.requireNonNull(gson.fromJson(json, Shelly2RGBCCTStatus.class));
         assertThat(status.mode, is("cct"));
         assertThat(status.output, is(true));
         assertThat(status.brightness, is(75.0));
@@ -77,7 +79,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"id":0,"mode":"rgb","output":true,"brightness":60.0,"rgb":[255,128,0]}
                 """;
-        Shelly2RGBCCTStatus status = gson.fromJson(json, Shelly2RGBCCTStatus.class);
+        Shelly2RGBCCTStatus status = Objects.requireNonNull(gson.fromJson(json, Shelly2RGBCCTStatus.class));
         assertThat(status.mode, is("rgb"));
         assertThat(status.output, is(true));
         assertThat(status.brightness, is(60.0));
@@ -98,7 +100,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"id":0,"output":false,"brightness":50.0,"ct":3200}
                 """;
-        Shelly2RGBCCTStatus status = gson.fromJson(json, Shelly2RGBCCTStatus.class);
+        Shelly2RGBCCTStatus status = Objects.requireNonNull(gson.fromJson(json, Shelly2RGBCCTStatus.class));
         assertThat(status.mode, is(nullValue()));
         // inColor = "rgb".equals(null) → false → CCT mode
         boolean inColor = "rgb".equals(status.mode);
@@ -113,7 +115,8 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"cct:0":{"id":0,"output":true,"brightness":80.0,"ct":3500}}
                 """;
-        Shelly2DeviceStatus.Shelly2DeviceStatusResult result = gson.fromJson(json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatus.Shelly2DeviceStatusResult result = Objects
+                .requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
         Shelly2CCTStatus cct = result.cct0;
         assertThat(cct, is(notNullValue()));
         if (cct != null) {
@@ -129,7 +132,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"rgbcct:0":{"id":0,"mode":"cct","output":true,"brightness":80.0,"ct":3500}}
                 """;
-        Shelly2DeviceStatusResult result = gson.fromJson(json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
         Shelly2RGBCCTStatus rgbcct = result.rgbcct0;
         assertThat(rgbcct, is(notNullValue()));
         if (rgbcct != null) {
@@ -145,7 +148,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"rgbcct:0":{"id":0,"mode":"rgb","output":true,"brightness":50.0,"rgb":[0,255,0]}}
                 """;
-        Shelly2DeviceStatusResult result = gson.fromJson(json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2DeviceStatusResult.class));
         assertThat(result.cct0, is(nullValue()));
         assertThat(result.rgbcct0, is(notNullValue()));
     }
@@ -157,7 +160,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"cct:0":{"id":0,"auto_on":false,"auto_off":false}}
                 """;
-        Shelly2GetConfigResult result = gson.fromJson(json, Shelly2GetConfigResult.class);
+        Shelly2GetConfigResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2GetConfigResult.class));
         assertThat(result.cct0, is(notNullValue()));
         assertThat(result.rgbcct0, is(nullValue()));
     }
@@ -168,7 +171,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"rgbcct:0":{"id":0,"auto_on":false,"auto_off":false}}
                 """;
-        Shelly2GetConfigResult result = gson.fromJson(json, Shelly2GetConfigResult.class);
+        Shelly2GetConfigResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2GetConfigResult.class));
         assertThat(result.rgbcct0, is(notNullValue()));
         assertThat(result.cct0, is(nullValue()));
     }
@@ -179,7 +182,7 @@ public class Shelly2DuoBulbProfileTest {
         String json = """
                 {"switch:0":{"id":0}}
                 """;
-        Shelly2GetConfigResult result = gson.fromJson(json, Shelly2GetConfigResult.class);
+        Shelly2GetConfigResult result = Objects.requireNonNull(gson.fromJson(json, Shelly2GetConfigResult.class));
         assertThat(result.cct0, is(nullValue()));
         assertThat(result.rgbcct0, is(nullValue()));
     }
