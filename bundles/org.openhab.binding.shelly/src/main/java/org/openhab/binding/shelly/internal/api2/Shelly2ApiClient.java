@@ -88,7 +88,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
@@ -113,13 +113,17 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);
 
-    public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
-        super(thingName, thing);
+    public Shelly2ApiClient(String thingName, ShellyApiConfiguration config, ShellyThingInterface thing) {
+        super(thingName, config, thing);
         this.thing = thing;
     }
 
-    public Shelly2ApiClient(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+    public Shelly2ApiClient(String thingName, ShellyApiConfiguration config, HttpClient httpClient) {
         super(thingName, config, httpClient);
+    }
+
+    @Override
+    public void initialize() {
     }
 
     protected static final Map<String, String> MAP_INMODE_BTNTYPE = Map.of(//
@@ -180,11 +184,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR);
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        setConfig(thingName, config);
-    }
-
-    @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         Shelly2DeviceSettings device = callApi("/shelly", Shelly2DeviceSettings.class);
         ShellySettingsDevice info = new ShellySettingsDevice();
@@ -202,15 +201,22 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     @Override
     public ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice devInfo)
             throws ShellyApiException {
-        /*
-         * This is a slightly simplified version of the method with the same name in Shelly2ApiRpc,
-         * which is only used for discovery.
-         *
-         * TODO: Either simplify this much more, to acquire the information necessary for discovery,
-         * or reorganize the two methods so that Shelly2ApiRpc.getDeviceProfile() calls super (this method)
-         * first, and then takes only the extra steps that depends on other methods in Shelly2ApiRpc.
-         */
+        initProfile(this.profile, thingTypeUID, devInfo);
+        this.profile.initialized = true;
+        return this.profile;
+    }
 
+    /**
+     * Populates {@code profile} from a GetConfig API call. Used by both the discovery path
+     * ({@link Shelly2ApiClient}) and the thing-handler path ({@link Shelly2ApiRpc}).
+     * Does NOT set {@code profile.initialized} — callers must do that after any additional
+     * post-init steps (e.g. WebSocket callback setup, initial status fetch).
+     *
+     * @return the raw GetConfig result, made available to subclasses for further processing
+     *         (e.g. BLU gateway setup that needs {@code dc.ble}).
+     */
+    protected Shelly2GetConfigResult initProfile(ShellyDeviceProfile profile, ThingTypeUID thingTypeUID,
+            @Nullable ShellySettingsDevice devInfo) throws ShellyApiException {
         if (devInfo != null) {
             profile.device = devInfo;
         }
@@ -256,9 +262,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.realm.isBlank()) {
-            config.realm = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as realm", thingName, config.realm);
+        String realm = config.getRealm();
+        if (realm.isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}: {} is used as realm", thingName, config.getRealm());
+            }
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -303,9 +312,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         // handle special cases, because there is no indicator for a meter in GetConfig
-        // Pro 3EM has 3 meters
-        // Pro 2 has 2 relays, but no meters
-        // Mini PM has 1 meter, but no relay
+        // Pro 3EM has 3 meters; Pro 2 has 2 relays but no meters; Mini PM has 1 meter but no relay
         Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUID);
         if (numMeters != null) {
             profile.numMeters = numMeters;
@@ -315,6 +322,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.numMeters = 3;
         } else if (dc.em10 != null) {
             profile.numMeters = 2;
+        } else {
+            profile.numMeters = profile.isRoller ? profile.numRollers : profile.numRelays;
         }
 
         if (profile.numMeters > 0) {
@@ -375,9 +384,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        profile.initialized = true;
-
-        return profile;
+        return dc;
     }
 
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
@@ -1301,7 +1308,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             String uid = thing.getThing().getUID().getAsString();
             suffix = substringAfterLast(uid, ":");
         } else {
-            suffix = config.localIp; // use a unique identifier;
+            suffix = config.getLocalIp(); // use a unique identifier;
         }
 
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();

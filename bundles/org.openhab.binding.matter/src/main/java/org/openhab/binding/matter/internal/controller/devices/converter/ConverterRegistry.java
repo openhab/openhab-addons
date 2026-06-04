@@ -30,6 +30,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowe
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FormaldehydeConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.IcdManagementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
@@ -121,6 +122,7 @@ public class ConverterRegistry {
         ConverterRegistry.registerConverter(NetworkCommissioningCluster.CLUSTER_ID,
                 NetworkCommissioningConverter.class);
         ConverterRegistry.registerConverter(GeneralDiagnosticsCluster.CLUSTER_ID, GeneralDiagnosticsConverter.class);
+        ConverterRegistry.registerConverter(IcdManagementCluster.CLUSTER_ID, IcdManagementConverter.class);
         // Robotic Vacuum Cleaner converters
         ConverterRegistry.registerConverter(
                 org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,

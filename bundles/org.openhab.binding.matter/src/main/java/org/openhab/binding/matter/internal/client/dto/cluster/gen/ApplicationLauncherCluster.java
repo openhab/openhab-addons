@@ -65,8 +65,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
          */
         public Integer catalogVendorId; // uint16
         /**
-         * This field shall indicate the application identifier, expressed as a string, such as &quot;PruneVideo&quot;
-         * or &quot;Company X&quot;. This field shall be unique within a catalog.
+         * This field shall indicate the application identifier, expressed as a string, such as "PruneVideo" or "Company
+         * X". This field shall be unique within a catalog.
          * For the DIAL registry catalog, this value shall be the DIAL prefix (see [DIAL Registry]).
          */
         public String applicationId; // string

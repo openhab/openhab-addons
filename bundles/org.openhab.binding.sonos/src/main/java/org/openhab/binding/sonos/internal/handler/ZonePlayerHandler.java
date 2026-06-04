@@ -52,7 +52,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
@@ -1901,10 +1900,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setLoudness(Command command) {
-        if (!isOutputLevelFixed() && (command instanceof OnOffType || command instanceof OpenClosedType
-                || command instanceof UpDownType)) {
-            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? "True" : "False";
+        if (!isOutputLevelFixed() && (command instanceof OnOffType || command instanceof UpDownType)) {
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) ? "True" : "False";
             executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_LOUDNESS,
                     Map.of("InstanceID", "0", "Channel", "Master", "DesiredLoudness", value));
         }
@@ -2045,12 +2042,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setShuffle(Command command) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
+        if (command instanceof OnOffType || command instanceof UpDownType) {
             try {
                 ZonePlayerHandler coordinator = getCoordinatorHandler();
 
-                if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                        || command.equals(OpenClosedType.OPEN)) {
+                if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
                     switch (coordinator.getRepeatMode()) {
                         case "ALL":
                             coordinator.updatePlayMode("SHUFFLE");
@@ -2062,8 +2058,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                             coordinator.updatePlayMode("SHUFFLE_NOREPEAT");
                             break;
                     }
-                } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
-                        || command.equals(OpenClosedType.CLOSED)) {
+                } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
                     switch (coordinator.getRepeatMode()) {
                         case "ALL":
                             coordinator.updatePlayMode("REPEAT_ALL");
@@ -2150,9 +2145,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void setEqualizerBooleanSetting(Command command, String eqType) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            setEQ(eqType, (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? "1" : "0");
+        if (command instanceof OnOffType || command instanceof UpDownType) {
+            setEQ(eqType, (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) ? "1" : "0");
         }
     }
 
@@ -2353,9 +2347,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setMute(Command command) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? "True" : "False";
+        if (command instanceof OnOffType || command instanceof UpDownType) {
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) ? "True" : "False";
             executeAction(SERVICE_RENDERING_CONTROL, ACTION_SET_MUTE,
                     Map.of("Channel", "Master", "DesiredMute", value));
         }
@@ -2399,11 +2392,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setAlarm(Command command) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) {
+        if (command instanceof OnOffType || command instanceof UpDownType) {
+            if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
                 setAlarm(true);
-            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)
-                    || command.equals(OpenClosedType.CLOSED)) {
+            } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
                 setAlarm(false);
             }
         }
@@ -3010,9 +3002,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public void setLed(Command command) {
-        if (command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) {
-            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
-                    || command.equals(OpenClosedType.OPEN)) ? "On" : "Off";
+        if (command instanceof OnOffType || command instanceof UpDownType) {
+            String value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) ? "On" : "Off";
             executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_SET_LED_STATE, Map.of("DesiredLEDState", value));
             executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_LED_STATE, null);
         }

@@ -30,7 +30,7 @@ export class CustomThermostatServer extends ThermostatServer {
     static readonly DEFAULTS = {
     } as const;
 
-    static features(values: any): Thermostat.Feature[] {
+    static selectFeatures(values: any): Thermostat.Feature[] {
         const feats: Thermostat.Feature[] = [];
         let controlSeq = -1;
         if (values?.occupiedHeatingSetpoint !== undefined) {

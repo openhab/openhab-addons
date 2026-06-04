@@ -42,7 +42,7 @@ public class PressureMeasurementCluster extends BaseCluster {
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the pressure in kPa as follows:
-     * MeasuredValue &#x3D; 10 x Pressure [kPa]
+     * MeasuredValue = 10 x Pressure [kPa]
      * The null value indicates that the value is not available.
      */
     public Integer measuredValue; // 0 int16 R V
@@ -62,7 +62,7 @@ public class PressureMeasurementCluster extends BaseCluster {
     public Integer tolerance; // 3 uint16 R V
     /**
      * Indicates the pressure in Pascals as follows:
-     * ScaledValue &#x3D; 10Scale x Pressure [Pa]
+     * ScaledValue = 10^Scale x Pressure [Pa]
      * The null value indicates that the value is not available.
      */
     public Integer scaledValue; // 16 int16 R V

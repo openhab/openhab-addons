@@ -13,7 +13,6 @@
 package org.openhab.binding.bticinosmarther.internal.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -185,7 +184,7 @@ public class SmartherBridgeConfiguration {
      * @return the current Bridge notifications list
      */
     public List<String> getNotifications() {
-        return (notifications != null) ? notifications : Collections.emptyList();
+        return (notifications != null) ? notifications : List.of();
     }
 
     /**

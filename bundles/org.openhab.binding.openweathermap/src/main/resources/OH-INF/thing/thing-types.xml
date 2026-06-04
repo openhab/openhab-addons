@@ -91,8 +91,13 @@
 
 		<channel-groups>
 			<channel-group id="current" typeId="airPollution"/>
+
+			<channel-group id="forecastHourly" typeId="airPollutionHourlyTimeSeries"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>location</representation-property>
 
 		<config-description-ref uri="thing-type:openweathermap:air-pollution"/>

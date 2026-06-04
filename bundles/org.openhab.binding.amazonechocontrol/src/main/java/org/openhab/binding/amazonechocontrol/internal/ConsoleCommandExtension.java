@@ -14,7 +14,6 @@ package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -92,7 +91,7 @@ public class ConsoleCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(LIST_ACCOUNTS, "list all AmazonEchoControl accounts"), buildCommandUsage(
+        return List.of(buildCommandUsage(LIST_ACCOUNTS, "list all AmazonEchoControl accounts"), buildCommandUsage(
                 RESET_ACCOUNT + " <account_id>",
                 "resets the account connection (clears all authentication data) for the thing with the given id"));
     }

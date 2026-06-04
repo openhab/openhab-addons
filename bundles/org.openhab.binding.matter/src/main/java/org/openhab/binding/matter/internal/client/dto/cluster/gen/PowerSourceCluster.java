@@ -72,14 +72,14 @@ public class PowerSourceCluster extends BaseCluster {
     /**
      * Indicates the relative preference with which the Node will select this source to provide power. A source with a
      * lower order shall be selected by the Node to provide power before any other source with a higher order, if the
-     * lower order source is available (see Section 11.7.7.1, “Status Attribute”).
+     * lower order source is available (see Section 11.7.7.1, "Status Attribute").
      * Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
      */
     public Integer order; // 1 uint8 R V
     /**
      * This attribute shall provide a user-facing description of this source, used to distinguish it from other power
-     * sources, e.g. &quot;DC Power&quot;, &quot;Primary Battery&quot; or &quot;Battery back-up&quot;. This attribute
-     * shall NOT be used to convey information such as battery form factor, or chemistry.
+     * sources, e.g. "DC Power", "Primary Battery" or "Battery back-up". This attribute shall NOT be used to convey
+     * information such as battery form factor, or chemistry.
      */
     public String description; // 2 string R V
     /**
@@ -106,12 +106,12 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Integer wiredAssessedCurrent; // 6 uint32 R V
     /**
-     * Indicates the nominal voltage, printed as part of the Node’s regulatory compliance label in mV (millivolts),
+     * Indicates the nominal voltage, printed as part of the Node's regulatory compliance label in mV (millivolts),
      * expected to be provided by the hard-wired source.
      */
     public Integer wiredNominalVoltage; // 7 uint32 R V
     /**
-     * Indicates the maximum current, printed as part of the Node’s regulatory compliance label in mA (milliamps),
+     * Indicates the maximum current, printed as part of the Node's regulatory compliance label in mA (milliamps),
      * expected to be provided by the hard-wired source.
      */
     public Integer wiredMaximumCurrent; // 8 uint32 R V
@@ -257,21 +257,26 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
-     * ### Legacy Implementations
-     * Legacy implementations of this cluster before revision 2, before this attribute was defined, would have
-     * implemented this cluster on an application endpoint without indicating it in EndpointList (since that attribute
-     * did not exist in revision 1), because it represented a power source for the endpoint, not the entire node.
-     * For example: Bridge implementations support endpoints for bridged devices that have different power sources.
-     * Such implementations followed device type requirements and semantics outside of this cluster, because this
-     * attribute did not exist.
-     * Future updates of such a cluster instance on the same endpoint, would allow that same endpoint to be an entry in
-     * the EndpointList attribute. Therefore it is valid to list the endpoint upon which the cluster instance exists.
-     * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
-     * power for the node. In both these common cases, for each cluster instance described, the list is empty.
-     * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
-     * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
-     * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the
-     * battery backup would list the endpoints that have a battery backup.
+     * > [!NOTE]
+     * > Legacy Implementations Legacy implementations of this cluster before revision 2, before this attribute was
+     * defined, would have implemented this cluster on an application endpoint without indicating it in EndpointList
+     * (since that attribute did not exist in revision 1), because it represented a power source for the endpoint, not
+     * the entire node. For example: Bridge implementations support endpoints for bridged devices that have different
+     * power sources. Such implementations followed device type requirements and semantics outside of this cluster,
+     * because this attribute did not exist. Future updates of such a cluster instance on the same endpoint, would allow
+     * that same endpoint to be an entry in the EndpointList attribute. Therefore it is valid to list the endpoint upon
+     * which the cluster instance exists.
+     * ### Empty list examples
+     * : Typically, there is one power source for the node.
+     * Also common is mains power for the node with battery backup power for the node.
+     * In both these common cases, for each cluster instance described, the list is empty.
+     * ### Populated list example
+     * : A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
+     * back up source with Order as 1,
+     * which means this list is empty for the Power Source cluster associated with the mains power,
+     * because it indicates the entire node,
+     * but the Power Source cluster instance associated with the battery backup would list the endpoints that have a
+     * battery backup.
      */
     public List<Integer> endpointList; // 31 list R V
 

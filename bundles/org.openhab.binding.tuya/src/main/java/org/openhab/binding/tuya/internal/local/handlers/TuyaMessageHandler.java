@@ -73,8 +73,6 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
                 if (stateMap != null && !stateMap.isEmpty()) {
                     deviceStatusListener.processDeviceStatus(stateMap);
                 }
-            } else if (m.commandType == CommandType.DP_QUERY_NOT_SUPPORTED) {
-                deviceStatusListener.processDeviceStatus(Map.of());
             } else if (m.commandType == CommandType.SESS_KEY_NEG_RESPONSE) {
                 if (!ctx.channel().hasAttr(TuyaDevice.SESSION_KEY_ATTR)
                         || !ctx.channel().hasAttr(TuyaDevice.SESSION_RANDOM_ATTR)) {
@@ -110,7 +108,8 @@ public class TuyaMessageHandler extends ChannelDuplexHandler {
                 }
                 ctx.channel().attr(TuyaDevice.SESSION_KEY_ATTR).set(newSessionKey);
 
-                deviceStatusListener.connectionStatus(true);
+                // No initial delay needed. We just negotiated a session key. The device MUST be ready.
+                deviceStatusListener.connectionStatus(true, 0);
             }
         }
     }
