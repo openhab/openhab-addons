@@ -16,6 +16,8 @@ import static org.openhab.binding.homematic.internal.HomematicBindingConstants.G
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,8 +110,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     private static List<VirtualDatapointHandler> virtualDatapointHandlers = new ArrayList<>();
     private boolean cancelLoadAllMetadata;
     private boolean initialized;
-    private boolean newDeviceEventsEnabled;
-    private ScheduledFuture<?> enableNewDeviceFuture;
+    private volatile Instant suppressNewDeviceEventsUntil = Instant.now();
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
 
     static {
@@ -190,26 +191,31 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
-        registerCallbacks();
 
-        if (!config.getGatewayInfo().isHomegear()) {
-            // delay the newDevice event handling at startup, reduces some API calls
-            long delay = config.getGatewayInfo().isCCU1() ? 10 : 3;
-            enableNewDeviceFuture = scheduler.schedule(() -> {
-                newDeviceEventsEnabled = true;
-            }, delay, TimeUnit.MINUTES);
-        } else {
-            newDeviceEventsEnabled = true;
-        }
+        // Suppress newDevice event handling for a short time after connecting. Together with
+        // the asynchronous newDevices() handling this also avoids a deadlock against the bulk
+        // device reload that runs on (re)connect. Arm it before registerCallbacks() so a
+        // newDevices callback delivered right after registration cannot slip through.
+        suppressNewDeviceEvents();
+
+        registerCallbacks();
+    }
+
+    /**
+     * (Re)starts the suppression window during which inbound newDevices callbacks are ignored.
+     * Called on the initial connect and on every reconnect, so a gateway that re-announces its
+     * devices via newDevices while reloadAllDeviceValues() is running cannot wedge the gateway's
+     * interface initialisation.
+     */
+    private void suppressNewDeviceEvents() {
+        // delay the newDevice event handling, reduces some API calls
+        long delayMinutes = config.getGatewayInfo().isHomegear() ? 0 : (config.getGatewayInfo().isCCU1() ? 10 : 3);
+        suppressNewDeviceEventsUntil = Instant.now().plus(delayMinutes, ChronoUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
         initialized = false;
-        if (enableNewDeviceFuture != null) {
-            enableNewDeviceFuture.cancel(true);
-        }
-        newDeviceEventsEnabled = false;
         stopWatchdogs();
         sendDelayedExecutor.stop();
         receiveDelayedExecutor.stop();
@@ -756,25 +762,36 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
 
     @Override
     public void newDevices(List<String> addresses) {
-        if (initialized && newDeviceEventsEnabled) {
-            for (String address : addresses) {
+        if (initialized && Instant.now().isAfter(suppressNewDeviceEventsUntil)) {
+            // Load the new device(s) on a separate thread so the gateway's synchronous
+            // newDevices XML-RPC callback returns immediately. Running the blocking
+            // getDeviceDescriptions() call inline on the callback server thread can deadlock
+            // the gateway's interface initialisation, because that call needs the XmlRpcClient
+            // monitor which the reconnect reload may be holding.
+            scheduler.execute(() -> {
                 try {
-                    logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
                     List<HmDevice> deviceDescriptions = getDeviceDescriptions();
-                    for (HmDevice device : deviceDescriptions) {
-                        if (device.getAddress().equals(address)) {
-                            for (HmChannel channel : device.getChannels()) {
-                                addChannelDatapoints(channel, HmParamsetType.MASTER);
-                                addChannelDatapoints(channel, HmParamsetType.VALUES);
+                    for (String address : addresses) {
+                        try {
+                            logger.debug("New device '{}' detected on gateway with id '{}'", address, id);
+                            for (HmDevice device : deviceDescriptions) {
+                                if (device.getAddress().equals(address)) {
+                                    for (HmChannel channel : device.getChannels()) {
+                                        addChannelDatapoints(channel, HmParamsetType.MASTER);
+                                        addChannelDatapoints(channel, HmParamsetType.VALUES);
+                                    }
+                                    prepareDevice(device);
+                                    gatewayAdapter.onNewDevice(device);
+                                }
                             }
-                            prepareDevice(device);
-                            gatewayAdapter.onNewDevice(device);
+                        } catch (Exception ex) {
+                            logger.error("{}", ex.getMessage(), ex);
                         }
                     }
-                } catch (Exception ex) {
+                } catch (IOException ex) {
                     logger.error("{}", ex.getMessage(), ex);
                 }
-            }
+            });
         }
     }
 
@@ -930,6 +947,10 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             if (connectionLost) {
                 connectionLost = false;
                 logger.info("Connection resumed on gateway '{}'", id);
+                // Re-start the newDevices suppression window: on reconnect the gateway
+                // re-announces all devices via newDevices while reloadAllDeviceValues() runs,
+                // which is the situation that can deadlock the gateway's interface init.
+                suppressNewDeviceEvents();
                 try {
                     registerCallbacks();
                 } catch (IOException e) {
