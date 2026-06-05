@@ -361,12 +361,15 @@ public class Shelly2RpcSocket implements WriteCallback {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                                     String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
-                                    if (thingTable.findThing(address) != null) {
-                                        // known device
-                                        ShellyThingInterface thing = thingTable.getThing(address);
-                                        Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
-                                        handler = api.getRpcHandler();
-                                        handler.onNotifyEvent(receivedMessage);
+                                    ShellyThingInterface bluThing = thingTable.findThing(address);
+                                    if (bluThing != null) {
+                                        // known device — route to the BLU thing's own handler
+                                        if (bluThing.getApi() instanceof Shelly2ApiRpc bluApi) {
+                                            bluApi.getRpcHandler().onNotifyEvent(receivedMessage);
+                                        } else {
+                                            logger.debug("{}: BLU thing {} has unexpected API type, skipping event",
+                                                    thingName, address);
+                                        }
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
@@ -378,6 +381,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                         }
                                     }
                                 } else {
+                                    // non-BLU event: always use the hub's handler, never the BLU one
                                     handler.onNotifyEvent(receivedMessage);
                                 }
                             }
