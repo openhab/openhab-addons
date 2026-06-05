@@ -148,7 +148,6 @@
 		<description>@text/thing-type.shelly.shellybluws90.description</description>
 		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="status" typeId="buttonState"/>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>

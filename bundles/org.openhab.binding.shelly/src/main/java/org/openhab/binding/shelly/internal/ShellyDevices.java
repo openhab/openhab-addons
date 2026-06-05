@@ -713,5 +713,6 @@ public class ShellyDevices {
             Map.entry(THING_TYPE_SHELLYBLUDW, 1), //
             Map.entry(THING_TYPE_SHELLYBLUMOTION, 0), // button is inside the housing
             Map.entry(THING_TYPE_SHELLYBLUDISTANCE, 0), // button is inside the housing
-            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2));
+            Map.entry(THING_TYPE_SHELLYBLUREMOTE, 2), //
+            Map.entry(THING_TYPE_SHELLYBLUWS90, 1)); // pairing/reset button
 }
