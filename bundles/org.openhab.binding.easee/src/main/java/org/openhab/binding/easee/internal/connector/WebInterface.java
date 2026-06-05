@@ -135,11 +135,6 @@ public class WebInterface implements AtomicReferenceTrait {
             }
 
             switch (status.getHttpCode()) {
-                case BAD_REQUEST:
-                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            msg);
-                    setAuthenticated(false);
-                    break;
                 case OK:
                     String accessToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
                     String refreshToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
@@ -160,8 +155,8 @@ public class WebInterface implements AtomicReferenceTrait {
                         break;
                     }
                 default:
-                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            msg);
+                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE,
+                            Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
                     setAuthenticated(false);
             }
         }

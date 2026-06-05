@@ -134,7 +134,8 @@ public final class Utils {
         switch (httpCode) {
             case BAD_REQUEST:
             case UNAUTHORIZED:
-            case FORBIDDEN:
+            case FORBIDDEN: // e.g. wrong site id
+            case NOT_FOUND: // e.g. wrong user name
                 return ThingStatusDetail.CONFIGURATION_ERROR;
             default:
                 return ThingStatusDetail.COMMUNICATION_ERROR;
