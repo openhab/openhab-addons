@@ -212,6 +212,26 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         }
     }
 
+    /**
+     * Temporarily stops the adapter's discovery. BlueZ's {@code Device.Connect()} is unreliable
+     * (slow / blocking) while the adapter is actively discovering, so callers pause discovery around
+     * a connect attempt. Discovery is automatically resumed by the periodic
+     * {@link #initializeAndRefreshDevices()} job (every 10s), which calls {@code startDiscovery()}.
+     */
+    public void stopDiscovery() {
+        BluetoothAdapter localAdapter = this.adapter;
+        if (localAdapter != null) {
+            try {
+                if (Boolean.TRUE.equals(localAdapter.isDiscovering())) {
+                    localAdapter.stopDiscovery();
+                    logger.debug("Paused discovery for a connect attempt");
+                }
+            } catch (RuntimeException ex) {
+                logger.debug("Failed to pause discovery", ex);
+            }
+        }
+    }
+
     @Override
     public @Nullable BluetoothAddress getAddress() {
         return adapterAddress;
