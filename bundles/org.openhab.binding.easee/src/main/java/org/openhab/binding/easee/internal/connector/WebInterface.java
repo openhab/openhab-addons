@@ -190,18 +190,20 @@ public class WebInterface implements AtomicReferenceTrait {
         @Override
         public void run() {
             logger.debug("run queued commands, queue size is {}", commandQueue.size());
-            if (!isAuthenticated()) {
-                authenticate();
-            } else {
-                refreshAccessToken();
+            // catch all exceptions here: the executor is scheduled with a fixed delay, an uncaught exception would
+            // silently cancel the job and the binding would never recover.
+            try {
+                if (!isAuthenticated()) {
+                    authenticate();
+                } else {
+                    refreshAccessToken();
 
-                if (isAuthenticated() && !commandQueue.isEmpty()) {
-                    try {
+                    if (isAuthenticated() && !commandQueue.isEmpty()) {
                         executeCommand();
-                    } catch (Exception ex) {
-                        logger.warn("command execution ended with exception:", ex);
                     }
                 }
+            } catch (Exception ex) {
+                logger.warn("command execution ended with exception:", ex);
             }
         }
 
