@@ -59,7 +59,7 @@
 			<tag>Measurement</tag>
 			<tag>Ultraviolet</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%">
+		<state readOnly="true" pattern="%.1f">
 		</state>
 	</channel-type>
 

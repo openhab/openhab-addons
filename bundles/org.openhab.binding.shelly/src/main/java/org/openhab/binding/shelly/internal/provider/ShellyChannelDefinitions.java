@@ -704,12 +704,9 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_PRECIPITATION);
 
         // Battery
-        if (ws90 || sdata.bat != null) {
-            addChannel(thing, newChannels, ws90 || sdata.bat.value != null, CHANNEL_GROUP_BATTERY,
-                    CHANNEL_SENSOR_BAT_LEVEL);
-            addChannel(thing, newChannels, ws90 || sdata.bat.value != null, CHANNEL_GROUP_BATTERY,
-                    CHANNEL_SENSOR_BAT_LOW);
-        }
+        boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
+        addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
+        addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
 
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
         addChannel(thing, newChannels, sdata.actReasons != null, CHGR_DEVST, CHANNEL_DEVST_WAKEUP);
