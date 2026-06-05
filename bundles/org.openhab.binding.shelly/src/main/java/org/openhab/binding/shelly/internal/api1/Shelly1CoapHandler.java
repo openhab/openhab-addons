@@ -75,7 +75,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     private final Gson gson;
     private String thingName;
 
-    private boolean coiotBound = false;
+    private boolean coiotBound;
     private Shelly1CoIoTInterface coiot;
     private int coiotVers = -1;
 
@@ -83,7 +83,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     private @Nullable CoapClient statusClient;
     private Request reqDescription = new Request(Code.GET, Type.CON);
     private Request reqStatus = new Request(Code.GET, Type.CON);
-    private boolean updatesRequested = false;
+    private boolean updatesRequested;
     private int coiotPort = COIOT_PORT;
 
     private int lastSerial = -1;
