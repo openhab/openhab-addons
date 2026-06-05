@@ -64,7 +64,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -393,7 +395,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             localMqttClient.setCallback(this);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(false);
+            connOpts.setCleanSession(true);
             connOpts.setUserName(mqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
@@ -541,7 +543,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 mqttWatchdog.noteOutboundPublish(Instant.now());
                 return id;
             } catch (MqttException e) {
-                logger.error("MQTT publish failed", e);
+                // Connection reset during router reboot or brief outage — transient, not a bug
+                logger.debug("MQTT publish failed (transient): {}", e.getMessage(), e);
                 return -1;
             }
         } else {
@@ -639,5 +642,261 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(RoborockVacuumDiscoveryService.class);
+    }
+    // -------------------------------------------------------------------------
+    // B01 command support (Q7 and similar models)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Translates a V1-style method name and params into the B01 equivalent,
+     * then builds and publishes the MQTT frame.
+     *
+     * <p>
+     * B01 uses a different payload envelope ({@code dps.10000}) and different
+     * method names ({@code prop.set}, {@code prop.get}, {@code service.*}) compared
+     * to V1 ({@code dps.101} with raw RPC method names).
+     *
+     * @param method V1-style method name, e.g. {@code "app_start"}, {@code "get_prop"}
+     * @param params JSON-encoded params, e.g. {@code "[]"} or {@code "["status"]"}
+     * @param thingID device DUID
+     * @param localKey device local key (16 UTF-8 bytes)
+     * @param id message sequence ID
+     * @return the message ID on success, -1 on failure
+     */
+    public int sendB01RPCCommand(String method, String params, String thingID, String localKey, int id, boolean q7) {
+        int timestamp = (int) Instant.now().getEpochSecond();
+        MqttClient localMqttClient = mqttClient;
+
+        String b01Method;
+        Object b01Params;
+
+        // Translate V1 method names → B01 equivalents.
+        switch (method) {
+            case COMMAND_APP_START:
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 1, "room_ids", new JsonArray());
+                break;
+            case COMMAND_APP_SPOT:
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 0, "room_ids", new JsonArray());
+                break;
+            case COMMAND_APP_PAUSE:
+                b01Method = "service.set_room_clean";
+                b01Params = buildJsonObject("clean_type", 0, "ctrl_value", 2, "room_ids", new JsonArray());
+                break;
+            case COMMAND_APP_CHARGE:
+                b01Method = "service.start_recharge";
+                b01Params = Map.of();
+                break;
+            case COMMAND_GET_STATUS: {
+                // Request all status properties the Q7 exposes via prop.get
+                b01Method = "prop.get";
+                JsonArray statusProps = new JsonArray();
+                for (String p : new String[] { "status", "fault", "wind", "water", "mode", "quantity", "tank_state",
+                        "sweep_type", "clean_path_preference", "cloth_state", "time_zone", "language", "cleaning_time",
+                        "cleaning_area", "custom_type", "work_mode", "charge_state", "current_map_id", "map_num",
+                        "dust_action", "quiet_is_open", "clean_finish", "build_map", "dust_frequency", "multi_floor",
+                        "map_save", "green_laser", "dust_bag_used", "back_to_wash", "repeat_state" }) {
+                    statusProps.add(p);
+                }
+                b01Params = buildJsonObject("property", statusProps);
+                break;
+            }
+            case "get_prop":
+                b01Method = "prop.get";
+                // params is a JSON array of property names, e.g. ["status","wind"]
+                try {
+                    JsonElement properties = JsonParser.parseString(params);
+                    if (!properties.isJsonArray()) {
+                        logger.debug("B01 get_prop expects JSON array params but got: {}", params);
+                        return -1;
+                    }
+                    b01Params = Map.of("property", properties.getAsJsonArray());
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for get_prop: {}", e.getMessage());
+                    return -1;
+                }
+                break;
+            case "set_custom_mode": {
+                // fan power: params is [<int>]
+                final int wind;
+                try {
+                    wind = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
+                b01Method = "prop.set";
+                b01Params = Map.of("wind", wind);
+                break;
+            }
+            case "set_water_box_custom_mode": {
+                final int water;
+                try {
+                    water = JsonParser.parseString(params).getAsJsonArray().get(0).getAsInt();
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to parse B01 params for set_water_box_custom_mode: {}", e.getMessage());
+                    return -1;
+                }
+                b01Method = "prop.set";
+                b01Params = Map.of("water", water);
+                break;
+            }
+            case "get_map_v1":
+                b01Method = "service.upload_by_maptype";
+                b01Params = Map.of("force", 1, "map_type", 0);
+                break;
+            case "get_room_mapping":
+                b01Method = "service.get_map_list";
+                b01Params = Map.of();
+                break;
+            case COMMAND_GET_NETWORK_INFO:
+                b01Method = "service.get_net_info";
+                b01Params = Map.of();
+                break;
+            case COMMAND_GET_CONSUMABLE:
+                // B01 consumables are fetched via prop.get with specific property names.
+                // Response is a positional array matching the requested property list.
+                b01Method = "prop.get";
+                JsonArray consumableProps = new JsonArray();
+                for (String p : new String[] { "main_brush", "side_brush", "hypa", "main_sensor" }) {
+                    consumableProps.add(p);
+                }
+                b01Params = buildJsonObject("property", consumableProps);
+                break;
+            case COMMAND_GET_DND_TIMER:
+                // B01 quiet time parameters are fetched via prop.get with specific property names.
+                // Response is a positional array matching the requested property list.
+                b01Method = "prop.get";
+                JsonArray quietTimeProps = new JsonArray();
+                for (String p : new String[] { "quiet_begin_time", "quiet_end_time" }) {
+                    quietTimeProps.add(p);
+                }
+                b01Params = buildJsonObject("property", quietTimeProps);
+                break;
+            case COMMAND_GET_CLEAN_SUMMARY:
+                b01Method = "service.get_record_list";
+                b01Params = Map.of();
+                break;
+            default:
+                // Unknown command — log and bail out rather than sending garbage to the device.
+                // Add an explicit case above when support for this command is implemented.
+                logger.debug("B01 sendB01RPCCommand: unhandled method '{}', ignoring", method);
+                return -1;
+        }
+
+        // Build the inner payload: { method, msgId, params }
+        // Note: key ordering matches the cloud expectation (method first, then msgId, then params)
+        Map<String, Object> b01Inner = new java.util.LinkedHashMap<>();
+        b01Inner.put("method", b01Method);
+        b01Inner.put("msgId", String.valueOf(id));
+        b01Inner.put("params", b01Params);
+
+        Map<String, Object> dps = new HashMap<>();
+        dps.put("10000", b01Inner);
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("t", timestamp);
+        payloadMap.put("dps", dps);
+
+        String payload = gson.toJson(payloadMap);
+        logger.trace("B01 MQTT payload = {}", payload);
+
+        byte[] messageBytes = buildB01(localKey, payload.getBytes(StandardCharsets.UTF_8));
+        if (messageBytes.length == 0) {
+            logger.debug("Failed to build B01 {} message (empty frame), not publishing", method);
+            return -1;
+        }
+        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
+        if (localMqttClient != null && localMqttClient.isConnected()) {
+            logger.debug("Publishing B01 {} ({}) message to {} (q7={})", method, b01Method, topic, q7);
+            try {
+                MqttMessage message = new MqttMessage(messageBytes);
+                message.setQos(1);
+                message.setRetained(false);
+                localMqttClient.publish(topic, message);
+                mqttWatchdog.noteOutboundPublish(Instant.now());
+                return id;
+            } catch (MqttException e) {
+                logger.debug("B01 MQTT publish failed (transient): {}", e.getMessage(), e);
+                return -1;
+            }
+        } else {
+            logger.debug("Failed to publish B01 {} message to {}, mqttClient not connected", method, topic);
+            return -1;
+        }
+    }
+
+    /**
+     * Builds a complete B01 binary frame: assembles the header, encrypts the payload
+     * with AES-128-CBC using a random IV derived from the frame's random field,
+     * and appends a CRC32 checksum.
+     *
+     * <p>
+     * The frame wire format is identical to V1 (version(3) + seq(4) + random(4) +
+     * timestamp(4) + protocol(2) + payloadLen(2) + payload(N) + crc32(4)) but the
+     * version bytes are {@code "B01"} and the crypto uses {@link ProtocolUtils#encryptB01}.
+     *
+     * @param localKey device local key
+     * @param payload plaintext payload bytes
+     * @return the complete binary frame ready to publish via MQTT
+     */
+    byte[] buildB01(String localKey, byte[] payload) {
+        try {
+            int timestamp = JsonParser.parseString(new String(payload, StandardCharsets.UTF_8)).getAsJsonObject()
+                    .get("t").getAsInt();
+            int randomInt = secureRandom.nextInt(90000) + 10000;
+            int seq = secureRandom.nextInt(900000) + 100000;
+            int protocol = 101;
+
+            byte[] encryptedPayload = ProtocolUtils.encryptB01(payload, localKey, randomInt);
+
+            int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
+            byte[] message = new byte[totalLength];
+
+            // Version string "B01"
+            message[0] = 'B';
+            message[1] = '0';
+            message[2] = '1';
+
+            ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
+            ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
+            ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
+            ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
+            ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
+
+            System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
+
+            CRC32 crc32 = new CRC32();
+            crc32.update(message, 0, message.length - CRC_LENGTH);
+            ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
+
+            return message;
+        } catch (Exception e) {
+            logger.debug("Exception building B01 frame: {}", e.getMessage());
+            return new byte[0];
+        }
+    }
+
+    /**
+     * Builds a JsonObject from alternating key/value pairs.
+     * Values may be Integer, String, Boolean, or JsonElement.
+     */
+    private JsonObject buildJsonObject(Object... keyValues) {
+        JsonObject obj = new JsonObject();
+        for (int i = 0; i + 1 < keyValues.length; i += 2) {
+            String key = keyValues[i].toString();
+            Object val = keyValues[i + 1];
+            if (val instanceof Integer v) {
+                obj.addProperty(key, v);
+            } else if (val instanceof String v) {
+                obj.addProperty(key, v);
+            } else if (val instanceof Boolean v) {
+                obj.addProperty(key, v);
+            } else if (val instanceof JsonElement v) {
+                obj.add(key, v);
+            }
+        }
+        return obj;
     }
 }
