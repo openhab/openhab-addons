@@ -1914,27 +1914,26 @@ See notes on discovery of Shelly BLU devices above.
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type     | read-only | Description                                                                         |
-| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
-| sensors | lux           | Number   | yes       | Brightness in Lux                                                                   |
-|         | uvIndex       | Number   | yes       | UV Index                                                                            |
-|         | windSpeed     | Number   | yes       | Wind speed in m/s                                                                   |
-|         | windDirection | Number   | yes       | Wind direction in degrees                                                           |
-|         | gustSpeed     | Number   | yes       | Gust speed in m/s                                                                   |
-|         | pressure      | Number   | yes       | Atmospheric pressure in hPA                                                         |
-|         | humidity      | Number   | yes       | Relative humidity in %                                                              |
-|         | temperature   | Number   | yes       | Temperature in degrees (Celsius)                                                    |
-|         | dewPoint      | Number   | yes       | Dew point in degrees (Celsius)                                                      |
-|         | rainStatus    | Switch   | yes       | ON: It's raining, OFF: It's not raining                                             |
-|         | precipitation | Number   | yes       | Rain precipitation in mm                                                            |
-|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
-| status  | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
-|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
-|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
-| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
-|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
-| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
-
+| Group   | Channel       | Type                 | read-only | Description                                                                         |
+| ------- | ------------- | -------------------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | lux           | Number:Illuminance   | yes       | Brightness in Lux                                                                   |
+|         | uvIndex       | Number               | yes       | UV Index (dimensionless, 0-11+)                                                     |
+|         | windSpeed     | Number:Speed         | yes       | Wind speed in m/s                                                                   |
+|         | windDirection | Number:Angle         | yes       | Wind direction in degrees (0-360)                                                   |
+|         | gustSpeed     | Number:Speed         | yes       | Wind gust speed in m/s                                                              |
+|         | pressure      | Number:Pressure      | yes       | Atmospheric pressure in hPa                                                         |
+|         | humidity      | Number:Dimensionless | yes       | Relative humidity in %                                                              |
+|         | temperature   | Number:Temperature   | yes       | Temperature in degrees Celsius                                                      |
+|         | dewPoint      | Number:Temperature   | yes       | Dew point in degrees Celsius                                                        |
+|         | rainStatus    | Switch               | yes       | ON: It's raining, OFF: It's not raining                                             |
+|         | precipitation | Number:Length        | yes       | Accumulated rainfall in mm                                                          |
+|         | lastUpdate    | DateTime             | yes       | Timestamp of the last update (any sensor value changed)                             |
+| status  | button        | Trigger              | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String               | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number               | yes       | Counter gets incremented every time the device issues a button event.               |
+| battery | batteryLevel  | Number               | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch               | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String               | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
 ## Shelly Wall Displays
 
