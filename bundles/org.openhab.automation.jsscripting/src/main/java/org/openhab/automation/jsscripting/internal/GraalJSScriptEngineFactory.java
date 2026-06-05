@@ -30,8 +30,10 @@ import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
+import org.osgi.service.component.ComponentConstants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -105,24 +107,29 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
             if (localEngine != null) {
                 return localEngine;
             }
-            if (configuration.isDebuggerEnabled()) {
-                Engine.Builder engineBuilder = createEngineBuilder() //
-                        .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
-                        .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                        .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                                 // attach
-                        .option("inspect.Secure", "false"); // Disable TLS
-                try {
-                    localEngine = engineBuilder.build();
-                } catch (RuntimeException e) {
-                    logger.error(
-                            "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
-                            e);
+            try {
+                if (configuration.isDebuggerEnabled()) {
+                    Engine.Builder engineBuilder = createEngineBuilder() //
+                            .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                            .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
+                            .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger
+                                                                     // to attach
+                            .option("inspect.Secure", "false"); // Disable TLS
+                    try {
+                        localEngine = engineBuilder.build();
+                    } catch (RuntimeException e) {
+                        logger.error(
+                                "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
+                                e);
+                        localEngine = createEngineBuilder().build();
+                    }
+                    logger.info("Debugger support is enabled for JavaScript Scripting.");
+                } else {
                     localEngine = createEngineBuilder().build();
                 }
-                logger.info("Debugger support is enabled for JavaScript Scripting.");
-            } else {
-                localEngine = createEngineBuilder().build();
+            } catch (RuntimeException e) {
+                logger.error("Failed to initialize Graal JavaScript engine.", e);
+                return null;
             }
             engine = localEngine;
             return localEngine;
@@ -142,12 +149,20 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     }
 
     /**
-     * Closes and releases the shared {@link Engine}.
-     * <p>
-     * This is intentionally <b>not</b> annotated with {@code @Deactivate}: the engine is scoped to the bundle, not to
-     * this component's activation (see {@link #engine}), so it must survive component (re-)activations. It is provided
-     * for explicit teardown (e.g. tests and bundle shutdown) and the engine is re-created on demand by
-     * {@link #getEngine}.
+     * Releases the shared {@link Engine}, but only when the bundle is actually stopping. The reason is checked so that
+     * ordinary component restarts (e.g. an OSGi reference rebind) do not close the engine and break running scripts -
+     * that is exactly what this fix prevents. Only a real bundle stop releases the engine.
+     */
+    @Deactivate
+    protected void deactivate(int reason) {
+        if (reason == ComponentConstants.DEACTIVATION_REASON_BUNDLE_STOPPED) {
+            dispose();
+        }
+    }
+
+    /**
+     * Closes the shared {@link Engine} and clears it so it is re-created on next use. Called on bundle stop and from
+     * tests.
      */
     public void dispose() {
         synchronized (ENGINE_LOCK) {
