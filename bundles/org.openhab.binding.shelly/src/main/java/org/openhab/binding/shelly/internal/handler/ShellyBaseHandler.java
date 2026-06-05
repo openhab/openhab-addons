@@ -129,7 +129,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
-    private boolean refreshSettings = false;
+    private boolean refreshSettings;
     private @Nullable ScheduledFuture<?> statusJob;
     private @Nullable ScheduledFuture<?> initJob;
 
